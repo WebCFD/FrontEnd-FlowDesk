@@ -2,6 +2,7 @@ import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useLocation } from "wouter";
 import {
   Dialog,
   DialogContent,
@@ -33,6 +34,9 @@ type RegisterModalProps = {
 
 export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -43,29 +47,37 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
 
   async function onSubmit(values: z.infer<typeof registerSchema>) {
     try {
+      setIsLoading(true);
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(values),
+        credentials: 'include'
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error("Registration failed");
+        throw new Error(data.message || "Failed to create account");
       }
 
       toast({
         title: "Success!",
         description: "Your account has been created.",
       });
+
       onClose();
+      setLocation("/dashboard");
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to create account. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to create account",
       });
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -107,7 +119,9 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full">Create Account</Button>
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Creating Account..." : "Create Account"}
+            </Button>
           </form>
         </Form>
       </DialogContent>
