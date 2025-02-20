@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,8 +8,11 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import RegisterModal from "@/components/auth/register-modal";
 
 export default function Navbar() {
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+
   return (
     <header className="border-b">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -44,9 +48,14 @@ export default function Navbar() {
 
         <div className="flex items-center gap-4">
           <Button variant="outline">Log in</Button>
-          <Button>Get Started</Button>
+          <Button onClick={() => setIsRegisterOpen(true)}>Get Started</Button>
         </div>
       </div>
+
+      <RegisterModal 
+        isOpen={isRegisterOpen}
+        onClose={() => setIsRegisterOpen(false)}
+      />
     </header>
   );
 }
