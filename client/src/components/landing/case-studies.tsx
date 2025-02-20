@@ -27,7 +27,7 @@ export default function CaseStudies() {
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold mb-4">Case Studies</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            See how leading companies use AirShaper to optimize their designs
+            See how leading companies use FlowDesk to optimize their designs
           </p>
         </div>
 

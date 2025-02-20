@@ -7,12 +7,12 @@ export default function Footer() {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <h3 className="font-bold text-lg mb-4">AirShaper</h3>
+            <h3 className="font-bold text-lg mb-4">FlowDesk</h3>
             <p className="text-sm text-muted-foreground">
               Making aerodynamics accessible through cloud-based CFD simulations
             </p>
           </div>
-          
+
           <div>
             <h4 className="font-semibold mb-4">Product</h4>
             <ul className="space-y-2">
@@ -43,7 +43,7 @@ export default function Footer() {
         <Separator className="my-8" />
 
         <div className="text-sm text-muted-foreground">
-          © {new Date().getFullYear()} AirShaper. All rights reserved.
+          © {new Date().getFullYear()} FlowDesk. All rights reserved.
         </div>
       </div>
     </footer>

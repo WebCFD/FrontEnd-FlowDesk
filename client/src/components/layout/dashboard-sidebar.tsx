@@ -38,7 +38,7 @@ export default function DashboardSidebar() {
     <div className="w-64 h-screen bg-sidebar border-r border-sidebar-border">
       <div className="p-6">
         <Link href="/">
-          <a className="text-2xl font-bold text-sidebar-primary">AirShaper</a>
+          <a className="text-2xl font-bold text-sidebar-primary">FlowDesk</a>
         </Link>
       </div>
       <nav className="px-4 py-2">
