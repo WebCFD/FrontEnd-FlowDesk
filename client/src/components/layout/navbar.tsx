@@ -9,9 +9,11 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import RegisterModal from "@/components/auth/register-modal";
+import LoginModal from "@/components/auth/login-modal";
 
 export default function Navbar() {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   return (
     <header className="border-b">
@@ -47,7 +49,7 @@ export default function Navbar() {
         </NavigationMenu>
 
         <div className="flex items-center gap-4">
-          <Button variant="outline">Log in</Button>
+          <Button variant="outline" onClick={() => setIsLoginOpen(true)}>Log in</Button>
           <Button onClick={() => setIsRegisterOpen(true)}>Get Started</Button>
         </div>
       </div>
@@ -55,6 +57,10 @@ export default function Navbar() {
       <RegisterModal 
         isOpen={isRegisterOpen}
         onClose={() => setIsRegisterOpen(false)}
+      />
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
       />
     </header>
   );
