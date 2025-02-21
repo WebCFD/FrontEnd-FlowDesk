@@ -36,7 +36,7 @@ export default function Hero() {
         <div 
           className="absolute inset-0 bg-contain bg-no-repeat bg-right opacity-40"
           style={{ 
-            backgroundImage: "url(https://raw.githubusercontent.com/replit/cfdassets/main/cfd-visualization.png)",
+            backgroundImage: "url('https://images.unsplash.com/photo-1676288176869-b2e1c6bea1a4')", 
             mixBlendMode: "multiply"
           }}
         />
