@@ -15,6 +15,13 @@ export default function Navbar() {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
 
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <header className="border-b">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -25,25 +32,31 @@ export default function Navbar() {
         <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem>
-              <Link href="#features">
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                  Features
-                </NavigationMenuLink>
-              </Link>
+              <NavigationMenuLink 
+                className={navigationMenuTriggerStyle()}
+                onClick={() => scrollToSection('features')}
+                style={{ cursor: 'pointer' }}
+              >
+                Features
+              </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Link href="#case-studies">
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                  Case Studies
-                </NavigationMenuLink>
-              </Link>
+              <NavigationMenuLink 
+                className={navigationMenuTriggerStyle()}
+                onClick={() => scrollToSection('case-studies')}
+                style={{ cursor: 'pointer' }}
+              >
+                Case Studies
+              </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Link href="#pricing">
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                  Pricing
-                </NavigationMenuLink>
-              </Link>
+              <NavigationMenuLink 
+                className={navigationMenuTriggerStyle()}
+                onClick={() => scrollToSection('pricing')}
+                style={{ cursor: 'pointer' }}
+              >
+                Pricing
+              </NavigationMenuLink>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
