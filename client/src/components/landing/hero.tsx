@@ -44,7 +44,7 @@ export default function Hero() {
             transition={{ duration: 0.6, delay: 0.4 }}
           >
             <Button size="lg" onClick={() => setIsLoginOpen(true)}>Get Started</Button>
-            <Button size="lg" variant="outline">Sample Simulation</Button>
+            <Button size="lg" variant="outline" onClick={() => setIsRegisterOpen(true)}>Sign Up</Button>
           </motion.div>
         </div>
       </div>
