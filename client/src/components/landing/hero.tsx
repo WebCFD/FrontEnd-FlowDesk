@@ -42,21 +42,31 @@ export default function Hero() {
         />
         <div className="absolute inset-0 bg-gradient-to-r from-white via-white/95 to-transparent">
           <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+            {/* Random starting points with varied curves */}
             <StreamLine 
-              d="M40,20 Q60,35 70,40 T90,50" 
+              d="M45,15 Q65,25 75,45 T90,55" 
               delay={0} 
             />
             <StreamLine 
-              d="M35,30 Q55,45 65,50 T85,60" 
-              delay={1} 
+              d="M35,25 Q50,40 70,45 T85,65" 
+              delay={0.8} 
             />
             <StreamLine 
-              d="M30,40 Q50,55 60,60 T80,70" 
-              delay={2} 
+              d="M40,35 Q55,50 65,60 T80,70" 
+              delay={1.6} 
             />
             <StreamLine 
-              d="M25,50 Q45,65 55,70 T75,80" 
-              delay={3} 
+              d="M30,45 Q45,55 60,65 T75,80" 
+              delay={2.4} 
+            />
+            {/* Additional random streamlines */}
+            <StreamLine 
+              d="M42,20 Q58,35 68,50 T88,60" 
+              delay={1.2} 
+            />
+            <StreamLine 
+              d="M38,30 Q52,45 63,55 T82,75" 
+              delay={2.0} 
             />
           </svg>
         </div>
