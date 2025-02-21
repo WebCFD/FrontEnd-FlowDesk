@@ -13,7 +13,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
-      <Route path="/dashboard/*">
+      <Route path="/dashboard">
         <ProtectedRoute>
           <Dashboard />
         </ProtectedRoute>
@@ -27,8 +27,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="min-h-screen flex flex-col">
-        {/* Only show Navbar and Footer on non-dashboard pages */}
-        <Route path="/dashboard/*">
+        <Route path="/dashboard">
           <Router />
         </Route>
         <Route path="*">
