@@ -4,20 +4,20 @@ import { Button } from "@/components/ui/button";
 import RegisterModal from "@/components/auth/register-modal";
 import LoginModal from "@/components/auth/login-modal";
 
+// Create a curved streamline path that flows from a window into the room
 const StreamLine = ({ delay }: { delay: number }) => (
   <motion.path
-    d="M0,50 Q50,0 100,50 T200,50"
+    d="M10,20 C50,20 50,80 90,80"
     stroke="currentColor"
     strokeWidth="2"
     fill="none"
     initial={{ pathLength: 0, opacity: 0 }}
     animate={{ 
-      pathLength: 1, 
-      opacity: [0, 0.2, 0],
-      translateX: ["-100%", "100%"]
+      pathLength: 1,
+      opacity: [0, 0.3, 0],
     }}
     transition={{
-      duration: 3,
+      duration: 2,
       delay,
       repeat: Infinity,
       ease: "linear"
@@ -30,11 +30,26 @@ export default function Hero() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] flex items-center overflow-hidden">
-      {/* Content */}
-      <div className="container mx-auto px-4 py-20 flex justify-between items-center">
-        {/* Left side - Text content */}
-        <div className="max-w-xl z-10">
+    <div className="relative min-h-[calc(100vh-4rem)] flex items-center">
+      {/* Background with window and streamlines */}
+      <div className="absolute inset-0 -z-10">
+        <svg className="w-full h-full text-primary/10" viewBox="0 0 100 100" preserveAspectRatio="none">
+          {/* Window frame */}
+          <rect x="10" y="20" width="20" height="40" fill="none" stroke="currentColor" strokeWidth="1" />
+          <line x1="20" y1="20" x2="20" y2="60" stroke="currentColor" strokeWidth="1" />
+          <line x1="10" y1="40" x2="30" y2="40" stroke="currentColor" strokeWidth="1" />
+
+          {/* Airflow streamlines */}
+          <StreamLine delay={0} />
+          <StreamLine delay={0.4} />
+          <StreamLine delay={0.8} />
+          <StreamLine delay={1.2} />
+          <StreamLine delay={1.6} />
+        </svg>
+      </div>
+
+      <div className="container mx-auto px-4 py-20">
+        <div className="max-w-3xl">
           <motion.h1 
             className="text-5xl sm:text-6xl font-bold mb-6"
             initial={{ opacity: 0, y: 20 }}
@@ -61,62 +76,6 @@ export default function Hero() {
           >
             <Button size="lg" onClick={() => setIsLoginOpen(true)}>Get Started</Button>
             <Button size="lg" variant="outline" onClick={() => setIsRegisterOpen(true)}>Sign Up</Button>
-          </motion.div>
-        </div>
-
-        {/* Right side - Window with streamlines */}
-        <div className="relative w-[600px] h-[400px] hidden lg:block">
-          <motion.div 
-            className="absolute inset-0 rounded-lg border bg-background/80 backdrop-blur-sm shadow-lg overflow-hidden"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="h-8 bg-muted border-b flex items-center px-4">
-              <div className="flex gap-2">
-                <div className="w-3 h-3 rounded-full bg-red-500" />
-                <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                <div className="w-3 h-3 rounded-full bg-green-500" />
-              </div>
-            </div>
-            <div className="p-4 relative h-[calc(100%-2rem)]">
-              <svg className="w-full h-full text-primary/20" viewBox="0 0 200 100">
-                <StreamLine delay={0} />
-                <StreamLine delay={0.5} />
-                <StreamLine delay={1} />
-                <StreamLine delay={1.5} />
-                <StreamLine delay={2} />
-              </svg>
-              {/* Background geometric shapes */}
-              <motion.div
-                className="absolute inset-0 -z-10"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 1 }}
-              >
-                <svg className="w-full h-full" viewBox="0 0 100 100">
-                  <motion.circle 
-                    cx="80" 
-                    cy="50" 
-                    r="20" 
-                    className="fill-primary/5"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 4, repeat: Infinity }}
-                  />
-                  <motion.rect
-                    x="20"
-                    y="20"
-                    width="30"
-                    height="30"
-                    className="fill-primary/5"
-                    initial={{ rotate: 0 }}
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 10, repeat: Infinity }}
-                  />
-                </svg>
-              </motion.div>
-            </div>
           </motion.div>
         </div>
       </div>
