@@ -34,9 +34,10 @@ export default function Hero() {
       {/* Background CFD visualization */}
       <div className="absolute right-0 top-0 bottom-0 w-2/3 -z-10">
         <div 
-          className="absolute inset-0 bg-contain bg-no-repeat bg-right opacity-20"
+          className="absolute inset-0 bg-contain bg-no-repeat bg-right opacity-40"
           style={{ 
-            backgroundImage: "url('/attached_assets/image_1740173483230.png')" 
+            backgroundImage: "url(https://raw.githubusercontent.com/replit/cfdassets/main/cfd-visualization.png)",
+            mixBlendMode: "multiply"
           }}
         />
         <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
