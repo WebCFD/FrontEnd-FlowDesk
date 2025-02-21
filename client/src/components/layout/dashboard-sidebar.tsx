@@ -94,7 +94,7 @@ export default function DashboardSidebar() {
           </div>
         )}
       </div>
-      <nav className="px-4 py-2 flex flex-col h-[calc(100%-160px)] justify-between">
+      <nav className="px-4 py-2">
         <div className="space-y-1">
           {sidebarItems.map((item) => {
             const Icon = item.icon;
@@ -116,17 +116,17 @@ export default function DashboardSidebar() {
               </Link>
             );
           })}
-        </div>
 
-        <div className="mt-auto px-3 py-4 border-t border-sidebar-border">
-          <Button 
-            variant="ghost" 
-            className="w-full justify-start gap-2" 
-            onClick={handleLogout}
-          >
-            <LogOut className="h-5 w-5" />
-            Logout
-          </Button>
+          <div className="mt-2 pt-2 border-t border-sidebar-border">
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start gap-2 px-3" 
+              onClick={handleLogout}
+            >
+              <LogOut className="h-5 w-5" />
+              Logout
+            </Button>
+          </div>
         </div>
       </nav>
     </div>
