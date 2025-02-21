@@ -4,20 +4,20 @@ import { Button } from "@/components/ui/button";
 import RegisterModal from "@/components/auth/register-modal";
 import LoginModal from "@/components/auth/login-modal";
 
-// Create streamlines that follow the CFD visualization pattern
+// Animated streamline component
 const StreamLine = ({ d, delay }: { d: string; delay: number }) => (
   <motion.path
     d={d}
-    stroke="rgba(0, 150, 255, 0.3)"
-    strokeWidth="1"
+    stroke="rgba(0, 150, 255, 0.4)"
+    strokeWidth="2"
     fill="none"
     initial={{ pathLength: 0, opacity: 0 }}
     animate={{ 
       pathLength: 1,
-      opacity: [0, 0.6, 0],
+      opacity: [0, 0.8, 0],
     }}
     transition={{
-      duration: 3,
+      duration: 4,
       delay,
       repeat: Infinity,
       ease: "easeInOut"
@@ -30,36 +30,36 @@ export default function Hero() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] flex items-center bg-white">
+    <div className="relative min-h-[calc(100vh-4rem)] flex items-center">
       {/* Background CFD visualization */}
-      <div className="absolute right-0 top-0 bottom-0 w-2/3 -z-10 overflow-hidden">
+      <div className="absolute inset-0 -z-10">
         <div 
           className="absolute inset-0 bg-cover bg-center"
           style={{ 
             backgroundImage: "url('/attached_assets/image_1740173483230.png')",
-            opacity: 0.6,
-            mixBlendMode: "color-burn"
+            opacity: 0.8
           }}
         />
-        <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-          {/* Streamlines following the actual CFD flow pattern */}
-          <StreamLine 
-            d="M30,20 Q45,30 55,45 T80,60" 
-            delay={0} 
-          />
-          <StreamLine 
-            d="M25,30 Q40,40 60,50 T85,65" 
-            delay={0.5} 
-          />
-          <StreamLine 
-            d="M20,40 Q35,50 65,55 T90,70" 
-            delay={1} 
-          />
-          <StreamLine 
-            d="M15,50 Q30,60 70,60 T95,75" 
-            delay={1.5} 
-          />
-        </svg>
+        <div className="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-transparent">
+          <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <StreamLine 
+              d="M10,20 Q30,35 50,40 T90,50" 
+              delay={0} 
+            />
+            <StreamLine 
+              d="M5,30 Q25,45 45,50 T85,60" 
+              delay={1} 
+            />
+            <StreamLine 
+              d="M0,40 Q20,55 40,60 T80,70" 
+              delay={2} 
+            />
+            <StreamLine 
+              d="M-5,50 Q15,65 35,70 T75,80" 
+              delay={3} 
+            />
+          </svg>
+        </div>
       </div>
 
       <div className="container mx-auto px-4 py-20">
