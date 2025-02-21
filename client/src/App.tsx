@@ -7,12 +7,17 @@ import Home from "@/pages/home";
 import Dashboard from "@/pages/dashboard";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
+import { ProtectedRoute } from "@/lib/protected-route";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
-      <Route path="/dashboard" component={Dashboard} />
+      <Route path="/dashboard/*">
+        <ProtectedRoute>
+          <Dashboard />
+        </ProtectedRoute>
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );
