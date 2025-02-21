@@ -4,17 +4,17 @@ import { Button } from "@/components/ui/button";
 import RegisterModal from "@/components/auth/register-modal";
 import LoginModal from "@/components/auth/login-modal";
 
-// Create a curved streamline path that flows from a window into the room
-const StreamLine = ({ delay }: { delay: number }) => (
+// Create streamlines that follow the CFD visualization pattern
+const StreamLine = ({ d, delay }: { d: string; delay: number }) => (
   <motion.path
-    d="M10,20 Q30,20 35,40 T60,60"
-    stroke="rgba(0, 150, 255, 0.2)"
+    d={d}
+    stroke="rgba(0, 150, 255, 0.15)"
     strokeWidth="0.5"
     fill="none"
     initial={{ pathLength: 0, opacity: 0 }}
     animate={{ 
       pathLength: 1,
-      opacity: [0, 0.3, 0],
+      opacity: [0, 0.4, 0],
     }}
     transition={{
       duration: 3,
@@ -30,71 +30,32 @@ export default function Hero() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] flex items-center">
-      {/* Background with window and streamlines */}
+    <div className="relative min-h-[calc(100vh-4rem)] flex items-center bg-white">
+      {/* Background CFD visualization */}
       <div className="absolute right-0 top-0 bottom-0 w-2/3 -z-10">
+        <div 
+          className="absolute inset-0 bg-contain bg-no-repeat bg-right opacity-20"
+          style={{ 
+            backgroundImage: "url('/attached_assets/image_1740173483230.png')" 
+          }}
+        />
         <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-          <defs>
-            <linearGradient id="airflow" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" style={{ stopColor: 'rgb(0, 150, 255)', stopOpacity: 0.1 }} />
-              <stop offset="100%" style={{ stopColor: 'rgb(0, 255, 150)', stopOpacity: 0.05 }} />
-            </linearGradient>
-          </defs>
-
-          {/* Window frame - more detailed */}
-          <rect x="10" y="20" width="30" height="50" fill="none" stroke="currentColor" strokeWidth="0.5" />
-          <line x1="25" y1="20" x2="25" y2="70" stroke="currentColor" strokeWidth="0.5" />
-          <line x1="10" y1="45" x2="40" y2="45" stroke="currentColor" strokeWidth="0.5" />
-
-          {/* Multiple streamlines with different paths */}
-          <g className="streamlines">
-            {/* Upper streamlines */}
-            <StreamLine delay={0} />
-            <motion.path
-              d="M10,25 Q40,25 50,45 T90,50"
-              stroke="url(#airflow)"
-              strokeWidth="0.5"
-              fill="none"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-            />
-
-            {/* Middle streamlines */}
-            <motion.path
-              d="M10,45 Q35,45 60,50 T100,55"
-              stroke="url(#airflow)"
-              strokeWidth="0.5"
-              fill="none"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 4, repeat: Infinity, ease: "linear", delay: 0.5 }}
-            />
-
-            {/* Lower streamlines */}
-            <motion.path
-              d="M10,65 Q40,65 70,60 T100,50"
-              stroke="url(#airflow)"
-              strokeWidth="0.5"
-              fill="none"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 3.5, repeat: Infinity, ease: "linear", delay: 1 }}
-            />
-          </g>
-
-          {/* Room elements with 3D perspective */}
-          <path 
-            d="M45,80 L85,80 L85,95 L45,95 Z" 
-            fill="currentColor" 
-            opacity="0.05"
-            className="room-floor"
+          {/* Streamlines following the CFD visualization pattern */}
+          <StreamLine 
+            d="M20,30 Q40,30 60,40 T90,45" 
+            delay={0} 
           />
-          <path 
-            d="M85,40 L95,45 L95,90 L85,85 Z" 
-            fill="currentColor" 
-            opacity="0.03"
-            className="room-wall"
+          <StreamLine 
+            d="M20,40 Q45,40 65,50 T95,55" 
+            delay={0.5} 
+          />
+          <StreamLine 
+            d="M20,50 Q50,50 70,60 T100,65" 
+            delay={1} 
+          />
+          <StreamLine 
+            d="M20,60 Q55,60 75,70 T100,75" 
+            delay={1.5} 
           />
         </svg>
       </div>
