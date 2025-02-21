@@ -23,7 +23,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 
 const loginSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters"),
+  email: z.string().email("Invalid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
@@ -40,7 +40,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
   });
@@ -87,7 +87,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         <DialogHeader>
           <DialogTitle>Log in to your account</DialogTitle>
           <DialogDescription>
-            Welcome back to FlowDesk
+            Welcome back to AirShaper
           </DialogDescription>
         </DialogHeader>
 
@@ -95,12 +95,12 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="username"
+              name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter your username" {...field} />
+                    <Input type="email" placeholder="Enter your email" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
