@@ -7,9 +7,9 @@ import LoginModal from "@/components/auth/login-modal";
 // Create a curved streamline path that flows from a window into the room
 const StreamLine = ({ delay }: { delay: number }) => (
   <motion.path
-    d="M10,20 C50,20 50,80 90,80"
+    d="M10,20 C35,20 45,40 50,60 Q55,80 90,80"
     stroke="currentColor"
-    strokeWidth="1"
+    strokeWidth="0.5"
     fill="none"
     initial={{ pathLength: 0, opacity: 0 }}
     animate={{ 
