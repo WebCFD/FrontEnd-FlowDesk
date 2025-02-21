@@ -23,7 +23,7 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            Cloud-Based Aerodynamics Simulation
+            Aerodynamics made easy
           </motion.h1>
 
           <motion.p 
@@ -32,7 +32,7 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            Optimize your designs with powerful CFD technology. No hardware required, just upload your 3D model and get results within hours.
+            Save time and money with zero license fees, support for non-watertight models, and a fully automated workflow.
           </motion.p>
 
           <motion.div
@@ -41,8 +41,8 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            <Button size="lg" onClick={() => setIsRegisterOpen(true)}>Start Free Trial</Button>
-            <Button size="lg" variant="outline">Watch Demo</Button>
+            <Button size="lg" onClick={() => setIsRegisterOpen(true)}>Get Started</Button>
+            <Button size="lg" variant="outline">Sample Simulation</Button>
           </motion.div>
         </div>
       </div>

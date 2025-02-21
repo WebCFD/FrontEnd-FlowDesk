@@ -19,7 +19,7 @@ export default function Navbar() {
     <header className="border-b">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link href="/">
-          <a className="text-2xl font-bold text-primary">FlowDesk</a>
+          <a className="text-2xl font-bold text-primary">AirShaper</a>
         </Link>
 
         <NavigationMenu>
@@ -50,7 +50,7 @@ export default function Navbar() {
 
         <div className="flex items-center gap-4">
           <Button variant="outline" onClick={() => setIsLoginOpen(true)}>Log in</Button>
-          <Button onClick={() => setIsRegisterOpen(true)}>Get Started</Button>
+          <Button onClick={() => setIsRegisterOpen(true)}>Sign Up</Button>
         </div>
       </div>
 
