@@ -2,9 +2,11 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import RegisterModal from "@/components/auth/register-modal";
+import LoginModal from "@/components/auth/login-modal";
 
 export default function Hero() {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   return (
     <div className="relative min-h-[calc(100vh-4rem)] flex items-center">
@@ -41,7 +43,7 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            <Button size="lg" onClick={() => setIsRegisterOpen(true)}>Get Started</Button>
+            <Button size="lg" onClick={() => setIsLoginOpen(true)}>Get Started</Button>
             <Button size="lg" variant="outline">Sample Simulation</Button>
           </motion.div>
         </div>
@@ -50,6 +52,10 @@ export default function Hero() {
       <RegisterModal 
         isOpen={isRegisterOpen}
         onClose={() => setIsRegisterOpen(false)}
+      />
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
       />
     </div>
   );
