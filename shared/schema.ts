@@ -6,8 +6,8 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
-  email: text("email"),  // Remove .notNull() to allow existing records
-  fullName: text("full_name"),  // Remove .notNull() to allow existing records
+  email: text("email").notNull(),
+  fullName: text("full_name"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -33,12 +33,10 @@ export const insertUserSchema = createInsertSchema(users)
     username: true,
     password: true,
     email: true,
-    fullName: true,
   })
   .extend({
     email: z.string().email("Invalid email address"),
     password: z.string().min(8, "Password must be at least 8 characters"),
-    fullName: z.string().min(1, "Full name is required"),
   });
 
 // Schema for creating simulations
