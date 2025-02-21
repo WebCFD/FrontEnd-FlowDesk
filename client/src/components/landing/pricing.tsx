@@ -5,38 +5,43 @@ import { Check } from "lucide-react";
 
 const plans = [
   {
-    name: "Starter",
-    price: "499",
-    description: "Perfect for small projects and individual designers",
+    name: "Pay as you go",
+    price: "25",
+    description: "Perfect for occasional users and small projects",
+    priceDetail: "per simulation",
     features: [
-      "5 simulations per month",
+      "Single geometry simulation",
       "Basic flow analysis",
-      "Standard support",
-      "Export results as PDF"
+      "Standard mesh refinement",
+      "Email support",
+      "Pay per use"
     ]
   },
   {
-    name: "Professional",
-    price: "999",
-    description: "For professional teams and advanced projects",
+    name: "Discovery",
+    price: "199",
+    description: "Ideal for teams and regular simulations",
+    priceDetail: "per month",
     features: [
-      "20 simulations per month",
+      "10 simulations included",
       "Advanced flow analysis",
       "Priority support",
-      "Custom report generation",
-      "API access"
+      "Results comparison",
+      "Custom mesh settings",
+      "Team collaboration"
     ]
   },
   {
     name: "Enterprise",
     price: "Custom",
-    description: "Custom solutions for large organizations",
+    description: "For organizations with specific requirements",
     features: [
       "Unlimited simulations",
-      "Full feature access",
-      "24/7 dedicated support",
-      "Custom integration",
-      "Training and onboarding"
+      "Custom workflow integration",
+      "Dedicated support team",
+      "Training sessions",
+      "Custom features",
+      "SLA guarantee"
     ]
   }
 ];
@@ -48,7 +53,7 @@ export default function Pricing() {
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold mb-4">Simple, Transparent Pricing</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Choose the plan that best fits your needs
+            Choose the plan that best fits your needs. No hidden fees.
           </p>
         </div>
 
@@ -68,7 +73,7 @@ export default function Pricing() {
                     <span className="text-4xl font-bold">
                       ${plan.price}
                     </span>
-                    {plan.price !== "Custom" && <span className="text-muted-foreground">/month</span>}
+                    {plan.priceDetail && <span className="text-muted-foreground ml-1">{plan.priceDetail}</span>}
                   </div>
                 </CardHeader>
                 <CardContent>
