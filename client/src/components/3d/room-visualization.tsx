@@ -1,20 +1,9 @@
 import { useRef, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Line } from '@react-three/drei';
 import * as THREE from 'three';
-
-const points = Array.from({ length: 5 }, (_, i) => {
-  const t = i / 4;
-  return [
-    Math.sin(t * Math.PI * 2) * 2,
-    Math.cos(t * Math.PI * 2) * 1.5 + 1,
-    (t - 0.5) * 4
-  ];
-});
 
 export function RoomVisualization() {
   const roomRef = useRef<THREE.Group>(null);
-  const streamlinesRef = useRef<THREE.Group>(null);
 
   useEffect(() => {
     if (roomRef.current) {
@@ -25,12 +14,6 @@ export function RoomVisualization() {
   useFrame(({ clock }) => {
     if (roomRef.current) {
       roomRef.current.rotation.y = clock.getElapsedTime() * 0.2;
-    }
-    if (streamlinesRef.current) {
-      streamlinesRef.current.children.forEach((line, i) => {
-        const offset = Math.sin(clock.getElapsedTime() * 0.5 + i) * 0.5;
-        line.position.z = offset;
-      });
     }
   });
 
@@ -59,19 +42,13 @@ export function RoomVisualization() {
         <meshStandardMaterial color="#8B4513" />
       </mesh>
 
-      {/* Streamlines */}
-      <group ref={streamlinesRef}>
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Line
-            key={i}
-            points={points.map(([x, y, z]) => [x, y, z + i])}
-            color="#00a8ff"
-            lineWidth={1}
-            segments
-            dashed={false}
-          />
-        ))}
-      </group>
+      {/* Simple Air Streamlines */}
+      {Array.from({ length: 3 }).map((_, i) => (
+        <mesh key={i} position={[0, 1 + i * 0.5, 0]}>
+          <cylinderGeometry args={[0.05, 0.05, 4, 8]} />
+          <meshStandardMaterial color="#00a8ff" transparent opacity={0.3} />
+        </mesh>
+      ))}
     </group>
   );
 }

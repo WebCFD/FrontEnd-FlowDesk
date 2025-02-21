@@ -1,12 +1,43 @@
 import { useState, Suspense } from "react";
 import { motion } from "framer-motion";
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import { Button } from "@/components/ui/button";
 import { RoomVisualization } from "../3d/room-visualization";
 import RegisterModal from "@/components/auth/register-modal";
 import LoginModal from "@/components/auth/login-modal";
 import React from 'react';
+
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+}
+
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(_: Error): ErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="w-full h-full flex items-center justify-center bg-slate-100 rounded-lg">
+          <p className="text-sm text-muted-foreground">Unable to load 3D visualization</p>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 export default function Hero() {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
@@ -52,7 +83,12 @@ export default function Hero() {
                 shadows 
                 dpr={[1, 2]}
                 camera={{ position: [10, 5, 10], fov: 50 }}
-                gl={{ preserveDrawingBuffer: true }}
+                gl={{ 
+                  antialias: true,
+                  alpha: true,
+                  preserveDrawingBuffer: true,
+                  powerPreference: "high-performance"
+                }}
               >
                 <ambientLight intensity={0.5} />
                 <directionalLight
@@ -82,27 +118,4 @@ export default function Hero() {
       />
     </div>
   );
-}
-
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(error) {
-    return { hasError: true };
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="w-full h-full flex items-center justify-center bg-slate-100 rounded-lg">
-          <p className="text-sm text-muted-foreground">Unable to load 3D visualization</p>
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
 }
