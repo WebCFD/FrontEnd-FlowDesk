@@ -7,8 +7,8 @@ import LoginModal from "@/components/auth/login-modal";
 // Create a curved streamline path that flows from a window into the room
 const StreamLine = ({ delay }: { delay: number }) => (
   <motion.path
-    d="M10,20 C35,20 45,40 50,60 Q55,80 90,80"
-    stroke="currentColor"
+    d="M10,20 Q30,20 35,40 T60,60"
+    stroke="rgba(0, 150, 255, 0.2)"
     strokeWidth="0.5"
     fill="none"
     initial={{ pathLength: 0, opacity: 0 }}
@@ -17,10 +17,10 @@ const StreamLine = ({ delay }: { delay: number }) => (
       opacity: [0, 0.3, 0],
     }}
     transition={{
-      duration: 2,
+      duration: 3,
       delay,
       repeat: Infinity,
-      ease: "linear"
+      ease: "easeInOut"
     }}
   />
 );
@@ -32,32 +32,70 @@ export default function Hero() {
   return (
     <div className="relative min-h-[calc(100vh-4rem)] flex items-center">
       {/* Background with window and streamlines */}
-      <div className="absolute right-0 top-0 bottom-0 w-1/2 -z-10">
-        <svg className="w-full h-full text-primary/10" viewBox="0 0 100 100" preserveAspectRatio="none">
-          {/* Window frame */}
-          <rect x="10" y="20" width="20" height="40" fill="none" stroke="currentColor" strokeWidth="1" />
-          <line x1="20" y1="20" x2="20" y2="60" stroke="currentColor" strokeWidth="1" />
-          <line x1="10" y1="40" x2="30" y2="40" stroke="currentColor" strokeWidth="1" />
+      <div className="absolute right-0 top-0 bottom-0 w-2/3 -z-10">
+        <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="airflow" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" style={{ stopColor: 'rgb(0, 150, 255)', stopOpacity: 0.1 }} />
+              <stop offset="100%" style={{ stopColor: 'rgb(0, 255, 150)', stopOpacity: 0.05 }} />
+            </linearGradient>
+          </defs>
 
-          {/* Room elements */}
-          {/* Floor */}
-          <line x1="0" y1="90" x2="100" y2="90" stroke="currentColor" strokeWidth="0.5" />
+          {/* Window frame - more detailed */}
+          <rect x="10" y="20" width="30" height="50" fill="none" stroke="currentColor" strokeWidth="0.5" />
+          <line x1="25" y1="20" x2="25" y2="70" stroke="currentColor" strokeWidth="0.5" />
+          <line x1="10" y1="45" x2="40" y2="45" stroke="currentColor" strokeWidth="0.5" />
 
-          {/* Sofa */}
-          <path d="M50,70 L80,70 L80,85 L50,85 Z" fill="currentColor" opacity="0.1" />
-          <path d="M50,70 L50,85 L45,90 L45,75 Z" fill="currentColor" opacity="0.05" />
+          {/* Multiple streamlines with different paths */}
+          <g className="streamlines">
+            {/* Upper streamlines */}
+            <StreamLine delay={0} />
+            <motion.path
+              d="M10,25 Q40,25 50,45 T90,50"
+              stroke="url(#airflow)"
+              strokeWidth="0.5"
+              fill="none"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+            />
 
-          {/* Lamp */}
-          <line x1="85" y1="30" x2="85" y2="70" stroke="currentColor" strokeWidth="0.5" />
-          <path d="M80,25 Q85,20 90,25 L85,35 Z" fill="currentColor" opacity="0.2" />
+            {/* Middle streamlines */}
+            <motion.path
+              d="M10,45 Q35,45 60,50 T100,55"
+              stroke="url(#airflow)"
+              strokeWidth="0.5"
+              fill="none"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 4, repeat: Infinity, ease: "linear", delay: 0.5 }}
+            />
 
-          {/* Airflow streamlines - more dynamic paths */}
-          <StreamLine delay={0} />
-          <StreamLine delay={0.3} />
-          <StreamLine delay={0.6} />
-          <StreamLine delay={0.9} />
-          <StreamLine delay={1.2} />
-          <StreamLine delay={1.5} />
+            {/* Lower streamlines */}
+            <motion.path
+              d="M10,65 Q40,65 70,60 T100,50"
+              stroke="url(#airflow)"
+              strokeWidth="0.5"
+              fill="none"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 3.5, repeat: Infinity, ease: "linear", delay: 1 }}
+            />
+          </g>
+
+          {/* Room elements with 3D perspective */}
+          <path 
+            d="M45,80 L85,80 L85,95 L45,95 Z" 
+            fill="currentColor" 
+            opacity="0.05"
+            className="room-floor"
+          />
+          <path 
+            d="M85,40 L95,45 L95,90 L85,85 Z" 
+            fill="currentColor" 
+            opacity="0.03"
+            className="room-wall"
+          />
         </svg>
       </div>
 
