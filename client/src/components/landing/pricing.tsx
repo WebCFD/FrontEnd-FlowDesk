@@ -6,30 +6,28 @@ import { Check } from "lucide-react";
 const plans = [
   {
     name: "Pay as you go",
-    price: "25",
+    price: "5",
     description: "Perfect for occasional users and small projects",
-    priceDetail: "per simulation",
+    priceDetail: "€ per simulation",
     features: [
-      "Upload any 3D model",
-      "Fast & accurate results",
-      "Basic post-processing",
-      "Automatic mesh generation",
-      "Email support",
-      "Pay per simulation"
+      "Analysis Only",
+      "Online Result Viewer",
+      "30 day data retention",
+      "PDF Reporting and Raw Data",
+      "Simulation Sharing"
     ]
   },
   {
     name: "Discovery",
-    price: "149",
+    price: "99",
     description: "Ideal for teams and regular simulations",
-    priceDetail: "per month",
+    priceDetail: "€ per month",
     features: [
-      "10 simulations included",
-      "All Pay-as-you-go features",
-      "Advanced post-processing",
-      "Automatic reporting",
-      "Priority support",
-      "Team collaboration"
+      "Analysis and Design Advice",
+      "Online Result Viewer",
+      "Data Retention during plan",
+      "PDF Reporting and Raw Data",
+      "Simulation Sharing"
     ]
   },
   {
@@ -72,7 +70,7 @@ export default function Pricing() {
                   <CardTitle>{plan.name}</CardTitle>
                   <div className="mt-4">
                     <span className="text-4xl font-bold">
-                      ${plan.price}
+                      {plan.price === "Custom" ? plan.price : plan.price}
                     </span>
                     {plan.priceDetail && <span className="text-muted-foreground ml-1">{plan.priceDetail}</span>}
                   </div>
