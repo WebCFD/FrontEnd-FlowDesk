@@ -8,13 +8,13 @@ import LoginModal from "@/components/auth/login-modal";
 const StreamLine = ({ d, delay }: { d: string; delay: number }) => (
   <motion.path
     d={d}
-    stroke="rgba(0, 150, 255, 0.4)"
+    stroke="rgba(0, 150, 255, 0.25)"
     strokeWidth="2"
     fill="none"
     initial={{ pathLength: 0, opacity: 0 }}
     animate={{ 
       pathLength: 1,
-      opacity: [0, 0.8, 0],
+      opacity: [0, 0.5, 0],
     }}
     transition={{
       duration: 4,
@@ -34,28 +34,28 @@ export default function Hero() {
       {/* Background CFD visualization */}
       <div className="absolute inset-0 -z-10">
         <div 
-          className="absolute inset-0 bg-cover bg-center"
+          className="absolute right-0 w-2/3 h-full bg-cover bg-center"
           style={{ 
             backgroundImage: "url('/attached_assets/image_1740173483230.png')",
             opacity: 0.8
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-transparent">
+        <div className="absolute inset-0 bg-gradient-to-r from-white via-white/95 to-transparent">
           <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
             <StreamLine 
-              d="M10,20 Q30,35 50,40 T90,50" 
+              d="M40,20 Q60,35 70,40 T90,50" 
               delay={0} 
             />
             <StreamLine 
-              d="M5,30 Q25,45 45,50 T85,60" 
+              d="M35,30 Q55,45 65,50 T85,60" 
               delay={1} 
             />
             <StreamLine 
-              d="M0,40 Q20,55 40,60 T80,70" 
+              d="M30,40 Q50,55 60,60 T80,70" 
               delay={2} 
             />
             <StreamLine 
-              d="M-5,50 Q15,65 35,70 T75,80" 
+              d="M25,50 Q45,65 55,70 T75,80" 
               delay={3} 
             />
           </svg>
