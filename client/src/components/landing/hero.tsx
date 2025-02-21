@@ -8,13 +8,13 @@ import LoginModal from "@/components/auth/login-modal";
 const StreamLine = ({ d, delay }: { d: string; delay: number }) => (
   <motion.path
     d={d}
-    stroke="rgba(0, 150, 255, 0.15)"
-    strokeWidth="0.5"
+    stroke="rgba(0, 150, 255, 0.3)"
+    strokeWidth="1"
     fill="none"
     initial={{ pathLength: 0, opacity: 0 }}
     animate={{ 
       pathLength: 1,
-      opacity: [0, 0.4, 0],
+      opacity: [0, 0.6, 0],
     }}
     transition={{
       duration: 3,
@@ -32,30 +32,31 @@ export default function Hero() {
   return (
     <div className="relative min-h-[calc(100vh-4rem)] flex items-center bg-white">
       {/* Background CFD visualization */}
-      <div className="absolute right-0 top-0 bottom-0 w-2/3 -z-10">
+      <div className="absolute right-0 top-0 bottom-0 w-2/3 -z-10 overflow-hidden">
         <div 
-          className="absolute inset-0 bg-contain bg-no-repeat bg-right opacity-40"
+          className="absolute inset-0 bg-cover bg-center"
           style={{ 
-            backgroundImage: "url('https://images.unsplash.com/photo-1676288176869-b2e1c6bea1a4')", 
-            mixBlendMode: "multiply"
+            backgroundImage: "url('/attached_assets/image_1740173483230.png')",
+            opacity: 0.6,
+            mixBlendMode: "color-burn"
           }}
         />
         <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-          {/* Streamlines following the CFD visualization pattern */}
+          {/* Streamlines following the actual CFD flow pattern */}
           <StreamLine 
-            d="M20,30 Q40,30 60,40 T90,45" 
+            d="M30,20 Q45,30 55,45 T80,60" 
             delay={0} 
           />
           <StreamLine 
-            d="M20,40 Q45,40 65,50 T95,55" 
+            d="M25,30 Q40,40 60,50 T85,65" 
             delay={0.5} 
           />
           <StreamLine 
-            d="M20,50 Q50,50 70,60 T100,65" 
+            d="M20,40 Q35,50 65,55 T90,70" 
             delay={1} 
           />
           <StreamLine 
-            d="M20,60 Q55,60 75,70 T100,75" 
+            d="M15,50 Q30,60 70,60 T95,75" 
             delay={1.5} 
           />
         </svg>
