@@ -10,24 +10,25 @@ const plans = [
     description: "Perfect for occasional users and small projects",
     priceDetail: "per simulation",
     features: [
-      "Single geometry simulation",
-      "Basic flow analysis",
-      "Standard mesh refinement",
+      "Upload any 3D model",
+      "Fast & accurate results",
+      "Basic post-processing",
+      "Automatic mesh generation",
       "Email support",
-      "Pay per use"
+      "Pay per simulation"
     ]
   },
   {
     name: "Discovery",
-    price: "199",
+    price: "149",
     description: "Ideal for teams and regular simulations",
     priceDetail: "per month",
     features: [
       "10 simulations included",
-      "Advanced flow analysis",
+      "All Pay-as-you-go features",
+      "Advanced post-processing",
+      "Automatic reporting",
       "Priority support",
-      "Results comparison",
-      "Custom mesh settings",
       "Team collaboration"
     ]
   },
@@ -38,10 +39,10 @@ const plans = [
     features: [
       "Unlimited simulations",
       "Custom workflow integration",
-      "Dedicated support team",
-      "Training sessions",
+      "Personal success manager",
+      "SLA guarantee",
       "Custom features",
-      "SLA guarantee"
+      "Training & onboarding"
     ]
   }
 ];
