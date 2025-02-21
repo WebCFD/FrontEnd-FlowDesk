@@ -21,7 +21,7 @@ const plans = [
     name: "Discovery",
     price: "99",
     description: "Ideal for teams and regular simulations",
-    priceDetail: "€ per month",
+    priceDetail: "€ per 25 simulations",
     features: [
       "Analysis and Design Advice",
       "Online Result Viewer",
