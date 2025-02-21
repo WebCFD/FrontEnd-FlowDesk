@@ -24,6 +24,8 @@ import { useToast } from "@/hooks/use-toast";
 
 const registerSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
+  email: z.string().email("Invalid email address"),
+  fullName: z.string().min(1, "Full name is required"),
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
@@ -41,6 +43,8 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
     resolver: zodResolver(registerSchema),
     defaultValues: {
       username: "",
+      email: "",
+      fullName: "",
       password: "",
     },
   });
@@ -87,7 +91,7 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
         <DialogHeader>
           <DialogTitle>Create your account</DialogTitle>
           <DialogDescription>
-            Start your free trial with FlowDesk
+            Start your free trial with AirShaper
           </DialogDescription>
         </DialogHeader>
 
@@ -101,6 +105,32 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
                   <FormLabel>Username</FormLabel>
                   <FormControl>
                     <Input placeholder="Enter your username" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input type="email" placeholder="Enter your email" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="fullName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Full Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter your full name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
