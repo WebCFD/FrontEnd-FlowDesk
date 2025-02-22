@@ -1,6 +1,9 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Button } from "@/components/ui/button";
+import LoginModal from "@/components/auth/login-modal";
 
 const caseStudies = [
   {
@@ -21,6 +24,8 @@ const caseStudies = [
 ];
 
 export default function CaseStudies() {
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+
   return (
     <section id="case-studies" className="py-20 bg-slate-50">
       <div className="container mx-auto px-4">
@@ -56,7 +61,18 @@ export default function CaseStudies() {
             </motion.div>
           ))}
         </div>
+
+        <div className="mt-12 text-center">
+          <Button size="lg" onClick={() => setIsLoginOpen(true)}>
+            Get Started
+          </Button>
+        </div>
       </div>
+
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+      />
     </section>
   );
 }
