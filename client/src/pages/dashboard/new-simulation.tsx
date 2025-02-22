@@ -52,6 +52,7 @@ export default function NewSimulation() {
   const [isDrawing, setIsDrawing] = useState(false);
   const [tool, setTool] = useState<"pen" | "arrow" | "text">("pen");
   const [color, setColor] = useState("#000000");
+  const [selectedPlan, setSelectedPlan] = useState("pay-as-you-go");
   const { toast } = useToast();
   const [hasError, setHasError] = useState(false);
   const [placedObjects, setPlacedObjects] = useState<Array<{ id: string; src: string; x: number; y: number }>>([]);
@@ -413,8 +414,12 @@ export default function NewSimulation() {
                 <CardDescription>Select your simulation plan</CardDescription>
               </CardHeader>
               <CardContent>
-                <RadioGroup defaultValue="pay-as-you-go" className="space-y-4">
-                  <div className="flex items-center space-x-2 border rounded-lg p-4 cursor-pointer hover:bg-accent border-primary">
+                <RadioGroup
+                  defaultValue="pay-as-you-go"
+                  className="space-y-4"
+                  onValueChange={setSelectedPlan}
+                >
+                  <div className={`flex items-center space-x-2 border rounded-lg p-4 cursor-pointer hover:bg-accent ${selectedPlan === 'pay-as-you-go' ? 'border-primary' : ''}`}>
                     <RadioGroupItem value="pay-as-you-go" id="pay-as-you-go" />
                     <Label htmlFor="pay-as-you-go" className="flex-1">
                       <div className="font-medium">Pay as you go</div>
@@ -445,7 +450,7 @@ export default function NewSimulation() {
                     </Label>
                   </div>
 
-                  <div className="flex items-center space-x-2 border rounded-lg p-4 cursor-pointer hover:bg-accent">
+                  <div className={`flex items-center space-x-2 border rounded-lg p-4 cursor-pointer hover:bg-accent ${selectedPlan === 'discovery' ? 'border-primary' : ''}`}>
                     <RadioGroupItem value="discovery" id="discovery" />
                     <Label htmlFor="discovery" className="flex-1">
                       <div className="font-medium">Discovery</div>
@@ -476,7 +481,7 @@ export default function NewSimulation() {
                     </Label>
                   </div>
 
-                  <div className="flex items-center space-x-2 border rounded-lg p-4 cursor-pointer hover:bg-accent">
+                  <div className={`flex items-center space-x-2 border rounded-lg p-4 cursor-pointer hover:bg-accent ${selectedPlan === 'enterprise' ? 'border-primary' : ''}`}>
                     <RadioGroupItem value="enterprise" id="enterprise" />
                     <Label htmlFor="enterprise" className="flex-1">
                       <div className="font-medium">Enterprise</div>
