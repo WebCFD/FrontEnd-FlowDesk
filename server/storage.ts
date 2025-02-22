@@ -1,4 +1,4 @@
-import { users, contactMessages, simulations, type User, type InsertUser, type ContactMessage, type InsertContactMessage, type Simulation, type InsertSimulation } from "@shared/schema";
+import { users, simulations, type User, type InsertUser, type Simulation, type InsertSimulation } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 import session from "express-session";
@@ -11,7 +11,6 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  createContactMessage(message: InsertContactMessage): Promise<ContactMessage>;
 
   // Simulation methods
   createSimulation(simulation: InsertSimulation & { userId: number }): Promise<Simulation>;
@@ -55,14 +54,6 @@ export class DatabaseStorage implements IStorage {
       .values(insertUser)
       .returning();
     return user;
-  }
-
-  async createContactMessage(message: InsertContactMessage): Promise<ContactMessage> {
-    const [contactMessage] = await db
-      .insert(contactMessages)
-      .values(message)
-      .returning();
-    return contactMessage;
   }
 
   async createSimulation(simulation: InsertSimulation & { userId: number }): Promise<Simulation> {

@@ -19,6 +19,7 @@ export const simulations = pgTable("simulations", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+// @deprecated - kept for backwards compatibility
 export const contactMessages = pgTable("contact_messages", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
@@ -45,7 +46,7 @@ export const simulationSchema = createInsertSchema(simulations)
     name: true,
   });
 
-// Schema for contact messages
+// Schema for contact messages (deprecated)
 export const contactMessageSchema = createInsertSchema(contactMessages)
   .pick({
     name: true,

@@ -4,10 +4,49 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Stage, Layer, Line, Text, Arrow } from "react-konva";
+import { HexColorPicker } from "react-colorful";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export default function NewSimulation() {
-  const [step] = useState(1);
+  const [step, setStep] = useState(1);
   const [simulationName, setSimulationName] = useState("");
+  const [lines, setLines] = useState<Array<{ points: number[]; color: string; tool: string }>>([]);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [tool, setTool] = useState<"pen" | "arrow" | "text">("pen");
+  const [color, setColor] = useState("#000000");
+
+  const handleMouseDown = (e: any) => {
+    setIsDrawing(true);
+    const pos = e.target.getStage().getPointerPosition();
+    if (tool === "pen") {
+      setLines([...lines, { points: [pos.x, pos.y], color, tool }]);
+    }
+  };
+
+  const handleMouseMove = (e: any) => {
+    if (!isDrawing) return;
+
+    const stage = e.target.getStage();
+    const point = stage.getPointerPosition();
+
+    if (tool === "pen") {
+      let lastLine = lines[lines.length - 1];
+      lastLine.points = lastLine.points.concat([point.x, point.y]);
+      lines.splice(lines.length - 1, 1, lastLine);
+      setLines([...lines]);
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDrawing(false);
+  };
+
+  const handleNextStep = () => {
+    if (simulationName.trim()) {
+      setStep(2);
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -30,10 +69,10 @@ export default function NewSimulation() {
       </div>
 
       {/* Step 1: Space Sketcher */}
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         <Card>
           <CardContent className="pt-6">
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div>
                 <Label htmlFor="simulation-name">Simulation name</Label>
                 <Input
@@ -45,27 +84,73 @@ export default function NewSimulation() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label>3D File Guidelines</Label>
-                <ul className="text-sm text-muted-foreground space-y-1">
-                  <li>• Type: *.stl, *.obj, *.step, *.stp, *.iges</li>
-                  <li>• Size: max 3145MB</li>
-                  <li>• Always save STL file in binary format when possible.</li>
-                  <li>• It is recommended to work with watertight 3D models (for highest accuracy) but non-watertight 3D models are also supported.</li>
-                </ul>
+              {/* Drawing Tools */}
+              <div className="flex gap-2 items-center">
+                <Button
+                  variant={tool === "pen" ? "default" : "outline"}
+                  onClick={() => setTool("pen")}
+                >
+                  Pen
+                </Button>
+                <Button
+                  variant={tool === "arrow" ? "default" : "outline"}
+                  onClick={() => setTool("arrow")}
+                >
+                  Arrow
+                </Button>
+                <Button
+                  variant={tool === "text" ? "default" : "outline"}
+                  onClick={() => setTool("text")}
+                >
+                  Text
+                </Button>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="w-[80px] h-[35px]">
+                      <div
+                        className="w-4 h-4 rounded-full"
+                        style={{ backgroundColor: color }}
+                      />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <HexColorPicker color={color} onChange={setColor} />
+                  </PopoverContent>
+                </Popover>
               </div>
 
-              <div className="border-2 border-dashed rounded-lg p-8 text-center">
-                <div className="mx-auto w-20 mb-4">
-                  <svg viewBox="0 0 24 24" fill="none" className="w-full h-full text-muted-foreground">
-                    <path d="M7 10V9C7 6.23858 9.23858 4 12 4C14.7614 4 17 6.23858 17 9V10C19.2091 10 21 11.7909 21 14C21 15.4806 20.1956 16.8084 19 17.5M7 10C4.79086 10 3 11.7909 3 14C3 15.4806 3.8044 16.8084 5 17.5M7 10C7.43285 10 7.84965 10.0688 8.24006 10.1959M12 12V21M12 12L15 15M12 12L9 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
-                <div className="text-lg font-medium mb-2">DRAG & DROP</div>
-                <div className="text-sm text-muted-foreground mb-4">
-                  Your 3D file here, browse or import file from OnShape
-                </div>
-                <Button variant="outline" size="sm">Browse Files</Button>
+              {/* Canvas */}
+              <div className="border rounded-lg">
+                <Stage
+                  width={800}
+                  height={600}
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={handleMouseUp}
+                >
+                  <Layer>
+                    {lines.map((line, i) => (
+                      <Line
+                        key={i}
+                        points={line.points}
+                        stroke={line.color}
+                        strokeWidth={5}
+                        tension={0.5}
+                        lineCap="round"
+                        lineJoin="round"
+                      />
+                    ))}
+                  </Layer>
+                </Stage>
+              </div>
+
+              <div className="flex justify-end">
+                <Button 
+                  onClick={handleNextStep}
+                  disabled={!simulationName.trim()}
+                >
+                  Next Step
+                </Button>
               </div>
             </div>
           </CardContent>
