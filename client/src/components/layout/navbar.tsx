@@ -27,7 +27,7 @@ export default function Navbar() {
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <img 
-            src="/attached_assets/image_1740210987890.png" 
+            src="/assets/logo.png" 
             alt="FlowDesk Logo" 
             className="h-8 w-8"
           />
