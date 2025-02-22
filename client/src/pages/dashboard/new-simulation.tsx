@@ -345,15 +345,15 @@ export default function NewSimulation() {
 
       {/* Step 3 - Launch */}
       {step === 3 && (
-        <div className="h-[calc(100vh-12rem)] max-w-5xl mx-auto flex flex-col">
-          <div className="flex-1 grid grid-cols-5 gap-4 min-h-0">
-            {/* Left Column - Project Summary */}
+        <div className="max-w-5xl mx-auto space-y-4">
+          {/* First Row - Summary and Credits */}
+          <div className="grid grid-cols-3 gap-4">
             <div className="col-span-2">
-              <Card className="h-full flex flex-col">
+              <Card>
                 <CardHeader className="pb-3">
                   <CardTitle>Project Summary</CardTitle>
                 </CardHeader>
-                <CardContent className="grid gap-2 text-sm">
+                <CardContent className="grid grid-cols-2 gap-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Project name</span>
                     <span className="font-medium">{simulationName}</span>
@@ -378,25 +378,23 @@ export default function NewSimulation() {
                     <span className="text-muted-foreground">Rotation</span>
                     <span className="font-medium">2.0 X/Y: 21.0/2.0 D</span>
                   </div>
-                  <Separator className="my-2" />
-                  <div className="flex justify-between font-medium">
+                  <Separator className="col-span-2 my-2" />
+                  <div className="col-span-2 flex justify-between font-medium">
                     <span>Subtotal:</span>
                     <span>€500.00</span>
                   </div>
-                  <div className="flex justify-between font-medium">
+                  <div className="col-span-2 flex justify-between font-medium">
                     <span>VAT (0%):</span>
                     <span>€0.00</span>
                   </div>
-                  <div className="flex justify-between text-base font-bold">
+                  <div className="col-span-2 flex justify-between text-base font-bold">
                     <span>Total Cost:</span>
                     <span>€500.00</span>
                   </div>
                 </CardContent>
               </Card>
             </div>
-
-            {/* Right Column - Order Options */}
-            <div className="col-span-3 flex flex-col gap-4">
+            <div>
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle>Available Credits</CardTitle>
@@ -405,108 +403,91 @@ export default function NewSimulation() {
                   <div className="text-2xl font-bold">€500.00</div>
                 </CardContent>
               </Card>
-
-              <Card className="flex-1">
-                <CardHeader className="pb-3">
-                  <CardTitle>Order Options</CardTitle>
-                  <CardDescription>Select your simulation plan</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <RadioGroup
-                    defaultValue="pay-as-you-go"
-                    className="space-y-2"
-                    onValueChange={setSelectedPlan}
-                  >
-                    {/* Pay as you go */}
-                    <div className={`flex items-center space-x-2 border rounded-lg p-3 cursor-pointer hover:bg-accent ${selectedPlan === 'pay-as-you-go' ? 'border-primary' : ''}`}>
-                      <RadioGroupItem value="pay-as-you-go" id="pay-as-you-go" />
-                      <Label htmlFor="pay-as-you-go" className="flex-1">
-                        <div className="font-medium">Pay as you go</div>
-                        <div className="text-xs text-muted-foreground">Perfect for occasional users and small projects</div>
-                        <div className="font-bold text-lg mt-1">€5 <span className="text-sm font-normal text-muted-foreground">per simulation</span></div>
-                        <div className="text-xs mt-1 space-y-1">
-                          {['Analysis Only', 'Online Result Viewer', '30 day data retention', 'PDF Reporting and Raw Data', 'Simulation Sharing'].map((feature) => (
-                            <div key={feature} className="flex items-center gap-1">
-                              <Check className="h-3 w-3" />
-                              <span>{feature}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </Label>
-                    </div>
-
-                    {/* Discovery */}
-                    <div className={`flex items-center space-x-2 border rounded-lg p-3 cursor-pointer hover:bg-accent ${selectedPlan === 'discovery' ? 'border-primary' : ''}`}>
-                      <RadioGroupItem value="discovery" id="discovery" />
-                      <Label htmlFor="discovery" className="flex-1">
-                        <div className="font-medium">Discovery</div>
-                        <div className="text-xs text-muted-foreground">Ideal for teams and regular simulations</div>
-                        <div className="font-bold text-lg mt-1">€99 <span className="text-sm font-normal text-muted-foreground">per 25 simulations</span></div>
-                        <div className="text-xs mt-1 space-y-1">
-                          {['Analysis and Design Advice', 'Online Result Viewer', 'Data Retention during plan', 'PDF Reporting and Raw Data', 'Simulation Sharing'].map((feature) => (
-                            <div key={feature} className="flex items-center gap-1">
-                              <Check className="h-3 w-3" />
-                              <span>{feature}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </Label>
-                    </div>
-
-                    {/* Enterprise */}
-                    <div className={`flex items-center space-x-2 border rounded-lg p-3 cursor-pointer hover:bg-accent ${selectedPlan === 'enterprise' ? 'border-primary' : ''}`}>
-                      <RadioGroupItem value="enterprise" id="enterprise" />
-                      <Label htmlFor="enterprise" className="flex-1">
-                        <div className="font-medium">Enterprise</div>
-                        <div className="text-xs text-muted-foreground">For organizations with specific requirements</div>
-                        <div className="font-bold text-lg mt-1">Custom</div>
-                        <div className="text-xs mt-1 space-y-1">
-                          {[
-                            'Unlimited simulations',
-                            'Custom workflow integration',
-                            'Personal success manager',
-                            'SLA guarantee',
-                            'Custom features',
-                            'Training & onboarding'
-                          ].map((feature) => (
-                            <div key={feature} className="flex items-center gap-1">
-                              <Check className="h-3 w-3" />
-                              <span>{feature}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </Label>
-                    </div>
-                  </RadioGroup>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle>Payment Information</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div>
-                    <Label className="text-sm">Card Number</Label>
-                    <Input placeholder="4242 4242 4242 4242" className="mt-1" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label className="text-sm">Expiry Date</Label>
-                      <Input placeholder="MM/YY" className="mt-1" />
-                    </div>
-                    <div>
-                      <Label className="text-sm">CVC</Label>
-                      <Input placeholder="123" className="mt-1" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex justify-between mt-4">
+          {/* Second Row - Order Options */}
+          <div>
+            <CardHeader className="px-0 pb-3">
+              <CardTitle>Order Options</CardTitle>
+              <CardDescription>Select your simulation plan</CardDescription>
+            </CardHeader>
+            <RadioGroup
+              defaultValue="pay-as-you-go"
+              className="grid grid-cols-3 gap-4"
+              onValueChange={setSelectedPlan}
+            >
+              {/* Pay as you go */}
+              <Card className={`cursor-pointer hover:bg-accent transition-colors ${selectedPlan === 'pay-as-you-go' ? 'border-primary' : ''}`}>
+                <CardContent className="pt-6">
+                  <RadioGroupItem value="pay-as-you-go" id="pay-as-you-go" className="hidden" />
+                  <Label htmlFor="pay-as-you-go" className="space-y-3">
+                    <div className="font-medium">Pay as you go</div>
+                    <div className="text-xs text-muted-foreground">Perfect for occasional users and small projects</div>
+                    <div className="font-bold text-lg">€5 <span className="text-sm font-normal text-muted-foreground">per simulation</span></div>
+                    <div className="text-xs space-y-1">
+                      {['Analysis Only', 'Online Result Viewer', '30 day data retention', 'PDF Reporting and Raw Data', 'Simulation Sharing'].map((feature) => (
+                        <div key={feature} className="flex items-center gap-1">
+                          <Check className="h-3 w-3" />
+                          <span>{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </Label>
+                </CardContent>
+              </Card>
+
+              {/* Discovery */}
+              <Card className={`cursor-pointer hover:bg-accent transition-colors ${selectedPlan === 'discovery' ? 'border-primary' : ''}`}>
+                <CardContent className="pt-6">
+                  <RadioGroupItem value="discovery" id="discovery" className="hidden" />
+                  <Label htmlFor="discovery" className="space-y-3">
+                    <div className="font-medium">Discovery</div>
+                    <div className="text-xs text-muted-foreground">Ideal for teams and regular simulations</div>
+                    <div className="font-bold text-lg">€99 <span className="text-sm font-normal text-muted-foreground">per 25 simulations</span></div>
+                    <div className="text-xs space-y-1">
+                      {['Analysis and Design Advice', 'Online Result Viewer', 'Data Retention during plan', 'PDF Reporting and Raw Data', 'Simulation Sharing'].map((feature) => (
+                        <div key={feature} className="flex items-center gap-1">
+                          <Check className="h-3 w-3" />
+                          <span>{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </Label>
+                </CardContent>
+              </Card>
+
+              {/* Enterprise */}
+              <Card className={`cursor-pointer hover:bg-accent transition-colors ${selectedPlan === 'enterprise' ? 'border-primary' : ''}`}>
+                <CardContent className="pt-6">
+                  <RadioGroupItem value="enterprise" id="enterprise" className="hidden" />
+                  <Label htmlFor="enterprise" className="space-y-3">
+                    <div className="font-medium">Enterprise</div>
+                    <div className="text-xs text-muted-foreground">For organizations with specific requirements</div>
+                    <div className="font-bold text-lg">Custom</div>
+                    <div className="text-xs space-y-1">
+                      {[
+                        'Unlimited simulations',
+                        'Custom workflow integration',
+                        'Personal success manager',
+                        'SLA guarantee',
+                        'Custom features',
+                        'Training & onboarding'
+                      ].map((feature) => (
+                        <div key={feature} className="flex items-center gap-1">
+                          <Check className="h-3 w-3" />
+                          <span>{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </Label>
+                </CardContent>
+              </Card>
+            </RadioGroup>
+          </div>
+
+          {/* Third Row - Navigation */}
+          <div className="flex justify-between">
             <Button
               onClick={handlePreviousStep}
               variant="outline"
@@ -523,6 +504,29 @@ export default function NewSimulation() {
               <Check className="h-4 w-4" />
             </Button>
           </div>
+
+          {/* Fourth Row - Payment Information */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle>Payment Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div>
+                <Label className="text-sm">Card Number</Label>
+                <Input placeholder="4242 4242 4242 4242" className="mt-1" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-sm">Expiry Date</Label>
+                  <Input placeholder="MM/YY" className="mt-1" />
+                </div>
+                <div>
+                  <Label className="text-sm">CVC</Label>
+                  <Input placeholder="123" className="mt-1" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       )}
     </DashboardLayout>
