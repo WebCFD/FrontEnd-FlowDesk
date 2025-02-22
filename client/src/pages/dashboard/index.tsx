@@ -1,17 +1,18 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Play, Mail, FileEdit } from "lucide-react";
 
 export default function Dashboard() {
+  const [, setLocation] = useLocation();
   const [simulations] = useState([
     { id: 1, name: 'tutorial', status: 'Draft' }
   ]);
 
   const handleStartSimulation = () => {
-    // TODO: Implement new simulation functionality
-    console.log("Starting new simulation");
+    setLocation("/dashboard/new-simulation");
   };
 
   const handleHowItWorks = () => {
