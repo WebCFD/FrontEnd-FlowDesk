@@ -4,19 +4,21 @@ import DashboardLayout from "@/components/layout/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Play, Mail, FileEdit } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
   const [simulations] = useState([
     { id: 1, name: 'tutorial', status: 'Draft' }
   ]);
+  const [isVideoOpen, setIsVideoOpen] = useState(false);
 
   const handleStartSimulation = () => {
     setLocation("/dashboard/new-simulation");
   };
 
   const handleHowItWorks = () => {
-    window.open("https://youtu.be/-cyPLRfry7k?si=8ssIurowMNabmjTa", "_blank");
+    setIsVideoOpen(true);
   };
 
   const handleContactSupport = () => {
@@ -106,6 +108,25 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
+
+      <Dialog open={isVideoOpen} onOpenChange={setIsVideoOpen}>
+        <DialogContent className="sm:max-w-[800px]">
+          <DialogHeader>
+            <DialogTitle>How FlowDesk Works</DialogTitle>
+          </DialogHeader>
+          <div className="aspect-video">
+            <iframe
+              width="100%"
+              height="100%"
+              src="https://www.youtube.com/embed/-cyPLRfry7k"
+              title="FlowDesk Tutorial"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            ></iframe>
+          </div>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 }

@@ -14,7 +14,7 @@ export default function NewSimulation() {
       {/* Steps indicator */}
       <div className="mb-8">
         <div className="flex items-center justify-between max-w-3xl mx-auto">
-          {["Upload", "Setup", "Order"].map((stepName, index) => (
+          {["Space Sketcher", "Setup Objects", "Launch"].map((stepName, index) => (
             <div key={stepName} className="flex items-center">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 
                 ${index + 1 === step ? "border-primary bg-primary text-white" : "border-gray-300"}`}>
@@ -29,7 +29,7 @@ export default function NewSimulation() {
         </div>
       </div>
 
-      {/* Step 1: Upload */}
+      {/* Step 1: Space Sketcher */}
       <div className="max-w-3xl mx-auto">
         <Card>
           <CardContent className="pt-6">
