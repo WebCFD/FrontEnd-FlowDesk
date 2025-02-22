@@ -39,15 +39,6 @@ export default function Navbar() {
             <NavigationMenuItem>
               <NavigationMenuLink 
                 className={navigationMenuTriggerStyle()}
-                onClick={() => scrollToSection('features')}
-                style={{ cursor: 'pointer' }}
-              >
-                Features
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <NavigationMenuLink 
-                className={navigationMenuTriggerStyle()}
                 onClick={() => scrollToSection('case-studies')}
                 style={{ cursor: 'pointer' }}
               >
@@ -57,10 +48,28 @@ export default function Navbar() {
             <NavigationMenuItem>
               <NavigationMenuLink 
                 className={navigationMenuTriggerStyle()}
+                onClick={() => scrollToSection('features')}
+                style={{ cursor: 'pointer' }}
+              >
+                Features
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuLink 
+                className={navigationMenuTriggerStyle()}
                 onClick={() => scrollToSection('pricing')}
                 style={{ cursor: 'pointer' }}
               >
                 Pricing
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuLink 
+                className={navigationMenuTriggerStyle()}
+                onClick={() => scrollToSection('contact')}
+                style={{ cursor: 'pointer' }}
+              >
+                Contact Us
               </NavigationMenuLink>
             </NavigationMenuItem>
           </NavigationMenuList>
