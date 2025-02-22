@@ -4,11 +4,37 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Stage, Layer, Line, Text, Arrow } from "react-konva";
+import { Stage, Layer, Line, Image as KonvaImage } from "react-konva";
 import { HexColorPicker } from "react-colorful";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Eraser } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Eraser, ArrowLeft, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import useImage from "use-image";
+
+// Pre-defined objects for the simulation
+const objects = [
+  { id: 'lamp', src: '/objects/lamp.svg', label: 'Lamp' },
+  { id: 'cat', src: '/objects/cat.svg', label: 'Cat' },
+  { id: 'chair', src: '/objects/chair.svg', label: 'Chair' },
+  { id: 'table', src: '/objects/table.svg', label: 'Table' },
+  { id: 'sofa', src: '/objects/sofa.svg', label: 'Sofa' }
+];
+
+const DraggableObject = ({ src, onDragEnd, x, y }) => {
+  const [image] = useImage(src);
+  return (
+    <KonvaImage
+      image={image}
+      x={x}
+      y={y}
+      width={50}
+      height={50}
+      draggable
+      onDragEnd={onDragEnd}
+    />
+  );
+};
 
 export default function NewSimulation() {
   const [step, setStep] = useState(1);
@@ -19,8 +45,10 @@ export default function NewSimulation() {
   const [color, setColor] = useState("#000000");
   const { toast } = useToast();
   const [hasError, setHasError] = useState(false);
+  const [placedObjects, setPlacedObjects] = useState<Array<{ id: string; src: string; x: number; y: number }>>([]);
 
   const handleMouseDown = (e: any) => {
+    if (step !== 1) return;
     setIsDrawing(true);
     const pos = e.target.getStage().getPointerPosition();
     if (tool === "pen") {
@@ -29,11 +57,9 @@ export default function NewSimulation() {
   };
 
   const handleMouseMove = (e: any) => {
-    if (!isDrawing) return;
-
+    if (!isDrawing || step !== 1) return;
     const stage = e.target.getStage();
     const point = stage.getPointerPosition();
-
     if (tool === "pen") {
       let lastLine = lines[lines.length - 1];
       lastLine.points = lastLine.points.concat([point.x, point.y]);
@@ -47,7 +73,6 @@ export default function NewSimulation() {
   };
 
   const handleNextStep = () => {
-    console.log("handleNextStep called", { simulationName });
     if (!simulationName.trim()) {
       setHasError(true);
       toast({
@@ -58,8 +83,11 @@ export default function NewSimulation() {
       return;
     }
     setHasError(false);
-    console.log("Proceeding to step 2");
-    setStep(2);
+    setStep(step + 1);
+  };
+
+  const handlePreviousStep = () => {
+    setStep(step - 1);
   };
 
   const handleEraseAll = () => {
@@ -73,8 +101,30 @@ export default function NewSimulation() {
     }
   };
 
-  // Debug log for current step
-  console.log("Current step:", step);
+  const handleObjectDrop = (objectId: string) => {
+    const stage = document.querySelector('canvas')?.getBoundingClientRect();
+    if (!stage) return;
+
+    const object = objects.find(obj => obj.id === objectId);
+    if (!object) return;
+
+    setPlacedObjects([
+      ...placedObjects,
+      {
+        id: `${objectId}-${Date.now()}`,
+        src: object.src,
+        x: stage.width / 2,
+        y: stage.height / 2
+      }
+    ]);
+  };
+
+  const handleObjectDragEnd = (index: number, e: any) => {
+    const { x, y } = e.target.position();
+    const newObjects = [...placedObjects];
+    newObjects[index] = { ...newObjects[index], x, y };
+    setPlacedObjects(newObjects);
+  };
 
   return (
     <DashboardLayout>
@@ -196,11 +246,88 @@ export default function NewSimulation() {
       )}
 
       {step === 2 && (
-        <div className="max-w-4xl mx-auto">
-          <Card>
-            <CardContent>
-              <h2 className="text-2xl font-bold mb-4">Setup Objects</h2>
-              {/* Step 2 content will go here */}
+        <div className="flex gap-6 max-w-5xl mx-auto">
+          {/* Main Canvas Area */}
+          <div className="flex-1">
+            <Card>
+              <CardContent className="pt-6">
+                <div className="border rounded-lg">
+                  <Stage
+                    width={800}
+                    height={600}
+                  >
+                    <Layer>
+                      {/* Display original lines (non-editable) */}
+                      {lines.map((line, i) => (
+                        <Line
+                          key={i}
+                          points={line.points}
+                          stroke={line.color}
+                          strokeWidth={5}
+                          tension={0.5}
+                          lineCap="round"
+                          lineJoin="round"
+                        />
+                      ))}
+                      {/* Display placed objects */}
+                      {placedObjects.map((obj, index) => (
+                        <DraggableObject
+                          key={obj.id}
+                          src={obj.src}
+                          x={obj.x}
+                          y={obj.y}
+                          onDragEnd={(e) => handleObjectDragEnd(index, e)}
+                        />
+                      ))}
+                    </Layer>
+                  </Stage>
+                </div>
+
+                {/* Navigation Buttons */}
+                <div className="flex justify-between mt-4">
+                  <Button
+                    onClick={handlePreviousStep}
+                    variant="outline"
+                    className="flex items-center gap-2"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    Previous Step
+                  </Button>
+                  <Button
+                    onClick={handleNextStep}
+                    className="flex items-center gap-2"
+                  >
+                    Next Step
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Objects Menu */}
+          <Card className="w-64">
+            <CardContent className="pt-6">
+              <h3 className="font-semibold mb-4">Available Objects</h3>
+              <ScrollArea className="h-[600px] pr-4">
+                <div className="space-y-4">
+                  {objects.map((object) => (
+                    <div
+                      key={object.id}
+                      className="p-4 border rounded-lg cursor-pointer hover:bg-accent"
+                      draggable
+                      onDragEnd={() => handleObjectDrop(object.id)}
+                    >
+                      <img
+                        src={object.src}
+                        alt={object.label}
+                        className="w-12 h-12 mx-auto mb-2"
+                      />
+                      <p className="text-sm text-center">{object.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
             </CardContent>
           </Card>
         </div>
