@@ -34,7 +34,7 @@ export default function Features() {
             Powerful Features
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Everything you need to optimize your designs through advanced aerodynamics simulation
+            Cloud native Simulations for Indoor Environments
           </p>
         </div>
 
