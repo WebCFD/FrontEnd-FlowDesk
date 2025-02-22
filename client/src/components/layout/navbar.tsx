@@ -25,11 +25,11 @@ export default function Navbar() {
   return (
     <header className="border-b">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <img 
             src="/assets/logo.png" 
             alt="FlowDesk Logo" 
-            className="h-8 w-8"
+            className="h-12 w-12 object-contain"
           />
           <span className="text-2xl font-bold text-primary">FlowDesk</span>
         </div>
