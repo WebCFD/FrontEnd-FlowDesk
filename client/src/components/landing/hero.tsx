@@ -98,7 +98,8 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            Save time and money with zero license fees, support for non-watertight models, and a fully automated workflow.
+            Enhance Comfort and Well-being Through Intelligent Design:
+            Transform your spaces with accessible Fluid Dynamic simulations - powerful, intuitive, and cost-free
           </motion.p>
 
           <motion.div
