@@ -29,7 +29,7 @@ export default function Dashboard() {
         {/* Welcome Section */}
         <Card>
           <CardHeader>
-            <CardTitle>Welcome to AirShaper</CardTitle>
+            <CardTitle>Welcome to FlowDesk</CardTitle>
             <CardDescription>Ready to shape your latest design?</CardDescription>
           </CardHeader>
           <CardContent className="flex gap-4">
