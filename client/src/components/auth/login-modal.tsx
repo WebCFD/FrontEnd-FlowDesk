@@ -87,7 +87,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         <DialogHeader>
           <DialogTitle>Log in to your account</DialogTitle>
           <DialogDescription>
-            Welcome back to AirShaper
+            Welcome back to FlowDesk
           </DialogDescription>
         </DialogHeader>
 

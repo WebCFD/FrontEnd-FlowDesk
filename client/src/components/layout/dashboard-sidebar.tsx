@@ -86,7 +86,7 @@ export default function DashboardSidebar() {
     <div className="w-64 h-screen bg-sidebar border-r border-sidebar-border">
       <div className="p-6">
         <Link href="/dashboard">
-          <a className="text-2xl font-bold text-sidebar-primary">AirShaper</a>
+          <a className="text-2xl font-bold text-sidebar-primary">FlowDesk</a>
         </Link>
         {userData && (
           <div className="mt-2 text-sm text-muted-foreground">
@@ -118,9 +118,9 @@ export default function DashboardSidebar() {
           })}
 
           <div className="mt-2 pt-2 border-t border-sidebar-border">
-            <Button 
-              variant="ghost" 
-              className="w-full justify-start gap-2 px-3" 
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2 px-3"
               onClick={handleLogout}
             >
               <LogOut className="h-5 w-5" />

@@ -89,7 +89,7 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
         <DialogHeader>
           <DialogTitle>Create your account</DialogTitle>
           <DialogDescription>
-            Start your free trial with AirShaper
+            Start your free trial with FlowDesk
           </DialogDescription>
         </DialogHeader>
 

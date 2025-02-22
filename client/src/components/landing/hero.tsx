@@ -8,13 +8,13 @@ import LoginModal from "@/components/auth/login-modal";
 const StreamLine = ({ d, delay }: { d: string; delay: number }) => (
   <motion.path
     d={d}
-    stroke="rgba(0, 150, 255, 0.25)"
+    stroke="rgba(0, 150, 255, 0.15)" // Made more transparent
     strokeWidth="2"
     fill="none"
     initial={{ pathLength: 0, opacity: 0 }}
     animate={{ 
       pathLength: 1,
-      opacity: [0, 0.5, 0],
+      opacity: [0, 0.3, 0], // Reduced opacity in animation
     }}
     transition={{
       duration: 4,
@@ -42,31 +42,40 @@ export default function Hero() {
         />
         <div className="absolute inset-0 bg-gradient-to-r from-white via-white/95 to-transparent">
           <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-            {/* Random starting points with varied curves */}
+            {/* Random starting points with varied curves - moved more to the right */}
             <StreamLine 
-              d="M45,15 Q65,25 75,45 T90,55" 
+              d="M55,10 Q75,25 85,45 T95,60" 
               delay={0} 
             />
             <StreamLine 
-              d="M35,25 Q50,40 70,45 T85,65" 
+              d="M50,25 Q70,35 80,50 T90,70" 
               delay={0.8} 
             />
             <StreamLine 
-              d="M40,35 Q55,50 65,60 T80,70" 
+              d="M60,15 Q75,40 85,55 T92,75" 
               delay={1.6} 
             />
             <StreamLine 
-              d="M30,45 Q45,55 60,65 T75,80" 
+              d="M53,35 Q68,50 78,65 T88,85" 
               delay={2.4} 
             />
-            {/* Additional random streamlines */}
+            {/* Additional random streamlines with varied starting points */}
             <StreamLine 
-              d="M42,20 Q58,35 68,50 T88,60" 
+              d="M58,20 Q73,35 83,55 T93,65" 
               delay={1.2} 
             />
             <StreamLine 
-              d="M38,30 Q52,45 63,55 T82,75" 
+              d="M52,30 Q67,45 77,60 T87,80" 
               delay={2.0} 
+            />
+            {/* New random streamlines */}
+            <StreamLine 
+              d="M57,12 Q72,28 82,48 T91,68" 
+              delay={0.4} 
+            />
+            <StreamLine 
+              d="M54,22 Q69,38 79,58 T89,78" 
+              delay={1.4} 
             />
           </svg>
         </div>
