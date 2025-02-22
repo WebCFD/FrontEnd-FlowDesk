@@ -410,56 +410,58 @@ export default function NewSimulation() {
             <Card>
               <CardHeader>
                 <CardTitle>Order Options</CardTitle>
-                <CardDescription>Select your simulation accuracy level</CardDescription>
+                <CardDescription>Selection your simulation goal</CardDescription>
               </CardHeader>
               <CardContent>
-                <RadioGroup defaultValue="detailed" className="space-y-4">
-                  <div className="flex items-center space-x-2 border rounded-lg p-4 cursor-pointer hover:bg-accent">
-                    <RadioGroupItem value="concept" id="concept" />
-                    <Label htmlFor="concept" className="flex-1">
-                      <div className="font-medium">Concept</div>
+                <RadioGroup defaultValue="analysis" className="space-y-4">
+                  <div className="flex items-center space-x-2 border rounded-lg p-4 cursor-pointer hover:bg-accent border-primary">
+                    <RadioGroupItem value="analysis" id="analysis" />
+                    <Label htmlFor="analysis" className="flex-1">
+                      <div className="font-medium">Analysis</div>
                       <div className="text-sm text-muted-foreground">
+                        Run a single simulation to analyze
+                        <br />
+                        external aerodynamics of your design.
+                        <br />
                         Full pdf report
                         <br />
                         Compare initial concepts
-                        <br />
-                        For basic shapes
                       </div>
-                      <div className="mt-2 font-medium">€200.00</div>
-                    </Label>
-                  </div>
-
-                  <div className="flex items-center space-x-2 border rounded-lg p-4 cursor-pointer hover:bg-accent border-primary">
-                    <RadioGroupItem value="detailed" id="detailed" />
-                    <Label htmlFor="detailed" className="flex-1">
-                      <div className="font-medium">Detailed</div>
-                      <div className="text-sm text-muted-foreground">
-                        Full pdf report
-                        <br />
-                        Compare detailed designs
-                        <br />
-                        For complex shapes
-                        <br />
-                        Intermediate accuracy
-                      </div>
-                      <div className="mt-2 font-medium">€500.00</div>
+                      <div className="mt-2 font-medium">Starting from €50</div>
                     </Label>
                   </div>
 
                   <div className="flex items-center space-x-2 border rounded-lg p-4 cursor-pointer hover:bg-accent">
-                    <RadioGroupItem value="ultimate" id="ultimate" />
-                    <Label htmlFor="ultimate" className="flex-1">
-                      <div className="font-medium">Ultimate</div>
+                    <RadioGroupItem value="optimization" id="optimization" />
+                    <Label htmlFor="optimization" className="flex-1">
+                      <div className="font-medium">Optimization</div>
                       <div className="text-sm text-muted-foreground">
+                        Our algorithm will automatically morph
+                        <br />
+                        your design to optimize
+                        <br />
+                        aerodynamics.
+                        <br />
+                        Dedicated server on request
+                      </div>
+                      <div className="mt-2 font-medium">Starting from €250</div>
+                    </Label>
+                  </div>
+
+                  <div className="flex items-center space-x-2 border rounded-lg p-4 cursor-pointer hover:bg-accent">
+                    <RadioGroupItem value="internal-flow" id="internal-flow" />
+                    <Label htmlFor="internal-flow" className="flex-1">
+                      <div className="font-medium">Internal Flow <span className="text-xs bg-primary text-primary-foreground px-1 py-0.5 rounded">NEW</span></div>
+                      <div className="text-sm text-muted-foreground">
+                        Run a single simulation to analyze
+                        <br />
+                        internal flow of your design.
+                        <br />
                         Full pdf report
-                        <br />
-                        Tweak final designs
-                        <br />
-                        For complex shapes
                         <br />
                         Close-to-reality accuracy
                       </div>
-                      <div className="mt-2 font-medium">€1,500.00</div>
+                      <div className="mt-2 font-medium">Starting from €50</div>
                     </Label>
                   </div>
                 </RadioGroup>
