@@ -14,9 +14,9 @@ const caseStudies = [
     image: "/assets/thermal-comfort.png"
   },
   {
-    title: "Wind Turbine Analysis",
-    description: "Increasing power output with optimized blade design",
-    image: "https://images.unsplash.com/photo-1457301547464-91995555cd25"
+    title: "Air Quality and Contamination Control",
+    description: "Develop intelligent ventilation strategies for efficient removal of CO2 and contaminants in spaces like classrooms, cleanrooms, and predict smoke propagation in underground facilities",
+    image: "/assets/air-quality-cfd.png"
   }
 ];
 
