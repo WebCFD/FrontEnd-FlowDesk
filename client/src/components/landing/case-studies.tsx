@@ -15,7 +15,7 @@ const caseStudies = [
   },
   {
     title: "Air Quality and Contamination Control",
-    description: "Develop intelligent ventilation strategies for efficient removal of CO2 and contaminants in spaces like classrooms, cleanrooms, and predict smoke propagation in underground facilities",
+    description: "Develop intelligent ventilation strategies for efficient removal of CO2 and contaminants in spaces like offices, laboratories, and predict smoke propagation in underground facilities",
     image: "/assets/air-quality-cfd.png"
   }
 ];
