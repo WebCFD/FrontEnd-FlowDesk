@@ -8,8 +8,8 @@ export default function Home() {
   return (
     <div className="flex flex-col gap-20">
       <Hero />
-      <Features />
       <CaseStudies />
+      <Features />
       <Pricing />
       <Contact />
     </div>
