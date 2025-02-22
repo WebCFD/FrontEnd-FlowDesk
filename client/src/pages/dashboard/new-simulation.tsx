@@ -410,58 +410,104 @@ export default function NewSimulation() {
             <Card>
               <CardHeader>
                 <CardTitle>Order Options</CardTitle>
-                <CardDescription>Selection your simulation goal</CardDescription>
+                <CardDescription>Select your simulation plan</CardDescription>
               </CardHeader>
               <CardContent>
-                <RadioGroup defaultValue="analysis" className="space-y-4">
+                <RadioGroup defaultValue="pay-as-you-go" className="space-y-4">
                   <div className="flex items-center space-x-2 border rounded-lg p-4 cursor-pointer hover:bg-accent border-primary">
-                    <RadioGroupItem value="analysis" id="analysis" />
-                    <Label htmlFor="analysis" className="flex-1">
-                      <div className="font-medium">Analysis</div>
-                      <div className="text-sm text-muted-foreground">
-                        Run a single simulation to analyze
-                        <br />
-                        external aerodynamics of your design.
-                        <br />
-                        Full pdf report
-                        <br />
-                        Compare initial concepts
+                    <RadioGroupItem value="pay-as-you-go" id="pay-as-you-go" />
+                    <Label htmlFor="pay-as-you-go" className="flex-1">
+                      <div className="font-medium">Pay as you go</div>
+                      <div className="text-xs text-muted-foreground mb-2">Perfect for occasional users and small projects</div>
+                      <div className="font-bold text-xl mb-2">€5 <span className="text-sm font-normal text-muted-foreground">per simulation</span></div>
+                      <div className="text-sm space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Check className="h-4 w-4" />
+                          Analysis Only
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Check className="h-4 w-4" />
+                          Online Result Viewer
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Check className="h-4 w-4" />
+                          30 day data retention
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Check className="h-4 w-4" />
+                          PDF Reporting and Raw Data
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Check className="h-4 w-4" />
+                          Simulation Sharing
+                        </div>
                       </div>
-                      <div className="mt-2 font-medium">Starting from €50</div>
                     </Label>
                   </div>
 
                   <div className="flex items-center space-x-2 border rounded-lg p-4 cursor-pointer hover:bg-accent">
-                    <RadioGroupItem value="optimization" id="optimization" />
-                    <Label htmlFor="optimization" className="flex-1">
-                      <div className="font-medium">Optimization</div>
-                      <div className="text-sm text-muted-foreground">
-                        Our algorithm will automatically morph
-                        <br />
-                        your design to optimize
-                        <br />
-                        aerodynamics.
-                        <br />
-                        Dedicated server on request
+                    <RadioGroupItem value="discovery" id="discovery" />
+                    <Label htmlFor="discovery" className="flex-1">
+                      <div className="font-medium">Discovery</div>
+                      <div className="text-xs text-muted-foreground mb-2">Ideal for teams and regular simulations</div>
+                      <div className="font-bold text-xl mb-2">€99 <span className="text-sm font-normal text-muted-foreground">per 25 simulations</span></div>
+                      <div className="text-sm space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Check className="h-4 w-4" />
+                          Analysis and Design Advice
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Check className="h-4 w-4" />
+                          Online Result Viewer
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Check className="h-4 w-4" />
+                          Data Retention during plan
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Check className="h-4 w-4" />
+                          PDF Reporting and Raw Data
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Check className="h-4 w-4" />
+                          Simulation Sharing
+                        </div>
                       </div>
-                      <div className="mt-2 font-medium">Starting from €250</div>
                     </Label>
                   </div>
 
                   <div className="flex items-center space-x-2 border rounded-lg p-4 cursor-pointer hover:bg-accent">
-                    <RadioGroupItem value="internal-flow" id="internal-flow" />
-                    <Label htmlFor="internal-flow" className="flex-1">
-                      <div className="font-medium">Internal Flow <span className="text-xs bg-primary text-primary-foreground px-1 py-0.5 rounded">NEW</span></div>
-                      <div className="text-sm text-muted-foreground">
-                        Run a single simulation to analyze
-                        <br />
-                        internal flow of your design.
-                        <br />
-                        Full pdf report
-                        <br />
-                        Close-to-reality accuracy
+                    <RadioGroupItem value="enterprise" id="enterprise" />
+                    <Label htmlFor="enterprise" className="flex-1">
+                      <div className="font-medium">Enterprise</div>
+                      <div className="text-xs text-muted-foreground mb-2">For organizations with specific requirements</div>
+                      <div className="font-bold text-xl mb-2">Custom</div>
+                      <div className="text-sm space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Check className="h-4 w-4" />
+                          Unlimited simulations
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Check className="h-4 w-4" />
+                          Custom workflow integration
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Check className="h-4 w-4" />
+                          Personal success manager
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Check className="h-4 w-4" />
+                          SLA guarantee
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Check className="h-4 w-4" />
+                          Custom features
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Check className="h-4 w-4" />
+                          Training & onboarding
+                        </div>
                       </div>
-                      <div className="mt-2 font-medium">Starting from €50</div>
                     </Label>
                   </div>
                 </RadioGroup>
