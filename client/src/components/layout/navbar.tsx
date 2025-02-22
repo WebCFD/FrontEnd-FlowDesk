@@ -29,7 +29,7 @@ export default function Navbar() {
           <img 
             src="/assets/logo.png" 
             alt="FlowDesk Logo" 
-            className="h-12 w-12 object-contain"
+            className="h-14 w-14 object-contain"
           />
           <span className="text-2xl font-bold text-primary">FlowDesk</span>
         </div>
