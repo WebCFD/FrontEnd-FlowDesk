@@ -15,8 +15,7 @@ export default function Dashboard() {
   };
 
   const handleHowItWorks = () => {
-    // TODO: Add the actual video URL
-    window.open("https://your-video-url.com", "_blank");
+    window.open("https://youtu.be/-cyPLRfry7k?si=8ssIurowMNabmjTa", "_blank");
   };
 
   const handleContactSupport = () => {
