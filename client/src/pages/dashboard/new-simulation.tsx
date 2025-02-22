@@ -46,6 +46,7 @@ export default function NewSimulation() {
   };
 
   const handleNextStep = () => {
+    console.log("handleNextStep called", { simulationName });
     if (!simulationName.trim()) {
       toast({
         title: "Error",
@@ -54,12 +55,16 @@ export default function NewSimulation() {
       });
       return;
     }
+    console.log("Proceeding to step 2");
     setStep(2);
   };
 
   const handleEraseAll = () => {
     setLines([]);
   };
+
+  // Debug log for current step
+  console.log("Current step:", step);
 
   return (
     <DashboardLayout>
@@ -81,99 +86,111 @@ export default function NewSimulation() {
         </div>
       </div>
 
-      {/* Step 1: Space Sketcher */}
-      <div className="max-w-4xl mx-auto">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="space-y-6">
-              <div>
-                <Label htmlFor="simulation-name">Simulation name</Label>
-                <Input
-                  id="simulation-name"
-                  value={simulationName}
-                  onChange={(e) => setSimulationName(e.target.value)}
-                  placeholder="Enter simulation name"
-                  className="mt-1"
-                />
-              </div>
+      {step === 1 && (
+        <div className="max-w-4xl mx-auto">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-6">
+                <div>
+                  <Label htmlFor="simulation-name">Simulation name</Label>
+                  <Input
+                    id="simulation-name"
+                    value={simulationName}
+                    onChange={(e) => setSimulationName(e.target.value)}
+                    placeholder="Enter simulation name"
+                    className="mt-1"
+                  />
+                </div>
 
-              {/* Drawing Tools */}
-              <div className="flex gap-2 items-center">
-                <Button
-                  variant={tool === "pen" ? "default" : "outline"}
-                  onClick={() => setTool("pen")}
-                >
-                  Pen
-                </Button>
-                <Button
-                  variant={tool === "arrow" ? "default" : "outline"}
-                  onClick={() => setTool("arrow")}
-                >
-                  Arrow
-                </Button>
-                <Button
-                  variant={tool === "text" ? "default" : "outline"}
-                  onClick={() => setTool("text")}
-                >
-                  Text
-                </Button>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-[80px] h-[35px]">
-                      <div
-                        className="w-4 h-4 rounded-full"
-                        style={{ backgroundColor: color }}
-                      />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <HexColorPicker color={color} onChange={setColor} />
-                  </PopoverContent>
-                </Popover>
-                <Button
-                  variant="outline"
-                  onClick={handleEraseAll}
-                  className="gap-2"
-                >
-                  <Eraser className="h-4 w-4" />
-                  Erase All
-                </Button>
-              </div>
+                {/* Drawing Tools */}
+                <div className="flex gap-2 items-center">
+                  <Button
+                    variant={tool === "pen" ? "default" : "outline"}
+                    onClick={() => setTool("pen")}
+                  >
+                    Pen
+                  </Button>
+                  <Button
+                    variant={tool === "arrow" ? "default" : "outline"}
+                    onClick={() => setTool("arrow")}
+                  >
+                    Arrow
+                  </Button>
+                  <Button
+                    variant={tool === "text" ? "default" : "outline"}
+                    onClick={() => setTool("text")}
+                  >
+                    Text
+                  </Button>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="w-[80px] h-[35px]">
+                        <div
+                          className="w-4 h-4 rounded-full"
+                          style={{ backgroundColor: color }}
+                        />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <HexColorPicker color={color} onChange={setColor} />
+                    </PopoverContent>
+                  </Popover>
+                  <Button
+                    variant="outline"
+                    onClick={handleEraseAll}
+                    className="gap-2"
+                  >
+                    <Eraser className="h-4 w-4" />
+                    Erase All
+                  </Button>
+                </div>
 
-              {/* Canvas */}
-              <div className="border rounded-lg">
-                <Stage
-                  width={800}
-                  height={600}
-                  onMouseDown={handleMouseDown}
-                  onMouseMove={handleMouseMove}
-                  onMouseUp={handleMouseUp}
-                >
-                  <Layer>
-                    {lines.map((line, i) => (
-                      <Line
-                        key={i}
-                        points={line.points}
-                        stroke={line.color}
-                        strokeWidth={5}
-                        tension={0.5}
-                        lineCap="round"
-                        lineJoin="round"
-                      />
-                    ))}
-                  </Layer>
-                </Stage>
-              </div>
+                {/* Canvas */}
+                <div className="border rounded-lg">
+                  <Stage
+                    width={800}
+                    height={600}
+                    onMouseDown={handleMouseDown}
+                    onMouseMove={handleMouseMove}
+                    onMouseUp={handleMouseUp}
+                  >
+                    <Layer>
+                      {lines.map((line, i) => (
+                        <Line
+                          key={i}
+                          points={line.points}
+                          stroke={line.color}
+                          strokeWidth={5}
+                          tension={0.5}
+                          lineCap="round"
+                          lineJoin="round"
+                        />
+                      ))}
+                    </Layer>
+                  </Stage>
+                </div>
 
-              <div className="flex justify-end">
-                <Button onClick={handleNextStep}>
-                  Next Step
-                </Button>
+                <div className="flex justify-end">
+                  <Button onClick={handleNextStep}>
+                    Next Step
+                  </Button>
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {step === 2 && (
+        <div className="max-w-4xl mx-auto">
+          <Card>
+            <CardContent>
+              <h2 className="text-2xl font-bold mb-4">Setup Objects</h2>
+              {/* Step 2 content will go here */}
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </DashboardLayout>
   );
 }
