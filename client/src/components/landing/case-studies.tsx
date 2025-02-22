@@ -6,7 +6,7 @@ const caseStudies = [
   {
     title: "Classroom Ventilation Design",
     description: "Optimizing air flow patterns for improved comfort and safety in educational spaces",
-    image: "/attached_assets/image_1740211615871.png"
+    image: "/assets/classroom-cfd.png"
   },
   {
     title: "Electric Vehicle Efficiency",
