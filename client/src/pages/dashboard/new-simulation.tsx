@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Stage, Layer, Line, Text, Arrow } from "react-konva";
 import { HexColorPicker } from "react-colorful";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Eraser } from "lucide-react";
 
 export default function NewSimulation() {
   const [step, setStep] = useState(1);
@@ -46,6 +47,10 @@ export default function NewSimulation() {
     if (simulationName.trim()) {
       setStep(2);
     }
+  };
+
+  const handleEraseAll = () => {
+    setLines([]);
   };
 
   return (
@@ -117,6 +122,14 @@ export default function NewSimulation() {
                     <HexColorPicker color={color} onChange={setColor} />
                   </PopoverContent>
                 </Popover>
+                <Button
+                  variant="outline"
+                  onClick={handleEraseAll}
+                  className="gap-2"
+                >
+                  <Eraser className="h-4 w-4" />
+                  Erase All
+                </Button>
               </div>
 
               {/* Canvas */}
