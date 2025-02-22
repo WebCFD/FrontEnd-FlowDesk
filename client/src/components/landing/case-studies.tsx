@@ -9,9 +9,9 @@ const caseStudies = [
     image: "/assets/classroom-cfd.png"
   },
   {
-    title: "Electric Vehicle Efficiency",
-    description: "Maximizing range through improved aerodynamics",
-    image: "https://images.unsplash.com/photo-1676288176869-b2e1c6bea1a4"
+    title: "Indoor Thermal Comfort",
+    description: "Visualize flow and heat transfer, evaluate temperature gradients and air distribution to ensure optimal thermal comfort for occupants through proper environmental design",
+    image: "/assets/thermal-comfort.png"
   },
   {
     title: "Wind Turbine Analysis",
