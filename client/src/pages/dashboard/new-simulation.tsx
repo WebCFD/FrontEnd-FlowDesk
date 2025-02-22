@@ -8,6 +8,7 @@ import { Stage, Layer, Line, Text, Arrow } from "react-konva";
 import { HexColorPicker } from "react-colorful";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Eraser } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function NewSimulation() {
   const [step, setStep] = useState(1);
@@ -16,6 +17,7 @@ export default function NewSimulation() {
   const [isDrawing, setIsDrawing] = useState(false);
   const [tool, setTool] = useState<"pen" | "arrow" | "text">("pen");
   const [color, setColor] = useState("#000000");
+  const { toast } = useToast();
 
   const handleMouseDown = (e: any) => {
     setIsDrawing(true);
@@ -44,9 +46,15 @@ export default function NewSimulation() {
   };
 
   const handleNextStep = () => {
-    if (simulationName.trim()) {
-      setStep(2);
+    if (!simulationName.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a simulation name before proceeding",
+        variant: "destructive"
+      });
+      return;
     }
+    setStep(2);
   };
 
   const handleEraseAll = () => {
@@ -158,10 +166,7 @@ export default function NewSimulation() {
               </div>
 
               <div className="flex justify-end">
-                <Button 
-                  onClick={handleNextStep}
-                  disabled={!simulationName.trim()}
-                >
+                <Button onClick={handleNextStep}>
                   Next Step
                 </Button>
               </div>
