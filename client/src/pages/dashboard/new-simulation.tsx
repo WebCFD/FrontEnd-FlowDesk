@@ -18,6 +18,7 @@ export default function NewSimulation() {
   const [tool, setTool] = useState<"pen" | "arrow" | "text">("pen");
   const [color, setColor] = useState("#000000");
   const { toast } = useToast();
+  const [hasError, setHasError] = useState(false);
 
   const handleMouseDown = (e: any) => {
     setIsDrawing(true);
@@ -48,6 +49,7 @@ export default function NewSimulation() {
   const handleNextStep = () => {
     console.log("handleNextStep called", { simulationName });
     if (!simulationName.trim()) {
+      setHasError(true);
       toast({
         title: "Error",
         description: "Please enter a simulation name before proceeding",
@@ -55,6 +57,7 @@ export default function NewSimulation() {
       });
       return;
     }
+    setHasError(false);
     console.log("Proceeding to step 2");
     setStep(2);
   };
@@ -63,12 +66,18 @@ export default function NewSimulation() {
     setLines([]);
   };
 
+  const handleSimulationNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSimulationName(e.target.value);
+    if (hasError && e.target.value.trim()) {
+      setHasError(false);
+    }
+  };
+
   // Debug log for current step
   console.log("Current step:", step);
 
   return (
     <DashboardLayout>
-      {/* Steps indicator */}
       <div className="mb-8">
         <div className="flex items-center justify-between max-w-3xl mx-auto">
           {["Space Sketcher", "Setup Objects", "Launch"].map((stepName, index) => (
@@ -96,10 +105,15 @@ export default function NewSimulation() {
                   <Input
                     id="simulation-name"
                     value={simulationName}
-                    onChange={(e) => setSimulationName(e.target.value)}
+                    onChange={handleSimulationNameChange}
                     placeholder="Enter simulation name"
-                    className="mt-1"
+                    className={`mt-1 ${hasError ? 'border-red-500' : ''}`}
                   />
+                  {hasError && (
+                    <p className="text-sm text-red-500 mt-1">
+                      Simulation name is required
+                    </p>
+                  )}
                 </div>
 
                 {/* Drawing Tools */}
