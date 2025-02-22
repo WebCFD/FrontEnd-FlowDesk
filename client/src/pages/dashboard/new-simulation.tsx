@@ -1,6 +1,7 @@
 import { useState } from "react";
 import DashboardLayout from "@/components/layout/dashboard-layout";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,9 +9,10 @@ import { Stage, Layer, Line, Image as KonvaImage } from "react-konva";
 import { HexColorPicker } from "react-colorful";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Eraser, ArrowLeft, ArrowRight } from "lucide-react";
+import { Eraser, ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import useImage from "use-image";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 // Pre-defined objects for the simulation
 const objects = [
@@ -19,9 +21,16 @@ const objects = [
   { id: 'chair', src: '/objects/chair.svg', label: 'Chair' },
   { id: 'table', src: '/objects/table.svg', label: 'Table' },
   { id: 'sofa', src: '/objects/sofa.svg', label: 'Sofa' }
-];
+] as const;
 
-const DraggableObject = ({ src, onDragEnd, x, y }) => {
+interface DraggableObjectProps {
+  src: string;
+  onDragEnd: (e: any) => void;
+  x: number;
+  y: number;
+}
+
+const DraggableObject: React.FC<DraggableObjectProps> = ({ src, onDragEnd, x, y }) => {
   const [image] = useImage(src);
   return (
     <KonvaImage
@@ -330,6 +339,175 @@ export default function NewSimulation() {
               </ScrollArea>
             </CardContent>
           </Card>
+        </div>
+      )}
+
+      {step === 3 && (
+        <div className="flex gap-6 max-w-5xl mx-auto">
+          {/* Project Summary */}
+          <div className="flex-1">
+            <Card>
+              <CardHeader>
+                <CardTitle>Project Summary</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Project name</span>
+                    <span className="font-medium">{simulationName}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Location</span>
+                    <span className="font-medium">Above Ground</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Motion</span>
+                    <span className="font-medium">Moving</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Fluid</span>
+                    <span className="font-medium">Air</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Wind velocity</span>
+                    <span className="font-medium">20.0 m/sec</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Rotation</span>
+                    <span className="font-medium">2.0 X/Y: 21.0/2.0 D</span>
+                  </div>
+                </div>
+                <Separator />
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span>Subtotal:</span>
+                    <span className="font-medium">€500.00</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>VAT (0%):</span>
+                    <span className="font-medium">€0.00</span>
+                  </div>
+                  <div className="flex justify-between text-lg font-bold">
+                    <span>Total Cost:</span>
+                    <span>€500.00</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Order Options */}
+          <div className="w-[400px] space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Available Credits</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">€500.00</div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Order Options</CardTitle>
+                <CardDescription>Select your simulation accuracy level</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <RadioGroup defaultValue="detailed" className="space-y-4">
+                  <div className="flex items-center space-x-2 border rounded-lg p-4 cursor-pointer hover:bg-accent">
+                    <RadioGroupItem value="concept" id="concept" />
+                    <Label htmlFor="concept" className="flex-1">
+                      <div className="font-medium">Concept</div>
+                      <div className="text-sm text-muted-foreground">
+                        Full pdf report
+                        <br />
+                        Compare initial concepts
+                        <br />
+                        For basic shapes
+                      </div>
+                      <div className="mt-2 font-medium">€200.00</div>
+                    </Label>
+                  </div>
+
+                  <div className="flex items-center space-x-2 border rounded-lg p-4 cursor-pointer hover:bg-accent border-primary">
+                    <RadioGroupItem value="detailed" id="detailed" />
+                    <Label htmlFor="detailed" className="flex-1">
+                      <div className="font-medium">Detailed</div>
+                      <div className="text-sm text-muted-foreground">
+                        Full pdf report
+                        <br />
+                        Compare detailed designs
+                        <br />
+                        For complex shapes
+                        <br />
+                        Intermediate accuracy
+                      </div>
+                      <div className="mt-2 font-medium">€500.00</div>
+                    </Label>
+                  </div>
+
+                  <div className="flex items-center space-x-2 border rounded-lg p-4 cursor-pointer hover:bg-accent">
+                    <RadioGroupItem value="ultimate" id="ultimate" />
+                    <Label htmlFor="ultimate" className="flex-1">
+                      <div className="font-medium">Ultimate</div>
+                      <div className="text-sm text-muted-foreground">
+                        Full pdf report
+                        <br />
+                        Tweak final designs
+                        <br />
+                        For complex shapes
+                        <br />
+                        Close-to-reality accuracy
+                      </div>
+                      <div className="mt-2 font-medium">€1,500.00</div>
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </CardContent>
+            </Card>
+
+            {/* Payment Information */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Payment Information</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Card Number</Label>
+                  <Input placeholder="4242 4242 4242 4242" />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Expiry Date</Label>
+                    <Input placeholder="MM/YY" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>CVC</Label>
+                    <Input placeholder="123" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Navigation Buttons */}
+            <div className="flex justify-between">
+              <Button
+                onClick={handlePreviousStep}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Previous Step
+              </Button>
+              <Button
+                onClick={() => console.log('Launch simulation')}
+                className="flex items-center gap-2"
+              >
+                Launch Simulation
+                <Check className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </DashboardLayout>
