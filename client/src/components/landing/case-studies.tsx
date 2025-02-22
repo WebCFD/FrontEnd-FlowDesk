@@ -4,9 +4,9 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 const caseStudies = [
   {
-    title: "Formula 1 Car Design",
-    description: "Optimizing downforce and reducing drag for competitive racing",
-    image: "https://images.unsplash.com/photo-1528774701372-1d4b668aed17"
+    title: "Classroom Ventilation Design",
+    description: "Optimizing air flow patterns for improved comfort and safety in educational spaces",
+    image: "/attached_assets/image_1740211615871.png"
   },
   {
     title: "Electric Vehicle Efficiency",
