@@ -1,86 +1,24 @@
 import { useState } from "react";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Stage, Layer, Line, Image as KonvaImage } from "react-konva";
-import { HexColorPicker } from "react-colorful";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Eraser, ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import useImage from "use-image";
+import { RoomSketchPro } from "@/components/sketch/RoomSketchPro";
+import { Separator } from "@/components/ui/separator";
+import { Eraser, ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-// Pre-defined objects for the simulation
-const objects = [
-  { id: 'lamp', src: '/objects/lamp.svg', label: 'Lamp' },
-  { id: 'cat', src: '/objects/cat.svg', label: 'Cat' },
-  { id: 'chair', src: '/objects/chair.svg', label: 'Chair' },
-  { id: 'table', src: '/objects/table.svg', label: 'Table' },
-  { id: 'sofa', src: '/objects/sofa.svg', label: 'Sofa' }
-] as const;
-
-interface DraggableObjectProps {
-  src: string;
-  onDragEnd: (e: any) => void;
-  x: number;
-  y: number;
-}
-
-const DraggableObject: React.FC<DraggableObjectProps> = ({ src, onDragEnd, x, y }) => {
-  const [image] = useImage(src);
-  return (
-    <KonvaImage
-      image={image}
-      x={x}
-      y={y}
-      width={50}
-      height={50}
-      draggable
-      onDragEnd={onDragEnd}
-    />
-  );
-};
 
 export default function NewSimulation() {
   const [step, setStep] = useState(1);
   const [simulationName, setSimulationName] = useState("");
-  const [lines, setLines] = useState<Array<{ points: number[]; color: string; tool: string }>>([]);
-  const [isDrawing, setIsDrawing] = useState(false);
-  const [tool, setTool] = useState<"pen" | "arrow" | "text">("pen");
-  const [color, setColor] = useState("#000000");
-  const [selectedPlan, setSelectedPlan] = useState("pay-as-you-go");
   const { toast } = useToast();
   const [hasError, setHasError] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState("pay-as-you-go");
   const [placedObjects, setPlacedObjects] = useState<Array<{ id: string; src: string; x: number; y: number }>>([]);
 
-  const handleMouseDown = (e: any) => {
-    if (step !== 1) return;
-    setIsDrawing(true);
-    const pos = e.target.getStage().getPointerPosition();
-    if (tool === "pen") {
-      setLines([...lines, { points: [pos.x, pos.y], color, tool }]);
-    }
-  };
-
-  const handleMouseMove = (e: any) => {
-    if (!isDrawing || step !== 1) return;
-    const stage = e.target.getStage();
-    const point = stage.getPointerPosition();
-    if (tool === "pen") {
-      let lastLine = lines[lines.length - 1];
-      lastLine.points = lastLine.points.concat([point.x, point.y]);
-      lines.splice(lines.length - 1, 1, lastLine);
-      setLines([...lines]);
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsDrawing(false);
-  };
 
   const handleNextStep = () => {
     if (!simulationName.trim()) {
@@ -98,10 +36,6 @@ export default function NewSimulation() {
 
   const handlePreviousStep = () => {
     setStep(step - 1);
-  };
-
-  const handleEraseAll = () => {
-    setLines([]);
   };
 
   const handleSimulationNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -135,6 +69,15 @@ export default function NewSimulation() {
     newObjects[index] = { ...newObjects[index], x, y };
     setPlacedObjects(newObjects);
   };
+
+  // Pre-defined objects for the simulation
+  const objects = [
+    { id: 'lamp', src: '/objects/lamp.svg', label: 'Lamp' },
+    { id: 'cat', src: '/objects/cat.svg', label: 'Cat' },
+    { id: 'chair', src: '/objects/chair.svg', label: 'Chair' },
+    { id: 'table', src: '/objects/table.svg', label: 'Table' },
+    { id: 'sofa', src: '/objects/sofa.svg', label: 'Sofa' }
+  ] as const;
 
   return (
     <DashboardLayout>
@@ -176,72 +119,9 @@ export default function NewSimulation() {
                   )}
                 </div>
 
-                {/* Drawing Tools */}
-                <div className="flex gap-2 items-center">
-                  <Button
-                    variant={tool === "pen" ? "default" : "outline"}
-                    onClick={() => setTool("pen")}
-                  >
-                    Pen
-                  </Button>
-                  <Button
-                    variant={tool === "arrow" ? "default" : "outline"}
-                    onClick={() => setTool("arrow")}
-                  >
-                    Arrow
-                  </Button>
-                  <Button
-                    variant={tool === "text" ? "default" : "outline"}
-                    onClick={() => setTool("text")}
-                  >
-                    Text
-                  </Button>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" className="w-[80px] h-[35px]">
-                        <div
-                          className="w-4 h-4 rounded-full"
-                          style={{ backgroundColor: color }}
-                        />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <HexColorPicker color={color} onChange={setColor} />
-                    </PopoverContent>
-                  </Popover>
-                  <Button
-                    variant="outline"
-                    onClick={handleEraseAll}
-                    className="gap-2"
-                  >
-                    <Eraser className="h-4 w-4" />
-                    Erase All
-                  </Button>
-                </div>
-
-                {/* Canvas */}
-                <div className="border rounded-lg">
-                  <Stage
-                    width={800}
-                    height={600}
-                    onMouseDown={handleMouseDown}
-                    onMouseMove={handleMouseMove}
-                    onMouseUp={handleMouseUp}
-                  >
-                    <Layer>
-                      {lines.map((line, i) => (
-                        <Line
-                          key={i}
-                          points={line.points}
-                          stroke={line.color}
-                          strokeWidth={5}
-                          tension={0.5}
-                          lineCap="round"
-                          lineJoin="round"
-                        />
-                      ))}
-                    </Layer>
-                  </Stage>
+                {/* RoomSketchPro Component */}
+                <div className="border rounded-lg overflow-hidden">
+                  <RoomSketchPro width={800} height={600} />
                 </div>
 
                 <div className="flex justify-end">
@@ -262,35 +142,26 @@ export default function NewSimulation() {
             <Card>
               <CardContent className="pt-6">
                 <div className="border rounded-lg">
-                  <Stage
-                    width={800}
-                    height={600}
-                  >
-                    <Layer>
-                      {/* Display original lines (non-editable) */}
-                      {lines.map((line, i) => (
-                        <Line
-                          key={i}
-                          points={line.points}
-                          stroke={line.color}
-                          strokeWidth={5}
-                          tension={0.5}
-                          lineCap="round"
-                          lineJoin="round"
-                        />
-                      ))}
-                      {/* Display placed objects */}
-                      {placedObjects.map((obj, index) => (
-                        <DraggableObject
-                          key={obj.id}
-                          src={obj.src}
-                          x={obj.x}
-                          y={obj.y}
-                          onDragEnd={(e) => handleObjectDragEnd(index, e)}
-                        />
-                      ))}
-                    </Layer>
-                  </Stage>
+                  {/* Placeholder for RoomSketchPro in Step 2 if needed.  This is not strictly necessary based on the intention. */}
+                  {/* <RoomSketchPro width={800} height={600} /> */}
+                
+                  {/* Display placed objects */}
+                  <div>
+                    {placedObjects.map((obj, index) => (
+                      <img
+                        key={obj.id}
+                        src={obj.src}
+                        alt={obj.id}
+                        style={{
+                          position: 'absolute',
+                          left: obj.x,
+                          top: obj.y,
+                          width: 50,
+                          height: 50,
+                        }}
+                      />
+                    ))}
+                  </div>
                 </div>
 
                 {/* Navigation Buttons */}
@@ -343,7 +214,6 @@ export default function NewSimulation() {
         </div>
       )}
 
-      {/* Step 3 - Launch */}
       {step === 3 && (
         <div className="max-w-5xl mx-auto space-y-4">
           {/* First Row - Summary and Credits */}
