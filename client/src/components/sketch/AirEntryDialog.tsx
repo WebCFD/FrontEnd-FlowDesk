@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface AirEntryDialogProps {
   type: 'window' | 'door' | 'vent';
@@ -49,11 +49,18 @@ export default function AirEntryDialog({ type, isOpen, onClose, onConfirm }: Air
       case 'vent':
         return ventDefaults;
       default:
-        return windowDefaults; //add default case to handle potential errors.
+        return windowDefaults;
     }
   };
 
   const [dimensions, setDimensions] = useState(getDefaultValues());
+
+  // Reset dimensions when dialog opens with new type
+  useEffect(() => {
+    if (isOpen) {
+      setDimensions(getDefaultValues());
+    }
+  }, [isOpen, type]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
