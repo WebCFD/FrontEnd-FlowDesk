@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
+import { useState } from "react";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,7 +13,6 @@ import { cn } from "@/lib/utils";
 import AirEntryDialog from "@/components/sketch/AirEntryDialog";
 import Canvas3D from "@/components/sketch/Canvas3D";
 import { useRoomStore } from "@/lib/store/room-store";
-import { useRoomReset } from "@/hooks/use-room-reset";
 
 interface Point {
   x: number;
@@ -26,17 +24,6 @@ interface Line {
   end: Point;
 }
 
-interface AirEntry {
-  type: 'vent' | 'door' | 'window';
-  position: Point;
-  dimensions: {
-    width: number;
-    height: number;
-    distanceToFloor?: number;
-  };
-  line: Line | null;
-}
-
 const calculateNormal = (line: Line | null): { x: number; y: number } => {
   if (!line) return { x: 0, y: 0 };
   const dx = line.end.x - line.start.x;
@@ -46,8 +33,6 @@ const calculateNormal = (line: Line | null): { x: number; y: number } => {
 };
 
 export default function WizardDesign() {
-  const [, setLocation] = useLocation();
-  const { confirmReset, ResetDialog } = useRoomReset();
   const [step, setStep] = useState(1);
   const [simulationName, setSimulationName] = useState("");
   const [gridSize, setGridSize] = useState(20);
@@ -132,13 +117,7 @@ export default function WizardDesign() {
   };
 
   const handleBack = () => {
-    if (lines.length > 0 || airEntries.length > 0) {
-      confirmReset(() => {
-        if (step > 1) setStep(step - 1);
-      });
-    } else {
-      if (step > 1) setStep(step - 1);
-    }
+    if (step > 1) setStep(step - 1);
   };
 
   const handleAirEntryDimensionsConfirm = (dimensions: {
@@ -490,49 +469,37 @@ export default function WizardDesign() {
     return Math.sqrt(dx * dx + dy * dy) < 15; // Snap distance
   };
 
-  // Add navigation confirmation
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (lines.length > 0 || airEntries.length > 0) {
-        e.preventDefault();
-        e.returnValue = '';
-      }
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [lines, airEntries]);
-
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      {renderStepIndicator()}
+    <DashboardLayout>
+      <div className="container mx-auto py-6 space-y-6">
+        {renderStepIndicator()}
 
-      <div className="min-h-[600px]">
-        {step === 1 && renderStep1()}
-        {step === 2 && renderStep2()}
-        {step === 3 && renderStep3()}
-      </div>
+        <div className="min-h-[600px]">
+          {step === 1 && renderStep1()}
+          {step === 2 && renderStep2()}
+          {step === 3 && renderStep3()}
+        </div>
 
-      <div className="flex justify-end gap-2 pt-6 mt-6 border-t">
-        {step > 1 && (
-          <Button onClick={handleBack} variant="outline">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
-        )}
-        {step < 3 ? (
-          <Button onClick={handleNext}>
-            Next
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-        ) : (
-          <Button onClick={() => toast({ title: "Starting simulation...", description: "Your simulation will begin shortly." })}>
-            Start Simulation
-          </Button>
-        )}
+        <div className="flex justify-end gap-2 pt-6 mt-6 border-t">
+          {step > 1 && (
+            <Button onClick={handleBack} variant="outline">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back
+            </Button>
+          )}
+          {step < 3 ? (
+            <Button onClick={handleNext}>
+              Next
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          ) : (
+            <Button onClick={() => toast({ title: "Starting simulation...", description: "Your simulation will begin shortly." })}>
+              Start Simulation
+            </Button>
+          )}
+        </div>
       </div>
-      <ResetDialog />
-    </div>
+    </DashboardLayout>
   );
 }
