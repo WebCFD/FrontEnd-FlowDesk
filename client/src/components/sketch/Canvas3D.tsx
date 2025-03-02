@@ -366,15 +366,20 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       console.log(`Original 2D position: (${entry.position.x}, ${entry.position.y})`);
       console.log(`Transformed 3D position: (${position.x}, ${position.y}, ${zPosition})`);
 
-      mesh.position.set(position.x, position.y, zPosition);
-
-      // Calculate rotation to align with wall
+      // Calculate normal to align with wall
       const normal = calculateNormal(entry.line);
       const angle = Math.atan2(normal.y, normal.x);
 
-      // Rotate the mesh to be perpendicular to the wall
+      // Position the mesh on the wall surface
+      mesh.position.set(position.x, position.y, zPosition);
+
+      // Rotate to align with wall - only rotate around Z axis to match wall orientation
       mesh.rotation.z = angle;
-      mesh.rotation.y = Math.PI; // Make it face outward
+
+      // Offset slightly from wall surface to prevent z-fighting
+      const WALL_OFFSET = 0.1; // Small offset to prevent z-fighting
+      mesh.position.x += normal.x * WALL_OFFSET;
+      mesh.position.y += normal.y * WALL_OFFSET;
 
       sceneRef.current?.add(mesh);
     });
