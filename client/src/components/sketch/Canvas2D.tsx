@@ -51,6 +51,25 @@ const calculateNormal = (line: Line): Point => {
   };
 };
 
+const getPointOnLine = (line: Line, point: Point): Point => {
+  const dx = line.end.x - line.start.x;
+  const dy = line.end.y - line.start.y;
+  const len2 = dx * dx + dy * dy;
+
+  if (len2 === 0) return line.start;
+
+  // Calculate projection
+  const t = ((point.x - line.start.x) * dx + (point.y - line.start.y) * dy) / len2;
+
+  // Clamp to line segment
+  const tt = Math.max(0, Math.min(1, t));
+
+  return {
+    x: line.start.x + tt * dx,
+    y: line.start.y + tt * dy
+  };
+};
+
 export default function Canvas2D({
   gridSize,
   currentTool,
@@ -531,7 +550,8 @@ export default function Canvas2D({
       } else if (currentAirEntry && onLineSelect) {
         const selectedLines = findLinesNearPoint(clickPoint);
         if (selectedLines.length > 0) {
-          onLineSelect(selectedLines[0], clickPoint);
+          const exactPoint = getPointOnLine(selectedLines[0], clickPoint);
+          onLineSelect(selectedLines[0], exactPoint);
         }
       }
     };
