@@ -34,6 +34,14 @@ const PIXELS_TO_CM = 25 / 20; // 25cm = 20px ratio
 const GRID_SIZE = 1000; // Size of the grid in cm
 const GRID_DIVISIONS = 40; // Number of divisions in the grid
 
+const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
+  return new THREE.Vector3(
+    point.x,    // Keep X as is
+    -point.y,   // Invert Y coordinate
+    height      // Z coordinate (height)
+  );
+};
+
 export default function Canvas3D({ lines, airEntries, height = 600 }: Canvas3DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -135,7 +143,7 @@ export default function Canvas3D({ lines, airEntries, height = 600 }: Canvas3DPr
     sceneRef.current.add(directionalLight);
 
     // Add coordinate system axes with labels
-    const axesHelper = new THREE.AxesHelper(200); // Size of 200 units
+    const axesHelper = new THREE.AxesHelper(200);
     sceneRef.current.add(axesHelper);
 
     // Create text sprites for axis labels
@@ -177,7 +185,6 @@ export default function Canvas3D({ lines, airEntries, height = 600 }: Canvas3DPr
       sceneRef.current.add(zLabel);
     }
 
-
     // Create wall material
     const wallMaterial = new THREE.MeshPhongMaterial({
       color: 0x3b82f6, // Clear blue color
@@ -186,14 +193,20 @@ export default function Canvas3D({ lines, airEntries, height = 600 }: Canvas3DPr
       side: THREE.DoubleSide,
     });
 
-    // Convert 2D lines to 3D walls
+    // Convert 2D lines to 3D walls using transformed coordinates
     lines.forEach(line => {
-      // Create vertices for wall corners
+      // Create vertices for wall corners using the transformation
+      const start_bottom = transform2DTo3D(line.start);
+      const end_bottom = transform2DTo3D(line.end);
+      const start_top = transform2DTo3D(line.start, ROOM_HEIGHT);
+      const end_top = transform2DTo3D(line.end, ROOM_HEIGHT);
+
+      // Create vertices array from transformed points
       const vertices = new Float32Array([
-        line.start.x, line.start.y, 0,           // bottom start
-        line.end.x, line.end.y, 0,               // bottom end
-        line.start.x, line.start.y, ROOM_HEIGHT, // top start
-        line.end.x, line.end.y, ROOM_HEIGHT      // top end
+        start_bottom.x, start_bottom.y, start_bottom.z, // bottom start
+        end_bottom.x, end_bottom.y, end_bottom.z,       // bottom end
+        start_top.x, start_top.y, start_top.z,         // top start
+        end_top.x, end_top.y, end_top.z               // top end
       ]);
 
       // Create faces indices
@@ -213,7 +226,7 @@ export default function Canvas3D({ lines, airEntries, height = 600 }: Canvas3DPr
       sceneRef.current.add(wall);
     });
 
-    // Add air entries
+    // Transform air entries to match the new coordinate system
     airEntries.forEach(entry => {
       const color = entry.type === 'window'
         ? 0x3b82f6  // Blue
@@ -235,12 +248,9 @@ export default function Canvas3D({ lines, airEntries, height = 600 }: Canvas3DPr
       const geometry = new THREE.PlaneGeometry(width, height);
       const mesh = new THREE.Mesh(geometry, material);
 
-      // Position the air entry
-      mesh.position.set(
-        entry.position.x,
-        entry.position.y,
-        distanceToFloor + height / 2
-      );
+      // Position the air entry using transformed coordinates
+      const position = transform2DTo3D(entry.position, distanceToFloor + height / 2);
+      mesh.position.set(position.x, position.y, position.z);
 
       // Calculate rotation to align with wall
       const normal = calculateNormal(entry.line);
