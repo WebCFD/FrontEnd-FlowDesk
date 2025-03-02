@@ -46,7 +46,7 @@ const calculateNormal = (line: Line | null): { x: number; y: number } => {
 
 export default function WizardDesign() {
   const [, setLocation] = useLocation();
-  const { user } = useAuth();
+  const { user, setReturnTo } = useAuth();
   const [step, setStep] = useState(1);
   const [simulationName, setSimulationName] = useState("");
   const [gridSize, setGridSize] = useState(20);
@@ -500,6 +500,7 @@ export default function WizardDesign() {
 
   const handleStartSimulation = () => {
     if (user?.isAnonymous) {
+      setReturnTo(window.location.pathname);
       setShowLoginPrompt(true);
     } else {
       toast({

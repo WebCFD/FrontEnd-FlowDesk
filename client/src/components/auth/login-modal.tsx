@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -36,6 +37,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const [isLoading, setIsLoading] = useState(false);
+  const { setReturnTo, returnTo } = useAuth();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -69,7 +71,9 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       });
 
       onClose();
-      setLocation("/dashboard");
+      // Redirect to stored path or dashboard
+      setLocation(returnTo || "/dashboard");
+      setReturnTo(null); // Clear the stored path
     } catch (error) {
       toast({
         variant: "destructive",

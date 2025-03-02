@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 
 const registerSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
@@ -37,6 +38,7 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const [isLoading, setIsLoading] = useState(false);
+  const { setReturnTo, returnTo } = useAuth();
 
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -71,7 +73,9 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
       });
 
       onClose();
-      setLocation("/dashboard");
+      // Redirect to stored path or dashboard
+      setLocation(returnTo || "/dashboard");
+      setReturnTo(null); // Clear the stored path
     } catch (error) {
       toast({
         variant: "destructive",
