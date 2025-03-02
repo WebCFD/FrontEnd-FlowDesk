@@ -298,11 +298,13 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       const start_top = transform2DTo3D(line.start, ROOM_HEIGHT);
       const end_top = transform2DTo3D(line.end, ROOM_HEIGHT);
 
-      console.log('Creating wall with vertices:');
-      console.log(`Start bottom: (${start_bottom.x}, ${start_bottom.y}, ${start_bottom.z})`);
-      console.log(`End bottom: (${end_bottom.x}, ${end_bottom.y}, ${end_bottom.z})`);
-      console.log(`Start top: (${start_top.x}, ${start_top.y}, ${start_top.z})`);
-      console.log(`End top: (${end_top.x}, ${end_top.y}, ${end_top.z})`);
+      // Calculate and log wall normal
+      const wallNormal = calculateNormal(line);
+      console.log('Wall normal vector:', {
+        start: `(${line.start.x}, ${line.start.y})`,
+        end: `(${line.end.x}, ${line.end.y})`,
+        normal: `(${wallNormal.x.toFixed(4)}, ${wallNormal.y.toFixed(4)})`
+      });
 
       // Create vertices array from transformed points
       const vertices = new Float32Array([
@@ -350,10 +352,8 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       // Calculate Z position based on entry type
       let zPosition;
       if (entry.type === 'door') {
-        // Doors start from floor, so z is half the height
         zPosition = height / 2;
       } else {
-        // Windows and vents use distanceToFloor from dialog
         zPosition = entry.dimensions.distanceToFloor || 0;
       }
 
@@ -362,13 +362,18 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
 
       // Position the air entry using transformed coordinates
       const position = transform2DTo3D(entry.position);
-      console.log(`Creating air entry (${entry.type}) at:`);
-      console.log(`Original 2D position: (${entry.position.x}, ${entry.position.y})`);
-      console.log(`Transformed 3D position: (${position.x}, ${position.y}, ${zPosition})`);
 
       // Calculate normal to align with wall
-      const normal = calculateNormal(entry.line);
-      const angle = Math.atan2(normal.y, normal.x);
+      const entryNormal = calculateNormal(entry.line);
+      const angle = Math.atan2(entryNormal.y, entryNormal.x);
+
+      // Log comparison between wall and air entry normals
+      console.log(`Air Entry (${entry.type}) normal vector comparison:`, {
+        wallStart: `(${entry.line.start.x}, ${entry.line.start.y})`,
+        wallEnd: `(${entry.line.end.x}, ${entry.line.end.y})`,
+        normal: `(${entryNormal.x.toFixed(4)}, ${entryNormal.y.toFixed(4)})`,
+        angle: `${(angle * 180 / Math.PI).toFixed(2)}°`
+      });
 
       // Position the mesh on the wall surface
       mesh.position.set(position.x, position.y, zPosition);
@@ -377,9 +382,9 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       mesh.rotation.z = angle;
 
       // Offset slightly from wall surface to prevent z-fighting
-      const WALL_OFFSET = 0.1; // Small offset to prevent z-fighting
-      mesh.position.x += normal.x * WALL_OFFSET;
-      mesh.position.y += normal.y * WALL_OFFSET;
+      const WALL_OFFSET = 0.1;
+      mesh.position.x += entryNormal.x * WALL_OFFSET;
+      mesh.position.y += entryNormal.y * WALL_OFFSET;
 
       sceneRef.current?.add(mesh);
     });
