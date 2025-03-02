@@ -43,6 +43,8 @@ const calculateNormal = (line: Line | null): { x: number; y: number } => {
 };
 
 
+const STORAGE_KEY = 'room-designer-state';
+
 export default function WizardDesign() {
   const [step, setStep] = useState(1);
   const [simulationName, setSimulationName] = useState("");
@@ -480,6 +482,23 @@ export default function WizardDesign() {
     </div>
   );
 
+
+  // Add save effect
+  useEffect(() => {
+    if (lines.length > 0 || airEntries.length > 0) {
+      try {
+        const state = {
+          lines,
+          airEntries,
+          hasClosedContour
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        console.log('Saved state:', state);
+      } catch (error) {
+        console.error('Error saving state:', error);
+      }
+    }
+  }, [lines, airEntries, hasClosedContour]);
 
   return (
     <DashboardLayout>
