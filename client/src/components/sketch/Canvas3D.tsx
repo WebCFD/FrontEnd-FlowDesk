@@ -31,6 +31,8 @@ interface Canvas3DProps {
 
 const ROOM_HEIGHT = 210; // Room height in cm
 const PIXELS_TO_CM = 25 / 20; // 25cm = 20px ratio
+const GRID_SIZE = 1000; // Size of the grid in cm
+const GRID_DIVISIONS = 40; // Number of divisions in the grid
 
 export default function Canvas3D({ lines, airEntries, height = 600 }: Canvas3DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -84,6 +86,13 @@ export default function Canvas3D({ lines, airEntries, height = 600 }: Canvas3DPr
     directionalLight.position.set(1, 1, 1);
     scene.add(directionalLight);
 
+    // Add grid helper
+    const gridHelper = new THREE.GridHelper(GRID_SIZE, GRID_DIVISIONS, 0x000000, 0x000000);
+    gridHelper.position.y = 0;
+    gridHelper.material.opacity = 0.2;
+    gridHelper.material.transparent = true;
+    scene.add(gridHelper);
+
     // Animation loop
     const animate = () => {
       requestAnimationFrame(animate);
@@ -108,6 +117,21 @@ export default function Canvas3D({ lines, airEntries, height = 600 }: Canvas3DPr
     // Clear previous geometry
     sceneRef.current.clear();
 
+    // Add grid helper again after clearing
+    const gridHelper = new THREE.GridHelper(GRID_SIZE, GRID_DIVISIONS, 0x000000, 0x000000);
+    gridHelper.position.y = 0;
+    gridHelper.material.opacity = 0.2;
+    gridHelper.material.transparent = true;
+    sceneRef.current.add(gridHelper);
+
+    // Add ambient and directional lights back
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    sceneRef.current.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(1, 1, 1);
+    sceneRef.current.add(directionalLight);
+
     // Convert 2D lines to 3D walls
     const wallMaterial = new THREE.MeshPhongMaterial({
       color: 0x808080,
@@ -122,7 +146,7 @@ export default function Canvas3D({ lines, airEntries, height = 600 }: Canvas3DPr
       const wallShape = new THREE.Shape();
       wallShape.moveTo(0, 0);
       wallShape.lineTo(0, ROOM_HEIGHT);
-      
+
       const extrudeSettings = {
         steps: 1,
         depth: 10, // Wall thickness
