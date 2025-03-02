@@ -58,6 +58,48 @@ const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
   return vector;
 };
 
+// Utility function to find connected points and create a perimeter
+const createRoomPerimeter = (lines: Line[]): Point[] => {
+  if (lines.length === 0) return [];
+
+  const perimeter: Point[] = [];
+  const visited = new Set<string>();
+  const pointToString = (p: Point) => `${p.x},${p.y}`;
+
+  // Create a map of points to their connected lines
+  const connections = new Map<string, Point[]>();
+  lines.forEach(line => {
+    const startKey = pointToString(line.start);
+    const endKey = pointToString(line.end);
+
+    if (!connections.has(startKey)) connections.set(startKey, []);
+    if (!connections.has(endKey)) connections.set(endKey, []);
+
+    connections.get(startKey)!.push(line.end);
+    connections.get(endKey)!.push(line.start);
+  });
+
+  // Start with the first point
+  const startPoint = lines[0].start;
+  perimeter.push(startPoint);
+  visited.add(pointToString(startPoint));
+
+  // Find connected points
+  let currentPoint = startPoint;
+  while (true) {
+    const connectedPoints = connections.get(pointToString(currentPoint)) || [];
+    const nextPoint = connectedPoints.find(p => !visited.has(pointToString(p)));
+
+    if (!nextPoint) break;
+
+    perimeter.push(nextPoint);
+    visited.add(pointToString(nextPoint));
+    currentPoint = nextPoint;
+  }
+
+  return perimeter;
+};
+
 export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canvas3DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -118,30 +160,44 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
     gridHelper.material.transparent = true;
     scene.add(gridHelper);
 
-    // Add floor surface at Z=0
-    const floorGeometry = new THREE.PlaneGeometry(GRID_SIZE, GRID_SIZE);
-    const floorMaterial = new THREE.MeshPhongMaterial({
-      color: 0x808080, // Medium gray
-      opacity: 0.3,
-      transparent: true,
-      side: THREE.DoubleSide,
-    });
-    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.position.set(0, 0, 0); // Place at Z=0
-    scene.add(floor);
+    // Create floor and roof surfaces using the room perimeter
+    const perimeterPoints = createRoomPerimeter(lines);
+    if (perimeterPoints.length > 2) {
+      // Create shape from perimeter points
+      const shape = new THREE.Shape();
+      const firstPoint = transform2DTo3D(perimeterPoints[0]);
+      shape.moveTo(firstPoint.x, firstPoint.y);
 
-    // Add roof surface at Z=ROOM_HEIGHT
-    const roofGeometry = new THREE.PlaneGeometry(GRID_SIZE, GRID_SIZE);
-    const roofMaterial = new THREE.MeshPhongMaterial({
-      color: 0xE0E0E0, // Light gray
-      opacity: 0.2,
-      transparent: true,
-      side: THREE.DoubleSide,
-    });
-    const roof = new THREE.Mesh(roofGeometry, roofMaterial);
-    roof.position.set(0, 0, ROOM_HEIGHT); // Place at Z=ROOM_HEIGHT
-    scene.add(roof);
+      for (let i = 1; i < perimeterPoints.length; i++) {
+        const point = transform2DTo3D(perimeterPoints[i]);
+        shape.lineTo(point.x, point.y);
+      }
+      shape.lineTo(firstPoint.x, firstPoint.y);
 
+      // Create floor geometry and mesh
+      const floorGeometry = new THREE.ShapeGeometry(shape);
+      const floorMaterial = new THREE.MeshPhongMaterial({
+        color: 0x808080, // Medium gray
+        opacity: 0.3,
+        transparent: true,
+        side: THREE.DoubleSide,
+      });
+      const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+      floor.position.set(0, 0, 0); // Place at Z=0
+      scene.add(floor);
+
+      // Create roof geometry and mesh
+      const roofGeometry = new THREE.ShapeGeometry(shape);
+      const roofMaterial = new THREE.MeshPhongMaterial({
+        color: 0xE0E0E0, // Light gray
+        opacity: 0.2,
+        transparent: true,
+        side: THREE.DoubleSide,
+      });
+      const roof = new THREE.Mesh(roofGeometry, roofMaterial);
+      roof.position.set(0, 0, ROOM_HEIGHT); // Place at Z=ROOM_HEIGHT
+      scene.add(roof);
+    }
 
     // Animation loop
     const animate = () => {
@@ -158,7 +214,7 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       }
       renderer.dispose();
     };
-  }, [height]);
+  }, [lines, height]);
 
   // Effect to update geometry when lines or airEntries change
   useEffect(() => {
@@ -175,29 +231,44 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
     gridHelper.material.transparent = true;
     sceneRef.current.add(gridHelper);
 
-    // Add floor surface at Z=0
-    const floorGeometry = new THREE.PlaneGeometry(GRID_SIZE, GRID_SIZE);
-    const floorMaterial = new THREE.MeshPhongMaterial({
-      color: 0x808080, // Medium gray
-      opacity: 0.3,
-      transparent: true,
-      side: THREE.DoubleSide,
-    });
-    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.position.set(0, 0, 0); // Place at Z=0
-    sceneRef.current.add(floor);
+    // Create floor and roof surfaces using the room perimeter
+    const perimeterPoints = createRoomPerimeter(lines);
+    if (perimeterPoints.length > 2) {
+      // Create shape from perimeter points
+      const shape = new THREE.Shape();
+      const firstPoint = transform2DTo3D(perimeterPoints[0]);
+      shape.moveTo(firstPoint.x, firstPoint.y);
 
-    // Add roof surface at Z=ROOM_HEIGHT
-    const roofGeometry = new THREE.PlaneGeometry(GRID_SIZE, GRID_SIZE);
-    const roofMaterial = new THREE.MeshPhongMaterial({
-      color: 0xE0E0E0, // Light gray
-      opacity: 0.2,
-      transparent: true,
-      side: THREE.DoubleSide,
-    });
-    const roof = new THREE.Mesh(roofGeometry, roofMaterial);
-    roof.position.set(0, 0, ROOM_HEIGHT); // Place at Z=ROOM_HEIGHT
-    sceneRef.current.add(roof);
+      for (let i = 1; i < perimeterPoints.length; i++) {
+        const point = transform2DTo3D(perimeterPoints[i]);
+        shape.lineTo(point.x, point.y);
+      }
+      shape.lineTo(firstPoint.x, firstPoint.y);
+
+      // Create floor geometry and mesh
+      const floorGeometry = new THREE.ShapeGeometry(shape);
+      const floorMaterial = new THREE.MeshPhongMaterial({
+        color: 0x808080, // Medium gray
+        opacity: 0.3,
+        transparent: true,
+        side: THREE.DoubleSide,
+      });
+      const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+      floor.position.set(0, 0, 0); // Place at Z=0
+      sceneRef.current.add(floor);
+
+      // Create roof geometry and mesh
+      const roofGeometry = new THREE.ShapeGeometry(shape);
+      const roofMaterial = new THREE.MeshPhongMaterial({
+        color: 0xE0E0E0, // Light gray
+        opacity: 0.2,
+        transparent: true,
+        side: THREE.DoubleSide,
+      });
+      const roof = new THREE.Mesh(roofGeometry, roofMaterial);
+      roof.position.set(0, 0, ROOM_HEIGHT); // Place at Z=ROOM_HEIGHT
+      sceneRef.current.add(roof);
+    }
 
     // Add ambient and directional lights back
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
@@ -210,45 +281,6 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
     // Add coordinate system axes with labels
     const axesHelper = new THREE.AxesHelper(200);
     sceneRef.current.add(axesHelper);
-
-    // Create text sprites for axis labels
-    const createTextSprite = (text: string, color: string) => {
-      const canvas = document.createElement('canvas');
-      const context = canvas.getContext('2d');
-      if (!context) return null;
-
-      canvas.width = 64;
-      canvas.height = 64;
-
-      context.font = "48px Arial";
-      context.fillStyle = color;
-      context.textAlign = "center";
-      context.textBaseline = "middle";
-      context.fillText(text, 32, 32);
-
-      const texture = new THREE.CanvasTexture(canvas);
-      const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
-      return new THREE.Sprite(spriteMaterial);
-    };
-
-    // Create and position labels
-    const xLabel = createTextSprite("X", "#ff0000");
-    const yLabel = createTextSprite("Y", "#00ff00");
-    const zLabel = createTextSprite("Z", "#0000ff");
-
-    if (xLabel && yLabel && zLabel) {
-      xLabel.position.set(220, 0, 0);
-      yLabel.position.set(0, 220, 0);
-      zLabel.position.set(0, 0, 220);
-
-      xLabel.scale.set(20, 20, 1);
-      yLabel.scale.set(20, 20, 1);
-      zLabel.scale.set(20, 20, 1);
-
-      sceneRef.current.add(xLabel);
-      sceneRef.current.add(yLabel);
-      sceneRef.current.add(zLabel);
-    }
 
     // Create wall material
     const wallMaterial = new THREE.MeshPhongMaterial({
