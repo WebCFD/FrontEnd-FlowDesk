@@ -41,6 +41,11 @@ export default function Dashboard() {
     setLocation("/dashboard/wizard-design");
   };
 
+  const handleReturnToWizard = () => {
+    setShowNewSimulationDialog(false);
+    setLocation("/dashboard/wizard-design");
+  };
+
   const handleHowItWorks = () => {
     setIsVideoOpen(true);
   };
@@ -164,7 +169,7 @@ export default function Dashboard() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Return to WizardDesign</AlertDialogCancel>
+            <AlertDialogCancel onClick={handleReturnToWizard}>Return to WizardDesign</AlertDialogCancel>
             <AlertDialogAction onClick={handleConfirmNewSimulation}>
               New Design
             </AlertDialogAction>
