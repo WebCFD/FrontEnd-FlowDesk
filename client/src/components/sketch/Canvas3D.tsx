@@ -96,7 +96,7 @@ const calculateNormal = (line: Line): Point => {
   const dy = line.end.y - line.start.y;
   const length = Math.sqrt(dx * dx + dy * dy);
   return {
-    x: -dy / length,  // Keep this perpendicular calculation
+    x: -dy / length,  // Perpendicular vector calculation
     y: dx / length    // This ensures outward-facing normals
   };
 };
@@ -217,7 +217,6 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
     };
   }, [lines, height]);
 
-  // Effect to update geometry when lines or airEntries change
   useEffect(() => {
     if (!sceneRef.current) return;
 
@@ -301,9 +300,18 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
 
       // Calculate wall normal
       const wallNormal = calculateNormal(line);
-      const wallNormalVector = new THREE.Vector3(wallNormal.x, wallNormal.y, 0);
+      console.log('Wall data:', {
+        line: {
+          start: `(${line.start.x}, ${line.start.y})`,
+          end: `(${line.end.x}, ${line.end.y})`
+        },
+        normal: `(${wallNormal.x.toFixed(4)}, ${wallNormal.y.toFixed(4)})`
+      });
 
-      // Add debug arrow for wall normal
+      // Create wall normal vector
+      const wallNormalVector = new THREE.Vector3(wallNormal.x, wallNormal.y, 0).normalize();
+
+      // Calculate wall midpoint for arrow placement
       const wallMidPoint = new THREE.Vector3(
         (start_bottom.x + end_bottom.x) / 2,
         (start_bottom.y + end_bottom.y) / 2,
@@ -319,7 +327,7 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
         10,  // head length
         5    // head width
       );
-      sceneRef.current?.add(wallArrowHelper);
+      sceneRef.current.add(wallArrowHelper);
 
       // Create vertices array from transformed points
       const vertices = new Float32Array([
@@ -340,7 +348,7 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
 
       // Create the wall mesh
       const wall = new THREE.Mesh(geometry, wallMaterial);
-      sceneRef.current?.add(wall);
+      sceneRef.current.add(wall);
     });
 
     // Create air entries using the same normal calculations as the walls
@@ -379,7 +387,7 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       mesh.lookAt(target);
       mesh.rotateY(Math.PI); // Make the mesh face outward
 
-      sceneRef.current?.add(mesh);
+      sceneRef.current.add(mesh);
 
       // Debug arrow for air entry normal (black)
       const elementArrowHelper = new THREE.ArrowHelper(
@@ -390,7 +398,7 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
         10,  // head length
         5    // head width
       );
-      sceneRef.current?.add(elementArrowHelper);
+      sceneRef.current.add(elementArrowHelper);
     });
 
   }, [lines, airEntries]);
