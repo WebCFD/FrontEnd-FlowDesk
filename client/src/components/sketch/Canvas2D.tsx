@@ -34,11 +34,19 @@ interface Canvas2DProps {
 
 const POINT_RADIUS = 4;
 const SNAP_DISTANCE = 15;
-const PIXELS_TO_CM = 25 / 20;
+const PIXELS_TO_CM = 25 / 20; // 25cm = 20px ratio
 const MIN_ZOOM = 0.25;
 const MAX_ZOOM = 4;
 const ZOOM_STEP = 0.1;
 const GRID_RANGE = 2000;
+
+const cmToPixels = (cm: number): number => {
+  return cm / PIXELS_TO_CM;
+};
+
+const pixelsToCm = (pixels: number): number => {
+  return pixels * PIXELS_TO_CM;
+};
 
 // Utility function to calculate the normal vector of a line
 const calculateNormal = (line: Line): Point => {
@@ -207,9 +215,6 @@ export default function Canvas2D({
     };
   };
 
-  const pixelsToCm = (pixels: number): number => {
-    return pixels * PIXELS_TO_CM;
-  };
 
   const getRelativeCoordinates = (point: Point): { x: number; y: number } => {
     const centerX = dimensions.width / 2;
@@ -380,23 +385,30 @@ export default function Canvas2D({
     return colors[type];
   };
 
-  // Modified function to draw air entries as thick segments
+  // Modified drawAirEntry function to use correct segment lengths
   const drawAirEntry = (ctx: CanvasRenderingContext2D, entry: AirEntry) => {
     const normal = calculateNormal(entry.line);
     const color = getAirEntryColor(entry.type);
     console.log(`Drawing ${entry.type} at (${entry.position.x}, ${entry.position.y})`);
     console.log(`Normal vector: (${normal.x.toFixed(3)}, ${normal.y.toFixed(3)})`);
 
+    // Convert width from cm to pixels
+    const widthInPixels = cmToPixels(entry.dimensions.width);
+    const halfWidth = widthInPixels / 2;
+
     ctx.save();
     ctx.strokeStyle = color;
     ctx.lineWidth = 4 / zoom; // Thick line for all types
 
-    // Draw the segment
+    // Draw the segment centered on the position point
     ctx.beginPath();
-    ctx.moveTo(entry.position.x, entry.position.y);
+    ctx.moveTo(
+      entry.position.x - normal.x * halfWidth,
+      entry.position.y - normal.y * halfWidth
+    );
     ctx.lineTo(
-      entry.position.x + normal.x * entry.dimensions.width,
-      entry.position.y + normal.y * entry.dimensions.width
+      entry.position.x + normal.x * halfWidth,
+      entry.position.y + normal.y * halfWidth
     );
     ctx.stroke();
 
@@ -405,13 +417,24 @@ export default function Canvas2D({
     const perpY = normal.x * 4 / zoom;
 
     ctx.beginPath();
-    ctx.moveTo(entry.position.x - perpX, entry.position.y - perpY);
-    ctx.lineTo(entry.position.x + perpX, entry.position.y + perpY);
-
-    const endX = entry.position.x + normal.x * entry.dimensions.width;
-    const endY = entry.position.y + normal.y * entry.dimensions.width;
-    ctx.moveTo(endX - perpX, endY - perpY);
-    ctx.lineTo(endX + perpX, endY + perpY);
+    // Left end
+    ctx.moveTo(
+      entry.position.x - normal.x * halfWidth - perpX,
+      entry.position.y - normal.y * halfWidth - perpY
+    );
+    ctx.lineTo(
+      entry.position.x - normal.x * halfWidth + perpX,
+      entry.position.y - normal.y * halfWidth + perpY
+    );
+    // Right end
+    ctx.moveTo(
+      entry.position.x + normal.x * halfWidth - perpX,
+      entry.position.y + normal.y * halfWidth - perpY
+    );
+    ctx.lineTo(
+      entry.position.x + normal.x * halfWidth + perpX,
+      entry.position.y + normal.y * halfWidth + perpY
+    );
     ctx.stroke();
 
     ctx.restore();
