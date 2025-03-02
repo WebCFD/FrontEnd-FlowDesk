@@ -25,6 +25,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { PlusCircle, Play, Mail, FileEdit } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface Point {
   x: number;
@@ -499,7 +501,12 @@ export default function WizardDesign() {
   };
 
   const handleStartSimulation = () => {
-    setShowStartSimulationPrompt(true);
+    if (lines.length > 0) {
+      setShowStartSimulationPrompt(true);
+    } else {
+      reset();
+      setLocation("/dashboard/wizard-design");
+    }
   };
 
   const handleConfirmNewSimulation = () => {
