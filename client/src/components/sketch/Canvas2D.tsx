@@ -15,18 +15,19 @@ interface Line {
 
 interface Canvas2DProps {
   gridSize: number;
-  currentTool: 'wall' | 'eraser';
+  currentTool: 'wall' | 'eraser' | null;
+  currentAirEntry: 'vent' | 'door' | 'window' | null;
 }
 
 const POINT_RADIUS = 4;
 const SNAP_DISTANCE = 15;
-const PIXELS_TO_CM = 25 / 20; // 20 pixels = 25 cm
+const PIXELS_TO_CM = 25 / 20;
 const MIN_ZOOM = 0.25;
 const MAX_ZOOM = 4;
 const ZOOM_STEP = 0.1;
-const GRID_RANGE = 2000; // Grid lines will extend this far in each direction
+const GRID_RANGE = 2000;
 
-export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
+export default function Canvas2D({ gridSize, currentTool, currentAirEntry }: Canvas2DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
@@ -308,6 +309,18 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
 
   const gridSizeToCm = (pixels: number): number => pixels * PIXELS_TO_CM;
 
+  const getHighlightColor = () => {
+    if (!currentAirEntry) return 'rgba(239, 68, 68, 0.5)'; // Default red
+
+    const colors = {
+      window: 'rgba(59, 130, 246, 0.5)', // Blue
+      door: 'rgba(180, 83, 9, 0.5)',     // Brown
+      vent: 'rgba(34, 197, 94, 0.5)'     // Green
+    };
+
+    return colors[currentAirEntry];
+  };
+
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -360,7 +373,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
 
       lines.forEach(line => {
         if (highlightedLines.includes(line)) {
-          ctx.strokeStyle = 'rgba(239, 68, 68, 0.5)';
+          ctx.strokeStyle = getHighlightColor();
           ctx.lineWidth = 3 / zoom;
         } else {
           ctx.strokeStyle = '#000000';
@@ -459,7 +472,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
         const endPoint = nearestPoint || snapToGrid(point);
         setCurrentLine(prev => prev ? { ...prev, end: endPoint } : null);
         setCursorPoint(endPoint);
-      } else if (currentTool === 'eraser') {
+      } else if (currentTool === 'eraser' || currentAirEntry) {
         const point = getCanvasPoint(e);
         setHighlightedLines(findLinesNearPoint(point));
       }
@@ -512,7 +525,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       canvas.removeEventListener('contextmenu', e => e.preventDefault());
       cancelAnimationFrame(animationFrameId);
     };
-  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode, cursorPoint]);
+  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode, cursorPoint, currentAirEntry]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, '');
