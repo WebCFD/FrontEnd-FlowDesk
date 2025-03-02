@@ -334,6 +334,8 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
 
       // Function to draw arrow
       function drawArrow(fromX: number, fromY: number, toX: number, toY: number, color: string) {
+        if (!ctx) return;
+
         ctx.beginPath();
         ctx.strokeStyle = color;
         ctx.lineWidth = 2 / zoom;
