@@ -88,7 +88,8 @@ export default function Canvas3D({ lines, airEntries, height = 600 }: Canvas3DPr
 
     // Add grid helper
     const gridHelper = new THREE.GridHelper(GRID_SIZE, GRID_DIVISIONS, 0x000000, 0x000000);
-    gridHelper.position.y = 0;
+    gridHelper.position.set(0, 0, 0); // Position at origin
+    gridHelper.rotation.x = -Math.PI / 2; // Rotate to lie flat on XY plane
     gridHelper.material.opacity = 0.2;
     gridHelper.material.transparent = true;
     scene.add(gridHelper);
@@ -119,7 +120,8 @@ export default function Canvas3D({ lines, airEntries, height = 600 }: Canvas3DPr
 
     // Add grid helper again after clearing
     const gridHelper = new THREE.GridHelper(GRID_SIZE, GRID_DIVISIONS, 0x000000, 0x000000);
-    gridHelper.position.y = 0;
+    gridHelper.position.set(0, 0, 0); // Position at origin
+    gridHelper.rotation.x = -Math.PI / 2; // Rotate to lie flat on XY plane
     gridHelper.material.opacity = 0.2;
     gridHelper.material.transparent = true;
     sceneRef.current.add(gridHelper);
