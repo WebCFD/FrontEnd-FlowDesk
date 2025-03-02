@@ -30,6 +30,7 @@ interface Canvas2DProps {
   currentAirEntry: 'vent' | 'door' | 'window' | null;
   onLineSelect?: (line: Line, clickPoint: Point) => void;
   airEntries: AirEntry[];
+  lines: Line[];  // Add this prop explicitly
   onLinesUpdate?: (lines: Line[]) => void;
 }
 
@@ -39,12 +40,12 @@ export default function Canvas2D({
   currentAirEntry,
   onLineSelect,
   airEntries = [], // Add default empty array
+  lines = [], // Add default empty array
   onLinesUpdate
 }: Canvas2DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
-  const [lines, setLines] = useState<Line[]>([]);
   const [currentLine, setCurrentLine] = useState<Line | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [highlightedLines, setHighlightedLines] = useState<Line[]>([]);
@@ -527,7 +528,6 @@ export default function Canvas2D({
         const linesToErase = findLinesNearPoint(clickPoint);
         if (linesToErase.length > 0) {
           const newLines = lines.filter(line => !linesToErase.includes(line));
-          setLines(newLines);
           onLinesUpdate?.(newLines);
           setHighlightedLines([]);
         }
@@ -577,7 +577,6 @@ export default function Canvas2D({
           console.log(`End in cm: (${coordsEnd.x}, ${coordsEnd.y})`);
 
           const newLines = [...lines, currentLine];
-          setLines(newLines);
           onLinesUpdate?.(newLines);
         }
         setCurrentLine(null);
