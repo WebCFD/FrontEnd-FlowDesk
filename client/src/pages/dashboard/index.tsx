@@ -159,7 +159,7 @@ export default function Dashboard() {
           <AlertDialogHeader>
             <AlertDialogTitle>Start New Simulation?</AlertDialogTitle>
             <AlertDialogDescription>
-              You have an existing room design. Starting a new simulation will clear your current design. 
+              You have an existing room in the WizardDesign. Starting a new simulation will clear your current design. 
               Are you sure you want to continue?
             </AlertDialogDescription>
           </AlertDialogHeader>

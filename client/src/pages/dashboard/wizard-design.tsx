@@ -57,7 +57,8 @@ export default function WizardDesign() {
   const [selectedLine, setSelectedLine] = useState<Line | null>(null);
   const [clickedPoint, setClickedPoint] = useState<Point | null>(null);
   const [tab, setTab] = useState<"2d-editor" | "3d-preview">("2d-editor");
-  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [showStartSimulationPrompt, setShowStartSimulationPrompt] = useState(false); //New state variable
+
 
   // Use the global room store
   const { lines, airEntries, hasClosedContour, setLines, setAirEntries, setHasClosedContour } = useRoomStore();
@@ -433,20 +434,18 @@ export default function WizardDesign() {
         </CardContent>
       </Card>
 
-      <AlertDialog open={showLoginPrompt} onOpenChange={setShowLoginPrompt}>
+      <AlertDialog open={showStartSimulationPrompt} onOpenChange={setShowStartSimulationPrompt}> {/* Replaced showLoginPrompt */}
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Login Required</AlertDialogTitle>
+            <AlertDialogTitle>Start New Simulation?</AlertDialogTitle>
             <AlertDialogDescription>
-              To start a simulation, you need to create an account or log in.
-              Would you like to do that now?
+              You have an existing room in the WizardDesign. Starting a new simulation will clear your current design.
+              Are you sure you want to continue?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Not Now</AlertDialogCancel>
-            <AlertDialogAction onClick={() => setLocation("/auth")}>
-              Login / Register
-            </AlertDialogAction>
+            <AlertDialogCancel onClick={() => setShowStartSimulationPrompt(false)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleStartSimulation}>Start Simulation</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -499,15 +498,11 @@ export default function WizardDesign() {
   };
 
   const handleStartSimulation = () => {
-    if (user?.isAnonymous) {
-      setReturnTo(window.location.pathname);
-      setShowLoginPrompt(true);
-    } else {
-      toast({
-        title: "Starting simulation...",
-        description: "Your simulation will begin shortly."
-      });
-    }
+    setShowStartSimulationPrompt(true); // Show the new alert dialog
+  };
+
+  const handleBack = () => {
+    if (step > 1) setStep(step - 1);
   };
 
 
