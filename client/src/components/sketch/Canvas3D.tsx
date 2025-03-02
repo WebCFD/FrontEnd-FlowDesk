@@ -35,27 +35,18 @@ const GRID_SIZE = 1000; // Size of the grid in cm
 const GRID_DIVISIONS = 40; // Number of divisions in the grid
 
 const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
-  // Get the base dimensions for center calculation
   const dimensions = { width: 800, height: 600 }; // Default dimensions
   const centerX = dimensions.width / 2;
   const centerY = dimensions.height / 2;
 
-  // Calculate relative coordinates from center (similar to 2D view)
   const relativeX = point.x - centerX;
   const relativeY = centerY - point.y; // Invert Y to match mathematical coordinates
 
-  const vector = new THREE.Vector3(
-    relativeX * PIXELS_TO_CM,    // Convert to cm and keep X direction
-    relativeY * PIXELS_TO_CM,    // Convert to cm and keep Y inverted
-    height      // Z coordinate (height)
+  return new THREE.Vector3(
+    relativeX * PIXELS_TO_CM,
+    relativeY * PIXELS_TO_CM,
+    height
   );
-
-  console.log('Transform 2D → 3D:');
-  console.log(`Screen coords: (${point.x}, ${point.y})`);
-  console.log(`Relative to center: (${relativeX}, ${relativeY})`);
-  console.log(`Final 3D (in cm): (${vector.x}, ${vector.y}, ${vector.z})`);
-
-  return vector;
 };
 
 // Utility function to find connected points and create a perimeter
@@ -105,8 +96,8 @@ const calculateNormal = (line: Line): Point => {
   const dy = line.end.y - line.start.y;
   const length = Math.sqrt(dx * dx + dy * dy);
   return {
-    x: -dy / length,  
-    y: dx / length   
+    x: -dy / length,  // Keep this perpendicular calculation
+    y: dx / length    // This ensures outward-facing normals
   };
 };
 
@@ -308,21 +299,18 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       const start_top = transform2DTo3D(line.start, ROOM_HEIGHT);
       const end_top = transform2DTo3D(line.end, ROOM_HEIGHT);
 
-      // Calculate and log wall normal using corrected calculation
+      // Calculate wall normal
       const wallNormal = calculateNormal(line);
-      console.log('Wall normal vector:', {
-        start: `(${line.start.x}, ${line.start.y})`,
-        end: `(${line.end.x}, ${line.end.y})`,
-        normal: `(${wallNormal.x.toFixed(4)}, ${wallNormal.y.toFixed(4)})`
-      });
+      const wallNormalVector = new THREE.Vector3(wallNormal.x, wallNormal.y, 0);
 
       // Add debug arrow for wall normal
-      const wallNormalVector = new THREE.Vector3(wallNormal.x, wallNormal.y, 0);
       const wallMidPoint = new THREE.Vector3(
         (start_bottom.x + end_bottom.x) / 2,
         (start_bottom.y + end_bottom.y) / 2,
         ROOM_HEIGHT / 2
       );
+
+      // Debug arrow for wall normal (blue)
       const wallArrowHelper = new THREE.ArrowHelper(
         wallNormalVector,
         wallMidPoint,
@@ -342,10 +330,7 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       ]);
 
       // Create faces indices
-      const indices = new Uint16Array([
-        0, 1, 2,
-        1, 3, 2
-      ]);
+      const indices = new Uint16Array([0, 1, 2, 1, 3, 2]);
 
       // Create the wall geometry
       const geometry = new THREE.BufferGeometry();
@@ -358,18 +343,13 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       sceneRef.current?.add(wall);
     });
 
-    // Transform air entries to match the new coordinate system
+    // Create air entries using the same normal calculations as the walls
     airEntries.forEach(entry => {
-      const color = entry.type === 'window'
-        ? 0x3b82f6  // Blue
-        : entry.type === 'door'
-          ? 0xb45309  // Brown
-          : 0x22c55e; // Green
-
+      const color = entry.type === 'window' ? 0x3b82f6 : entry.type === 'door' ? 0xb45309 : 0x22c55e;
       const material = new THREE.MeshPhongMaterial({
         color,
-        transparent: true,
         opacity: 0.6,
+        transparent: true,
         side: THREE.DoubleSide,
       });
 
@@ -377,52 +357,31 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       const height = entry.dimensions.height;
 
       // Calculate Z position based on entry type
-      let zPosition;
-      if (entry.type === 'door') {
-        zPosition = height / 2;
-      } else {
-        zPosition = entry.dimensions.distanceToFloor || 0;
-      }
+      const zPosition = entry.type === 'door' ? height / 2 : (entry.dimensions.distanceToFloor || 0);
 
-      // Calculate wall normal using corrected calculation
+      // Use the same normal calculation as the wall
       const entryNormal = calculateNormal(entry.line);
-      const angle = Math.atan2(entryNormal.y, entryNormal.x);
+      const normalVector = new THREE.Vector3(entryNormal.x, entryNormal.y, 0);
 
-      // Log comparison between wall and air entry normals
-      console.log(`Air Entry (${entry.type}) normal vector comparison:`, {
-        wallStart: `(${entry.line.start.x}, ${entry.line.start.y})`,
-        wallEnd: `(${entry.line.end.x}, ${entry.line.end.y})`,
-        normal: `(${entryNormal.x.toFixed(4)}, ${entryNormal.y.toFixed(4)})`,
-        angle: `${(angle * 180 / Math.PI).toFixed(2)}°`
-      });
-
-      // Create geometry for the air entry
+      // Create and position the air entry
       const geometry = new THREE.PlaneGeometry(width, height);
       const mesh = new THREE.Mesh(geometry, material);
-
-      // Position the air entry using transformed coordinates
       const position = transform2DTo3D(entry.position);
       mesh.position.set(position.x, position.y, zPosition);
 
-      // Get the wall normal vector
-      const normalVector = new THREE.Vector3(entryNormal.x, entryNormal.y, 0);
-
-      // Set the mesh's normal (making it face the same direction as the wall)
-      mesh.lookAt(
-        new THREE.Vector3(
-          position.x + normalVector.x,
-          position.y + normalVector.y,
-          zPosition
-        )
+      // Orient the mesh using the wall's normal
+      const target = new THREE.Vector3(
+        position.x + normalVector.x,
+        position.y + normalVector.y,
+        zPosition
       );
 
-      // Rotate 90 degrees around Z to align with wall
-      mesh.rotateZ(Math.PI / 2);
+      mesh.lookAt(target);
+      mesh.rotateY(Math.PI); // Make the mesh face outward
 
-      // Add mesh to scene
       sceneRef.current?.add(mesh);
 
-      // Add debug arrows to visualize normals
+      // Debug arrow for air entry normal (black)
       const elementArrowHelper = new THREE.ArrowHelper(
         normalVector,
         new THREE.Vector3(position.x, position.y, zPosition),
