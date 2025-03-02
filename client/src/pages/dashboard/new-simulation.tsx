@@ -42,7 +42,16 @@ export default function NewSimulation() {
   const renderStepIndicator = () => (
     <div className="w-full mb-8">
       <div className="flex justify-between relative">
-        <div className="absolute left-0 right-0 top-1/2 h-px bg-border -translate-y-1/2" />
+        {/* Progress bar background */}
+        <div className="absolute left-0 right-0 top-1/2 h-0.5 bg-muted -translate-y-1/2" />
+        {/* Active progress bar */}
+        <div 
+          className="absolute left-0 top-1/2 h-0.5 bg-primary -translate-y-1/2 transition-all duration-300" 
+          style={{ 
+            width: `${((step - 1) / (steps.length - 1)) * 100}%`
+          }} 
+        />
+
         {steps.map((s, i) => (
           <div 
             key={s.id}
@@ -52,8 +61,10 @@ export default function NewSimulation() {
             <div 
               className={`
                 w-8 h-8 rounded-full flex items-center justify-center 
-                ${step >= s.id ? 'bg-primary text-primary-foreground' : 'bg-muted'} 
-                cursor-pointer transition-colors relative z-10
+                ${step > s.id ? 'bg-primary text-primary-foreground border-primary' : 
+                  step === s.id ? 'bg-primary text-primary-foreground border-primary' : 
+                  'bg-background border-muted-foreground text-muted-foreground'} 
+                border-2 cursor-pointer transition-colors relative z-10
               `}
             >
               {step > s.id ? (
@@ -63,8 +74,8 @@ export default function NewSimulation() {
               )}
             </div>
             <div className={`
-              absolute top-full mt-2 left-1/2 -translate-x-1/2 whitespace-nowrap text-sm
-              ${step >= s.id ? 'text-foreground' : 'text-muted-foreground'}
+              absolute top-full mt-2 left-1/2 -translate-x-1/2 whitespace-nowrap text-sm font-medium
+              ${step >= s.id ? 'text-primary' : 'text-muted-foreground'}
             `}>
               {s.name}
             </div>
