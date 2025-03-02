@@ -5,6 +5,17 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Play, Mail, FileEdit } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useRoomStore } from "@/lib/store/room-store";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
@@ -12,9 +23,22 @@ export default function Dashboard() {
     { id: 1, name: 'tutorial', status: 'Draft' }
   ]);
   const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const [showNewSimulationDialog, setShowNewSimulationDialog] = useState(false);
+  const { lines, reset } = useRoomStore();
 
   const handleStartSimulation = () => {
-    setLocation("/dashboard/new-simulation");
+    if (lines.length > 0) {
+      setShowNewSimulationDialog(true);
+    } else {
+      reset();
+      setLocation("/dashboard/wizard-design");
+    }
+  };
+
+  const handleConfirmNewSimulation = () => {
+    reset();
+    setShowNewSimulationDialog(false);
+    setLocation("/dashboard/wizard-design");
   };
 
   const handleHowItWorks = () => {
@@ -109,6 +133,7 @@ export default function Dashboard() {
         </Card>
       </div>
 
+      {/* How it Works Video Dialog */}
       <Dialog open={isVideoOpen} onOpenChange={setIsVideoOpen}>
         <DialogContent className="sm:max-w-[800px]">
           <DialogHeader>
@@ -127,6 +152,25 @@ export default function Dashboard() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* New Simulation Confirmation Dialog */}
+      <AlertDialog open={showNewSimulationDialog} onOpenChange={setShowNewSimulationDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Start New Simulation?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have an existing room design. Starting a new simulation will clear your current design. 
+              Are you sure you want to continue?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmNewSimulation}>
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </DashboardLayout>
   );
 }
