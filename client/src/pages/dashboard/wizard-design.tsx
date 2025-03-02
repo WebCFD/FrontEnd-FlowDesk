@@ -11,6 +11,7 @@ import { Save, Upload, Eraser, ArrowRight, ArrowLeft } from "lucide-react";
 import Canvas2D from "@/components/sketch/Canvas2D";
 import { cn } from "@/lib/utils";
 import AirEntryDialog from "@/components/sketch/AirEntryDialog";
+import Canvas3D from "@/components/sketch/Canvas3D";
 
 interface Point {
   x: number;
@@ -53,6 +54,54 @@ export default function WizardDesign() {
   const [selectedLine, setSelectedLine] = useState<Line | null>(null);
   const [airEntries, setAirEntries] = useState<AirEntry[]>([]);
   const [clickedPoint, setClickedPoint] = useState<Point | null>(null);
+  const [lines, setLines] = useState<Line[]>([]); // Added state for lines
+  const [tab, setTab] = useState<"2d-editor" | "3d-preview">("2d-editor");
+  const [hasClosedContour, setHasClosedContour] = useState(false);
+
+  const isInClosedContour = (point: Point, lines: Line[]): boolean => {
+    const visited = new Set<string>();
+    const pointKey = (p: Point) => `${p.x},${p.y}`;
+
+    const findPath = (current: Point, steps: number): boolean => {
+      if (steps >= 3 && arePointsClose(current, point)) {
+        return true;
+      }
+
+      const connectedLines = findConnectedLines(current, lines);
+
+      for (const line of connectedLines) {
+        const nextPoint = arePointsClose(line.start, current) ? line.end : line.start;
+        const key = pointKey(nextPoint);
+
+        if (visited.has(key) && !(arePointsClose(nextPoint, point) && steps >= 3)) {
+          continue;
+        }
+
+        visited.add(key);
+        if (findPath(nextPoint, steps + 1)) {
+          return true;
+        }
+        visited.delete(key);
+      }
+
+      return false;
+    };
+
+    visited.add(pointKey(point));
+    return findPath(point, 0);
+  };
+
+  const findConnectedLines = (point: Point, lines: Line[]): Line[] => {
+    return lines.filter(line =>
+      arePointsClose(line.start, point) || arePointsClose(line.end, point)
+    );
+  };
+
+  const arePointsClose = (p1: Point, p2: Point): boolean => {
+    const dx = p1.x - p2.x;
+    const dy = p1.y - p2.y;
+    return Math.sqrt(dx * dx + dy * dy) < 15; // Snap distance
+  };
 
   const steps = [
     { id: 1, name: "Upload" },
@@ -201,10 +250,25 @@ export default function WizardDesign() {
 
       <Card className="mt-6">
         <CardContent className="p-6">
-          <Tabs defaultValue="2d-editor" className="w-full">
+          <Tabs
+            value={tab}
+            onValueChange={(value: "2d-editor" | "3d-preview") => {
+              if (value === "3d-preview" && !hasClosedContour) {
+                toast({
+                  title: "Invalid Room Layout",
+                  description: "Please create a closed room contour before viewing in 3D",
+                  variant: "destructive",
+                });
+                return;
+              }
+              setTab(value);
+            }}
+          >
             <TabsList>
               <TabsTrigger value="2d-editor">2D Editor</TabsTrigger>
-              <TabsTrigger value="3d-preview">3D Preview</TabsTrigger>
+              <TabsTrigger value="3d-preview" disabled={!hasClosedContour}>
+                3D Preview
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="2d-editor" className="mt-6">
@@ -295,14 +359,28 @@ export default function WizardDesign() {
                     currentAirEntry={currentAirEntry}
                     onLineSelect={handleLineSelect}
                     airEntries={airEntries}
+                    onLinesUpdate={(newLines) => {
+                      setLines(newLines);
+                      // Check if any point forms a closed contour
+                      const hasClosedContour = newLines.length > 0 &&
+                        newLines.some(line =>
+                          isInClosedContour(line.start, newLines) ||
+                          isInClosedContour(line.end, newLines)
+                        );
+                      setHasClosedContour(hasClosedContour);
+                    }}
                   />
                 </div>
               </div>
             </TabsContent>
 
             <TabsContent value="3d-preview">
-              <div className="h-[600px] flex items-center justify-center border rounded-lg">
-                <p className="text-muted-foreground">3D Preview will be implemented in the next phase</p>
+              <div className="h-[600px] border rounded-lg overflow-hidden">
+                <Canvas3D
+                  lines={lines}
+                  airEntries={airEntries}
+                  height={600}
+                />
               </div>
             </TabsContent>
           </Tabs>
