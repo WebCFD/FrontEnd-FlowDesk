@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
 import { Save, Upload, Eraser, ArrowRight, ArrowLeft } from "lucide-react";
@@ -13,6 +15,16 @@ import { cn } from "@/lib/utils";
 import AirEntryDialog from "@/components/sketch/AirEntryDialog";
 import Canvas3D from "@/components/sketch/Canvas3D";
 import { useRoomStore } from "@/lib/store/room-store";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Point {
   x: number;
@@ -33,6 +45,8 @@ const calculateNormal = (line: Line | null): { x: number; y: number } => {
 };
 
 export default function WizardDesign() {
+  const [, setLocation] = useLocation();
+  const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [simulationName, setSimulationName] = useState("");
   const [gridSize, setGridSize] = useState(20);
@@ -43,6 +57,7 @@ export default function WizardDesign() {
   const [selectedLine, setSelectedLine] = useState<Line | null>(null);
   const [clickedPoint, setClickedPoint] = useState<Point | null>(null);
   const [tab, setTab] = useState<"2d-editor" | "3d-preview">("2d-editor");
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   // Use the global room store
   const { lines, airEntries, hasClosedContour, setLines, setAirEntries, setHasClosedContour } = useRoomStore();
@@ -114,10 +129,6 @@ export default function WizardDesign() {
 
   const handleNext = () => {
     if (step < 3) setStep(step + 1);
-  };
-
-  const handleBack = () => {
-    if (step > 1) setStep(step - 1);
   };
 
   const handleAirEntryDimensionsConfirm = (dimensions: {
@@ -421,6 +432,24 @@ export default function WizardDesign() {
           </Card>
         </CardContent>
       </Card>
+
+      <AlertDialog open={showLoginPrompt} onOpenChange={setShowLoginPrompt}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Login Required</AlertDialogTitle>
+            <AlertDialogDescription>
+              To start a simulation, you need to create an account or log in.
+              Would you like to do that now?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Not Now</AlertDialogCancel>
+            <AlertDialogAction onClick={() => setLocation("/auth")}>
+              Login / Register
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 
@@ -469,6 +498,17 @@ export default function WizardDesign() {
     return Math.sqrt(dx * dx + dy * dy) < 15; // Snap distance
   };
 
+  const handleStartSimulation = () => {
+    if (user?.isAnonymous) {
+      setShowLoginPrompt(true);
+    } else {
+      toast({
+        title: "Starting simulation...",
+        description: "Your simulation will begin shortly."
+      });
+    }
+  };
+
 
   return (
     <DashboardLayout>
@@ -494,7 +534,7 @@ export default function WizardDesign() {
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           ) : (
-            <Button onClick={() => toast({ title: "Starting simulation...", description: "Your simulation will begin shortly." })}>
+            <Button onClick={handleStartSimulation}>
               Start Simulation
             </Button>
           )}
