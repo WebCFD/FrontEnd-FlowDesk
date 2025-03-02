@@ -49,7 +49,7 @@ const pixelsToCm = (pixels: number): number => {
   return pixels * PIXELS_TO_CM;
 };
 
-// Utility function to calculate the normal vector of a line
+// Utility functions that don't need dimensions can stay outside
 const calculateNormal = (line: Line): Point => {
   const dx = line.end.x - line.start.x;
   const dy = line.end.y - line.start.y;
@@ -67,36 +67,13 @@ const getPointOnLine = (line: Line, point: Point): Point => {
 
   if (len2 === 0) return line.start;
 
-  // Calculate projection
   const t = ((point.x - line.start.x) * dx + (point.y - line.start.y) * dy) / len2;
-
-  // Clamp to line segment
   const tt = Math.max(0, Math.min(1, t));
 
   return {
     x: line.start.x + tt * dx,
     y: line.start.y + tt * dy
   };
-};
-
-// Update the getRelativeCoordinates function to be more verbose
-const getRelativeCoordinates = (point: Point): { x: number; y: number } => {
-  const centerX = dimensions.width / 2;
-  const centerY = dimensions.height / 2;
-  const relativeX = point.x - centerX;
-  const relativeY = centerY - point.y;
-  return {
-    x: Math.round(pixelsToCm(relativeX)),
-    y: Math.round(pixelsToCm(relativeY))
-  };
-};
-
-const drawCoordinateLabel = (ctx: CanvasRenderingContext2D, point: Point, color: string) => {
-  const coords = getRelativeCoordinates(point);
-  console.log(`2D Point clicked - Screen: (${point.x}, ${point.y}), In cm: (${coords.x}, ${coords.y})`);
-  ctx.fillStyle = color;
-  ctx.textAlign = 'left';
-  ctx.fillText(`(${coords.x}, ${coords.y})`, point.x + 8, point.y - 8);
 };
 
 export default function Canvas2D({
@@ -379,7 +356,6 @@ export default function Canvas2D({
     return colors[currentAirEntry];
   };
 
-
   const getAirEntryColor = (type: 'window' | 'door' | 'vent'): string => {
     const colors = {
       window: '#3b82f6', // Blue
@@ -387,6 +363,26 @@ export default function Canvas2D({
       vent: '#22c55e'    // Green
     };
     return colors[type];
+  };
+
+  // Move these functions inside the component where they have access to dimensions
+  const getRelativeCoordinates = (point: Point): { x: number; y: number } => {
+    const centerX = dimensions.width / 2;
+    const centerY = dimensions.height / 2;
+    const relativeX = point.x - centerX;
+    const relativeY = centerY - point.y; // Invert Y to match mathematical coordinates
+    return {
+      x: Math.round(pixelsToCm(relativeX)),
+      y: Math.round(pixelsToCm(relativeY))
+    };
+  };
+
+  const drawCoordinateLabel = (ctx: CanvasRenderingContext2D, point: Point, color: string) => {
+    const coords = getRelativeCoordinates(point);
+    console.log(`2D Point clicked - Screen: (${point.x}, ${point.y}), In cm: (${coords.x}, ${coords.y})`);
+    ctx.fillStyle = color;
+    ctx.textAlign = 'left';
+    ctx.fillText(`(${coords.x}, ${coords.y})`, point.x + 8, point.y - 8);
   };
 
   // Modified drawAirEntry function to use correct segment lengths
