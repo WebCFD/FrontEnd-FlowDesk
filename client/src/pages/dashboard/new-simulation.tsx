@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
-import { Save, Upload, Eraser, ArrowRight, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { Save, Upload, Eraser, ArrowRight, ArrowLeft } from "lucide-react";
 import Canvas2D from "@/components/sketch/Canvas2D";
 
 export default function NewSimulation() {
@@ -18,9 +18,9 @@ export default function NewSimulation() {
   const { toast } = useToast();
 
   const steps = [
-    { id: 1, name: "Design" },
-    { id: 2, name: "Parameters" },
-    { id: 3, name: "Package" }
+    { id: 1, name: "Upload" },
+    { id: 2, name: "Setup" },
+    { id: 3, name: "Order" }
   ];
 
   const handleGridSizeChange = (value: number[]) => {
@@ -40,47 +40,21 @@ export default function NewSimulation() {
   };
 
   const renderStepIndicator = () => (
-    <div className="w-full mb-8">
-      <div className="flex justify-between relative">
-        {/* Progress bar background */}
-        <div className="absolute left-0 right-0 top-1/2 h-0.5 bg-muted -translate-y-1/2" />
-        {/* Active progress bar */}
-        <div 
-          className="absolute left-0 top-1/2 h-0.5 bg-primary -translate-y-1/2 transition-all duration-300" 
-          style={{ 
-            width: `${((step - 1) / (steps.length - 1)) * 100}%`
-          }} 
-        />
-
-        {steps.map((s, i) => (
-          <div 
-            key={s.id}
-            className="relative"
-            onClick={() => setStep(s.id)}
-          >
-            <div 
-              className={`
-                w-8 h-8 rounded-full flex items-center justify-center 
-                ${step > s.id ? 'bg-primary text-primary-foreground border-primary' : 
-                  step === s.id ? 'bg-primary text-primary-foreground border-primary' : 
-                  'bg-background border-muted-foreground text-muted-foreground'} 
-                border-2 cursor-pointer transition-colors relative z-10
-              `}
+    <div className="w-full">
+      <div className="relative h-16 bg-muted/10">
+        <div className="absolute inset-0 flex justify-between items-center px-8">
+          {steps.map((s, i) => (
+            <div
+              key={s.id}
+              className="flex items-center cursor-pointer"
+              onClick={() => setStep(s.id)}
             >
-              {step > s.id ? (
-                <CheckCircle2 className="w-5 h-5" />
-              ) : (
-                s.id
-              )}
+              <div className={`text-sm ${step === s.id ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
+                Step {s.id} | {s.name}
+              </div>
             </div>
-            <div className={`
-              absolute top-full mt-2 left-1/2 -translate-x-1/2 whitespace-nowrap text-sm font-medium
-              ${step >= s.id ? 'text-primary' : 'text-muted-foreground'}
-            `}>
-              {s.name}
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
