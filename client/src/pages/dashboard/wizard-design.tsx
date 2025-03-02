@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import Canvas2D from "@/components/sketch/Canvas2D";
 import { cn } from "@/lib/utils";
 import AirEntryDialog from "@/components/sketch/AirEntryDialog";
 import Canvas3D from "@/components/sketch/Canvas3D";
+import { useRoomStore } from "@/lib/store/room-store";
 
 interface Point {
   x: number;
@@ -23,17 +24,6 @@ interface Line {
   end: Point;
 }
 
-interface AirEntry {
-  type: 'window' | 'door' | 'vent';
-  position: Point;
-  dimensions: {
-    width: number;
-    height: number;
-    distanceToFloor?: number;
-  };
-  line: Line;
-}
-
 const calculateNormal = (line: Line | null): { x: number; y: number } => {
   if (!line) return { x: 0, y: 0 };
   const dx = line.end.x - line.start.x;
@@ -41,9 +31,6 @@ const calculateNormal = (line: Line | null): { x: number; y: number } => {
   const mag = Math.sqrt(dx * dx + dy * dy);
   return { x: -dy / mag, y: dx / mag };
 };
-
-
-const STORAGE_KEY = 'room-designer-state';
 
 export default function WizardDesign() {
   const [step, setStep] = useState(1);
@@ -54,99 +41,11 @@ export default function WizardDesign() {
   const { toast } = useToast();
   const [isAirEntryDialogOpen, setIsAirEntryDialogOpen] = useState(false);
   const [selectedLine, setSelectedLine] = useState<Line | null>(null);
-  const [airEntries, setAirEntries] = useState<AirEntry[]>([]);
   const [clickedPoint, setClickedPoint] = useState<Point | null>(null);
-  const [lines, setLines] = useState<Line[]>([]);
   const [tab, setTab] = useState<"2d-editor" | "3d-preview">("2d-editor");
-  const [hasClosedContour, setHasClosedContour] = useState(false);
 
-  // Load saved state on component mount
-  useEffect(() => {
-    try {
-      const savedState = localStorage.getItem(STORAGE_KEY);
-      if (savedState) {
-        const state = JSON.parse(savedState);
-        setLines(state.lines || []);
-        setAirEntries(state.airEntries || []);
-        setHasClosedContour(state.hasClosedContour || false);
-        console.log('Loaded saved state:', state);
-      }
-    } catch (error) {
-      console.error('Error loading saved state:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load saved room layout",
-        variant: "destructive",
-      });
-    }
-  }, []); // Empty dependency array means this runs once on mount
-
-  // Save state effect (existing code)
-  useEffect(() => {
-    if (lines.length > 0 || airEntries.length > 0) {
-      try {
-        const state = {
-          lines,
-          airEntries,
-          hasClosedContour
-        };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        console.log('Saved state:', state);
-      } catch (error) {
-        console.error('Error saving state:', error);
-        toast({
-          title: "Error",
-          description: "Failed to save room layout",
-          variant: "destructive",
-        });
-      }
-    }
-  }, [lines, airEntries, hasClosedContour]);
-
-  const isInClosedContour = (point: Point, lines: Line[]): boolean => {
-    const visited = new Set<string>();
-    const pointKey = (p: Point) => `${p.x},${p.y}`;
-
-    const findPath = (current: Point, steps: number): boolean => {
-      if (steps >= 3 && arePointsClose(current, point)) {
-        return true;
-      }
-
-      const connectedLines = findConnectedLines(current, lines);
-
-      for (const line of connectedLines) {
-        const nextPoint = arePointsClose(line.start, current) ? line.end : line.start;
-        const key = pointKey(nextPoint);
-
-        if (visited.has(key) && !(arePointsClose(nextPoint, point) && steps >= 3)) {
-          continue;
-        }
-
-        visited.add(key);
-        if (findPath(nextPoint, steps + 1)) {
-          return true;
-        }
-        visited.delete(key);
-      }
-
-      return false;
-    };
-
-    visited.add(pointKey(point));
-    return findPath(point, 0);
-  };
-
-  const findConnectedLines = (point: Point, lines: Line[]): Line[] => {
-    return lines.filter(line =>
-      arePointsClose(line.start, point) || arePointsClose(line.end, point)
-    );
-  };
-
-  const arePointsClose = (p1: Point, p2: Point): boolean => {
-    const dx = p1.x - p2.x;
-    const dy = p1.y - p2.y;
-    return Math.sqrt(dx * dx + dy * dy) < 15; // Snap distance
-  };
+  // Use the global room store
+  const { lines, airEntries, hasClosedContour, setLines, setAirEntries, setHasClosedContour } = useRoomStore();
 
   const steps = [
     { id: 1, name: "Upload" },
@@ -524,6 +423,51 @@ export default function WizardDesign() {
       </Card>
     </div>
   );
+
+  const isInClosedContour = (point: Point, lines: Line[]): boolean => {
+    const visited = new Set<string>();
+    const pointKey = (p: Point) => `${p.x},${p.y}`;
+
+    const findPath = (current: Point, steps: number): boolean => {
+      if (steps >= 3 && arePointsClose(current, point)) {
+        return true;
+      }
+
+      const connectedLines = findConnectedLines(current, lines);
+
+      for (const line of connectedLines) {
+        const nextPoint = arePointsClose(line.start, current) ? line.end : line.start;
+        const key = pointKey(nextPoint);
+
+        if (visited.has(key) && !(arePointsClose(nextPoint, point) && steps >= 3)) {
+          continue;
+        }
+
+        visited.add(key);
+        if (findPath(nextPoint, steps + 1)) {
+          return true;
+        }
+        visited.delete(key);
+      }
+
+      return false;
+    };
+
+    visited.add(pointKey(point));
+    return findPath(point, 0);
+  };
+
+  const findConnectedLines = (point: Point, lines: Line[]): Line[] => {
+    return lines.filter(line =>
+      arePointsClose(line.start, point) || arePointsClose(line.end, point)
+    );
+  };
+
+  const arePointsClose = (p1: Point, p2: Point): boolean => {
+    const dx = p1.x - p2.x;
+    const dy = p1.y - p2.y;
+    return Math.sqrt(dx * dx + dy * dy) < 15; // Snap distance
+  };
 
 
   return (
