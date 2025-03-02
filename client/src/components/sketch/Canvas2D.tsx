@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import { Minus, Plus, Move } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface Point {
   x: number;
@@ -18,6 +20,9 @@ interface Canvas2DProps {
 const POINT_RADIUS = 4;
 const SNAP_DISTANCE = 15;
 const PIXELS_TO_CM = 25 / 20; // 20 pixels = 25 cm
+const MIN_ZOOM = 0.25;
+const MAX_ZOOM = 4;
+const ZOOM_STEP = 0.1;
 
 export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -27,6 +32,61 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
   const [currentLine, setCurrentLine] = useState<Line | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [highlightedLines, setHighlightedLines] = useState<Line[]>([]);
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
+  const [lastPanPoint, setLastPanPoint] = useState<Point | null>(null);
+
+  // Zoom control functions
+  const handleZoomIn = () => {
+    setZoom(prev => Math.min(prev + ZOOM_STEP, MAX_ZOOM));
+  };
+
+  const handleZoomOut = () => {
+    setZoom(prev => Math.max(prev - ZOOM_STEP, MIN_ZOOM));
+  };
+
+  const handleWheel = (e: WheelEvent) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
+      setZoom(prev => Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, prev + delta)));
+    }
+  };
+
+  // Pan control functions
+  const handlePanStart = (e: MouseEvent) => {
+    if (e.button === 2) { // Right click
+      e.preventDefault();
+      setIsPanning(true);
+      setLastPanPoint({ x: e.clientX, y: e.clientY });
+    }
+  };
+
+  const handlePanMove = (e: MouseEvent) => {
+    if (isPanning && lastPanPoint) {
+      const dx = e.clientX - lastPanPoint.x;
+      const dy = e.clientY - lastPanPoint.y;
+      setPan(prev => ({ x: prev.x + dx, y: prev.y + dy }));
+      setLastPanPoint({ x: e.clientX, y: e.clientY });
+    }
+  };
+
+  const handlePanEnd = () => {
+    setIsPanning(false);
+    setLastPanPoint(null);
+  };
+
+  // Transform point from screen to canvas coordinates
+  const screenToCanvas = (point: Point): Point => {
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (!rect) return point;
+
+    return {
+      x: (point.x - rect.left - pan.x) / zoom,
+      y: (point.y - rect.top - pan.y) / zoom
+    };
+  };
 
   // Convert pixels to centimeters
   const pixelsToCm = (pixels: number): number => {
@@ -244,6 +304,11 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       // Clear canvas
       ctx.clearRect(0, 0, dimensions.width, dimensions.height);
 
+      // Apply transform
+      ctx.save();
+      ctx.translate(pan.x, pan.y);
+      ctx.scale(zoom, zoom);
+
       // Calculate center points and grid offset
       const centerX = Math.round(dimensions.width / 2);
       const centerY = Math.round(dimensions.height / 2);
@@ -392,19 +457,30 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
         // Draw coordinate label
         drawCoordinateLabel(ctx, point, color);
       });
+      ctx.restore();
+
+      // Draw zoom controls (these are drawn without transform)
+      ctx.save();
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+      ctx.fillRect(dimensions.width - 100, dimensions.height - 30, 100, 30);
+      ctx.fillStyle = '#64748b';
+      ctx.font = '12px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${Math.round(zoom * 100)}%`, dimensions.width - 50, dimensions.height - 12);
+      ctx.restore();
     };
 
     // Add event listeners for drawing and erasing
     const handleMouseDown = (e: MouseEvent) => {
       if (currentTool === 'wall') {
-        const point = getCanvasPoint(e);
+        const point = screenToCanvas(getCanvasPoint(e));
         const nearestPoint = findNearestEndpoint(point);
         const startPoint = nearestPoint || snapToGrid(point);
 
         setCurrentLine({ start: startPoint, end: startPoint });
         setIsDrawing(true);
       } else if (currentTool === 'eraser') {
-        const point = getCanvasPoint(e);
+        const point = screenToCanvas(getCanvasPoint(e));
         const linesToErase = findLinesNearPoint(point);
         if (linesToErase.length > 0) {
           const remainingLines = lines.filter(line => !linesToErase.includes(line));
@@ -418,13 +494,13 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       if (currentTool === 'wall') {
         if (!isDrawing || !currentLine) return;
 
-        const point = getCanvasPoint(e);
+        const point = screenToCanvas(getCanvasPoint(e));
         const nearestPoint = findNearestEndpoint(point);
         const endPoint = nearestPoint || snapToGrid(point);
 
         setCurrentLine({ ...currentLine, end: endPoint });
       } else if (currentTool === 'eraser') {
-        const point = getCanvasPoint(e);
+        const point = screenToCanvas(getCanvasPoint(e));
         const linesToErase = findLinesNearPoint(point);
         setHighlightedLines(linesToErase);
       }
@@ -453,6 +529,12 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
     canvas.addEventListener('mousemove', handleMouseMove);
     canvas.addEventListener('mouseup', handleMouseUp);
     canvas.addEventListener('mouseleave', handleMouseLeave);
+    canvas.addEventListener('wheel', handleWheel);
+    canvas.addEventListener('mousedown', handlePanStart);
+    canvas.addEventListener('mousemove', handlePanMove);
+    canvas.addEventListener('mouseup', handlePanEnd);
+    canvas.addEventListener('mouseleave', handlePanEnd);
+    canvas.addEventListener('contextmenu', e => e.preventDefault());
 
     // Start animation loop
     let animationFrameId: number;
@@ -468,18 +550,48 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       canvas.removeEventListener('mousemove', handleMouseMove);
       canvas.removeEventListener('mouseup', handleMouseUp);
       canvas.removeEventListener('mouseleave', handleMouseLeave);
+      canvas.removeEventListener('wheel', handleWheel);
+      canvas.removeEventListener('mousedown', handlePanStart);
+      canvas.removeEventListener('mousemove', handlePanMove);
+      canvas.removeEventListener('mouseup', handlePanEnd);
+      canvas.removeEventListener('mouseleave', handlePanEnd);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines]);
+  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan]);
 
   return (
-    <div ref={containerRef} className="w-full h-full">
+    <div ref={containerRef} className="w-full h-full relative">
       <canvas
         ref={canvasRef}
         width={dimensions.width}
         height={dimensions.height}
         className="w-full h-full"
       />
+      <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-white/80 p-2 rounded-lg shadow">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={handleZoomOut}
+          disabled={zoom <= MIN_ZOOM}
+          className="h-8 w-8"
+        >
+          <Minus className="h-4 w-4" />
+        </Button>
+        <span className="text-sm font-medium w-16 text-center">
+          {Math.round(zoom * 100)}%
+        </span>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={handleZoomIn}
+          disabled={zoom >= MAX_ZOOM}
+          className="h-8 w-8"
+        >
+          <Plus className="h-4 w-4" />
+        </Button>
+        <div className="w-px h-6 bg-border mx-2" />
+        <Move className="h-4 w-4 text-muted-foreground" />
+      </div>
     </div>
   );
 }
