@@ -9,6 +9,7 @@ import Simulations from "@/pages/dashboard/simulations";
 import Settings from "@/pages/dashboard/settings";
 import Profile from "@/pages/dashboard/profile";
 import NewSimulation from "@/pages/dashboard/new-simulation";
+import WizardDesign from "@/pages/dashboard/wizard-design";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { ProtectedRoute } from "@/lib/protected-route";
@@ -30,6 +31,11 @@ function Router() {
       <Route path="/dashboard/new-simulation">
         <ProtectedRoute>
           <NewSimulation />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/dashboard/wizard-design">
+        <ProtectedRoute>
+          <WizardDesign />
         </ProtectedRoute>
       </Route>
       <Route path="/dashboard/settings">
