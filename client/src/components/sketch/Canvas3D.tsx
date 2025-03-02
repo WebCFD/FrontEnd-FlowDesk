@@ -100,6 +100,16 @@ const createRoomPerimeter = (lines: Line[]): Point[] => {
   return perimeter;
 };
 
+const calculateNormal = (line: Line): Point => {
+  const dx = line.end.x - line.start.x;
+  const dy = line.end.y - line.start.y;
+  const length = Math.sqrt(dx * dx + dy * dy);
+  return {
+    x: -dy / length,  
+    y: dx / length   
+  };
+};
+
 export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canvas3DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -298,7 +308,7 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       const start_top = transform2DTo3D(line.start, ROOM_HEIGHT);
       const end_top = transform2DTo3D(line.end, ROOM_HEIGHT);
 
-      // Calculate and log wall normal
+      // Calculate and log wall normal using corrected calculation
       const wallNormal = calculateNormal(line);
       console.log('Wall normal vector:', {
         start: `(${line.start.x}, ${line.start.y})`,
@@ -374,7 +384,7 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
         zPosition = entry.dimensions.distanceToFloor || 0;
       }
 
-      // Calculate wall normal vector
+      // Calculate wall normal using corrected calculation
       const entryNormal = calculateNormal(entry.line);
       const angle = Math.atan2(entryNormal.y, entryNormal.x);
 
@@ -431,16 +441,6 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
     });
 
   }, [lines, airEntries]);
-
-  const calculateNormal = (line: Line): { x: number; y: number } => {
-    const dx = line.end.x - line.start.x;
-    const dy = line.end.y - line.start.y;
-    const length = Math.sqrt(dx * dx + dy * dy);
-    return {
-      x: dx / length,
-      y: dy / length
-    };
-  };
 
   return <div ref={containerRef} style={{ height }} />;
 }
