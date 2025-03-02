@@ -33,55 +33,12 @@ interface Canvas2DProps {
   onLinesUpdate?: (lines: Line[]) => void;
 }
 
-const POINT_RADIUS = 4;
-const SNAP_DISTANCE = 15;
-const PIXELS_TO_CM = 25 / 20; // 25cm = 20px ratio
-const MIN_ZOOM = 0.25;
-const MAX_ZOOM = 4;
-const ZOOM_STEP = 0.1;
-const GRID_RANGE = 2000;
-
-const cmToPixels = (cm: number): number => {
-  return cm / PIXELS_TO_CM;
-};
-
-const pixelsToCm = (pixels: number): number => {
-  return pixels * PIXELS_TO_CM;
-};
-
-// Utility functions that don't need dimensions can stay outside
-const calculateNormal = (line: Line): Point => {
-  const dx = line.end.x - line.start.x;
-  const dy = line.end.y - line.start.y;
-  const length = Math.sqrt(dx * dx + dy * dy);
-  return {
-    x: dx / length,
-    y: dy / length
-  };
-};
-
-const getPointOnLine = (line: Line, point: Point): Point => {
-  const dx = line.end.x - line.start.x;
-  const dy = line.end.y - line.start.y;
-  const len2 = dx * dx + dy * dy;
-
-  if (len2 === 0) return line.start;
-
-  const t = ((point.x - line.start.x) * dx + (point.y - line.start.y) * dy) / len2;
-  const tt = Math.max(0, Math.min(1, t));
-
-  return {
-    x: line.start.x + tt * dx,
-    y: line.start.y + tt * dy
-  };
-};
-
 export default function Canvas2D({
   gridSize,
   currentTool,
   currentAirEntry,
   onLineSelect,
-  airEntries,
+  airEntries = [], // Add default empty array
   onLinesUpdate
 }: Canvas2DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -365,7 +322,6 @@ export default function Canvas2D({
     return colors[type];
   };
 
-  // Move these functions inside the component where they have access to dimensions
   const getRelativeCoordinates = (point: Point): { x: number; y: number } => {
     const centerX = dimensions.width / 2;
     const centerY = dimensions.height / 2;
@@ -385,7 +341,6 @@ export default function Canvas2D({
     ctx.fillText(`(${coords.x}, ${coords.y})`, point.x + 8, point.y - 8);
   };
 
-  // Modified drawAirEntry function to use correct segment lengths
   const drawAirEntry = (ctx: CanvasRenderingContext2D, entry: AirEntry) => {
     const normal = calculateNormal(entry.line);
     const color = getAirEntryColor(entry.type);
@@ -603,7 +558,6 @@ export default function Canvas2D({
       }
     };
 
-    // Modified handleMouseUp to log wall normals when created
     const handleMouseUp = (e: MouseEvent) => {
       if (panMode || e.button === 2) {
         handlePanEnd();
@@ -737,3 +691,45 @@ export default function Canvas2D({
     </div>
   );
 }
+
+const POINT_RADIUS = 4;
+const SNAP_DISTANCE = 15;
+const PIXELS_TO_CM = 25 / 20; // 25cm = 20px ratio
+const MIN_ZOOM = 0.25;
+const MAX_ZOOM = 4;
+const ZOOM_STEP = 0.1;
+const GRID_RANGE = 2000;
+
+const cmToPixels = (cm: number): number => {
+  return cm / PIXELS_TO_CM;
+};
+
+const pixelsToCm = (pixels: number): number => {
+  return pixels * PIXELS_TO_CM;
+};
+
+const calculateNormal = (line: Line): Point => {
+  const dx = line.end.x - line.start.x;
+  const dy = line.end.y - line.start.y;
+  const length = Math.sqrt(dx * dx + dy * dy);
+  return {
+    x: dx / length,
+    y: dy / length
+  };
+};
+
+const getPointOnLine = (line: Line, point: Point): Point => {
+  const dx = line.end.x - line.start.x;
+  const dy = line.end.y - line.start.y;
+  const len2 = dx * dx + dy * dy;
+
+  if (len2 === 0) return line.start;
+
+  const t = ((point.x - line.start.x) * dx + (point.y - line.start.y) * dy) / len2;
+  const tt = Math.max(0, Math.min(1, t));
+
+  return {
+    x: line.start.x + tt * dx,
+    y: line.start.y + tt * dy
+  };
+};
