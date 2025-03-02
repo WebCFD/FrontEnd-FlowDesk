@@ -35,11 +35,13 @@ const GRID_SIZE = 1000; // Size of the grid in cm
 const GRID_DIVISIONS = 40; // Number of divisions in the grid
 
 const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
-  return new THREE.Vector3(
+  const vector = new THREE.Vector3(
     -point.x,    // Negate X to match 2D coordinate system
     -point.y,    // Invert Y coordinate
     height      // Z coordinate (height)
   );
+  console.log(`Transform 2D(${point.x}, ${point.y}) → 3D(${vector.x}, ${vector.y}, ${vector.z})`);
+  return vector;
 };
 
 export default function Canvas3D({ lines, airEntries, height = 600 }: Canvas3DProps) {
