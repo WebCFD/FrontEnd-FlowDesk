@@ -93,10 +93,10 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
     if (!canvas) return { x: 0, y: 0 };
 
     const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX - rect.left - pan.x) / zoom;
-    const y = (e.clientY - rect.top - pan.y) / zoom;
-
-    return { x, y };
+    return {
+      x: (e.clientX - rect.left - pan.x) / zoom,
+      y: (e.clientY - rect.top - pan.y) / zoom
+    };
   };
 
   // Convert pixels to centimeters
