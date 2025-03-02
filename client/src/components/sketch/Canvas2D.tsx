@@ -562,7 +562,9 @@ export default function Canvas2D({
         const nearestPoint = findNearestEndpoint(clickPoint);
         const startPoint = nearestPoint || snapToGrid(clickPoint);
         const coords = getRelativeCoordinates(startPoint);
-        console.log(`Starting wall line at - Screen: (${startPoint.x}, ${startPoint.y}), In cm: (${coords.x}, ${coords.y})`);
+        console.log(`Starting wall line at - Screen: (${startPoint.x}, ${startPoint.y})`);
+        console.log(`Relative to center: (${startPoint.x - dimensions.width/2}, ${dimensions.height/2 - startPoint.y})`);
+        console.log(`In cm: (${coords.x}, ${coords.y})`);
         setCurrentLine({ start: startPoint, end: startPoint });
         setIsDrawing(true);
         setCursorPoint(startPoint);

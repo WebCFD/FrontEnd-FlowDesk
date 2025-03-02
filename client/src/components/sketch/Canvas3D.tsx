@@ -42,14 +42,19 @@ const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
 
   // Calculate relative coordinates from center (similar to 2D view)
   const relativeX = point.x - centerX;
-  const relativeY = centerY - point.y;
+  const relativeY = centerY - point.y; // Invert Y to match mathematical coordinates
 
   const vector = new THREE.Vector3(
-    -relativeX * PIXELS_TO_CM,    // Convert to cm and negate X to match 2D coordinate system
-    -relativeY * PIXELS_TO_CM,    // Convert to cm and invert Y coordinate
+    relativeX * PIXELS_TO_CM,    // Convert to cm and keep X direction
+    relativeY * PIXELS_TO_CM,    // Convert to cm and keep Y inverted
     height      // Z coordinate (height)
   );
-  console.log(`Transform 2D(${point.x}, ${point.y}) → 3D(${vector.x}, ${vector.y}, ${vector.z})`);
+
+  console.log('Transform 2D → 3D:');
+  console.log(`Screen coords: (${point.x}, ${point.y})`);
+  console.log(`Relative to center: (${relativeX}, ${relativeY})`);
+  console.log(`Final 3D (in cm): (${vector.x}, ${vector.y}, ${vector.z})`);
+
   return vector;
 };
 
