@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -42,6 +42,7 @@ const calculateNormal = (line: Line | null): { x: number; y: number } => {
   return { x: -dy / mag, y: dx / mag };
 };
 
+const STORAGE_KEY = 'room-designer-state';
 
 export default function WizardDesign() {
   const [step, setStep] = useState(1);
@@ -54,9 +55,29 @@ export default function WizardDesign() {
   const [selectedLine, setSelectedLine] = useState<Line | null>(null);
   const [airEntries, setAirEntries] = useState<AirEntry[]>([]);
   const [clickedPoint, setClickedPoint] = useState<Point | null>(null);
-  const [lines, setLines] = useState<Line[]>([]); // Added state for lines
+  const [lines, setLines] = useState<Line[]>([]);
   const [tab, setTab] = useState<"2d-editor" | "3d-preview">("2d-editor");
   const [hasClosedContour, setHasClosedContour] = useState(false);
+
+  // Load state from localStorage on component mount
+  useEffect(() => {
+    const savedState = localStorage.getItem(STORAGE_KEY);
+    if (savedState) {
+      const { lines, airEntries, hasClosedContour } = JSON.parse(savedState);
+      setLines(lines);
+      setAirEntries(airEntries);
+      setHasClosedContour(hasClosedContour);
+    }
+  }, []);
+
+  // Save state to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      lines,
+      airEntries,
+      hasClosedContour
+    }));
+  }, [lines, airEntries, hasClosedContour]);
 
   const isInClosedContour = (point: Point, lines: Line[]): boolean => {
     const visited = new Set<string>();
@@ -195,7 +216,8 @@ export default function WizardDesign() {
         line: selectedLine
       };
 
-      setAirEntries(prev => [...prev, newAirEntry]);
+      const newAirEntries = [...airEntries, newAirEntry];
+      setAirEntries(newAirEntries);
       setSelectedLine(null);
       setClickedPoint(null);
       setCurrentAirEntry(null);
