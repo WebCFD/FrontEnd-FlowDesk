@@ -4,6 +4,17 @@ import { LucideIcon, LayoutDashboard, Wind, Settings, User, LogOut, Wand2 } from
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
+import { useRoomStore } from "@/lib/store/room-store";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface SidebarItem {
   icon: LucideIcon;
@@ -44,6 +55,8 @@ export default function DashboardSidebar() {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const [userData, setUserData] = useState<{ username: string } | null>(null);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const { reset } = useRoomStore();
 
   useEffect(() => {
     async function fetchUserData() {
@@ -70,9 +83,12 @@ export default function DashboardSidebar() {
       });
 
       if (response.ok) {
+        // Clear room data
+        reset();
+
         toast({
           title: "Success!",
-          description: "You have been logged out.",
+          description: "You have been logged out. Your room design has been cleared.",
         });
         setLocation("/");
       } else {
@@ -126,7 +142,7 @@ export default function DashboardSidebar() {
             <Button
               variant="ghost"
               className="w-full justify-start gap-2 px-3"
-              onClick={handleLogout}
+              onClick={() => setShowLogoutDialog(true)}
             >
               <LogOut className="h-5 w-5" />
               Logout
@@ -134,6 +150,26 @@ export default function DashboardSidebar() {
           </div>
         </div>
       </nav>
+
+      <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Logout</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to logout? Your current room design will be cleared.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => {
+              setShowLogoutDialog(false);
+              handleLogout();
+            }}>
+              Logout
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
