@@ -60,6 +60,49 @@ export default function WizardDesign() {
   const [tab, setTab] = useState<"2d-editor" | "3d-preview">("2d-editor");
   const [hasClosedContour, setHasClosedContour] = useState(false);
 
+  // Load saved state on component mount
+  useEffect(() => {
+    try {
+      const savedState = localStorage.getItem(STORAGE_KEY);
+      if (savedState) {
+        const state = JSON.parse(savedState);
+        setLines(state.lines || []);
+        setAirEntries(state.airEntries || []);
+        setHasClosedContour(state.hasClosedContour || false);
+        console.log('Loaded saved state:', state);
+      }
+    } catch (error) {
+      console.error('Error loading saved state:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load saved room layout",
+        variant: "destructive",
+      });
+    }
+  }, []); // Empty dependency array means this runs once on mount
+
+  // Save state effect (existing code)
+  useEffect(() => {
+    if (lines.length > 0 || airEntries.length > 0) {
+      try {
+        const state = {
+          lines,
+          airEntries,
+          hasClosedContour
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        console.log('Saved state:', state);
+      } catch (error) {
+        console.error('Error saving state:', error);
+        toast({
+          title: "Error",
+          description: "Failed to save room layout",
+          variant: "destructive",
+        });
+      }
+    }
+  }, [lines, airEntries, hasClosedContour]);
+
   const isInClosedContour = (point: Point, lines: Line[]): boolean => {
     const visited = new Set<string>();
     const pointKey = (p: Point) => `${p.x},${p.y}`;
@@ -482,23 +525,6 @@ export default function WizardDesign() {
     </div>
   );
 
-
-  // Add save effect
-  useEffect(() => {
-    if (lines.length > 0 || airEntries.length > 0) {
-      try {
-        const state = {
-          lines,
-          airEntries,
-          hasClosedContour
-        };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        console.log('Saved state:', state);
-      } catch (error) {
-        console.error('Error saving state:', error);
-      }
-    }
-  }, [lines, airEntries, hasClosedContour]);
 
   return (
     <DashboardLayout>
