@@ -381,35 +381,19 @@ export default function Canvas2D({
     );
     ctx.stroke();
 
-    // Add type-specific visual indicators while keeping the thick segment
-    if (entry.type === 'vent') {
-      // Add small cross marks along the segment
-      const steps = 3;
-      for (let i = 1; i < steps; i++) {
-        const t = i / steps;
-        const x = entry.position.x + normal.x * entry.dimensions.width * t;
-        const y = entry.position.y + normal.y * entry.dimensions.width * t;
-        ctx.moveTo(x - 2 / zoom, y - 2 / zoom);
-        ctx.lineTo(x + 2 / zoom, y + 2 / zoom);
-        ctx.moveTo(x - 2 / zoom, y + 2 / zoom);
-        ctx.lineTo(x + 2 / zoom, y - 2 / zoom);
-      }
-      ctx.stroke();
-    } else if (entry.type === 'window') {
-      // Add small perpendicular lines at the ends
-      const perpX = -normal.y * 4 / zoom;
-      const perpY = normal.x * 4 / zoom;
+    // Add perpendicular lines at the ends for all types
+    const perpX = -normal.y * 4 / zoom;
+    const perpY = normal.x * 4 / zoom;
 
-      ctx.beginPath();
-      ctx.moveTo(entry.position.x - perpX, entry.position.y - perpY);
-      ctx.lineTo(entry.position.x + perpX, entry.position.y + perpY);
+    ctx.beginPath();
+    ctx.moveTo(entry.position.x - perpX, entry.position.y - perpY);
+    ctx.lineTo(entry.position.x + perpX, entry.position.y + perpY);
 
-      const endX = entry.position.x + normal.x * entry.dimensions.width;
-      const endY = entry.position.y + normal.y * entry.dimensions.width;
-      ctx.moveTo(endX - perpX, endY - perpY);
-      ctx.lineTo(endX + perpX, endY + perpY);
-      ctx.stroke();
-    }
+    const endX = entry.position.x + normal.x * entry.dimensions.width;
+    const endY = entry.position.y + normal.y * entry.dimensions.width;
+    ctx.moveTo(endX - perpX, endY - perpY);
+    ctx.lineTo(endX + perpX, endY + perpY);
+    ctx.stroke();
 
     ctx.restore();
   };
