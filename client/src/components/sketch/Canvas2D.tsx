@@ -228,37 +228,53 @@ export default function Canvas2D({
     );
   };
 
-  const isInClosedContour = (point: Point, lines:Line[]): boolean => {
-    const visited = new Set<string>();
-    const pointKey = (p: Point) => `${p.x},${p.y}`;
-
-    const findPath = (current: Point, steps: number): boolean => {
-      if (steps >= 3 && arePointsClose(current, point)) {
-        return true;
-      }
-
-      const connectedLines = findConnectedLines(current);
-
-      for (const line of connectedLines) {
-        const nextPoint = arePointsClose(line.start, current) ? line.end : line.start;
-        const key = pointKey(nextPoint);
-
-        if (visited.has(key) && !(arePointsClose(nextPoint, point) && steps >= 3)) {
-          continue;
-        }
-
-        visited.add(key);
-        if (findPath(nextPoint, steps + 1)) {
-          return true;
-        }
-        visited.delete(key);
-      }
-
-      return false;
+  const isInClosedContour = (point: Point, lines: Line[]): boolean => {
+    const arePointsEqual = (p1: Point, p2: Point): boolean => {
+      const dx = p1.x - p2.x;
+      const dy = p1.y - p2.y;
+      return Math.sqrt(dx * dx + dy * dy) < 5;
     };
 
-    visited.add(pointKey(point));
-    return findPath(point, 0);
+    const connectedLines = lines.filter(line =>
+      arePointsEqual(line.start, point) || arePointsEqual(line.end, point)
+    );
+
+    for (const startLine of connectedLines) {
+      const visited = new Set<string>();
+      const pointKey = (p: Point) => `${Math.round(p.x)},${Math.round(p.y)}`;
+      const stack: { point: Point; path: Line[] }[] = [{
+        point: arePointsEqual(startLine.start, point) ? startLine.end : startLine.start,
+        path: [startLine]
+      }];
+
+      while (stack.length > 0) {
+        const { point: currentPoint, path } = stack.pop()!;
+        const key = pointKey(currentPoint);
+
+        if (path.length >= 2 && arePointsEqual(currentPoint, point)) {
+          console.log('Found closed contour:', path);
+          return true;
+        }
+
+        if (visited.has(key)) continue;
+        visited.add(key);
+
+        const nextLines = lines.filter(line =>
+          !path.includes(line) &&
+          (arePointsEqual(line.start, currentPoint) || arePointsEqual(line.end, currentPoint))
+        );
+
+        for (const nextLine of nextLines) {
+          const nextPoint = arePointsEqual(nextLine.start, currentPoint) ? nextLine.end : nextLine.start;
+          stack.push({
+            point: nextPoint,
+            path: [...path, nextLine]
+          });
+        }
+      }
+    }
+
+    return false;
   };
 
   const findLinesNearPoint = (point: Point): Line[] => {
@@ -303,12 +319,12 @@ export default function Canvas2D({
   const gridSizeToCm = (pixels: number): number => pixels * PIXELS_TO_CM;
 
   const getHighlightColor = () => {
-    if (!currentAirEntry) return 'rgba(239, 68, 68, 0.5)'; // Default red
+    if (!currentAirEntry) return 'rgba(239, 68, 68, 0.5)';
 
     const colors = {
-      window: 'rgba(59, 130, 246, 0.5)', // Blue
-      door: 'rgba(180, 83, 9, 0.5)',     // Brown
-      vent: 'rgba(34, 197, 94, 0.5)'     // Green
+      window: 'rgba(59, 130, 246, 0.5)',
+      door: 'rgba(180, 83, 9, 0.5)',
+      vent: 'rgba(34, 197, 94, 0.5)'
     };
 
     return colors[currentAirEntry];
@@ -316,9 +332,9 @@ export default function Canvas2D({
 
   const getAirEntryColor = (type: 'window' | 'door' | 'vent'): string => {
     const colors = {
-      window: '#3b82f6', // Blue
-      door: '#b45309',   // Brown
-      vent: '#22c55e'    // Green
+      window: '#3b82f6',
+      door: '#b45309',
+      vent: '#22c55e'
     };
     return colors[type];
   };
@@ -327,7 +343,7 @@ export default function Canvas2D({
     const centerX = dimensions.width / 2;
     const centerY = dimensions.height / 2;
     const relativeX = point.x - centerX;
-    const relativeY = centerY - point.y; // Invert Y to match mathematical coordinates
+    const relativeY = centerY - point.y;
     return {
       x: Math.round(pixelsToCm(relativeX)),
       y: Math.round(pixelsToCm(relativeY))
@@ -348,15 +364,13 @@ export default function Canvas2D({
     console.log(`Drawing ${entry.type} at (${entry.position.x}, ${entry.position.y})`);
     console.log(`Normal vector: (${normal.x.toFixed(3)}, ${normal.y.toFixed(3)})`);
 
-    // Convert width from cm to pixels
     const widthInPixels = cmToPixels(entry.dimensions.width);
     const halfWidth = widthInPixels / 2;
 
     ctx.save();
     ctx.strokeStyle = color;
-    ctx.lineWidth = 4 / zoom; // Thick line for all types
+    ctx.lineWidth = 4 / zoom;
 
-    // Draw the segment centered on the position point
     ctx.beginPath();
     ctx.moveTo(
       entry.position.x - normal.x * halfWidth,
@@ -368,12 +382,10 @@ export default function Canvas2D({
     );
     ctx.stroke();
 
-    // Add perpendicular lines at the ends for all types
     const perpX = -normal.y * 4 / zoom;
     const perpY = normal.x * 4 / zoom;
 
     ctx.beginPath();
-    // Left end
     ctx.moveTo(
       entry.position.x - normal.x * halfWidth - perpX,
       entry.position.y - normal.y * halfWidth - perpY
@@ -382,7 +394,6 @@ export default function Canvas2D({
       entry.position.x - normal.x * halfWidth + perpX,
       entry.position.y - normal.y * halfWidth + perpY
     );
-    // Right end
     ctx.moveTo(
       entry.position.x + normal.x * halfWidth - perpX,
       entry.position.y + normal.y * halfWidth - perpY
@@ -410,7 +421,6 @@ export default function Canvas2D({
       ctx.translate(pan.x, pan.y);
       ctx.scale(zoom, zoom);
 
-      // Draw grid lines
       ctx.beginPath();
       ctx.strokeStyle = '#e2e8f0';
       ctx.lineWidth = 1 / zoom;
@@ -420,7 +430,6 @@ export default function Canvas2D({
       });
       ctx.stroke();
 
-      // Draw coordinate system
       const coordSystem = createCoordinateSystem();
       coordSystem.forEach((line, index) => {
         ctx.beginPath();
@@ -431,7 +440,6 @@ export default function Canvas2D({
         ctx.stroke();
       });
 
-      // Draw existing wall lines
       lines.forEach(line => {
         if (highlightedLines.includes(line)) {
           ctx.strokeStyle = getHighlightColor();
@@ -445,7 +453,6 @@ export default function Canvas2D({
         ctx.lineTo(line.end.x, line.end.y);
         ctx.stroke();
 
-        // Draw line length
         const midX = (line.start.x + line.end.x) / 2;
         const midY = (line.start.y + line.end.y) / 2;
         const length = Math.round(getLineLength(line));
@@ -454,7 +461,6 @@ export default function Canvas2D({
         ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
       });
 
-      // Draw current line while drawing
       if (currentLine) {
         ctx.beginPath();
         ctx.strokeStyle = '#000000';
@@ -469,12 +475,10 @@ export default function Canvas2D({
         ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
       }
 
-      // Draw air entries
       airEntries.forEach(entry => {
         drawAirEntry(ctx, entry);
       });
 
-      // Draw points
       const endpoints = [...new Set(lines.flatMap(line => [line.start, line.end]))];
       endpoints.forEach(point => {
         const connections = findConnectedLines(point).length;
@@ -483,7 +487,7 @@ export default function Canvas2D({
         if (connections > 1) {
           if (isInClosedContour(point, lines)) {
             color = '#22c55e';
-            console.log('Found vertex in closed contour:', point);
+            console.log('Vertex color set to green:', point);
           } else {
             color = '#3b82f6';
           }
@@ -694,7 +698,7 @@ export default function Canvas2D({
 
 const POINT_RADIUS = 4;
 const SNAP_DISTANCE = 15;
-const PIXELS_TO_CM = 25 / 20; // 25cm = 20px ratio
+const PIXELS_TO_CM = 25 / 20;
 const MIN_ZOOM = 0.25;
 const MAX_ZOOM = 4;
 const ZOOM_STEP = 0.1;
