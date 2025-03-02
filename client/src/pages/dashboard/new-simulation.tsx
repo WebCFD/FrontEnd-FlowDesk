@@ -116,7 +116,7 @@ export default function NewSimulation() {
 
                   {/* Canvas Area */}
                   <div className="flex-1 border rounded-lg overflow-hidden">
-                    <Canvas2D gridSize={gridSize} />
+                    <Canvas2D gridSize={gridSize} currentTool={currentTool} />
                   </div>
                 </div>
               </TabsContent>
