@@ -35,9 +35,18 @@ const GRID_SIZE = 1000; // Size of the grid in cm
 const GRID_DIVISIONS = 40; // Number of divisions in the grid
 
 const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
+  // Get the base dimensions for center calculation
+  const dimensions = { width: 800, height: 600 }; // Default dimensions
+  const centerX = dimensions.width / 2;
+  const centerY = dimensions.height / 2;
+
+  // Calculate relative coordinates from center (similar to 2D view)
+  const relativeX = point.x - centerX;
+  const relativeY = centerY - point.y;
+
   const vector = new THREE.Vector3(
-    -point.x * PIXELS_TO_CM,    // Convert to cm and negate X to match 2D coordinate system
-    -point.y * PIXELS_TO_CM,    // Convert to cm and invert Y coordinate
+    -relativeX * PIXELS_TO_CM,    // Convert to cm and negate X to match 2D coordinate system
+    -relativeY * PIXELS_TO_CM,    // Convert to cm and invert Y coordinate
     height      // Z coordinate (height)
   );
   console.log(`Transform 2D(${point.x}, ${point.y}) → 3D(${vector.x}, ${vector.y}, ${vector.z})`);
