@@ -13,11 +13,23 @@ interface Line {
   end: Point;
 }
 
+interface AirEntry {
+  type: 'window' | 'door' | 'vent';
+  position: Point;
+  dimensions: {
+    width: number;
+    height: number;
+    distanceToFloor?: number;
+  };
+  line: Line;
+}
+
 interface Canvas2DProps {
   gridSize: number;
   currentTool: 'wall' | 'eraser' | null;
   currentAirEntry: 'vent' | 'door' | 'window' | null;
-  onLineSelect?: (line: Line) => void;
+  onLineSelect?: (line: Line, clickPoint: Point) => void;
+  airEntries: AirEntry[];
 }
 
 const POINT_RADIUS = 4;
@@ -28,7 +40,24 @@ const MAX_ZOOM = 4;
 const ZOOM_STEP = 0.1;
 const GRID_RANGE = 2000;
 
-export default function Canvas2D({ gridSize, currentTool, currentAirEntry, onLineSelect }: Canvas2DProps) {
+// Utility function to calculate the normal vector of a line
+const calculateNormal = (line: Line): Point => {
+  const dx = line.end.x - line.start.x;
+  const dy = line.end.y - line.start.y;
+  const length = Math.sqrt(dx * dx + dy * dy);
+  return {
+    x: -dy / length,
+    y: dx / length
+  };
+};
+
+export default function Canvas2D({ 
+  gridSize, 
+  currentTool, 
+  currentAirEntry, 
+  onLineSelect,
+  airEntries 
+}: Canvas2DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
@@ -323,6 +352,72 @@ export default function Canvas2D({ gridSize, currentTool, currentAirEntry, onLin
   };
 
 
+  const getAirEntryColor = (type: 'window' | 'door' | 'vent'): string => {
+    const colors = {
+      window: '#3b82f6', // Blue
+      door: '#b45309',   // Brown
+      vent: '#22c55e'    // Green
+    };
+    return colors[type];
+  };
+
+  // Add function to draw air entries
+  const drawAirEntry = (ctx: CanvasRenderingContext2D, entry: AirEntry) => {
+    const normal = calculateNormal(entry.line);
+    const color = getAirEntryColor(entry.type);
+
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = 2 / zoom;
+
+    // Draw based on type
+    if (entry.type === 'door') {
+      // Draw door as thick line
+      ctx.lineWidth = 4 / zoom;
+      ctx.beginPath();
+      ctx.moveTo(entry.position.x, entry.position.y);
+      ctx.lineTo(
+        entry.position.x + normal.x * entry.dimensions.width,
+        entry.position.y + normal.y * entry.dimensions.width
+      );
+      ctx.stroke();
+    } else {
+      // Draw window or vent as rectangle
+      const width = entry.dimensions.width;
+      const height = entry.dimensions.height;
+
+      ctx.beginPath();
+      ctx.rect(
+        entry.position.x - width/2,
+        entry.position.y - height/2,
+        width,
+        height
+      );
+
+      if (entry.type === 'vent') {
+        // Add grid pattern for vent
+        ctx.fill();
+        ctx.stroke();
+
+        // Draw grid lines
+        ctx.beginPath();
+        for (let i = 1; i < 3; i++) {
+          ctx.moveTo(entry.position.x - width/2 + (width/3)*i, entry.position.y - height/2);
+          ctx.lineTo(entry.position.x - width/2 + (width/3)*i, entry.position.y + height/2);
+          ctx.moveTo(entry.position.x - width/2, entry.position.y - height/2 + (height/3)*i);
+          ctx.lineTo(entry.position.x + width/2, entry.position.y - height/2 + (height/3)*i);
+        }
+        ctx.stroke();
+      } else {
+        // Window just gets outline
+        ctx.stroke();
+      }
+    }
+
+    ctx.restore();
+  };
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -337,6 +432,7 @@ export default function Canvas2D({ gridSize, currentTool, currentAirEntry, onLin
       ctx.translate(pan.x, pan.y);
       ctx.scale(zoom, zoom);
 
+      // Draw grid lines
       ctx.beginPath();
       ctx.strokeStyle = '#e2e8f0';
       ctx.lineWidth = 1 / zoom;
@@ -346,6 +442,7 @@ export default function Canvas2D({ gridSize, currentTool, currentAirEntry, onLin
       });
       ctx.stroke();
 
+      // Draw coordinate system
       const coordSystem = createCoordinateSystem();
       coordSystem.forEach((line, index) => {
         ctx.beginPath();
@@ -356,22 +453,7 @@ export default function Canvas2D({ gridSize, currentTool, currentAirEntry, onLin
         ctx.stroke();
       });
 
-      const centerX = dimensions.width / 2;
-      const centerY = dimensions.height / 2;
-
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, 4 / zoom, 0, 2 * Math.PI);
-      ctx.fillStyle = '#94a3b8';
-      ctx.fill();
-
-      ctx.fillStyle = '#64748b';
-      ctx.font = `${12 / zoom}px sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.fillText('(0,0)', centerX + 15 / zoom, centerY + 15 / zoom);
-      ctx.fillText('X', centerX + 150 - 10 / zoom, centerY - 10 / zoom);
-      ctx.fillText('Y', centerX + 10 / zoom, centerY - 150 + 10 / zoom);
-
-
+      // Draw existing wall lines
       lines.forEach(line => {
         if (highlightedLines.includes(line)) {
           ctx.strokeStyle = getHighlightColor();
@@ -385,6 +467,7 @@ export default function Canvas2D({ gridSize, currentTool, currentAirEntry, onLin
         ctx.lineTo(line.end.x, line.end.y);
         ctx.stroke();
 
+        // Draw line length
         const midX = (line.start.x + line.end.x) / 2;
         const midY = (line.start.y + line.end.y) / 2;
         const length = Math.round(getLineLength(line));
@@ -393,6 +476,7 @@ export default function Canvas2D({ gridSize, currentTool, currentAirEntry, onLin
         ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
       });
 
+      // Draw current line while drawing
       if (currentLine) {
         ctx.beginPath();
         ctx.strokeStyle = '#000000';
@@ -407,6 +491,12 @@ export default function Canvas2D({ gridSize, currentTool, currentAirEntry, onLin
         ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
       }
 
+      // Draw air entries
+      airEntries.forEach(entry => {
+        drawAirEntry(ctx, entry);
+      });
+
+      // Draw points
       const endpoints = [...new Set(lines.flatMap(line => [line.start, line.end]))];
       endpoints.forEach(point => {
         const connections = findConnectedLines(point).length;
@@ -444,25 +534,24 @@ export default function Canvas2D({ gridSize, currentTool, currentAirEntry, onLin
         return;
       }
 
+      const clickPoint = getCanvasPoint(e);
+
       if (currentTool === 'wall') {
-        const point = getCanvasPoint(e);
-        const nearestPoint = findNearestEndpoint(point);
-        const startPoint = nearestPoint || snapToGrid(point);
+        const nearestPoint = findNearestEndpoint(clickPoint);
+        const startPoint = nearestPoint || snapToGrid(clickPoint);
         setCurrentLine({ start: startPoint, end: startPoint });
         setIsDrawing(true);
         setCursorPoint(startPoint);
       } else if (currentTool === 'eraser') {
-        const point = getCanvasPoint(e);
-        const linesToErase = findLinesNearPoint(point);
+        const linesToErase = findLinesNearPoint(clickPoint);
         if (linesToErase.length > 0) {
           setLines(prev => prev.filter(line => !linesToErase.includes(line)));
           setHighlightedLines([]);
         }
       } else if (currentAirEntry && onLineSelect) {
-        const point = getCanvasPoint(e);
-        const selectedLines = findLinesNearPoint(point);
+        const selectedLines = findLinesNearPoint(clickPoint);
         if (selectedLines.length > 0) {
-          onLineSelect(selectedLines[0]);
+          onLineSelect(selectedLines[0], clickPoint);
         }
       }
     };
@@ -532,7 +621,7 @@ export default function Canvas2D({ gridSize, currentTool, currentAirEntry, onLin
       canvas.removeEventListener('contextmenu', e => e.preventDefault());
       cancelAnimationFrame(animationFrameId);
     };
-  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode, cursorPoint, currentAirEntry, onLineSelect]);
+  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode, cursorPoint, currentAirEntry, onLineSelect, airEntries]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, '');
