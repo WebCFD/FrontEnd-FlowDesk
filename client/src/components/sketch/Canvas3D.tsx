@@ -150,7 +150,7 @@ export default function Canvas3D({ lines, airEntries, height = 600 }: Canvas3DPr
     gridHelper.material.transparent = true;
     sceneRef.current.add(gridHelper);
 
-    // Add floor surface
+    // Add floor surface at Z=0
     const floorGeometry = new THREE.PlaneGeometry(GRID_SIZE, GRID_SIZE);
     const floorMaterial = new THREE.MeshPhongMaterial({
       color: 0x808080, // Medium gray
@@ -159,11 +159,10 @@ export default function Canvas3D({ lines, airEntries, height = 600 }: Canvas3DPr
       side: THREE.DoubleSide,
     });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.rotation.x = -Math.PI / 2; // Rotate to lie flat on XY plane
-    floor.position.set(0, 0, 0);
+    floor.position.set(0, 0, 0); // Place at Z=0
     sceneRef.current.add(floor);
 
-    // Add roof surface
+    // Add roof surface at Z=ROOM_HEIGHT
     const roofGeometry = new THREE.PlaneGeometry(GRID_SIZE, GRID_SIZE);
     const roofMaterial = new THREE.MeshPhongMaterial({
       color: 0xE0E0E0, // Light gray
@@ -172,8 +171,7 @@ export default function Canvas3D({ lines, airEntries, height = 600 }: Canvas3DPr
       side: THREE.DoubleSide,
     });
     const roof = new THREE.Mesh(roofGeometry, roofMaterial);
-    roof.rotation.x = -Math.PI / 2; // Same rotation as floor
-    roof.position.set(0, 0, ROOM_HEIGHT);
+    roof.position.set(0, 0, ROOM_HEIGHT); // Place at Z=ROOM_HEIGHT
     sceneRef.current.add(roof);
 
     // Add ambient and directional lights back
