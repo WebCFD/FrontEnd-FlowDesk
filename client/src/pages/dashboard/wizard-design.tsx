@@ -59,24 +59,31 @@ export default function WizardDesign() {
   const [tab, setTab] = useState<"2d-editor" | "3d-preview">("2d-editor");
   const [hasClosedContour, setHasClosedContour] = useState(false);
 
-  // Load state from localStorage on component mount
   useEffect(() => {
     const savedState = localStorage.getItem(STORAGE_KEY);
     if (savedState) {
-      const { lines, airEntries, hasClosedContour } = JSON.parse(savedState);
-      setLines(lines);
-      setAirEntries(airEntries);
-      setHasClosedContour(hasClosedContour);
+      try {
+        const { lines, airEntries, hasClosedContour } = JSON.parse(savedState);
+        if (lines) setLines(lines);
+        if (airEntries) setAirEntries(airEntries);
+        setHasClosedContour(!!hasClosedContour);
+      } catch (error) {
+        console.error('Error loading saved state:', error);
+      }
     }
   }, []);
 
-  // Save state to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      lines,
-      airEntries,
-      hasClosedContour
-    }));
+    try {
+      const state = {
+        lines,
+        airEntries,
+        hasClosedContour
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (error) {
+      console.error('Error saving state:', error);
+    }
   }, [lines, airEntries, hasClosedContour]);
 
   const isInClosedContour = (point: Point, lines: Line[]): boolean => {
@@ -381,16 +388,8 @@ export default function WizardDesign() {
                     currentAirEntry={currentAirEntry}
                     onLineSelect={handleLineSelect}
                     airEntries={airEntries}
-                    onLinesUpdate={(newLines) => {
-                      setLines(newLines);
-                      // Check if any point forms a closed contour
-                      const hasClosedContour = newLines.length > 0 &&
-                        newLines.some(line =>
-                          isInClosedContour(line.start, newLines) ||
-                          isInClosedContour(line.end, newLines)
-                        );
-                      setHasClosedContour(hasClosedContour);
-                    }}
+                    lines={lines}
+                    onLinesUpdate={handleLinesUpdate}
                   />
                 </div>
               </div>
@@ -500,6 +499,18 @@ export default function WizardDesign() {
       </Card>
     </div>
   );
+
+  const handleLinesUpdate = (newLines: Line[]) => {
+    setLines(newLines);
+    // Check if any point forms a closed contour
+    const hasClosedContour = newLines.length > 0 &&
+      newLines.some(line =>
+        isInClosedContour(line.start, newLines) ||
+        isInClosedContour(line.end, newLines)
+      );
+    setHasClosedContour(hasClosedContour);
+  };
+
 
   return (
     <DashboardLayout>
