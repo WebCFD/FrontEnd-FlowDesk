@@ -17,6 +17,7 @@ interface Canvas2DProps {
 
 const POINT_RADIUS = 4;
 const SNAP_DISTANCE = 15;
+const PIXELS_TO_CM = 25 / 20; // 20 pixels = 25 cm
 
 export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -25,6 +26,32 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
   const [lines, setLines] = useState<Line[]>([]);
   const [currentLine, setCurrentLine] = useState<Line | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
+
+  // Convert pixels to centimeters
+  const pixelsToCm = (pixels: number): number => {
+    return pixels * PIXELS_TO_CM;
+  };
+
+  // Convert coordinates to cm and log them
+  const logPointCoordinates = (point: Point, label: string) => {
+    const centerX = dimensions.width / 2;
+    const centerY = dimensions.height / 2;
+    const relativeX = point.x - centerX;
+    const relativeY = centerY - point.y; // Invert Y since canvas Y is top-down
+
+    console.log(`${label} Point Created:`, {
+      'Grid Coordinates (px)': `(${Math.round(relativeX)}, ${Math.round(relativeY)})`,
+      'Real-world Coordinates (cm)': `(${Math.round(pixelsToCm(relativeX))}, ${Math.round(pixelsToCm(relativeY))})`
+    });
+  };
+
+  // Calculate line length in centimeters
+  const getLineLength = (line: Line): number => {
+    const dx = line.end.x - line.start.x;
+    const dy = line.end.y - line.start.y;
+    const lengthInPixels = Math.sqrt(dx * dx + dy * dy);
+    return pixelsToCm(lengthInPixels);
+  };
 
   // Update canvas dimensions when container size changes
   useEffect(() => {
@@ -252,7 +279,33 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       });
       ctx.stroke();
 
-      // Draw current line preview
+      // Draw line lengths
+      ctx.font = '12px sans-serif';
+      ctx.fillStyle = '#64748b';
+      ctx.textAlign = 'center';
+      lines.forEach(line => {
+        const midX = (line.start.x + line.end.x) / 2;
+        const midY = (line.start.y + line.end.y) / 2;
+        const length = Math.round(getLineLength(line));
+
+        // Add a small white background for better readability
+        const text = `${length} cm`;
+        const metrics = ctx.measureText(text);
+        const padding = 2;
+
+        ctx.fillStyle = 'white';
+        ctx.fillRect(
+          midX - metrics.width/2 - padding,
+          midY - 6 - padding,
+          metrics.width + 2*padding,
+          14 + 2*padding
+        );
+
+        ctx.fillStyle = '#64748b';
+        ctx.fillText(text, midX, midY + 4);
+      });
+
+      // Draw current line preview and its length
       if (currentLine) {
         ctx.beginPath();
         ctx.strokeStyle = '#000000';
@@ -260,6 +313,26 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
         ctx.moveTo(currentLine.start.x, currentLine.start.y);
         ctx.lineTo(currentLine.end.x, currentLine.end.y);
         ctx.stroke();
+
+        const length = Math.round(getLineLength(currentLine));
+        const midX = (currentLine.start.x + currentLine.end.x) / 2;
+        const midY = (currentLine.start.y + currentLine.end.y) / 2;
+
+        // Add a small white background for better readability
+        const text = `${length} cm`;
+        const metrics = ctx.measureText(text);
+        const padding = 2;
+
+        ctx.fillStyle = 'white';
+        ctx.fillRect(
+          midX - metrics.width/2 - padding,
+          midY - 6 - padding,
+          metrics.width + 2*padding,
+          14 + 2*padding
+        );
+
+        ctx.fillStyle = '#64748b';
+        ctx.fillText(text, midX, midY + 4);
       }
 
       // Draw endpoints with different colors based on their state
@@ -294,6 +367,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
 
       setCurrentLine({ start: startPoint, end: startPoint });
       setIsDrawing(true);
+      logPointCoordinates(startPoint, 'Start');
     };
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -311,6 +385,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
 
       if (currentLine.start.x !== currentLine.end.x || currentLine.start.y !== currentLine.end.y) {
         setLines([...lines, currentLine]);
+        logPointCoordinates(currentLine.end, 'End');
       }
       setCurrentLine(null);
       setIsDrawing(false);
