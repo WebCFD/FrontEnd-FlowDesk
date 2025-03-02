@@ -10,6 +10,16 @@ import { Slider } from "@/components/ui/slider";
 import { Save, Upload, Eraser, ArrowRight, ArrowLeft } from "lucide-react";
 import Canvas2D from "@/components/sketch/Canvas2D";
 import { cn } from "@/lib/utils";
+import AirEntryDialog from "@/components/sketch/AirEntryDialog";
+
+interface Line {
+  // Define the structure of a line object here.  This is needed because the edited code uses 'Line' type.  You'll need to replace this with the actual structure of your line object.
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+}
+
 
 export default function WizardDesign() {
   const [step, setStep] = useState(1);
@@ -18,6 +28,8 @@ export default function WizardDesign() {
   const [currentTool, setCurrentTool] = useState<'wall' | 'eraser' | null>('wall');
   const [currentAirEntry, setCurrentAirEntry] = useState<'vent' | 'door' | 'window' | null>(null);
   const { toast } = useToast();
+  const [isAirEntryDialogOpen, setIsAirEntryDialogOpen] = useState(false);
+  const [selectedLine, setSelectedLine] = useState<Line | null>(null);
 
   const steps = [
     { id: 1, name: "Upload" },
@@ -38,7 +50,7 @@ export default function WizardDesign() {
       setCurrentTool(null);
     } else {
       setCurrentTool(tool);
-      setCurrentAirEntry(null); // Reset air entry selection
+      setCurrentAirEntry(null); 
     }
   };
 
@@ -47,11 +59,10 @@ export default function WizardDesign() {
       setCurrentAirEntry(null);
     } else {
       setCurrentAirEntry(entry);
-      setCurrentTool(null); // Reset tool selection
+      setCurrentTool(null); 
     }
   };
 
-  // Button styles based on type
   const getAirEntryStyles = (type: 'vent' | 'door' | 'window') => {
     const baseStyles = "h-16 p-2 flex flex-col items-center justify-center transition-all duration-200 shadow-sm";
     const activeStyles = "scale-95 shadow-inner";
@@ -93,11 +104,33 @@ export default function WizardDesign() {
     if (step > 1) setStep(step - 1);
   };
 
+  const handleAirEntryDimensionsConfirm = (dimensions: {
+    width: number;
+    height: number;
+    distanceToFloor?: number;
+  }) => {
+    if (selectedLine && currentAirEntry) {
+      console.log('Air Entry Added:', {
+        type: currentAirEntry,
+        dimensions,
+        line: selectedLine
+      });
+      setSelectedLine(null);
+      setCurrentAirEntry(null);
+    }
+  };
+
+  const handleLineSelect = (line: Line) => {
+    if (currentAirEntry) {
+      setSelectedLine(line);
+      setIsAirEntryDialogOpen(true);
+    }
+  };
+
   const renderStepIndicator = () => (
     <div className="w-full">
       <div className="relative h-16 bg-muted/10 border rounded-lg">
         <div className="absolute inset-0 flex justify-between items-center px-8">
-          {/* Decorative lines */}
           <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-center gap-[33%]">
             <div className="w-24 h-px bg-border" />
             <div className="w-24 h-px bg-border" />
@@ -221,7 +254,12 @@ export default function WizardDesign() {
                 </div>
 
                 <div className="flex-1 border rounded-lg overflow-hidden">
-                  <Canvas2D gridSize={gridSize} currentTool={currentTool} currentAirEntry={currentAirEntry} />
+                  <Canvas2D
+                    gridSize={gridSize}
+                    currentTool={currentTool}
+                    currentAirEntry={currentAirEntry}
+                    onLineSelect={handleLineSelect}
+                  />
                 </div>
               </div>
             </TabsContent>
@@ -234,6 +272,15 @@ export default function WizardDesign() {
           </Tabs>
         </CardContent>
       </Card>
+      <AirEntryDialog
+        type={currentAirEntry || 'window'}
+        isOpen={isAirEntryDialogOpen}
+        onClose={() => {
+          setIsAirEntryDialogOpen(false);
+          setSelectedLine(null);
+        }}
+        onConfirm={handleAirEntryDimensionsConfirm}
+      />
     </>
   );
 

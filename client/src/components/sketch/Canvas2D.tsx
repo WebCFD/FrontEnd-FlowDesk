@@ -17,6 +17,7 @@ interface Canvas2DProps {
   gridSize: number;
   currentTool: 'wall' | 'eraser' | null;
   currentAirEntry: 'vent' | 'door' | 'window' | null;
+  onLineSelect?: (line: Line) => void;
 }
 
 const POINT_RADIUS = 4;
@@ -27,7 +28,7 @@ const MAX_ZOOM = 4;
 const ZOOM_STEP = 0.1;
 const GRID_RANGE = 2000;
 
-export default function Canvas2D({ gridSize, currentTool, currentAirEntry }: Canvas2DProps) {
+export default function Canvas2D({ gridSize, currentTool, currentAirEntry, onLineSelect }: Canvas2DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
@@ -457,6 +458,12 @@ export default function Canvas2D({ gridSize, currentTool, currentAirEntry }: Can
           setLines(prev => prev.filter(line => !linesToErase.includes(line)));
           setHighlightedLines([]);
         }
+      } else if (currentAirEntry && onLineSelect) {
+        const point = getCanvasPoint(e);
+        const selectedLines = findLinesNearPoint(point);
+        if (selectedLines.length > 0) {
+          onLineSelect(selectedLines[0]);
+        }
       }
     };
 
@@ -525,7 +532,7 @@ export default function Canvas2D({ gridSize, currentTool, currentAirEntry }: Can
       canvas.removeEventListener('contextmenu', e => e.preventDefault());
       cancelAnimationFrame(animationFrameId);
     };
-  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode, cursorPoint, currentAirEntry]);
+  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode, cursorPoint, currentAirEntry, onLineSelect]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, '');
