@@ -79,6 +79,26 @@ const getPointOnLine = (line: Line, point: Point): Point => {
   };
 };
 
+// Update the getRelativeCoordinates function to be more verbose
+const getRelativeCoordinates = (point: Point): { x: number; y: number } => {
+  const centerX = dimensions.width / 2;
+  const centerY = dimensions.height / 2;
+  const relativeX = point.x - centerX;
+  const relativeY = centerY - point.y;
+  return {
+    x: Math.round(pixelsToCm(relativeX)),
+    y: Math.round(pixelsToCm(relativeY))
+  };
+};
+
+const drawCoordinateLabel = (ctx: CanvasRenderingContext2D, point: Point, color: string) => {
+  const coords = getRelativeCoordinates(point);
+  console.log(`2D Point clicked - Screen: (${point.x}, ${point.y}), In cm: (${coords.x}, ${coords.y})`);
+  ctx.fillStyle = color;
+  ctx.textAlign = 'left';
+  ctx.fillText(`(${coords.x}, ${coords.y})`, point.x + 8, point.y - 8);
+};
+
 export default function Canvas2D({
   gridSize,
   currentTool,
@@ -217,24 +237,6 @@ export default function Canvas2D({
     };
   };
 
-
-  const getRelativeCoordinates = (point: Point): { x: number; y: number } => {
-    const centerX = dimensions.width / 2;
-    const centerY = dimensions.height / 2;
-    const relativeX = point.x - centerX;
-    const relativeY = centerY - point.y;
-    return {
-      x: Math.round(pixelsToCm(relativeX)),
-      y: Math.round(pixelsToCm(relativeY))
-    };
-  };
-
-  const drawCoordinateLabel = (ctx: CanvasRenderingContext2D, point: Point, color: string) => {
-    const coords = getRelativeCoordinates(point);
-    ctx.fillStyle = color;
-    ctx.textAlign = 'left';
-    ctx.fillText(`(${coords.x}, ${coords.y})`, point.x + 8, point.y - 8);
-  };
 
   const getLineLength = (line: Line): number => {
     const dx = line.end.x - line.start.x;
@@ -563,6 +565,8 @@ export default function Canvas2D({
       if (currentTool === 'wall') {
         const nearestPoint = findNearestEndpoint(clickPoint);
         const startPoint = nearestPoint || snapToGrid(clickPoint);
+        const coords = getRelativeCoordinates(startPoint);
+        console.log(`Starting wall line at - Screen: (${startPoint.x}, ${startPoint.y}), In cm: (${coords.x}, ${coords.y})`);
         setCurrentLine({ start: startPoint, end: startPoint });
         setIsDrawing(true);
         setCursorPoint(startPoint);
@@ -615,6 +619,10 @@ export default function Canvas2D({
           console.log(`Start: (${currentLine.start.x}, ${currentLine.start.y})`);
           console.log(`End: (${currentLine.end.x}, ${currentLine.end.y})`);
           console.log(`Normal vector: (${normal.x.toFixed(3)}, ${normal.y.toFixed(3)})`);
+          const coordsStart = getRelativeCoordinates(currentLine.start);
+          const coordsEnd = getRelativeCoordinates(currentLine.end);
+          console.log(`Start in cm: (${coordsStart.x}, ${coordsStart.y})`);
+          console.log(`End in cm: (${coordsEnd.x}, ${coordsEnd.y})`);
 
           const newLines = [...lines, currentLine];
           setLines(newLines);
