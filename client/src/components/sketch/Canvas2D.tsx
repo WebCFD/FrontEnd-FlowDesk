@@ -37,6 +37,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
   const [isPanning, setIsPanning] = useState(false);
   const [lastPanPoint, setLastPanPoint] = useState<Point | null>(null);
   const [panMode, setPanMode] = useState(false);
+  const [cursorPoint, setCursorPoint] = useState<Point | null>(null);
 
   // Zoom control functions
   const handleZoomIn = () => {
@@ -131,35 +132,24 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
     return pixelsToCm(lengthInPixels);
   };
 
-  // Update canvas dimensions when container size changes
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const updateDimensions = () => {
-      const container = containerRef.current;
-      if (!container) return;
-
-      const { width, height } = container.getBoundingClientRect();
-      setDimensions({ width, height });
-    };
-
-    const resizeObserver = new ResizeObserver(updateDimensions);
-    resizeObserver.observe(containerRef.current);
-
-    // Initial update
-    updateDimensions();
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
-
   // Convert canvas coordinates to grid-snapped coordinates
   const snapToGrid = (point: Point): Point => {
-    const snapSize = gridSize / 2;
+    const snapSize = gridSize / 4; // More refined grid (quarter of the visible grid)
+    const centerX = dimensions.width / 2;
+    const centerY = dimensions.height / 2;
+
+    // Calculate relative to center
+    const relativeX = point.x - centerX;
+    const relativeY = point.y - centerY;
+
+    // Snap relative coordinates
+    const snappedX = Math.round(relativeX / snapSize) * snapSize;
+    const snappedY = Math.round(relativeY / snapSize) * snapSize;
+
+    // Convert back to canvas coordinates
     return {
-      x: Math.round(point.x / snapSize) * snapSize,
-      y: Math.round(point.y / snapSize) * snapSize
+      x: centerX + snappedX,
+      y: centerY + snappedY
     };
   };
 
@@ -291,23 +281,23 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       const centerX = Math.round(dimensions.width / (2 * zoom));
       const centerY = Math.round(dimensions.height / (2 * zoom));
 
-      // Calculate grid offset to align center with grid
-      const offsetX = centerX % gridSize;
-      const offsetY = centerY % gridSize;
+      // Ensure grid lines are drawn so that (0,0) is at a grid intersection
+      const gridOffsetX = centerX % gridSize;
+      const gridOffsetY = centerY % gridSize;
 
       // Draw grid
       ctx.beginPath();
       ctx.strokeStyle = '#e2e8f0';
-      ctx.lineWidth = 1 / zoom; // Adjust line width based on zoom
+      ctx.lineWidth = 1 / zoom;
 
       // Vertical lines
-      for (let x = -offsetX; x <= dimensions.width / zoom; x += gridSize) {
+      for (let x = -gridOffsetX; x <= dimensions.width / zoom; x += gridSize) {
         ctx.moveTo(x, 0);
         ctx.lineTo(x, dimensions.height / zoom);
       }
 
       // Horizontal lines
-      for (let y = -offsetY; y <= dimensions.height / zoom; y += gridSize) {
+      for (let y = -gridOffsetY; y <= dimensions.height / zoom; y += gridSize) {
         ctx.moveTo(0, y);
         ctx.lineTo(dimensions.width / zoom, y);
       }
@@ -427,6 +417,12 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
         drawCoordinateLabel(ctx, point, color);
       });
 
+      // Draw cursor point coordinates while drawing
+      if (cursorPoint && isDrawing) {
+        ctx.font = `${12 / zoom}px sans-serif`;
+        drawCoordinateLabel(ctx, cursorPoint, '#fb923c');
+      }
+
       ctx.restore();
     };
 
@@ -444,6 +440,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
         const startPoint = nearestPoint || snapToGrid(point);
         setCurrentLine({ start: startPoint, end: startPoint });
         setIsDrawing(true);
+        setCursorPoint(startPoint);
       } else if (currentTool === 'eraser') {
         const point = getCanvasPoint(e);
         const linesToErase = findLinesNearPoint(point);
@@ -465,6 +462,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
         const nearestPoint = findNearestEndpoint(point);
         const endPoint = nearestPoint || snapToGrid(point);
         setCurrentLine(prev => prev ? { ...prev, end: endPoint } : null);
+        setCursorPoint(endPoint);
       } else if (currentTool === 'eraser') {
         const point = getCanvasPoint(e);
         setHighlightedLines(findLinesNearPoint(point));
@@ -483,6 +481,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
         }
         setCurrentLine(null);
         setIsDrawing(false);
+        setCursorPoint(null);
       }
     };
 
@@ -492,6 +491,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       if (isDrawing) {
         setCurrentLine(null);
         setIsDrawing(false);
+        setCursorPoint(null);
       }
     };
 
@@ -519,7 +519,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       canvas.removeEventListener('contextmenu', e => e.preventDefault());
       cancelAnimationFrame(animationFrameId);
     };
-  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode]);
+  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode, cursorPoint]);
 
   return (
     <div ref={containerRef} className="w-full h-full relative">
