@@ -10,41 +10,18 @@ import Settings from "@/pages/dashboard/settings";
 import Profile from "@/pages/dashboard/profile";
 import NewSimulation from "@/pages/dashboard/new-simulation";
 import WizardDesign from "@/pages/dashboard/wizard-design";
-import Navbar from "@/components/layout/navbar";
-import Footer from "@/components/layout/footer";
 import { ProtectedRoute } from "@/lib/protected-route";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
-      <Route path="/dashboard">
-        <ProtectedRoute>
-          <Dashboard />
-        </ProtectedRoute>
-      </Route>
-      <Route path="/dashboard/simulations">
-        <ProtectedRoute>
-          <Simulations />
-        </ProtectedRoute>
-      </Route>
-      <Route path="/dashboard/new-simulation">
-        <ProtectedRoute>
-          <NewSimulation />
-        </ProtectedRoute>
-      </Route>
-      {/* Remove ProtectedRoute wrapper to allow direct access */}
-      <Route path="/dashboard/wizard-design" component={WizardDesign} />
-      <Route path="/dashboard/settings">
-        <ProtectedRoute>
-          <Settings />
-        </ProtectedRoute>
-      </Route>
-      <Route path="/dashboard/profile">
-        <ProtectedRoute>
-          <Profile />
-        </ProtectedRoute>
-      </Route>
+      <ProtectedRoute path="/dashboard" component={Dashboard} />
+      <ProtectedRoute path="/dashboard/simulations" component={Simulations} />
+      <ProtectedRoute path="/dashboard/settings" component={Settings} />
+      <ProtectedRoute path="/dashboard/profile" component={Profile} />
+      <ProtectedRoute path="/dashboard/new-simulation" component={NewSimulation} />
+      <ProtectedRoute path="/dashboard/wizard-design" component={WizardDesign} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -54,18 +31,9 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="min-h-screen flex flex-col">
-        <Route path="/dashboard*">
+        <main className="flex-1">
           <Router />
-        </Route>
-        <Route path="*">
-          <>
-            <Navbar />
-            <main className="flex-1">
-              <Router />
-            </main>
-            <Footer />
-          </>
-        </Route>
+        </main>
       </div>
       <Toaster />
     </QueryClientProvider>
