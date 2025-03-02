@@ -36,8 +36,8 @@ const GRID_DIVISIONS = 40; // Number of divisions in the grid
 
 const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
   const vector = new THREE.Vector3(
-    -point.x,    // Negate X to match 2D coordinate system
-    -point.y,    // Invert Y coordinate
+    -point.x * PIXELS_TO_CM,    // Convert to cm and negate X to match 2D coordinate system
+    -point.y * PIXELS_TO_CM,    // Convert to cm and invert Y coordinate
     height      // Z coordinate (height)
   );
   console.log(`Transform 2D(${point.x}, ${point.y}) → 3D(${vector.x}, ${vector.y}, ${vector.z})`);
