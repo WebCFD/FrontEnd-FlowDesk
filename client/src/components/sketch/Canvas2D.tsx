@@ -195,6 +195,48 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
     };
   };
 
+  // Find lines near a point
+  const findLinesNearPoint = (point: Point): Line[] => {
+    const nearbyLines: Line[] = [];
+
+    lines.forEach((line, index) => {
+      // Calculate distances to line segment
+      const A = point.x - line.start.x;
+      const B = point.y - line.start.y;
+      const C = line.end.x - line.start.x;
+      const D = line.end.y - line.start.y;
+
+      const dot = A * C + B * D;
+      const lenSq = C * C + D * D;
+      let param = -1;
+      if (lenSq !== 0) param = dot / lenSq;
+
+      let xx, yy;
+
+      if (param < 0) {
+        xx = line.start.x;
+        yy = line.start.y;
+      } else if (param > 1) {
+        xx = line.end.x;
+        yy = line.end.y;
+      } else {
+        xx = line.start.x + param * C;
+        yy = line.start.y + param * D;
+      }
+
+      const dx = point.x - xx;
+      const dy = point.y - yy;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < SNAP_DISTANCE) {
+        nearbyLines.push(line);
+      }
+    });
+
+    return nearbyLines;
+  };
+
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -349,38 +391,52 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       });
     };
 
-    // Add event listeners for drawing
+    // Add event listeners for drawing and erasing
     const handleMouseDown = (e: MouseEvent) => {
-      if (currentTool !== 'wall') return;
+      if (currentTool === 'wall') {
+        const point = getCanvasPoint(e);
+        const nearestPoint = findNearestEndpoint(point);
+        const startPoint = nearestPoint || snapToGrid(point);
 
-      const point = getCanvasPoint(e);
-      const nearestPoint = findNearestEndpoint(point);
-      const startPoint = nearestPoint || snapToGrid(point);
-
-      setCurrentLine({ start: startPoint, end: startPoint });
-      setIsDrawing(true);
-      //logPointCoordinates(startPoint, 'Start');
+        setCurrentLine({ start: startPoint, end: startPoint });
+        setIsDrawing(true);
+      } else if (currentTool === 'eraser') {
+        const point = getCanvasPoint(e);
+        const linesToErase = findLinesNearPoint(point);
+        if (linesToErase.length > 0) {
+          const remainingLines = lines.filter(line => !linesToErase.includes(line));
+          setLines(remainingLines);
+        }
+      }
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (!isDrawing || !currentLine) return;
+      if (currentTool === 'wall') {
+        if (!isDrawing || !currentLine) return;
 
-      const point = getCanvasPoint(e);
-      const nearestPoint = findNearestEndpoint(point);
-      const endPoint = nearestPoint || snapToGrid(point);
+        const point = getCanvasPoint(e);
+        const nearestPoint = findNearestEndpoint(point);
+        const endPoint = nearestPoint || snapToGrid(point);
 
-      setCurrentLine({ ...currentLine, end: endPoint });
+        setCurrentLine({ ...currentLine, end: endPoint });
+      } else if (currentTool === 'eraser') {
+        // Optional: highlight lines that would be erased
+        const point = getCanvasPoint(e);
+        const linesToErase = findLinesNearPoint(point);
+        // You could add visual feedback here if desired
+      }
     };
 
     const handleMouseUp = () => {
-      if (!isDrawing || !currentLine) return;
+      if (currentTool === 'wall') {
+        if (!isDrawing || !currentLine) return;
 
-      if (currentLine.start.x !== currentLine.end.x || currentLine.start.y !== currentLine.end.y) {
-        setLines([...lines, currentLine]);
-        //logPointCoordinates(currentLine.end, 'End');
+        if (currentLine.start.x !== currentLine.end.x || currentLine.start.y !== currentLine.end.y) {
+          setLines([...lines, currentLine]);
+        }
+        setCurrentLine(null);
+        setIsDrawing(false);
       }
-      setCurrentLine(null);
-      setIsDrawing(false);
     };
 
     canvas.addEventListener('mousedown', handleMouseDown);
