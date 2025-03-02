@@ -404,31 +404,25 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       const position = transform2DTo3D(entry.position);
       mesh.position.set(position.x, position.y, zPosition);
 
-      // Create a matrix to orient the plane along the wall
-      const rotationMatrix = new THREE.Matrix4();
-
-      // First, rotate the plane to align with the wall's normal vector
+      // Get the wall normal vector
       const normalVector = new THREE.Vector3(entryNormal.x, entryNormal.y, 0);
-      const upVector = new THREE.Vector3(0, 0, 1);
-      const rightVector = new THREE.Vector3().crossVectors(upVector, normalVector).normalize();
 
-      rotationMatrix.makeBasis(
-        rightVector,                     // Right vector
-        normalVector,                    // Forward vector (wall normal)
-        upVector                         // Up vector
+      // Set the mesh's normal (making it face the same direction as the wall)
+      mesh.lookAt(
+        new THREE.Vector3(
+          position.x + normalVector.x,
+          position.y + normalVector.y,
+          zPosition
+        )
       );
 
-      // Apply the rotation matrix
-      mesh.setRotationFromMatrix(rotationMatrix);
+      // Rotate 90 degrees around Z to align with wall
+      mesh.rotateZ(Math.PI / 2);
 
-      // Offset slightly from wall surface to prevent z-fighting
-      const WALL_OFFSET = 0.1;
-      mesh.position.x += entryNormal.x * WALL_OFFSET;
-      mesh.position.y += entryNormal.y * WALL_OFFSET;
-
+      // Add mesh to scene
       sceneRef.current?.add(mesh);
 
-      // Add arrow helper for air entry normal (in black)
+      // Add debug arrows to visualize normals
       const elementArrowHelper = new THREE.ArrowHelper(
         normalVector,
         new THREE.Vector3(position.x, position.y, zPosition),
