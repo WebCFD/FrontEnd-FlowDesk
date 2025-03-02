@@ -35,12 +35,12 @@ const GRID_SIZE = 1000; // Size of the grid in cm
 const GRID_DIVISIONS = 40; // Number of divisions in the grid
 
 const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
-  const dimensions = { width: 800, height: 600 }; // Default dimensions
+  const dimensions = { width: 800, height: 600 };
   const centerX = dimensions.width / 2;
   const centerY = dimensions.height / 2;
 
   const relativeX = point.x - centerX;
-  const relativeY = centerY - point.y; // Invert Y to match mathematical coordinates
+  const relativeY = centerY - point.y;
 
   return new THREE.Vector3(
     relativeX * PIXELS_TO_CM,
@@ -298,27 +298,32 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       const start_top = transform2DTo3D(line.start, ROOM_HEIGHT);
       const end_top = transform2DTo3D(line.end, ROOM_HEIGHT);
 
-      // Calculate wall normal
-      const wallNormal = calculateNormal(line);
-      console.log('Wall data:', {
-        line: {
-          start: `(${line.start.x}, ${line.start.y})`,
-          end: `(${line.end.x}, ${line.end.y})`
-        },
-        normal: `(${wallNormal.x.toFixed(4)}, ${wallNormal.y.toFixed(4)})`
+      // Calculate wall direction and normal vectors
+      const wallDirection = new THREE.Vector3()
+        .subVectors(end_bottom, start_bottom)
+        .normalize();
+
+      // Calculate proper wall normal using cross product
+      const upVector = new THREE.Vector3(0, 0, 1);
+      const wallNormalVector = new THREE.Vector3()
+        .crossVectors(wallDirection, upVector)
+        .normalize();
+
+      // Log vectors for debugging
+      console.log('Wall vectors:', {
+        start: `(${line.start.x}, ${line.start.y})`,
+        end: `(${line.end.x}, ${line.end.y})`,
+        direction: `(${wallDirection.x.toFixed(4)}, ${wallDirection.y.toFixed(4)}, ${wallDirection.z.toFixed(4)})`,
+        normal: `(${wallNormalVector.x.toFixed(4)}, ${wallNormalVector.y.toFixed(4)}, ${wallNormalVector.z.toFixed(4)})`
       });
 
-      // Create wall normal vector
-      const wallNormalVector = new THREE.Vector3(wallNormal.x, wallNormal.y, 0).normalize();
+      // Calculate wall midpoint for arrow visualization
+      const wallMidPoint = new THREE.Vector3()
+        .addVectors(start_bottom, end_bottom)
+        .multiplyScalar(0.5)
+        .setZ(ROOM_HEIGHT / 2);
 
-      // Calculate wall midpoint for arrow placement
-      const wallMidPoint = new THREE.Vector3(
-        (start_bottom.x + end_bottom.x) / 2,
-        (start_bottom.y + end_bottom.y) / 2,
-        ROOM_HEIGHT / 2
-      );
-
-      // Debug arrow for wall normal (blue)
+      // Add debug arrow for wall normal (blue)
       const wallArrowHelper = new THREE.ArrowHelper(
         wallNormalVector,
         wallMidPoint,
