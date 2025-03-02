@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useLocation, Route } from "wouter";
+import { useLocation, Route, Redirect } from "wouter";
 import { useRoomStore } from "@/lib/store/room-store";
 import { useRoomReset } from "@/hooks/use-room-reset";
 import { useAuth } from "@/hooks/use-auth";
@@ -27,24 +27,20 @@ export function ProtectedRoute({
     }
   }, [user, isLoading, setLocation, lines, airEntries, confirmReset]);
 
-  if (isLoading) {
-    return (
-      <Route path={path}>
+  return (
+    <Route path={path}>
+      {isLoading ? (
         <div className="flex items-center justify-center min-h-screen">
           <Loader2 className="h-8 w-8 animate-spin text-border" />
         </div>
-      </Route>
-    );
-  }
-
-  if (!user) {
-    return null;
-  }
-
-  return (
-    <Route path={path}>
-      <Component />
-      <ResetDialog />
+      ) : !user ? (
+        <Redirect to="/auth" />
+      ) : (
+        <>
+          <Component />
+          <ResetDialog />
+        </>
+      )}
     </Route>
   );
 }
