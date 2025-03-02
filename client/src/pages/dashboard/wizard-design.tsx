@@ -9,12 +9,14 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
 import { Save, Upload, Eraser, ArrowRight, ArrowLeft } from "lucide-react";
 import Canvas2D from "@/components/sketch/Canvas2D";
+import { cn } from "@/lib/utils";
 
 export default function WizardDesign() {
   const [step, setStep] = useState(1);
   const [simulationName, setSimulationName] = useState("");
   const [gridSize, setGridSize] = useState(20);
-  const [currentTool, setCurrentTool] = useState<'wall' | 'eraser'>('wall');
+  const [currentTool, setCurrentTool] = useState<'wall' | 'eraser' | null>(null);
+  const [currentAirEntry, setCurrentAirEntry] = useState<'vent' | 'door' | 'window' | null>(null);
   const { toast } = useToast();
 
   const steps = [
@@ -28,7 +30,50 @@ export default function WizardDesign() {
   };
 
   const gridSizeToCm = (pixels: number): number => {
-    return pixels * (25 / 20); // Convert pixels to cm using the same ratio
+    return pixels * (25 / 20);
+  };
+
+  const handleToolSelect = (tool: 'wall' | 'eraser') => {
+    if (currentTool === tool) {
+      setCurrentTool(null);
+    } else {
+      setCurrentTool(tool);
+      setCurrentAirEntry(null); // Reset air entry selection
+    }
+  };
+
+  const handleAirEntrySelect = (entry: 'vent' | 'door' | 'window') => {
+    if (currentAirEntry === entry) {
+      setCurrentAirEntry(null);
+    } else {
+      setCurrentAirEntry(entry);
+      setCurrentTool(null); // Reset tool selection
+    }
+  };
+
+  // Button styles based on type
+  const getAirEntryStyles = (type: 'vent' | 'door' | 'window') => {
+    const baseStyles = "h-16 p-2 flex flex-col items-center justify-center transition-all duration-200 shadow-sm";
+    const activeStyles = "border-2 scale-95 shadow-inner";
+
+    const colorStyles = {
+      vent: "hover:bg-green-50 active:bg-green-100 text-green-700",
+      door: "hover:bg-blue-50 active:bg-blue-100 text-blue-700",
+      window: "hover:bg-amber-50 active:bg-amber-100 text-amber-700"
+    };
+
+    const borderStyles = {
+      vent: "border-green-200",
+      door: "border-blue-200",
+      window: "border-amber-200"
+    };
+
+    return cn(
+      baseStyles,
+      colorStyles[type],
+      currentAirEntry === type ? activeStyles : "",
+      currentAirEntry === type ? borderStyles[type] : ""
+    );
   };
 
   const handleNext = () => {
@@ -65,9 +110,6 @@ export default function WizardDesign() {
     </div>
   );
 
-  // Rest of the code from new-simulation.tsx remains the same
-  // Including renderStep1, renderStep2, renderStep3 functions
-  
   const renderStep1 = () => (
     <>
       <div className="max-w-xl">
@@ -97,7 +139,7 @@ export default function WizardDesign() {
                       <Button
                         variant={currentTool === 'wall' ? 'default' : 'outline'}
                         className="w-full h-16 flex flex-col items-center justify-center gap-1"
-                        onClick={() => setCurrentTool('wall')}
+                        onClick={() => handleToolSelect('wall')}
                       >
                         <div className="w-6 h-6 bg-primary/20 rounded-sm" />
                         <span className="text-xs">Wall Line</span>
@@ -105,7 +147,7 @@ export default function WizardDesign() {
                       <Button
                         variant={currentTool === 'eraser' ? 'default' : 'outline'}
                         className="w-full h-16 flex flex-col items-center justify-center gap-1"
-                        onClick={() => setCurrentTool('eraser')}
+                        onClick={() => handleToolSelect('eraser')}
                       >
                         <Eraser className="w-6 h-6" />
                         <span className="text-xs">Eraser</span>
@@ -130,16 +172,28 @@ export default function WizardDesign() {
                   <div className="space-y-4">
                     <h3 className="font-semibold">Air Entries</h3>
                     <div className="grid grid-cols-3 gap-2">
-                      <Button variant="outline" className="h-16 p-2 flex flex-col items-center justify-center">
-                        <div className="w-6 h-6 border-2 border-primary grid grid-cols-2 grid-rows-2" />
+                      <Button 
+                        variant="outline"
+                        className={getAirEntryStyles('vent')}
+                        onClick={() => handleAirEntrySelect('vent')}
+                      >
+                        <div className="w-6 h-6 border-2 border-green-500 grid grid-cols-2 grid-rows-2" />
                         <span className="text-xs mt-1">Vent-Grid</span>
                       </Button>
-                      <Button variant="outline" className="h-16 p-2 flex flex-col items-center justify-center">
-                        <div className="w-6 h-6 border-2 border-primary" />
+                      <Button 
+                        variant="outline"
+                        className={getAirEntryStyles('door')}
+                        onClick={() => handleAirEntrySelect('door')}
+                      >
+                        <div className="w-6 h-6 border-2 border-blue-500" />
                         <span className="text-xs mt-1">Door</span>
                       </Button>
-                      <Button variant="outline" className="h-16 p-2 flex flex-col items-center justify-center">
-                        <div className="w-6 h-6 border-2 border-primary grid grid-cols-2" />
+                      <Button 
+                        variant="outline"
+                        className={getAirEntryStyles('window')}
+                        onClick={() => handleAirEntrySelect('window')}
+                      >
+                        <div className="w-6 h-6 border-2 border-amber-500 grid grid-cols-2" />
                         <span className="text-xs mt-1">Window</span>
                       </Button>
                     </div>
@@ -158,7 +212,7 @@ export default function WizardDesign() {
                 </div>
 
                 <div className="flex-1 border rounded-lg overflow-hidden">
-                  <Canvas2D gridSize={gridSize} currentTool={currentTool} />
+                  <Canvas2D gridSize={gridSize} currentTool={currentTool} currentAirEntry={currentAirEntry}/>
                 </div>
               </div>
             </TabsContent>
