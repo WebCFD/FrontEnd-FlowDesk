@@ -27,12 +27,12 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
-      <ProtectedRoute path="/dashboard" component={withDashboardLayout(Dashboard)} />
-      <ProtectedRoute path="/dashboard/simulations" component={withDashboardLayout(Simulations)} />
-      <ProtectedRoute path="/dashboard/settings" component={withDashboardLayout(Settings)} />
-      <ProtectedRoute path="/dashboard/profile" component={withDashboardLayout(Profile)} />
-      <ProtectedRoute path="/dashboard/new-simulation" component={withDashboardLayout(NewSimulation)} />
-      <ProtectedRoute path="/dashboard/wizard-design" component={withDashboardLayout(WizardDesign)} />
+      <ProtectedRoute path="/dashboard" component={Dashboard} />
+      <ProtectedRoute path="/dashboard/simulations" component={Simulations} />
+      <ProtectedRoute path="/dashboard/settings" component={Settings} />
+      <ProtectedRoute path="/dashboard/profile" component={Profile} />
+      <ProtectedRoute path="/dashboard/new-simulation" component={NewSimulation} />
+      <ProtectedRoute path="/dashboard/wizard-design" component={WizardDesign} />
       <Route component={NotFound} />
     </Switch>
   );

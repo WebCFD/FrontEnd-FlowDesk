@@ -505,36 +505,34 @@ export default function WizardDesign() {
 
 
   return (
-    <DashboardLayout>
-      <div className="container mx-auto py-6 space-y-6">
-        {renderStepIndicator()}
+    <div className="container mx-auto py-6 space-y-6">
+      {renderStepIndicator()}
 
-        <div className="min-h-[600px]">
-          {step === 1 && renderStep1()}
-          {step === 2 && renderStep2()}
-          {step === 3 && renderStep3()}
-        </div>
+      <div className="min-h-[600px]">
+        {step === 1 && renderStep1()}
+        {step === 2 && renderStep2()}
+        {step === 3 && renderStep3()}
+      </div>
 
-        <div className="flex justify-end gap-2 pt-6 mt-6 border-t">
-          {step > 1 && (
-            <Button onClick={handleBack} variant="outline">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back
-            </Button>
-          )}
-          {step < 3 ? (
-            <Button onClick={handleNext}>
-              Next
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          ) : (
-            <Button onClick={() => toast({ title: "Starting simulation...", description: "Your simulation will begin shortly." })}>
-              Start Simulation
-            </Button>
-          )}
-        </div>
+      <div className="flex justify-end gap-2 pt-6 mt-6 border-t">
+        {step > 1 && (
+          <Button onClick={handleBack} variant="outline">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
+          </Button>
+        )}
+        {step < 3 ? (
+          <Button onClick={handleNext}>
+            Next
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        ) : (
+          <Button onClick={() => toast({ title: "Starting simulation...", description: "Your simulation will begin shortly." })}>
+            Start Simulation
+          </Button>
+        )}
       </div>
       <ResetDialog />
-    </DashboardLayout>
+    </div>
   );
 }

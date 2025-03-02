@@ -20,27 +20,35 @@ export function ProtectedRoute({
   useEffect(() => {
     if (!isLoading && !user) {
       if (lines.length > 0 || airEntries.length > 0) {
-        confirmReset(() => setLocation("/auth"));
+        confirmReset(() => setLocation("/"));
       } else {
-        setLocation("/auth");
+        setLocation("/");
       }
     }
   }, [user, isLoading, setLocation, lines, airEntries, confirmReset]);
 
   return (
     <Route path={path}>
-      {isLoading ? (
-        <div className="flex items-center justify-center min-h-screen">
-          <Loader2 className="h-8 w-8 animate-spin text-border" />
-        </div>
-      ) : !user ? (
-        <Redirect to="/auth" />
-      ) : (
-        <>
-          <Component />
-          <ResetDialog />
-        </>
-      )}
+      {() => {
+        if (isLoading) {
+          return (
+            <div className="flex items-center justify-center min-h-screen">
+              <Loader2 className="h-8 w-8 animate-spin text-border" />
+            </div>
+          );
+        }
+
+        if (!user) {
+          return <Redirect to="/" />;
+        }
+
+        return (
+          <>
+            <Component />
+            <ResetDialog />
+          </>
+        );
+      }}
     </Route>
   );
 }
