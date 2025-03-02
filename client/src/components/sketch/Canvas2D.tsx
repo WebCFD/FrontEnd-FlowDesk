@@ -26,6 +26,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
   const [lines, setLines] = useState<Line[]>([]);
   const [currentLine, setCurrentLine] = useState<Line | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
+  const [highlightedLines, setHighlightedLines] = useState<Line[]>([]);
 
   // Convert pixels to centimeters
   const pixelsToCm = (pixels: number): number => {
@@ -132,7 +133,6 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
     const pointKey = (p: Point) => `${p.x},${p.y}`;
 
     const findPath = (current: Point, steps: number): boolean => {
-      // If we've made at least 3 steps and found our way back to the start, it's a closed contour
       if (steps >= 3 && arePointsClose(current, point)) {
         return true;
       }
@@ -140,11 +140,9 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       const connectedLines = findConnectedLines(current);
 
       for (const line of connectedLines) {
-        // Get the other endpoint of the line
         const nextPoint = arePointsClose(line.start, current) ? line.end : line.start;
         const key = pointKey(nextPoint);
 
-        // Skip if we've already visited this point (unless it's the starting point and we've made enough steps)
         if (visited.has(key) && !(arePointsClose(nextPoint, point) && steps >= 3)) {
           continue;
         }
@@ -199,8 +197,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
   const findLinesNearPoint = (point: Point): Line[] => {
     const nearbyLines: Line[] = [];
 
-    lines.forEach((line, index) => {
-      // Calculate distances to line segment
+    lines.forEach(line => {
       const A = point.x - line.start.x;
       const B = point.y - line.start.y;
       const C = line.end.x - line.start.x;
@@ -235,7 +232,6 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
 
     return nearbyLines;
   };
-
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -326,13 +322,20 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
 
       // Draw existing lines
       ctx.beginPath();
-      ctx.strokeStyle = '#000000';
-      ctx.lineWidth = 2;
       lines.forEach(line => {
+        if (highlightedLines.includes(line)) {
+          // Draw highlighted lines in red with some transparency
+          ctx.strokeStyle = 'rgba(239, 68, 68, 0.5)';
+          ctx.lineWidth = 3;
+        } else {
+          ctx.strokeStyle = '#000000';
+          ctx.lineWidth = 2;
+        }
+        ctx.beginPath();
         ctx.moveTo(line.start.x, line.start.y);
         ctx.lineTo(line.end.x, line.end.y);
+        ctx.stroke();
       });
-      ctx.stroke();
 
       // Draw line lengths
       ctx.font = '12px sans-serif';
@@ -406,6 +409,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
         if (linesToErase.length > 0) {
           const remainingLines = lines.filter(line => !linesToErase.includes(line));
           setLines(remainingLines);
+          setHighlightedLines([]);
         }
       }
     };
@@ -420,10 +424,9 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
 
         setCurrentLine({ ...currentLine, end: endPoint });
       } else if (currentTool === 'eraser') {
-        // Optional: highlight lines that would be erased
         const point = getCanvasPoint(e);
         const linesToErase = findLinesNearPoint(point);
-        // You could add visual feedback here if desired
+        setHighlightedLines(linesToErase);
       }
     };
 
@@ -439,10 +442,17 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       }
     };
 
+    const handleMouseLeave = () => {
+      if (currentTool === 'eraser') {
+        setHighlightedLines([]);
+      }
+      handleMouseUp();
+    };
+
     canvas.addEventListener('mousedown', handleMouseDown);
     canvas.addEventListener('mousemove', handleMouseMove);
     canvas.addEventListener('mouseup', handleMouseUp);
-    canvas.addEventListener('mouseleave', handleMouseUp);
+    canvas.addEventListener('mouseleave', handleMouseLeave);
 
     // Start animation loop
     let animationFrameId: number;
@@ -457,10 +467,10 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       canvas.removeEventListener('mousedown', handleMouseDown);
       canvas.removeEventListener('mousemove', handleMouseMove);
       canvas.removeEventListener('mouseup', handleMouseUp);
-      canvas.removeEventListener('mouseleave', handleMouseUp);
+      canvas.removeEventListener('mouseleave', handleMouseLeave);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool]);
+  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines]);
 
   return (
     <div ref={containerRef} className="w-full h-full">
