@@ -132,6 +132,10 @@ export default function Canvas3D({ lines, airEntries, height = 600 }: Canvas3DPr
     directionalLight.position.set(1, 1, 1);
     sceneRef.current.add(directionalLight);
 
+    // Add coordinate system axes
+    const axesHelper = new THREE.AxesHelper(200); // Size of 200 units
+    sceneRef.current.add(axesHelper);
+
     // Create wall material
     const wallMaterial = new THREE.MeshPhongMaterial({
       color: 0x3b82f6, // Clear blue color
@@ -169,11 +173,11 @@ export default function Canvas3D({ lines, airEntries, height = 600 }: Canvas3DPr
 
     // Add air entries
     airEntries.forEach(entry => {
-      const color = entry.type === 'window' 
+      const color = entry.type === 'window'
         ? 0x3b82f6  // Blue
         : entry.type === 'door'
-        ? 0xb45309  // Brown
-        : 0x22c55e; // Green
+          ? 0xb45309  // Brown
+          : 0x22c55e; // Green
 
       const material = new THREE.MeshPhongMaterial({
         color,
@@ -193,7 +197,7 @@ export default function Canvas3D({ lines, airEntries, height = 600 }: Canvas3DPr
       mesh.position.set(
         entry.position.x,
         entry.position.y,
-        distanceToFloor + height/2
+        distanceToFloor + height / 2
       );
 
       // Calculate rotation to align with wall
