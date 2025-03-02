@@ -3,8 +3,8 @@ import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const [, setLocation] = useLocation();
-  const { user, setAnonymousUser } = useAuth();
+  const [location, setLocation] = useLocation();
+  const { user, setAnonymousUser, setReturnTo } = useAuth();
 
   useEffect(() => {
     async function checkAuth() {
@@ -14,31 +14,36 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
         });
 
         if (!response.ok) {
+          // Store current path before setting anonymous user
+          setReturnTo(location);
           // Instead of redirecting, set as anonymous user
           setAnonymousUser();
         }
       } catch (error) {
+        // Store current path before setting anonymous user
+        setReturnTo(location);
         // On error, also set as anonymous user
         setAnonymousUser();
       }
     }
 
     checkAuth();
-  }, [setLocation, setAnonymousUser]);
+  }, [setLocation, setAnonymousUser, setReturnTo, location]);
 
   return <>{children}</>;
 }
 
 // New component for forcing authentication
 export function RequireAuth({ children }: { children: React.ReactNode }) {
-  const [, setLocation] = useLocation();
-  const { user } = useAuth();
+  const [location, setLocation] = useLocation();
+  const { user, setReturnTo } = useAuth();
 
   useEffect(() => {
     if (user?.isAnonymous) {
+      setReturnTo(location);
       setLocation("/auth");
     }
-  }, [user, setLocation]);
+  }, [user, setLocation, location, setReturnTo]);
 
   return <>{children}</>;
 }
