@@ -68,8 +68,8 @@ export default function AirEntryDialog({ type, isOpen, onClose, onConfirm }: Air
                 value={dimensions.width}
                 onChange={(e) => setDimensions(prev => ({ ...prev, width: Number(e.target.value) }))}
                 className="col-span-3"
-                suffix="cm"
               />
+              <span className="text-sm">cm</span>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="height" className="text-right">
@@ -81,8 +81,8 @@ export default function AirEntryDialog({ type, isOpen, onClose, onConfirm }: Air
                 value={dimensions.height}
                 onChange={(e) => setDimensions(prev => ({ ...prev, height: Number(e.target.value) }))}
                 className="col-span-3"
-                suffix="cm"
               />
+              <span className="text-sm">cm</span>
             </div>
             {type !== 'door' && (
               <div className="grid grid-cols-4 items-center gap-4">
@@ -95,8 +95,8 @@ export default function AirEntryDialog({ type, isOpen, onClose, onConfirm }: Air
                   value={dimensions.distanceToFloor}
                   onChange={(e) => setDimensions(prev => ({ ...prev, distanceToFloor: Number(e.target.value) }))}
                   className="col-span-3"
-                  suffix="cm"
                 />
+                <span className="text-sm">cm</span>
               </div>
             )}
           </div>
