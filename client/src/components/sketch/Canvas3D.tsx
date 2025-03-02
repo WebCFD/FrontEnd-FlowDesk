@@ -132,9 +132,49 @@ export default function Canvas3D({ lines, airEntries, height = 600 }: Canvas3DPr
     directionalLight.position.set(1, 1, 1);
     sceneRef.current.add(directionalLight);
 
-    // Add coordinate system axes
+    // Add coordinate system axes with labels
     const axesHelper = new THREE.AxesHelper(200); // Size of 200 units
     sceneRef.current.add(axesHelper);
+
+    // Create text sprites for axis labels
+    const createTextSprite = (text: string, color: string) => {
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      if (!context) return null;
+
+      canvas.width = 64;
+      canvas.height = 64;
+
+      context.font = "48px Arial";
+      context.fillStyle = color;
+      context.textAlign = "center";
+      context.textBaseline = "middle";
+      context.fillText(text, 32, 32);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+      return new THREE.Sprite(spriteMaterial);
+    };
+
+    // Create and position labels
+    const xLabel = createTextSprite("X", "#ff0000");
+    const yLabel = createTextSprite("Y", "#00ff00");
+    const zLabel = createTextSprite("Z", "#0000ff");
+
+    if (xLabel && yLabel && zLabel) {
+      xLabel.position.set(220, 0, 0);
+      yLabel.position.set(0, 220, 0);
+      zLabel.position.set(0, 0, 220);
+
+      xLabel.scale.set(20, 20, 1);
+      yLabel.scale.set(20, 20, 1);
+      zLabel.scale.set(20, 20, 1);
+
+      sceneRef.current.add(xLabel);
+      sceneRef.current.add(yLabel);
+      sceneRef.current.add(zLabel);
+    }
+
 
     // Create wall material
     const wallMaterial = new THREE.MeshPhongMaterial({
