@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls';
+import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 
 interface Point {
   x: number;
