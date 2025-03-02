@@ -17,10 +17,34 @@ interface Canvas2DProps {
 
 export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [dimensions] = useState({ width: 800, height: 600 });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
   const [lines, setLines] = useState<Line[]>([]);
   const [currentLine, setCurrentLine] = useState<Line | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
+
+  // Update canvas dimensions when container size changes
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const updateDimensions = () => {
+      const container = containerRef.current;
+      if (!container) return;
+
+      const { width, height } = container.getBoundingClientRect();
+      setDimensions({ width, height });
+    };
+
+    const resizeObserver = new ResizeObserver(updateDimensions);
+    resizeObserver.observe(containerRef.current);
+
+    // Initial update
+    updateDimensions();
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   // Convert canvas coordinates to grid-snapped coordinates
   const snapToGrid = (point: Point): Point => {
@@ -197,11 +221,13 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
   }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      width={dimensions.width}
-      height={dimensions.height}
-      className="w-full h-full"
-    />
+    <div ref={containerRef} className="w-full h-full">
+      <canvas
+        ref={canvasRef}
+        width={dimensions.width}
+        height={dimensions.height}
+        className="w-full h-full"
+      />
+    </div>
   );
 }
