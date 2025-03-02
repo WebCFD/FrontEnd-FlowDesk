@@ -21,6 +21,10 @@ export default function NewSimulation() {
     setGridSize(value[0]);
   };
 
+  const gridSizeToCm = (pixels: number): number => {
+    return pixels * (25 / 20); // Convert pixels to cm using the same ratio
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -80,7 +84,7 @@ export default function NewSimulation() {
                           step={1}
                           onValueChange={handleGridSizeChange}
                         />
-                        <div className="text-sm text-right mt-1">{gridSize}px</div>
+                        <div className="text-sm text-right mt-1">{gridSizeToCm(gridSize).toFixed(1)}cm/cell</div>
                       </div>
                     </div>
 

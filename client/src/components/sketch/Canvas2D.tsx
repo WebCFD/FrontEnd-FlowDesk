@@ -40,7 +40,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
   const [lastPanPoint, setLastPanPoint] = useState<Point | null>(null);
   const [panMode, setPanMode] = useState(false);
   const [cursorPoint, setCursorPoint] = useState<Point | null>(null);
-  const [zoomInput, setZoomInput] = useState('100'); //This line is changed
+  const [zoomInput, setZoomInput] = useState('100');
 
   const createCoordinateSystem = (): Line[] => {
     const centerX = dimensions.width / 2;
@@ -305,6 +305,9 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
 
     return nearbyLines;
   };
+
+  const gridSizeToCm = (pixels: number): number => pixels * PIXELS_TO_CM;
+
 
   useEffect(() => {
     const canvas = canvasRef.current;
