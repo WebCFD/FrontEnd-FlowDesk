@@ -8,12 +8,15 @@ interface User {
 
 interface AuthState {
   user: User | null;
+  returnTo: string | null;
   setUser: (user: User | null) => void;
   setAnonymousUser: () => void;
+  setReturnTo: (path: string | null) => void;
 }
 
 export const useAuth = create<AuthState>((set) => ({
   user: null,
+  returnTo: null,
   setUser: (user) => set({ user }),
   setAnonymousUser: () => set({ 
     user: { 
@@ -22,4 +25,5 @@ export const useAuth = create<AuthState>((set) => ({
       isAnonymous: true 
     } 
   }),
+  setReturnTo: (path) => set({ returnTo: path }),
 }));
