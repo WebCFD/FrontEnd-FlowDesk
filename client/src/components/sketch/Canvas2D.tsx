@@ -30,7 +30,7 @@ interface Canvas2DProps {
   currentAirEntry: 'vent' | 'door' | 'window' | null;
   onLineSelect?: (line: Line, clickPoint: Point) => void;
   airEntries: AirEntry[];
-  lines: Line[];  // Add this prop explicitly
+  lines: Line[];
   onLinesUpdate?: (lines: Line[]) => void;
 }
 
@@ -39,8 +39,8 @@ export default function Canvas2D({
   currentTool,
   currentAirEntry,
   onLineSelect,
-  airEntries = [], // Add default empty array
-  lines = [], // Add default empty array
+  airEntries = [],
+  lines = [],
   onLinesUpdate
 }: Canvas2DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -228,7 +228,7 @@ export default function Canvas2D({
     );
   };
 
-  const isInClosedContour = (point: Point): boolean => {
+  const isInClosedContour = (point: Point, lines:Line[]): boolean => {
     const visited = new Set<string>();
     const pointKey = (p: Point) => `${p.x},${p.y}`;
 
@@ -481,8 +481,9 @@ export default function Canvas2D({
         let color = '#fb923c';
 
         if (connections > 1) {
-          if (isInClosedContour(point)) {
+          if (isInClosedContour(point, lines)) {
             color = '#22c55e';
+            console.log('Found vertex in closed contour:', point);
           } else {
             color = '#3b82f6';
           }
