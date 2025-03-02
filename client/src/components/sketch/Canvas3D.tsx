@@ -306,29 +306,46 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
         normal: `(${wallNormal.x.toFixed(4)}, ${wallNormal.y.toFixed(4)})`
       });
 
+      // Add debug arrow for wall normal
+      const wallNormalVector = new THREE.Vector3(wallNormal.x, wallNormal.y, 0);
+      const wallMidPoint = new THREE.Vector3(
+        (start_bottom.x + end_bottom.x) / 2,
+        (start_bottom.y + end_bottom.y) / 2,
+        ROOM_HEIGHT / 2
+      );
+      const wallArrowHelper = new THREE.ArrowHelper(
+        wallNormalVector,
+        wallMidPoint,
+        50,  // length
+        0x3b82f6,  // blue color
+        10,  // head length
+        5    // head width
+      );
+      sceneRef.current?.add(wallArrowHelper);
+
       // Create vertices array from transformed points
       const vertices = new Float32Array([
-        start_bottom.x, start_bottom.y, start_bottom.z, // bottom start
-        end_bottom.x, end_bottom.y, end_bottom.z,       // bottom end
-        start_top.x, start_top.y, start_top.z,         // top start
-        end_top.x, end_top.y, end_top.z               // top end
+        start_bottom.x, start_bottom.y, start_bottom.z,
+        end_bottom.x, end_bottom.y, end_bottom.z,
+        start_top.x, start_top.y, start_top.z,
+        end_top.x, end_top.y, end_top.z
       ]);
 
       // Create faces indices
       const indices = new Uint16Array([
-        0, 1, 2,  // first triangle
-        1, 3, 2   // second triangle
+        0, 1, 2,
+        1, 3, 2
       ]);
 
       // Create the wall geometry
       const geometry = new THREE.BufferGeometry();
       geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
       geometry.setIndex(new THREE.BufferAttribute(indices, 1));
-      geometry.computeVertexNormals(); // Compute normals for proper lighting
+      geometry.computeVertexNormals();
 
       // Create the wall mesh
       const wall = new THREE.Mesh(geometry, wallMaterial);
-      sceneRef.current.add(wall);
+      sceneRef.current?.add(wall);
     });
 
     // Transform air entries to match the new coordinate system
@@ -401,16 +418,16 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
 
       sceneRef.current?.add(mesh);
 
-      // Add additional debug visuals for normals
-      const arrowHelper = new THREE.ArrowHelper(
+      // Add arrow helper for air entry normal (in black)
+      const elementArrowHelper = new THREE.ArrowHelper(
         normalVector,
         new THREE.Vector3(position.x, position.y, zPosition),
         50,  // length
-        0xff0000,  // color
+        0x000000,  // black color
         10,  // head length
         5    // head width
       );
-      sceneRef.current?.add(arrowHelper);
+      sceneRef.current?.add(elementArrowHelper);
     });
 
   }, [lines, airEntries]);
