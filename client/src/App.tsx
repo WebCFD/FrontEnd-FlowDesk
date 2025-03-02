@@ -11,17 +11,28 @@ import Profile from "@/pages/dashboard/profile";
 import NewSimulation from "@/pages/dashboard/new-simulation";
 import WizardDesign from "@/pages/dashboard/wizard-design";
 import { ProtectedRoute } from "@/lib/protected-route";
+import { AuthProvider } from "@/hooks/use-auth";
+import DashboardLayout from "@/components/layout/dashboard-layout";
+
+// Wrap the component with DashboardLayout for dashboard routes
+const withDashboardLayout = (Component: () => React.JSX.Element) => {
+  return () => (
+    <DashboardLayout>
+      <Component />
+    </DashboardLayout>
+  );
+};
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
-      <ProtectedRoute path="/dashboard" component={Dashboard} />
-      <ProtectedRoute path="/dashboard/simulations" component={Simulations} />
-      <ProtectedRoute path="/dashboard/settings" component={Settings} />
-      <ProtectedRoute path="/dashboard/profile" component={Profile} />
-      <ProtectedRoute path="/dashboard/new-simulation" component={NewSimulation} />
-      <ProtectedRoute path="/dashboard/wizard-design" component={WizardDesign} />
+      <ProtectedRoute path="/dashboard" component={withDashboardLayout(Dashboard)} />
+      <ProtectedRoute path="/dashboard/simulations" component={withDashboardLayout(Simulations)} />
+      <ProtectedRoute path="/dashboard/settings" component={withDashboardLayout(Settings)} />
+      <ProtectedRoute path="/dashboard/profile" component={withDashboardLayout(Profile)} />
+      <ProtectedRoute path="/dashboard/new-simulation" component={withDashboardLayout(NewSimulation)} />
+      <ProtectedRoute path="/dashboard/wizard-design" component={withDashboardLayout(WizardDesign)} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -30,12 +41,14 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="min-h-screen flex flex-col">
-        <main className="flex-1">
-          <Router />
-        </main>
-      </div>
-      <Toaster />
+      <AuthProvider>
+        <div className="min-h-screen flex flex-col">
+          <main className="flex-1">
+            <Router />
+          </main>
+        </div>
+        <Toaster />
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
