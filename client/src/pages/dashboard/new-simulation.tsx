@@ -41,12 +41,18 @@ export default function NewSimulation() {
 
   const renderStepIndicator = () => (
     <div className="w-full">
-      <div className="relative h-16 bg-muted/10">
+      <div className="relative h-16 bg-muted/10 border rounded-lg">
         <div className="absolute inset-0 flex justify-between items-center px-8">
+          {/* Decorative lines */}
+          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-center gap-[33%]">
+            <div className="w-24 h-px bg-border" />
+            <div className="w-24 h-px bg-border" />
+          </div>
+
           {steps.map((s, i) => (
             <div
               key={s.id}
-              className="flex items-center cursor-pointer"
+              className="flex items-center cursor-pointer relative z-10 bg-muted/10 px-3"
               onClick={() => setStep(s.id)}
             >
               <div className={`text-sm ${step === s.id ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
