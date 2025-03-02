@@ -372,9 +372,19 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       // Calculate Z position based on entry type
       const zPosition = entry.type === 'door' ? height / 2 : (entry.dimensions.distanceToFloor || 0);
 
-      // Use the same normal calculation as the wall
-      const entryNormal = calculateNormal(entry.line);
-      const normalVector = new THREE.Vector3(entryNormal.x, entryNormal.y, 0);
+      // Calculate wall direction and normal vectors using the same method as walls
+      const wallDirection = new THREE.Vector3()
+        .subVectors(
+          transform2DTo3D(entry.line.end),
+          transform2DTo3D(entry.line.start)
+        )
+        .normalize();
+
+      // Calculate proper wall normal using cross product
+      const upVector = new THREE.Vector3(0, 0, 1);
+      const wallNormalVector = new THREE.Vector3()
+        .crossVectors(wallDirection, upVector)
+        .normalize();
 
       // Create and position the air entry
       const geometry = new THREE.PlaneGeometry(width, height);
@@ -382,28 +392,33 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       const position = transform2DTo3D(entry.position);
       mesh.position.set(position.x, position.y, zPosition);
 
-      // Orient the mesh using the wall's normal
-      const target = new THREE.Vector3(
-        position.x + normalVector.x,
-        position.y + normalVector.y,
-        zPosition
+      // Set the orientation to match the wall
+      const quaternion = new THREE.Quaternion();
+      quaternion.setFromUnitVectors(
+        new THREE.Vector3(0, 0, 1), // Default plane normal
+        wallNormalVector            // Target normal (wall normal)
       );
+      mesh.setRotationFromQuaternion(quaternion);
 
-      mesh.lookAt(target);
-      mesh.rotateY(Math.PI); // Make the mesh face outward
-
-      sceneRef.current.add(mesh);
+      sceneRef.current?.add(mesh);
 
       // Debug arrow for air entry normal (black)
       const elementArrowHelper = new THREE.ArrowHelper(
-        normalVector,
+        wallNormalVector,
         new THREE.Vector3(position.x, position.y, zPosition),
         50,  // length
         0x000000,  // black color
         10,  // head length
         5    // head width
       );
-      sceneRef.current.add(elementArrowHelper);
+      sceneRef.current?.add(elementArrowHelper);
+
+      // Log vectors for debugging
+      console.log(`Air Entry (${entry.type}) vectors:`, {
+        position: `(${position.x.toFixed(2)}, ${position.y.toFixed(2)}, ${zPosition.toFixed(2)})`,
+        direction: `(${wallDirection.x.toFixed(4)}, ${wallDirection.y.toFixed(4)}, ${wallDirection.z.toFixed(4)})`,
+        normal: `(${wallNormalVector.x.toFixed(4)}, ${wallNormalVector.y.toFixed(4)}, ${wallNormalVector.z.toFixed(4)})`
+      });
     });
 
   }, [lines, airEntries]);
