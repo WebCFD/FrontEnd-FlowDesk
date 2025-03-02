@@ -85,6 +85,50 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
     return nearest;
   };
 
+  // Find connected lines to a point
+  const findConnectedLines = (point: Point): Line[] => {
+    return lines.filter(line =>
+      arePointsClose(line.start, point) || arePointsClose(line.end, point)
+    );
+  };
+
+  // Check if a point is part of a closed contour
+  const isInClosedContour = (point: Point): boolean => {
+    const visited = new Set<string>();
+    const pointKey = (p: Point) => `${p.x},${p.y}`;
+
+    const findPath = (current: Point, steps: number): boolean => {
+      // If we've made at least 3 steps and found our way back to the start, it's a closed contour
+      if (steps >= 3 && arePointsClose(current, point)) {
+        return true;
+      }
+
+      const connectedLines = findConnectedLines(current);
+
+      for (const line of connectedLines) {
+        // Get the other endpoint of the line
+        const nextPoint = arePointsClose(line.start, current) ? line.end : line.start;
+        const key = pointKey(nextPoint);
+
+        // Skip if we've already visited this point (unless it's the starting point and we've made enough steps)
+        if (visited.has(key) && !(arePointsClose(nextPoint, point) && steps >= 3)) {
+          continue;
+        }
+
+        visited.add(key);
+        if (findPath(nextPoint, steps + 1)) {
+          return true;
+        }
+        visited.delete(key);
+      }
+
+      return false;
+    };
+
+    visited.add(pointKey(point));
+    return findPath(point, 0);
+  };
+
   // Get all endpoints from lines
   const getAllEndpoints = (): Point[] => {
     const points: Point[] = [];
@@ -103,34 +147,6 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       }
     });
     return count;
-  };
-
-  // Check if a point is part of a closed contour
-  const isInClosedContour = (point: Point): boolean => {
-    const connectedPoints = new Set<string>();
-    const pointKey = (p: Point) => `${p.x},${p.y}`;
-    let startPoint = point;
-
-    const findNextPoint = (current: Point, visited: Set<string>): boolean => {
-      for (const line of lines) {
-        const linePoints = [line.start, line.end];
-        for (const endpoint of linePoints) {
-          if (arePointsClose(current, endpoint) && !visited.has(pointKey(endpoint))) {
-            visited.add(pointKey(endpoint));
-            if (arePointsClose(endpoint, startPoint) && visited.size > 2) {
-              return true;
-            }
-            if (findNextPoint(endpoint, visited)) {
-              return true;
-            }
-            visited.delete(pointKey(endpoint));
-          }
-        }
-      }
-      return false;
-    };
-
-    return findNextPoint(point, new Set([pointKey(point)]));
   };
 
   // Convert page coordinates to canvas coordinates
