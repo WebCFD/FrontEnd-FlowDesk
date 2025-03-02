@@ -9,7 +9,7 @@ import { RoomSketchPro } from "@/components/sketch/RoomSketchPro";
 import { Separator } from "@/components/ui/separator";
 import { Eraser, ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function NewSimulation() {
   const [step, setStep] = useState(1);
@@ -144,7 +144,7 @@ export default function NewSimulation() {
                 <div className="border rounded-lg">
                   {/* Placeholder for RoomSketchPro in Step 2 if needed.  This is not strictly necessary based on the intention. */}
                   {/* <RoomSketchPro width={800} height={600} /> */}
-                
+
                   {/* Display placed objects */}
                   <div>
                     {placedObjects.map((obj, index) => (
