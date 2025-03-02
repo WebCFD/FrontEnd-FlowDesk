@@ -77,15 +77,16 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
     setLastPanPoint(null);
   };
 
-  // Transform point from screen to canvas coordinates
-  const screenToCanvas = (point: Point): Point => {
-    const rect = canvasRef.current?.getBoundingClientRect();
-    if (!rect) return point;
+  // Get point coordinates relative to canvas with zoom and pan
+  const getCanvasPoint = (e: MouseEvent): Point => {
+    const canvas = canvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
 
-    return {
-      x: (point.x - rect.left - pan.x) / zoom,
-      y: (point.y - rect.top - pan.y) / zoom
-    };
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left - pan.x) / zoom;
+    const y = (e.clientY - rect.top - pan.y) / zoom;
+
+    return { x, y };
   };
 
   // Convert pixels to centimeters
@@ -221,38 +222,6 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
     return findPath(point, 0);
   };
 
-  // Get all endpoints from lines
-  const getAllEndpoints = (): Point[] => {
-    const points: Point[] = [];
-    lines.forEach(line => {
-      points.push(line.start, line.end);
-    });
-    return points;
-  };
-
-  // Count how many times a point appears as an endpoint
-  const getEndpointConnections = (point: Point): number => {
-    let count = 0;
-    lines.forEach(line => {
-      if (arePointsClose(line.start, point) || arePointsClose(line.end, point)) {
-        count++;
-      }
-    });
-    return count;
-  };
-
-  // Convert page coordinates to canvas coordinates
-  const getCanvasPoint = (e: MouseEvent): Point => {
-    const canvas = canvasRef.current;
-    if (!canvas) return { x: 0, y: 0 };
-
-    const rect = canvas.getBoundingClientRect();
-    return {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
-    };
-  };
-
   // Find lines near a point
   const findLinesNearPoint = (point: Point): Line[] => {
     const nearbyLines: Line[] = [];
@@ -310,8 +279,8 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       ctx.scale(zoom, zoom);
 
       // Calculate center points and grid offset
-      const centerX = Math.round(dimensions.width / 2);
-      const centerY = Math.round(dimensions.height / 2);
+      const centerX = Math.round(dimensions.width / (2 * zoom));
+      const centerY = Math.round(dimensions.height / (2 * zoom));
 
       // Calculate grid offset to align center with grid
       const offsetX = centerX % gridSize;
@@ -320,31 +289,32 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       // Draw grid
       ctx.beginPath();
       ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 1 / zoom; // Adjust line width based on zoom
 
       // Vertical lines
-      for (let x = centerX % gridSize; x <= dimensions.width; x += gridSize) {
+      for (let x = -offsetX; x <= dimensions.width / zoom; x += gridSize) {
         ctx.moveTo(x, 0);
-        ctx.lineTo(x, dimensions.height);
+        ctx.lineTo(x, dimensions.height / zoom);
       }
 
       // Horizontal lines
-      for (let y = centerY % gridSize; y <= dimensions.height; y += gridSize) {
+      for (let y = -offsetY; y <= dimensions.height / zoom; y += gridSize) {
         ctx.moveTo(0, y);
-        ctx.lineTo(dimensions.width, y);
+        ctx.lineTo(dimensions.width / zoom, y);
       }
 
       ctx.stroke();
 
       // Calculate arrow dimensions
-      const arrowLength = 150;
-      const arrowHeadLength = 10;
+      const arrowLength = 150 / zoom;
+      const arrowHeadLength = 10 / zoom;
       const arrowHeadAngle = Math.PI / 6;
 
       // Function to draw arrow
       function drawArrow(fromX: number, fromY: number, toX: number, toY: number, color: string) {
         ctx.beginPath();
         ctx.strokeStyle = color;
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 2 / zoom;
 
         // Draw main line
         ctx.moveTo(fromX, fromY);
@@ -373,51 +343,46 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
 
       // Draw origin point
       ctx.beginPath();
-      ctx.arc(centerX, centerY, 4, 0, 2 * Math.PI);
+      ctx.arc(centerX, centerY, 4 / zoom, 0, 2 * Math.PI);
       ctx.fillStyle = '#94a3b8';
       ctx.fill();
 
       // Add coordinate labels
       ctx.fillStyle = '#64748b';
-      ctx.font = '12px sans-serif';
+      ctx.font = `${12 / zoom}px sans-serif`;
       ctx.textAlign = 'center';
-      ctx.fillText('(0,0)', centerX + 15, centerY + 15);
-      ctx.fillText('X', centerX + arrowLength - 10, centerY - 10);
-      ctx.fillText('Y', centerX + 10, centerY - arrowLength + 10);
+      ctx.fillText('(0,0)', centerX + 15 / zoom, centerY + 15 / zoom);
+      ctx.fillText('X', centerX + arrowLength - 10 / zoom, centerY - 10 / zoom);
+      ctx.fillText('Y', centerX + 10 / zoom, centerY - arrowLength + 10 / zoom);
 
       // Draw existing lines
-      ctx.beginPath();
       lines.forEach(line => {
         if (highlightedLines.includes(line)) {
-          // Draw highlighted lines in red with some transparency
           ctx.strokeStyle = 'rgba(239, 68, 68, 0.5)';
-          ctx.lineWidth = 3;
+          ctx.lineWidth = 3 / zoom;
         } else {
           ctx.strokeStyle = '#000000';
-          ctx.lineWidth = 2;
+          ctx.lineWidth = 2 / zoom;
         }
         ctx.beginPath();
         ctx.moveTo(line.start.x, line.start.y);
         ctx.lineTo(line.end.x, line.end.y);
         ctx.stroke();
-      });
 
-      // Draw line lengths
-      ctx.font = '12px sans-serif';
-      ctx.fillStyle = '#64748b';
-      ctx.textAlign = 'center';
-      lines.forEach(line => {
+        // Draw line length
         const midX = (line.start.x + line.end.x) / 2;
         const midY = (line.start.y + line.end.y) / 2;
         const length = Math.round(getLineLength(line));
-        ctx.fillText(`${length} cm`, midX, midY - 5);
+        ctx.font = `${12 / zoom}px sans-serif`;
+        ctx.fillStyle = '#64748b';
+        ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
       });
 
-      // Draw current line preview and its length
+      // Draw current line preview
       if (currentLine) {
         ctx.beginPath();
         ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 2 / zoom;
         ctx.moveTo(currentLine.start.x, currentLine.start.y);
         ctx.lineTo(currentLine.end.x, currentLine.end.y);
         ctx.stroke();
@@ -425,20 +390,13 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
         const length = Math.round(getLineLength(currentLine));
         const midX = (currentLine.start.x + currentLine.end.x) / 2;
         const midY = (currentLine.start.y + currentLine.end.y) / 2;
-        ctx.fillText(`${length} cm`, midX, midY - 5);
-
-        //Draw coordinate for the current end point
-        if (currentLine.start.x !== currentLine.end.x || currentLine.start.y !== currentLine.end.y) {
-          drawCoordinateLabel(ctx, currentLine.end, '#fb923c');
-        }
+        ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
       }
 
-      // Draw endpoints with different colors based on their state
-      getAllEndpoints().forEach(point => {
-        ctx.beginPath();
-
-        // Determine point color based on its state
-        const connections = getEndpointConnections(point);
+      // Draw endpoints with different colors
+      const endpoints = [...new Set(lines.flatMap(line => [line.start, line.end]))];
+      endpoints.forEach(point => {
+        const connections = findConnectedLines(point).length;
         let color = '#fb923c'; // Orange for disconnected points
 
         if (connections > 1) {
@@ -449,69 +407,70 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
           }
         }
 
-        // Draw the point
+        // Draw point
+        ctx.beginPath();
         ctx.fillStyle = color;
-        ctx.arc(point.x, point.y, POINT_RADIUS, 0, 2 * Math.PI);
+        ctx.arc(point.x, point.y, POINT_RADIUS / zoom, 0, 2 * Math.PI);
         ctx.fill();
 
         // Draw coordinate label
+        ctx.font = `${12 / zoom}px sans-serif`;
         drawCoordinateLabel(ctx, point, color);
       });
-      ctx.restore();
 
-      // Draw zoom controls (these are drawn without transform)
-      ctx.save();
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-      ctx.fillRect(dimensions.width - 100, dimensions.height - 30, 100, 30);
-      ctx.fillStyle = '#64748b';
-      ctx.font = '12px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(`${Math.round(zoom * 100)}%`, dimensions.width - 50, dimensions.height - 12);
       ctx.restore();
     };
 
-    // Add event listeners for drawing and erasing
+    // Add event listeners
     const handleMouseDown = (e: MouseEvent) => {
+      if (e.button === 2) { // Right click for panning
+        e.preventDefault();
+        handlePanStart(e);
+        return;
+      }
+
       if (currentTool === 'wall') {
-        const point = screenToCanvas(getCanvasPoint(e));
+        const point = getCanvasPoint(e);
         const nearestPoint = findNearestEndpoint(point);
         const startPoint = nearestPoint || snapToGrid(point);
-
         setCurrentLine({ start: startPoint, end: startPoint });
         setIsDrawing(true);
       } else if (currentTool === 'eraser') {
-        const point = screenToCanvas(getCanvasPoint(e));
+        const point = getCanvasPoint(e);
         const linesToErase = findLinesNearPoint(point);
         if (linesToErase.length > 0) {
-          const remainingLines = lines.filter(line => !linesToErase.includes(line));
-          setLines(remainingLines);
+          setLines(prev => prev.filter(line => !linesToErase.includes(line)));
           setHighlightedLines([]);
         }
       }
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (currentTool === 'wall') {
-        if (!isDrawing || !currentLine) return;
+      if (isPanning) {
+        handlePanMove(e);
+        return;
+      }
 
-        const point = screenToCanvas(getCanvasPoint(e));
+      if (currentTool === 'wall' && isDrawing && currentLine) {
+        const point = getCanvasPoint(e);
         const nearestPoint = findNearestEndpoint(point);
         const endPoint = nearestPoint || snapToGrid(point);
-
-        setCurrentLine({ ...currentLine, end: endPoint });
+        setCurrentLine(prev => prev ? { ...prev, end: endPoint } : null);
       } else if (currentTool === 'eraser') {
-        const point = screenToCanvas(getCanvasPoint(e));
-        const linesToErase = findLinesNearPoint(point);
-        setHighlightedLines(linesToErase);
+        const point = getCanvasPoint(e);
+        setHighlightedLines(findLinesNearPoint(point));
       }
     };
 
-    const handleMouseUp = () => {
-      if (currentTool === 'wall') {
-        if (!isDrawing || !currentLine) return;
+    const handleMouseUp = (e: MouseEvent) => {
+      if (e.button === 2) {
+        handlePanEnd();
+        return;
+      }
 
+      if (currentTool === 'wall' && isDrawing && currentLine) {
         if (currentLine.start.x !== currentLine.end.x || currentLine.start.y !== currentLine.end.y) {
-          setLines([...lines, currentLine]);
+          setLines(prev => [...prev, currentLine]);
         }
         setCurrentLine(null);
         setIsDrawing(false);
@@ -519,30 +478,27 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
     };
 
     const handleMouseLeave = () => {
-      if (currentTool === 'eraser') {
-        setHighlightedLines([]);
+      handlePanEnd();
+      setHighlightedLines([]);
+      if (isDrawing) {
+        setCurrentLine(null);
+        setIsDrawing(false);
       }
-      handleMouseUp();
     };
 
+    // Set up event listeners
     canvas.addEventListener('mousedown', handleMouseDown);
     canvas.addEventListener('mousemove', handleMouseMove);
     canvas.addEventListener('mouseup', handleMouseUp);
     canvas.addEventListener('mouseleave', handleMouseLeave);
     canvas.addEventListener('wheel', handleWheel);
-    canvas.addEventListener('mousedown', handlePanStart);
-    canvas.addEventListener('mousemove', handlePanMove);
-    canvas.addEventListener('mouseup', handlePanEnd);
-    canvas.addEventListener('mouseleave', handlePanEnd);
     canvas.addEventListener('contextmenu', e => e.preventDefault());
 
     // Start animation loop
-    let animationFrameId: number;
-    const animate = () => {
+    let animationFrameId = requestAnimationFrame(function animate() {
       draw();
       animationFrameId = requestAnimationFrame(animate);
-    };
-    animate();
+    });
 
     // Cleanup
     return () => {
@@ -551,13 +507,10 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       canvas.removeEventListener('mouseup', handleMouseUp);
       canvas.removeEventListener('mouseleave', handleMouseLeave);
       canvas.removeEventListener('wheel', handleWheel);
-      canvas.removeEventListener('mousedown', handlePanStart);
-      canvas.removeEventListener('mousemove', handlePanMove);
-      canvas.removeEventListener('mouseup', handlePanEnd);
-      canvas.removeEventListener('mouseleave', handlePanEnd);
+      canvas.removeEventListener('contextmenu', e => e.preventDefault());
       cancelAnimationFrame(animationFrameId);
     };
-  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan]);
+  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning]);
 
   return (
     <div ref={containerRef} className="w-full h-full relative">
