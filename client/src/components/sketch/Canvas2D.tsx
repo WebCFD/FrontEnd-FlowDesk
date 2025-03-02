@@ -93,9 +93,12 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
     if (!canvas) return { x: 0, y: 0 };
 
     const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
     return {
-      x: (e.clientX - rect.left - pan.x) / zoom,
-      y: (e.clientY - rect.top - pan.y) / zoom
+      x: ((e.clientX - rect.left) * scaleX - pan.x) / zoom,
+      y: ((e.clientY - rect.top) * scaleY - pan.y) / zoom
     };
   };
 
