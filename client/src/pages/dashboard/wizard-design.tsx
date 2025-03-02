@@ -33,6 +33,15 @@ interface AirEntry {
   line: Line;
 }
 
+const calculateNormal = (line: Line | null): { x: number; y: number } => {
+  if (!line) return { x: 0, y: 0 };
+  const dx = line.end.x - line.start.x;
+  const dy = line.end.y - line.start.y;
+  const mag = Math.sqrt(dx * dx + dy * dy);
+  return { x: -dy / mag, y: dx / mag };
+};
+
+
 export default function WizardDesign() {
   const [step, setStep] = useState(1);
   const [simulationName, setSimulationName] = useState("");
@@ -124,6 +133,12 @@ export default function WizardDesign() {
     distanceToFloor?: number;
   }) => {
     if (selectedLine && clickedPoint && currentAirEntry) {
+      const normal = calculateNormal(selectedLine);
+      console.log(`Creating new ${currentAirEntry} air entry:`);
+      console.log(`Position: (${clickedPoint.x}, ${clickedPoint.y})`);
+      console.log(`Dimensions: width=${dimensions.width}cm, height=${dimensions.height}cm`);
+      console.log(`Wall normal: (${normal.x.toFixed(3)}, ${normal.y.toFixed(3)})`);
+
       const newAirEntry: AirEntry = {
         type: currentAirEntry,
         position: clickedPoint,

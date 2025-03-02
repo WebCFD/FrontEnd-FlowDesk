@@ -46,17 +46,17 @@ const calculateNormal = (line: Line): Point => {
   const dy = line.end.y - line.start.y;
   const length = Math.sqrt(dx * dx + dy * dy);
   return {
-    x: -dy / length,
-    y: dx / length
+    x: dx / length, // Changed to match wall direction
+    y: dy / length
   };
 };
 
-export default function Canvas2D({ 
-  gridSize, 
-  currentTool, 
-  currentAirEntry, 
+export default function Canvas2D({
+  gridSize,
+  currentTool,
+  currentAirEntry,
   onLineSelect,
-  airEntries 
+  airEntries
 }: Canvas2DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -361,58 +361,54 @@ export default function Canvas2D({
     return colors[type];
   };
 
-  // Add function to draw air entries
+  // Modified function to draw air entries as thick segments
   const drawAirEntry = (ctx: CanvasRenderingContext2D, entry: AirEntry) => {
     const normal = calculateNormal(entry.line);
     const color = getAirEntryColor(entry.type);
+    console.log(`Drawing ${entry.type} at (${entry.position.x}, ${entry.position.y})`);
+    console.log(`Normal vector: (${normal.x.toFixed(3)}, ${normal.y.toFixed(3)})`);
 
     ctx.save();
     ctx.strokeStyle = color;
-    ctx.fillStyle = color;
-    ctx.lineWidth = 2 / zoom;
+    ctx.lineWidth = 4 / zoom; // Thick line for all types
 
-    // Draw based on type
-    if (entry.type === 'door') {
-      // Draw door as thick line
-      ctx.lineWidth = 4 / zoom;
-      ctx.beginPath();
-      ctx.moveTo(entry.position.x, entry.position.y);
-      ctx.lineTo(
-        entry.position.x + normal.x * entry.dimensions.width,
-        entry.position.y + normal.y * entry.dimensions.width
-      );
-      ctx.stroke();
-    } else {
-      // Draw window or vent as rectangle
-      const width = entry.dimensions.width;
-      const height = entry.dimensions.height;
+    // Draw the segment
+    ctx.beginPath();
+    ctx.moveTo(entry.position.x, entry.position.y);
+    ctx.lineTo(
+      entry.position.x + normal.x * entry.dimensions.width,
+      entry.position.y + normal.y * entry.dimensions.width
+    );
+    ctx.stroke();
 
-      ctx.beginPath();
-      ctx.rect(
-        entry.position.x - width/2,
-        entry.position.y - height/2,
-        width,
-        height
-      );
-
-      if (entry.type === 'vent') {
-        // Add grid pattern for vent
-        ctx.fill();
-        ctx.stroke();
-
-        // Draw grid lines
-        ctx.beginPath();
-        for (let i = 1; i < 3; i++) {
-          ctx.moveTo(entry.position.x - width/2 + (width/3)*i, entry.position.y - height/2);
-          ctx.lineTo(entry.position.x - width/2 + (width/3)*i, entry.position.y + height/2);
-          ctx.moveTo(entry.position.x - width/2, entry.position.y - height/2 + (height/3)*i);
-          ctx.lineTo(entry.position.x + width/2, entry.position.y - height/2 + (height/3)*i);
-        }
-        ctx.stroke();
-      } else {
-        // Window just gets outline
-        ctx.stroke();
+    // Add type-specific visual indicators while keeping the thick segment
+    if (entry.type === 'vent') {
+      // Add small cross marks along the segment
+      const steps = 3;
+      for (let i = 1; i < steps; i++) {
+        const t = i / steps;
+        const x = entry.position.x + normal.x * entry.dimensions.width * t;
+        const y = entry.position.y + normal.y * entry.dimensions.width * t;
+        ctx.moveTo(x - 2 / zoom, y - 2 / zoom);
+        ctx.lineTo(x + 2 / zoom, y + 2 / zoom);
+        ctx.moveTo(x - 2 / zoom, y + 2 / zoom);
+        ctx.lineTo(x + 2 / zoom, y - 2 / zoom);
       }
+      ctx.stroke();
+    } else if (entry.type === 'window') {
+      // Add small perpendicular lines at the ends
+      const perpX = -normal.y * 4 / zoom;
+      const perpY = normal.x * 4 / zoom;
+
+      ctx.beginPath();
+      ctx.moveTo(entry.position.x - perpX, entry.position.y - perpY);
+      ctx.lineTo(entry.position.x + perpX, entry.position.y + perpY);
+
+      const endX = entry.position.x + normal.x * entry.dimensions.width;
+      const endY = entry.position.y + normal.y * entry.dimensions.width;
+      ctx.moveTo(endX - perpX, endY - perpY);
+      ctx.lineTo(endX + perpX, endY + perpY);
+      ctx.stroke();
     }
 
     ctx.restore();
@@ -574,6 +570,7 @@ export default function Canvas2D({
       }
     };
 
+    // Modified handleMouseUp to log wall normals when created
     const handleMouseUp = (e: MouseEvent) => {
       if (panMode || e.button === 2) {
         handlePanEnd();
@@ -582,6 +579,12 @@ export default function Canvas2D({
 
       if (currentTool === 'wall' && isDrawing && currentLine) {
         if (currentLine.start.x !== currentLine.end.x || currentLine.start.y !== currentLine.end.y) {
+          const normal = calculateNormal(currentLine);
+          console.log('Created wall line:');
+          console.log(`Start: (${currentLine.start.x}, ${currentLine.start.y})`);
+          console.log(`End: (${currentLine.end.x}, ${currentLine.end.y})`);
+          console.log(`Normal vector: (${normal.x.toFixed(3)}, ${normal.y.toFixed(3)})`);
+
           setLines(prev => [...prev, currentLine]);
         }
         setCurrentLine(null);
