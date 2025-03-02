@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
-import { Save, Upload, Eraser, ArrowRight, ArrowLeft } from "lucide-react";
+import { Save, Upload, Eraser, ArrowRight, ArrowLeft, CheckCircle2 } from "lucide-react";
 import Canvas2D from "@/components/sketch/Canvas2D";
 
 export default function NewSimulation() {
@@ -16,6 +16,12 @@ export default function NewSimulation() {
   const [gridSize, setGridSize] = useState(20);
   const [currentTool, setCurrentTool] = useState<'wall' | 'eraser'>('wall');
   const { toast } = useToast();
+
+  const steps = [
+    { id: 1, name: "Design" },
+    { id: 2, name: "Parameters" },
+    { id: 3, name: "Package" }
+  ];
 
   const handleGridSizeChange = (value: number[]) => {
     setGridSize(value[0]);
@@ -32,6 +38,41 @@ export default function NewSimulation() {
   const handleBack = () => {
     if (step > 1) setStep(step - 1);
   };
+
+  const renderStepIndicator = () => (
+    <div className="w-full mb-8">
+      <div className="flex justify-between relative">
+        <div className="absolute left-0 right-0 top-1/2 h-px bg-border -translate-y-1/2" />
+        {steps.map((s, i) => (
+          <div 
+            key={s.id}
+            className="relative"
+            onClick={() => setStep(s.id)}
+          >
+            <div 
+              className={`
+                w-8 h-8 rounded-full flex items-center justify-center 
+                ${step >= s.id ? 'bg-primary text-primary-foreground' : 'bg-muted'} 
+                cursor-pointer transition-colors relative z-10
+              `}
+            >
+              {step > s.id ? (
+                <CheckCircle2 className="w-5 h-5" />
+              ) : (
+                s.id
+              )}
+            </div>
+            <div className={`
+              absolute top-full mt-2 left-1/2 -translate-x-1/2 whitespace-nowrap text-sm
+              ${step >= s.id ? 'text-foreground' : 'text-muted-foreground'}
+            `}>
+              {s.name}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
   const renderStep1 = () => (
     <>
@@ -222,32 +263,33 @@ export default function NewSimulation() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">New Simulation - Step {step} of 3</h1>
-          <div className="flex gap-2">
-            {step > 1 && (
-              <Button onClick={handleBack} variant="outline">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back
-              </Button>
-            )}
-            {step < 3 ? (
-              <Button onClick={handleNext}>
-                Next
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            ) : (
-              <Button onClick={() => toast({ title: "Starting simulation...", description: "Your simulation will begin shortly." })}>
-                Start Simulation
-              </Button>
-            )}
-          </div>
+      <div className="container mx-auto py-6 space-y-6">
+        {renderStepIndicator()}
+
+        <div className="min-h-[600px]">
+          {step === 1 && renderStep1()}
+          {step === 2 && renderStep2()}
+          {step === 3 && renderStep3()}
         </div>
 
-        {step === 1 && renderStep1()}
-        {step === 2 && renderStep2()}
-        {step === 3 && renderStep3()}
+        <div className="flex justify-end gap-2 pt-6 mt-6 border-t">
+          {step > 1 && (
+            <Button onClick={handleBack} variant="outline">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back
+            </Button>
+          )}
+          {step < 3 ? (
+            <Button onClick={handleNext}>
+              Next
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          ) : (
+            <Button onClick={() => toast({ title: "Starting simulation...", description: "Your simulation will begin shortly." })}>
+              Start Simulation
+            </Button>
+          )}
+        </div>
       </div>
     </DashboardLayout>
   );
