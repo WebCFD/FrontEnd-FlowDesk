@@ -57,8 +57,7 @@ export default function WizardDesign() {
   const [selectedLine, setSelectedLine] = useState<Line | null>(null);
   const [clickedPoint, setClickedPoint] = useState<Point | null>(null);
   const [tab, setTab] = useState<"2d-editor" | "3d-preview">("2d-editor");
-  const [showStartSimulationPrompt, setShowStartSimulationPrompt] = useState(false); //New state variable
-
+  const [showStartSimulationPrompt, setShowStartSimulationPrompt] = useState(false);
 
   // Use the global room store
   const { lines, airEntries, hasClosedContour, setLines, setAirEntries, setHasClosedContour } = useRoomStore();
@@ -434,7 +433,7 @@ export default function WizardDesign() {
         </CardContent>
       </Card>
 
-      <AlertDialog open={showStartSimulationPrompt} onOpenChange={setShowStartSimulationPrompt}> {/* Replaced showLoginPrompt */}
+      <AlertDialog open={showStartSimulationPrompt} onOpenChange={setShowStartSimulationPrompt}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Start New Simulation?</AlertDialogTitle>
@@ -444,8 +443,8 @@ export default function WizardDesign() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowStartSimulationPrompt(false)}>Return WizardDesign</AlertDialogCancel>
-            <AlertDialogAction onClick={handleStartSimulation}>
+            <AlertDialogCancel onClick={handleReturnToWizard}>Return to WizardDesign</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmNewSimulation}>
               New Design
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -500,13 +499,36 @@ export default function WizardDesign() {
   };
 
   const handleStartSimulation = () => {
-    setShowStartSimulationPrompt(true); // Show the new alert dialog
+    setShowStartSimulationPrompt(true);
   };
+
+  const handleConfirmNewSimulation = () => {
+    reset();
+    setShowStartSimulationPrompt(false);
+    setLocation("/dashboard/wizard-design");
+  };
+
+  const handleReturnToWizard = () => {
+    setShowStartSimulationPrompt(false);
+  };
+
+  const reset = () => {
+    setLines([]);
+    setAirEntries([]);
+    setHasClosedContour(false);
+    setSimulationName("");
+    setGridSize(20);
+    setCurrentTool('wall');
+    setCurrentAirEntry(null);
+    setSelectedLine(null);
+    setClickedPoint(null);
+    setTab("2d-editor");
+  };
+
 
   const handleBack = () => {
     if (step > 1) setStep(step - 1);
   };
-
 
   return (
     <DashboardLayout>
