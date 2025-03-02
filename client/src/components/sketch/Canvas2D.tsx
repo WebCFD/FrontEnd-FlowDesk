@@ -23,6 +23,7 @@ const PIXELS_TO_CM = 25 / 20; // 20 pixels = 25 cm
 const MIN_ZOOM = 0.25;
 const MAX_ZOOM = 4;
 const ZOOM_STEP = 0.1;
+const GRID_RANGE = 2000; // Grid lines will extend this far in each direction
 
 export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -38,6 +39,51 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
   const [lastPanPoint, setLastPanPoint] = useState<Point | null>(null);
   const [panMode, setPanMode] = useState(false);
   const [cursorPoint, setCursorPoint] = useState<Point | null>(null);
+
+  // Create coordinate system axes
+  const createCoordinateSystem = (): Line[] => {
+    const centerX = dimensions.width / 2;
+    const centerY = dimensions.height / 2;
+    const arrowLength = 150;
+
+    return [
+      // X-axis
+      { start: { x: centerX - arrowLength, y: centerY }, end: { x: centerX + arrowLength, y: centerY } },
+      // X-axis arrow head
+      { start: { x: centerX + arrowLength, y: centerY }, end: { x: centerX + arrowLength - 10, y: centerY - 5 } },
+      { start: { x: centerX + arrowLength, y: centerY }, end: { x: centerX + arrowLength - 10, y: centerY + 5 } },
+      // Y-axis
+      { start: { x: centerX, y: centerY + arrowLength }, end: { x: centerX, y: centerY - arrowLength } },
+      // Y-axis arrow head
+      { start: { x: centerX, y: centerY - arrowLength }, end: { x: centerX - 5, y: centerY - arrowLength + 10 } },
+      { start: { x: centerX, y: centerY - arrowLength }, end: { x: centerX + 5, y: centerY - arrowLength + 10 } },
+    ];
+  };
+
+  // Create grid lines
+  const createGridLines = (): Line[] => {
+    const gridLines: Line[] = [];
+    const centerX = dimensions.width / 2;
+    const centerY = dimensions.height / 2;
+
+    // Vertical lines
+    for (let x = -GRID_RANGE; x <= GRID_RANGE; x += gridSize) {
+      gridLines.push({
+        start: { x: centerX + x, y: centerY - GRID_RANGE },
+        end: { x: centerX + x, y: centerY + GRID_RANGE }
+      });
+    }
+
+    // Horizontal lines
+    for (let y = -GRID_RANGE; y <= GRID_RANGE; y += gridSize) {
+      gridLines.push({
+        start: { x: centerX - GRID_RANGE, y: centerY + y },
+        end: { x: centerX + GRID_RANGE, y: centerY + y }
+      });
+    }
+
+    return gridLines;
+  };
 
   // Zoom control functions
   const handleZoomChange = (newZoom: number) => {
@@ -295,89 +341,48 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       // Clear canvas
       ctx.clearRect(0, 0, dimensions.width, dimensions.height);
 
-      // Apply transform
+      // Apply transform for all drawing operations
       ctx.save();
       ctx.translate(pan.x, pan.y);
       ctx.scale(zoom, zoom);
 
-      // Calculate center points and grid offset
-      const centerX = Math.round(dimensions.width / (2 * zoom));
-      const centerY = Math.round(dimensions.height / (2 * zoom));
-
-      // Ensure grid lines are drawn so that (0,0) is at a grid intersection
-      const gridOffsetX = centerX % gridSize;
-      const gridOffsetY = centerY % gridSize;
-
-      // Draw grid
+      // Draw grid lines
       ctx.beginPath();
       ctx.strokeStyle = '#e2e8f0';
       ctx.lineWidth = 1 / zoom;
-
-      // Vertical lines
-      for (let x = -gridOffsetX; x <= dimensions.width / zoom; x += gridSize) {
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, dimensions.height / zoom);
-      }
-
-      // Horizontal lines
-      for (let y = -gridOffsetY; y <= dimensions.height / zoom; y += gridSize) {
-        ctx.moveTo(0, y);
-        ctx.lineTo(dimensions.width / zoom, y);
-      }
-
+      createGridLines().forEach(line => {
+        ctx.moveTo(line.start.x, line.start.y);
+        ctx.lineTo(line.end.x, line.end.y);
+      });
       ctx.stroke();
 
-      // Calculate arrow dimensions
-      const arrowLength = 150 / zoom;
-      const arrowHeadLength = 10 / zoom;
-      const arrowHeadAngle = Math.PI / 6;
-
-      // Function to draw arrow
-      function drawArrow(fromX: number, fromY: number, toX: number, toY: number, color: string) {
-        if (!ctx) return;
-
+      // Draw coordinate system
+      const coordSystem = createCoordinateSystem();
+      coordSystem.forEach((line, index) => {
         ctx.beginPath();
-        ctx.strokeStyle = color;
+        ctx.strokeStyle = index < 3 ? '#ef4444' : '#22c55e'; // Red for X-axis, Green for Y-axis
         ctx.lineWidth = 2 / zoom;
-
-        // Draw main line
-        ctx.moveTo(fromX, fromY);
-        ctx.lineTo(toX, toY);
-
-        // Calculate arrow head
-        const angle = Math.atan2(toY - fromY, toX - fromX);
-        ctx.lineTo(
-          toX - arrowHeadLength * Math.cos(angle - arrowHeadAngle),
-          toY - arrowHeadLength * Math.sin(angle - arrowHeadAngle)
-        );
-        ctx.moveTo(toX, toY);
-        ctx.lineTo(
-          toX - arrowHeadLength * Math.cos(angle + arrowHeadAngle),
-          toY - arrowHeadLength * Math.sin(angle + arrowHeadAngle)
-        );
-
+        ctx.moveTo(line.start.x, line.start.y);
+        ctx.lineTo(line.end.x, line.end.y);
         ctx.stroke();
-      }
+      });
 
-      // Draw X-axis (red)
-      drawArrow(centerX - arrowLength, centerY, centerX + arrowLength, centerY, '#ef4444');
+      // Draw origin point and labels
+      const centerX = dimensions.width / 2;
+      const centerY = dimensions.height / 2;
 
-      // Draw Y-axis (green)
-      drawArrow(centerX, centerY + arrowLength, centerX, centerY - arrowLength, '#22c55e');
-
-      // Draw origin point
       ctx.beginPath();
       ctx.arc(centerX, centerY, 4 / zoom, 0, 2 * Math.PI);
       ctx.fillStyle = '#94a3b8';
       ctx.fill();
 
-      // Add coordinate labels
       ctx.fillStyle = '#64748b';
       ctx.font = `${12 / zoom}px sans-serif`;
       ctx.textAlign = 'center';
       ctx.fillText('(0,0)', centerX + 15 / zoom, centerY + 15 / zoom);
-      ctx.fillText('X', centerX + arrowLength - 10 / zoom, centerY - 10 / zoom);
-      ctx.fillText('Y', centerX + 10 / zoom, centerY - arrowLength + 10 / zoom);
+      ctx.fillText('X', centerX + 150 - 10 / zoom, centerY - 10 / zoom);
+      ctx.fillText('Y', centerX + 10 / zoom, centerY - 150 + 10 / zoom);
+
 
       // Draw existing lines
       lines.forEach(line => {
@@ -451,7 +456,6 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       ctx.restore();
     };
 
-    // Add event listeners
     const handleMouseDown = (e: MouseEvent) => {
       if (panMode || e.button === 2) { // Pan mode or right click
         e.preventDefault();
