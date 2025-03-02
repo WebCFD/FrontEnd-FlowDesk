@@ -40,19 +40,39 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
   const [cursorPoint, setCursorPoint] = useState<Point | null>(null);
 
   // Zoom control functions
+  const handleZoomChange = (newZoom: number) => {
+    const oldZoom = zoom;
+    const zoomDiff = newZoom - oldZoom;
+
+    // Calculate the center point
+    const centerX = dimensions.width / 2;
+    const centerY = dimensions.height / 2;
+
+    // Adjust pan to keep the center point stable
+    setPan(prev => ({
+      x: prev.x - (centerX * zoomDiff),
+      y: prev.y - (centerY * zoomDiff)
+    }));
+
+    setZoom(newZoom);
+  };
+
   const handleZoomIn = () => {
-    setZoom(prev => Math.min(prev + ZOOM_STEP, MAX_ZOOM));
+    const newZoom = Math.min(zoom + ZOOM_STEP, MAX_ZOOM);
+    handleZoomChange(newZoom);
   };
 
   const handleZoomOut = () => {
-    setZoom(prev => Math.max(prev - ZOOM_STEP, MIN_ZOOM));
+    const newZoom = Math.max(zoom - ZOOM_STEP, MIN_ZOOM);
+    handleZoomChange(newZoom);
   };
 
   const handleWheel = (e: WheelEvent) => {
     if (e.ctrlKey || e.metaKey) {
       e.preventDefault();
       const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
-      setZoom(prev => Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, prev + delta)));
+      const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom + delta));
+      handleZoomChange(newZoom);
     }
   };
 
