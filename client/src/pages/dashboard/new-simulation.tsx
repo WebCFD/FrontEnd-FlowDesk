@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
 import { Save, Upload, Eraser } from "lucide-react";
+import Canvas2D from "@/components/sketch/Canvas2D";
 
 export default function NewSimulation() {
   const [step, setStep] = useState(1);
@@ -114,9 +115,8 @@ export default function NewSimulation() {
                   </div>
 
                   {/* Canvas Area */}
-                  <div className="flex-1 border rounded-lg min-h-[600px] relative">
-                    {/* Grid will be implemented here */}
-                    <div className="absolute inset-0 bg-grid bg-primary/5" />
+                  <div className="flex-1 border rounded-lg overflow-hidden">
+                    <Canvas2D gridSize={gridSize} />
                   </div>
                 </div>
               </TabsContent>
