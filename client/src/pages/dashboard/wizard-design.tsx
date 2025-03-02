@@ -444,8 +444,10 @@ export default function WizardDesign() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowStartSimulationPrompt(false)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleStartSimulation}>Start Simulation</AlertDialogAction>
+            <AlertDialogCancel onClick={() => setShowStartSimulationPrompt(false)}>Return WizardDesign</AlertDialogCancel>
+            <AlertDialogAction onClick={handleStartSimulation}>
+              New Design
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
