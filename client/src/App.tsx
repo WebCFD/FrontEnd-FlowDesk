@@ -10,29 +10,41 @@ import Settings from "@/pages/dashboard/settings";
 import Profile from "@/pages/dashboard/profile";
 import NewSimulation from "@/pages/dashboard/new-simulation";
 import WizardDesign from "@/pages/dashboard/wizard-design";
+import Navbar from "@/components/layout/navbar";
+import Footer from "@/components/layout/footer";
 import { ProtectedRoute } from "@/lib/protected-route";
-import { AuthProvider } from "@/hooks/use-auth";
-import DashboardLayout from "@/components/layout/dashboard-layout";
-
-// Wrap the component with DashboardLayout for dashboard routes
-const withDashboardLayout = (Component: () => React.JSX.Element) => {
-  return () => (
-    <DashboardLayout>
-      <Component />
-    </DashboardLayout>
-  );
-};
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
-      <ProtectedRoute path="/dashboard" component={Dashboard} />
-      <ProtectedRoute path="/dashboard/simulations" component={Simulations} />
-      <ProtectedRoute path="/dashboard/settings" component={Settings} />
-      <ProtectedRoute path="/dashboard/profile" component={Profile} />
-      <ProtectedRoute path="/dashboard/new-simulation" component={NewSimulation} />
-      <ProtectedRoute path="/dashboard/wizard-design" component={WizardDesign} />
+      <Route path="/dashboard">
+        <ProtectedRoute>
+          <Dashboard />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/dashboard/simulations">
+        <ProtectedRoute>
+          <Simulations />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/dashboard/new-simulation">
+        <ProtectedRoute>
+          <NewSimulation />
+        </ProtectedRoute>
+      </Route>
+      {/* Remove ProtectedRoute wrapper to allow direct access */}
+      <Route path="/dashboard/wizard-design" component={WizardDesign} />
+      <Route path="/dashboard/settings">
+        <ProtectedRoute>
+          <Settings />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/dashboard/profile">
+        <ProtectedRoute>
+          <Profile />
+        </ProtectedRoute>
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );
@@ -41,14 +53,21 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <div className="min-h-screen flex flex-col">
-          <main className="flex-1">
-            <Router />
-          </main>
-        </div>
-        <Toaster />
-      </AuthProvider>
+      <div className="min-h-screen flex flex-col">
+        <Route path="/dashboard*">
+          <Router />
+        </Route>
+        <Route path="*">
+          <>
+            <Navbar />
+            <main className="flex-1">
+              <Router />
+            </main>
+            <Footer />
+          </>
+        </Route>
+      </div>
+      <Toaster />
     </QueryClientProvider>
   );
 }
