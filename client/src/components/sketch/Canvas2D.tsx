@@ -32,17 +32,24 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
     return pixels * PIXELS_TO_CM;
   };
 
-  // Convert coordinates to cm and log them
-  const logPointCoordinates = (point: Point, label: string) => {
+  // Get point coordinates relative to center (in cm)
+  const getRelativeCoordinates = (point: Point): { x: number; y: number } => {
     const centerX = dimensions.width / 2;
     const centerY = dimensions.height / 2;
     const relativeX = point.x - centerX;
     const relativeY = centerY - point.y; // Invert Y since canvas Y is top-down
+    return {
+      x: Math.round(pixelsToCm(relativeX)),
+      y: Math.round(pixelsToCm(relativeY))
+    };
+  };
 
-    console.log(`${label} Point Created:`, {
-      'Grid Coordinates (px)': `(${Math.round(relativeX)}, ${Math.round(relativeY)})`,
-      'Real-world Coordinates (cm)': `(${Math.round(pixelsToCm(relativeX))}, ${Math.round(pixelsToCm(relativeY))})`
-    });
+  // Draw coordinate label
+  const drawCoordinateLabel = (ctx: CanvasRenderingContext2D, point: Point, color: string) => {
+    const coords = getRelativeCoordinates(point);
+    ctx.fillStyle = color;
+    ctx.textAlign = 'left';
+    ctx.fillText(`(${coords.x}, ${coords.y})`, point.x + 8, point.y - 8);
   };
 
   // Calculate line length in centimeters
@@ -309,6 +316,11 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
         const midX = (currentLine.start.x + currentLine.end.x) / 2;
         const midY = (currentLine.start.y + currentLine.end.y) / 2;
         ctx.fillText(`${length} cm`, midX, midY - 5);
+
+        //Draw coordinate for the current end point
+        if (currentLine.start.x !== currentLine.end.x || currentLine.start.y !== currentLine.end.y) {
+          drawCoordinateLabel(ctx, currentLine.end, '#fb923c');
+        }
       }
 
       // Draw endpoints with different colors based on their state
@@ -327,9 +339,13 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
           }
         }
 
+        // Draw the point
         ctx.fillStyle = color;
         ctx.arc(point.x, point.y, POINT_RADIUS, 0, 2 * Math.PI);
         ctx.fill();
+
+        // Draw coordinate label
+        drawCoordinateLabel(ctx, point, color);
       });
     };
 
@@ -343,7 +359,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
 
       setCurrentLine({ start: startPoint, end: startPoint });
       setIsDrawing(true);
-      logPointCoordinates(startPoint, 'Start');
+      //logPointCoordinates(startPoint, 'Start');
     };
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -361,7 +377,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
 
       if (currentLine.start.x !== currentLine.end.x || currentLine.start.y !== currentLine.end.y) {
         setLines([...lines, currentLine]);
-        logPointCoordinates(currentLine.end, 'End');
+        //logPointCoordinates(currentLine.end, 'End');
       }
       setCurrentLine(null);
       setIsDrawing(false);
