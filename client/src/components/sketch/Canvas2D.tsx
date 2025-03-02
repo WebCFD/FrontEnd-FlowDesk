@@ -15,6 +15,9 @@ interface Canvas2DProps {
   currentTool: 'wall' | 'eraser';
 }
 
+const POINT_RADIUS = 4;
+const SNAP_DISTANCE = 15;
+
 export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -48,11 +51,86 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
 
   // Convert canvas coordinates to grid-snapped coordinates
   const snapToGrid = (point: Point): Point => {
-    const snapSize = gridSize / 2; // Snap to a grid half the size of visible grid
+    const snapSize = gridSize / 2;
     return {
       x: Math.round(point.x / snapSize) * snapSize,
       y: Math.round(point.y / snapSize) * snapSize
     };
+  };
+
+  // Check if two points are close enough to snap
+  const arePointsClose = (p1: Point, p2: Point): boolean => {
+    const dx = p1.x - p2.x;
+    const dy = p1.y - p2.y;
+    return Math.sqrt(dx * dx + dy * dy) < SNAP_DISTANCE;
+  };
+
+  // Find the nearest endpoint to a point
+  const findNearestEndpoint = (point: Point): Point | null => {
+    let nearest: Point | null = null;
+    let minDistance = SNAP_DISTANCE;
+
+    lines.forEach(line => {
+      [line.start, line.end].forEach(endpoint => {
+        const dx = point.x - endpoint.x;
+        const dy = point.y - endpoint.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance < minDistance) {
+          minDistance = distance;
+          nearest = endpoint;
+        }
+      });
+    });
+
+    return nearest;
+  };
+
+  // Get all endpoints from lines
+  const getAllEndpoints = (): Point[] => {
+    const points: Point[] = [];
+    lines.forEach(line => {
+      points.push(line.start, line.end);
+    });
+    return points;
+  };
+
+  // Count how many times a point appears as an endpoint
+  const getEndpointConnections = (point: Point): number => {
+    let count = 0;
+    lines.forEach(line => {
+      if (arePointsClose(line.start, point) || arePointsClose(line.end, point)) {
+        count++;
+      }
+    });
+    return count;
+  };
+
+  // Check if a point is part of a closed contour
+  const isInClosedContour = (point: Point): boolean => {
+    const connectedPoints = new Set<string>();
+    const pointKey = (p: Point) => `${p.x},${p.y}`;
+    let startPoint = point;
+
+    const findNextPoint = (current: Point, visited: Set<string>): boolean => {
+      for (const line of lines) {
+        const linePoints = [line.start, line.end];
+        for (const endpoint of linePoints) {
+          if (arePointsClose(current, endpoint) && !visited.has(pointKey(endpoint))) {
+            visited.add(pointKey(endpoint));
+            if (arePointsClose(endpoint, startPoint) && visited.size > 2) {
+              return true;
+            }
+            if (findNextPoint(endpoint, visited)) {
+              return true;
+            }
+            visited.delete(pointKey(endpoint));
+          }
+        }
+      }
+      return false;
+    };
+
+    return findNextPoint(point, new Set([pointKey(point)]));
   };
 
   // Convert page coordinates to canvas coordinates
@@ -167,6 +245,27 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
         ctx.lineTo(currentLine.end.x, currentLine.end.y);
         ctx.stroke();
       }
+
+      // Draw endpoints with different colors based on their state
+      getAllEndpoints().forEach(point => {
+        ctx.beginPath();
+
+        // Determine point color based on its state
+        const connections = getEndpointConnections(point);
+        let color = '#fb923c'; // Orange for disconnected points
+
+        if (connections > 1) {
+          if (isInClosedContour(point)) {
+            color = '#22c55e'; // Green for points in closed contours
+          } else {
+            color = '#3b82f6'; // Blue for connected points
+          }
+        }
+
+        ctx.fillStyle = color;
+        ctx.arc(point.x, point.y, POINT_RADIUS, 0, 2 * Math.PI);
+        ctx.fill();
+      });
     };
 
     // Add event listeners for drawing
@@ -174,8 +273,10 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       if (currentTool !== 'wall') return;
 
       const point = getCanvasPoint(e);
-      const snappedPoint = snapToGrid(point);
-      setCurrentLine({ start: snappedPoint, end: snappedPoint });
+      const nearestPoint = findNearestEndpoint(point);
+      const startPoint = nearestPoint || snapToGrid(point);
+
+      setCurrentLine({ start: startPoint, end: startPoint });
       setIsDrawing(true);
     };
 
@@ -183,8 +284,10 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       if (!isDrawing || !currentLine) return;
 
       const point = getCanvasPoint(e);
-      const snappedPoint = snapToGrid(point);
-      setCurrentLine({ ...currentLine, end: snappedPoint });
+      const nearestPoint = findNearestEndpoint(point);
+      const endPoint = nearestPoint || snapToGrid(point);
+
+      setCurrentLine({ ...currentLine, end: endPoint });
     };
 
     const handleMouseUp = () => {
