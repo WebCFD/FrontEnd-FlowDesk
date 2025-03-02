@@ -199,27 +199,33 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       // Clear canvas
       ctx.clearRect(0, 0, dimensions.width, dimensions.height);
 
+      // Calculate center points and grid offset
+      const centerX = Math.round(dimensions.width / 2);
+      const centerY = Math.round(dimensions.height / 2);
+
+      // Calculate grid offset to align center with grid
+      const offsetX = centerX % gridSize;
+      const offsetY = centerY % gridSize;
+
       // Draw grid
       ctx.beginPath();
       ctx.strokeStyle = '#e2e8f0';
 
       // Vertical lines
-      for (let x = 0; x <= dimensions.width; x += gridSize) {
+      for (let x = centerX % gridSize; x <= dimensions.width; x += gridSize) {
         ctx.moveTo(x, 0);
         ctx.lineTo(x, dimensions.height);
       }
 
       // Horizontal lines
-      for (let y = 0; y <= dimensions.height; y += gridSize) {
+      for (let y = centerY % gridSize; y <= dimensions.height; y += gridSize) {
         ctx.moveTo(0, y);
         ctx.lineTo(dimensions.width, y);
       }
 
       ctx.stroke();
 
-      // Calculate center points
-      const centerX = dimensions.width / 2;
-      const centerY = dimensions.height / 2;
+      // Calculate arrow dimensions
       const arrowLength = 150;
       const arrowHeadLength = 10;
       const arrowHeadAngle = Math.PI / 6;
@@ -287,22 +293,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
         const midX = (line.start.x + line.end.x) / 2;
         const midY = (line.start.y + line.end.y) / 2;
         const length = Math.round(getLineLength(line));
-
-        // Add a small white background for better readability
-        const text = `${length} cm`;
-        const metrics = ctx.measureText(text);
-        const padding = 2;
-
-        ctx.fillStyle = 'white';
-        ctx.fillRect(
-          midX - metrics.width/2 - padding,
-          midY - 6 - padding,
-          metrics.width + 2*padding,
-          14 + 2*padding
-        );
-
-        ctx.fillStyle = '#64748b';
-        ctx.fillText(text, midX, midY + 4);
+        ctx.fillText(`${length} cm`, midX, midY - 5);
       });
 
       // Draw current line preview and its length
@@ -317,22 +308,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
         const length = Math.round(getLineLength(currentLine));
         const midX = (currentLine.start.x + currentLine.end.x) / 2;
         const midY = (currentLine.start.y + currentLine.end.y) / 2;
-
-        // Add a small white background for better readability
-        const text = `${length} cm`;
-        const metrics = ctx.measureText(text);
-        const padding = 2;
-
-        ctx.fillStyle = 'white';
-        ctx.fillRect(
-          midX - metrics.width/2 - padding,
-          midY - 6 - padding,
-          metrics.width + 2*padding,
-          14 + 2*padding
-        );
-
-        ctx.fillStyle = '#64748b';
-        ctx.fillText(text, midX, midY + 4);
+        ctx.fillText(`${length} cm`, midX, midY - 5);
       }
 
       // Draw endpoints with different colors based on their state
