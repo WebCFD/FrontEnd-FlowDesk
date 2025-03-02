@@ -456,36 +456,59 @@ export default function WizardDesign() {
   );
 
   const isInClosedContour = (point: Point, lines: Line[]): boolean => {
-    const visited = new Set<string>();
-    const pointKey = (p: Point) => `${p.x},${p.y}`;
-
-    const findPath = (current: Point, steps: number): boolean => {
-      if (steps >= 3 && arePointsClose(current, point)) {
-        return true;
-      }
-
-      const connectedLines = findConnectedLines(current, lines);
-
-      for (const line of connectedLines) {
-        const nextPoint = arePointsClose(line.start, current) ? line.end : line.start;
-        const key = pointKey(nextPoint);
-
-        if (visited.has(key) && !(arePointsClose(nextPoint, point) && steps >= 3)) {
-          continue;
-        }
-
-        visited.add(key);
-        if (findPath(nextPoint, steps + 1)) {
-          return true;
-        }
-        visited.delete(key);
-      }
-
-      return false;
+    // Helper function to check if two points are effectively the same
+    const arePointsEqual = (p1: Point, p2: Point): boolean => {
+      const dx = p1.x - p2.x;
+      const dy = p1.y - p2.y;
+      return Math.sqrt(dx * dx + dy * dy) < 5; // Smaller threshold for more precise detection
     };
 
-    visited.add(pointKey(point));
-    return findPath(point, 0);
+    // Find all lines connected to this point
+    const connectedLines = lines.filter(line =>
+      arePointsEqual(line.start, point) || arePointsEqual(line.end, point)
+    );
+
+    // For each connected line
+    for (const startLine of connectedLines) {
+      const visited = new Set<string>();
+      const pointKey = (p: Point) => `${Math.round(p.x)},${Math.round(p.y)}`;
+      const stack: { point: Point; path: Line[] }[] = [{
+        point: arePointsEqual(startLine.start, point) ? startLine.end : startLine.start,
+        path: [startLine]
+      }];
+
+      while (stack.length > 0) {
+        const { point: currentPoint, path } = stack.pop()!;
+        const key = pointKey(currentPoint);
+
+        // If we found a path back to the start point and used at least 3 lines
+        if (path.length >= 2 && arePointsEqual(currentPoint, point)) {
+          console.log('Found closed contour:', path);
+          return true;
+        }
+
+        // Skip if we've been here before
+        if (visited.has(key)) continue;
+        visited.add(key);
+
+        // Find all lines connected to current point except the one we came from
+        const nextLines = lines.filter(line =>
+          !path.includes(line) &&
+          (arePointsEqual(line.start, currentPoint) || arePointsEqual(line.end, currentPoint))
+        );
+
+        // Add all possible next points to stack
+        for (const nextLine of nextLines) {
+          const nextPoint = arePointsEqual(nextLine.start, currentPoint) ? nextLine.end : nextLine.start;
+          stack.push({
+            point: nextPoint,
+            path: [...path, nextLine]
+          });
+        }
+      }
+    }
+
+    return false;
   };
 
   const findConnectedLines = (point: Point, lines: Line[]): Line[] => {
