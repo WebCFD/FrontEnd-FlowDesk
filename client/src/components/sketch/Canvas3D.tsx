@@ -357,13 +357,7 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
         zPosition = entry.dimensions.distanceToFloor || 0;
       }
 
-      const geometry = new THREE.PlaneGeometry(width, height);
-      const mesh = new THREE.Mesh(geometry, material);
-
-      // Position the air entry using transformed coordinates
-      const position = transform2DTo3D(entry.position);
-
-      // Calculate normal to align with wall
+      // Calculate wall normal vector
       const entryNormal = calculateNormal(entry.line);
       const angle = Math.atan2(entryNormal.y, entryNormal.x);
 
@@ -375,11 +369,30 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
         angle: `${(angle * 180 / Math.PI).toFixed(2)}°`
       });
 
-      // Position the mesh on the wall surface
+      // Create geometry for the air entry
+      const geometry = new THREE.PlaneGeometry(width, height);
+      const mesh = new THREE.Mesh(geometry, material);
+
+      // Position the air entry using transformed coordinates
+      const position = transform2DTo3D(entry.position);
       mesh.position.set(position.x, position.y, zPosition);
 
-      // Rotate to align with wall - only rotate around Z axis to match wall orientation
-      mesh.rotation.z = angle;
+      // Create a matrix to orient the plane along the wall
+      const rotationMatrix = new THREE.Matrix4();
+
+      // First, rotate the plane to align with the wall's normal vector
+      const normalVector = new THREE.Vector3(entryNormal.x, entryNormal.y, 0);
+      const upVector = new THREE.Vector3(0, 0, 1);
+      const rightVector = new THREE.Vector3().crossVectors(upVector, normalVector).normalize();
+
+      rotationMatrix.makeBasis(
+        rightVector,                     // Right vector
+        normalVector,                    // Forward vector (wall normal)
+        upVector                         // Up vector
+      );
+
+      // Apply the rotation matrix
+      mesh.setRotationFromMatrix(rotationMatrix);
 
       // Offset slightly from wall surface to prevent z-fighting
       const WALL_OFFSET = 0.1;
@@ -387,6 +400,17 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       mesh.position.y += entryNormal.y * WALL_OFFSET;
 
       sceneRef.current?.add(mesh);
+
+      // Add additional debug visuals for normals
+      const arrowHelper = new THREE.ArrowHelper(
+        normalVector,
+        new THREE.Vector3(position.x, position.y, zPosition),
+        50,  // length
+        0xff0000,  // color
+        10,  // head length
+        5    // head width
+      );
+      sceneRef.current?.add(arrowHelper);
     });
 
   }, [lines, airEntries]);
