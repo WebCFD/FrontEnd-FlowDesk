@@ -40,7 +40,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
   const [lastPanPoint, setLastPanPoint] = useState<Point | null>(null);
   const [panMode, setPanMode] = useState(false);
   const [cursorPoint, setCursorPoint] = useState<Point | null>(null);
-  const [zoomInput, setZoomInput] = useState(zoom.toString());
+  const [zoomInput, setZoomInput] = useState('100'); //This line is changed
 
   const createCoordinateSystem = (): Line[] => {
     const centerX = dimensions.width / 2;
@@ -165,7 +165,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
     const centerX = dimensions.width / 2;
     const centerY = dimensions.height / 2;
     const relativeX = point.x - centerX;
-    const relativeY = centerY - point.y; 
+    const relativeY = centerY - point.y;
     return {
       x: Math.round(pixelsToCm(relativeX)),
       y: Math.round(pixelsToCm(relativeY))
@@ -187,7 +187,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
   };
 
   const snapToGrid = (point: Point): Point => {
-    const snapSize = gridSize / 4; 
+    const snapSize = gridSize / 4;
     const centerX = dimensions.width / 2;
     const centerY = dimensions.height / 2;
 
@@ -332,7 +332,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       const coordSystem = createCoordinateSystem();
       coordSystem.forEach((line, index) => {
         ctx.beginPath();
-        ctx.strokeStyle = index < 3 ? '#ef4444' : '#22c55e'; 
+        ctx.strokeStyle = index < 3 ? '#ef4444' : '#22c55e';
         ctx.lineWidth = 2 / zoom;
         ctx.moveTo(line.start.x, line.start.y);
         ctx.lineTo(line.end.x, line.end.y);
@@ -393,13 +393,13 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       const endpoints = [...new Set(lines.flatMap(line => [line.start, line.end]))];
       endpoints.forEach(point => {
         const connections = findConnectedLines(point).length;
-        let color = '#fb923c'; 
+        let color = '#fb923c';
 
         if (connections > 1) {
           if (isInClosedContour(point)) {
-            color = '#22c55e'; 
+            color = '#22c55e';
           } else {
-            color = '#3b82f6'; 
+            color = '#3b82f6';
           }
         }
 
@@ -421,7 +421,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
     };
 
     const handleMouseDown = (e: MouseEvent) => {
-      if (panMode || e.button === 2) { 
+      if (panMode || e.button === 2) {
         e.preventDefault();
         handlePanStart(e);
         return;
