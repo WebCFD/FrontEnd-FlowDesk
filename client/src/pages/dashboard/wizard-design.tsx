@@ -12,14 +12,26 @@ import Canvas2D from "@/components/sketch/Canvas2D";
 import { cn } from "@/lib/utils";
 import AirEntryDialog from "@/components/sketch/AirEntryDialog";
 
-interface Line {
-  // Define the structure of a line object here.  This is needed because the edited code uses 'Line' type.  You'll need to replace this with the actual structure of your line object.
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
+interface Point {
+  x: number;
+  y: number;
 }
 
+interface Line {
+  start: Point;
+  end: Point;
+}
+
+interface AirEntry {
+  type: 'window' | 'door' | 'vent';
+  position: Point;
+  dimensions: {
+    width: number;
+    height: number;
+    distanceToFloor?: number;
+  };
+  line: Line;
+}
 
 export default function WizardDesign() {
   const [step, setStep] = useState(1);
@@ -30,6 +42,8 @@ export default function WizardDesign() {
   const { toast } = useToast();
   const [isAirEntryDialogOpen, setIsAirEntryDialogOpen] = useState(false);
   const [selectedLine, setSelectedLine] = useState<Line | null>(null);
+  const [airEntries, setAirEntries] = useState<AirEntry[]>([]);
+  const [clickedPoint, setClickedPoint] = useState<Point | null>(null);
 
   const steps = [
     { id: 1, name: "Upload" },
@@ -50,7 +64,7 @@ export default function WizardDesign() {
       setCurrentTool(null);
     } else {
       setCurrentTool(tool);
-      setCurrentAirEntry(null); 
+      setCurrentAirEntry(null);
     }
   };
 
@@ -59,7 +73,7 @@ export default function WizardDesign() {
       setCurrentAirEntry(null);
     } else {
       setCurrentAirEntry(entry);
-      setCurrentTool(null); 
+      setCurrentTool(null);
     }
   };
 
@@ -109,20 +123,26 @@ export default function WizardDesign() {
     height: number;
     distanceToFloor?: number;
   }) => {
-    if (selectedLine && currentAirEntry) {
-      console.log('Air Entry Added:', {
+    if (selectedLine && clickedPoint && currentAirEntry) {
+      const newAirEntry: AirEntry = {
         type: currentAirEntry,
+        position: clickedPoint,
         dimensions,
         line: selectedLine
-      });
+      };
+
+      setAirEntries(prev => [...prev, newAirEntry]);
       setSelectedLine(null);
+      setClickedPoint(null);
       setCurrentAirEntry(null);
     }
+    setIsAirEntryDialogOpen(false);
   };
 
-  const handleLineSelect = (line: Line) => {
+  const handleLineSelect = (line: Line, clickPoint: Point) => {
     if (currentAirEntry) {
       setSelectedLine(line);
+      setClickedPoint(clickPoint);
       setIsAirEntryDialogOpen(true);
     }
   };
@@ -259,6 +279,7 @@ export default function WizardDesign() {
                     currentTool={currentTool}
                     currentAirEntry={currentAirEntry}
                     onLineSelect={handleLineSelect}
+                    airEntries={airEntries}
                   />
                 </div>
               </div>
