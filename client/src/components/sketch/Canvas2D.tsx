@@ -36,6 +36,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
   const [lastPanPoint, setLastPanPoint] = useState<Point | null>(null);
+  const [panMode, setPanMode] = useState(false);
 
   // Zoom control functions
   const handleZoomIn = () => {
@@ -56,7 +57,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
 
   // Pan control functions
   const handlePanStart = (e: MouseEvent) => {
-    if (e.button === 2) { // Right click
+    if (panMode || e.button === 2) { // Pan mode or right click
       e.preventDefault();
       setIsPanning(true);
       setLastPanPoint({ x: e.clientX, y: e.clientY });
@@ -75,6 +76,14 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
   const handlePanEnd = () => {
     setIsPanning(false);
     setLastPanPoint(null);
+  };
+
+  // Toggle pan mode
+  const togglePanMode = () => {
+    setPanMode(!panMode);
+    if (isPanning) {
+      handlePanEnd();
+    }
   };
 
   // Get point coordinates relative to canvas with zoom and pan
@@ -423,7 +432,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
 
     // Add event listeners
     const handleMouseDown = (e: MouseEvent) => {
-      if (e.button === 2) { // Right click for panning
+      if (panMode || e.button === 2) { // Pan mode or right click
         e.preventDefault();
         handlePanStart(e);
         return;
@@ -463,7 +472,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
     };
 
     const handleMouseUp = (e: MouseEvent) => {
-      if (e.button === 2) {
+      if (panMode || e.button === 2) {
         handlePanEnd();
         return;
       }
@@ -510,7 +519,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       canvas.removeEventListener('contextmenu', e => e.preventDefault());
       cancelAnimationFrame(animationFrameId);
     };
-  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning]);
+  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode]);
 
   return (
     <div ref={containerRef} className="w-full h-full relative">
@@ -518,7 +527,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
         ref={canvasRef}
         width={dimensions.width}
         height={dimensions.height}
-        className="w-full h-full"
+        className={`w-full h-full ${panMode ? 'cursor-move' : 'cursor-default'}`}
       />
       <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-white/80 p-2 rounded-lg shadow">
         <Button
@@ -543,7 +552,14 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
           <Plus className="h-4 w-4" />
         </Button>
         <div className="w-px h-6 bg-border mx-2" />
-        <Move className="h-4 w-4 text-muted-foreground" />
+        <Button
+          variant={panMode ? "destructive" : "outline"}
+          size="icon"
+          onClick={togglePanMode}
+          className="h-8 w-8"
+        >
+          <Move className="h-4 w-4" />
+        </Button>
       </div>
     </div>
   );
