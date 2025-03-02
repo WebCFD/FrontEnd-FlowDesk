@@ -30,6 +30,7 @@ interface Canvas2DProps {
   currentAirEntry: 'vent' | 'door' | 'window' | null;
   onLineSelect?: (line: Line, clickPoint: Point) => void;
   airEntries: AirEntry[];
+  onLinesUpdate?: (lines: Line[]) => void;
 }
 
 const POINT_RADIUS = 4;
@@ -83,7 +84,8 @@ export default function Canvas2D({
   currentTool,
   currentAirEntry,
   onLineSelect,
-  airEntries
+  airEntries,
+  onLinesUpdate
 }: Canvas2DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -612,7 +614,9 @@ export default function Canvas2D({
           console.log(`End: (${currentLine.end.x}, ${currentLine.end.y})`);
           console.log(`Normal vector: (${normal.x.toFixed(3)}, ${normal.y.toFixed(3)})`);
 
-          setLines(prev => [...prev, currentLine]);
+          const newLines = [...lines, currentLine];
+          setLines(newLines);
+          onLinesUpdate?.(newLines);
         }
         setCurrentLine(null);
         setIsDrawing(false);
@@ -651,7 +655,7 @@ export default function Canvas2D({
       canvas.removeEventListener('contextmenu', e => e.preventDefault());
       cancelAnimationFrame(animationFrameId);
     };
-  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode, cursorPoint, currentAirEntry, onLineSelect, airEntries]);
+  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode, cursorPoint, currentAirEntry, onLineSelect, airEntries, onLinesUpdate]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, '');
