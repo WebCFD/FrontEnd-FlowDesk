@@ -201,6 +201,12 @@ export default function Canvas3D({ lines, airEntries, height = 600 }: Canvas3DPr
       const start_top = transform2DTo3D(line.start, ROOM_HEIGHT);
       const end_top = transform2DTo3D(line.end, ROOM_HEIGHT);
 
+      console.log('Creating wall with vertices:');
+      console.log(`Start bottom: (${start_bottom.x}, ${start_bottom.y}, ${start_bottom.z})`);
+      console.log(`End bottom: (${end_bottom.x}, ${end_bottom.y}, ${end_bottom.z})`);
+      console.log(`Start top: (${start_top.x}, ${start_top.y}, ${start_top.z})`);
+      console.log(`End top: (${end_top.x}, ${end_top.y}, ${end_top.z})`);
+
       // Create vertices array from transformed points
       const vertices = new Float32Array([
         start_bottom.x, start_bottom.y, start_bottom.z, // bottom start
@@ -250,6 +256,10 @@ export default function Canvas3D({ lines, airEntries, height = 600 }: Canvas3DPr
 
       // Position the air entry using transformed coordinates
       const position = transform2DTo3D(entry.position, distanceToFloor + height / 2);
+      console.log(`Creating air entry (${entry.type}) at:`);
+      console.log(`Original 2D position: (${entry.position.x}, ${entry.position.y})`);
+      console.log(`Transformed 3D position: (${position.x}, ${position.y}, ${position.z})`);
+
       mesh.position.set(position.x, position.y, position.z);
 
       // Calculate rotation to align with wall
