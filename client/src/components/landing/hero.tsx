@@ -1,20 +1,20 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { useLocation } from "wouter";
 import RegisterModal from "@/components/auth/register-modal";
-import LoginModal from "@/components/auth/login-modal";
 
 // Animated streamline component
 const StreamLine = ({ d, delay }: { d: string; delay: number }) => (
   <motion.path
     d={d}
-    stroke="rgba(0, 150, 255, 0.15)" // Made more transparent
+    stroke="rgba(0, 150, 255, 0.15)" 
     strokeWidth="2"
     fill="none"
     initial={{ pathLength: 0, opacity: 0 }}
     animate={{ 
       pathLength: 1,
-      opacity: [0, 0.3, 0], // Reduced opacity in animation
+      opacity: [0, 0.3, 0], 
     }}
     transition={{
       duration: 4,
@@ -27,7 +27,7 @@ const StreamLine = ({ d, delay }: { d: string; delay: number }) => (
 
 export default function Hero() {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [, setLocation] = useLocation();
 
   return (
     <div className="relative min-h-[calc(100vh-4rem)] flex items-center">
@@ -42,41 +42,14 @@ export default function Hero() {
         />
         <div className="absolute inset-0 bg-gradient-to-r from-white via-white/95 to-transparent">
           <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-            {/* Random starting points with varied curves - moved more to the right */}
-            <StreamLine 
-              d="M55,10 Q75,25 85,45 T95,60" 
-              delay={0} 
-            />
-            <StreamLine 
-              d="M50,25 Q70,35 80,50 T90,70" 
-              delay={0.8} 
-            />
-            <StreamLine 
-              d="M60,15 Q75,40 85,55 T92,75" 
-              delay={1.6} 
-            />
-            <StreamLine 
-              d="M53,35 Q68,50 78,65 T88,85" 
-              delay={2.4} 
-            />
-            {/* Additional random streamlines with varied starting points */}
-            <StreamLine 
-              d="M58,20 Q73,35 83,55 T93,65" 
-              delay={1.2} 
-            />
-            <StreamLine 
-              d="M52,30 Q67,45 77,60 T87,80" 
-              delay={2.0} 
-            />
-            {/* New random streamlines */}
-            <StreamLine 
-              d="M57,12 Q72,28 82,48 T91,68" 
-              delay={0.4} 
-            />
-            <StreamLine 
-              d="M54,22 Q69,38 79,58 T89,78" 
-              delay={1.4} 
-            />
+            <StreamLine d="M55,10 Q75,25 85,45 T95,60" delay={0} />
+            <StreamLine d="M50,25 Q70,35 80,50 T90,70" delay={0.8} />
+            <StreamLine d="M60,15 Q75,40 85,55 T92,75" delay={1.6} />
+            <StreamLine d="M53,35 Q68,50 78,65 T88,85" delay={2.4} />
+            <StreamLine d="M58,20 Q73,35 83,55 T93,65" delay={1.2} />
+            <StreamLine d="M52,30 Q67,45 77,60 T87,80" delay={2.0} />
+            <StreamLine d="M57,12 Q72,28 82,48 T91,68" delay={0.4} />
+            <StreamLine d="M54,22 Q69,38 79,58 T89,78" delay={1.4} />
           </svg>
         </div>
       </div>
@@ -108,7 +81,7 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            <Button size="lg" onClick={() => setIsLoginOpen(true)}>Get Started</Button>
+            <Button size="lg" onClick={() => setLocation("/dashboard/wizard-design")}>Get Started</Button>
             <Button size="lg" variant="outline" onClick={() => setIsRegisterOpen(true)}>Sign Up</Button>
           </motion.div>
         </div>
@@ -117,10 +90,6 @@ export default function Hero() {
       <RegisterModal 
         isOpen={isRegisterOpen}
         onClose={() => setIsRegisterOpen(false)}
-      />
-      <LoginModal
-        isOpen={isLoginOpen}
-        onClose={() => setIsLoginOpen(false)}
       />
     </div>
   );

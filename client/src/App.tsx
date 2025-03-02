@@ -33,11 +33,8 @@ function Router() {
           <NewSimulation />
         </ProtectedRoute>
       </Route>
-      <Route path="/dashboard/wizard-design">
-        <ProtectedRoute>
-          <WizardDesign />
-        </ProtectedRoute>
-      </Route>
+      {/* Remove ProtectedRoute wrapper to allow direct access */}
+      <Route path="/dashboard/wizard-design" component={WizardDesign} />
       <Route path="/dashboard/settings">
         <ProtectedRoute>
           <Settings />
