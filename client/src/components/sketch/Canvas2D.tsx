@@ -31,7 +31,6 @@ interface Canvas2DProps {
   onLineSelect?: (line: Line, clickPoint: Point) => void;
   airEntries: AirEntry[];
   onLinesUpdate?: (lines: Line[]) => void;
-  lines: Line[];
 }
 
 const POINT_RADIUS = 4;
@@ -56,7 +55,7 @@ const calculateNormal = (line: Line): Point => {
   const dy = line.end.y - line.start.y;
   const length = Math.sqrt(dx * dx + dy * dy);
   return {
-    x: dx / length, // Changed to match wall direction
+    x: dx / length,
     y: dy / length
   };
 };
@@ -86,12 +85,12 @@ export default function Canvas2D({
   currentAirEntry,
   onLineSelect,
   airEntries,
-  onLinesUpdate,
-  lines
+  onLinesUpdate
 }: Canvas2DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
+  const [lines, setLines] = useState<Line[]>([]);
   const [currentLine, setCurrentLine] = useState<Line | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [highlightedLines, setHighlightedLines] = useState<Line[]>([]);
@@ -571,6 +570,7 @@ export default function Canvas2D({
         const linesToErase = findLinesNearPoint(clickPoint);
         if (linesToErase.length > 0) {
           const newLines = lines.filter(line => !linesToErase.includes(line));
+          setLines(newLines);
           onLinesUpdate?.(newLines);
           setHighlightedLines([]);
         }
@@ -617,6 +617,7 @@ export default function Canvas2D({
           console.log(`Normal vector: (${normal.x.toFixed(3)}, ${normal.y.toFixed(3)})`);
 
           const newLines = [...lines, currentLine];
+          setLines(newLines);
           onLinesUpdate?.(newLines);
         }
         setCurrentLine(null);
