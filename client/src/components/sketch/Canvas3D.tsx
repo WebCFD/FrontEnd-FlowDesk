@@ -25,7 +25,7 @@ interface AirEntry {
 
 interface Canvas3DProps {
   lines: Line[];
-  airEntries: AirEntry[];
+  airEntries?: AirEntry[];
   height?: number;
 }
 
@@ -58,7 +58,7 @@ const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
   return vector;
 };
 
-export default function Canvas3D({ lines, airEntries, height = 600 }: Canvas3DProps) {
+export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canvas3DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
@@ -117,6 +117,31 @@ export default function Canvas3D({ lines, airEntries, height = 600 }: Canvas3DPr
     gridHelper.material.opacity = 0.2;
     gridHelper.material.transparent = true;
     scene.add(gridHelper);
+
+    // Add floor surface at Z=0
+    const floorGeometry = new THREE.PlaneGeometry(GRID_SIZE, GRID_SIZE);
+    const floorMaterial = new THREE.MeshPhongMaterial({
+      color: 0x808080, // Medium gray
+      opacity: 0.3,
+      transparent: true,
+      side: THREE.DoubleSide,
+    });
+    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+    floor.position.set(0, 0, 0); // Place at Z=0
+    scene.add(floor);
+
+    // Add roof surface at Z=ROOM_HEIGHT
+    const roofGeometry = new THREE.PlaneGeometry(GRID_SIZE, GRID_SIZE);
+    const roofMaterial = new THREE.MeshPhongMaterial({
+      color: 0xE0E0E0, // Light gray
+      opacity: 0.2,
+      transparent: true,
+      side: THREE.DoubleSide,
+    });
+    const roof = new THREE.Mesh(roofGeometry, roofMaterial);
+    roof.position.set(0, 0, ROOM_HEIGHT); // Place at Z=ROOM_HEIGHT
+    scene.add(roof);
+
 
     // Animation loop
     const animate = () => {
