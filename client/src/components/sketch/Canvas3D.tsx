@@ -36,8 +36,8 @@ const GRID_DIVISIONS = 40; // Number of divisions in the grid
 
 const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
   return new THREE.Vector3(
-    point.x,    // Keep X as is
-    -point.y,   // Invert Y coordinate
+    -point.x,    // Negate X to match 2D coordinate system
+    -point.y,    // Invert Y coordinate
     height      // Z coordinate (height)
   );
 };
