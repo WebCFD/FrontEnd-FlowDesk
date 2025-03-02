@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Minus, Plus, Move } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 interface Point {
   x: number;
@@ -39,34 +40,28 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
   const [lastPanPoint, setLastPanPoint] = useState<Point | null>(null);
   const [panMode, setPanMode] = useState(false);
   const [cursorPoint, setCursorPoint] = useState<Point | null>(null);
+  const [zoomInput, setZoomInput] = useState(zoom.toString());
 
-  // Create coordinate system axes
   const createCoordinateSystem = (): Line[] => {
     const centerX = dimensions.width / 2;
     const centerY = dimensions.height / 2;
     const arrowLength = 150;
 
     return [
-      // X-axis
       { start: { x: centerX - arrowLength, y: centerY }, end: { x: centerX + arrowLength, y: centerY } },
-      // X-axis arrow head
       { start: { x: centerX + arrowLength, y: centerY }, end: { x: centerX + arrowLength - 10, y: centerY - 5 } },
       { start: { x: centerX + arrowLength, y: centerY }, end: { x: centerX + arrowLength - 10, y: centerY + 5 } },
-      // Y-axis
       { start: { x: centerX, y: centerY + arrowLength }, end: { x: centerX, y: centerY - arrowLength } },
-      // Y-axis arrow head
       { start: { x: centerX, y: centerY - arrowLength }, end: { x: centerX - 5, y: centerY - arrowLength + 10 } },
       { start: { x: centerX, y: centerY - arrowLength }, end: { x: centerX + 5, y: centerY - arrowLength + 10 } },
     ];
   };
 
-  // Create grid lines
   const createGridLines = (): Line[] => {
     const gridLines: Line[] = [];
     const centerX = dimensions.width / 2;
     const centerY = dimensions.height / 2;
 
-    // Vertical lines
     for (let x = -GRID_RANGE; x <= GRID_RANGE; x += gridSize) {
       gridLines.push({
         start: { x: centerX + x, y: centerY - GRID_RANGE },
@@ -74,7 +69,6 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       });
     }
 
-    // Horizontal lines
     for (let y = -GRID_RANGE; y <= GRID_RANGE; y += gridSize) {
       gridLines.push({
         start: { x: centerX - GRID_RANGE, y: centerY + y },
@@ -85,22 +79,20 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
     return gridLines;
   };
 
-  // Zoom control functions
   const handleZoomChange = (newZoom: number) => {
     const oldZoom = zoom;
     const zoomDiff = newZoom - oldZoom;
 
-    // Calculate the center point
     const centerX = dimensions.width / 2;
     const centerY = dimensions.height / 2;
 
-    // Adjust pan to keep the center point stable
     setPan(prev => ({
       x: prev.x - (centerX * zoomDiff),
       y: prev.y - (centerY * zoomDiff)
     }));
 
     setZoom(newZoom);
+    setZoomInput(Math.round(newZoom * 100).toString());
   };
 
   const handleZoomIn = () => {
@@ -122,9 +114,8 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
     }
   };
 
-  // Pan control functions
   const handlePanStart = (e: MouseEvent) => {
-    if (panMode || e.button === 2) { // Pan mode or right click
+    if (panMode || e.button === 2) {
       e.preventDefault();
       setIsPanning(true);
       setLastPanPoint({ x: e.clientX, y: e.clientY });
@@ -145,7 +136,6 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
     setLastPanPoint(null);
   };
 
-  // Toggle pan mode
   const togglePanMode = () => {
     setPanMode(!panMode);
     if (isPanning) {
@@ -153,7 +143,6 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
     }
   };
 
-  // Get point coordinates relative to canvas with zoom and pan
   const getCanvasPoint = (e: MouseEvent): Point => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
@@ -168,24 +157,21 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
     };
   };
 
-  // Convert pixels to centimeters
   const pixelsToCm = (pixels: number): number => {
     return pixels * PIXELS_TO_CM;
   };
 
-  // Get point coordinates relative to center (in cm)
   const getRelativeCoordinates = (point: Point): { x: number; y: number } => {
     const centerX = dimensions.width / 2;
     const centerY = dimensions.height / 2;
     const relativeX = point.x - centerX;
-    const relativeY = centerY - point.y; // Invert Y since canvas Y is top-down
+    const relativeY = centerY - point.y; 
     return {
       x: Math.round(pixelsToCm(relativeX)),
       y: Math.round(pixelsToCm(relativeY))
     };
   };
 
-  // Draw coordinate label
   const drawCoordinateLabel = (ctx: CanvasRenderingContext2D, point: Point, color: string) => {
     const coords = getRelativeCoordinates(point);
     ctx.fillStyle = color;
@@ -193,7 +179,6 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
     ctx.fillText(`(${coords.x}, ${coords.y})`, point.x + 8, point.y - 8);
   };
 
-  // Calculate line length in centimeters
   const getLineLength = (line: Line): number => {
     const dx = line.end.x - line.start.x;
     const dy = line.end.y - line.start.y;
@@ -201,35 +186,29 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
     return pixelsToCm(lengthInPixels);
   };
 
-  // Convert canvas coordinates to grid-snapped coordinates
   const snapToGrid = (point: Point): Point => {
-    const snapSize = gridSize / 4; // More refined grid (quarter of the visible grid)
+    const snapSize = gridSize / 4; 
     const centerX = dimensions.width / 2;
     const centerY = dimensions.height / 2;
 
-    // Calculate relative to center
     const relativeX = point.x - centerX;
     const relativeY = point.y - centerY;
 
-    // Snap relative coordinates
     const snappedX = Math.round(relativeX / snapSize) * snapSize;
     const snappedY = Math.round(relativeY / snapSize) * snapSize;
 
-    // Convert back to canvas coordinates
     return {
       x: centerX + snappedX,
       y: centerY + snappedY
     };
   };
 
-  // Check if two points are close enough to snap
   const arePointsClose = (p1: Point, p2: Point): boolean => {
     const dx = p1.x - p2.x;
     const dy = p1.y - p2.y;
     return Math.sqrt(dx * dx + dy * dy) < SNAP_DISTANCE;
   };
 
-  // Find the nearest endpoint to a point
   const findNearestEndpoint = (point: Point): Point | null => {
     let nearest: Point | null = null;
     let minDistance = SNAP_DISTANCE;
@@ -249,14 +228,12 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
     return nearest;
   };
 
-  // Find connected lines to a point
   const findConnectedLines = (point: Point): Line[] => {
     return lines.filter(line =>
       arePointsClose(line.start, point) || arePointsClose(line.end, point)
     );
   };
 
-  // Check if a point is part of a closed contour
   const isInClosedContour = (point: Point): boolean => {
     const visited = new Set<string>();
     const pointKey = (p: Point) => `${p.x},${p.y}`;
@@ -290,7 +267,6 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
     return findPath(point, 0);
   };
 
-  // Find lines near a point
   const findLinesNearPoint = (point: Point): Line[] => {
     const nearbyLines: Line[] = [];
 
@@ -338,15 +314,12 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
     if (!ctx) return;
 
     const draw = () => {
-      // Clear canvas
       ctx.clearRect(0, 0, dimensions.width, dimensions.height);
 
-      // Apply transform for all drawing operations
       ctx.save();
       ctx.translate(pan.x, pan.y);
       ctx.scale(zoom, zoom);
 
-      // Draw grid lines
       ctx.beginPath();
       ctx.strokeStyle = '#e2e8f0';
       ctx.lineWidth = 1 / zoom;
@@ -356,18 +329,16 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       });
       ctx.stroke();
 
-      // Draw coordinate system
       const coordSystem = createCoordinateSystem();
       coordSystem.forEach((line, index) => {
         ctx.beginPath();
-        ctx.strokeStyle = index < 3 ? '#ef4444' : '#22c55e'; // Red for X-axis, Green for Y-axis
+        ctx.strokeStyle = index < 3 ? '#ef4444' : '#22c55e'; 
         ctx.lineWidth = 2 / zoom;
         ctx.moveTo(line.start.x, line.start.y);
         ctx.lineTo(line.end.x, line.end.y);
         ctx.stroke();
       });
 
-      // Draw origin point and labels
       const centerX = dimensions.width / 2;
       const centerY = dimensions.height / 2;
 
@@ -384,7 +355,6 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       ctx.fillText('Y', centerX + 10 / zoom, centerY - 150 + 10 / zoom);
 
 
-      // Draw existing lines
       lines.forEach(line => {
         if (highlightedLines.includes(line)) {
           ctx.strokeStyle = 'rgba(239, 68, 68, 0.5)';
@@ -398,7 +368,6 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
         ctx.lineTo(line.end.x, line.end.y);
         ctx.stroke();
 
-        // Draw line length
         const midX = (line.start.x + line.end.x) / 2;
         const midY = (line.start.y + line.end.y) / 2;
         const length = Math.round(getLineLength(line));
@@ -407,7 +376,6 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
         ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
       });
 
-      // Draw current line preview
       if (currentLine) {
         ctx.beginPath();
         ctx.strokeStyle = '#000000';
@@ -422,32 +390,28 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
         ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
       }
 
-      // Draw endpoints with different colors
       const endpoints = [...new Set(lines.flatMap(line => [line.start, line.end]))];
       endpoints.forEach(point => {
         const connections = findConnectedLines(point).length;
-        let color = '#fb923c'; // Orange for disconnected points
+        let color = '#fb923c'; 
 
         if (connections > 1) {
           if (isInClosedContour(point)) {
-            color = '#22c55e'; // Green for points in closed contours
+            color = '#22c55e'; 
           } else {
-            color = '#3b82f6'; // Blue for connected points
+            color = '#3b82f6'; 
           }
         }
 
-        // Draw point
         ctx.beginPath();
         ctx.fillStyle = color;
         ctx.arc(point.x, point.y, POINT_RADIUS / zoom, 0, 2 * Math.PI);
         ctx.fill();
 
-        // Draw coordinate label
         ctx.font = `${12 / zoom}px sans-serif`;
         drawCoordinateLabel(ctx, point, color);
       });
 
-      // Draw cursor point coordinates while drawing
       if (cursorPoint && isDrawing) {
         ctx.font = `${12 / zoom}px sans-serif`;
         drawCoordinateLabel(ctx, cursorPoint, '#fb923c');
@@ -457,7 +421,7 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
     };
 
     const handleMouseDown = (e: MouseEvent) => {
-      if (panMode || e.button === 2) { // Pan mode or right click
+      if (panMode || e.button === 2) { 
         e.preventDefault();
         handlePanStart(e);
         return;
@@ -524,7 +488,6 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       }
     };
 
-    // Set up event listeners
     canvas.addEventListener('mousedown', handleMouseDown);
     canvas.addEventListener('mousemove', handleMouseMove);
     canvas.addEventListener('mouseup', handleMouseUp);
@@ -532,13 +495,11 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
     canvas.addEventListener('wheel', handleWheel);
     canvas.addEventListener('contextmenu', e => e.preventDefault());
 
-    // Start animation loop
     let animationFrameId = requestAnimationFrame(function animate() {
       draw();
       animationFrameId = requestAnimationFrame(animate);
     });
 
-    // Cleanup
     return () => {
       canvas.removeEventListener('mousedown', handleMouseDown);
       canvas.removeEventListener('mousemove', handleMouseMove);
@@ -549,6 +510,27 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
       cancelAnimationFrame(animationFrameId);
     };
   }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode, cursorPoint]);
+
+  const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/[^0-9]/g, '');
+    setZoomInput(value);
+  };
+
+  const handleZoomInputBlur = () => {
+    let newZoom = parseInt(zoomInput) / 100;
+    if (isNaN(newZoom)) {
+      newZoom = zoom;
+    } else {
+      newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newZoom));
+    }
+    handleZoomChange(newZoom);
+  };
+
+  const handleZoomInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.currentTarget.blur();
+    }
+  };
 
   return (
     <div ref={containerRef} className="w-full h-full relative">
@@ -568,9 +550,17 @@ export default function Canvas2D({ gridSize, currentTool }: Canvas2DProps) {
         >
           <Minus className="h-4 w-4" />
         </Button>
-        <span className="text-sm font-medium w-16 text-center">
-          {Math.round(zoom * 100)}%
-        </span>
+        <Input
+          type="number"
+          value={zoomInput}
+          onChange={handleZoomInputChange}
+          onBlur={handleZoomInputBlur}
+          onKeyDown={handleZoomInputKeyDown}
+          className="w-16 h-8 text-center text-sm"
+          min={MIN_ZOOM * 100}
+          max={MAX_ZOOM * 100}
+        />
+        <span className="text-sm font-medium -ml-6">%</span>
         <Button
           variant="outline"
           size="icon"
