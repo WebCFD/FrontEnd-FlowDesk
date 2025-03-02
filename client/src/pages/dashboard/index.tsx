@@ -164,9 +164,9 @@ export default function Dashboard() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Return to WizardDesign</AlertDialogCancel>
             <AlertDialogAction onClick={handleConfirmNewSimulation}>
-              Continue
+              New Design
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
