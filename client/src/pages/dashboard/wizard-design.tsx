@@ -57,21 +57,21 @@ export default function WizardDesign() {
     const activeStyles = "scale-95 shadow-inner";
 
     const colorStyles = {
-      vent: "hover:bg-green-100 text-green-700",
-      door: "hover:bg-blue-100 text-blue-700",
-      window: "hover:bg-amber-100 text-amber-700"
+      window: "hover:bg-blue-100 text-blue-700",
+      door: "hover:bg-amber-100 text-amber-700",
+      vent: "hover:bg-green-100 text-green-700"
     };
 
     const activeColorStyles = {
-      vent: "bg-green-100",
-      door: "bg-blue-100",
-      window: "bg-amber-100"
+      window: "bg-blue-100",
+      door: "bg-amber-100",
+      vent: "bg-green-100"
     };
 
     const borderStyles = {
-      vent: "border-green-500",
-      door: "border-blue-500",
-      window: "border-amber-500"
+      window: "border-blue-500",
+      door: "border-amber-500",
+      vent: "border-green-500"
     };
 
     return cn(
@@ -183,27 +183,27 @@ export default function WizardDesign() {
                     <div className="grid grid-cols-3 gap-2">
                       <Button
                         variant="outline"
-                        className={getAirEntryStyles('vent')}
-                        onClick={() => handleAirEntrySelect('vent')}
+                        className={getAirEntryStyles('window')}
+                        onClick={() => handleAirEntrySelect('window')}
                       >
-                        <div className="w-6 h-6 border-2 border-green-500 grid grid-cols-2 grid-rows-2" />
-                        <span className="text-xs mt-1">Vent-Grid</span>
+                        <div className="w-6 h-6 border-2 border-blue-500 grid grid-cols-2" />
+                        <span className="text-xs mt-1">Window</span>
                       </Button>
                       <Button
                         variant="outline"
                         className={getAirEntryStyles('door')}
                         onClick={() => handleAirEntrySelect('door')}
                       >
-                        <div className="w-6 h-6 border-2 border-blue-500" />
+                        <div className="w-6 h-6 border-2 border-amber-500" />
                         <span className="text-xs mt-1">Door</span>
                       </Button>
                       <Button
                         variant="outline"
-                        className={getAirEntryStyles('window')}
-                        onClick={() => handleAirEntrySelect('window')}
+                        className={getAirEntryStyles('vent')}
+                        onClick={() => handleAirEntrySelect('vent')}
                       >
-                        <div className="w-6 h-6 border-2 border-amber-500 grid grid-cols-2" />
-                        <span className="text-xs mt-1">Window</span>
+                        <div className="w-6 h-6 border-2 border-green-500 grid grid-cols-2 grid-rows-2" />
+                        <span className="text-xs mt-1">Vent-Grid</span>
                       </Button>
                     </div>
                   </div>
