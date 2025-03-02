@@ -345,26 +345,38 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       });
 
       const width = entry.dimensions.width;
-      const height = entry.dimensions.height || 50;
-      const distanceToFloor = entry.dimensions.distanceToFloor || 0;
+      const height = entry.dimensions.height;
+
+      // Calculate Z position based on entry type
+      let zPosition;
+      if (entry.type === 'door') {
+        // Doors start from floor, so z is half the height
+        zPosition = height / 2;
+      } else {
+        // Windows and vents use distanceToFloor from dialog
+        zPosition = entry.dimensions.distanceToFloor || 0;
+      }
 
       const geometry = new THREE.PlaneGeometry(width, height);
       const mesh = new THREE.Mesh(geometry, material);
 
       // Position the air entry using transformed coordinates
-      const position = transform2DTo3D(entry.position, distanceToFloor + height / 2);
+      const position = transform2DTo3D(entry.position);
       console.log(`Creating air entry (${entry.type}) at:`);
       console.log(`Original 2D position: (${entry.position.x}, ${entry.position.y})`);
-      console.log(`Transformed 3D position: (${position.x}, ${position.y}, ${position.z})`);
+      console.log(`Transformed 3D position: (${position.x}, ${position.y}, ${zPosition})`);
 
-      mesh.position.set(position.x, position.y, position.z);
+      mesh.position.set(position.x, position.y, zPosition);
 
       // Calculate rotation to align with wall
       const normal = calculateNormal(entry.line);
       const angle = Math.atan2(normal.y, normal.x);
-      mesh.rotation.z = angle;
 
-      sceneRef.current.add(mesh);
+      // Rotate the mesh to be perpendicular to the wall
+      mesh.rotation.z = angle;
+      mesh.rotation.y = Math.PI; // Make it face outward
+
+      sceneRef.current?.add(mesh);
     });
 
   }, [lines, airEntries]);
