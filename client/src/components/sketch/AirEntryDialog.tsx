@@ -22,14 +22,38 @@ interface AirEntryDialogProps {
   }) => void;
 }
 
+const windowDefaults = {
+  width: 50,
+  height: 50,
+  distanceToFloor: 120
+};
+
+const doorDefaults = {
+  width: 75,
+  height: 190
+};
+
+const ventDefaults = {
+  width: 50,
+  height: 50,
+  distanceToFloor: 120
+};
+
 export default function AirEntryDialog({ type, isOpen, onClose, onConfirm }: AirEntryDialogProps) {
-  const defaultValues = {
-    window: { width: 50, height: 50, distanceToFloor: 120 },
-    door: { width: 75, height: 190 },
-    vent: { width: 50, height: 50, distanceToFloor: 120 }
+  const getDefaultValues = () => {
+    switch (type) {
+      case 'window':
+        return windowDefaults;
+      case 'door':
+        return doorDefaults;
+      case 'vent':
+        return ventDefaults;
+      default:
+        return windowDefaults; //add default case to handle potential errors.
+    }
   };
 
-  const [dimensions, setDimensions] = useState(defaultValues[type]);
+  const [dimensions, setDimensions] = useState(getDefaultValues());
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
