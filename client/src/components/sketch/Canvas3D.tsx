@@ -132,37 +132,38 @@ export default function Canvas3D({ lines, airEntries, height = 600 }: Canvas3DPr
     directionalLight.position.set(1, 1, 1);
     sceneRef.current.add(directionalLight);
 
-    // Convert 2D lines to 3D walls
+    // Create wall material
     const wallMaterial = new THREE.MeshPhongMaterial({
-      color: 0x808080,
+      color: 0x3b82f6, // Clear blue color
+      opacity: 0.5,
+      transparent: true,
       side: THREE.DoubleSide,
     });
 
+    // Convert 2D lines to 3D walls
     lines.forEach(line => {
-      const start = new THREE.Vector3(line.start.x, line.start.y, 0);
-      const end = new THREE.Vector3(line.end.x, line.end.y, 0);
+      // Create vertices for wall corners
+      const vertices = new Float32Array([
+        line.start.x, line.start.y, 0,           // bottom start
+        line.end.x, line.end.y, 0,               // bottom end
+        line.start.x, line.start.y, ROOM_HEIGHT, // top start
+        line.end.x, line.end.y, ROOM_HEIGHT      // top end
+      ]);
 
-      // Create wall geometry
-      const wallShape = new THREE.Shape();
-      wallShape.moveTo(0, 0);
-      wallShape.lineTo(0, ROOM_HEIGHT);
+      // Create faces indices
+      const indices = new Uint16Array([
+        0, 1, 2,  // first triangle
+        1, 3, 2   // second triangle
+      ]);
 
-      const extrudeSettings = {
-        steps: 1,
-        depth: 10, // Wall thickness
-        bevelEnabled: false,
-      };
+      // Create the wall geometry
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+      geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+      geometry.computeVertexNormals(); // Compute normals for proper lighting
 
-      const wallGeometry = new THREE.ExtrudeGeometry(wallShape, extrudeSettings);
-
-      // Position and rotate the wall
-      const wall = new THREE.Mesh(wallGeometry, wallMaterial);
-      wall.position.set(start.x, start.y, 0);
-
-      // Calculate rotation to align with wall direction
-      const angle = Math.atan2(end.y - start.y, end.x - start.x);
-      wall.rotation.z = angle;
-
+      // Create the wall mesh
+      const wall = new THREE.Mesh(geometry, wallMaterial);
       sceneRef.current.add(wall);
     });
 
@@ -192,7 +193,7 @@ export default function Canvas3D({ lines, airEntries, height = 600 }: Canvas3DPr
       mesh.position.set(
         entry.position.x,
         entry.position.y,
-        distanceToFloor
+        distanceToFloor + height/2
       );
 
       // Calculate rotation to align with wall
