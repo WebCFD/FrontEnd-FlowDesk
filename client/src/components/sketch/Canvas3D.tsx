@@ -369,8 +369,8 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       const width = entry.dimensions.width;
       const height = entry.dimensions.height;
 
-      // Calculate Z position based on entry type
-      const zPosition = entry.type === 'door' ? height / 2 : (entry.dimensions.distanceToFloor || 0);
+      // Calculate Z position based on entry type and adjust door position to ensure bottom edge is at z=0
+      const zPosition = entry.type === 'door' ? 0 : (entry.dimensions.distanceToFloor || 0);
 
       // Calculate wall direction and normal vectors using the same method as walls
       const wallDirection = new THREE.Vector3()
@@ -388,8 +388,17 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
 
       // Create and position the air entry
       const geometry = new THREE.PlaneGeometry(width, height);
+
+      // For doors, adjust the geometry to have its bottom edge at z=0
+      if (entry.type === 'door') {
+        // Translate the geometry up by half its height to have bottom edge at z=0
+        geometry.translate(0, 0, height / 2);
+      }
+
       const mesh = new THREE.Mesh(geometry, material);
       const position = transform2DTo3D(entry.position);
+
+      // Set position - for doors, we're already handling the height offset in the geometry
       mesh.position.set(position.x, position.y, zPosition);
 
       // Set the orientation to match the wall
@@ -405,7 +414,7 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       // Debug arrow for air entry normal (black)
       const elementArrowHelper = new THREE.ArrowHelper(
         wallNormalVector,
-        new THREE.Vector3(position.x, position.y, zPosition),
+        new THREE.Vector3(position.x, position.y, zPosition + (entry.type === 'door' ? height / 2 : 0)),
         50,  // length
         0x000000,  // black color
         10,  // head length
