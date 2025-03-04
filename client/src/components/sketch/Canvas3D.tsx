@@ -369,9 +369,6 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       const width = entry.dimensions.width;
       const height = entry.dimensions.height;
 
-      // Calculate Z position based on entry type
-      const zPosition = entry.type === 'door' ? height / 2 : (entry.dimensions.distanceToFloor || 0);
-
       // Calculate wall direction and normal vectors using the same method as walls
       const wallDirection = new THREE.Vector3()
         .subVectors(
@@ -390,22 +387,51 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       const geometry = new THREE.PlaneGeometry(width, height);
       const mesh = new THREE.Mesh(geometry, material);
       const position = transform2DTo3D(entry.position);
-      mesh.position.set(position.x, position.y, zPosition);
 
-      // Set the orientation to match the wall
-      const quaternion = new THREE.Quaternion();
-      quaternion.setFromUnitVectors(
-        new THREE.Vector3(0, 0, 1), // Default plane normal
-        wallNormalVector            // Target normal (wall normal)
-      );
-      mesh.setRotationFromQuaternion(quaternion);
+      if (entry.type === 'door') {
+        // For doors, we need special handling to ensure they're properly aligned with the floor
+
+        // Position the door with its center at the wall intersection point
+        mesh.position.set(position.x, position.y, height / 2); // Center height for rotation
+
+        // First, align the door with the wall normal
+        const wallQuaternion = new THREE.Quaternion();
+        wallQuaternion.setFromUnitVectors(
+          new THREE.Vector3(0, 0, 1), // Default plane normal
+          wallNormalVector            // Target normal (wall normal)
+        );
+
+        // Then rotate it 90 degrees around its normal to make it vertical
+        const verticalRotation = new THREE.Quaternion();
+        verticalRotation.setFromAxisAngle(wallNormalVector, Math.PI / 2);
+
+        // Combine the rotations
+        const finalQuaternion = wallQuaternion.multiply(verticalRotation);
+        mesh.setRotationFromQuaternion(finalQuaternion);
+
+      } else {
+        // For windows and vents, keep the original behavior
+        const zPosition = entry.type === 'window' ? 
+          (entry.dimensions.distanceToFloor || 0) : 
+          (entry.dimensions.distanceToFloor || 0);
+
+        mesh.position.set(position.x, position.y, zPosition);
+
+        // Set the orientation to match the wall
+        const quaternion = new THREE.Quaternion();
+        quaternion.setFromUnitVectors(
+          new THREE.Vector3(0, 0, 1), // Default plane normal
+          wallNormalVector            // Target normal (wall normal)
+        );
+        mesh.setRotationFromQuaternion(quaternion);
+      }
 
       sceneRef.current?.add(mesh);
 
       // Debug arrow for air entry normal (black)
       const elementArrowHelper = new THREE.ArrowHelper(
         wallNormalVector,
-        new THREE.Vector3(position.x, position.y, zPosition),
+        new THREE.Vector3(position.x, position.y, entry.type === 'door' ? height / 2 : entry.dimensions.distanceToFloor || 0),
         50,  // length
         0x000000,  // black color
         10,  // head length
@@ -415,7 +441,7 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
 
       // Log vectors for debugging
       console.log(`Air Entry (${entry.type}) vectors:`, {
-        position: `(${position.x.toFixed(2)}, ${position.y.toFixed(2)}, ${zPosition.toFixed(2)})`,
+        position: `(${position.x.toFixed(2)}, ${position.y.toFixed(2)}, ${entry.type === 'door' ? (height / 2).toFixed(2) : entry.dimensions.distanceToFloor?.toFixed(2) || '0'})`,
         direction: `(${wallDirection.x.toFixed(4)}, ${wallDirection.y.toFixed(4)}, ${wallDirection.z.toFixed(4)})`,
         normal: `(${wallNormalVector.x.toFixed(4)}, ${wallNormalVector.y.toFixed(4)}, ${wallNormalVector.z.toFixed(4)})`
       });
