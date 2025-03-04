@@ -7,7 +7,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // Log environment
-log(`Starting server in ${process.env.NODE_ENV || 'development'} mode`);
+const nodeEnv = process.env.NODE_ENV || 'development';
+log(`Starting server in ${nodeEnv} mode`);
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -52,7 +53,8 @@ app.use((req, res, next) => {
       console.error(err);
     });
 
-    if (process.env.NODE_ENV === "development") {
+    // Default to development mode unless explicitly set to production
+    if (nodeEnv !== "production") {
       log("Setting up Vite for development...");
       await setupVite(app, server);
     } else {
