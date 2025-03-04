@@ -369,24 +369,10 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       const width = entry.dimensions.width;
       const height = entry.dimensions.height;
 
-      // Create geometry and adjust it based on entry type
-      const geometry = new THREE.PlaneGeometry(width, height);
+      // Calculate Z position based on entry type
+      const zPosition = entry.type === 'door' ? height / 2 : (entry.dimensions.distanceToFloor || 0);
 
-      // For doors, ensure the geometry's origin is at the bottom center
-      if (entry.type === 'door') {
-        // Move the geometry up so its bottom edge is at z=0
-        geometry.translate(0, height/2, 0);
-      }
-
-      const mesh = new THREE.Mesh(geometry, material);
-      const position = transform2DTo3D(entry.position);
-
-      // Position the mesh - for doors, position at floor level (z=0)
-      // For other entries, use their specified distance from floor
-      const zPosition = entry.type === 'door' ? 0 : (entry.dimensions.distanceToFloor || 0);
-      mesh.position.set(position.x, position.y, zPosition);
-
-      // Calculate wall direction and normal vectors
+      // Calculate wall direction and normal vectors using the same method as walls
       const wallDirection = new THREE.Vector3()
         .subVectors(
           transform2DTo3D(entry.line.end),
@@ -399,6 +385,12 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       const wallNormalVector = new THREE.Vector3()
         .crossVectors(wallDirection, upVector)
         .normalize();
+
+      // Create and position the air entry
+      const geometry = new THREE.PlaneGeometry(width, height);
+      const mesh = new THREE.Mesh(geometry, material);
+      const position = transform2DTo3D(entry.position);
+      mesh.position.set(position.x, position.y, zPosition);
 
       // Set the orientation to match the wall
       const quaternion = new THREE.Quaternion();
@@ -413,7 +405,7 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       // Debug arrow for air entry normal (black)
       const elementArrowHelper = new THREE.ArrowHelper(
         wallNormalVector,
-        new THREE.Vector3(position.x, position.y, zPosition + height/2), // Arrow starts at center of door
+        new THREE.Vector3(position.x, position.y, zPosition),
         50,  // length
         0x000000,  // black color
         10,  // head length
