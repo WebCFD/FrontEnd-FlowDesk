@@ -2,15 +2,6 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { TrackballControls } from "three/addons/controls/TrackballControls.js";
 
-// Add texture URLs
-const TEXTURES = {
-  floor: "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/hardwood2_diffuse.jpg",
-  wall: "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/brick_diffuse.jpg",
-  door: "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/door/color.jpg",
-  window: "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/glass/glass_diffuse.jpg",
-  vent: "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/metal/metal_diffuse.jpg"
-};
-
 interface Point {
   x: number;
   y: number;
@@ -42,15 +33,6 @@ const ROOM_HEIGHT = 210; // Room height in cm
 const PIXELS_TO_CM = 25 / 20; // 25cm = 20px ratio
 const GRID_SIZE = 1000; // Size of the grid in cm
 const GRID_DIVISIONS = 40; // Number of divisions in the grid
-
-// Helper function to load textures
-const loadTexture = (url: string): THREE.Texture => {
-  const texture = new THREE.TextureLoader().load(url);
-  texture.wrapS = THREE.RepeatWrapping;
-  texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(4, 4); // Repeat texture 4 times
-  return texture;
-};
 
 const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
   const dimensions = { width: 800, height: 600 };
@@ -168,22 +150,14 @@ export default function Canvas3D({
     controls.dynamicDampingFactor = 0.3;
     controlsRef.current = controls;
 
-    // Add lights
+    // Add ambient light
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(ambientLight);
 
+    // Add directional light
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
     directionalLight.position.set(1, 1, 1);
     scene.add(directionalLight);
-
-    // Load textures
-    const textures = {
-      floor: loadTexture(TEXTURES.floor),
-      wall: loadTexture(TEXTURES.wall),
-      door: loadTexture(TEXTURES.door),
-      window: loadTexture(TEXTURES.window),
-      vent: loadTexture(TEXTURES.vent)
-    };
 
     // Add grid helper
     const gridHelper = new THREE.GridHelper(
@@ -192,8 +166,8 @@ export default function Canvas3D({
       0x000000,
       0x000000,
     );
-    gridHelper.position.set(0, 0, 0);
-    gridHelper.rotation.x = -Math.PI / 2;
+    gridHelper.position.set(0, 0, 0); // Position at origin
+    gridHelper.rotation.x = -Math.PI / 2; // Rotate to lie flat on XY plane
     gridHelper.material.opacity = 0.2;
     gridHelper.material.transparent = true;
     scene.add(gridHelper);
@@ -212,115 +186,29 @@ export default function Canvas3D({
       }
       shape.lineTo(firstPoint.x, firstPoint.y);
 
-      // Create floor with texture
+      // Create floor geometry and mesh
       const floorGeometry = new THREE.ShapeGeometry(shape);
       const floorMaterial = new THREE.MeshPhongMaterial({
-        map: textures.floor,
+        color: 0x808080, // Medium gray
+        opacity: 0.3,
+        transparent: true,
         side: THREE.DoubleSide,
       });
       const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-      floor.position.set(0, 0, 0);
+      floor.position.set(0, 0, 0); // Place at Z=0
       scene.add(floor);
 
-      // Create roof (no texture needed as it's usually not visible)
+      // Create roof geometry and mesh
       const roofGeometry = new THREE.ShapeGeometry(shape);
       const roofMaterial = new THREE.MeshPhongMaterial({
-        color: 0xe0e0e0,
+        color: 0xe0e0e0, // Light gray
         opacity: 0.2,
         transparent: true,
         side: THREE.DoubleSide,
       });
       const roof = new THREE.Mesh(roofGeometry, roofMaterial);
-      roof.position.set(0, 0, ROOM_HEIGHT);
+      roof.position.set(0, 0, ROOM_HEIGHT); // Place at Z=ROOM_HEIGHT
       scene.add(roof);
-
-      // Create walls with brick texture
-      lines.forEach((line) => {
-        const start_bottom = transform2DTo3D(line.start);
-        const end_bottom = transform2DTo3D(line.end);
-        const start_top = transform2DTo3D(line.start, ROOM_HEIGHT);
-        const end_top = transform2DTo3D(line.end, ROOM_HEIGHT);
-
-        const wallPoints = [
-          new THREE.Vector3(start_bottom.x, start_bottom.y, start_bottom.z),
-          new THREE.Vector3(end_bottom.x, end_bottom.y, end_bottom.z),
-          new THREE.Vector3(end_top.x, end_top.y, end_top.z),
-          new THREE.Vector3(start_top.x, start_top.y, start_top.z),
-        ];
-
-        const wallGeometry = new THREE.BufferGeometry().setFromPoints(wallPoints);
-        wallGeometry.setIndex([0, 1, 2, 0, 2, 3]);
-
-        // Calculate UV coordinates for proper texture mapping
-        const wallLength = Math.sqrt(
-          Math.pow(end_bottom.x - start_bottom.x, 2) +
-          Math.pow(end_bottom.y - start_bottom.y, 2)
-        );
-        const uvs = new Float32Array([
-          0, 0,
-          wallLength / 100, 0,
-          wallLength / 100, ROOM_HEIGHT / 100,
-          0, ROOM_HEIGHT / 100,
-        ]);
-        wallGeometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
-
-        const wallMaterial = new THREE.MeshPhongMaterial({
-          map: textures.wall,
-          side: THREE.DoubleSide,
-        });
-        const wall = new THREE.Mesh(wallGeometry, wallMaterial);
-        scene.add(wall);
-      });
-
-      // Add air entries with appropriate textures
-      airEntries.forEach((entry) => {
-        const texture = entry.type === 'window' ? textures.window :
-          entry.type === 'door' ? textures.door : textures.vent;
-
-        const material = new THREE.MeshPhongMaterial({
-          map: texture,
-          transparent: entry.type === 'window',
-          opacity: entry.type === 'window' ? 0.6 : 1,
-          side: THREE.DoubleSide,
-        });
-
-        const geometry = new THREE.PlaneGeometry(
-          entry.dimensions.width,
-          entry.dimensions.height
-        );
-
-        const mesh = new THREE.Mesh(geometry, material);
-        const position = transform2DTo3D(entry.position);
-        const zPosition = entry.type === 'door' ?
-          entry.dimensions.height / 2 :
-          entry.dimensions.distanceToFloor || 0;
-
-        mesh.position.set(position.x, position.y, zPosition);
-
-        // Calculate and apply proper rotation
-        const wallDirection = new THREE.Vector3()
-          .subVectors(
-            transform2DTo3D(entry.line.end),
-            transform2DTo3D(entry.line.start)
-          )
-          .normalize();
-
-        const worldUpVector = new THREE.Vector3(0, 0, 1);
-        const wallNormalVector = new THREE.Vector3()
-          .crossVectors(wallDirection, worldUpVector)
-          .normalize();
-
-        const up = new THREE.Vector3(0, 0, 1);
-        const right = new THREE.Vector3()
-          .crossVectors(up, wallNormalVector)
-          .normalize();
-
-        const rotationMatrix = new THREE.Matrix4()
-          .makeBasis(right, up, wallNormalVector);
-        mesh.setRotationFromMatrix(rotationMatrix);
-
-        scene.add(mesh);
-      });
     }
 
     // Animation loop
@@ -337,9 +225,310 @@ export default function Canvas3D({
         containerRef.current.removeChild(renderer.domElement);
       }
       renderer.dispose();
-      Object.values(textures).forEach(texture => texture.dispose());
     };
-  }, [lines, height, airEntries]);
+  }, [lines, height]);
+
+  useEffect(() => {
+    if (!sceneRef.current) return;
+
+    // Clear previous geometry
+    sceneRef.current.clear();
+
+    // Add grid helper again after clearing
+    const gridHelper = new THREE.GridHelper(
+      GRID_SIZE,
+      GRID_DIVISIONS,
+      0x000000,
+      0x000000,
+    );
+    gridHelper.position.set(0, 0, 0); // Position at origin
+    gridHelper.rotation.x = -Math.PI / 2; // Rotate to lie flat on XY plane
+    gridHelper.material.opacity = 0.2;
+    gridHelper.material.transparent = true;
+    sceneRef.current.add(gridHelper);
+
+    // Create floor and roof surfaces using the room perimeter
+    const perimeterPoints = createRoomPerimeter(lines);
+    if (perimeterPoints.length > 2) {
+      // Create shape from perimeter points
+      const shape = new THREE.Shape();
+      const firstPoint = transform2DTo3D(perimeterPoints[0]);
+      shape.moveTo(firstPoint.x, firstPoint.y);
+
+      for (let i = 1; i < perimeterPoints.length; i++) {
+        const point = transform2DTo3D(perimeterPoints[i]);
+        shape.lineTo(point.x, point.y);
+      }
+      shape.lineTo(firstPoint.x, firstPoint.y);
+
+      // Create floor geometry and mesh
+      const floorGeometry = new THREE.ShapeGeometry(shape);
+      const floorMaterial = new THREE.MeshPhongMaterial({
+        color: 0x808080, // Medium gray
+        opacity: 0.3,
+        transparent: true,
+        side: THREE.DoubleSide,
+      });
+      const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+      floor.position.set(0, 0, 0); // Place at Z=0
+      sceneRef.current.add(floor);
+
+      // Create roof geometry and mesh
+      const roofGeometry = new THREE.ShapeGeometry(shape);
+      const roofMaterial = new THREE.MeshPhongMaterial({
+        color: 0xe0e0e0, // Light gray
+        opacity: 0.2,
+        transparent: true,
+        side: THREE.DoubleSide,
+      });
+      const roof = new THREE.Mesh(roofGeometry, roofMaterial);
+      roof.position.set(0, 0, ROOM_HEIGHT); // Place at Z=ROOM_HEIGHT
+      sceneRef.current.add(roof);
+    }
+
+    // Add ambient and directional lights back
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    sceneRef.current.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(1, 1, 1);
+    sceneRef.current.add(directionalLight);
+
+    // Add coordinate system axes with labels
+    const axesHelper = new THREE.AxesHelper(200);
+    sceneRef.current.add(axesHelper);
+
+    // Create wall material
+    const wallMaterial = new THREE.MeshPhongMaterial({
+      color: 0x3b82f6, // Clear blue color
+      opacity: 0.5,
+      transparent: true,
+      side: THREE.DoubleSide,
+    });
+
+    // Convert 2D lines to 3D walls using transformed coordinates
+    lines.forEach((line) => {
+      // Create vertices for wall corners using the transformation
+      const start_bottom = transform2DTo3D(line.start);
+      const end_bottom = transform2DTo3D(line.end);
+      const start_top = transform2DTo3D(line.start, ROOM_HEIGHT);
+      const end_top = transform2DTo3D(line.end, ROOM_HEIGHT);
+
+      // Calculate wall direction and normal vectors
+      const wallDirection = new THREE.Vector3()
+        .subVectors(end_bottom, start_bottom)
+        .normalize();
+
+      // Calculate proper wall normal using cross product
+      const upVector = new THREE.Vector3(0, 0, 1);
+      const wallNormalVector = new THREE.Vector3()
+        .crossVectors(wallDirection, upVector)
+        .normalize();
+
+      // Log vectors for debugging
+      console.log("Wall vectors:", {
+        start: `(${line.start.x}, ${line.start.y})`,
+        end: `(${line.end.x}, ${line.end.y})`,
+        direction: `(${wallDirection.x.toFixed(4)}, ${wallDirection.y.toFixed(4)}, ${wallDirection.z.toFixed(4)})`,
+        normal: `(${wallNormalVector.x.toFixed(4)}, ${wallNormalVector.y.toFixed(4)}, ${wallNormalVector.z.toFixed(4)})`,
+      });
+
+      // Calculate wall midpoint for arrow visualization
+      const wallMidPoint = new THREE.Vector3()
+        .addVectors(start_bottom, end_bottom)
+        .multiplyScalar(0.5)
+        .setZ(ROOM_HEIGHT / 2);
+
+      // Add debug arrow for wall normal (blue)
+      const wallArrowHelper = new THREE.ArrowHelper(
+        wallNormalVector,
+        wallMidPoint,
+        50, // length
+        0x3b82f6, // blue color
+        10, // head length
+        5, // head width
+      );
+      sceneRef.current.add(wallArrowHelper);
+
+      // Create vertices array from transformed points
+      const vertices = new Float32Array([
+        start_bottom.x,
+        start_bottom.y,
+        start_bottom.z,
+        end_bottom.x,
+        end_bottom.y,
+        end_bottom.z,
+        start_top.x,
+        start_top.y,
+        start_top.z,
+        end_top.x,
+        end_top.y,
+        end_top.z,
+      ]);
+
+      // Create faces indices
+      const indices = new Uint16Array([0, 1, 2, 1, 3, 2]);
+
+      // Create the wall geometry
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+      geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+      geometry.computeVertexNormals();
+
+      // Create the wall mesh
+      const wall = new THREE.Mesh(geometry, wallMaterial);
+      sceneRef.current.add(wall);
+    });
+
+    // Create air entries using the same normal calculations as the walls
+    // REPLACE THE AIR ENTRY CREATION SECTION WITH THIS CODE
+    // Look for the part starting with: airEntries.forEach((entry) => {
+
+    // REPLACE THE ENTIRE AIR ENTRY CREATION SECTION WITH THIS CODE
+
+    airEntries.forEach((entry) => {
+      // Set color based on entry type
+      const color =
+        entry.type === "window"
+          ? 0x3b82f6
+          : entry.type === "door"
+            ? 0xb45309
+            : 0x22c55e;
+      const material = new THREE.MeshPhongMaterial({
+        color,
+        opacity: 0.6,
+        transparent: true,
+        side: THREE.DoubleSide,
+      });
+
+      const width = entry.dimensions.width;
+      const height = entry.dimensions.height;
+
+      // Calculate Z position based on entry type
+      const zPosition =
+        entry.type === "door"
+          ? height / 2
+          : entry.dimensions.distanceToFloor || 0;
+
+      // Calculate wall direction and normal vectors using the same method as walls
+      const wallDirection = new THREE.Vector3()
+        .subVectors(
+          transform2DTo3D(entry.line.end),
+          transform2DTo3D(entry.line.start),
+        )
+        .normalize();
+
+      // Calculate proper wall normal using cross product
+      const worldUpVector = new THREE.Vector3(0, 0, 1);
+      const wallNormalVector = new THREE.Vector3()
+        .crossVectors(wallDirection, worldUpVector)
+        .normalize();
+
+      // Create and position the air entry
+      const geometry = new THREE.PlaneGeometry(width, height);
+      const mesh = new THREE.Mesh(geometry, material);
+      const position = transform2DTo3D(entry.position);
+      mesh.position.set(position.x, position.y, zPosition);
+
+      // Apply Wall's Local Coordinate System approach for all air entries
+
+      // 1. Define the three axes of our local coordinate system
+      const forward = wallNormalVector.clone(); // Forward points in the direction of the wall normal
+      const up = new THREE.Vector3(0, 0, 1);    // Up is always the world up
+
+      // 2. Calculate the right vector to be perpendicular to both forward and up
+      const right = new THREE.Vector3().crossVectors(up, forward).normalize();
+
+      // 3. Re-calculate forward to ensure perfect orthogonality 
+      // (this step ensures forward is exactly perpendicular to both up and right)
+      forward.crossVectors(right, up).normalize();
+
+      // 4. Create rotation matrix from the orthonormal basis
+      const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
+
+      // 5. Apply the rotation to the mesh
+      mesh.setRotationFromMatrix(rotationMatrix);
+
+      // Add the mesh to the scene
+      sceneRef.current?.add(mesh);
+
+      // Log the coordinate system vectors for debugging
+      console.log(`${entry.type.charAt(0).toUpperCase() + entry.type.slice(1)} Coordinate System:`, {
+        position: `(${position.x.toFixed(2)}, ${position.y.toFixed(2)}, ${zPosition.toFixed(2)})`,
+        forward: `(${forward.x.toFixed(4)}, ${forward.y.toFixed(4)}, ${forward.z.toFixed(4)})`,
+        up: `(${up.x.toFixed(4)}, ${up.y.toFixed(4)}, ${up.z.toFixed(4)})`,
+        right: `(${right.x.toFixed(4)}, ${right.y.toFixed(4)}, ${right.z.toFixed(4)})`
+      });
+
+      // Add helper arrows only in debug mode
+      const showDebugArrows = true; // Set to false to hide coordinate system arrows
+
+      if (showDebugArrows) {
+        const arrowLength = 30;
+        const arrowPosition = new THREE.Vector3(position.x, position.y, zPosition);
+
+        // Forward arrow (blue) - shows normal direction
+        const forwardArrow = new THREE.ArrowHelper(
+          forward,
+          arrowPosition,
+          arrowLength,
+          0x0000ff, // blue
+          6,        // head length
+          3         // head width
+        );
+
+        // Up arrow (green) - shows height direction
+        const upArrow = new THREE.ArrowHelper(
+          up,
+          arrowPosition,
+          arrowLength,
+          0x00ff00, // green
+          6,        // head length
+          3         // head width
+        );
+
+        // Right arrow (red) - shows width direction
+        const rightArrow = new THREE.ArrowHelper(
+          right,
+          arrowPosition,
+          arrowLength,
+          0xff0000, // red
+          6,        // head length
+          3         // head width
+        );
+
+        // Add arrows to scene
+        sceneRef.current?.add(forwardArrow);
+        sceneRef.current?.add(upArrow);
+        sceneRef.current?.add(rightArrow);
+
+        // Add a small marker at the air entry position
+        const markerGeometry = new THREE.SphereGeometry(3, 8, 8);
+        const markerMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+        const marker = new THREE.Mesh(markerGeometry, markerMaterial);
+        marker.position.copy(arrowPosition);
+        sceneRef.current?.add(marker);
+      }
+
+      // Original debug arrow for wall normal (black)
+      const elementArrowHelper = new THREE.ArrowHelper(
+        wallNormalVector,
+        new THREE.Vector3(position.x, position.y, zPosition),
+        50, // length
+        0x000000, // black color
+        10, // head length
+        5, // head width
+      );
+      sceneRef.current?.add(elementArrowHelper);
+
+      // Log vectors for debugging
+      console.log(`Air Entry (${entry.type}) vectors:`, {
+        position: `(${position.x.toFixed(2)}, ${position.y.toFixed(2)}, ${zPosition.toFixed(2)})`,
+        direction: `(${wallDirection.x.toFixed(4)}, ${wallDirection.y.toFixed(4)}, ${wallDirection.z.toFixed(4)})`,
+        normal: `(${wallNormalVector.x.toFixed(4)}, ${wallNormalVector.y.toFixed(4)}, ${wallNormalVector.z.toFixed(4)})`,
+      });
+    });
+  }, [lines, airEntries]);
 
   return <div ref={containerRef} style={{ height }} />;
 }
