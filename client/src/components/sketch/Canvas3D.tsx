@@ -27,6 +27,7 @@ interface Canvas3DProps {
   lines: Line[];
   airEntries?: AirEntry[];
   height?: number;
+  showTextures?: boolean;
 }
 
 const ROOM_HEIGHT = 210; // Room height in cm
@@ -107,6 +108,7 @@ export default function Canvas3D({
   lines,
   airEntries = [],
   height = 600,
+  showTextures = false,
 }: Canvas3DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -263,24 +265,40 @@ export default function Canvas3D({
 
       // Create floor geometry and mesh
       const floorGeometry = new THREE.ShapeGeometry(shape);
-      const floorMaterial = new THREE.MeshPhongMaterial({
-        color: 0x808080, // Medium gray
-        opacity: 0.3,
-        transparent: true,
-        side: THREE.DoubleSide,
-      });
+      const floorMaterial = props.showTextures
+        ? new THREE.MeshStandardMaterial({
+            color: 0xffffff,
+            roughness: 0.8,
+            metalness: 0.1,
+            side: THREE.DoubleSide,
+            map: new THREE.TextureLoader().load('/textures/floor.jpg'),
+          })
+        : new THREE.MeshPhongMaterial({
+            color: 0x808080, // Medium gray
+            opacity: 0.3,
+            transparent: true,
+            side: THREE.DoubleSide,
+          });
       const floor = new THREE.Mesh(floorGeometry, floorMaterial);
       floor.position.set(0, 0, 0); // Place at Z=0
       sceneRef.current.add(floor);
 
       // Create roof geometry and mesh
       const roofGeometry = new THREE.ShapeGeometry(shape);
-      const roofMaterial = new THREE.MeshPhongMaterial({
-        color: 0xe0e0e0, // Light gray
-        opacity: 0.2,
-        transparent: true,
-        side: THREE.DoubleSide,
-      });
+      const roofMaterial = props.showTextures
+        ? new THREE.MeshStandardMaterial({
+            color: 0xffffff,
+            roughness: 0.7,
+            metalness: 0.1,
+            side: THREE.DoubleSide,
+            map: new THREE.TextureLoader().load('/textures/ceiling.jpg'),
+          })
+        : new THREE.MeshPhongMaterial({
+            color: 0xe0e0e0, // Light gray
+            opacity: 0.2,
+            transparent: true,
+            side: THREE.DoubleSide,
+          });
       const roof = new THREE.Mesh(roofGeometry, roofMaterial);
       roof.position.set(0, 0, ROOM_HEIGHT); // Place at Z=ROOM_HEIGHT
       sceneRef.current.add(roof);
@@ -299,12 +317,20 @@ export default function Canvas3D({
     sceneRef.current.add(axesHelper);
 
     // Create wall material
-    const wallMaterial = new THREE.MeshPhongMaterial({
-      color: 0x3b82f6, // Clear blue color
-      opacity: 0.5,
-      transparent: true,
-      side: THREE.DoubleSide,
-    });
+    const wallMaterial = props.showTextures 
+      ? new THREE.MeshStandardMaterial({
+          color: 0xffffff,
+          roughness: 0.7,
+          metalness: 0.1,
+          side: THREE.DoubleSide,
+          map: new THREE.TextureLoader().load('/textures/wall.jpg'),
+        })
+      : new THREE.MeshPhongMaterial({
+          color: 0x3b82f6, // Clear blue color
+          opacity: 0.5,
+          transparent: true,
+          side: THREE.DoubleSide,
+        });
 
     // Convert 2D lines to 3D walls using transformed coordinates
     lines.forEach((line) => {
