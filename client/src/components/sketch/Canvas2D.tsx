@@ -511,7 +511,7 @@ export default function Canvas2D({
       ctx.scale(zoom, zoom);
 
       ctx.beginPath();
-      ctx.strokeStyle = '#94a3b8'; // Lighter color for grid lines
+      ctx.strokeStyle = '#64748b'; // Darker color for grid lines
       ctx.lineWidth = 1 / zoom;
       createGridLines().forEach(line => {
         ctx.moveTo(line.start.x, line.start.y);
@@ -522,7 +522,7 @@ export default function Canvas2D({
       const gridPoints = getGridPoints();
       gridPoints.forEach(point => {
         ctx.beginPath();
-        ctx.fillStyle = '#cbd5e1'; // Lighter color for points
+        ctx.fillStyle = '#e2e8f0'; // Even lighter color for points
         ctx.arc(
           point.x,
           point.y,
@@ -532,10 +532,11 @@ export default function Canvas2D({
         );
         ctx.fill();
 
-        // Show coordinates if this is the hovered point
+        // Show coordinates if this is the hovered point and we're not drawing a wall
         if (hoveredGridPoint &&
           point.x === hoveredGridPoint.x &&
-          point.y === hoveredGridPoint.y) {
+          point.y === hoveredGridPoint.y &&
+          !isDrawing) {  // Only show coordinates when not drawing
           const coords = getRelativeCoordinates(point);
           ctx.font = `${12 / zoom}px sans-serif`;
           ctx.fillStyle = '#000000'; // Black color for coordinates
