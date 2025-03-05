@@ -54,7 +54,10 @@ export default function NewSimulation() {
             <div
               key={s.id}
               className="flex items-center cursor-pointer relative z-10 bg-muted/10 px-3"
-              onClick={() => setStep(s.id)}
+              onClick={() => {
+                console.log(`Switching to step ${s.id}`); 
+                setStep(s.id);
+              }}
             >
               <div className={`text-sm ${step === s.id ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
                 Step {s.id} | {s.name}
@@ -178,39 +181,42 @@ export default function NewSimulation() {
     </>
   );
 
-  const renderStep2 = () => (
-    <div className="space-y-6">
-      {/* 3D Canvas */}
-      <div className="w-full h-[600px] border rounded-lg overflow-hidden bg-white">
-        <RoomSketchPro width={800} height={600} />
-      </div>
+  const renderStep2 = () => {
+    console.log('Rendering Step 2'); 
+    return (
+      <div className="space-y-6">
+        {/* 3D View */}
+        <div className="w-full h-[600px] border rounded-lg overflow-hidden bg-white">
+          <RoomSketchPro width={800} height={600} />
+        </div>
 
-      {/* Simulation Parameters */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Simulation Parameters</CardTitle>
-          <CardDescription>Configure the physical parameters for your simulation</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-4">
-            <Label>Air Flow Rate</Label>
-            <Slider defaultValue={[50]} max={100} step={1} />
-            <div className="text-sm text-right">50 m³/h</div>
-          </div>
-          <div className="space-y-4">
-            <Label>Temperature</Label>
-            <Slider defaultValue={[20]} max={40} min={0} step={1} />
-            <div className="text-sm text-right">20°C</div>
-          </div>
-          <div className="space-y-4">
-            <Label>Humidity</Label>
-            <Slider defaultValue={[45]} max={100} min={0} step={1} />
-            <div className="text-sm text-right">45%</div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+        {/* Parameters Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Simulation Parameters</CardTitle>
+            <CardDescription>Configure the physical parameters for your simulation</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-4">
+              <Label>Air Flow Rate</Label>
+              <Slider defaultValue={[50]} max={100} step={1} />
+              <div className="text-sm text-right">50 m³/h</div>
+            </div>
+            <div className="space-y-4">
+              <Label>Temperature</Label>
+              <Slider defaultValue={[20]} max={40} min={0} step={1} />
+              <div className="text-sm text-right">20°C</div>
+            </div>
+            <div className="space-y-4">
+              <Label>Humidity</Label>
+              <Slider defaultValue={[45]} max={100} min={0} step={1} />
+              <div className="text-sm text-right">45%</div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  };
 
   const renderStep3 = () => (
     <div className="space-y-6">
