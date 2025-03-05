@@ -9,6 +9,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
 import { Save, Upload, Eraser, ArrowRight, ArrowLeft } from "lucide-react";
 import Canvas2D from "@/components/sketch/Canvas2D";
+import { RoomSketchPro } from "@/components/sketch/RoomSketchPro"; 
+import type { MouseEvent } from 'react';
 
 export default function NewSimulation() {
   const [step, setStep] = useState(1);
@@ -162,7 +164,7 @@ export default function NewSimulation() {
 
             <TabsContent value="3d-preview">
               <div className="h-[600px] flex items-center justify-center border rounded-lg">
-                <p className="text-muted-foreground">3D Preview will be implemented in the next phase</p>
+                {/* <p className="text-muted-foreground">3D Preview will be implemented in the next phase</p> */}
               </div>
             </TabsContent>
           </Tabs>
@@ -172,29 +174,35 @@ export default function NewSimulation() {
   );
 
   const renderStep2 = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Simulation Parameters</CardTitle>
-        <CardDescription>Configure the physical parameters for your simulation</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="space-y-4">
-          <Label>Air Flow Rate</Label>
-          <Slider defaultValue={[50]} max={100} step={1} />
-          <div className="text-sm text-right">50 m³/h</div>
-        </div>
-        <div className="space-y-4">
-          <Label>Temperature</Label>
-          <Slider defaultValue={[20]} max={40} min={0} step={1} />
-          <div className="text-sm text-right">20°C</div>
-        </div>
-        <div className="space-y-4">
-          <Label>Humidity</Label>
-          <Slider defaultValue={[45]} max={100} min={0} step={1} />
-          <div className="text-sm text-right">45%</div>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="space-y-6">
+      <div className="h-[600px] border rounded-lg overflow-hidden">
+        <RoomSketchPro width={800} height={600} />
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Simulation Parameters</CardTitle>
+          <CardDescription>Configure the physical parameters for your simulation</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-4">
+            <Label>Air Flow Rate</Label>
+            <Slider defaultValue={[50]} max={100} step={1} />
+            <div className="text-sm text-right">50 m³/h</div>
+          </div>
+          <div className="space-y-4">
+            <Label>Temperature</Label>
+            <Slider defaultValue={[20]} max={40} min={0} step={1} />
+            <div className="text-sm text-right">20°C</div>
+          </div>
+          <div className="space-y-4">
+            <Label>Humidity</Label>
+            <Slider defaultValue={[45]} max={100} min={0} step={1} />
+            <div className="text-sm text-right">45%</div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 
   const renderStep3 = () => (
