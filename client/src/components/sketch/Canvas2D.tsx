@@ -101,6 +101,7 @@ export default function Canvas2D({
   const [panMode, setPanMode] = useState(false);
   const [cursorPoint, setCursorPoint] = useState<Point | null>(null);
   const [zoomInput, setZoomInput] = useState('100');
+  const [hoveredGridPoint, setHoveredGridPoint] = useState<Point | null>(null);
 
   const createCoordinateSystem = (): Line[] => {
     const centerX = dimensions.width / 2;
@@ -510,7 +511,7 @@ export default function Canvas2D({
       ctx.scale(zoom, zoom);
 
       ctx.beginPath();
-      ctx.strokeStyle = '#e2e8f0';
+      ctx.strokeStyle = '#94a3b8'; // Lighter color for grid lines
       ctx.lineWidth = 1 / zoom;
       createGridLines().forEach(line => {
         ctx.moveTo(line.start.x, line.start.y);
@@ -521,7 +522,7 @@ export default function Canvas2D({
       const gridPoints = getGridPoints();
       gridPoints.forEach(point => {
         ctx.beginPath();
-        ctx.fillStyle = '#94a3b8';
+        ctx.fillStyle = '#64748b'; // Darker color for points
         ctx.arc(
           point.x,
           point.y,
@@ -530,6 +531,21 @@ export default function Canvas2D({
           2 * Math.PI
         );
         ctx.fill();
+
+        // Show coordinates if this is the hovered point
+        if (hoveredGridPoint &&
+          point.x === hoveredGridPoint.x &&
+          point.y === hoveredGridPoint.y) {
+          const coords = getRelativeCoordinates(point);
+          ctx.font = `${12 / zoom}px sans-serif`;
+          ctx.fillStyle = '#3b82f6';
+          ctx.textAlign = 'left';
+          ctx.fillText(
+            `(${coords.x}, ${coords.y})`,
+            point.x + 8 / zoom,
+            point.y - 8 / zoom
+          );
+        }
       });
 
       const coordSystem = createCoordinateSystem();
@@ -656,7 +672,7 @@ export default function Canvas2D({
 
       const point = getCanvasPoint(e);
       const nearestGridPoint = findNearestGridPoint(point);
-      //setHoveredGridPoint(nearestGridPoint); // Removed as per instruction
+      setHoveredGridPoint(nearestGridPoint);
 
       if (currentTool === 'wall' && isDrawing && currentLine) {
         const nearestPoint = findNearestEndpoint(point);
@@ -698,6 +714,7 @@ export default function Canvas2D({
     const handleMouseLeave = () => {
       handlePanEnd();
       setHighlightedLines([]);
+      setHoveredGridPoint(null);
       if (isDrawing) {
         setCurrentLine(null);
         setIsDrawing(false);
@@ -726,7 +743,7 @@ export default function Canvas2D({
       canvas.removeEventListener('contextmenu', e => e.preventDefault());
       cancelAnimationFrame(animationFrameId);
     };
-  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode, cursorPoint, currentAirEntry, onLineSelect, airEntries, onLinesUpdate]);
+  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode, cursorPoint, currentAirEntry, onLineSelect, airEntries, onLinesUpdate, hoveredGridPoint]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, '');
