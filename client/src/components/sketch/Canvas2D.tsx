@@ -42,7 +42,6 @@ const MAX_ZOOM = 4;
 const ZOOM_STEP = 0.1;
 const GRID_RANGE = 2000;
 const GRID_POINT_RADIUS = 1;
-const GRID_POINT_HOVER_RADIUS = 2;
 const HOVER_DISTANCE = 10;
 
 const cmToPixels = (cm: number): number => {
@@ -102,7 +101,6 @@ export default function Canvas2D({
   const [panMode, setPanMode] = useState(false);
   const [cursorPoint, setCursorPoint] = useState<Point | null>(null);
   const [zoomInput, setZoomInput] = useState('100');
-  const [hoveredGridPoint, setHoveredGridPoint] = useState<Point | null>(null);
 
   const createCoordinateSystem = (): Line[] => {
     const centerX = dimensions.width / 2;
@@ -462,10 +460,18 @@ export default function Canvas2D({
 
     for (let x = -GRID_RANGE; x <= GRID_RANGE; x += snapSize) {
       for (let y = -GRID_RANGE; y <= GRID_RANGE; y += snapSize) {
-        points.push({
-          x: centerX + x,
-          y: centerY + y
-        });
+        // Calculate if this point should be visible in checkerboard pattern
+        // Shift coordinates to make (0,0) the center point
+        const relativeX = Math.round(x / snapSize);
+        const relativeY = Math.round(y / snapSize);
+
+        // Show point if both coordinates are even or both are odd (checkerboard pattern)
+        if ((relativeX + relativeY) % 2 === 0) {
+          points.push({
+            x: centerX + x,
+            y: centerY + y
+          });
+        }
       }
     }
     return points;
@@ -515,19 +521,11 @@ export default function Canvas2D({
       const gridPoints = getGridPoints();
       gridPoints.forEach(point => {
         ctx.beginPath();
-        ctx.fillStyle = hoveredGridPoint &&
-          point.x === hoveredGridPoint.x &&
-          point.y === hoveredGridPoint.y
-          ? '#3b82f6'
-          : '#94a3b8';
+        ctx.fillStyle = '#94a3b8';
         ctx.arc(
           point.x,
           point.y,
-          (hoveredGridPoint &&
-            point.x === hoveredGridPoint.x &&
-            point.y === hoveredGridPoint.y
-            ? GRID_POINT_HOVER_RADIUS
-            : GRID_POINT_RADIUS) / zoom,
+          GRID_POINT_RADIUS / zoom,
           0,
           2 * Math.PI
         );
@@ -611,17 +609,6 @@ export default function Canvas2D({
         drawCoordinateLabel(ctx, cursorPoint, '#fb923c');
       }
 
-      if (hoveredGridPoint) {
-        const coords = getRelativeCoordinates(hoveredGridPoint);
-        ctx.font = `${12 / zoom}px sans-serif`;
-        ctx.fillStyle = '#3b82f6';
-        ctx.textAlign = 'left';
-        ctx.fillText(
-          `(${coords.x}, ${coords.y})`,
-          hoveredGridPoint.x + 8 / zoom,
-          hoveredGridPoint.y - 8 / zoom
-        );
-      }
 
       ctx.restore();
     };
@@ -669,7 +656,7 @@ export default function Canvas2D({
 
       const point = getCanvasPoint(e);
       const nearestGridPoint = findNearestGridPoint(point);
-      setHoveredGridPoint(nearestGridPoint);
+      //setHoveredGridPoint(nearestGridPoint); // Removed as per instruction
 
       if (currentTool === 'wall' && isDrawing && currentLine) {
         const nearestPoint = findNearestEndpoint(point);
@@ -739,7 +726,7 @@ export default function Canvas2D({
       canvas.removeEventListener('contextmenu', e => e.preventDefault());
       cancelAnimationFrame(animationFrameId);
     };
-  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode, cursorPoint, currentAirEntry, onLineSelect, airEntries, onLinesUpdate, hoveredGridPoint]);
+  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode, cursorPoint, currentAirEntry, onLineSelect, airEntries, onLinesUpdate]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, '');
