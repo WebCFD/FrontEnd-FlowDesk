@@ -180,12 +180,12 @@ export default function NewSimulation() {
 
   const renderStep2 = () => (
     <div className="space-y-6">
-      {/* Full-width 3D canvas */}
+      {/* 3D Canvas */}
       <div className="w-full h-[600px] border rounded-lg overflow-hidden bg-white">
         <RoomSketchPro width={800} height={600} />
       </div>
 
-      {/* Simulation parameters */}
+      {/* Simulation Parameters */}
       <Card>
         <CardHeader>
           <CardTitle>Simulation Parameters</CardTitle>
