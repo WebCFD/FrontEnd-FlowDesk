@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,11 @@ export default function NewSimulation() {
   const [currentTool, setCurrentTool] = useState<'wall' | 'eraser'>('wall');
   const { toast } = useToast();
 
+  // Add effect to log step changes
+  useEffect(() => {
+    console.log('Current step:', step);
+  }, [step]);
+
   const steps = [
     { id: 1, name: "Upload" },
     { id: 2, name: "Setup" },
@@ -34,6 +39,7 @@ export default function NewSimulation() {
   };
 
   const handleNext = () => {
+    console.log('Clicking Next button, current step:', step);
     if (step < 3) setStep(step + 1);
   };
 
@@ -41,148 +47,39 @@ export default function NewSimulation() {
     if (step > 1) setStep(step - 1);
   };
 
-  const renderStepIndicator = () => (
-    <div className="w-full">
-      <div className="relative h-16 bg-muted/10 border rounded-lg">
-        <div className="absolute inset-0 flex justify-between items-center px-8">
-          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-center gap-[33%]">
-            <div className="w-24 h-px bg-border" />
-            <div className="w-24 h-px bg-border" />
-          </div>
-
-          {steps.map((s, i) => (
-            <div
-              key={s.id}
-              className="flex items-center cursor-pointer relative z-10 bg-muted/10 px-3"
-              onClick={() => {
-                console.log(`Switching to step ${s.id}`); 
-                setStep(s.id);
-              }}
-            >
-              <div className={`text-sm ${step === s.id ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
-                Step {s.id} | {s.name}
-              </div>
+  const renderStepIndicator = () => {
+    console.log('Rendering step indicator, current step:', step);
+    return (
+      <div className="w-full">
+        <div className="relative h-16 bg-muted/10 border rounded-lg">
+          <div className="absolute inset-0 flex justify-between items-center px-8">
+            <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-center gap-[33%]">
+              <div className="w-24 h-px bg-border" />
+              <div className="w-24 h-px bg-border" />
             </div>
-          ))}
+
+            {steps.map((s, i) => (
+              <div
+                key={s.id}
+                className="flex items-center cursor-pointer relative z-10 bg-muted/10 px-3"
+                onClick={() => {
+                  console.log(`Clicking step ${s.id} in progress bar`);
+                  setStep(s.id);
+                }}
+              >
+                <div className={`text-sm ${step === s.id ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
+                  Step {s.id} | {s.name}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
-  );
-
-  const renderStep1 = () => (
-    <>
-      <div className="max-w-xl">
-        <Label htmlFor="simulation-name">Simulation name</Label>
-        <Input
-          id="simulation-name"
-          value={simulationName}
-          onChange={(e) => setSimulationName(e.target.value)}
-          placeholder="Enter simulation name"
-        />
-      </div>
-
-      <Card className="mt-6">
-        <CardContent className="p-6">
-          <Tabs defaultValue="2d-editor" className="w-full">
-            <TabsList>
-              <TabsTrigger value="2d-editor">2D Editor</TabsTrigger>
-              <TabsTrigger value="3d-preview">3D Preview</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="2d-editor" className="mt-6">
-              <div className="flex gap-6">
-                <div className="w-48 space-y-6">
-                  <div className="space-y-4">
-                    <h3 className="font-semibold">Tools</h3>
-                    <div className="grid grid-cols-2 gap-2">
-                      <Button
-                        variant={currentTool === 'wall' ? 'default' : 'outline'}
-                        className="w-full h-16 flex flex-col items-center justify-center gap-1"
-                        onClick={() => setCurrentTool('wall')}
-                      >
-                        <div className="w-6 h-6 bg-primary/20 rounded-sm" />
-                        <span className="text-xs">Wall Line</span>
-                      </Button>
-                      <Button
-                        variant={currentTool === 'eraser' ? 'default' : 'outline'}
-                        className="w-full h-16 flex flex-col items-center justify-center gap-1"
-                        onClick={() => setCurrentTool('eraser')}
-                      >
-                        <Eraser className="w-6 h-6" />
-                        <span className="text-xs">Eraser</span>
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="font-semibold">Grid Size</h3>
-                    <div className="px-2">
-                      <Slider
-                        defaultValue={[gridSize]}
-                        max={50}
-                        min={10}
-                        step={1}
-                        onValueChange={handleGridSizeChange}
-                      />
-                      <div className="text-sm text-right mt-1">{gridSizeToCm(gridSize).toFixed(1)}cm/cell</div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="font-semibold">Air Entries</h3>
-                    <div className="grid grid-cols-3 gap-2">
-                      <Button variant="outline" className="h-16 p-2 flex flex-col items-center justify-center">
-                        <div className="w-6 h-6 border-2 border-primary grid grid-cols-2 grid-rows-2" />
-                        <span className="text-xs mt-1">Vent-Grid</span>
-                      </Button>
-                      <Button variant="outline" className="h-16 p-2 flex flex-col items-center justify-center">
-                        <div className="w-6 h-6 border-2 border-primary" />
-                        <span className="text-xs mt-1">Door</span>
-                      </Button>
-                      <Button variant="outline" className="h-16 p-2 flex flex-col items-center justify-center">
-                        <div className="w-6 h-6 border-2 border-primary grid grid-cols-2" />
-                        <span className="text-xs mt-1">Window</span>
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Button variant="outline" className="w-full justify-start">
-                      <Save className="mr-2 h-4 w-4" />
-                      Save Design
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <Upload className="mr-2 h-4 w-4" />
-                      Load Design
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="flex-1 border rounded-lg overflow-hidden">
-                  <Canvas2D 
-                    gridSize={gridSize} 
-                    currentTool={currentTool}
-                    currentAirEntry={null}
-                    airEntries={[]}
-                    lines={[]}
-                  />
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="3d-preview">
-              <div className="h-[600px] flex items-center justify-center border rounded-lg">
-                <RoomSketchPro width={800} height={600} />
-              </div>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
-    </>
-  );
+    );
+  };
 
   const renderStep2 = () => {
-    console.log('Rendering Step 2'); 
+    console.log('Rendering Step 2 content');
     return (
       <div className="space-y-6">
         {/* 3D View */}
@@ -218,60 +115,7 @@ export default function NewSimulation() {
     );
   };
 
-  const renderStep3 = () => (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Choose Your Simulation Package</CardTitle>
-          <CardDescription>Select the package that best fits your needs</CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <Card>
-            <CardHeader>
-              <CardTitle>Basic</CardTitle>
-              <CardDescription>For simple room simulations</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">€49</div>
-              <ul className="mt-4 space-y-2 text-sm">
-                <li>• Basic airflow simulation</li>
-                <li>• Temperature distribution</li>
-                <li>• Single room analysis</li>
-              </ul>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Professional</CardTitle>
-              <CardDescription>For detailed analysis</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">€99</div>
-              <ul className="mt-4 space-y-2 text-sm">
-                <li>• Advanced CFD simulation</li>
-                <li>• Multi-room analysis</li>
-                <li>• Detailed reports</li>
-              </ul>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Enterprise</CardTitle>
-              <CardDescription>For complex projects</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">€199</div>
-              <ul className="mt-4 space-y-2 text-sm">
-                <li>• Full building simulation</li>
-                <li>• Custom parameters</li>
-                <li>• Priority support</li>
-              </ul>
-            </CardContent>
-          </Card>
-        </CardContent>
-      </Card>
-    </div>
-  );
+  console.log('Rendering NewSimulation component, step:', step);
 
   return (
     <DashboardLayout>
