@@ -34,6 +34,52 @@ interface Canvas2DProps {
   onLinesUpdate?: (lines: Line[]) => void;
 }
 
+const POINT_RADIUS = 4;
+const SNAP_DISTANCE = 15;
+const PIXELS_TO_CM = 25 / 20;
+const MIN_ZOOM = 0.25;
+const MAX_ZOOM = 4;
+const ZOOM_STEP = 0.1;
+const GRID_RANGE = 2000;
+const GRID_POINT_RADIUS = 2;
+const GRID_POINT_HOVER_RADIUS = 3;
+const HOVER_DISTANCE = 10;
+
+const cmToPixels = (cm: number): number => {
+  return cm / PIXELS_TO_CM;
+};
+
+const pixelsToCm = (pixels: number): number => {
+  return pixels * PIXELS_TO_CM;
+};
+
+const calculateNormal = (line: Line): Point => {
+  const dx = line.end.x - line.start.x;
+  const dy = line.end.y - line.start.y;
+  const length = Math.sqrt(dx * dx + dy * dy);
+  return {
+    x: dx / length,
+    y: dy / length
+  };
+};
+
+const getPointOnLine = (line: Line, point: Point): Point => {
+  const dx = line.end.x - line.start.x;
+  const dy = line.end.y - line.start.y;
+  const len2 = dx * dx + dy * dy;
+
+  if (len2 === 0) return line.start;
+
+  const t = ((point.x - line.start.x) * dx + (point.y - line.start.y) * dy) / len2;
+  const tt = Math.max(0, Math.min(1, t));
+
+  return {
+    x: line.start.x + tt * dx,
+    y: line.start.y + tt * dy
+  };
+};
+
+
 export default function Canvas2D({
   gridSize,
   currentTool,
@@ -56,6 +102,7 @@ export default function Canvas2D({
   const [panMode, setPanMode] = useState(false);
   const [cursorPoint, setCursorPoint] = useState<Point | null>(null);
   const [zoomInput, setZoomInput] = useState('100');
+  const [hoveredGridPoint, setHoveredGridPoint] = useState<Point | null>(null);
 
   const createCoordinateSystem = (): Line[] => {
     const centerX = dimensions.width / 2;
@@ -407,6 +454,41 @@ export default function Canvas2D({
     ctx.restore();
   };
 
+  const getGridPoints = (): Point[] => {
+    const points: Point[] = [];
+    const centerX = dimensions.width / 2;
+    const centerY = dimensions.height / 2;
+    const snapSize = gridSize / 4;
+
+    for (let x = -GRID_RANGE; x <= GRID_RANGE; x += snapSize) {
+      for (let y = -GRID_RANGE; y <= GRID_RANGE; y += snapSize) {
+        points.push({
+          x: centerX + x,
+          y: centerY + y
+        });
+      }
+    }
+    return points;
+  };
+
+  const findNearestGridPoint = (point: Point): Point | null => {
+    const gridPoints = getGridPoints();
+    let nearest: Point | null = null;
+    let minDistance = HOVER_DISTANCE;
+
+    gridPoints.forEach(gridPoint => {
+      const dx = point.x - gridPoint.x;
+      const dy = point.y - gridPoint.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      if (distance < minDistance) {
+        minDistance = distance;
+        nearest = gridPoint;
+      }
+    });
+
+    return nearest;
+  };
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -429,6 +511,28 @@ export default function Canvas2D({
         ctx.lineTo(line.end.x, line.end.y);
       });
       ctx.stroke();
+
+      const gridPoints = getGridPoints();
+      gridPoints.forEach(point => {
+        ctx.beginPath();
+        ctx.fillStyle = hoveredGridPoint &&
+          point.x === hoveredGridPoint.x &&
+          point.y === hoveredGridPoint.y
+          ? '#3b82f6'
+          : '#94a3b8';
+        ctx.arc(
+          point.x,
+          point.y,
+          (hoveredGridPoint &&
+            point.x === hoveredGridPoint.x &&
+            point.y === hoveredGridPoint.y
+            ? GRID_POINT_HOVER_RADIUS
+            : GRID_POINT_RADIUS) / zoom,
+          0,
+          2 * Math.PI
+        );
+        ctx.fill();
+      });
 
       const coordSystem = createCoordinateSystem();
       coordSystem.forEach((line, index) => {
@@ -507,6 +611,18 @@ export default function Canvas2D({
         drawCoordinateLabel(ctx, cursorPoint, '#fb923c');
       }
 
+      if (hoveredGridPoint) {
+        const coords = getRelativeCoordinates(hoveredGridPoint);
+        ctx.font = `${12 / zoom}px sans-serif`;
+        ctx.fillStyle = '#3b82f6';
+        ctx.textAlign = 'left';
+        ctx.fillText(
+          `(${coords.x}, ${coords.y})`,
+          hoveredGridPoint.x + 8 / zoom,
+          hoveredGridPoint.y - 8 / zoom
+        );
+      }
+
       ctx.restore();
     };
 
@@ -524,7 +640,7 @@ export default function Canvas2D({
         const startPoint = nearestPoint || snapToGrid(clickPoint);
         const coords = getRelativeCoordinates(startPoint);
         console.log(`Starting wall line at - Screen: (${startPoint.x}, ${startPoint.y})`);
-        console.log(`Relative to center: (${startPoint.x - dimensions.width/2}, ${dimensions.height/2 - startPoint.y})`);
+        console.log(`Relative to center: (${startPoint.x - dimensions.width / 2}, ${dimensions.height / 2 - startPoint.y})`);
         console.log(`In cm: (${coords.x}, ${coords.y})`);
         setCurrentLine({ start: startPoint, end: startPoint });
         setIsDrawing(true);
@@ -551,14 +667,16 @@ export default function Canvas2D({
         return;
       }
 
+      const point = getCanvasPoint(e);
+      const nearestGridPoint = findNearestGridPoint(point);
+      setHoveredGridPoint(nearestGridPoint);
+
       if (currentTool === 'wall' && isDrawing && currentLine) {
-        const point = getCanvasPoint(e);
         const nearestPoint = findNearestEndpoint(point);
         const endPoint = nearestPoint || snapToGrid(point);
         setCurrentLine(prev => prev ? { ...prev, end: endPoint } : null);
         setCursorPoint(endPoint);
       } else if (currentTool === 'eraser' || currentAirEntry) {
-        const point = getCanvasPoint(e);
         setHighlightedLines(findLinesNearPoint(point));
       }
     };
@@ -621,7 +739,7 @@ export default function Canvas2D({
       canvas.removeEventListener('contextmenu', e => e.preventDefault());
       cancelAnimationFrame(animationFrameId);
     };
-  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode, cursorPoint, currentAirEntry, onLineSelect, airEntries, onLinesUpdate]);
+  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode, cursorPoint, currentAirEntry, onLineSelect, airEntries, onLinesUpdate, hoveredGridPoint]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, '');
@@ -695,45 +813,3 @@ export default function Canvas2D({
     </div>
   );
 }
-
-const POINT_RADIUS = 4;
-const SNAP_DISTANCE = 15;
-const PIXELS_TO_CM = 25 / 20;
-const MIN_ZOOM = 0.25;
-const MAX_ZOOM = 4;
-const ZOOM_STEP = 0.1;
-const GRID_RANGE = 2000;
-
-const cmToPixels = (cm: number): number => {
-  return cm / PIXELS_TO_CM;
-};
-
-const pixelsToCm = (pixels: number): number => {
-  return pixels * PIXELS_TO_CM;
-};
-
-const calculateNormal = (line: Line): Point => {
-  const dx = line.end.x - line.start.x;
-  const dy = line.end.y - line.start.y;
-  const length = Math.sqrt(dx * dx + dy * dy);
-  return {
-    x: dx / length,
-    y: dy / length
-  };
-};
-
-const getPointOnLine = (line: Line, point: Point): Point => {
-  const dx = line.end.x - line.start.x;
-  const dy = line.end.y - line.start.y;
-  const len2 = dx * dx + dy * dy;
-
-  if (len2 === 0) return line.start;
-
-  const t = ((point.x - line.start.x) * dx + (point.y - line.start.y) * dy) / len2;
-  const tt = Math.max(0, Math.min(1, t));
-
-  return {
-    x: line.start.x + tt * dx,
-    y: line.start.y + tt * dy
-  };
-};
