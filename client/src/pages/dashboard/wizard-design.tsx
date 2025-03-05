@@ -169,6 +169,11 @@ export default function WizardDesign() {
     }
   };
 
+  const handleStepClick = (stepId: number) => {
+    setStep(stepId);
+    console.log(`Clicked on Step ${stepId}`); // Added console log for debugging
+  };
+
   const renderStepIndicator = () => (
     <div className="w-full">
       <div className="relative h-16 bg-muted/10 border rounded-lg">
@@ -178,11 +183,11 @@ export default function WizardDesign() {
             <div className="w-24 h-px bg-border" />
           </div>
 
-          {steps.map((s, i) => (
+          {steps.map((s) => (
             <div
               key={s.id}
               className="flex items-center cursor-pointer relative z-10 bg-muted/10 px-3"
-              onClick={() => setStep(s.id)}
+              onClick={() => handleStepClick(s.id)}
             >
               <div className={`text-sm ${step === s.id ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
                 Step {s.id} | {s.name}
