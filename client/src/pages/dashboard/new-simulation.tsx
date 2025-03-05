@@ -9,7 +9,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
 import { Save, Upload, Eraser, ArrowRight, ArrowLeft } from "lucide-react";
 import Canvas2D from "@/components/sketch/Canvas2D";
-import { RoomSketchPro } from "@/components/sketch/RoomSketchPro"; 
+import { RoomSketchPro } from "@/components/sketch/RoomSketchPro";
 import type { MouseEvent } from 'react';
 
 export default function NewSimulation() {
@@ -30,7 +30,7 @@ export default function NewSimulation() {
   };
 
   const gridSizeToCm = (pixels: number): number => {
-    return pixels * (25 / 20); // Convert pixels to cm using the same ratio
+    return pixels * (25 / 20);
   };
 
   const handleNext = () => {
@@ -45,7 +45,6 @@ export default function NewSimulation() {
     <div className="w-full">
       <div className="relative h-16 bg-muted/10 border rounded-lg">
         <div className="absolute inset-0 flex justify-between items-center px-8">
-          {/* Decorative lines */}
           <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-center gap-[33%]">
             <div className="w-24 h-px bg-border" />
             <div className="w-24 h-px bg-border" />
@@ -157,14 +156,20 @@ export default function NewSimulation() {
                 </div>
 
                 <div className="flex-1 border rounded-lg overflow-hidden">
-                  <Canvas2D gridSize={gridSize} currentTool={currentTool} />
+                  <Canvas2D 
+                    gridSize={gridSize} 
+                    currentTool={currentTool}
+                    currentAirEntry={null}
+                    airEntries={[]}
+                    lines={[]}
+                  />
                 </div>
               </div>
             </TabsContent>
 
             <TabsContent value="3d-preview">
               <div className="h-[600px] flex items-center justify-center border rounded-lg">
-                {/* <p className="text-muted-foreground">3D Preview will be implemented in the next phase</p> */}
+                <RoomSketchPro width={800} height={600} />
               </div>
             </TabsContent>
           </Tabs>
@@ -175,10 +180,12 @@ export default function NewSimulation() {
 
   const renderStep2 = () => (
     <div className="space-y-6">
-      <div className="h-[600px] border rounded-lg overflow-hidden">
+      {/* Full-width 3D canvas */}
+      <div className="w-full h-[600px] border rounded-lg overflow-hidden bg-white">
         <RoomSketchPro width={800} height={600} />
       </div>
 
+      {/* Simulation parameters */}
       <Card>
         <CardHeader>
           <CardTitle>Simulation Parameters</CardTitle>
