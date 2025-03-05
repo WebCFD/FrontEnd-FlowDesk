@@ -1,14 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLocation } from "wouter";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
-import { ArrowRight, ArrowLeft } from "lucide-react";
-import { RoomSketchPro } from "@/components/sketch/RoomSketchPro"; // Changed to named import
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Save, Upload, Eraser } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+import { Save, Upload, Eraser, ArrowRight, ArrowLeft } from "lucide-react";
 import Canvas2D from "@/components/sketch/Canvas2D";
 import { cn } from "@/lib/utils";
 import AirEntryDialog from "@/components/sketch/AirEntryDialog";
@@ -26,10 +27,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { PlusCircle, Play, Mail, FileEdit } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/use-auth";
-
 
 interface Point {
   x: number;
@@ -172,11 +169,6 @@ export default function WizardDesign() {
     }
   };
 
-  const handleStepClick = (stepId: number) => {
-    setStep(stepId);
-    console.log(`Clicked on Step ${stepId}`); // Added console log for debugging
-  };
-
   const renderStepIndicator = () => (
     <div className="w-full">
       <div className="relative h-16 bg-muted/10 border rounded-lg">
@@ -186,11 +178,11 @@ export default function WizardDesign() {
             <div className="w-24 h-px bg-border" />
           </div>
 
-          {steps.map((s) => (
+          {steps.map((s, i) => (
             <div
               key={s.id}
               className="flex items-center cursor-pointer relative z-10 bg-muted/10 px-3"
-              onClick={() => handleStepClick(s.id)}
+              onClick={() => setStep(s.id)}
             >
               <div className={`text-sm ${step === s.id ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
                 Step {s.id} | {s.name}
@@ -364,42 +356,31 @@ export default function WizardDesign() {
     </>
   );
 
-  const renderStep2 = () => {
-    console.log('Rendering Step 2');
-    return (
-      <div className="space-y-6">
-        {/* 3D View */}
-        <div className="w-full h-[600px] border rounded-lg overflow-hidden bg-white">
-          <RoomSketchPro width={800} height={600} />
+  const renderStep2 = () => (
+    <Card>
+      <CardHeader>
+        <CardTitle>Simulation Parameters</CardTitle>
+        <CardDescription>Configure the physical parameters for your simulation</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="space-y-4">
+          <Label>Air Flow Rate</Label>
+          <Slider defaultValue={[50]} max={100} step={1} />
+          <div className="text-sm text-right">50 m³/h</div>
         </div>
-
-        {/* Parameters Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Simulation Parameters</CardTitle>
-            <CardDescription>Configure the physical parameters for your simulation</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-4">
-              <Label>Air Flow Rate</Label>
-              <Slider defaultValue={[50]} max={100} step={1} />
-              <div className="text-sm text-right">50 m³/h</div>
-            </div>
-            <div className="space-y-4">
-              <Label>Temperature</Label>
-              <Slider defaultValue={[20]} max={40} min={0} step={1} />
-              <div className="text-sm text-right">20°C</div>
-            </div>
-            <div className="space-y-4">
-              <Label>Humidity</Label>
-              <Slider defaultValue={[45]} max={100} min={0} step={1} />
-              <div className="text-sm text-right">45%</div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  };
+        <div className="space-y-4">
+          <Label>Temperature</Label>
+          <Slider defaultValue={[20]} max={40} min={0} step={1} />
+          <div className="text-sm text-right">20°C</div>
+        </div>
+        <div className="space-y-4">
+          <Label>Humidity</Label>
+          <Slider defaultValue={[45]} max={100} min={0} step={1} />
+          <div className="text-sm text-right">45%</div>
+        </div>
+      </CardContent>
+    </Card>
+  );
 
   const renderStep3 = () => (
     <div className="space-y-6">
