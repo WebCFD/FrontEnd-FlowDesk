@@ -1,15 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/use-auth";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
-import { Save, Upload, Eraser, ArrowRight, ArrowLeft } from "lucide-react";
+import { ArrowRight, ArrowLeft } from "lucide-react";
+import { RoomSketchPro } from "@/components/sketch/RoomSketchPro"; // Changed to named import
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Save, Upload, Eraser } from "lucide-react";
 import Canvas2D from "@/components/sketch/Canvas2D";
 import { cn } from "@/lib/utils";
 import AirEntryDialog from "@/components/sketch/AirEntryDialog";
@@ -27,6 +26,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import { PlusCircle, Play, Mail, FileEdit } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
+
 
 interface Point {
   x: number;
@@ -362,25 +365,15 @@ export default function WizardDesign() {
   );
 
   const renderStep2 = () => {
-    console.log('Rendering Step 2 with 3D Canvas');
+    console.log('Rendering Step 2');
     return (
       <div className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>3D Room Visualization</CardTitle>
-            <CardDescription>Preview your room with textured surfaces</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[600px] border rounded-lg overflow-hidden">
-              <Canvas3D
-                lines={lines}
-                airEntries={airEntries}
-                height={600}
-                showTextures={true}
-              />
-            </div>
-          </CardContent>
-        </Card>
+        {/* 3D View */}
+        <div className="w-full h-[600px] border rounded-lg overflow-hidden bg-white">
+          <RoomSketchPro width={800} height={600} />
+        </div>
+
+        {/* Parameters Card */}
         <Card>
           <CardHeader>
             <CardTitle>Simulation Parameters</CardTitle>
@@ -407,7 +400,6 @@ export default function WizardDesign() {
       </div>
     );
   };
-  );
 
   const renderStep3 = () => (
     <div className="space-y-6">
