@@ -2,34 +2,18 @@ import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
-import { Save, Upload, Eraser, ArrowRight, ArrowLeft } from "lucide-react";
-import Canvas2D from "@/components/sketch/Canvas2D";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 import { RoomSketchPro } from "@/components/sketch/RoomSketchPro";
 
 export default function NewSimulation() {
   const [step, setStep] = useState(1);
-  const [simulationName, setSimulationName] = useState("");
-  const [gridSize, setGridSize] = useState(20);
-  const [currentTool, setCurrentTool] = useState<'wall' | 'eraser'>('wall');
 
-  // Debug logs for step changes
+  // Debug effect for step changes
   useEffect(() => {
-    console.log('Step changed to:', step);
+    console.log(`Step state changed to: ${step}`);
   }, [step]);
-
-  const handleNext = () => {
-    console.log('Next button clicked, current step:', step);
-    if (step < 3) setStep(step + 1);
-  };
-
-  const handleBack = () => {
-    console.log('Back button clicked, current step:', step);
-    if (step > 1) setStep(step - 1);
-  };
 
   const steps = [
     { id: 1, name: "Upload" },
@@ -37,49 +21,56 @@ export default function NewSimulation() {
     { id: 3, name: "Order" }
   ];
 
-  const renderStepIndicator = () => {
-    console.log('Rendering step indicator, step:', step);
-    return (
-      <div className="w-full">
-        <div className="relative h-16 bg-muted/10 border rounded-lg">
-          <div className="absolute inset-0 flex justify-between items-center px-8">
-            <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-center gap-[33%]">
-              <div className="w-24 h-px bg-border" />
-              <div className="w-24 h-px bg-border" />
-            </div>
-
-            {steps.map((s) => (
-              <div
-                key={s.id}
-                className="flex items-center cursor-pointer relative z-10 bg-muted/10 px-3"
-                onClick={() => {
-                  console.log('Step clicked:', s.id);
-                  setStep(s.id);
-                }}
-              >
-                <div className={`text-sm ${step === s.id ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
-                  Step {s.id} | {s.name}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
+  const handleStepClick = (newStep: number) => {
+    console.log(`Progress bar: Clicking step ${newStep}`);
+    setStep(newStep);
   };
 
+  const handleNext = () => {
+    console.log(`Next button: Moving from step ${step} to ${step + 1}`);
+    if (step < 3) setStep(step + 1);
+  };
+
+  const handleBack = () => {
+    console.log(`Back button: Moving from step ${step} to ${step - 1}`);
+    if (step > 1) setStep(step - 1);
+  };
+
+  const renderStepIndicator = () => (
+    <div className="w-full">
+      <div className="relative h-16 bg-muted/10 border rounded-lg">
+        <div className="absolute inset-0 flex justify-between items-center px-8">
+          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-center gap-[33%]">
+            <div className="w-24 h-px bg-border" />
+            <div className="w-24 h-px bg-border" />
+          </div>
+
+          {steps.map((s) => (
+            <div
+              key={s.id}
+              className="flex items-center cursor-pointer relative z-10 bg-muted/10 px-3"
+              onClick={() => handleStepClick(s.id)}
+            >
+              <div className={`text-sm ${step === s.id ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
+                Step {s.id} | {s.name}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
   const renderContent = () => {
-    console.log('Rendering content for step:', step);
+    console.log(`Rendering content for step ${step}`);
 
     switch (step) {
       case 1:
         return (
-          // Step 1 content -  This needs to be filled in from the original code.  We are assuming it exists but is not shown.
-          <div>Step 1 content</div> 
+          <div>Step 1 content</div>
         );
-
       case 2:
-        console.log('Rendering Step 2 content');
+        console.log('Rendering Step 2: Setup screen');
         return (
           <div className="space-y-6">
             {/* 3D View */}
@@ -113,13 +104,10 @@ export default function NewSimulation() {
             </Card>
           </div>
         );
-
       case 3:
         return (
-          // Step 3 content - This needs to be filled in from the original code. We are assuming it exists but is not shown.
           <div>Step 3 content</div>
         );
-
       default:
         return null;
     }
