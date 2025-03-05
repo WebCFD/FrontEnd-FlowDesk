@@ -522,7 +522,7 @@ export default function Canvas2D({
       const gridPoints = getGridPoints();
       gridPoints.forEach(point => {
         ctx.beginPath();
-        ctx.fillStyle = '#64748b'; // Darker color for points
+        ctx.fillStyle = '#cbd5e1'; // Lighter color for points
         ctx.arc(
           point.x,
           point.y,
@@ -538,7 +538,7 @@ export default function Canvas2D({
           point.y === hoveredGridPoint.y) {
           const coords = getRelativeCoordinates(point);
           ctx.font = `${12 / zoom}px sans-serif`;
-          ctx.fillStyle = '#3b82f6';
+          ctx.fillStyle = '#000000'; // Black color for coordinates
           ctx.textAlign = 'left';
           ctx.fillText(
             `(${coords.x}, ${coords.y})`,
