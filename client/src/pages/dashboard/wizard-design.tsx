@@ -361,30 +361,52 @@ export default function WizardDesign() {
     </>
   );
 
-  const renderStep2 = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Simulation Parameters</CardTitle>
-        <CardDescription>Configure the physical parameters for your simulation</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="space-y-4">
-          <Label>Air Flow Rate</Label>
-          <Slider defaultValue={[50]} max={100} step={1} />
-          <div className="text-sm text-right">50 m³/h</div>
-        </div>
-        <div className="space-y-4">
-          <Label>Temperature</Label>
-          <Slider defaultValue={[20]} max={40} min={0} step={1} />
-          <div className="text-sm text-right">20°C</div>
-        </div>
-        <div className="space-y-4">
-          <Label>Humidity</Label>
-          <Slider defaultValue={[45]} max={100} min={0} step={1} />
-          <div className="text-sm text-right">45%</div>
-        </div>
-      </CardContent>
-    </Card>
+  const renderStep2 = () => {
+    console.log('Rendering Step 2 with 3D Canvas');
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>3D Room Visualization</CardTitle>
+            <CardDescription>Preview your room with textured surfaces</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[600px] border rounded-lg overflow-hidden">
+              <Canvas3D
+                lines={lines}
+                airEntries={airEntries}
+                height={600}
+                showTextures={true}
+              />
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Simulation Parameters</CardTitle>
+            <CardDescription>Configure the physical parameters for your simulation</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-4">
+              <Label>Air Flow Rate</Label>
+              <Slider defaultValue={[50]} max={100} step={1} />
+              <div className="text-sm text-right">50 m³/h</div>
+            </div>
+            <div className="space-y-4">
+              <Label>Temperature</Label>
+              <Slider defaultValue={[20]} max={40} min={0} step={1} />
+              <div className="text-sm text-right">20°C</div>
+            </div>
+            <div className="space-y-4">
+              <Label>Humidity</Label>
+              <Slider defaultValue={[45]} max={100} min={0} step={1} />
+              <div className="text-sm text-right">45%</div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  };
   );
 
   const renderStep3 = () => (
