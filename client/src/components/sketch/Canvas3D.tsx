@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
-import * as THREE from 'three';
-import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
+import { useEffect, useRef } from "react";
+import * as THREE from "three";
+import { TrackballControls } from "three/addons/controls/TrackballControls.js";
 
 interface Point {
   x: number;
@@ -13,7 +13,7 @@ interface Line {
 }
 
 interface AirEntry {
-  type: 'window' | 'door' | 'vent';
+  type: "window" | "door" | "vent";
   position: Point;
   dimensions: {
     width: number;
@@ -45,7 +45,7 @@ const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
   return new THREE.Vector3(
     relativeX * PIXELS_TO_CM,
     relativeY * PIXELS_TO_CM,
-    height
+    height,
   );
 };
 
@@ -59,7 +59,7 @@ const createRoomPerimeter = (lines: Line[]): Point[] => {
 
   // Create a map of points to their connected lines
   const connections = new Map<string, Point[]>();
-  lines.forEach(line => {
+  lines.forEach((line) => {
     const startKey = pointToString(line.start);
     const endKey = pointToString(line.end);
 
@@ -79,7 +79,9 @@ const createRoomPerimeter = (lines: Line[]): Point[] => {
   let currentPoint = startPoint;
   while (true) {
     const connectedPoints = connections.get(pointToString(currentPoint)) || [];
-    const nextPoint = connectedPoints.find(p => !visited.has(pointToString(p)));
+    const nextPoint = connectedPoints.find(
+      (p) => !visited.has(pointToString(p)),
+    );
 
     if (!nextPoint) break;
 
@@ -96,12 +98,16 @@ const calculateNormal = (line: Line): Point => {
   const dy = line.end.y - line.start.y;
   const length = Math.sqrt(dx * dx + dy * dy);
   return {
-    x: -dy / length,  // Perpendicular vector calculation
-    y: dx / length    // This ensures outward-facing normals
+    x: -dy / length, // Perpendicular vector calculation
+    y: dx / length, // This ensures outward-facing normals
   };
 };
 
-export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canvas3DProps) {
+export default function Canvas3D({
+  lines,
+  airEntries = [],
+  height = 600,
+}: Canvas3DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
@@ -121,7 +127,7 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       45,
       containerRef.current.clientWidth / height,
       1,
-      10000
+      10000,
     );
     camera.position.set(0, 0, 1000);
     camera.lookAt(0, 0, 0);
@@ -154,7 +160,12 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
     scene.add(directionalLight);
 
     // Add grid helper
-    const gridHelper = new THREE.GridHelper(GRID_SIZE, GRID_DIVISIONS, 0x000000, 0x000000);
+    const gridHelper = new THREE.GridHelper(
+      GRID_SIZE,
+      GRID_DIVISIONS,
+      0x000000,
+      0x000000,
+    );
     gridHelper.position.set(0, 0, 0); // Position at origin
     gridHelper.rotation.x = -Math.PI / 2; // Rotate to lie flat on XY plane
     gridHelper.material.opacity = 0.2;
@@ -190,7 +201,7 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       // Create roof geometry and mesh
       const roofGeometry = new THREE.ShapeGeometry(shape);
       const roofMaterial = new THREE.MeshPhongMaterial({
-        color: 0xE0E0E0, // Light gray
+        color: 0xe0e0e0, // Light gray
         opacity: 0.2,
         transparent: true,
         side: THREE.DoubleSide,
@@ -224,7 +235,12 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
     sceneRef.current.clear();
 
     // Add grid helper again after clearing
-    const gridHelper = new THREE.GridHelper(GRID_SIZE, GRID_DIVISIONS, 0x000000, 0x000000);
+    const gridHelper = new THREE.GridHelper(
+      GRID_SIZE,
+      GRID_DIVISIONS,
+      0x000000,
+      0x000000,
+    );
     gridHelper.position.set(0, 0, 0); // Position at origin
     gridHelper.rotation.x = -Math.PI / 2; // Rotate to lie flat on XY plane
     gridHelper.material.opacity = 0.2;
@@ -260,7 +276,7 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       // Create roof geometry and mesh
       const roofGeometry = new THREE.ShapeGeometry(shape);
       const roofMaterial = new THREE.MeshPhongMaterial({
-        color: 0xE0E0E0, // Light gray
+        color: 0xe0e0e0, // Light gray
         opacity: 0.2,
         transparent: true,
         side: THREE.DoubleSide,
@@ -291,7 +307,7 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
     });
 
     // Convert 2D lines to 3D walls using transformed coordinates
-    lines.forEach(line => {
+    lines.forEach((line) => {
       // Create vertices for wall corners using the transformation
       const start_bottom = transform2DTo3D(line.start);
       const end_bottom = transform2DTo3D(line.end);
@@ -310,11 +326,11 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
         .normalize();
 
       // Log vectors for debugging
-      console.log('Wall vectors:', {
+      console.log("Wall vectors:", {
         start: `(${line.start.x}, ${line.start.y})`,
         end: `(${line.end.x}, ${line.end.y})`,
         direction: `(${wallDirection.x.toFixed(4)}, ${wallDirection.y.toFixed(4)}, ${wallDirection.z.toFixed(4)})`,
-        normal: `(${wallNormalVector.x.toFixed(4)}, ${wallNormalVector.y.toFixed(4)}, ${wallNormalVector.z.toFixed(4)})`
+        normal: `(${wallNormalVector.x.toFixed(4)}, ${wallNormalVector.y.toFixed(4)}, ${wallNormalVector.z.toFixed(4)})`,
       });
 
       // Calculate wall midpoint for arrow visualization
@@ -327,19 +343,27 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       const wallArrowHelper = new THREE.ArrowHelper(
         wallNormalVector,
         wallMidPoint,
-        50,  // length
-        0x3b82f6,  // blue color
-        10,  // head length
-        5    // head width
+        50, // length
+        0x3b82f6, // blue color
+        10, // head length
+        5, // head width
       );
       sceneRef.current.add(wallArrowHelper);
 
       // Create vertices array from transformed points
       const vertices = new Float32Array([
-        start_bottom.x, start_bottom.y, start_bottom.z,
-        end_bottom.x, end_bottom.y, end_bottom.z,
-        start_top.x, start_top.y, start_top.z,
-        end_top.x, end_top.y, end_top.z
+        start_bottom.x,
+        start_bottom.y,
+        start_bottom.z,
+        end_bottom.x,
+        end_bottom.y,
+        end_bottom.z,
+        start_top.x,
+        start_top.y,
+        start_top.z,
+        end_top.x,
+        end_top.y,
+        end_top.z,
       ]);
 
       // Create faces indices
@@ -347,7 +371,7 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
 
       // Create the wall geometry
       const geometry = new THREE.BufferGeometry();
-      geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+      geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
       geometry.setIndex(new THREE.BufferAttribute(indices, 1));
       geometry.computeVertexNormals();
 
@@ -357,8 +381,19 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
     });
 
     // Create air entries using the same normal calculations as the walls
-    airEntries.forEach(entry => {
-      const color = entry.type === 'window' ? 0x3b82f6 : entry.type === 'door' ? 0xb45309 : 0x22c55e;
+    // REPLACE THE AIR ENTRY CREATION SECTION WITH THIS CODE
+    // Look for the part starting with: airEntries.forEach((entry) => {
+
+    // REPLACE THE ENTIRE AIR ENTRY CREATION SECTION WITH THIS CODE
+
+    airEntries.forEach((entry) => {
+      // Set color based on entry type
+      const color =
+        entry.type === "window"
+          ? 0x3b82f6
+          : entry.type === "door"
+            ? 0xb45309
+            : 0x22c55e;
       const material = new THREE.MeshPhongMaterial({
         color,
         opacity: 0.6,
@@ -370,20 +405,23 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       const height = entry.dimensions.height;
 
       // Calculate Z position based on entry type
-      const zPosition = entry.type === 'door' ? height / 2 : (entry.dimensions.distanceToFloor || 0);
+      const zPosition =
+        entry.type === "door"
+          ? height / 2
+          : entry.dimensions.distanceToFloor || 0;
 
       // Calculate wall direction and normal vectors using the same method as walls
       const wallDirection = new THREE.Vector3()
         .subVectors(
           transform2DTo3D(entry.line.end),
-          transform2DTo3D(entry.line.start)
+          transform2DTo3D(entry.line.start),
         )
         .normalize();
 
       // Calculate proper wall normal using cross product
-      const upVector = new THREE.Vector3(0, 0, 1);
+      const worldUpVector = new THREE.Vector3(0, 0, 1);
       const wallNormalVector = new THREE.Vector3()
-        .crossVectors(wallDirection, upVector)
+        .crossVectors(wallDirection, worldUpVector)
         .normalize();
 
       // Create and position the air entry
@@ -392,24 +430,94 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       const position = transform2DTo3D(entry.position);
       mesh.position.set(position.x, position.y, zPosition);
 
-      // Set the orientation to match the wall
-      const quaternion = new THREE.Quaternion();
-      quaternion.setFromUnitVectors(
-        new THREE.Vector3(0, 0, 1), // Default plane normal
-        wallNormalVector            // Target normal (wall normal)
-      );
-      mesh.setRotationFromQuaternion(quaternion);
+      // Apply Wall's Local Coordinate System approach for all air entries
 
+      // 1. Define the three axes of our local coordinate system
+      const forward = wallNormalVector.clone(); // Forward points in the direction of the wall normal
+      const up = new THREE.Vector3(0, 0, 1);    // Up is always the world up
+
+      // 2. Calculate the right vector to be perpendicular to both forward and up
+      const right = new THREE.Vector3().crossVectors(up, forward).normalize();
+
+      // 3. Re-calculate forward to ensure perfect orthogonality 
+      // (this step ensures forward is exactly perpendicular to both up and right)
+      forward.crossVectors(right, up).normalize();
+
+      // 4. Create rotation matrix from the orthonormal basis
+      const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
+
+      // 5. Apply the rotation to the mesh
+      mesh.setRotationFromMatrix(rotationMatrix);
+
+      // Add the mesh to the scene
       sceneRef.current?.add(mesh);
 
-      // Debug arrow for air entry normal (black)
+      // Log the coordinate system vectors for debugging
+      console.log(`${entry.type.charAt(0).toUpperCase() + entry.type.slice(1)} Coordinate System:`, {
+        position: `(${position.x.toFixed(2)}, ${position.y.toFixed(2)}, ${zPosition.toFixed(2)})`,
+        forward: `(${forward.x.toFixed(4)}, ${forward.y.toFixed(4)}, ${forward.z.toFixed(4)})`,
+        up: `(${up.x.toFixed(4)}, ${up.y.toFixed(4)}, ${up.z.toFixed(4)})`,
+        right: `(${right.x.toFixed(4)}, ${right.y.toFixed(4)}, ${right.z.toFixed(4)})`
+      });
+
+      // Add helper arrows only in debug mode
+      const showDebugArrows = true; // Set to false to hide coordinate system arrows
+
+      if (showDebugArrows) {
+        const arrowLength = 30;
+        const arrowPosition = new THREE.Vector3(position.x, position.y, zPosition);
+
+        // Forward arrow (blue) - shows normal direction
+        const forwardArrow = new THREE.ArrowHelper(
+          forward,
+          arrowPosition,
+          arrowLength,
+          0x0000ff, // blue
+          6,        // head length
+          3         // head width
+        );
+
+        // Up arrow (green) - shows height direction
+        const upArrow = new THREE.ArrowHelper(
+          up,
+          arrowPosition,
+          arrowLength,
+          0x00ff00, // green
+          6,        // head length
+          3         // head width
+        );
+
+        // Right arrow (red) - shows width direction
+        const rightArrow = new THREE.ArrowHelper(
+          right,
+          arrowPosition,
+          arrowLength,
+          0xff0000, // red
+          6,        // head length
+          3         // head width
+        );
+
+        // Add arrows to scene
+        sceneRef.current?.add(forwardArrow);
+        sceneRef.current?.add(upArrow);
+        sceneRef.current?.add(rightArrow);
+
+        // Add a small marker at the air entry position
+        const markerGeometry = new THREE.SphereGeometry(3, 8, 8);
+        const markerMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+        const marker = new THREE.Mesh(markerGeometry, markerMaterial);
+        marker.position.copy(arrowPosition);
+        sceneRef.current?.add(marker);
+      }
+
+      // Original debug arrow for wall normal (black)
       const elementArrowHelper = new THREE.ArrowHelper(
         wallNormalVector,
         new THREE.Vector3(position.x, position.y, zPosition),
-        50,  // length
-        0x000000,  // black color
-        10,  // head length
-        5    // head width
+        50, // length
+        0x000000, // black color
+        10, // head length
+        5, // head width
       );
       sceneRef.current?.add(elementArrowHelper);
 
@@ -417,10 +525,9 @@ export default function Canvas3D({ lines, airEntries = [], height = 600 }: Canva
       console.log(`Air Entry (${entry.type}) vectors:`, {
         position: `(${position.x.toFixed(2)}, ${position.y.toFixed(2)}, ${zPosition.toFixed(2)})`,
         direction: `(${wallDirection.x.toFixed(4)}, ${wallDirection.y.toFixed(4)}, ${wallDirection.z.toFixed(4)})`,
-        normal: `(${wallNormalVector.x.toFixed(4)}, ${wallNormalVector.y.toFixed(4)}, ${wallNormalVector.z.toFixed(4)})`
+        normal: `(${wallNormalVector.x.toFixed(4)}, ${wallNormalVector.y.toFixed(4)}, ${wallNormalVector.z.toFixed(4)})`,
       });
     });
-
   }, [lines, airEntries]);
 
   return <div ref={containerRef} style={{ height }} />;
