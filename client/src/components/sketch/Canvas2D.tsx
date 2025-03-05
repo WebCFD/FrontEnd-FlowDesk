@@ -41,8 +41,8 @@ const MIN_ZOOM = 0.25;
 const MAX_ZOOM = 4;
 const ZOOM_STEP = 0.1;
 const GRID_RANGE = 2000;
-const GRID_POINT_RADIUS = 2;
-const GRID_POINT_HOVER_RADIUS = 3;
+const GRID_POINT_RADIUS = 1;
+const GRID_POINT_HOVER_RADIUS = 2;
 const HOVER_DISTANCE = 10;
 
 const cmToPixels = (cm: number): number => {
@@ -228,7 +228,7 @@ export default function Canvas2D({
   };
 
   const snapToGrid = (point: Point): Point => {
-    const snapSize = gridSize / 4;
+    const snapSize = 4; // 4 pixels = 5cm
     const centerX = dimensions.width / 2;
     const centerY = dimensions.height / 2;
 
@@ -458,7 +458,7 @@ export default function Canvas2D({
     const points: Point[] = [];
     const centerX = dimensions.width / 2;
     const centerY = dimensions.height / 2;
-    const snapSize = gridSize / 4;
+    const snapSize = 4; // 4 pixels = 5cm
 
     for (let x = -GRID_RANGE; x <= GRID_RANGE; x += snapSize) {
       for (let y = -GRID_RANGE; y <= GRID_RANGE; y += snapSize) {
