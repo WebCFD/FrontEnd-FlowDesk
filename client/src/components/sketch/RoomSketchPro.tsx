@@ -5,9 +5,10 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 interface RoomSketchProProps {
   width: number;
   height: number;
+  showTextures?: boolean;
 }
 
-export function RoomSketchPro({ width, height }: RoomSketchProProps) {
+export function RoomSketchPro({ width, height, showTextures = false }: RoomSketchProProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
@@ -61,21 +62,20 @@ export function RoomSketchPro({ width, height }: RoomSketchProProps) {
     directionalLight.shadow.mapSize.height = 1024;
     scene.add(directionalLight);
 
-    // Add ground plane with texture
-    const textureLoader = new THREE.TextureLoader();
-    const floorTexture = textureLoader.load('/textures/floor.jpg', () => {
-      floorTexture.wrapS = THREE.RepeatWrapping;
-      floorTexture.wrapT = THREE.RepeatWrapping;
-      floorTexture.repeat.set(4, 4);
-      renderer.render(scene, camera);
-    });
-
+    // Add ground plane with or without texture based on showTextures prop
     const floorGeometry = new THREE.PlaneGeometry(size, size);
-    const floorMaterial = new THREE.MeshStandardMaterial({ 
-      map: floorTexture,
-      roughness: 0.8,
-      metalness: 0.2
-    });
+    const floorMaterial = showTextures
+      ? new THREE.MeshStandardMaterial({
+          map: new THREE.TextureLoader().load('/textures/floor.jpg'),
+          roughness: 0.8,
+          metalness: 0.2
+        })
+      : new THREE.MeshStandardMaterial({
+          color: 0x808080,
+          roughness: 0.8,
+          metalness: 0.2
+        });
+
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
@@ -124,7 +124,7 @@ export function RoomSketchPro({ width, height }: RoomSketchProProps) {
         }
       });
     };
-  }, [width, height]);
+  }, [width, height, showTextures]);
 
   return (
     <div 

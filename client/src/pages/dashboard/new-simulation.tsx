@@ -67,15 +67,16 @@ export default function NewSimulation() {
     switch (step) {
       case 1:
         return (
+          // Keep Step 1's content unchanged
           <div>Step 1 content</div>
         );
       case 2:
         console.log('Rendering Step 2: Setup screen');
         return (
           <div className="space-y-6">
-            {/* 3D View */}
+            {/* 3D View with textures enabled */}
             <div className="w-full h-[600px] border rounded-lg overflow-hidden bg-white">
-              <RoomSketchPro width={800} height={600} />
+              <RoomSketchPro width={800} height={600} showTextures={true} />
             </div>
 
             {/* Parameters Card */}
