@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { ArrowRight, ArrowLeft } from "lucide-react";
-import { RoomSketchPro } from "@/components/sketch/RoomSketchPro";
+import Canvas3D from "@/components/sketch/Canvas3D"; // Changed to default import
 
 export default function NewSimulation() {
   const [step, setStep] = useState(1);
@@ -21,9 +21,9 @@ export default function NewSimulation() {
     { id: 3, name: "Order" }
   ];
 
-  const handleStepClick = (newStep: number) => {
-    console.log(`Progress bar: Clicking step ${newStep}`);
-    setStep(newStep);
+  const handleStepClick = (stepId: number) => {
+    console.log(`Progress bar: Clicking step ${stepId}`);
+    setStep(stepId);
   };
 
   const handleNext = () => {
@@ -61,50 +61,58 @@ export default function NewSimulation() {
     </div>
   );
 
+  const renderStep2 = () => {
+    console.log('Rendering Step 2: Setup screen');
+    return (
+      <div className="space-y-6">
+        {/* 3D View with textures */}
+        <div className="w-full h-[600px] border rounded-lg overflow-hidden bg-white">
+          <Canvas3D
+            lines={[]}
+            airEntries={[]}
+            height={600}
+            showTextures={true}
+          />
+        </div>
+
+        {/* Parameters Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Simulation Parameters</CardTitle>
+            <CardDescription>Configure the physical parameters for your simulation</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-4">
+              <Label>Air Flow Rate</Label>
+              <Slider defaultValue={[50]} max={100} step={1} />
+              <div className="text-sm text-right">50 m³/h</div>
+            </div>
+            <div className="space-y-4">
+              <Label>Temperature</Label>
+              <Slider defaultValue={[20]} max={40} min={0} step={1} />
+              <div className="text-sm text-right">20°C</div>
+            </div>
+            <div className="space-y-4">
+              <Label>Humidity</Label>
+              <Slider defaultValue={[45]} max={100} min={0} step={1} />
+              <div className="text-sm text-right">45%</div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  };
+
   const renderContent = () => {
     console.log(`Rendering content for step ${step}`);
 
     switch (step) {
       case 1:
         return (
-          // Keep Step 1's content unchanged
           <div>Step 1 content</div>
         );
       case 2:
-        console.log('Rendering Step 2: Setup screen');
-        return (
-          <div className="space-y-6">
-            {/* 3D View with textures enabled */}
-            <div className="w-full h-[600px] border rounded-lg overflow-hidden bg-white">
-              <RoomSketchPro width={800} height={600} showTextures={true} />
-            </div>
-
-            {/* Parameters Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Simulation Parameters</CardTitle>
-                <CardDescription>Configure the physical parameters for your simulation</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <Label>Air Flow Rate</Label>
-                  <Slider defaultValue={[50]} max={100} step={1} />
-                  <div className="text-sm text-right">50 m³/h</div>
-                </div>
-                <div className="space-y-4">
-                  <Label>Temperature</Label>
-                  <Slider defaultValue={[20]} max={40} min={0} step={1} />
-                  <div className="text-sm text-right">20°C</div>
-                </div>
-                <div className="space-y-4">
-                  <Label>Humidity</Label>
-                  <Slider defaultValue={[45]} max={100} min={0} step={1} />
-                  <div className="text-sm text-right">45%</div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        );
+        return renderStep2();
       case 3:
         return (
           <div>Step 3 content</div>

@@ -92,7 +92,7 @@ export default function Canvas3D({
     directionalLight.shadow.mapSize.height = 1024;
     scene.add(directionalLight);
 
-    // Add ground plane with texture
+    // Create floor geometry and mesh
     const floorGeometry = new THREE.PlaneGeometry(20, 20);
     const floorMaterial = showTextures
       ? new THREE.MeshStandardMaterial({
