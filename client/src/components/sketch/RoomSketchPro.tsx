@@ -31,6 +31,27 @@ interface RoomSketchProProps {
   airEntries?: AirEntry[];
 }
 
+// Constants matching Canvas3D
+const ROOM_HEIGHT = 210; // Room height in cm
+const PIXELS_TO_CM = 25 / 20; // 25cm = 20px ratio
+const GRID_SIZE = 1000; // Size of the grid in cm
+const GRID_DIVISIONS = 40; // Number of divisions in the grid
+
+const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
+  const dimensions = { width: 800, height: 600 };
+  const centerX = dimensions.width / 2;
+  const centerY = dimensions.height / 2;
+
+  const relativeX = point.x - centerX;
+  const relativeY = centerY - point.y;
+
+  return new THREE.Vector3(
+    relativeX * PIXELS_TO_CM,
+    height,
+    relativeY * PIXELS_TO_CM,
+  );
+};
+
 export function RoomSketchPro({ 
   width, 
   height, 
@@ -68,50 +89,55 @@ export function RoomSketchPro({
     }
   };
 
-  // Create walls from lines
+  // Create walls using the same method as Canvas3D
   const createWalls = (scene: THREE.Scene) => {
-    const wallHeight = 3;
-    const wallThickness = 0.2;
-    const wallMaterial = new THREE.MeshStandardMaterial({ 
-      color: 0xcccccc,
-      roughness: 0.7,
-      metalness: 0.2
+    // Create wall material
+    const wallMaterial = new THREE.MeshPhongMaterial({
+      color: 0x3b82f6,
+      opacity: 0.5,
+      transparent: true,
+      side: THREE.DoubleSide,
     });
 
-    lines.forEach(line => {
-      // Log wall vectors for debugging
-      console.log('Wall vectors:', {
+    // Convert 2D lines to 3D walls using transformed coordinates
+    lines.forEach((line) => {
+      // Create vertices for wall corners using the transformation
+      const start_bottom = transform2DTo3D(line.start);
+      const end_bottom = transform2DTo3D(line.end);
+      const start_top = transform2DTo3D(line.start, ROOM_HEIGHT);
+      const end_top = transform2DTo3D(line.end, ROOM_HEIGHT);
+
+      // Calculate wall direction and normal vectors
+      const wallDirection = new THREE.Vector3()
+        .subVectors(end_bottom, start_bottom)
+        .normalize();
+
+      // Log vectors for debugging
+      console.log("Wall vectors:", {
         start: `(${line.start.x}, ${line.start.y})`,
         end: `(${line.end.x}, ${line.end.y})`,
-        direction: new THREE.Vector3(
-          line.end.x - line.start.x,
-          0,
-          line.end.y - line.start.y
-        ).normalize().toArray().map(v => v.toFixed(4)).join(', '),
-        normal: new THREE.Vector3(
-          -(line.end.y - line.start.y),
-          0,
-          line.end.x - line.start.x
-        ).normalize().toArray().map(v => v.toFixed(4)).join(', ')
+        direction: `(${wallDirection.x.toFixed(4)}, ${wallDirection.y.toFixed(4)}, ${wallDirection.z.toFixed(4)})`,
       });
 
-      const dx = line.end.x - line.start.x;
-      const dy = line.end.y - line.start.y;
-      const length = Math.sqrt(dx * dx + dy * dy);
-      const angle = Math.atan2(dy, dx);
+      // Create vertices array from transformed points
+      const vertices = new Float32Array([
+        start_bottom.x, start_bottom.y, start_bottom.z,
+        end_bottom.x, end_bottom.y, end_bottom.z,
+        start_top.x, start_top.y, start_top.z,
+        end_top.x, end_top.y, end_top.z,
+      ]);
 
-      const wallGeometry = new THREE.BoxGeometry(length / 100, wallHeight, wallThickness);
-      const wall = new THREE.Mesh(wallGeometry, wallMaterial);
+      // Create faces indices
+      const indices = new Uint16Array([0, 1, 2, 1, 3, 2]);
 
-      wall.position.set(
-        (line.start.x + line.end.x) / 200, // Convert to meters
-        wallHeight / 2,
-        (line.start.y + line.end.y) / 200  // Convert to meters
-      );
-      wall.rotation.y = angle;
-      wall.castShadow = true;
-      wall.receiveShadow = true;
+      // Create the wall geometry
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+      geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+      geometry.computeVertexNormals();
 
+      // Create the wall mesh
+      const wall = new THREE.Mesh(geometry, wallMaterial);
       scene.add(wall);
     });
   };
@@ -191,9 +217,7 @@ export function RoomSketchPro({
     controls.addEventListener('change', saveCameraState);
 
     // Add grid helper
-    const size = 20;
-    const divisions = 20;
-    const gridHelper = new THREE.GridHelper(size, divisions, 0x94a3b8, 0xe2e8f0);
+    const gridHelper = new THREE.GridHelper(GRID_SIZE, GRID_DIVISIONS, 0x94a3b8, 0xe2e8f0);
     scene.add(gridHelper);
 
     // Add ambient light
@@ -217,7 +241,7 @@ export function RoomSketchPro({
       renderer.render(scene, camera);
     });
 
-    const floorGeometry = new THREE.PlaneGeometry(size, size);
+    const floorGeometry = new THREE.PlaneGeometry(GRID_SIZE, GRID_SIZE);
     const floorMaterial = new THREE.MeshStandardMaterial({ 
       map: floorTexture,
       roughness: 0.8,
