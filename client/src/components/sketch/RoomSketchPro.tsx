@@ -326,22 +326,47 @@ export function RoomSketchPro({
       // Set color and material based on entry type
       let material;
       if (entry.type === "window") {
+        // Create texture loader and load window texture
+        const textureLoader = new THREE.TextureLoader();
+        const windowTexture = textureLoader.load(
+          'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/window.jpg',
+          (texture) => {
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat.set(1, 1); // One texture per window
+          }
+        );
+
         material = new THREE.MeshPhysicalMaterial({
-          color: 0x88ccff,
+          map: windowTexture,
+          color: 0xffffff, // White to show texture properly
           metalness: 0.1,
           roughness: 0.1,
-          transmission: 0.9, // Add transparency
-          thickness: 0.5, // Add glass thickness
-          opacity: 0.6,
+          transmission: 0.8, // Glass transparency
+          thickness: 0.5, // Glass thickness
+          opacity: 0.9,
           transparent: true,
           side: THREE.DoubleSide,
-          clearcoat: 1.0, // Add reflective coating
-          clearcoatRoughness: 0.1
+          clearcoat: 1.0, // Reflective coating
+          clearcoatRoughness: 0.1,
+          envMapIntensity: 1.0, // Enhance environment reflections
         });
       } else if (entry.type === "door") {
+        // Create texture loader and load door texture
+        const textureLoader = new THREE.TextureLoader();
+        const doorTexture = textureLoader.load(
+          'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/hardwood2_diffuse.jpg',
+          (texture) => {
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat.set(1, 1);
+          }
+        );
+
         material = new THREE.MeshPhongMaterial({
-          color: 0xb45309,
-          opacity: 0.9,
+          map: doorTexture,
+          color: 0xffffff,
+          opacity: 1.0,
           transparent: false,
           side: THREE.DoubleSide,
         });
@@ -363,7 +388,7 @@ export function RoomSketchPro({
           ? height / 2  // Center the door vertically
           : (entry.dimensions.distanceToFloor || 0) * DEFAULTS.PIXELS_TO_CM;
 
-      // Calculate wall direction and normal vectors
+      // Calculate wall direction and normal vectors using the same method as walls
       const wallDirection = new THREE.Vector3()
         .subVectors(
           transform2DTo3D(entry.line.end),
@@ -403,19 +428,38 @@ export function RoomSketchPro({
       // Add the mesh to the scene
       scene.add(mesh);
 
-      // Optional: Add window frame for windows
+      // Add window frame for windows
       if (entry.type === "window") {
         // Create window frame
         const frameGeometry = new THREE.BoxGeometry(width + 4, height + 4, 4);
         const frameMaterial = new THREE.MeshPhongMaterial({
           color: 0x4a5568,
-          metalness: 0.5,
-          roughness: 0.5
+          opacity: 1.0,
+          transparent: false,
+          side: THREE.DoubleSide,
         });
         const frame = new THREE.Mesh(frameGeometry, frameMaterial);
         frame.position.copy(mesh.position);
         frame.setRotationFromMatrix(rotationMatrix);
         scene.add(frame);
+
+        // Create window panes (cross pattern)
+        const paneThickness = 1;
+        const paneWidth = 2;
+
+        // Horizontal pane
+        const horizontalPaneGeometry = new THREE.BoxGeometry(width, paneWidth, paneThickness);
+        const horizontalPane = new THREE.Mesh(horizontalPaneGeometry, frameMaterial);
+        horizontalPane.position.copy(mesh.position);
+        horizontalPane.setRotationFromMatrix(rotationMatrix);
+        scene.add(horizontalPane);
+
+        // Vertical pane
+        const verticalPaneGeometry = new THREE.BoxGeometry(paneWidth, height, paneThickness);
+        const verticalPane = new THREE.Mesh(verticalPaneGeometry, frameMaterial);
+        verticalPane.position.copy(mesh.position);
+        verticalPane.setRotationFromMatrix(rotationMatrix);
+        scene.add(verticalPane);
       }
     });
   };
