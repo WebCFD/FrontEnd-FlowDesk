@@ -2,13 +2,42 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
+interface Point {
+  x: number;
+  y: number;
+}
+
+interface Line {
+  start: Point;
+  end: Point;
+}
+
+interface AirEntry {
+  type: 'vent' | 'door' | 'window';
+  position: Point;
+  dimensions: {
+    width: number;
+    height: number;
+    distanceToFloor?: number;
+  };
+  line: Line;
+}
+
 interface RoomSketchProProps {
   width: number;
   height: number;
-  instanceId?: string; // Add unique identifier prop
+  instanceId?: string;
+  lines?: Line[];
+  airEntries?: AirEntry[];
 }
 
-export function RoomSketchPro({ width, height, instanceId = 'default' }: RoomSketchProProps) {
+export function RoomSketchPro({ 
+  width, 
+  height, 
+  instanceId = 'default',
+  lines = [],
+  airEntries = []
+}: RoomSketchProProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
@@ -39,12 +68,83 @@ export function RoomSketchPro({ width, height, instanceId = 'default' }: RoomSke
     }
   };
 
+  // Create walls from lines
+  const createWalls = (scene: THREE.Scene) => {
+    const wallHeight = 3;
+    const wallThickness = 0.2;
+    const wallMaterial = new THREE.MeshStandardMaterial({ 
+      color: 0xcccccc,
+      roughness: 0.7,
+      metalness: 0.2
+    });
+
+    lines.forEach(line => {
+      const dx = line.end.x - line.start.x;
+      const dy = line.end.y - line.start.y;
+      const length = Math.sqrt(dx * dx + dy * dy);
+      const angle = Math.atan2(dy, dx);
+
+      const wallGeometry = new THREE.BoxGeometry(length, wallHeight, wallThickness);
+      const wall = new THREE.Mesh(wallGeometry, wallMaterial);
+
+      wall.position.set(
+        (line.start.x + line.end.x) / 2,
+        wallHeight / 2,
+        (line.start.y + line.end.y) / 2
+      );
+      wall.rotation.y = angle;
+      wall.castShadow = true;
+      wall.receiveShadow = true;
+
+      scene.add(wall);
+    });
+  };
+
+  // Create air entries (doors, windows, vents)
+  const createAirEntries = (scene: THREE.Scene) => {
+    airEntries.forEach(entry => {
+      const material = new THREE.MeshStandardMaterial({
+        color: entry.type === 'door' ? 0x8b4513 : 
+               entry.type === 'window' ? 0x87ceeb : 
+               0x808080,
+        roughness: 0.5,
+        metalness: 0.2,
+        transparent: entry.type === 'window',
+        opacity: entry.type === 'window' ? 0.6 : 1
+      });
+
+      const geometry = new THREE.BoxGeometry(
+        entry.dimensions.width / 100, // Convert cm to meters
+        entry.dimensions.height / 100,
+        0.1
+      );
+
+      const mesh = new THREE.Mesh(geometry, material);
+
+      // Position the air entry
+      mesh.position.set(
+        entry.position.x,
+        (entry.dimensions.distanceToFloor || 0) / 100 + entry.dimensions.height / 200,
+        entry.position.y
+      );
+
+      // Calculate rotation based on the wall line
+      const dx = entry.line.end.x - entry.line.start.x;
+      const dy = entry.line.end.y - entry.line.start.y;
+      mesh.rotation.y = Math.atan2(dy, dx);
+
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      scene.add(mesh);
+    });
+  };
+
   useEffect(() => {
     if (!containerRef.current) return;
 
     // Initialize scene
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xf8fafc); // Light background
+    scene.background = new THREE.Color(0xf8fafc);
     sceneRef.current = scene;
 
     // Initialize camera
@@ -112,6 +212,10 @@ export function RoomSketchPro({ width, height, instanceId = 'default' }: RoomSke
     floor.receiveShadow = true;
     scene.add(floor);
 
+    // Create walls and air entries
+    createWalls(scene);
+    createAirEntries(scene);
+
     // Animation loop
     function animate() {
       if (!scene || !camera || !renderer || !controls) return;
@@ -156,7 +260,7 @@ export function RoomSketchPro({ width, height, instanceId = 'default' }: RoomSke
         }
       });
     };
-  }, [width, height, instanceId]); // Add instanceId to dependencies
+  }, [width, height, instanceId, lines, airEntries]);
 
   return (
     <div 
