@@ -320,64 +320,94 @@ export function RoomSketchPro({
     });
   };
 
-  // Air entries creation (doors, windows, vents)
+  // Enhanced air entries creation (doors, windows, vents)
   const createAirEntries = (scene: THREE.Scene) => {
+    // Create and add a simple environment map for reflections
+    const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(256);
+    const cubeCamera = new THREE.CubeCamera(1, 1000, cubeRenderTarget);
+    scene.add(cubeCamera);
+
+    // Create texture loader for all materials
+    const textureLoader = new THREE.TextureLoader();
+
+    // Enhanced glass material for windows with subtle blue tint and realistic properties
+    const glassMaterial = new THREE.MeshPhysicalMaterial({
+      color: new THREE.Color(0xdcf5ff), // Very slight blue tint
+      metalness: 0.1,
+      roughness: 0.03,
+      transmission: 0.96, // High transmission for transparency
+      thickness: 0.5,
+      ior: 1.5, // Index of refraction for glass
+      reflectivity: 0.3,
+      transparent: true,
+      opacity: 0.9,
+      side: THREE.DoubleSide,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.05,
+      envMap: cubeRenderTarget.texture,
+      envMapIntensity: 1.8
+    });
+
+    // Load wood texture for window frames
+    const woodTexture = textureLoader.load(
+      'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/hardwood2_diffuse.jpg',
+      (texture) => {
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set(1, 1);
+      }
+    );
+
+    // Create enhanced frame material
+    const frameMaterial = new THREE.MeshPhysicalMaterial({
+      map: woodTexture,
+      color: 0xdddddd, // Light color to show wood grain
+      metalness: 0.2,
+      roughness: 0.8,
+      side: THREE.DoubleSide,
+    });
+
+    // Door material with wood texture
+    const doorMaterial = new THREE.MeshPhongMaterial({
+      map: woodTexture,
+      color: 0xffffff,
+      opacity: 1.0,
+      transparent: false,
+      side: THREE.DoubleSide,
+    });
+
+    // Vent material
+    const ventMaterial = new THREE.MeshPhongMaterial({
+      color: 0x22c55e,
+      opacity: 0.8,
+      transparent: true,
+      side: THREE.DoubleSide,
+    });
+
     airEntries.forEach(entry => {
-      // Set color and material based on entry type
+      // Set material based on entry type
       let material;
       if (entry.type === "window") {
-        // Create glass material with realistic properties
-        material = new THREE.MeshPhysicalMaterial({
-          color: 0xffffff,
-          metalness: 0.1,
-          roughness: 0.05,
-          transmission: 0.95, // High transparency
-          thickness: 0.5,
-          opacity: 0.3,
-          transparent: true,
-          side: THREE.DoubleSide,
-          clearcoat: 1.0,
-          clearcoatRoughness: 0.1,
-          envMapIntensity: 1.5
-        });
+        // Windows are handled specially with the enhanced window creation
+        createDetailedWindow(entry, frameMaterial, glassMaterial, scene);
+        return; // Skip the default creation for windows
       } else if (entry.type === "door") {
-        // Create texture loader and load door texture
-        const textureLoader = new THREE.TextureLoader();
-        const doorTexture = textureLoader.load(
-          'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/hardwood2_diffuse.jpg',
-          (texture) => {
-            texture.wrapS = THREE.RepeatWrapping;
-            texture.wrapT = THREE.RepeatWrapping;
-            texture.repeat.set(1, 1);
-          }
-        );
-
-        material = new THREE.MeshPhongMaterial({
-          map: doorTexture,
-          color: 0xffffff,
-          opacity: 1.0,
-          transparent: false,
-          side: THREE.DoubleSide,
-        });
+        material = doorMaterial;
       } else { // vent
-        material = new THREE.MeshPhongMaterial({
-          color: 0x22c55e,
-          opacity: 0.8,
-          transparent: true,
-          side: THREE.DoubleSide,
-        });
+        material = ventMaterial;
       }
 
+      // For doors and vents, keep the simple geometry
       const width = entry.dimensions.width * DEFAULTS.PIXELS_TO_CM;
       const height = entry.dimensions.height * DEFAULTS.PIXELS_TO_CM;
 
-      // Calculate Z position based on entry type and convert to proper scale
+      // Calculate Z position based on entry type
       const zPosition =
         entry.type === "door"
           ? height / 2  // Center the door vertically
           : (entry.dimensions.distanceToFloor || 0) * DEFAULTS.PIXELS_TO_CM;
 
-      // Calculate wall direction and normal vectors using the same method as walls
+      // Calculate wall direction and normal vectors
       const wallDirection = new THREE.Vector3()
         .subVectors(
           transform2DTo3D(entry.line.end),
@@ -391,113 +421,209 @@ export function RoomSketchPro({
         .crossVectors(wallDirection, worldUpVector)
         .normalize();
 
-      // For windows, create a more sophisticated structure
-      if (entry.type === "window") {
-        const windowDepth = 8; // Total window depth
-        const frameThickness = 4; // Thickness of the frame
-        const glassOffset = 2; // Offset of glass from frame
-        const position = transform2DTo3D(entry.position);
+      const geometry = new THREE.PlaneGeometry(width, height);
+      const mesh = new THREE.Mesh(geometry, material);
+      const position = transform2DTo3D(entry.position);
+      mesh.position.set(position.x, position.y, zPosition);
 
-        // Adjust position to be slightly in front of the wall
-        position.x += wallNormalVector.x * windowDepth/2;
-        position.y += wallNormalVector.y * windowDepth/2;
+      // Apply rotation
+      const forward = wallNormalVector.clone();
+      const up = new THREE.Vector3(0, 0, 1);
+      const right = new THREE.Vector3().crossVectors(up, forward).normalize();
+      forward.crossVectors(right, up).normalize();
+      const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
+      mesh.setRotationFromMatrix(rotationMatrix);
 
-        // Create rotation matrix
-        const forward = wallNormalVector.clone();
-        const up = new THREE.Vector3(0, 0, 1);
-        const right = new THREE.Vector3().crossVectors(up, forward).normalize();
-        forward.crossVectors(right, up).normalize();
-        const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
-
-        // Create outer frame
-        const outerFrameGeometry = new THREE.BoxGeometry(
-          width + frameThickness*2,
-          height + frameThickness*2,
-          windowDepth
-        );
-        const frameMaterial = new THREE.MeshPhysicalMaterial({
-          color: 0x4a5568,
-          metalness: 0.5,
-          roughness: 0.5,
-          envMapIntensity: 1.0
-        });
-        const outerFrame = new THREE.Mesh(outerFrameGeometry, frameMaterial);
-        outerFrame.position.copy(position);
-        outerFrame.position.z = zPosition;
-        outerFrame.setRotationFromMatrix(rotationMatrix);
-        scene.add(outerFrame);
-
-        // Create glass panes (2x2 grid)
-        const paneWidth = width/2 - frameThickness;
-        const paneHeight = height/2 - frameThickness;
-        const panePositions = [
-          [-width/4, height/4],
-          [width/4, height/4],
-          [-width/4, -height/4],
-          [width/4, -height/4]
-        ];
-
-        panePositions.forEach(([x, y]) => {
-          const paneGeometry = new THREE.BoxGeometry(paneWidth, paneHeight, 0.2);
-          const glassPane = new THREE.Mesh(paneGeometry, material);
-          const panePosition = position.clone();
-
-          // Position relative to window center
-          panePosition.x += right.x * x + forward.x * glassOffset;
-          panePosition.y += right.y * x + forward.y * glassOffset;
-          panePosition.z = zPosition + y;
-
-          glassPane.position.copy(panePosition);
-          glassPane.setRotationFromMatrix(rotationMatrix);
-          scene.add(glassPane);
-        });
-
-        // Create cross frame (vertical and horizontal dividers)
-        const dividerWidth = frameThickness;
-        const dividerDepth = windowDepth - 2;
-
-        // Horizontal divider
-        const horizontalDividerGeometry = new THREE.BoxGeometry(
-          width,
-          dividerWidth,
-          dividerDepth
-        );
-        const horizontalDivider = new THREE.Mesh(horizontalDividerGeometry, frameMaterial);
-        horizontalDivider.position.copy(position);
-        horizontalDivider.position.z = zPosition;
-        horizontalDivider.setRotationFromMatrix(rotationMatrix);
-        scene.add(horizontalDivider);
-
-        // Vertical divider
-        const verticalDividerGeometry = new THREE.BoxGeometry(
-          dividerWidth,
-          height,
-          dividerDepth
-        );
-        const verticalDivider = new THREE.Mesh(verticalDividerGeometry, frameMaterial);
-        verticalDivider.position.copy(position);
-        verticalDivider.position.z = zPosition;
-        verticalDivider.setRotationFromMatrix(rotationMatrix);
-        scene.add(verticalDivider);
-
-      } else {
-        // For doors and vents, keep the simple geometry
-        const geometry = new THREE.PlaneGeometry(width, height);
-        const mesh = new THREE.Mesh(geometry, material);
-        const position = transform2DTo3D(entry.position);
-        mesh.position.set(position.x, position.y, zPosition);
-
-        // Apply rotation
-        const forward = wallNormalVector.clone();
-        const up = new THREE.Vector3(0, 0, 1);
-        const right = new THREE.Vector3().crossVectors(up, forward).normalize();
-        forward.crossVectors(right, up).normalize();
-        const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
-        mesh.setRotationFromMatrix(rotationMatrix);
-
-        scene.add(mesh);
-      }
+      scene.add(mesh);
     });
+  };
+
+  // New function to create highly detailed windows
+  const createDetailedWindow = (entry: AirEntry, frameMaterial: THREE.Material, glassMaterial: THREE.Material, scene: THREE.Scene) => {
+    const width = entry.dimensions.width * DEFAULTS.PIXELS_TO_CM;
+    const height = entry.dimensions.height * DEFAULTS.PIXELS_TO_CM;
+    const windowDepth = 12; // Total window depth in cm
+
+    // Calculate Z position and wall normal
+    const zPosition = (entry.dimensions.distanceToFloor || 100) * DEFAULTS.PIXELS_TO_CM;
+
+    // Calculate wall direction and normal vectors
+    const wallDirection = new THREE.Vector3()
+      .subVectors(
+        transform2DTo3D(entry.line.end),
+        transform2DTo3D(entry.line.start),
+      )
+      .normalize();
+
+    // Calculate proper wall normal using cross product
+    const worldUpVector = new THREE.Vector3(0, 0, 1);
+    const wallNormalVector = new THREE.Vector3()
+      .crossVectors(wallDirection, worldUpVector)
+      .normalize();
+
+    // Set up orientation vectors for the window
+    const forward = wallNormalVector.clone();
+    const up = new THREE.Vector3(0, 0, 1);
+    const right = new THREE.Vector3().crossVectors(up, forward).normalize();
+
+    // Create rotation matrix
+    const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
+
+    // Create window group to hold all window elements
+    const windowGroup = new THREE.Group();
+
+    // Get base position from entry
+    const basePosition = transform2DTo3D(entry.position);
+    windowGroup.position.set(basePosition.x, basePosition.y, zPosition);
+    windowGroup.setRotationFromMatrix(rotationMatrix);
+
+    // Frame parameters
+    const frameThickness = width * 0.06; // Frame thickness proportional to window width
+    const frameDepth = windowDepth;
+    const sillDepth = windowDepth * 1.2; // Slightly deeper than window
+    const sillHeight = frameThickness * 1.5;
+
+    // Create outer frame (top, bottom, left, right)
+    // Top frame
+    const topFrame = new THREE.Mesh(
+      new THREE.BoxGeometry(width + frameThickness * 2, frameThickness, frameDepth),
+      frameMaterial
+    );
+    topFrame.position.set(0, height / 2 + frameThickness / 2, 0);
+    windowGroup.add(topFrame);
+
+    // Bottom frame with sill
+    const bottomFrame = new THREE.Mesh(
+      new THREE.BoxGeometry(width + frameThickness * 2, frameThickness, frameDepth),
+      frameMaterial
+    );
+    bottomFrame.position.set(0, -height / 2 - frameThickness / 2, 0);
+    windowGroup.add(bottomFrame);
+
+    // Window sill (extends outward from the bottom frame)
+    const sill = new THREE.Mesh(
+      new THREE.BoxGeometry(width + frameThickness * 3, sillHeight, sillDepth),
+      frameMaterial
+    );
+    sill.position.set(0, -height / 2 - frameThickness - sillHeight / 2, sillDepth / 2 - frameDepth / 2);
+    windowGroup.add(sill);
+
+    // Left frame
+    const leftFrame = new THREE.Mesh(
+      new THREE.BoxGeometry(frameThickness, height, frameDepth),
+      frameMaterial
+    );
+    leftFrame.position.set(-width / 2 - frameThickness / 2, 0, 0);
+    windowGroup.add(leftFrame);
+
+    // Right frame
+    const rightFrame = new THREE.Mesh(
+      new THREE.BoxGeometry(frameThickness, height, frameDepth),
+      frameMaterial
+    );
+    rightFrame.position.set(width / 2 + frameThickness / 2, 0, 0);
+    windowGroup.add(rightFrame);
+
+    // Create mullions (cross pattern dividers) - thinner than the main frame
+    const mullionThickness = frameThickness * 0.7;
+    const mullionDepth = frameDepth * 0.9;
+
+    // Horizontal mullion
+    const horizontalMullion = new THREE.Mesh(
+      new THREE.BoxGeometry(width, mullionThickness, mullionDepth),
+      frameMaterial
+    );
+    horizontalMullion.position.set(0, 0, 0); // Center of window
+    windowGroup.add(horizontalMullion);
+
+    // Vertical mullion
+    const verticalMullion = new THREE.Mesh(
+      new THREE.BoxGeometry(mullionThickness, height, mullionDepth),
+      frameMaterial
+    );
+    verticalMullion.position.set(0, 0, 0); // Center of window
+    windowGroup.add(verticalMullion);
+
+    // Create beveled corner details for the frame
+    // Add bevels or corner details if desired
+
+    // Create glass panes - four panes due to the cross pattern
+    const paneWidth = width / 2 - mullionThickness / 2;
+    const paneHeight = height / 2 - mullionThickness / 2;
+    const glassInset = frameDepth * 0.2; // Inset glass from front of frame
+
+    // Define the positions for the four panes (top-left, top-right, bottom-left, bottom-right)
+    const panePositions = [
+      [-width / 4, height / 4, -glassInset],
+      [width / 4, height / 4, -glassInset],
+      [-width / 4, -height / 4, -glassInset],
+      [width / 4, -height / 4, -glassInset]
+    ];
+
+    // Create the glass panes
+    panePositions.forEach((pos, index) => {
+      // Create subtle variation in each pane
+      const paneVariation = 0.02; // Small random variation
+      const paneOpacity = 0.9 - Math.random() * 0.1; // Slight opacity variation
+
+      // Clone the glass material to make variations
+      const paneGlassMaterial = (glassMaterial as THREE.MeshPhysicalMaterial).clone();
+      paneGlassMaterial.opacity = paneOpacity;
+
+      // Add subtle imperfections to glass with different transmission values
+      paneGlassMaterial.transmission = 0.92 + Math.random() * 0.06;
+
+      // Create glass pane with slight thickness
+      const glassPane = new THREE.Mesh(
+        new THREE.BoxGeometry(
+          paneWidth - frameThickness * paneVariation,
+          paneHeight - frameThickness * paneVariation,
+          0.4 // Very thin glass
+        ),
+        paneGlassMaterial
+      );
+
+      glassPane.position.set(...pos);
+      windowGroup.add(glassPane);
+    });
+
+    // Add window hardware (handle) to one of the panes
+    const handleBaseGeometry = new THREE.BoxGeometry(frameThickness * 1.5, frameThickness * 1.5, frameThickness * 0.5);
+    const handleBaseMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0x777777,
+      metalness: 0.8,
+      roughness: 0.2
+    });
+
+    const handleBase = new THREE.Mesh(handleBaseGeometry, handleBaseMaterial);
+    handleBase.position.set(width / 4, 0, -frameDepth / 2 - frameThickness * 0.25);
+    windowGroup.add(handleBase);
+
+    // Create the handle lever
+    const handleLeverGeometry = new THREE.CylinderGeometry(frameThickness * 0.3, frameThickness * 0.3, frameThickness * 3, 16);
+    const handleLever = new THREE.Mesh(handleLeverGeometry, handleBaseMaterial);
+    handleLever.rotation.set(0, 0, Math.PI / 2);
+    handleLever.position.set(width / 4, -frameThickness * 1.5, -frameDepth / 2 - frameThickness * 0.5);
+    windowGroup.add(handleLever);
+
+    // Add subtle shadow catching surfaces near the window
+    // This would typically be done with proper lighting, but here's a placeholder
+    const shadowCatcher = new THREE.Mesh(
+      new THREE.PlaneGeometry(width + frameThickness * 4, height + frameThickness * 4),
+      new THREE.MeshPhongMaterial({
+        color: 0x000000,
+        opacity: 0.1,
+        transparent: true,
+        side: THREE.FrontSide,
+      })
+    );
+    shadowCatcher.position.set(0, 0, frameDepth / 2 + 0.1);
+    windowGroup.add(shadowCatcher);
+
+    // Add the entire window group to the scene
+    scene.add(windowGroup);
+
+    return windowGroup;
   };
 
   // Create floor and roof
@@ -614,72 +740,69 @@ export function RoomSketchPro({
     const axesHelper = new THREE.AxesHelper(200);
     scene.add(axesHelper);
 
-    // Create floor and roof surfaces using the room perimeter
-    createFloorAndRoof(scene, renderer, camera);
-
-
-    // Add ambient light
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    // Set up enhanced lighting for better shadows and reflections
+    // Ambient light for general illumination
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
 
     // Add directional light
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(1, 1, 1);
+    directionalLight.position.set(500, 500, 500);
+    directionalLight.castShadow = true;
+
+    // Configure shadow properties
+    directionalLight.shadow.mapSize.width = 2048;
+    directionalLight.shadow.mapSize.height = 2048;
+    directionalLight.shadow.camera.near = 0.5;
+    directionalLight.shadow.camera.far = 2000;
+    directionalLight.shadow.bias = -0.0001;
+
     scene.add(directionalLight);
 
-    // Create walls and air entries
     createWalls(scene, renderer, camera);
     createAirEntries(scene);
+    createFloorAndRoof(scene, renderer, camera);
+
 
     // Animation loop
-    let animationFrameId: number;
-    function animate() {
-      if (!scene || !camera || !renderer || !controls) return;
-
-      animationFrameId = requestAnimationFrame(animate);
-      controls.update();
+    const animate = () => {
+      requestAnimationFrame(animate);
+      if (controlsRef.current) {
+        controlsRef.current.update();
+      }
       renderer.render(scene, camera);
-    }
+    };
     animate();
 
-    // Handle resize
+    // Handle window resize
     const handleResize = () => {
-      if (!camera || !renderer || !containerRef.current) return;
+      if (!containerRef.current) return;
 
       const newWidth = containerRef.current.clientWidth;
-      const newHeight = height;
 
-      camera.aspect = newWidth / newHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(newWidth, newHeight);
+      if (cameraRef.current) {
+        cameraRef.current.aspect = newWidth / height;
+        cameraRef.current.updateProjectionMatrix();
+      }
+
+      if (rendererRef.current) {
+        rendererRef.current.setSize(newWidth, height);
+      }
     };
 
     window.addEventListener('resize', handleResize);
 
-    // Cleanup function
+    // Cleanup
     return () => {
       window.removeEventListener('resize', handleResize);
-      controls.removeEventListener('change', saveCameraState);
-      cancelAnimationFrame(animationFrameId);
 
-      if (renderer && containerRef.current && containerRef.current.contains(renderer.domElement)) {
-        containerRef.current.removeChild(renderer.domElement);
+      if (rendererRef.current && containerRef.current) {
+        containerRef.current.removeChild(rendererRef.current.domElement);
       }
 
-      // Dispose of geometries and materials
-      scene.traverse((object) => {
-        if (object instanceof THREE.Mesh) {
-          if (object.geometry) object.geometry.dispose();
-
-          if (Array.isArray(object.material)) {
-            object.material.forEach(material => material.dispose());
-          } else if (object.material) {
-            object.material.dispose();
-          }
-        }
-      });
-
-      if (renderer) renderer.dispose();
+      if (rendererRef.current) {
+        rendererRef.current.dispose();
+      }
     };
   }, [
     width,
@@ -696,18 +819,5 @@ export function RoomSketchPro({
     roofColor
   ]);
 
-  // Render component
-  return (
-    <div
-      ref={containerRef}
-      style={{
-        width: '100%',
-        height: `${height}px`,
-        position: 'relative',
-        overflow: 'hidden',
-        borderRadius: '0.5rem',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-      }}
-    />
-  );
+  return <div ref={containerRef} style={{ height }} />;
 }
