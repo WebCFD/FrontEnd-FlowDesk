@@ -11,6 +11,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
 import { Save, Upload, Eraser, ArrowRight, ArrowLeft } from "lucide-react";
 import Canvas2D from "@/components/sketch/Canvas2D";
+import { RoomSketchPro } from "@/components/sketch/RoomSketchPro"; 
 import { cn } from "@/lib/utils";
 import AirEntryDialog from "@/components/sketch/AirEntryDialog";
 import Canvas3D from "@/components/sketch/Canvas3D";
@@ -356,31 +357,46 @@ export default function WizardDesign() {
     </>
   );
 
-  const renderStep2 = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Simulation Parameters</CardTitle>
-        <CardDescription>Configure the physical parameters for your simulation</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="space-y-4">
-          <Label>Air Flow Rate</Label>
-          <Slider defaultValue={[50]} max={100} step={1} />
-          <div className="text-sm text-right">50 m³/h</div>
+  const renderStep2 = () => {
+    console.log('Rendering Step 2 content');
+    return (
+      <div className="space-y-6">
+        {/* Independent 3D View for Step 2 */}
+        <div className="w-full h-[600px] border rounded-lg overflow-hidden bg-white">
+          <RoomSketchPro 
+            width={800} 
+            height={600}
+            key="step2-view"
+          />
         </div>
-        <div className="space-y-4">
-          <Label>Temperature</Label>
-          <Slider defaultValue={[20]} max={40} min={0} step={1} />
-          <div className="text-sm text-right">20°C</div>
-        </div>
-        <div className="space-y-4">
-          <Label>Humidity</Label>
-          <Slider defaultValue={[45]} max={100} min={0} step={1} />
-          <div className="text-sm text-right">45%</div>
-        </div>
-      </CardContent>
-    </Card>
-  );
+
+        {/* Parameters Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Simulation Parameters</CardTitle>
+            <CardDescription>Configure the physical parameters for your simulation</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-4">
+              <Label>Air Flow Rate</Label>
+              <Slider defaultValue={[50]} max={100} step={1} />
+              <div className="text-sm text-right">50 m³/h</div>
+            </div>
+            <div className="space-y-4">
+              <Label>Temperature</Label>
+              <Slider defaultValue={[20]} max={40} min={0} step={1} />
+              <div className="text-sm text-right">20°C</div>
+            </div>
+            <div className="space-y-4">
+              <Label>Humidity</Label>
+              <Slider defaultValue={[45]} max={100} min={0} step={1} />
+              <div className="text-sm text-right">45%</div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  };
 
   const renderStep3 = () => (
     <div className="space-y-6">
