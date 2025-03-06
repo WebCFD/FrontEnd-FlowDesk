@@ -376,13 +376,6 @@ export function RoomSketchPro({
       side: THREE.DoubleSide,
     });
 
-    // Vent material
-    const ventMaterial = new THREE.MeshPhongMaterial({
-      color: 0x22c55e,
-      opacity: 0.8,
-      transparent: true,
-      side: THREE.DoubleSide,
-    });
 
     airEntries.forEach(entry => {
       // Set material based on entry type
@@ -540,7 +533,74 @@ export function RoomSketchPro({
         scene.add(doorGroup);
         return; // Skip the default creation for doors
       } else { // vent
-        material = ventMaterial;
+        // Create vent group
+        const ventGroup = new THREE.Group();
+
+        // Vent dimensions
+        const ventDepth = 2;
+        const frameThickness = 2;
+        const gridSpacing = 5; // Space between grid bars
+
+        // Create metallic materials
+        const ventFrameMaterial = new THREE.MeshPhysicalMaterial({
+          color: "#a1a1aa",
+          metalness: 0.8,
+          roughness: 0.2,
+          side: THREE.DoubleSide,
+        });
+
+        const ventGridMaterial = new THREE.MeshPhysicalMaterial({
+          color: "#71717a",
+          metalness: 0.9,
+          roughness: 0.3,
+          side: THREE.DoubleSide,
+        });
+
+        // Create main vent frame
+        const frameGeometry = new THREE.BoxGeometry(width, height, ventDepth);
+        const frame = new THREE.Mesh(frameGeometry, ventFrameMaterial);
+
+        // Create horizontal grid bars
+        const numHorizontalBars = Math.floor(height / gridSpacing) - 1;
+        for (let i = 0; i < numHorizontalBars; i++) {
+          const y = -height / 2 + (i + 1) * gridSpacing;
+          const barGeometry = new THREE.BoxGeometry(width - frameThickness * 2, 1, ventDepth / 2);
+          const bar = new THREE.Mesh(barGeometry, ventGridMaterial);
+          bar.position.set(0, y, ventDepth / 4);
+          ventGroup.add(bar);
+        }
+
+        // Create vertical grid bars
+        const numVerticalBars = Math.floor(width / gridSpacing) - 1;
+        for (let i = 0; i < numVerticalBars; i++) {
+          const x = -width / 2 + (i + 1) * gridSpacing;
+          const barGeometry = new THREE.BoxGeometry(1, height - frameThickness * 2, ventDepth / 2);
+          const bar = new THREE.Mesh(barGeometry, ventGridMaterial);
+          bar.position.set(x, 0, ventDepth / 4);
+          ventGroup.add(bar);
+        }
+
+        // Add frame to group
+        ventGroup.add(frame);
+
+        // Position and rotate the vent group
+        const position = transform2DTo3D(entry.position);
+        ventGroup.position.set(position.x, position.y, zPosition);
+
+        // Apply Wall's Local Coordinate System approach
+        const forward = wallNormalVector.clone();
+        const up = new THREE.Vector3(0, 0, 1);
+        const right = new THREE.Vector3().crossVectors(up, forward).normalize();
+        forward.crossVectors(right, up).normalize();
+        const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
+        ventGroup.setRotationFromMatrix(rotationMatrix);
+
+        // Offset slightly from wall to prevent z-fighting
+        ventGroup.position.x += wallNormalVector.x * ventDepth / 2;
+        ventGroup.position.y += wallNormalVector.y * ventDepth / 2;
+
+        scene.add(ventGroup);
+        return; // Skip default creation for vents
       }
 
       // For doors and vents, keep the simple geometry
@@ -746,7 +806,7 @@ export function RoomSketchPro({
     windowGroup.add(handleBase);
 
     // Create the handle lever
-    const handleLeverGeometry = new THREE.CylinderGeometry(frameThickness * 0.3, frameThickness * 0.3, frameThickness * 3, 16);
+    const handleLeverGeometry = new THREE.CylinderGeometry(frameThickness * 0.3,frameThickness * 0.3, frameThickness * 3, 16);
     const handleLever = new THREE.Mesh(handleLeverGeometry, handleBaseMaterial);
     handleLever.rotation.set(0, 0, Math.PI / 2);
     handleLever.position.set(width / 4, -frameThickness * 1.5, -frameDepth / 2 - frameThickness * 0.5);
