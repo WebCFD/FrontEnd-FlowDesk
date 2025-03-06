@@ -323,19 +323,36 @@ export function RoomSketchPro({
   // Air entries creation (doors, windows, vents)
   const createAirEntries = (scene: THREE.Scene) => {
     airEntries.forEach(entry => {
-      // Set color based on entry type
-      const color =
-        entry.type === "window"
-          ? 0x3b82f6
-          : entry.type === "door"
-            ? 0xb45309
-            : 0x22c55e;
-      const material = new THREE.MeshPhongMaterial({
-        color,
-        opacity: 0.6,
-        transparent: true,
-        side: THREE.DoubleSide,
-      });
+      // Set color and material based on entry type
+      let material;
+      if (entry.type === "window") {
+        material = new THREE.MeshPhysicalMaterial({
+          color: 0x88ccff,
+          metalness: 0.1,
+          roughness: 0.1,
+          transmission: 0.9, // Add transparency
+          thickness: 0.5, // Add glass thickness
+          opacity: 0.6,
+          transparent: true,
+          side: THREE.DoubleSide,
+          clearcoat: 1.0, // Add reflective coating
+          clearcoatRoughness: 0.1
+        });
+      } else if (entry.type === "door") {
+        material = new THREE.MeshPhongMaterial({
+          color: 0xb45309,
+          opacity: 0.9,
+          transparent: false,
+          side: THREE.DoubleSide,
+        });
+      } else { // vent
+        material = new THREE.MeshPhongMaterial({
+          color: 0x22c55e,
+          opacity: 0.8,
+          transparent: true,
+          side: THREE.DoubleSide,
+        });
+      }
 
       const width = entry.dimensions.width * DEFAULTS.PIXELS_TO_CM;
       const height = entry.dimensions.height * DEFAULTS.PIXELS_TO_CM;
@@ -364,71 +381,41 @@ export function RoomSketchPro({
       const geometry = new THREE.PlaneGeometry(width, height);
       const mesh = new THREE.Mesh(geometry, material);
       const position = transform2DTo3D(entry.position);
+
+      // Adjust position for windows to be slightly in front of walls
+      if (entry.type === "window") {
+        // Use the wall normal to offset the window slightly from the wall
+        const offset = 2; // 2 units in front of the wall
+        position.x += wallNormalVector.x * offset;
+        position.y += wallNormalVector.y * offset;
+      }
+
       mesh.position.set(position.x, position.y, zPosition);
 
       // Apply Wall's Local Coordinate System approach for all air entries
-      // 1. Define the three axes of our local coordinate system
-      const forward = wallNormalVector.clone(); // Forward points in the direction of the wall normal
-      const up = new THREE.Vector3(0, 0, 1);    // Up is always the world up
-
-      // 2. Calculate the right vector to be perpendicular to both forward and up
+      const forward = wallNormalVector.clone();
+      const up = new THREE.Vector3(0, 0, 1);
       const right = new THREE.Vector3().crossVectors(up, forward).normalize();
-
-      // 3. Re-calculate forward to ensure perfect orthogonality 
       forward.crossVectors(right, up).normalize();
-
-      // 4. Create rotation matrix from the orthonormal basis
       const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
-
-      // 5. Apply the rotation to the mesh
       mesh.setRotationFromMatrix(rotationMatrix);
 
       // Add the mesh to the scene
       scene.add(mesh);
 
-      // Add a small marker at the air entry position for debugging
-      const markerGeometry = new THREE.SphereGeometry(3, 8, 8);
-      const markerMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-      const marker = new THREE.Mesh(markerGeometry, markerMaterial);
-      marker.position.copy(mesh.position);
-      scene.add(marker);
-
-      // Optional: Show coordinate system for debugging
-      const showDebugArrows = false; // Set to true to see coordinate systems
-      if (showDebugArrows) {
-        const arrowLength = 30;
-        const arrowPosition = mesh.position.clone();
-
-        const forwardArrow = new THREE.ArrowHelper(
-          forward,
-          arrowPosition,
-          arrowLength,
-          0x0000ff,
-          6,
-          3
-        );
-
-        const upArrow = new THREE.ArrowHelper(
-          up,
-          arrowPosition,
-          arrowLength,
-          0x00ff00,
-          6,
-          3
-        );
-
-        const rightArrow = new THREE.ArrowHelper(
-          right,
-          arrowPosition,
-          arrowLength,
-          0xff0000,
-          6,
-          3
-        );
-
-        scene.add(forwardArrow);
-        scene.add(upArrow);
-        scene.add(rightArrow);
+      // Optional: Add window frame for windows
+      if (entry.type === "window") {
+        // Create window frame
+        const frameGeometry = new THREE.BoxGeometry(width + 4, height + 4, 4);
+        const frameMaterial = new THREE.MeshPhongMaterial({
+          color: 0x4a5568,
+          metalness: 0.5,
+          roughness: 0.5
+        });
+        const frame = new THREE.Mesh(frameGeometry, frameMaterial);
+        frame.position.copy(mesh.position);
+        frame.setRotationFromMatrix(rotationMatrix);
+        scene.add(frame);
       }
     });
   };
