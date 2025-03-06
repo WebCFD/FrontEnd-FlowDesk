@@ -201,6 +201,8 @@ const roomUtils = {
   }
 };
 
+const transform2DTo3D = roomUtils.transform2DTo3D;
+
 export function RoomSketchPro({
   width,
   height,
@@ -313,20 +315,20 @@ export function RoomSketchPro({
         side: THREE.DoubleSide,
       });
 
-      const width = entry.dimensions.width;
-      const height = entry.dimensions.height;
+      const width = entry.dimensions.width * DEFAULTS.PIXELS_TO_CM;
+      const height = entry.dimensions.height * DEFAULTS.PIXELS_TO_CM;
 
-      // Calculate Z position based on entry type
+      // Calculate Z position based on entry type and convert to proper scale
       const zPosition =
         entry.type === "door"
-          ? height / 2
-          : entry.dimensions.distanceToFloor || 0;
+          ? height / 2  // Center the door vertically
+          : (entry.dimensions.distanceToFloor || 0) * DEFAULTS.PIXELS_TO_CM;
 
-      // Calculate wall direction and normal vectors using the same method as walls
+      // Calculate wall direction and normal vectors
       const wallDirection = new THREE.Vector3()
         .subVectors(
-          roomUtils.transform2DTo3D(entry.line.end),
-          roomUtils.transform2DTo3D(entry.line.start),
+          transform2DTo3D(entry.line.end),
+          transform2DTo3D(entry.line.start),
         )
         .normalize();
 
@@ -337,10 +339,10 @@ export function RoomSketchPro({
         .normalize();
 
       // Create and position the air entry
-      const geometry = new THREE.PlaneGeometry(width / 100, height / 100);
+      const geometry = new THREE.PlaneGeometry(width, height);
       const mesh = new THREE.Mesh(geometry, material);
-      const position = roomUtils.transform2DTo3D(entry.position);
-      mesh.position.set(position.x, position.y, zPosition / 100);
+      const position = transform2DTo3D(entry.position);
+      mesh.position.set(position.x, position.y, zPosition);
 
       // Apply Wall's Local Coordinate System approach for all air entries
       // 1. Define the three axes of our local coordinate system
@@ -362,13 +364,19 @@ export function RoomSketchPro({
       // Add the mesh to the scene
       scene.add(mesh);
 
-      // For debugging, add coordinate system indicators
-      const showDebugArrows = true;
+      // Add a small marker at the air entry position for debugging
+      const markerGeometry = new THREE.SphereGeometry(3, 8, 8);
+      const markerMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+      const marker = new THREE.Mesh(markerGeometry, markerMaterial);
+      marker.position.copy(mesh.position);
+      scene.add(marker);
+
+      // Optional: Show coordinate system for debugging
+      const showDebugArrows = false; // Set to true to see coordinate systems
       if (showDebugArrows) {
         const arrowLength = 30;
-        const arrowPosition = new THREE.Vector3(position.x, position.y, zPosition / 100);
+        const arrowPosition = mesh.position.clone();
 
-        // Forward arrow (blue) - shows normal direction
         const forwardArrow = new THREE.ArrowHelper(
           forward,
           arrowPosition,
@@ -378,7 +386,6 @@ export function RoomSketchPro({
           3
         );
 
-        // Up arrow (green) - shows height direction
         const upArrow = new THREE.ArrowHelper(
           up,
           arrowPosition,
@@ -388,7 +395,6 @@ export function RoomSketchPro({
           3
         );
 
-        // Right arrow (red) - shows width direction
         const rightArrow = new THREE.ArrowHelper(
           right,
           arrowPosition,
