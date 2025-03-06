@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 
 interface Point {
   x: number;
@@ -63,7 +63,7 @@ export function RoomSketchPro({
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const controlsRef = useRef<OrbitControls | null>(null);
+  const controlsRef = useRef<TrackballControls | null>(null);
 
   // Store camera position in localStorage with instance-specific key
   const saveCameraState = () => {
@@ -142,7 +142,6 @@ export function RoomSketchPro({
     });
   };
 
-  // Create air entries (doors, windows, vents)
   const createAirEntries = (scene: THREE.Scene) => {
     airEntries.forEach(entry => {
       const material = new THREE.MeshStandardMaterial({
@@ -189,25 +188,32 @@ export function RoomSketchPro({
     scene.background = new THREE.Color(0xf8fafc);
     sceneRef.current = scene;
 
-    // Initialize camera
-    const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-    camera.position.set(5, 5, 5);
+    // Initialize camera with perspective matching 2D view
+    const camera = new THREE.PerspectiveCamera(
+      45,
+      containerRef.current.clientWidth / height,
+      1,
+      10000,
+    );
+    camera.position.set(0, 0, 1000);
+    camera.lookAt(0, 0, 0);
     cameraRef.current = camera;
 
     // Initialize renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(width, height);
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.setSize(containerRef.current.clientWidth, height);
     containerRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // Add OrbitControls
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-    controls.minDistance = 3;
-    controls.maxDistance = 20;
+    // Initialize TrackballControls
+    const controls = new TrackballControls(camera, renderer.domElement);
+    controls.rotateSpeed = 2.0;
+    controls.zoomSpeed = 1.2;
+    controls.panSpeed = 0.8;
+    controls.noZoom = false;
+    controls.noPan = false;
+    controls.staticMoving = true;
+    controls.dynamicDampingFactor = 0.3;
     controlsRef.current = controls;
 
     // Load saved camera state
