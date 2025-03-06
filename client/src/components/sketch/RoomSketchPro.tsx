@@ -52,7 +52,7 @@ const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
   );
 };
 
-// Add createRoomPerimeter utility function after the transform2DTo3D function
+// Add createRoomPerimeter utility function
 const createRoomPerimeter = (lines: Line[]): Point[] => {
   if (lines.length === 0) return [];
 
@@ -199,21 +199,19 @@ export function RoomSketchPro({
       });
 
       const geometry = new THREE.BoxGeometry(
-        entry.dimensions.width / 100, // Convert cm to meters
+        entry.dimensions.width / 100,
         entry.dimensions.height / 100,
         0.1
       );
 
       const mesh = new THREE.Mesh(geometry, material);
 
-      // Position the air entry
       mesh.position.set(
         entry.position.x,
         (entry.dimensions.distanceToFloor || 0) / 100 + entry.dimensions.height / 200,
         entry.position.y
       );
 
-      // Calculate rotation based on the wall line
       const dx = entry.line.end.x - entry.line.start.x;
       const dy = entry.line.end.y - entry.line.start.y;
       mesh.rotation.y = Math.atan2(dy, dx);
