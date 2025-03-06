@@ -79,18 +79,34 @@ export function RoomSketchPro({
     });
 
     lines.forEach(line => {
+      // Log wall vectors for debugging
+      console.log('Wall vectors:', {
+        start: `(${line.start.x}, ${line.start.y})`,
+        end: `(${line.end.x}, ${line.end.y})`,
+        direction: new THREE.Vector3(
+          line.end.x - line.start.x,
+          0,
+          line.end.y - line.start.y
+        ).normalize().toArray().map(v => v.toFixed(4)).join(', '),
+        normal: new THREE.Vector3(
+          -(line.end.y - line.start.y),
+          0,
+          line.end.x - line.start.x
+        ).normalize().toArray().map(v => v.toFixed(4)).join(', ')
+      });
+
       const dx = line.end.x - line.start.x;
       const dy = line.end.y - line.start.y;
       const length = Math.sqrt(dx * dx + dy * dy);
       const angle = Math.atan2(dy, dx);
 
-      const wallGeometry = new THREE.BoxGeometry(length, wallHeight, wallThickness);
+      const wallGeometry = new THREE.BoxGeometry(length / 100, wallHeight, wallThickness);
       const wall = new THREE.Mesh(wallGeometry, wallMaterial);
 
       wall.position.set(
-        (line.start.x + line.end.x) / 2,
+        (line.start.x + line.end.x) / 200, // Convert to meters
         wallHeight / 2,
-        (line.start.y + line.end.y) / 2
+        (line.start.y + line.end.y) / 200  // Convert to meters
       );
       wall.rotation.y = angle;
       wall.castShadow = true;
