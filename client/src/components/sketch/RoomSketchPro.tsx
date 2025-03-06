@@ -52,7 +52,6 @@ const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
   );
 };
 
-// Add createRoomPerimeter utility function
 const createRoomPerimeter = (lines: Line[]): Point[] => {
   if (lines.length === 0) return [];
 
@@ -275,7 +274,6 @@ export function RoomSketchPro({
     // Add coordinate system axes with labels
     const axesHelper = new THREE.AxesHelper(200);
     scene.add(axesHelper);
-
 
     // Create floor and roof surfaces using the room perimeter
     const perimeterPoints = createRoomPerimeter(lines);
