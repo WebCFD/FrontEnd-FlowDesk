@@ -47,8 +47,8 @@ const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
 
   return new THREE.Vector3(
     relativeX * PIXELS_TO_CM,
-    height,
     relativeY * PIXELS_TO_CM,
+    height,
   );
 };
 
@@ -244,17 +244,9 @@ export function RoomSketchPro({
     scene.add(directionalLight);
 
     // Create floor with texture
-    const textureLoader = new THREE.TextureLoader();
-    const floorTexture = textureLoader.load('/textures/floor.jpg', () => {
-      floorTexture.wrapS = THREE.RepeatWrapping;
-      floorTexture.wrapT = THREE.RepeatWrapping;
-      floorTexture.repeat.set(4, 4);
-      renderer.render(scene, camera);
-    });
-
     const floorGeometry = new THREE.PlaneGeometry(GRID_SIZE, GRID_SIZE);
     const floorMaterial = new THREE.MeshStandardMaterial({ 
-      map: floorTexture,
+      color: 0x808080, // Simple gray color for the floor
       roughness: 0.8,
       metalness: 0.2
     });
