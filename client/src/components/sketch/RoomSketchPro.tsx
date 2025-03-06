@@ -52,9 +52,53 @@ const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
   );
 };
 
-export function RoomSketchPro({ 
-  width, 
-  height, 
+// Add createRoomPerimeter utility function after the transform2DTo3D function
+const createRoomPerimeter = (lines: Line[]): Point[] => {
+  if (lines.length === 0) return [];
+
+  const perimeter: Point[] = [];
+  const visited = new Set<string>();
+  const pointToString = (p: Point) => `${p.x},${p.y}`;
+
+  // Create a map of points to their connected lines
+  const connections = new Map<string, Point[]>();
+  lines.forEach((line) => {
+    const startKey = pointToString(line.start);
+    const endKey = pointToString(line.end);
+
+    if (!connections.has(startKey)) connections.set(startKey, []);
+    if (!connections.has(endKey)) connections.set(endKey, []);
+
+    connections.get(startKey)!.push(line.end);
+    connections.get(endKey)!.push(line.start);
+  });
+
+  // Start with the first point
+  const startPoint = lines[0].start;
+  perimeter.push(startPoint);
+  visited.add(pointToString(startPoint));
+
+  // Find connected points
+  let currentPoint = startPoint;
+  while (true) {
+    const connectedPoints = connections.get(pointToString(currentPoint)) || [];
+    const nextPoint = connectedPoints.find(
+      (p) => !visited.has(pointToString(p)),
+    );
+
+    if (!nextPoint) break;
+
+    perimeter.push(nextPoint);
+    visited.add(pointToString(nextPoint));
+    currentPoint = nextPoint;
+  }
+
+  return perimeter;
+};
+
+export function RoomSketchPro({
+  width,
+  height,
   instanceId = 'default',
   lines = [],
   airEntries = []
@@ -145,9 +189,9 @@ export function RoomSketchPro({
   const createAirEntries = (scene: THREE.Scene) => {
     airEntries.forEach(entry => {
       const material = new THREE.MeshStandardMaterial({
-        color: entry.type === 'door' ? 0x8b4513 : 
-               entry.type === 'window' ? 0x87ceeb : 
-               0x808080,
+        color: entry.type === 'door' ? 0x8b4513 :
+          entry.type === 'window' ? 0x87ceeb :
+            0x808080,
         roughness: 0.5,
         metalness: 0.2,
         transparent: entry.type === 'window',
@@ -243,20 +287,44 @@ export function RoomSketchPro({
     directionalLight.position.set(1, 1, 1);
     scene.add(directionalLight);
 
-    // Create floor with the same properties as Canvas3D
-    const floorGeometry = new THREE.PlaneGeometry(GRID_SIZE, GRID_SIZE);
-    const floorMaterial = new THREE.MeshStandardMaterial({ 
-      color: 0x808080, // Medium gray
-      opacity: 0.3,
-      transparent: true,
-      side: THREE.DoubleSide
-    });
-    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.rotation.x = -Math.PI / 2; // This ensures the floor lies flat on the XY plane
-    floor.position.set(0, 0, 0); // Position at origin
-    floor.receiveShadow = true;
-    scene.add(floor);
+    // Create floor and roof surfaces using the room perimeter
+    const perimeterPoints = createRoomPerimeter(lines);
+    if (perimeterPoints.length > 2) {
+      // Create shape from perimeter points
+      const shape = new THREE.Shape();
+      const firstPoint = transform2DTo3D(perimeterPoints[0]);
+      shape.moveTo(firstPoint.x, firstPoint.y);
 
+      for (let i = 1; i < perimeterPoints.length; i++) {
+        const point = transform2DTo3D(perimeterPoints[i]);
+        shape.lineTo(point.x, point.y);
+      }
+      shape.lineTo(firstPoint.x, firstPoint.y);
+
+      // Create floor geometry and mesh
+      const floorGeometry = new THREE.ShapeGeometry(shape);
+      const floorMaterial = new THREE.MeshPhongMaterial({
+        color: 0x808080, // Medium gray
+        opacity: 0.3,
+        transparent: true,
+        side: THREE.DoubleSide,
+      });
+      const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+      floor.position.set(0, 0, 0); // Place at Z=0
+      scene.add(floor);
+
+      // Create roof geometry and mesh
+      const roofGeometry = new THREE.ShapeGeometry(shape);
+      const roofMaterial = new THREE.MeshPhongMaterial({
+        color: 0xe0e0e0, // Light gray
+        opacity: 0.2,
+        transparent: true,
+        side: THREE.DoubleSide,
+      });
+      const roof = new THREE.Mesh(roofGeometry, roofMaterial);
+      roof.position.set(0, ROOM_HEIGHT, 0); // Place at Z=ROOM_HEIGHT
+      scene.add(roof);
+    }
 
     // Create walls and air entries
     createWalls(scene);
@@ -309,10 +377,10 @@ export function RoomSketchPro({
   }, [width, height, instanceId, lines, airEntries]);
 
   return (
-    <div 
-      ref={containerRef} 
-      style={{ 
-        width: '100%', 
+    <div
+      ref={containerRef}
+      style={{
+        width: '100%',
         height: '100%',
         position: 'relative',
         overflow: 'hidden',
