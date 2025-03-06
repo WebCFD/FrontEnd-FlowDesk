@@ -5,14 +5,39 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 interface RoomSketchProProps {
   width: number;
   height: number;
+  instanceId?: string; // Add unique identifier prop
 }
 
-export function RoomSketchPro({ width, height }: RoomSketchProProps) {
+export function RoomSketchPro({ width, height, instanceId = 'default' }: RoomSketchProProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
+
+  // Store camera position in localStorage with instance-specific key
+  const saveCameraState = () => {
+    if (cameraRef.current && controlsRef.current) {
+      const cameraState = {
+        position: cameraRef.current.position.toArray(),
+        target: controlsRef.current.target.toArray(),
+        zoom: cameraRef.current.zoom
+      };
+      localStorage.setItem(`roomSketchPro-camera-${instanceId}`, JSON.stringify(cameraState));
+    }
+  };
+
+  // Load camera position from localStorage
+  const loadCameraState = () => {
+    const savedState = localStorage.getItem(`roomSketchPro-camera-${instanceId}`);
+    if (savedState && cameraRef.current && controlsRef.current) {
+      const state = JSON.parse(savedState);
+      cameraRef.current.position.fromArray(state.position);
+      controlsRef.current.target.fromArray(state.target);
+      cameraRef.current.zoom = state.zoom;
+      cameraRef.current.updateProjectionMatrix();
+    }
+  };
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -42,6 +67,12 @@ export function RoomSketchPro({ width, height }: RoomSketchProProps) {
     controls.minDistance = 3;
     controls.maxDistance = 20;
     controlsRef.current = controls;
+
+    // Load saved camera state
+    loadCameraState();
+
+    // Add event listener for camera changes
+    controls.addEventListener('change', saveCameraState);
 
     // Add grid helper
     const size = 20;
@@ -109,6 +140,7 @@ export function RoomSketchPro({ width, height }: RoomSketchProProps) {
     // Cleanup
     return () => {
       window.removeEventListener('resize', handleResize);
+      controls.removeEventListener('change', saveCameraState);
 
       if (renderer && containerRef.current) {
         containerRef.current.removeChild(renderer.domElement);
@@ -124,7 +156,7 @@ export function RoomSketchPro({ width, height }: RoomSketchProProps) {
         }
       });
     };
-  }, [width, height]);
+  }, [width, height, instanceId]); // Add instanceId to dependencies
 
   return (
     <div 
