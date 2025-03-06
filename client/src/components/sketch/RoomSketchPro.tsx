@@ -257,22 +257,35 @@ export function RoomSketchPro({
   };
 
   // Wall creation
-  const createWalls = (scene: THREE.Scene) => {
-    // Create wall material with custom color
+  const createWalls = (scene: THREE.Scene, renderer: THREE.WebGLRenderer, camera: THREE.PerspectiveCamera) => {
+    // Create texture loader and load brick texture
+    const textureLoader = new THREE.TextureLoader();
+    const brickTexture = textureLoader.load(
+      'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/brick_diffuse.jpg',
+      (texture) => {
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set(2, 1); // Adjust the repeat scale for better visual
+        renderer.render(scene, camera);
+      }
+    );
+
+    // Create wall material with brick texture
     const wallMaterial = new THREE.MeshPhongMaterial({
-      color: wallColor,
-      opacity: 0.5,
+      map: brickTexture,
+      color: 0xffffff, // White to show texture properly
+      opacity: 0.8,
       transparent: true,
       side: THREE.DoubleSide,
     });
 
-    // Create walls from line segments
+    // Convert 2D lines to 3D walls using transformed coordinates
     lines.forEach((line) => {
       // Create vertices for wall corners
-      const start_bottom = roomUtils.transform2DTo3D(line.start);
-      const end_bottom = roomUtils.transform2DTo3D(line.end);
-      const start_top = roomUtils.transform2DTo3D(line.start, roomHeight);
-      const end_top = roomUtils.transform2DTo3D(line.end, roomHeight);
+      const start_bottom = transform2DTo3D(line.start);
+      const end_bottom = transform2DTo3D(line.end);
+      const start_top = transform2DTo3D(line.start, DEFAULTS.ROOM_HEIGHT);
+      const end_top = transform2DTo3D(line.end, DEFAULTS.ROOM_HEIGHT);
 
       // Create vertices array from points
       const vertices = new Float32Array([
@@ -285,9 +298,18 @@ export function RoomSketchPro({
       // Create faces indices (triangles)
       const indices = new Uint16Array([0, 1, 2, 1, 3, 2]);
 
+      // Create UV coordinates for proper texture mapping
+      const uvs = new Float32Array([
+        0, 0,  // bottom left
+        1, 0,  // bottom right
+        0, 1,  // top left
+        1, 1   // top right
+      ]);
+
       // Create the wall geometry
       const geometry = new THREE.BufferGeometry();
       geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+      geometry.setAttribute("uv", new THREE.BufferAttribute(uvs, 2));
       geometry.setIndex(new THREE.BufferAttribute(indices, 1));
       geometry.computeVertexNormals();
 
@@ -539,7 +561,7 @@ export function RoomSketchPro({
     scene.add(directionalLight);
 
     // Create walls and air entries
-    createWalls(scene);
+    createWalls(scene, renderer, camera);
     createAirEntries(scene);
 
     // Animation loop
