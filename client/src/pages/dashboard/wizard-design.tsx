@@ -339,6 +339,7 @@ export default function WizardDesign() {
                   lines={lines}
                   airEntries={airEntries}
                   height={600}
+                  instanceId="step1-preview"
                 />
               </div>
             </TabsContent>
@@ -367,6 +368,7 @@ export default function WizardDesign() {
             width={800} 
             height={600}
             key="step2-view"
+            instanceId="step2-view"
           />
         </div>
 
