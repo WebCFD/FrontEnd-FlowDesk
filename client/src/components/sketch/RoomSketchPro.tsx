@@ -326,30 +326,19 @@ export function RoomSketchPro({
       // Set color and material based on entry type
       let material;
       if (entry.type === "window") {
-        // Create texture loader and load window texture
-        const textureLoader = new THREE.TextureLoader();
-        const windowTexture = textureLoader.load(
-          'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/window.jpg',
-          (texture) => {
-            texture.wrapS = THREE.RepeatWrapping;
-            texture.wrapT = THREE.RepeatWrapping;
-            texture.repeat.set(1, 1); // One texture per window
-          }
-        );
-
+        // Create glass material with realistic properties
         material = new THREE.MeshPhysicalMaterial({
-          map: windowTexture,
-          color: 0xffffff, // White to show texture properly
+          color: 0xffffff,
           metalness: 0.1,
-          roughness: 0.1,
-          transmission: 0.8, // Glass transparency
-          thickness: 0.5, // Glass thickness
-          opacity: 0.9,
+          roughness: 0.05,
+          transmission: 0.95, // High transparency
+          thickness: 0.5,
+          opacity: 0.3,
           transparent: true,
           side: THREE.DoubleSide,
-          clearcoat: 1.0, // Reflective coating
+          clearcoat: 1.0,
           clearcoatRoughness: 0.1,
-          envMapIntensity: 1.0, // Enhance environment reflections
+          envMapIntensity: 1.5
         });
       } else if (entry.type === "door") {
         // Create texture loader and load door texture
@@ -402,64 +391,111 @@ export function RoomSketchPro({
         .crossVectors(wallDirection, worldUpVector)
         .normalize();
 
-      // Create and position the air entry
-      const geometry = new THREE.PlaneGeometry(width, height);
-      const mesh = new THREE.Mesh(geometry, material);
-      const position = transform2DTo3D(entry.position);
-
-      // Adjust position for windows to be slightly in front of walls
+      // For windows, create a more sophisticated structure
       if (entry.type === "window") {
-        // Use the wall normal to offset the window slightly from the wall
-        const offset = 2; // 2 units in front of the wall
-        position.x += wallNormalVector.x * offset;
-        position.y += wallNormalVector.y * offset;
-      }
+        const windowDepth = 8; // Total window depth
+        const frameThickness = 4; // Thickness of the frame
+        const glassOffset = 2; // Offset of glass from frame
+        const position = transform2DTo3D(entry.position);
 
-      mesh.position.set(position.x, position.y, zPosition);
+        // Adjust position to be slightly in front of the wall
+        position.x += wallNormalVector.x * windowDepth/2;
+        position.y += wallNormalVector.y * windowDepth/2;
 
-      // Apply Wall's Local Coordinate System approach for all air entries
-      const forward = wallNormalVector.clone();
-      const up = new THREE.Vector3(0, 0, 1);
-      const right = new THREE.Vector3().crossVectors(up, forward).normalize();
-      forward.crossVectors(right, up).normalize();
-      const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
-      mesh.setRotationFromMatrix(rotationMatrix);
+        // Create rotation matrix
+        const forward = wallNormalVector.clone();
+        const up = new THREE.Vector3(0, 0, 1);
+        const right = new THREE.Vector3().crossVectors(up, forward).normalize();
+        forward.crossVectors(right, up).normalize();
+        const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
 
-      // Add the mesh to the scene
-      scene.add(mesh);
-
-      // Add window frame for windows
-      if (entry.type === "window") {
-        // Create window frame
-        const frameGeometry = new THREE.BoxGeometry(width + 4, height + 4, 4);
-        const frameMaterial = new THREE.MeshPhongMaterial({
+        // Create outer frame
+        const outerFrameGeometry = new THREE.BoxGeometry(
+          width + frameThickness*2,
+          height + frameThickness*2,
+          windowDepth
+        );
+        const frameMaterial = new THREE.MeshPhysicalMaterial({
           color: 0x4a5568,
-          opacity: 1.0,
-          transparent: false,
-          side: THREE.DoubleSide,
+          metalness: 0.5,
+          roughness: 0.5,
+          envMapIntensity: 1.0
         });
-        const frame = new THREE.Mesh(frameGeometry, frameMaterial);
-        frame.position.copy(mesh.position);
-        frame.setRotationFromMatrix(rotationMatrix);
-        scene.add(frame);
+        const outerFrame = new THREE.Mesh(outerFrameGeometry, frameMaterial);
+        outerFrame.position.copy(position);
+        outerFrame.position.z = zPosition;
+        outerFrame.setRotationFromMatrix(rotationMatrix);
+        scene.add(outerFrame);
 
-        // Create window panes (cross pattern)
-        const paneThickness = 1;
-        const paneWidth = 2;
+        // Create glass panes (2x2 grid)
+        const paneWidth = width/2 - frameThickness;
+        const paneHeight = height/2 - frameThickness;
+        const panePositions = [
+          [-width/4, height/4],
+          [width/4, height/4],
+          [-width/4, -height/4],
+          [width/4, -height/4]
+        ];
 
-        // Horizontal pane
-        const horizontalPaneGeometry = new THREE.BoxGeometry(width, paneWidth, paneThickness);
-        const horizontalPane = new THREE.Mesh(horizontalPaneGeometry, frameMaterial);
-        horizontalPane.position.copy(mesh.position);
-        horizontalPane.setRotationFromMatrix(rotationMatrix);
-        scene.add(horizontalPane);
+        panePositions.forEach(([x, y]) => {
+          const paneGeometry = new THREE.BoxGeometry(paneWidth, paneHeight, 0.2);
+          const glassPane = new THREE.Mesh(paneGeometry, material);
+          const panePosition = position.clone();
 
-        // Vertical pane
-        const verticalPaneGeometry = new THREE.BoxGeometry(paneWidth, height, paneThickness);
-        const verticalPane = new THREE.Mesh(verticalPaneGeometry, frameMaterial);
-        verticalPane.position.copy(mesh.position);
-        verticalPane.setRotationFromMatrix(rotationMatrix);
-        scene.add(verticalPane);
+          // Position relative to window center
+          panePosition.x += right.x * x + forward.x * glassOffset;
+          panePosition.y += right.y * x + forward.y * glassOffset;
+          panePosition.z = zPosition + y;
+
+          glassPane.position.copy(panePosition);
+          glassPane.setRotationFromMatrix(rotationMatrix);
+          scene.add(glassPane);
+        });
+
+        // Create cross frame (vertical and horizontal dividers)
+        const dividerWidth = frameThickness;
+        const dividerDepth = windowDepth - 2;
+
+        // Horizontal divider
+        const horizontalDividerGeometry = new THREE.BoxGeometry(
+          width,
+          dividerWidth,
+          dividerDepth
+        );
+        const horizontalDivider = new THREE.Mesh(horizontalDividerGeometry, frameMaterial);
+        horizontalDivider.position.copy(position);
+        horizontalDivider.position.z = zPosition;
+        horizontalDivider.setRotationFromMatrix(rotationMatrix);
+        scene.add(horizontalDivider);
+
+        // Vertical divider
+        const verticalDividerGeometry = new THREE.BoxGeometry(
+          dividerWidth,
+          height,
+          dividerDepth
+        );
+        const verticalDivider = new THREE.Mesh(verticalDividerGeometry, frameMaterial);
+        verticalDivider.position.copy(position);
+        verticalDivider.position.z = zPosition;
+        verticalDivider.setRotationFromMatrix(rotationMatrix);
+        scene.add(verticalDivider);
+
+      } else {
+        // For doors and vents, keep the simple geometry
+        const geometry = new THREE.PlaneGeometry(width, height);
+        const mesh = new THREE.Mesh(geometry, material);
+        const position = transform2DTo3D(entry.position);
+        mesh.position.set(position.x, position.y, zPosition);
+
+        // Apply rotation
+        const forward = wallNormalVector.clone();
+        const up = new THREE.Vector3(0, 0, 1);
+        const right = new THREE.Vector3().crossVectors(up, forward).normalize();
+        forward.crossVectors(right, up).normalize();
+        const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
+        mesh.setRotationFromMatrix(rotationMatrix);
+
+        scene.add(mesh);
       }
     });
   };
