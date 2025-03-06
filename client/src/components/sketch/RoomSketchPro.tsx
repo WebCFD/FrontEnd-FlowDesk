@@ -47,8 +47,8 @@ const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
 
   return new THREE.Vector3(
     relativeX * PIXELS_TO_CM,
+    height,  // y coordinate is for height
     relativeY * PIXELS_TO_CM,
-    height,
   );
 };
 
@@ -245,14 +245,14 @@ export function RoomSketchPro({
 
     // Create floor with the same properties as Canvas3D
     const floorGeometry = new THREE.PlaneGeometry(GRID_SIZE, GRID_SIZE);
-    const floorMaterial = new THREE.MeshStandardMaterial({ 
+    const floorMaterial = new THREE.MeshPhongMaterial({ 
       color: 0x808080, // Medium gray
       opacity: 0.3,
       transparent: true,
       side: THREE.DoubleSide
     });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.rotation.x = -Math.PI / 2; // This ensures the floor lies flat on the XY plane
+    floor.rotation.x = -Math.PI / 2; // Rotate to lie flat
     floor.position.set(0, 0, 0); // Position at origin
     floor.receiveShadow = true;
     scene.add(floor);
