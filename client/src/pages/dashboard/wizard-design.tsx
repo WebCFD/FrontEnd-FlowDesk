@@ -369,6 +369,8 @@ export default function WizardDesign() {
             height={600}
             key="step2-view"
             instanceId="step2-view"
+            lines={lines}
+            airEntries={airEntries}
           />
         </div>
 
