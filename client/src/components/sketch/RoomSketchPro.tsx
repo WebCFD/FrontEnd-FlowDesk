@@ -299,46 +299,109 @@ export function RoomSketchPro({
   // Air entries creation (doors, windows, vents)
   const createAirEntries = (scene: THREE.Scene) => {
     airEntries.forEach(entry => {
-      // Choose material based on entry type
-      const material = new THREE.MeshStandardMaterial({
-        color: entry.type === 'door' ? 0x8b4513 :
-          entry.type === 'window' ? 0x87ceeb :
-            0x808080,
-        roughness: 0.5,
-        metalness: 0.2,
-        transparent: entry.type === 'window',
-        opacity: entry.type === 'window' ? 0.6 : 1
+      // Set color based on entry type
+      const color =
+        entry.type === "window"
+          ? 0x3b82f6
+          : entry.type === "door"
+            ? 0xb45309
+            : 0x22c55e;
+      const material = new THREE.MeshPhongMaterial({
+        color,
+        opacity: 0.6,
+        transparent: true,
+        side: THREE.DoubleSide,
       });
 
-      // Create geometry
-      const geometry = new THREE.BoxGeometry(
-        entry.dimensions.width / 100,
-        entry.dimensions.height / 100,
-        0.1
-      );
+      const width = entry.dimensions.width;
+      const height = entry.dimensions.height;
 
-      // Create mesh
+      // Calculate Z position based on entry type
+      const zPosition =
+        entry.type === "door"
+          ? height / 2
+          : entry.dimensions.distanceToFloor || 0;
+
+      // Calculate wall direction and normal vectors using the same method as walls
+      const wallDirection = new THREE.Vector3()
+        .subVectors(
+          roomUtils.transform2DTo3D(entry.line.end),
+          roomUtils.transform2DTo3D(entry.line.start),
+        )
+        .normalize();
+
+      // Calculate proper wall normal using cross product
+      const worldUpVector = new THREE.Vector3(0, 0, 1);
+      const wallNormalVector = new THREE.Vector3()
+        .crossVectors(wallDirection, worldUpVector)
+        .normalize();
+
+      // Create and position the air entry
+      const geometry = new THREE.PlaneGeometry(width / 100, height / 100);
       const mesh = new THREE.Mesh(geometry, material);
-      mesh.name = `air-entry-${entry.type}`;
+      const position = roomUtils.transform2DTo3D(entry.position);
+      mesh.position.set(position.x, position.y, zPosition / 100);
 
-      // Position and rotate based on line
-      const entryPos = roomUtils.transform2DTo3D(entry.position);
-      const distanceToFloor = (entry.dimensions.distanceToFloor || 0) / 100;
+      // Apply Wall's Local Coordinate System approach for all air entries
+      // 1. Define the three axes of our local coordinate system
+      const forward = wallNormalVector.clone(); // Forward points in the direction of the wall normal
+      const up = new THREE.Vector3(0, 0, 1);    // Up is always the world up
 
-      mesh.position.set(
-        entryPos.x,
-        entryPos.y,
-        distanceToFloor + entry.dimensions.height / 200
-      );
+      // 2. Calculate the right vector to be perpendicular to both forward and up
+      const right = new THREE.Vector3().crossVectors(up, forward).normalize();
 
-      // Rotate to match wall orientation
-      const angle = roomUtils.getAngleBetweenPoints(entry.line.start, entry.line.end);
-      mesh.rotation.z = angle; // For XY plane, use Z rotation
+      // 3. Re-calculate forward to ensure perfect orthogonality 
+      forward.crossVectors(right, up).normalize();
 
-      // Add shadows
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
+      // 4. Create rotation matrix from the orthonormal basis
+      const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
+
+      // 5. Apply the rotation to the mesh
+      mesh.setRotationFromMatrix(rotationMatrix);
+
+      // Add the mesh to the scene
       scene.add(mesh);
+
+      // For debugging, add coordinate system indicators
+      const showDebugArrows = true;
+      if (showDebugArrows) {
+        const arrowLength = 30;
+        const arrowPosition = new THREE.Vector3(position.x, position.y, zPosition / 100);
+
+        // Forward arrow (blue) - shows normal direction
+        const forwardArrow = new THREE.ArrowHelper(
+          forward,
+          arrowPosition,
+          arrowLength,
+          0x0000ff,
+          6,
+          3
+        );
+
+        // Up arrow (green) - shows height direction
+        const upArrow = new THREE.ArrowHelper(
+          up,
+          arrowPosition,
+          arrowLength,
+          0x00ff00,
+          6,
+          3
+        );
+
+        // Right arrow (red) - shows width direction
+        const rightArrow = new THREE.ArrowHelper(
+          right,
+          arrowPosition,
+          arrowLength,
+          0xff0000,
+          6,
+          3
+        );
+
+        scene.add(forwardArrow);
+        scene.add(upArrow);
+        scene.add(rightArrow);
+      }
     });
   };
 
