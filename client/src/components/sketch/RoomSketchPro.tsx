@@ -224,21 +224,26 @@ export function RoomSketchPro({
 
     // Add grid helper
     const gridHelper = new THREE.GridHelper(GRID_SIZE, GRID_DIVISIONS, 0x94a3b8, 0xe2e8f0);
+    gridHelper.position.set(0, 0, 0); // Position at origin
+    gridHelper.rotation.x = -Math.PI / 2; // Rotate to lie flat on XY plane
+    gridHelper.material.opacity = 0.2;
+    gridHelper.material.transparent = true;
     scene.add(gridHelper);
 
+    // Add coordinate system axes with labels
+    const axesHelper = new THREE.AxesHelper(200);
+    scene.add(axesHelper);
+
     // Add ambient light
-    const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(ambientLight);
 
-    // Add directional light with shadows
+    // Add directional light
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(5, 5, 5);
-    directionalLight.castShadow = true;
-    directionalLight.shadow.mapSize.width = 1024;
-    directionalLight.shadow.mapSize.height = 1024;
+    directionalLight.position.set(1, 1, 1);
     scene.add(directionalLight);
 
-    // Add ground plane with texture
+    // Create floor with texture
     const textureLoader = new THREE.TextureLoader();
     const floorTexture = textureLoader.load('/textures/floor.jpg', () => {
       floorTexture.wrapS = THREE.RepeatWrapping;
@@ -254,9 +259,11 @@ export function RoomSketchPro({
       metalness: 0.2
     });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.rotation.x = -Math.PI / 2;
+    floor.rotation.x = -Math.PI / 2; // This ensures the floor lies flat on the XY plane
+    floor.position.set(0, 0, 0); // Position at origin
     floor.receiveShadow = true;
     scene.add(floor);
+
 
     // Create walls and air entries
     createWalls(scene);
