@@ -392,7 +392,132 @@ export function RoomSketchPro({
         createDetailedWindow(entry, frameMaterial, glassMaterial, scene);
         return; // Skip the default creation for windows
       } else if (entry.type === "door") {
-        material = doorMaterial;
+        // Create texture loader and load wood texture
+        const textureLoader = new THREE.TextureLoader();
+        const woodTexture = textureLoader.load(
+          'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/hardwood2_diffuse.jpg',
+          (texture) => {
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat.set(1, 2); // Adjust for door proportions
+          }
+        );
+
+        const doorGroup = new THREE.Group();
+        const doorDepth = 6; // Door thickness
+        const frameThickness = 5; // Frame thickness
+        const frameDepth = 8; // Frame depth
+
+        // Create door frame material
+        const frameMaterial = new THREE.MeshPhysicalMaterial({
+          color: 0x8b4513,
+          metalness: 0.2,
+          roughness: 0.8,
+        });
+
+        // Create door panel material
+        const doorMaterial = new THREE.MeshPhysicalMaterial({
+          map: woodTexture,
+          color: 0xffffff,
+          metalness: 0.1,
+          roughness: 0.6,
+          side: THREE.DoubleSide,
+        });
+
+        // Door panel
+        const doorGeometry = new THREE.BoxGeometry(width - frameThickness, height - frameThickness, doorDepth);
+        const doorPanel = new THREE.Mesh(doorGeometry, doorMaterial);
+
+        // Create frame parts
+        // Top frame
+        const topFrame = new THREE.Mesh(
+          new THREE.BoxGeometry(width + frameThickness, frameThickness, frameDepth),
+          frameMaterial
+        );
+        topFrame.position.y = height / 2;
+
+        // Bottom frame
+        const bottomFrame = new THREE.Mesh(
+          new THREE.BoxGeometry(width + frameThickness, frameThickness, frameDepth),
+          frameMaterial
+        );
+        bottomFrame.position.y = -height / 2;
+
+        // Left frame
+        const leftFrame = new THREE.Mesh(
+          new THREE.BoxGeometry(frameThickness, height + frameThickness, frameDepth),
+          frameMaterial
+        );
+        leftFrame.position.x = -width / 2;
+
+        // Right frame
+        const rightFrame = new THREE.Mesh(
+          new THREE.BoxGeometry(frameThickness, height + frameThickness, frameDepth),
+          frameMaterial
+        );
+        rightFrame.position.x = width / 2;
+
+        // Door handle
+        const handleMaterial = new THREE.MeshPhysicalMaterial({
+          color: 0xc0c0c0,
+          metalness: 0.9,
+          roughness: 0.2,
+        });
+
+        // Handle base
+        const handleBaseGeometry = new THREE.CylinderGeometry(2, 2, 12, 16);
+        const handleBase = new THREE.Mesh(handleBaseGeometry, handleMaterial);
+        handleBase.rotation.z = Math.PI / 2;
+        handleBase.position.set(width / 3, 0, doorDepth / 2 + 2);
+
+        // Handle grip
+        const handleGripGeometry = new THREE.CylinderGeometry(1, 1, 15, 16);
+        const handleGrip = new THREE.Mesh(handleGripGeometry, handleMaterial);
+        handleGrip.position.set(width / 3, -5, doorDepth / 2 + 4);
+
+        // Create hinges
+        const hingeGeometry = new THREE.BoxGeometry(2, 8, 2);
+        const hingeMaterial = new THREE.MeshPhysicalMaterial({
+          color: 0x808080,
+          metalness: 0.8,
+          roughness: 0.2,
+        });
+
+        // Add hinges
+        const topHinge = new THREE.Mesh(hingeGeometry, hingeMaterial);
+        topHinge.position.set(-width / 2 + 1, height / 3, 0);
+
+        const bottomHinge = new THREE.Mesh(hingeGeometry, hingeMaterial);
+        bottomHinge.position.set(-width / 2 + 1, -height / 3, 0);
+
+        // Add all parts to door group
+        doorGroup.add(doorPanel);
+        doorGroup.add(topFrame);
+        doorGroup.add(bottomFrame);
+        doorGroup.add(leftFrame);
+        doorGroup.add(rightFrame);
+        doorGroup.add(handleBase);
+        doorGroup.add(handleGrip);
+        doorGroup.add(topHinge);
+        doorGroup.add(bottomHinge);
+
+        // Position and rotate the door group
+        const position = transform2DTo3D(entry.position);
+        doorGroup.position.set(position.x, position.y, zPosition);
+
+        // Apply Wall's Local Coordinate System approach
+        const forward = wallNormalVector.clone();
+        const up = new THREE.Vector3(0, 0, 1);
+        const right = new THREE.Vector3().crossVectors(up, forward).normalize();
+        forward.crossVectors(right, up).normalize();
+        const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
+        doorGroup.setRotationFromMatrix(rotationMatrix);
+
+        // Offset slightly to prevent z-fighting with wall
+        doorGroup.position.x += wallNormalVector.x * frameDepth / 2;
+        doorGroup.position.y += wallNormalVector.y * frameDepth / 2;
+
+        scene.add(doorGroup);
       } else { // vent
         material = ventMaterial;
       }
