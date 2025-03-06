@@ -533,20 +533,39 @@ export function RoomSketchPro({
         scene.add(doorGroup);
         return; // Skip the default creation for doors
       } else { // vent
+        // Calculate dimensions first to avoid scoping issues
+        const ventWidth = entry.dimensions.width * DEFAULTS.PIXELS_TO_CM;
+        const ventHeight = entry.dimensions.height * DEFAULTS.PIXELS_TO_CM;
+        const ventDepth = 12; // Total vent depth in cm
+        const frameThickness = 2;
+        const mullionThickness = frameThickness * 0.7;
+        const gridSpacing = 5; // Space between grid bars
+        const position = transform2DTo3D(entry.position);
+        const ventZPosition = (entry.dimensions.distanceToFloor || 0) * DEFAULTS.PIXELS_TO_CM;
+
+        // Calculate wall direction and normal vectors
+        const wallDirection = new THREE.Vector3()
+          .subVectors(
+            transform2DTo3D(entry.line.end),
+            transform2DTo3D(entry.line.start)
+          )
+          .normalize();
+
+        // Calculate proper wall normal using cross product
+        const worldUpVector = new THREE.Vector3(0, 0, 1);
+        const wallNormalVector = new THREE.Vector3()
+          .crossVectors(wallDirection, worldUpVector)
+          .normalize();
+
         // Create vent group
         const ventGroup = new THREE.Group();
 
-        // Vent dimensions
-        const ventDepth = 2;
-        const frameThickness = 2;
-        const gridSpacing = 5; // Space between grid bars
-
         // Create metallic materials
         const ventFrameMaterial = new THREE.MeshPhysicalMaterial({
-          color: "#a1a1aa",
-          metalness: 0.8,
-          roughness: 0.2,
-          side: THREE.DoubleSide,
+          color: "#4a5568",
+          metalness: 0.5,
+          roughness: 0.5,
+          envMapIntensity: 1.0
         });
 
         const ventGridMaterial = new THREE.MeshPhysicalMaterial({
@@ -557,35 +576,74 @@ export function RoomSketchPro({
         });
 
         // Create main vent frame
-        const frameGeometry = new THREE.BoxGeometry(width, height, ventDepth);
+        const frameGeometry = new THREE.BoxGeometry(ventWidth + frameThickness * 2, ventHeight + frameThickness * 2, ventDepth);
         const frame = new THREE.Mesh(frameGeometry, ventFrameMaterial);
+        ventGroup.add(frame);
 
         // Create horizontal grid bars
-        const numHorizontalBars = Math.floor(height / gridSpacing) - 1;
+        const numHorizontalBars = Math.floor(ventHeight / gridSpacing) - 1;
         for (let i = 0; i < numHorizontalBars; i++) {
-          const y = -height / 2 + (i + 1) * gridSpacing;
-          const barGeometry = new THREE.BoxGeometry(width - frameThickness * 2, 1, ventDepth / 2);
+          const y = -ventHeight / 2 + (i + 1) * gridSpacing;
+          const barGeometry = new THREE.BoxGeometry(ventWidth - frameThickness * 2, 1, ventDepth / 2);
           const bar = new THREE.Mesh(barGeometry, ventGridMaterial);
           bar.position.set(0, y, ventDepth / 4);
           ventGroup.add(bar);
         }
 
         // Create vertical grid bars
-        const numVerticalBars = Math.floor(width / gridSpacing) - 1;
+        const numVerticalBars = Math.floor(ventWidth / gridSpacing) - 1;
         for (let i = 0; i < numVerticalBars; i++) {
-          const x = -width / 2 + (i + 1) * gridSpacing;
-          const barGeometry = new THREE.BoxGeometry(1, height - frameThickness * 2, ventDepth / 2);
+          const x = -ventWidth / 2 + (i + 1) * gridSpacing;
+          const barGeometry = new THREE.BoxGeometry(1, ventHeight - frameThickness * 2, ventDepth / 2);
           const bar = new THREE.Mesh(barGeometry, ventGridMaterial);
           bar.position.set(x, 0, ventDepth / 4);
           ventGroup.add(bar);
         }
 
-        // Add frame to group
-        ventGroup.add(frame);
+
+        // Create glass panes - four panes due to the cross pattern
+        const paneWidth = ventWidth / 2 - mullionThickness / 2;
+        const paneHeight = ventHeight / 2 - mullionThickness / 2;
+        const glassInset = ventDepth * 0.2; // Inset glass from front of frame
+
+        // Define the positions for the four panes (top-left, top-right, bottom-left, bottom-right)
+        const panePositions = [
+          [-ventWidth / 4, ventHeight / 4, -glassInset],
+          [ventWidth / 4, ventHeight / 4, -glassInset],
+          [-ventWidth / 4, -ventHeight / 4, -glassInset],
+          [ventWidth / 4, -ventHeight / 4, -glassInset]
+        ];
+
+        // Create the glass panes
+        panePositions.forEach((pos) => {
+          // Create subtle variation in each pane
+          const paneVariation = 0.02; // Small random variation
+          const paneOpacity = 0.9 - Math.random() * 0.1; // Slight opacity variation
+
+          // Clone the glass material to make variations
+          const paneGlassMaterial = (glassMaterial as THREE.MeshPhysicalMaterial).clone();
+          paneGlassMaterial.opacity = paneOpacity;
+
+          // Add subtle imperfections to glass with different transmission values
+          paneGlassMaterial.transmission = 0.92 + Math.random() * 0.06;
+
+          // Create glass pane with slight thickness
+          const glassPane = new THREE.Mesh(
+            new THREE.BoxGeometry(
+              paneWidth - frameThickness * paneVariation,
+              paneHeight - frameThickness * paneVariation,
+              0.4 // Very thin glass
+            ),
+            paneGlassMaterial
+          );
+
+          glassPane.position.set(pos[0], pos[1], pos[2]);
+          ventGroup.add(glassPane);
+        });
+
 
         // Position and rotate the vent group
-        const position = transform2DTo3D(entry.position);
-        ventGroup.position.set(position.x, position.y, zPosition);
+        ventGroup.position.set(position.x, position.y, ventZPosition);
 
         // Apply Wall's Local Coordinate System approach
         const forward = wallNormalVector.clone();
@@ -806,7 +864,7 @@ export function RoomSketchPro({
     windowGroup.add(handleBase);
 
     // Create the handle lever
-    const handleLeverGeometry = new THREE.CylinderGeometry(frameThickness * 0.3,frameThickness * 0.3, frameThickness * 3, 16);
+    const handleLeverGeometry = new THREE.CylinderGeometry(frameThickness * 0.3, frameThickness * 0.3, frameThickness * 3, 16);
     const handleLever = new THREE.Mesh(handleLeverGeometry, handleBaseMaterial);
     handleLever.rotation.set(0, 0, Math.PI / 2);
     handleLever.position.set(width / 4, -frameThickness * 1.5, -frameDepth / 2 - frameThickness * 0.5);
