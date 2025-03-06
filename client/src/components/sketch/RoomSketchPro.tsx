@@ -276,14 +276,6 @@ export function RoomSketchPro({
     const axesHelper = new THREE.AxesHelper(200);
     scene.add(axesHelper);
 
-    // Add ambient light
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-    scene.add(ambientLight);
-
-    // Add directional light
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(1, 1, 1);
-    scene.add(directionalLight);
 
     // Create floor and roof surfaces using the room perimeter
     const perimeterPoints = createRoomPerimeter(lines);
@@ -323,6 +315,15 @@ export function RoomSketchPro({
       roof.position.set(0, ROOM_HEIGHT, 0); // Place at Z=ROOM_HEIGHT
       scene.add(roof);
     }
+
+    // Add ambient light
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(ambientLight);
+
+    // Add directional light
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(1, 1, 1);
+    scene.add(directionalLight);
 
     // Create walls and air entries
     createWalls(scene);
