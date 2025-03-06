@@ -243,12 +243,13 @@ export function RoomSketchPro({
     directionalLight.position.set(1, 1, 1);
     scene.add(directionalLight);
 
-    // Create floor with texture
+    // Create floor with the same properties as Canvas3D
     const floorGeometry = new THREE.PlaneGeometry(GRID_SIZE, GRID_SIZE);
     const floorMaterial = new THREE.MeshStandardMaterial({ 
-      color: 0x808080, // Simple gray color for the floor
-      roughness: 0.8,
-      metalness: 0.2
+      color: 0x808080, // Medium gray
+      opacity: 0.3,
+      transparent: true,
+      side: THREE.DoubleSide
     });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2; // This ensures the floor lies flat on the XY plane
