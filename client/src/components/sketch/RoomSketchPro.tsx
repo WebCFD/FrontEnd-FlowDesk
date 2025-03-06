@@ -435,11 +435,13 @@ export function RoomSketchPro({
     containerRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // Initialize controls
+    // Initialize TrackballControls
     const controls = new TrackballControls(camera, renderer.domElement);
     controls.rotateSpeed = 2.0;
     controls.zoomSpeed = 1.2;
     controls.panSpeed = 0.8;
+    controls.noZoom = false;
+    controls.noPan = false;
     controls.staticMoving = true;
     controls.dynamicDampingFactor = 0.3;
     controlsRef.current = controls;
@@ -450,37 +452,24 @@ export function RoomSketchPro({
     // Add event listener for camera changes
     controls.addEventListener('change', saveCameraState);
 
-    // Add grid helper (initially in XZ plane, rotate to XY plane)
-    const gridHelper = new THREE.GridHelper(DEFAULTS.GRID_SIZE, DEFAULTS.GRID_DIVISIONS, 0x94a3b8, 0xe2e8f0);
-    gridHelper.position.set(0, 0, 0);
-    gridHelper.rotation.x = Math.PI / 2; // Rotate grid to lie in XY plane
-    gridHelper.material.opacity = 0.2;
-    gridHelper.material.transparent = true;
-    scene.add(gridHelper);
-
-    // Add coordinate axes
+    // Add coordinate system axes with labels
     const axesHelper = new THREE.AxesHelper(200);
     scene.add(axesHelper);
 
-    // Add lighting
+    // Create floor and roof surfaces using the room perimeter
+    createFloorAndRoof(scene, renderer, camera);
+
+
+    // Add ambient light
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(ambientLight);
 
+    // Add directional light
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(500, 500, 500);
-    directionalLight.castShadow = true;
-
-    // Configure shadow properties
-    directionalLight.shadow.mapSize.width = 2048;
-    directionalLight.shadow.mapSize.height = 2048;
-    directionalLight.shadow.camera.near = 0.5;
-    directionalLight.shadow.camera.far = 2000;
-    directionalLight.shadow.bias = -0.0001;
-
+    directionalLight.position.set(1, 1, 1);
     scene.add(directionalLight);
 
-    // Create scene components
-    createFloorAndRoof(scene, renderer, camera);
+    // Create walls and air entries
     createWalls(scene);
     createAirEntries(scene);
 
