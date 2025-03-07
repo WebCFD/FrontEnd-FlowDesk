@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { TrackballControls } from "three/addons/controls/TrackballControls.js";
+import { makeTextSprite } from "@/lib/three-utils";
 
 interface Point {
   x: number;
@@ -434,7 +435,7 @@ export default function Canvas3D({
       // 2. Calculate the right vector to be perpendicular to both forward and up
       const right = new THREE.Vector3().crossVectors(up, forward).normalize();
 
-      // 3. Re-calculate forward to ensure perfect orthogonality 
+      // 3. Re-calculate forward to ensure perfect orthogonality
       // (this step ensures forward is exactly perpendicular to both up and right)
       forward.crossVectors(right, up).normalize();
 
@@ -455,7 +456,7 @@ export default function Canvas3D({
         right: `(${right.x.toFixed(4)}, ${right.y.toFixed(4)}, ${right.z.toFixed(4)})`
       });
 
-      // Add helper arrows only in debug mode
+      // Add debug arrows only in debug mode
       const showDebugArrows = true; // Set to false to hide coordinate system arrows
 
       if (showDebugArrows) {
@@ -504,10 +505,10 @@ export default function Canvas3D({
         marker.position.copy(arrowPosition);
         sceneRef.current?.add(marker);
 
-        // Add coordinate label for debugging (Canvas3D version)
-        console.log(`Canvas3D: Adding coordinate marker for ${entry.type} at:`, {
-          position: `(${arrowPosition.x.toFixed(1)}, ${arrowPosition.y.toFixed(1)}, ${arrowPosition.z.toFixed(1)})`
-        });
+        // Add coordinate label for debugging
+        const coordText = `(${arrowPosition.x.toFixed(1)}, ${arrowPosition.y.toFixed(1)}, ${arrowPosition.z.toFixed(1)}) cm`;
+        const label = makeTextSprite(coordText, arrowPosition);
+        sceneRef.current?.add(label);
       }
 
       // Original debug arrow for wall normal (black)
