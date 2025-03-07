@@ -891,9 +891,7 @@ export function RoomSketchPro({
         });
 
         // Positionand rotate the vent group
-        ventGroup.position.set(position.x, position.y, ventZPosition);
-
-        // Apply Wall's Local Coordinate System approach
+        ventGroup.position.set(position.x, position.y, ventZPosition);// Apply Wall's Local Coordinate System approach
         const forward = wallNormalVector.clone();
         const up = new THREE.Vector3(0, 0, 1);
         const right = new THREE.Vector3().crossVectors(up, forward).normalize();
@@ -1474,11 +1472,8 @@ export function RoomSketchPro({
     }
   }, [wallTransparency]);
 
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
-    e.dataTransfer!.setData("application/json", JSON.stringify({
-      id: e.target.id,
-      name: e.target.getAttribute('data-name')
-    }));
+  const handleDragStart = (item: any) => {
+    console.log("Drag started:", item);
   };
 
   return (
