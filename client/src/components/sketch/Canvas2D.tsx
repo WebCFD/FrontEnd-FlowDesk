@@ -504,7 +504,7 @@ export default function Canvas2D({
       ctx.scale(zoom, zoom);
 
       ctx.beginPath();
-      ctx.strokeStyle = '#64748b'; 
+      ctx.strokeStyle = '#64748b';
       ctx.lineWidth = 1 / zoom;
       createGridLines().forEach(line => {
         ctx.moveTo(line.start.x, line.start.y);
@@ -515,7 +515,7 @@ export default function Canvas2D({
       const gridPoints = getGridPoints();
       gridPoints.forEach(point => {
         ctx.beginPath();
-        ctx.fillStyle = '#e2e8f0'; 
+        ctx.fillStyle = '#e2e8f0';
         ctx.arc(
           point.x,
           point.y,
@@ -528,10 +528,10 @@ export default function Canvas2D({
         if (hoveredGridPoint &&
           point.x === hoveredGridPoint.x &&
           point.y === hoveredGridPoint.y &&
-          !isDrawing) {  
+          !isDrawing) {
           const coords = getRelativeCoordinates(point);
           ctx.font = `${12 / zoom}px sans-serif`;
-          ctx.fillStyle = '#000000'; 
+          ctx.fillStyle = '#000000';
           ctx.textAlign = 'left';
           ctx.fillText(
             `(${coords.x}, ${coords.y})`,
@@ -700,21 +700,48 @@ export default function Canvas2D({
       }
     };
 
+    // Animation loop with performance optimization
+    let lastFrameTime = 0;
+    const targetFPS = 30; // Limit to 30 FPS to reduce CPU usage
+    const frameInterval = 1000 / targetFPS;
+
+    const animate = (currentTime: number) => {
+      const deltaTime = currentTime - lastFrameTime;
+
+      if (deltaTime > frameInterval) {
+        lastFrameTime = currentTime - (deltaTime % frameInterval);
+        draw();
+      }
+
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    let animationFrameId = requestAnimationFrame(animate);
+
+    // Add throttling to mouse move events
+    let mouseMoveThrottleTimer: number | null = null;
+    const throttleMouseMove = (e: MouseEvent) => {
+      if (!mouseMoveThrottleTimer) {
+        mouseMoveThrottleTimer = window.setTimeout(() => {
+          handleMouseMove(e);
+          mouseMoveThrottleTimer = null;
+        }, 16); // ~60fps throttle
+      }
+    };
+
     canvas.addEventListener('mousedown', handleMouseDown);
-    canvas.addEventListener('mousemove', handleMouseMove);
+    canvas.addEventListener('mousemove', throttleMouseMove);
     canvas.addEventListener('mouseup', handleMouseUp);
     canvas.addEventListener('mouseleave', handleMouseLeave);
     canvas.addEventListener('wheel', handleWheel);
     canvas.addEventListener('contextmenu', e => e.preventDefault());
 
-    let animationFrameId = requestAnimationFrame(function animate() {
-      draw();
-      animationFrameId = requestAnimationFrame(animate);
-    });
-
     return () => {
+      if (mouseMoveThrottleTimer) {
+        clearTimeout(mouseMoveThrottleTimer);
+      }
       canvas.removeEventListener('mousedown', handleMouseDown);
-      canvas.removeEventListener('mousemove', handleMouseMove);
+      canvas.removeEventListener('mousemove', throttleMouseMove);
       canvas.removeEventListener('mouseup', handleMouseUp);
       canvas.removeEventListener('mouseleave', handleMouseLeave);
       canvas.removeEventListener('wheel', handleWheel);
