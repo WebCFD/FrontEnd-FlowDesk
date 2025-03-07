@@ -1,34 +1,37 @@
-import { useEffect, useRef, useMemo } from 'react';
-import * as THREE from 'three';
-import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
+import { useEffect, useRef, useMemo } from "react";
+import * as THREE from "three";
+import { TrackballControls } from "three/addons/controls/TrackballControls.js";
 
 // Utility function to create text sprites
-const makeTextSprite = (message: string, position: THREE.Vector3): THREE.Sprite => {
-  const canvas = document.createElement('canvas');
-  const context = canvas.getContext('2d');
+const makeTextSprite = (
+  message: string,
+  position: THREE.Vector3,
+): THREE.Sprite => {
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
   if (!context) return new THREE.Sprite();
 
   canvas.width = 256;
   canvas.height = 128;
 
   context.font = "24px Arial";
-  context.fillStyle = "rgba(255,255,255,0.95)";
+  //context.fillStyle = "rgba(255,255,255,0.95)";
   context.fillRect(0, 0, canvas.width, canvas.height);
-  context.fillStyle = "black";
+  //context.fillStyle = "black";
+  context.fillStyle = "white"; // White text
   context.textAlign = "center";
-  context.fillText(message, canvas.width/2, canvas.height/2);
+  context.fillText(message, canvas.width / 2, canvas.height / 2);
 
   const texture = new THREE.CanvasTexture(canvas);
   const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
   const sprite = new THREE.Sprite(spriteMaterial);
 
   sprite.position.copy(position);
-  sprite.position.y += 20; // Offset above the point
-  sprite.scale.set(50, 25, 1);
-
+  //sprite.position.y += 20; // Offset above the point
+  sprite.scale.set(75, 35, 1); // Larger sprite
+  sprite.renderOrder = 999; // Ensure it's drawn on top
   return sprite;
 };
-
 
 // Types
 interface Point {
@@ -42,7 +45,7 @@ interface Line {
 }
 
 interface AirEntry {
-  type: 'vent' | 'door' | 'window';
+  type: "vent" | "door" | "window";
   position: Point;
   dimensions: {
     width: number;
@@ -125,12 +128,12 @@ const roomUtils = {
 
       // Don't add duplicate connections
       const startConnections = pointGraph.get(startKey)!;
-      if (!startConnections.some(p => pointToString(p) === endKey)) {
+      if (!startConnections.some((p) => pointToString(p) === endKey)) {
         startConnections.push(line.end);
       }
 
       const endConnections = pointGraph.get(endKey)!;
-      if (!endConnections.some(p => pointToString(p) === startKey)) {
+      if (!endConnections.some((p) => pointToString(p) === startKey)) {
         endConnections.push(line.start);
       }
     });
@@ -140,7 +143,7 @@ const roomUtils = {
       const endpoints: Point[] = [];
       pointGraph.forEach((connections, pointKey) => {
         if (connections.length <= 1) {
-          const [x, y] = pointKey.split(',').map(Number);
+          const [x, y] = pointKey.split(",").map(Number);
           endpoints.push({ x, y });
         }
       });
@@ -160,7 +163,7 @@ const roomUtils = {
 
       pointGraph.forEach((connections, pointKey) => {
         if (connections.length < minConnections) {
-          const [x, y] = pointKey.split(',').map(Number);
+          const [x, y] = pointKey.split(",").map(Number);
           minPoint = { x, y };
           minConnections = connections.length;
         }
@@ -178,14 +181,16 @@ const roomUtils = {
       const currentKey = pointToString(currentPoint);
       const neighbors = pointGraph.get(currentKey) || [];
 
-      // Find unvisited neighbor 
-      const nextPoint = neighbors.find(p => !visited.has(pointToString(p)));
+      // Find unvisited neighbor
+      const nextPoint = neighbors.find((p) => !visited.has(pointToString(p)));
 
       if (!nextPoint) {
         // Try to close the loop if possible
-        if (perimeter.length > 2 &&
+        if (
+          perimeter.length > 2 &&
           arePointsEqual(perimeter[0], neighbors[0]) &&
-          perimeter.length !== neighbors.length + 1) {
+          perimeter.length !== neighbors.length + 1
+        ) {
           perimeter.push(perimeter[0]); // Close the loop
         }
         break;
@@ -197,7 +202,10 @@ const roomUtils = {
     }
 
     // Verify we created a closed loop
-    if (perimeter.length > 2 && !arePointsEqual(perimeter[0], perimeter[perimeter.length - 1])) {
+    if (
+      perimeter.length > 2 &&
+      !arePointsEqual(perimeter[0], perimeter[perimeter.length - 1])
+    ) {
       perimeter.push(perimeter[0]); // Ensure loop is closed
     }
 
@@ -226,7 +234,7 @@ const roomUtils = {
     const dx = end.x - start.x;
     const dy = end.y - start.y;
     return Math.atan2(dy, dx);
-  }
+  },
 };
 
 const transform2DTo3D = roomUtils.transform2DTo3D;
@@ -234,14 +242,14 @@ const transform2DTo3D = roomUtils.transform2DTo3D;
 export function RoomSketchPro({
   width,
   height,
-  instanceId = 'default',
+  instanceId = "default",
   lines = [],
   airEntries = [],
   roomHeight = DEFAULTS.ROOM_HEIGHT,
   backgroundColor = DEFAULTS.BACKGROUND_COLOR,
   wallColor = DEFAULTS.WALL_COLOR,
   floorColor = DEFAULTS.FLOOR_COLOR,
-  roofColor = DEFAULTS.ROOF_COLOR
+  roofColor = DEFAULTS.ROOF_COLOR,
 }: RoomSketchProProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -252,10 +260,16 @@ export function RoomSketchPro({
   const controlsRef = useRef<TrackballControls | null>(null);
 
   // Extract perimeter points using useMemo to avoid recalculation
-  const perimeter = useMemo(() => roomUtils.createRoomPerimeter(lines), [lines]);
+  const perimeter = useMemo(
+    () => roomUtils.createRoomPerimeter(lines),
+    [lines],
+  );
 
   // Create shape from perimeter
-  const shape = useMemo(() => roomUtils.createShapeFromPerimeter(perimeter), [perimeter]);
+  const shape = useMemo(
+    () => roomUtils.createShapeFromPerimeter(perimeter),
+    [perimeter],
+  );
 
   // Camera state management
   const saveCameraState = () => {
@@ -263,14 +277,19 @@ export function RoomSketchPro({
       const cameraState = {
         position: cameraRef.current.position.toArray(),
         target: controlsRef.current.target.toArray(),
-        zoom: cameraRef.current.zoom
+        zoom: cameraRef.current.zoom,
       };
-      localStorage.setItem(`roomSketchPro-camera-${instanceId}`, JSON.stringify(cameraState));
+      localStorage.setItem(
+        `roomSketchPro-camera-${instanceId}`,
+        JSON.stringify(cameraState),
+      );
     }
   };
 
   const loadCameraState = () => {
-    const savedState = localStorage.getItem(`roomSketchPro-camera-${instanceId}`);
+    const savedState = localStorage.getItem(
+      `roomSketchPro-camera-${instanceId}`,
+    );
     if (savedState && cameraRef.current && controlsRef.current) {
       try {
         const state = JSON.parse(savedState);
@@ -279,23 +298,27 @@ export function RoomSketchPro({
         cameraRef.current.zoom = state.zoom;
         cameraRef.current.updateProjectionMatrix();
       } catch (error) {
-        console.error('Failed to load camera state:', error);
+        console.error("Failed to load camera state:", error);
       }
     }
   };
 
   // Wall creation
-  const createWalls = (scene: THREE.Scene, renderer: THREE.WebGLRenderer, camera: THREE.PerspectiveCamera) => {
+  const createWalls = (
+    scene: THREE.Scene,
+    renderer: THREE.WebGLRenderer,
+    camera: THREE.PerspectiveCamera,
+  ) => {
     // Create texture loader and load brick texture
     const textureLoader = new THREE.TextureLoader();
     const brickTexture = textureLoader.load(
-      'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/brick_diffuse.jpg',
+      "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/brick_diffuse.jpg",
       (texture) => {
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
         texture.repeat.set(2, 1); // Adjust the repeat scale for better visual
         renderer.render(scene, camera);
-      }
+      },
     );
 
     // Create wall material with brick texture
@@ -317,10 +340,18 @@ export function RoomSketchPro({
 
       // Create vertices array from points
       const vertices = new Float32Array([
-        start_bottom.x, start_bottom.y, start_bottom.z,
-        end_bottom.x, end_bottom.y, end_bottom.z,
-        start_top.x, start_top.y, start_top.z,
-        end_top.x, end_top.y, end_top.z,
+        start_bottom.x,
+        start_bottom.y,
+        start_bottom.z,
+        end_bottom.x,
+        end_bottom.y,
+        end_bottom.z,
+        start_top.x,
+        start_top.y,
+        start_top.z,
+        end_top.x,
+        end_top.y,
+        end_top.z,
       ]);
 
       // Create faces indices (triangles)
@@ -328,10 +359,14 @@ export function RoomSketchPro({
 
       // Create UV coordinates for proper texture mapping
       const uvs = new Float32Array([
-        0, 0,  // bottom left
-        1, 0,  // bottom right
-        0, 1,  // top left
-        1, 1   // top right
+        0,
+        0, // bottom left
+        1,
+        0, // bottom right
+        0,
+        1, // top left
+        1,
+        1, // top right
       ]);
 
       // Create the wall geometry
@@ -373,17 +408,17 @@ export function RoomSketchPro({
       clearcoat: 1.0,
       clearcoatRoughness: 0.05,
       envMap: cubeRenderTarget.texture,
-      envMapIntensity: 1.8
+      envMapIntensity: 1.8,
     });
 
     // Load wood texture for window frames
     const woodTexture = textureLoader.load(
-      'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/hardwood2_diffuse.jpg',
+      "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/hardwood2_diffuse.jpg",
       (texture) => {
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
         texture.repeat.set(1, 1);
-      }
+      },
     );
 
     // Create enhanced frame material
@@ -404,8 +439,7 @@ export function RoomSketchPro({
       side: THREE.DoubleSide,
     });
 
-
-    airEntries.forEach(entry => {
+    airEntries.forEach((entry) => {
       // Set material based on entry type
       let material;
       if (entry.type === "window") {
@@ -420,13 +454,13 @@ export function RoomSketchPro({
         const frameThickness = 5; // Frame thickness
         const frameDepth = 8; // Frame depth
         const position = transform2DTo3D(entry.position);
-        const doorZPosition = doorHeight / 2;  // Center the door vertically
+        const doorZPosition = doorHeight / 2; // Center the door vertically
 
         // Calculate wall direction and normal vectors
         const wallDirection = new THREE.Vector3()
           .subVectors(
             transform2DTo3D(entry.line.end),
-            transform2DTo3D(entry.line.start)
+            transform2DTo3D(entry.line.start),
           )
           .normalize();
 
@@ -442,12 +476,12 @@ export function RoomSketchPro({
         // Create texture loader and load wood texture
         const textureLoader = new THREE.TextureLoader();
         const woodTexture = textureLoader.load(
-          'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/hardwood2_diffuse.jpg',
+          "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/hardwood2_diffuse.jpg",
           (texture) => {
             texture.wrapS = THREE.RepeatWrapping;
             texture.wrapT = THREE.RepeatWrapping;
             texture.repeat.set(1, 2); // Adjust for door proportions
-          }
+          },
         );
 
         // Create door frame material
@@ -467,35 +501,55 @@ export function RoomSketchPro({
         });
 
         // Door panel
-        const doorGeometry = new THREE.BoxGeometry(doorWidth - frameThickness, doorHeight - frameThickness, doorDepth);
+        const doorGeometry = new THREE.BoxGeometry(
+          doorWidth - frameThickness,
+          doorHeight - frameThickness,
+          doorDepth,
+        );
         const doorPanel = new THREE.Mesh(doorGeometry, doorMaterial);
 
         // Create frame parts
         // Top frame
         const topFrame = new THREE.Mesh(
-          new THREE.BoxGeometry(doorWidth + frameThickness, frameThickness, frameDepth),
-          frameMaterial
+          new THREE.BoxGeometry(
+            doorWidth + frameThickness,
+            frameThickness,
+            frameDepth,
+          ),
+          frameMaterial,
         );
         topFrame.position.y = doorHeight / 2;
 
         // Bottom frame
         const bottomFrame = new THREE.Mesh(
-          new THREE.BoxGeometry(doorWidth + frameThickness, frameThickness, frameDepth),
-          frameMaterial
+          new THREE.BoxGeometry(
+            doorWidth + frameThickness,
+            frameThickness,
+            frameDepth,
+          ),
+          frameMaterial,
         );
         bottomFrame.position.y = -doorHeight / 2;
 
         // Left frame
         const leftFrame = new THREE.Mesh(
-          new THREE.BoxGeometry(frameThickness, doorHeight + frameThickness, frameDepth),
-          frameMaterial
+          new THREE.BoxGeometry(
+            frameThickness,
+            doorHeight + frameThickness,
+            frameDepth,
+          ),
+          frameMaterial,
         );
         leftFrame.position.x = -doorWidth / 2;
 
         // Right frame
         const rightFrame = new THREE.Mesh(
-          new THREE.BoxGeometry(frameThickness, doorHeight + frameThickness, frameDepth),
-          frameMaterial
+          new THREE.BoxGeometry(
+            frameThickness,
+            doorHeight + frameThickness,
+            frameDepth,
+          ),
+          frameMaterial,
         );
         rightFrame.position.x = doorWidth / 2;
 
@@ -551,16 +605,21 @@ export function RoomSketchPro({
         const up = new THREE.Vector3(0, 0, 1);
         const right = new THREE.Vector3().crossVectors(up, forward).normalize();
         forward.crossVectors(right, up).normalize();
-        const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
+        const rotationMatrix = new THREE.Matrix4().makeBasis(
+          right,
+          up,
+          forward,
+        );
         doorGroup.setRotationFromMatrix(rotationMatrix);
 
         // Offset slightly to prevent z-fighting with wall
-        doorGroup.position.x += wallNormalVector.x * frameDepth / 2;
-        doorGroup.position.y += wallNormalVector.y * frameDepth / 2;
+        doorGroup.position.x += (wallNormalVector.x * frameDepth) / 2;
+        doorGroup.position.y += (wallNormalVector.y * frameDepth) / 2;
 
         scene.add(doorGroup);
         return; // Skip the default creation for doors
-      } else { // vent
+      } else {
+        // vent
         // Calculate dimensions first to avoid scoping issues
         const ventWidth = entry.dimensions.width * DEFAULTS.PIXELS_TO_CM;
         const ventHeight = entry.dimensions.height * DEFAULTS.PIXELS_TO_CM;
@@ -569,13 +628,14 @@ export function RoomSketchPro({
         const mullionThickness = frameThickness * 0.7;
         const gridSpacing = 5; // Space between grid bars
         const position = transform2DTo3D(entry.position);
-        const ventZPosition = (entry.dimensions.distanceToFloor || 0) * DEFAULTS.PIXELS_TO_CM;
+        const ventZPosition =
+          (entry.dimensions.distanceToFloor || 0) * DEFAULTS.PIXELS_TO_CM;
 
         // Calculate wall direction and normal vectors
         const wallDirection = new THREE.Vector3()
           .subVectors(
             transform2DTo3D(entry.line.end),
-            transform2DTo3D(entry.line.start)
+            transform2DTo3D(entry.line.start),
           )
           .normalize();
 
@@ -593,7 +653,7 @@ export function RoomSketchPro({
           color: "#4a5568",
           metalness: 0.5,
           roughness: 0.5,
-          envMapIntensity: 1.0
+          envMapIntensity: 1.0,
         });
 
         const ventGridMaterial = new THREE.MeshPhysicalMaterial({
@@ -604,7 +664,11 @@ export function RoomSketchPro({
         });
 
         // Create main vent frame
-        const frameGeometry = new THREE.BoxGeometry(ventWidth + frameThickness * 2, ventHeight + frameThickness * 2, ventDepth);
+        const frameGeometry = new THREE.BoxGeometry(
+          ventWidth + frameThickness * 2,
+          ventHeight + frameThickness * 2,
+          ventDepth,
+        );
         const frame = new THREE.Mesh(frameGeometry, ventFrameMaterial);
         ventGroup.add(frame);
 
@@ -612,7 +676,11 @@ export function RoomSketchPro({
         const numHorizontalBars = Math.floor(ventHeight / gridSpacing) - 1;
         for (let i = 0; i < numHorizontalBars; i++) {
           const y = -ventHeight / 2 + (i + 1) * gridSpacing;
-          const barGeometry = new THREE.BoxGeometry(ventWidth - frameThickness * 2, 1, ventDepth / 2);
+          const barGeometry = new THREE.BoxGeometry(
+            ventWidth - frameThickness * 2,
+            1,
+            ventDepth / 2,
+          );
           const bar = new THREE.Mesh(barGeometry, ventGridMaterial);
           bar.position.set(0, y, ventDepth / 4);
           ventGroup.add(bar);
@@ -622,12 +690,15 @@ export function RoomSketchPro({
         const numVerticalBars = Math.floor(ventWidth / gridSpacing) - 1;
         for (let i = 0; i < numVerticalBars; i++) {
           const x = -ventWidth / 2 + (i + 1) * gridSpacing;
-          const barGeometry = new THREE.BoxGeometry(1, ventHeight - frameThickness * 2, ventDepth / 2);
+          const barGeometry = new THREE.BoxGeometry(
+            1,
+            ventHeight - frameThickness * 2,
+            ventDepth / 2,
+          );
           const bar = new THREE.Mesh(barGeometry, ventGridMaterial);
           bar.position.set(x, 0, ventDepth / 4);
           ventGroup.add(bar);
         }
-
 
         // Create glass panes - four panes due to the cross pattern
         const paneWidth = ventWidth / 2 - mullionThickness / 2;
@@ -639,7 +710,7 @@ export function RoomSketchPro({
           [-ventWidth / 4, ventHeight / 4, -glassInset],
           [ventWidth / 4, ventHeight / 4, -glassInset],
           [-ventWidth / 4, -ventHeight / 4, -glassInset],
-          [ventWidth / 4, -ventHeight / 4, -glassInset]
+          [ventWidth / 4, -ventHeight / 4, -glassInset],
         ];
 
         // Create the glass panes
@@ -649,7 +720,9 @@ export function RoomSketchPro({
           const paneOpacity = 0.9 - Math.random() * 0.1; // Slight opacity variation
 
           // Clone the glass material to make variations
-          const paneGlassMaterial = (glassMaterial as THREE.MeshPhysicalMaterial).clone();
+          const paneGlassMaterial = (
+            glassMaterial as THREE.MeshPhysicalMaterial
+          ).clone();
           paneGlassMaterial.opacity = paneOpacity;
 
           // Add subtle imperfections to glass with different transmission values
@@ -660,15 +733,14 @@ export function RoomSketchPro({
             new THREE.BoxGeometry(
               paneWidth - frameThickness * paneVariation,
               paneHeight - frameThickness * paneVariation,
-              0.4 // Very thin glass
+              0.4, // Very thin glass
             ),
-            paneGlassMaterial
+            paneGlassMaterial,
           );
 
           glassPane.position.set(pos[0], pos[1], pos[2]);
           ventGroup.add(glassPane);
         });
-
 
         // Position and rotate the vent group
         ventGroup.position.set(position.x, position.y, ventZPosition);
@@ -678,12 +750,16 @@ export function RoomSketchPro({
         const up = new THREE.Vector3(0, 0, 1);
         const right = new THREE.Vector3().crossVectors(up, forward).normalize();
         forward.crossVectors(right, up).normalize();
-        const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
+        const rotationMatrix = new THREE.Matrix4().makeBasis(
+          right,
+          up,
+          forward,
+        );
         ventGroup.setRotationFromMatrix(rotationMatrix);
 
         // Offset slightly from wall to prevent z-fighting
-        ventGroup.position.x += wallNormalVector.x * ventDepth / 2;
-        ventGroup.position.y += wallNormalVector.y * ventDepth / 2;
+        ventGroup.position.x += (wallNormalVector.x * ventDepth) / 2;
+        ventGroup.position.y += (wallNormalVector.y * ventDepth) / 2;
 
         scene.add(ventGroup);
         return; // Skip default creation for vents
@@ -696,7 +772,7 @@ export function RoomSketchPro({
       // Calculate Z position based on entry type
       const zPosition =
         entry.type === "door"
-          ? height / 2  // Center the door vertically
+          ? height / 2 // Center the door vertically
           : (entry.dimensions.distanceToFloor || 0) * DEFAULTS.PIXELS_TO_CM;
 
       // Calculate wall direction and normal vectors
@@ -744,13 +820,19 @@ export function RoomSketchPro({
   };
 
   // New function to create highly detailed windows
-  const createDetailedWindow = (entry: AirEntry, frameMaterial: THREE.Material, glassMaterial: THREE.Material, scene: THREE.Scene) => {
+  const createDetailedWindow = (
+    entry: AirEntry,
+    frameMaterial: THREE.Material,
+    glassMaterial: THREE.Material,
+    scene: THREE.Scene,
+  ) => {
     const width = entry.dimensions.width * DEFAULTS.PIXELS_TO_CM;
     const height = entry.dimensions.height * DEFAULTS.PIXELS_TO_CM;
     const windowDepth = 12; // Total window depth in cm
 
     // Calculate Z position and wall normal
-    const zPosition = (entry.dimensions.distanceToFloor || 100) * DEFAULTS.PIXELS_TO_CM;
+    const zPosition =
+      (entry.dimensions.distanceToFloor || 100) * DEFAULTS.PIXELS_TO_CM;
 
     // Calculate wall direction and normal vectors
     const wallDirection = new THREE.Vector3()
@@ -791,16 +873,24 @@ export function RoomSketchPro({
     // Create outer frame (top, bottom, left, right)
     // Top frame
     const topFrame = new THREE.Mesh(
-      new THREE.BoxGeometry(width + frameThickness * 2, frameThickness, frameDepth),
-      frameMaterial
+      new THREE.BoxGeometry(
+        width + frameThickness * 2,
+        frameThickness,
+        frameDepth,
+      ),
+      frameMaterial,
     );
     topFrame.position.set(0, height / 2 + frameThickness / 2, 0);
     windowGroup.add(topFrame);
 
     // Bottom frame with sill
     const bottomFrame = new THREE.Mesh(
-      new THREE.BoxGeometry(width + frameThickness * 2, frameThickness, frameDepth),
-      frameMaterial
+      new THREE.BoxGeometry(
+        width + frameThickness * 2,
+        frameThickness,
+        frameDepth,
+      ),
+      frameMaterial,
     );
     bottomFrame.position.set(0, -height / 2 - frameThickness / 2, 0);
     windowGroup.add(bottomFrame);
@@ -808,15 +898,19 @@ export function RoomSketchPro({
     // Window sill (extends outward from the bottom frame)
     const sill = new THREE.Mesh(
       new THREE.BoxGeometry(width + frameThickness * 3, sillHeight, sillDepth),
-      frameMaterial
+      frameMaterial,
     );
-    sill.position.set(0, -height / 2 - frameThickness - sillHeight / 2, sillDepth / 2 - frameDepth / 2);
+    sill.position.set(
+      0,
+      -height / 2 - frameThickness - sillHeight / 2,
+      sillDepth / 2 - frameDepth / 2,
+    );
     windowGroup.add(sill);
 
     // Left frame
     const leftFrame = new THREE.Mesh(
       new THREE.BoxGeometry(frameThickness, height, frameDepth),
-      frameMaterial
+      frameMaterial,
     );
     leftFrame.position.set(-width / 2 - frameThickness / 2, 0, 0);
     windowGroup.add(leftFrame);
@@ -824,7 +918,7 @@ export function RoomSketchPro({
     // Right frame
     const rightFrame = new THREE.Mesh(
       new THREE.BoxGeometry(frameThickness, height, frameDepth),
-      frameMaterial
+      frameMaterial,
     );
     rightFrame.position.set(width / 2 + frameThickness / 2, 0, 0);
     windowGroup.add(rightFrame);
@@ -836,7 +930,7 @@ export function RoomSketchPro({
     // Horizontal mullion
     const horizontalMullion = new THREE.Mesh(
       new THREE.BoxGeometry(width, mullionThickness, mullionDepth),
-      frameMaterial
+      frameMaterial,
     );
     horizontalMullion.position.set(0, 0, 0); // Center of window
     windowGroup.add(horizontalMullion);
@@ -844,7 +938,7 @@ export function RoomSketchPro({
     // Vertical mullion
     const verticalMullion = new THREE.Mesh(
       new THREE.BoxGeometry(mullionThickness, height, mullionDepth),
-      frameMaterial
+      frameMaterial,
     );
     verticalMullion.position.set(0, 0, 0); // Center of window
     windowGroup.add(verticalMullion);
@@ -862,7 +956,7 @@ export function RoomSketchPro({
       [-width / 4, height / 4, -glassInset],
       [width / 4, height / 4, -glassInset],
       [-width / 4, -height / 4, -glassInset],
-      [width / 4, -height / 4, -glassInset]
+      [width / 4, -height / 4, -glassInset],
     ];
 
     // Create the glass panes
@@ -872,7 +966,9 @@ export function RoomSketchPro({
       const paneOpacity = 0.9 - Math.random() * 0.1; // Slight opacity variation
 
       // Clone the glass material to make variations
-      const paneGlassMaterial = (glassMaterial as THREE.MeshPhysicalMaterial).clone();
+      const paneGlassMaterial = (
+        glassMaterial as THREE.MeshPhysicalMaterial
+      ).clone();
       paneGlassMaterial.opacity = paneOpacity;
 
       // Add subtle imperfections to glass with different transmission values
@@ -883,9 +979,9 @@ export function RoomSketchPro({
         new THREE.BoxGeometry(
           paneWidth - frameThickness * paneVariation,
           paneHeight - frameThickness * paneVariation,
-          0.4 // Very thin glass
+          0.4, // Very thin glass
         ),
-        paneGlassMaterial
+        paneGlassMaterial,
       );
 
       glassPane.position.set(...pos);
@@ -893,34 +989,54 @@ export function RoomSketchPro({
     });
 
     // Add window hardware (handle) to one of the panes
-    const handleBaseGeometry = new THREE.BoxGeometry(frameThickness * 1.5, frameThickness * 1.5, frameThickness * 0.5);
+    const handleBaseGeometry = new THREE.BoxGeometry(
+      frameThickness * 1.5,
+      frameThickness * 1.5,
+      frameThickness * 0.5,
+    );
     const handleBaseMaterial = new THREE.MeshPhysicalMaterial({
       color: 0x777777,
       metalness: 0.8,
-      roughness: 0.2
+      roughness: 0.2,
     });
 
     const handleBase = new THREE.Mesh(handleBaseGeometry, handleBaseMaterial);
-    handleBase.position.set(width / 4, 0, -frameDepth / 2 - frameThickness * 0.25);
+    handleBase.position.set(
+      width / 4,
+      0,
+      -frameDepth / 2 - frameThickness * 0.25,
+    );
     windowGroup.add(handleBase);
 
     // Create the handle lever
-    const handleLeverGeometry = new THREE.CylinderGeometry(frameThickness * 0.3, frameThickness * 0.3, frameThickness * 3, 16);
+    const handleLeverGeometry = new THREE.CylinderGeometry(
+      frameThickness * 0.3,
+      frameThickness * 0.3,
+      frameThickness * 3,
+      16,
+    );
     const handleLever = new THREE.Mesh(handleLeverGeometry, handleBaseMaterial);
     handleLever.rotation.set(0, 0, Math.PI / 2);
-    handleLever.position.set(width / 4, -frameThickness * 1.5, -frameDepth / 2 - frameThickness * 0.5);
+    handleLever.position.set(
+      width / 4,
+      -frameThickness * 1.5,
+      -frameDepth / 2 - frameThickness * 0.5,
+    );
     windowGroup.add(handleLever);
 
     // Add subtle shadow catching surfaces near the window
     // This would typically be done with proper lighting, but here's a placeholder
     const shadowCatcher = new THREE.Mesh(
-      new THREE.PlaneGeometry(width + frameThickness * 4, height + frameThickness * 4),
+      new THREE.PlaneGeometry(
+        width + frameThickness * 4,
+        height + frameThickness * 4,
+      ),
       new THREE.MeshPhongMaterial({
         color: 0x000000,
         opacity: 0.1,
         transparent: true,
         side: THREE.FrontSide,
-      })
+      }),
     );
     shadowCatcher.position.set(0, 0, frameDepth / 2 + 0.1);
     windowGroup.add(shadowCatcher);
@@ -932,7 +1048,11 @@ export function RoomSketchPro({
   };
 
   // Create floor and roof
-  const createFloorAndRoof = (scene: THREE.Scene, renderer: THREE.WebGLRenderer, camera: THREE.PerspectiveCamera) => {
+  const createFloorAndRoof = (
+    scene: THREE.Scene,
+    renderer: THREE.WebGLRenderer,
+    camera: THREE.PerspectiveCamera,
+  ) => {
     const perimeterPoints = roomUtils.createRoomPerimeter(lines);
     if (perimeterPoints.length > 2) {
       // Create shape from perimeter points
@@ -952,13 +1072,13 @@ export function RoomSketchPro({
       // Create texture loader and load wood texture from an external source
       const textureLoader = new THREE.TextureLoader();
       const woodTexture = textureLoader.load(
-        'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/hardwood2_diffuse.jpg',
+        "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/hardwood2_diffuse.jpg",
         (texture) => {
           texture.wrapS = THREE.RepeatWrapping;
           texture.wrapT = THREE.RepeatWrapping;
           texture.repeat.set(5, 5); // Adjust the repeat scale for better visual
           renderer.render(scene, camera);
-        }
+        },
       );
 
       const floorMaterial = new THREE.MeshPhongMaterial({
@@ -992,7 +1112,10 @@ export function RoomSketchPro({
     if (!containerRef.current) return;
 
     // Clean up previous scene
-    if (rendererRef.current && containerRef.current.contains(rendererRef.current.domElement)) {
+    if (
+      rendererRef.current &&
+      containerRef.current.contains(rendererRef.current.domElement)
+    ) {
       containerRef.current.removeChild(rendererRef.current.domElement);
     }
 
@@ -1016,7 +1139,7 @@ export function RoomSketchPro({
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
-      preserveDrawingBuffer: true
+      preserveDrawingBuffer: true,
     });
     renderer.setSize(containerRef.current.clientWidth, height);
     renderer.shadowMap.enabled = true;
@@ -1039,7 +1162,7 @@ export function RoomSketchPro({
     loadCameraState();
 
     // Add event listener for camera changes
-    controls.addEventListener('change', saveCameraState);
+    controls.addEventListener("change", saveCameraState);
 
     // Add coordinate system axes with labels
     const axesHelper = new THREE.AxesHelper(200);
@@ -1068,7 +1191,6 @@ export function RoomSketchPro({
     createAirEntries(scene);
     createFloorAndRoof(scene, renderer, camera);
 
-
     // Animation loop
     const animate = () => {
       requestAnimationFrame(animate);
@@ -1095,11 +1217,11 @@ export function RoomSketchPro({
       }
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     // Cleanup
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
 
       if (rendererRef.current && containerRef.current) {
         containerRef.current.removeChild(rendererRef.current.domElement);
@@ -1121,7 +1243,7 @@ export function RoomSketchPro({
     backgroundColor,
     wallColor,
     floorColor,
-    roofColor
+    roofColor,
   ]);
 
   return <div ref={containerRef} style={{ height }} />;
