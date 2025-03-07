@@ -1124,6 +1124,111 @@ export function RoomSketchPro({
     }
   };
 
+  // Add lighting setup
+  const setupLights = (scene: THREE.Scene) => {
+    // Ambient light for overall illumination
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+
+    // Directional light for shadows and depth
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    dirLight.position.set(100, 100, 50);
+    scene.add(dirLight);
+
+    // Additional point lights for better object visibility
+    const pointLight1 = new THREE.PointLight(0xffffff, 0.5);
+    pointLight1.position.set(-100, 100, 100);
+    scene.add(pointLight1);
+
+    const pointLight2 = new THREE.PointLight(0xffffff, 0.3);
+    pointLight2.position.set(100, 100, -100);
+    scene.add(pointLight2);
+  };
+
+  // Handle furniture creation and placement
+  const handleDrop = (e: DragEvent) => {
+    e.preventDefault();
+    console.log('Drop event triggered');
+
+    if (!sceneRef.current || !cameraRef.current || !rendererRef.current) {
+      console.error('Scene, camera, or renderer not initialized');
+      return;
+    }
+
+    const itemData = e.dataTransfer?.getData('application/json');
+    if (!itemData) {
+      console.log('No item data found in drop event');
+      return;
+    }
+
+    const item = JSON.parse(itemData);
+    console.log('Dropped item:', item);
+
+    // Get container dimensions
+    const rect = containerRef.current!.getBoundingClientRect();
+
+    // Calculate normalized device coordinates (-1 to +1)
+    const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    const y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+    console.log('Normalized coordinates:', { x, y });
+
+    // Setup raycaster
+    const raycaster = new THREE.Raycaster();
+    const mouseVector = new THREE.Vector2(x, y);
+    raycaster.setFromCamera(mouseVector, cameraRef.current);
+
+    // Create an infinite floor plane at y=0
+    const floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+    const intersectionPoint = new THREE.Vector3();
+
+    // Get intersection point with floor plane
+    if (raycaster.ray.intersectPlane(floorPlane, intersectionPoint)) {
+      console.log('Intersection point:', intersectionPoint);
+
+      // Create furniture based on type
+      let furnitureObject: THREE.Object3D;
+
+      switch (item.id) {
+        case 'table':
+          furnitureObject = createTableModel();
+          break;
+        case 'person':
+          furnitureObject = createPersonModel();
+          break;
+        case 'armchair':
+          furnitureObject = createArmchairModel();
+          break;
+        default:
+          console.error('Unknown furniture type:', item.id);
+          return;
+      }
+
+      // Position the object at intersection point
+      furnitureObject.position.copy(intersectionPoint);
+
+      // Add object to scene
+      sceneRef.current.add(furnitureObject);
+      console.log(`Added ${item.id} to scene at position:`, furnitureObject.position);
+
+      // Update furniture state
+      const newItem: FurnitureItem = {
+        id: item.id,
+        name: item.name,
+        position: intersectionPoint.clone(),
+        rotation: new THREE.Euler()
+      };
+
+      setFurniture(prev => [...prev, newItem]);
+      onFurnitureAdd?.(newItem);
+
+      // Force a render update
+      rendererRef.current.render(sceneRef.current, cameraRef.current);
+    } else {
+      console.log('No intersection with floor plane');
+    }
+  };
+
   // Add drag and drop handlers
   useEffect(() => {
     const container = containerRef.current;
@@ -1132,71 +1237,6 @@ export function RoomSketchPro({
     const handleDragOver = (e: DragEvent) => {
       e.preventDefault();
       e.dataTransfer!.dropEffect = 'copy';
-    };
-
-    const handleDrop = (e: DragEvent) => {
-      e.preventDefault();
-      console.log('Drop event triggered');
-
-      const itemData = e.dataTransfer?.getData('application/json');
-      if (!itemData) {
-        console.log('No item data found in drop event');
-        return;
-      }
-
-      const item = JSON.parse(itemData);
-      console.log('Dropped item:', item);
-
-      // Calculate drop position in 3D space
-      const rect = containerRef.current!.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / containerRef.current!.clientWidth) * 2 - 1;
-      const y = -((e.clientY - rect.top) / containerRef.current!.clientHeight) * 2 + 1;
-
-      console.log('Normalized coordinates:', { x, y });
-
-      const raycaster = new THREE.Raycaster();
-      raycaster.setFromCamera(new THREE.Vector2(x, y), cameraRef.current!);
-
-      // Create a floor plane at y=0
-      const floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
-      const intersectionPoint = new THREE.Vector3();
-
-      if (raycaster.ray.intersectPlane(floorPlane, intersectionPoint)) {
-        console.log('Intersection point:', intersectionPoint);
-
-        // Create and add furniture
-        const furnitureMesh = createFurnitureMesh(item.id);
-
-        // Set position
-        furnitureMesh.position.set(
-          intersectionPoint.x,
-          0, // Base at floor level
-          intersectionPoint.z
-        );
-
-        console.log('Adding furniture at position:', furnitureMesh.position);
-
-        // Add to scene
-        sceneRef.current?.add(furnitureMesh);
-
-        // Add to furniture state
-        const newItem: FurnitureItem = {
-          id: item.id,
-          name: item.name,
-          position: intersectionPoint.clone(),
-          rotation: new THREE.Euler()
-        };
-
-        setFurniture(prev => [...prev, newItem]);
-        onFurnitureAdd?.(newItem);
-
-        // Force a render
-        if (rendererRef.current && sceneRef.current && cameraRef.current) {
-          rendererRef.current.render(sceneRef.current, cameraRef.current);
-        }
-      } else {
-        console.log('No intersection with floor plane');
-      }
     };
 
     container.addEventListener('dragover', handleDragOver);
@@ -1208,7 +1248,7 @@ export function RoomSketchPro({
     };
   }, [onFurnitureAdd]);
 
-  // Main effect for scene setup 
+  // Main scene setup effect
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -1227,30 +1267,27 @@ export function RoomSketchPro({
 
     // Initialize camera
     const camera = new THREE.PerspectiveCamera(
-      45,
-      containerRef.current.clientWidth / height,
+      75,
+      width / height,
       1,
-      10000,
+      10000
     );
-    camera.position.set(0, 0, 1000); // Position camera along Z-axis looking at XY plane
-    camera.lookAt(0, 0, 0);
+    camera.position.set(0, 200, 400);
     cameraRef.current = camera;
 
     // Initialize renderer with antialiasing and shadow support
-    const renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      alpha: true,
-      preserveDrawingBuffer: true,
-    });
-    renderer.setSize(containerRef.current.clientWidth, height);
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(window.devicePixelRatio);
     containerRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
+    // Add lights
+    setupLights(scene);
+
     // Initialize TrackballControls
     const controls = new TrackballControls(camera, renderer.domElement);
-    controls.rotateSpeed = 2.0;
+    controls.rotateSpeed = 1.0;
     controls.zoomSpeed = 1.2;
     controls.panSpeed = 0.8;
     controls.noZoom = false;
@@ -1269,24 +1306,6 @@ export function RoomSketchPro({
     const axesHelper = new THREE.AxesHelper(200);
     scene.add(axesHelper);
 
-    // Set up enhanced lighting for better shadows and reflections
-    // Ambient light for general illumination
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-    scene.add(ambientLight);
-
-    // Add directional light
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(500, 500, 500);
-    directionalLight.castShadow = true;
-
-    // Configure shadow properties
-    directionalLight.shadow.mapSize.width = 2048;
-    directionalLight.shadow.mapSize.height = 2048;
-    directionalLight.shadow.camera.near = 0.5;
-    directionalLight.shadow.camera.far = 2000;
-    directionalLight.shadow.bias = -0.0001;
-
-    scene.add(directionalLight);
 
     createWalls(scene, renderer, camera);
     createAirEntries(scene);
