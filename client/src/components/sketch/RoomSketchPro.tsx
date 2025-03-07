@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import * as THREE from "three";
 import { TrackballControls } from "three/addons/controls/TrackballControls.js";
 import { makeTextSprite } from "@/lib/three-utils";
+import { createTableModel, createPersonModel, createArmchairModel } from "./furniture-models";
 
 // Types
 interface Point {
@@ -1100,67 +1101,20 @@ export function RoomSketchPro({
 
     switch (type) {
       case 'table': {
-        const tableGeometry = new THREE.BoxGeometry(80, 75, 60); // Width, height, depth
-        const tableMaterial = new THREE.MeshStandardMaterial({ 
-          color: 0x8B4513,
-          roughness: 0.8,
-          metalness: 0.2
-        });
-        const table = new THREE.Mesh(tableGeometry, tableMaterial);
-        console.log('Created table mesh');
-        return table;
+        const model = createTableModel();
+        console.log('Created table model');
+        return model;
       }
-
       case 'person': {
-        const personGroup = new THREE.Group();
-
-        // Body
-        const bodyGeometry = new THREE.CylinderGeometry(15, 15, 120, 8);
-        const bodyMaterial = new THREE.MeshStandardMaterial({ 
-          color: 0x4A5568,
-          roughness: 0.9,
-          metalness: 0.1
-        });
-        const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
-        body.position.y = 60;
-        personGroup.add(body);
-
-        // Head
-        const headGeometry = new THREE.SphereGeometry(15, 16, 16);
-        const head = new THREE.Mesh(headGeometry, bodyMaterial);
-        head.position.y = 120;
-        personGroup.add(head);
-
-        console.log('Created person mesh');
-        return personGroup;
+        const model = createPersonModel();
+        console.log('Created person model');
+        return model;
       }
-
       case 'armchair': {
-        const chairGroup = new THREE.Group();
-
-        const chairMaterial = new THREE.MeshStandardMaterial({ 
-          color: 0x718096,
-          roughness: 0.7,
-          metalness: 0.3
-        });
-
-        // Seat
-        const seatGeometry = new THREE.BoxGeometry(80, 45, 80);
-        const seat = new THREE.Mesh(seatGeometry, chairMaterial);
-        seat.position.y = 22.5;
-        chairGroup.add(seat);
-
-        // Back
-        const backGeometry = new THREE.BoxGeometry(80, 60, 20);
-        const back = new THREE.Mesh(backGeometry, chairMaterial);
-        back.position.y = 52.5;
-        back.position.z = -30;
-        chairGroup.add(back);
-
-        console.log('Created armchair mesh');
-        return chairGroup;
+        const model = createArmchairModel();
+        console.log('Created armchair model');
+        return model;
       }
-
       default: {
         console.log('Creating default mesh');
         const defaultGeometry = new THREE.BoxGeometry(50, 50, 50);
@@ -1204,7 +1158,7 @@ export function RoomSketchPro({
       raycaster.setFromCamera(new THREE.Vector2(x, y), cameraRef.current!);
 
       // Create a floor plane at y=0
-      const floorPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+      const floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
       const intersectionPoint = new THREE.Vector3();
 
       if (raycaster.ray.intersectPlane(floorPlane, intersectionPoint)) {
@@ -1213,24 +1167,10 @@ export function RoomSketchPro({
         // Create and add furniture
         const furnitureMesh = createFurnitureMesh(item.id);
 
-        // Adjust position based on object type
-        let yOffset = 0;
-        switch (item.id) {
-          case 'table':
-            yOffset = 37.5; // Half height of table
-            break;
-          case 'armchair':
-            yOffset = 22.5; // Half height of chair
-            break;
-          case 'person':
-            yOffset = 60; // Half height of person
-            break;
-        }
-
         // Set position
         furnitureMesh.position.set(
           intersectionPoint.x,
-          yOffset, // Y offset to place on floor
+          0, // Base at floor level
           intersectionPoint.z
         );
 
@@ -1243,7 +1183,7 @@ export function RoomSketchPro({
         const newItem: FurnitureItem = {
           id: item.id,
           name: item.name,
-          position: new THREE.Vector3(intersectionPoint.x, yOffset, intersectionPoint.z),
+          position: intersectionPoint.clone(),
           rotation: new THREE.Euler()
         };
 
