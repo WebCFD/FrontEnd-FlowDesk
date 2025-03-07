@@ -224,7 +224,7 @@ export function RoomSketchPro({
   airEntries = [],
   roomHeight = DEFAULTS.ROOM_HEIGHT,
   onFurnitureAdd,
-  wallTransparency,
+  wallTransparency = 0.8, // Default value
   onWallTransparencyChange,
 }: RoomSketchProProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -520,7 +520,6 @@ export function RoomSketchPro({
       ]);
 
       const indices = new Uint16Array([0, 1, 2, 1, 3, 2]);
-
       const uvs = new Float32Array([0, 0, 1, 0, 0, 1, 1, 1]);
 
       const geometry = new THREE.BufferGeometry();
@@ -1468,6 +1467,7 @@ export function RoomSketchPro({
   useEffect(() => {
     if (wallMaterialRef.current) {
       wallMaterialRef.current.opacity = wallTransparency;
+      wallMaterialRef.current.needsUpdate = true;
       if (rendererRef.current && sceneRef.current && cameraRef.current) {
         rendererRef.current.render(sceneRef.current, cameraRef.current);
       }
