@@ -3,8 +3,6 @@ import * as THREE from "three";
 import { TrackballControls } from "three/addons/controls/TrackballControls.js";
 import { makeTextSprite } from "@/lib/three-utils";
 import { createTableModel, createPersonModel, createArmchairModel } from "./furniture-models";
-import { ControlMenu } from "./ControlMenu";
-import { FurnitureMenu } from "./FurnitureMenu"; // Import FurnitureMenu
 
 // Types
 interface Point {
@@ -28,7 +26,6 @@ interface AirEntry {
   line: Line;
 }
 
-// Add FurnitureItem interface
 interface FurnitureItem {
   id: string;
   name: string;
@@ -36,7 +33,6 @@ interface FurnitureItem {
   rotation: THREE.Euler;
 }
 
-// Update RoomSketchProProps
 interface RoomSketchProProps {
   width: number;
   height: number;
@@ -45,14 +41,16 @@ interface RoomSketchProProps {
   airEntries?: AirEntry[];
   roomHeight?: number;
   onFurnitureAdd?: (item: FurnitureItem) => void;
+  wallTransparency: number;
+  onWallTransparencyChange: (value: number) => void;
 }
 
 // Constants
 const DEFAULTS = {
-  ROOM_HEIGHT: 210, // Room height in cm
-  PIXELS_TO_CM: 25 / 20, // 25cm = 20px ratio
-  GRID_SIZE: 1000, // Size of the grid in cm
-  GRID_DIVISIONS: 40, // Number of divisions in the grid
+  ROOM_HEIGHT: 210,
+  PIXELS_TO_CM: 25 / 20,
+  GRID_SIZE: 1000,
+  GRID_DIVISIONS: 40,
   BACKGROUND_COLOR: 0xf8fafc,
   WALL_COLOR: 0x3b82f6,
   FLOOR_COLOR: 0x808080,
@@ -226,10 +224,11 @@ export function RoomSketchPro({
   airEntries = [],
   roomHeight = DEFAULTS.ROOM_HEIGHT,
   onFurnitureAdd,
+  wallTransparency,
+  onWallTransparencyChange,
 }: RoomSketchProProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [furniture, setFurniture] = useState<FurnitureItem[]>([]);
-  const [wallTransparency, setWallTransparency] = useState(0.8); // Add wall transparency state
 
   // Refs for Three.js objects
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -882,16 +881,13 @@ export function RoomSketchPro({
           [ventWidth / 4, -ventHeight / 4, -glassInset],
         ];
 
-        // Create the glass panes
-        panePositions.forEach((pos) => {
-          // Create subtle variation in each pane
-          const paneVariation = 0.02; // Small random variation
-          const paneOpacity = 0.9 - Math.random() * 0.1; // Slight opacity variation
+        // Create the glass panes with subtle variations
+        const paneVariation = 0.02; // Small random variation
+        const paneOpacity = 0.9 - Math.random() * 0.1; // Slight opacity variation
 
-          // Clone the glass material to make variations
-          const paneGlassMaterial = (
-            glassMaterial as THREE.MeshPhysicalMaterial
-          ).clone();
+        // Clone the glass material to make variations
+        panePositions.forEach((pos) => {
+          const paneGlassMaterial = (glassMaterial as THREE.MeshPhysicalMaterial).clone();
           paneGlassMaterial.opacity = paneOpacity;
 
           // Add subtle imperfections to glass with different transmission values
@@ -900,11 +896,11 @@ export function RoomSketchPro({
           // Create glass pane with slight thickness
           const glassPane = new THREE.Mesh(
             new THREE.BoxGeometry(
-              paneWidth - frameThickness * paneVariation,
+              paneWidth- frameThickness * paneVariation,
               paneHeight - frameThickness * paneVariation,
-              0.4, // Very thin glass
+              0.4 // Very thin glass
             ),
-            paneGlassMaterial,
+            paneGlassMaterial
           );
 
           glassPane.position.set(pos[0], pos[1], pos[2]);
@@ -959,6 +955,7 @@ export function RoomSketchPro({
         .normalize();
 
       const geometry = new THREE.PlaneGeometry(width, height);
+      material = entry.type === "door" ? doorMaterial : new THREE.MeshBasicMaterial({color: 0x808080}); // Assign material based on entry type
       const mesh = new THREE.Mesh(geometry, material);
       const position = transform2DTo3D(entry.position);
       mesh.position.set(position.x, position.y, zPosition);
@@ -1483,6 +1480,7 @@ export function RoomSketchPro({
     furniture,
   ]);
 
+  // Update effect to use props instead of local state
   useEffect(() => {
     if (wallMaterialRef.current) {
       wallMaterialRef.current.opacity = wallTransparency;
@@ -1500,22 +1498,13 @@ export function RoomSketchPro({
   };
 
   return (
-    <div className="flex">
-      <div className="space-y-6">
-        <ControlMenu
-          transparency={wallTransparency}
-          onTransparencyChange={setWallTransparency}
-        />
-        <FurnitureMenu onDragStart={handleDragStart} />
-      </div>
-      <div
-        ref={containerRef}
-        style={{
-          width: `${width}px`,
-          height: `${height}px`,
-          position: "relative",
-        }}
-      />
-    </div>
+    <div
+      ref={containerRef}
+      style={{
+        width: `${width}px`,
+        height: `${height}px`,
+        position: "relative",
+      }}
+    />
   );
 }
