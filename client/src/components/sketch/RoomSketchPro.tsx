@@ -2,6 +2,34 @@ import { useEffect, useRef, useMemo } from 'react';
 import * as THREE from 'three';
 import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 
+// Utility function to create text sprites
+const makeTextSprite = (message: string, position: THREE.Vector3): THREE.Sprite => {
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+  if (!context) return new THREE.Sprite();
+
+  canvas.width = 256;
+  canvas.height = 128;
+
+  context.font = "24px Arial";
+  context.fillStyle = "rgba(255,255,255,0.95)";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.fillStyle = "black";
+  context.textAlign = "center";
+  context.fillText(message, canvas.width/2, canvas.height/2);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+  const sprite = new THREE.Sprite(spriteMaterial);
+
+  sprite.position.copy(position);
+  sprite.position.y += 20; // Offset above the point
+  sprite.scale.set(50, 25, 1);
+
+  return sprite;
+};
+
+
 // Types
 interface Point {
   x: number;
@@ -697,6 +725,19 @@ export function RoomSketchPro({
       forward.crossVectors(right, up).normalize();
       const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
       mesh.setRotationFromMatrix(rotationMatrix);
+
+      // Add a small marker at the air entry position for debugging
+      const markerGeometry = new THREE.SphereGeometry(3, 8, 8);
+      const markerMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+      const marker = new THREE.Mesh(markerGeometry, markerMaterial);
+      marker.position.copy(mesh.position);
+      scene.add(marker);
+
+      // Add coordinate label
+      const coordinates = marker.position;
+      const coordText = `(${coordinates.x.toFixed(1)}, ${coordinates.y.toFixed(1)}, ${coordinates.z.toFixed(1)}) cm`;
+      const label = makeTextSprite(coordText, marker.position);
+      scene.add(label);
 
       scene.add(mesh);
     });
