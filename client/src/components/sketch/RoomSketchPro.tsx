@@ -13,8 +13,8 @@ const makeTextSprite = (
     return new THREE.Sprite();
   }
 
-  canvas.width = 256;
-  canvas.height = 128;
+  canvas.width = 5;
+  canvas.height = 5;
 
   // Fill background (dark semi-transparent background for better contrast)
   context.fillStyle = "rgba(0,0,0,0.7)";
@@ -35,10 +35,10 @@ const makeTextSprite = (
 
   sprite.position.copy(position);
   // Offset slightly to avoid overlap with marker
-  sprite.position.z += 5;
+  //sprite.position.z += 5;
 
-  sprite.scale.set(50, 25, 1);
-  sprite.renderOrder = 999; // Ensure it's drawn on top
+  //sprite.scale.set(50, 25, 1);
+  //sprite.renderOrder = 999; // Ensure it's drawn on top
 
   return sprite;
 };
