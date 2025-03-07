@@ -3,10 +3,7 @@ import * as THREE from "three";
 import { TrackballControls } from "three/addons/controls/TrackballControls.js";
 
 // Utility function to create text sprites
-const makeTextSprite = (
-  message: string,
-  position: THREE.Vector3,
-): THREE.Sprite => {
+const makeTextSprite = (message: string, position: THREE.Vector3): THREE.Sprite => {
   console.log(`Creating text sprite: "${message}" at position:`, {
     x: position.x.toFixed(1),
     y: position.y.toFixed(1),
@@ -26,7 +23,7 @@ const makeTextSprite = (
   // Fill background (dark semi-transparent background for better contrast)
   context.fillStyle = "rgba(0,0,0,0.7)";
   context.fillRect(0, 0, canvas.width, canvas.height);
-  
+
   // Draw text
   context.font = "bold 24px Arial";
   context.fillStyle = "white"; // White text for better visibility
@@ -43,10 +40,10 @@ const makeTextSprite = (
   sprite.position.copy(position);
   // Offset slightly to avoid overlap with marker
   sprite.position.z += 5;
-  
+
   sprite.scale.set(75, 35, 1); // Larger sprite
   sprite.renderOrder = 999; // Ensure it's drawn on top
-  
+
   console.log("Text sprite created successfully");
   return sprite;
 };
@@ -827,6 +824,8 @@ export function RoomSketchPro({
       marker.position.copy(mesh.position);
       scene.add(marker);
 
+      console.log(`Creating coordinate label for ${entry.type} at:`, marker.position); // Added logging
+
       // Add coordinate label
       const coordinates = marker.position;
       const coordText = `(${coordinates.x.toFixed(1)}, ${coordinates.y.toFixed(1)}, ${coordinates.z.toFixed(1)}) cm`;
@@ -1219,7 +1218,7 @@ export function RoomSketchPro({
     const countLabelsInScene = () => {
       let labelCount = 0;
       scene.traverse((object) => {
-        if (object.type === 'Sprite' && object.name.includes('label')) {
+        if (object.type === "Sprite" && object.name.includes("label")) {
           labelCount++;
           console.log(`Found label in scene: ${object.name}`, {
             position: `(${object.position.x.toFixed(1)}, ${object.position.y.toFixed(1)}, ${object.position.z.toFixed(1)})`
@@ -1229,12 +1228,12 @@ export function RoomSketchPro({
       console.log(`Total labels in scene: ${labelCount}`);
       return labelCount;
     };
-    
+
     // Call once after setup
     setTimeout(() => {
       countLabelsInScene();
     }, 1000);
-    
+
     // Animation loop
     const animate = () => {
       requestAnimationFrame(animate);
