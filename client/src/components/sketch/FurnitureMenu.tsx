@@ -50,6 +50,12 @@ const furnitureItems: FurnitureItem[] = [
 ];
 
 export function FurnitureMenu({ onDragStart, wallTransparency, onWallTransparencyChange }: FurnitureMenuProps) {
+  const handleTransparencyChange = (values: number[]) => {
+    if (onWallTransparencyChange) {
+      onWallTransparencyChange(values[0]);
+    }
+  };
+
   return (
     <div className="w-48 space-y-6">
       <div className="space-y-4">
@@ -58,7 +64,7 @@ export function FurnitureMenu({ onDragStart, wallTransparency, onWallTransparenc
           <label className="text-sm text-gray-600">Wall Transparency</label>
           <Slider
             value={[wallTransparency]}
-            onValueChange={(values) => onWallTransparencyChange(values[0])}
+            onValueChange={handleTransparencyChange}
             min={0}
             max={1}
             step={0.1}

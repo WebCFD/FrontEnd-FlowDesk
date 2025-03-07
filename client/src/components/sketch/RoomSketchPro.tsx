@@ -3,8 +3,6 @@ import * as THREE from "three";
 import { TrackballControls } from "three/addons/controls/TrackballControls.js";
 import { makeTextSprite } from "@/lib/three-utils";
 import { createTableModel, createPersonModel, createArmchairModel } from "./furniture-models";
-import { FurnitureMenu } from "./FurnitureMenu"; // Change to named import
-
 
 // Types
 interface Point {
@@ -226,7 +224,7 @@ export function RoomSketchPro({
   airEntries = [],
   roomHeight = DEFAULTS.ROOM_HEIGHT,
   onFurnitureAdd,
-  wallTransparency = 0.8, // Default value
+  wallTransparency = 0.8,
   onWallTransparencyChange,
 }: RoomSketchProProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -1486,6 +1484,7 @@ export function RoomSketchPro({
         position: "relative",
       }}
     >
+      <FurnitureMenu onFurnitureAdd={onFurnitureAdd} /> {/* Added FurnitureMenu */}
     </div>
   );
 }
