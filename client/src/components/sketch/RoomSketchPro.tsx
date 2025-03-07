@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { TrackballControls } from "three/addons/controls/TrackballControls.js";
 import { makeTextSprite } from "@/lib/three-utils";
 import { createTableModel, createPersonModel, createArmchairModel } from "./furniture-models";
+import { ControlMenu } from "./ControlMenu";
 
 // Types
 interface Point {
@@ -227,6 +228,7 @@ export function RoomSketchPro({
 }: RoomSketchProProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [furniture, setFurniture] = useState<FurnitureItem[]>([]);
+  const [wallTransparency, setWallTransparency] = useState(0.8); // Add wall transparency state
 
   // Refs for Three.js objects
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -234,6 +236,7 @@ export function RoomSketchPro({
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<TrackballControls | null>(null);
   const floorRef = useRef<THREE.Mesh | null>(null);
+  const wallMaterialRef = useRef<THREE.MeshStandardMaterial | null>(null);
 
   // Setup scene and lighting
   const setupScene = () => {
@@ -292,7 +295,7 @@ export function RoomSketchPro({
   const setupRenderer = () => {
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
-      alpha: true
+      alpha: true,
     });
     renderer.setSize(width, height);
     renderer.setPixelRatio(window.devicePixelRatio);
@@ -466,7 +469,6 @@ export function RoomSketchPro({
     [perimeter],
   );
 
-  // Camera state management (removed for brevity as it's not directly related to the core changes)
 
   // Wall creation
   const createWalls = (
@@ -481,19 +483,20 @@ export function RoomSketchPro({
       (texture) => {
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
-        texture.repeat.set(2, 1); // Adjust the repeat scale for better visual
+        texture.repeat.set(2, 1);
         renderer.render(scene, camera);
       },
     );
 
     // Create wall material with brick texture
-    const wallMaterial = new THREE.MeshPhongMaterial({
+    const wallMaterial = new THREE.MeshStandardMaterial({
       map: brickTexture,
-      color: 0xffffff, // White to show texture properly
-      opacity: 0.8,
+      color: 0xffffff,
+      opacity: wallTransparency,
       transparent: true,
       side: THREE.DoubleSide,
     });
+    wallMaterialRef.current = wallMaterial;
 
     // Convert 2D lines to 3D walls using transformed coordinates
     lines.forEach((line) => {
@@ -899,8 +902,8 @@ export function RoomSketchPro({
               paneWidth - frameThickness * paneVariation,
               paneHeight - frameThickness * paneVariation,
               0.4, // Very thin glass
-                        ),
-            paneGlassMaterial
+            ),
+            paneGlassMaterial,
           );
 
           glassPane.position.set(pos[0], pos[1], pos[2]);
@@ -1479,14 +1482,29 @@ export function RoomSketchPro({
     furniture,
   ]);
 
+  useEffect(() => {
+    if (wallMaterialRef.current) {
+      wallMaterialRef.current.opacity = wallTransparency;
+      if (rendererRef.current && sceneRef.current && cameraRef.current) {
+        rendererRef.current.render(sceneRef.current, cameraRef.current);
+      }
+    }
+  }, [wallTransparency]);
+
   return (
-    <div
-      ref={containerRef}
-      style={{
-        width: `${width}px`,
-        height: `${height}px`,
-        position: "relative",
-      }}
-    />
+    <div className="flex flex-col">
+      <ControlMenu
+        transparency={wallTransparency}
+        onTransparencyChange={setWallTransparency}
+      />
+      <div
+        ref={containerRef}
+        style={{
+          width: `${width}px`,
+          height: `${height}px`,
+          position: "relative",
+        }}
+      />
+    </div>
   );
 }
