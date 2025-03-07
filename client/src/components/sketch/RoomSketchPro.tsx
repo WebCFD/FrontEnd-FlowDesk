@@ -893,7 +893,7 @@ export function RoomSketchPro({
         // Positionand rotate the vent group
         ventGroup.position.set(position.x, position.y, ventZPosition);
         // Apply Wall's Local Coordinate System approach
-        constforward = wallNormalVector.clone();
+        const forward = wallNormalVector.clone();
         const up = new THREE.Vector3(0, 0, 1);
         const right = new THREE.Vector3().crossVectors(up, forward).normalize();
         forward.crossVectors(right, up).normalize();
