@@ -298,7 +298,6 @@ export default function Canvas2D({
         const key = pointKey(currentPoint);
 
         if (path.length >= 2 && arePointsEqual(currentPoint, point)) {
-          console.log('Found closed contour:', path);
           return true;
         }
 
@@ -398,7 +397,6 @@ export default function Canvas2D({
 
   const drawCoordinateLabel = (ctx: CanvasRenderingContext2D, point: Point, color: string) => {
     const coords = getRelativeCoordinates(point);
-    console.log(`2D Point clicked - Screen: (${point.x}, ${point.y}), In cm: (${coords.x}, ${coords.y})`);
     ctx.fillStyle = color;
     ctx.textAlign = 'left';
     ctx.fillText(`(${coords.x}, ${coords.y})`, point.x + 8, point.y - 8);
@@ -407,8 +405,6 @@ export default function Canvas2D({
   const drawAirEntry = (ctx: CanvasRenderingContext2D, entry: AirEntry) => {
     const normal = calculateNormal(entry.line);
     const color = getAirEntryColor(entry.type);
-    console.log(`Drawing ${entry.type} at (${entry.position.x}, ${entry.position.y})`);
-    console.log(`Normal vector: (${normal.x.toFixed(3)}, ${normal.y.toFixed(3)})`);
 
     const widthInPixels = cmToPixels(entry.dimensions.width);
     const halfWidth = widthInPixels / 2;
@@ -461,12 +457,9 @@ export default function Canvas2D({
 
     for (let x = -GRID_RANGE; x <= GRID_RANGE; x += snapSize) {
       for (let y = -GRID_RANGE; y <= GRID_RANGE; y += snapSize) {
-        // Calculate if this point should be visible in checkerboard pattern
-        // Shift coordinates to make (0,0) the center point
         const relativeX = Math.round(x / snapSize);
         const relativeY = Math.round(y / snapSize);
 
-        // Show point if both coordinates are even or both are odd (checkerboard pattern)
         if ((relativeX + relativeY) % 2 === 0) {
           points.push({
             x: centerX + x,
@@ -511,7 +504,7 @@ export default function Canvas2D({
       ctx.scale(zoom, zoom);
 
       ctx.beginPath();
-      ctx.strokeStyle = '#64748b'; // Darker color for grid lines
+      ctx.strokeStyle = '#64748b'; 
       ctx.lineWidth = 1 / zoom;
       createGridLines().forEach(line => {
         ctx.moveTo(line.start.x, line.start.y);
@@ -522,7 +515,7 @@ export default function Canvas2D({
       const gridPoints = getGridPoints();
       gridPoints.forEach(point => {
         ctx.beginPath();
-        ctx.fillStyle = '#e2e8f0'; // Even lighter color for points
+        ctx.fillStyle = '#e2e8f0'; 
         ctx.arc(
           point.x,
           point.y,
@@ -532,14 +525,13 @@ export default function Canvas2D({
         );
         ctx.fill();
 
-        // Show coordinates if this is the hovered point and we're not drawing a wall
         if (hoveredGridPoint &&
           point.x === hoveredGridPoint.x &&
           point.y === hoveredGridPoint.y &&
-          !isDrawing) {  // Only show coordinates when not drawing
+          !isDrawing) {  
           const coords = getRelativeCoordinates(point);
           ctx.font = `${12 / zoom}px sans-serif`;
-          ctx.fillStyle = '#000000'; // Black color for coordinates
+          ctx.fillStyle = '#000000'; 
           ctx.textAlign = 'left';
           ctx.fillText(
             `(${coords.x}, ${coords.y})`,
@@ -606,7 +598,6 @@ export default function Canvas2D({
         if (connections > 1) {
           if (isInClosedContour(point, lines)) {
             color = '#22c55e';
-            console.log('Vertex color set to green:', point);
           } else {
             color = '#3b82f6';
           }
@@ -626,7 +617,6 @@ export default function Canvas2D({
         drawCoordinateLabel(ctx, cursorPoint, '#fb923c');
       }
 
-
       ctx.restore();
     };
 
@@ -643,9 +633,6 @@ export default function Canvas2D({
         const nearestPoint = findNearestEndpoint(clickPoint);
         const startPoint = nearestPoint || snapToGrid(clickPoint);
         const coords = getRelativeCoordinates(startPoint);
-        console.log(`Starting wall line at - Screen: (${startPoint.x}, ${startPoint.y})`);
-        console.log(`Relative to center: (${startPoint.x - dimensions.width / 2}, ${dimensions.height / 2 - startPoint.y})`);
-        console.log(`In cm: (${coords.x}, ${coords.y})`);
         setCurrentLine({ start: startPoint, end: startPoint });
         setIsDrawing(true);
         setCursorPoint(startPoint);
@@ -693,16 +680,6 @@ export default function Canvas2D({
 
       if (currentTool === 'wall' && isDrawing && currentLine) {
         if (currentLine.start.x !== currentLine.end.x || currentLine.start.y !== currentLine.end.y) {
-          const normal = calculateNormal(currentLine);
-          console.log('Created wall line:');
-          console.log(`Start: (${currentLine.start.x}, ${currentLine.start.y})`);
-          console.log(`End: (${currentLine.end.x}, ${currentLine.end.y})`);
-          console.log(`Normal vector: (${normal.x.toFixed(3)}, ${normal.y.toFixed(3)})`);
-          const coordsStart = getRelativeCoordinates(currentLine.start);
-          const coordsEnd = getRelativeCoordinates(currentLine.end);
-          console.log(`Start in cm: (${coordsStart.x}, ${coordsStart.y})`);
-          console.log(`End in cm: (${coordsEnd.x}, ${coordsEnd.y})`);
-
           const newLines = [...lines, currentLine];
           onLinesUpdate?.(newLines);
         }
