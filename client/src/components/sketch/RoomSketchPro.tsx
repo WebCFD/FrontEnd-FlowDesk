@@ -1096,24 +1096,27 @@ export function RoomSketchPro({
 
   // Add furniture creation functions
   const createFurnitureMesh = (type: string): THREE.Object3D => {
+    console.log('Creating furniture mesh of type:', type);
+
     switch (type) {
-      case 'table':
-        const tableGeometry = new THREE.BoxGeometry(80, 60, 75);
-        const tableMaterial = new THREE.MeshPhongMaterial({ 
+      case 'table': {
+        const tableGeometry = new THREE.BoxGeometry(80, 75, 60); // Width, height, depth
+        const tableMaterial = new THREE.MeshStandardMaterial({ 
           color: 0x8B4513,
           roughness: 0.8,
           metalness: 0.2
         });
         const table = new THREE.Mesh(tableGeometry, tableMaterial);
-        table.position.y = 37.5; // Half height to sit on floor
+        console.log('Created table mesh');
         return table;
+      }
 
-      case 'person':
+      case 'person': {
         const personGroup = new THREE.Group();
 
         // Body
-        const bodyGeometry = new THREE.CylinderGeometry(20, 20, 120, 8);
-        const bodyMaterial = new THREE.MeshPhongMaterial({ 
+        const bodyGeometry = new THREE.CylinderGeometry(15, 15, 120, 8);
+        const bodyMaterial = new THREE.MeshStandardMaterial({ 
           color: 0x4A5568,
           roughness: 0.9,
           metalness: 0.1
@@ -1128,36 +1131,42 @@ export function RoomSketchPro({
         head.position.y = 120;
         personGroup.add(head);
 
+        console.log('Created person mesh');
         return personGroup;
+      }
 
-      case 'armchair':
+      case 'armchair': {
         const chairGroup = new THREE.Group();
 
-        const chairMaterial = new THREE.MeshPhongMaterial({ 
+        const chairMaterial = new THREE.MeshStandardMaterial({ 
           color: 0x718096,
           roughness: 0.7,
           metalness: 0.3
         });
 
         // Seat
-        const seatGeometry = new THREE.BoxGeometry(80, 80, 45);
+        const seatGeometry = new THREE.BoxGeometry(80, 45, 80);
         const seat = new THREE.Mesh(seatGeometry, chairMaterial);
         seat.position.y = 22.5;
         chairGroup.add(seat);
 
         // Back
-        const backGeometry = new THREE.BoxGeometry(80, 20, 60);
+        const backGeometry = new THREE.BoxGeometry(80, 60, 20);
         const back = new THREE.Mesh(backGeometry, chairMaterial);
-        back.position.y = 45;
+        back.position.y = 52.5;
         back.position.z = -30;
         chairGroup.add(back);
 
+        console.log('Created armchair mesh');
         return chairGroup;
+      }
 
-      default:
+      default: {
+        console.log('Creating default mesh');
         const defaultGeometry = new THREE.BoxGeometry(50, 50, 50);
-        const defaultMaterial = new THREE.MeshPhongMaterial({ color: 0x808080 });
+        const defaultMaterial = new THREE.MeshStandardMaterial({ color: 0x808080 });
         return new THREE.Mesh(defaultGeometry, defaultMaterial);
+      }
     }
   };
 
@@ -1173,54 +1182,80 @@ export function RoomSketchPro({
 
     const handleDrop = (e: DragEvent) => {
       e.preventDefault();
+      console.log('Drop event triggered');
 
       const itemData = e.dataTransfer?.getData('application/json');
-      if (!itemData) return;
+      if (!itemData) {
+        console.log('No item data found in drop event');
+        return;
+      }
 
       const item = JSON.parse(itemData);
+      console.log('Dropped item:', item);
 
       // Calculate drop position in 3D space
-      const rect = container.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / container.clientWidth) * 2 - 1;
-      const y = -((e.clientY - rect.top) / container.clientHeight) * 2 + 1;
+      const rect = containerRef.current!.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / containerRef.current!.clientWidth) * 2 - 1;
+      const y = -((e.clientY - rect.top) / containerRef.current!.clientHeight) * 2 + 1;
+
+      console.log('Normalized coordinates:', { x, y });
 
       const raycaster = new THREE.Raycaster();
       raycaster.setFromCamera(new THREE.Vector2(x, y), cameraRef.current!);
 
-      // Create an invisible plane at y=0 (floor level)
-      const floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+      // Create a floor plane at y=0
+      const floorPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
       const intersectionPoint = new THREE.Vector3();
 
-      raycaster.ray.intersectPlane(floorPlane, intersectionPoint);
+      if (raycaster.ray.intersectPlane(floorPlane, intersectionPoint)) {
+        console.log('Intersection point:', intersectionPoint);
 
-      // Create and add furniture
-      const furnitureMesh = createFurnitureMesh(item.id);
-      furnitureMesh.position.copy(intersectionPoint);
+        // Create and add furniture
+        const furnitureMesh = createFurnitureMesh(item.id);
 
-      // Ensure base is at floor level
-      if (item.id === 'table') {
-        furnitureMesh.position.y = 37.5; // Half height of table
-      } else if (item.id === 'person') {
-        furnitureMesh.position.y = 0;
-      } else if (item.id === 'armchair') {
-        furnitureMesh.position.y = 22.5; // Half height of chair
-      }
+        // Adjust position based on object type
+        let yOffset = 0;
+        switch (item.id) {
+          case 'table':
+            yOffset = 37.5; // Half height of table
+            break;
+          case 'armchair':
+            yOffset = 22.5; // Half height of chair
+            break;
+          case 'person':
+            yOffset = 60; // Half height of person
+            break;
+        }
 
-      sceneRef.current?.add(furnitureMesh);
+        // Set position
+        furnitureMesh.position.set(
+          intersectionPoint.x,
+          yOffset, // Y offset to place on floor
+          intersectionPoint.z
+        );
 
-      const newItem: FurnitureItem = {
-        id: item.id,
-        name: item.name,
-        position: intersectionPoint.clone(),
-        rotation: new THREE.Euler(),
-      };
+        console.log('Adding furniture at position:', furnitureMesh.position);
 
-      setFurniture(prev => [...prev, newItem]);
-      onFurnitureAdd?.(newItem);
+        // Add to scene
+        sceneRef.current?.add(furnitureMesh);
 
-      // Force a re-render
-      if (rendererRef.current && sceneRef.current && cameraRef.current) {
-        rendererRef.current.render(sceneRef.current, cameraRef.current);
+        // Add to furniture state
+        const newItem: FurnitureItem = {
+          id: item.id,
+          name: item.name,
+          position: new THREE.Vector3(intersectionPoint.x, yOffset, intersectionPoint.z),
+          rotation: new THREE.Euler()
+        };
+
+        setFurniture(prev => [...prev, newItem]);
+        onFurnitureAdd?.(newItem);
+
+        // Force a render
+        if (rendererRef.current && sceneRef.current && cameraRef.current) {
+          rendererRef.current.render(sceneRef.current, cameraRef.current);
+        }
+      } else {
+        console.log('No intersection with floor plane');
       }
     };
 
