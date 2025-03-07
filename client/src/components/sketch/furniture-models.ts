@@ -48,34 +48,114 @@ export const createTableModel = (): THREE.Group => {
 export const createPersonModel = (): THREE.Group => {
   const group = new THREE.Group();
 
-  // Body material
-  const bodyMaterial = new THREE.MeshStandardMaterial({
-    color: 0x4A5568,
-    roughness: 0.9,
+  // Materials
+  const skinMaterial = new THREE.MeshStandardMaterial({
+    color: 0xE0AC69, // Skin tone
+    roughness: 0.3,
+    metalness: 0.2
+  });
+
+  const clothingMaterial = new THREE.MeshStandardMaterial({
+    color: 0x4A5568, // Dark gray for clothing
+    roughness: 0.7,
     metalness: 0.1
   });
 
-  // Body (torso)
-  const bodyGeometry = new THREE.CylinderGeometry(15, 15, 60, 8);
-  const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
-  body.position.z = 30; // Half height of body
-  group.add(body);
+  // Torso (body)
+  const torsoGeometry = new THREE.CapsuleGeometry(12, 40, 8, 16);
+  const torso = new THREE.Mesh(torsoGeometry, clothingMaterial);
+  torso.position.z = 60; // Center of body height
+  group.add(torso);
 
-  // Head
-  const headGeometry = new THREE.SphereGeometry(12, 16, 16);
-  const head = new THREE.Mesh(headGeometry, bodyMaterial);
-  head.position.z = 72; // Position above body
+  // Neck
+  const neckGeometry = new THREE.CylinderGeometry(4, 5, 8, 16);
+  const neck = new THREE.Mesh(neckGeometry, skinMaterial);
+  neck.position.z = 84; // Above torso
+  group.add(neck);
+
+  // Head (more detailed with face direction)
+  const headGeometry = new THREE.SphereGeometry(10, 32, 32);
+  const head = new THREE.Mesh(headGeometry, skinMaterial);
+  head.position.z = 98; // Above neck
   group.add(head);
 
-  // Legs
-  const legGeometry = new THREE.CylinderGeometry(5, 5, 50, 8);
-  const leftLeg = new THREE.Mesh(legGeometry, bodyMaterial);
-  leftLeg.position.set(8, 0, 25);
-  group.add(leftLeg);
+  // Arms
+  const createArm = (isLeft: boolean) => {
+    const armGroup = new THREE.Group();
 
-  const rightLeg = new THREE.Mesh(legGeometry, bodyMaterial);
-  rightLeg.position.set(-8, 0, 25);
-  group.add(rightLeg);
+    // Upper arm
+    const upperArmGeometry = new THREE.CapsuleGeometry(4, 20, 8, 8);
+    const upperArm = new THREE.Mesh(upperArmGeometry, clothingMaterial);
+    upperArm.position.z = -10;
+    armGroup.add(upperArm);
+
+    // Elbow joint
+    const elbowGeometry = new THREE.SphereGeometry(4, 16, 16);
+    const elbow = new THREE.Mesh(elbowGeometry, clothingMaterial);
+    elbow.position.z = -20;
+    armGroup.add(elbow);
+
+    // Lower arm
+    const lowerArmGeometry = new THREE.CapsuleGeometry(3.5, 20, 8, 8);
+    const lowerArm = new THREE.Mesh(lowerArmGeometry, skinMaterial);
+    lowerArm.position.z = -30;
+    armGroup.add(lowerArm);
+
+    // Hand
+    const handGeometry = new THREE.SphereGeometry(4, 16, 16);
+    const hand = new THREE.Mesh(handGeometry, skinMaterial);
+    hand.position.z = -40;
+    armGroup.add(hand);
+
+    // Position the entire arm
+    armGroup.position.set(isLeft ? 16 : -16, 0, 75);
+    armGroup.rotation.x = Math.PI * 0.1; // Slight forward tilt
+
+    return armGroup;
+  };
+
+  // Add both arms
+  group.add(createArm(true)); // Left arm
+  group.add(createArm(false)); // Right arm
+
+  // Legs
+  const createLeg = (isLeft: boolean) => {
+    const legGroup = new THREE.Group();
+
+    // Upper leg
+    const upperLegGeometry = new THREE.CapsuleGeometry(5, 25, 8, 8);
+    const upperLeg = new THREE.Mesh(upperLegGeometry, clothingMaterial);
+    upperLeg.position.z = -12.5;
+    legGroup.add(upperLeg);
+
+    // Knee joint
+    const kneeGeometry = new THREE.SphereGeometry(5, 16, 16);
+    const knee = new THREE.Mesh(kneeGeometry, clothingMaterial);
+    knee.position.z = -25;
+    legGroup.add(knee);
+
+    // Lower leg
+    const lowerLegGeometry = new THREE.CapsuleGeometry(4.5, 25, 8, 8);
+    const lowerLeg = new THREE.Mesh(lowerLegGeometry, clothingMaterial);
+    lowerLeg.position.z = -37.5;
+    legGroup.add(lowerLeg);
+
+    // Foot
+    const footGeometry = new THREE.BoxGeometry(8, 12, 4);
+    const foot = new THREE.Mesh(footGeometry, skinMaterial);
+    foot.position.z = -52;
+    foot.position.y = 2; // Slight forward position for feet
+    legGroup.add(foot);
+
+    // Position the entire leg
+    legGroup.position.set(isLeft ? 8 : -8, 0, 60);
+
+    return legGroup;
+  };
+
+  // Add both legs
+  group.add(createLeg(true)); // Left leg
+  group.add(createLeg(false)); // Right leg
 
   return group;
 };
