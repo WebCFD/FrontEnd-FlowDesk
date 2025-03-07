@@ -1,0 +1,34 @@
+[Violation] 'requestAnimationFrame' handler took 109ms
+Canvas2D.tsx:410 Drawing window at (187.44827663156894, 220.08995853542342)
+Canvas2D.tsx:411 Normal vector: (0.214, 0.977)
+Canvas2D.tsx:410 Drawing door at (450.24576978361586, 108.24904478984874)
+Canvas2D.tsx:411 Normal vector: (-0.975, -0.220)
+Canvas2D.tsx:410 Drawing vent at (436.1575272997921, 460)
+Canvas2D.tsx:411 Normal vector: (1.000, 0.000)
+Canvas2D.tsx:410 Drawing window at (734.427281021358, 318.24060755911404)
+Canvas2D.tsx:411 Normal vector: (0.236, -0.972)
+Canvas2D.tsx:301 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:609 Vertex color set to green: {x: 240, y: 460}
+Canvas2D.tsx:401 2D Point clicked - Screen: (240, 460), In cm: (-200, -200)
+Canvas2D.tsx:301 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:609 Vertex color set to green: {x: 700, y: 460}
+Canvas2D.tsx:401 2D Point clicked - Screen: (700, 460), In cm: (375, -200)
+Canvas2D.tsx:301 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:609 Vertex color set to green: {x: 700, y: 460}
+Canvas2D.tsx:401 2D Point clicked - Screen: (700, 460), In cm: (375, -200)
+Canvas2D.tsx:301 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:609 Vertex color set to green: {x: 768, y: 180}
+Canvas2D.tsx:401 2D Point clicked - Screen: (768, 180), In cm: (460, 150)
+Canvas2D.tsx:301 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:609 Vertex color set to green: {x: 768, y: 180}
+Canvas2D.tsx:401 2D Point clicked - Screen: (768, 180), In cm: (460, 150)
+Canvas2D.tsx:301 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:609 Vertex color set to green: {x: 148, y: 40}
+Canvas2D.tsx:401 2D Point clicked - Screen: (148, 40), In cm: (-315, 325)
+Canvas2D.tsx:301 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:609 Vertex color set to green: {x: 148, y: 40}
+Canvas2D.tsx:401 2D Point clicked - Screen: (148, 40), In cm: (-315, 325)
+Canvas2D.tsx:301 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:609 Vertex color set to green: {x: 240, y: 460}
+Canvas2D.tsx:401 2D Point clicked - Screen: (240, 460), In cm: (-200, -200)
+Canvas2D.tsx:733 [Violation] 'requestAnimationFrame' handler took 123ms
