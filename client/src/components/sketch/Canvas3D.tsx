@@ -381,11 +381,6 @@ export default function Canvas3D({
     });
 
     // Create air entries using the same normal calculations as the walls
-    // REPLACE THE AIR ENTRY CREATION SECTION WITH THIS CODE
-    // Look for the part starting with: airEntries.forEach((entry) => {
-
-    // REPLACE THE ENTIRE AIR ENTRY CREATION SECTION WITH THIS CODE
-
     airEntries.forEach((entry) => {
       // Set color based on entry type
       const color =
@@ -508,6 +503,11 @@ export default function Canvas3D({
         const marker = new THREE.Mesh(markerGeometry, markerMaterial);
         marker.position.copy(arrowPosition);
         sceneRef.current?.add(marker);
+
+        // Add coordinate label for debugging (Canvas3D version)
+        console.log(`Canvas3D: Adding coordinate marker for ${entry.type} at:`, {
+          position: `(${arrowPosition.x.toFixed(1)}, ${arrowPosition.y.toFixed(1)}, ${arrowPosition.z.toFixed(1)})`
+        });
       }
 
       // Original debug arrow for wall normal (black)

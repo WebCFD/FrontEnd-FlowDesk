@@ -7,29 +7,47 @@ const makeTextSprite = (
   message: string,
   position: THREE.Vector3,
 ): THREE.Sprite => {
+  console.log(`Creating text sprite: "${message}" at position:`, {
+    x: position.x.toFixed(1),
+    y: position.y.toFixed(1),
+    z: position.z.toFixed(1)
+  });
+
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
-  if (!context) return new THREE.Sprite();
+  if (!context) {
+    console.error("Failed to get 2D context for text sprite");
+    return new THREE.Sprite();
+  }
 
   canvas.width = 256;
   canvas.height = 128;
 
-  context.font = "24px Arial";
-  //context.fillStyle = "rgba(255,255,255,0.95)";
+  // Fill background (dark semi-transparent background for better contrast)
+  context.fillStyle = "rgba(0,0,0,0.7)";
   context.fillRect(0, 0, canvas.width, canvas.height);
-  //context.fillStyle = "black";
-  context.fillStyle = "white"; // White text
+  
+  // Draw text
+  context.font = "bold 24px Arial";
+  context.fillStyle = "white"; // White text for better visibility
   context.textAlign = "center";
   context.fillText(message, canvas.width / 2, canvas.height / 2);
 
   const texture = new THREE.CanvasTexture(canvas);
-  const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+  const spriteMaterial = new THREE.SpriteMaterial({ 
+    map: texture,
+    transparent: true
+  });
   const sprite = new THREE.Sprite(spriteMaterial);
 
   sprite.position.copy(position);
-  //sprite.position.y += 20; // Offset above the point
+  // Offset slightly to avoid overlap with marker
+  sprite.position.z += 5;
+  
   sprite.scale.set(75, 35, 1); // Larger sprite
   sprite.renderOrder = 999; // Ensure it's drawn on top
+  
+  console.log("Text sprite created successfully");
   return sprite;
 };
 
@@ -812,8 +830,14 @@ export function RoomSketchPro({
       // Add coordinate label
       const coordinates = marker.position;
       const coordText = `(${coordinates.x.toFixed(1)}, ${coordinates.y.toFixed(1)}, ${coordinates.z.toFixed(1)}) cm`;
+      console.log(`Creating coordinate label for ${entry.type}:`, {
+        position: `(${coordinates.x.toFixed(1)}, ${coordinates.y.toFixed(1)}, ${coordinates.z.toFixed(1)})`,
+        text: coordText
+      });
       const label = makeTextSprite(coordText, marker.position);
+      label.name = `${entry.type}_label_${coordinates.x.toFixed(0)}_${coordinates.y.toFixed(0)}`;
       scene.add(label);
+      console.log(`Added label to scene: ${label.name}`);
 
       scene.add(mesh);
     });
@@ -1191,6 +1215,26 @@ export function RoomSketchPro({
     createAirEntries(scene);
     createFloorAndRoof(scene, renderer, camera);
 
+    // Count and log all labels in the scene for debugging
+    const countLabelsInScene = () => {
+      let labelCount = 0;
+      scene.traverse((object) => {
+        if (object.type === 'Sprite' && object.name.includes('label')) {
+          labelCount++;
+          console.log(`Found label in scene: ${object.name}`, {
+            position: `(${object.position.x.toFixed(1)}, ${object.position.y.toFixed(1)}, ${object.position.z.toFixed(1)})`
+          });
+        }
+      });
+      console.log(`Total labels in scene: ${labelCount}`);
+      return labelCount;
+    };
+    
+    // Call once after setup
+    setTimeout(() => {
+      countLabelsInScene();
+    }, 1000);
+    
     // Animation loop
     const animate = () => {
       requestAnimationFrame(animate);
