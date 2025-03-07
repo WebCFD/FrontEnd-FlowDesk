@@ -4,16 +4,9 @@ import { TrackballControls } from "three/addons/controls/TrackballControls.js";
 
 // Utility function to create text sprites
 const makeTextSprite = (message: string, position: THREE.Vector3): THREE.Sprite => {
-  console.log(`Creating text sprite: "${message}" at position:`, {
-    x: position.x.toFixed(1),
-    y: position.y.toFixed(1),
-    z: position.z.toFixed(1)
-  });
-
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
   if (!context) {
-    console.error("Failed to get 2D context for text sprite");
     return new THREE.Sprite();
   }
 
@@ -44,7 +37,6 @@ const makeTextSprite = (message: string, position: THREE.Vector3): THREE.Sprite 
   sprite.scale.set(75, 35, 1); // Larger sprite
   sprite.renderOrder = 999; // Ensure it's drawn on top
 
-  console.log("Text sprite created successfully");
   return sprite;
 };
 
