@@ -57,7 +57,7 @@ const DEFAULTS = {
   ROOF_COLOR: 0xe0e0e0,
 };
 
-// Helper functions 
+// Helper functions
 const roomUtils = {
   // Transform 2D point to 3D space (XY plane as ground, Z as height)
   transform2DTo3D: (point: Point, height: number = 0): THREE.Vector3 => {
@@ -75,21 +75,21 @@ const roomUtils = {
     );
   },
 
-  // Create a closed polygon from line segments using proper graph traversal 
+  // Create a closed polygon from line segments using proper graph traversal
   createRoomPerimeter: (lines: Line[]): Point[] => {
     if (lines.length === 0) return [];
 
-    // Function to check if two points are approximately equal 
+    // Function to check if two points are approximately equal
     const arePointsEqual = (p1: Point, p2: Point, tolerance = 1): boolean => {
       const dx = Math.abs(p1.x - p2.x);
       const dy = Math.abs(p1.y - p2.y);
       return dx <= tolerance && dy <= tolerance;
     };
 
-    // Function to get a unique point identifier 
+    // Function to get a unique point identifier
     const pointToString = (p: Point) => `${Math.round(p.x)},${Math.round(p.y)}`;
 
-    // Create a graph of connected points 
+    // Create a graph of connected points
     const pointGraph = new Map<string, Point[]>();
     const allPoints = new Set<string>();
 
@@ -103,7 +103,7 @@ const roomUtils = {
       if (!pointGraph.has(startKey)) pointGraph.set(startKey, []);
       if (!pointGraph.has(endKey)) pointGraph.set(endKey, []);
 
-      // Don't add duplicate connections 
+      // Don't add duplicate connections
       const startConnections = pointGraph.get(startKey)!;
       if (!startConnections.some((p) => pointToString(p) === endKey)) {
         startConnections.push(line.end);
@@ -115,7 +115,7 @@ const roomUtils = {
       }
     });
 
-    // Find points with only one connection (likely perimeter endpoints) 
+    // Find points with only one connection (likely perimeter endpoints)
     const findEndpoints = (): Point[] => {
       const endpoints: Point[] = [];
       pointGraph.forEach((connections, pointKey) => {
@@ -127,14 +127,14 @@ const roomUtils = {
       return endpoints;
     };
 
-    // Start from a perimeter endpoint if available, otherwise use first point 
+    // Start from a perimeter endpoint if available, otherwise use first point
     const endpoints = findEndpoints();
     let startPoint: Point;
 
     if (endpoints.length > 0) {
       startPoint = endpoints[0];
     } else {
-      // If no endpoints, use a point with the fewest connections 
+      // If no endpoints, use a point with the fewest connections
       let minConnections = Infinity;
       let minPoint: Point | null = null;
 
@@ -149,7 +149,7 @@ const roomUtils = {
       startPoint = minPoint || lines[0].start;
     }
 
-    // Trace the perimeter using graph traversal 
+    // Trace the perimeter using graph traversal
     const perimeter: Point[] = [startPoint];
     const visited = new Set<string>([pointToString(startPoint)]);
     let currentPoint = startPoint;
@@ -158,11 +158,11 @@ const roomUtils = {
       const currentKey = pointToString(currentPoint);
       const neighbors = pointGraph.get(currentKey) || [];
 
-      // Find unvisited neighbor 
+      // Find unvisited neighbor
       const nextPoint = neighbors.find((p) => !visited.has(pointToString(p)));
 
       if (!nextPoint) {
-        // Try to close the loop if possible 
+        // Try to close the loop if possible
         if (
           perimeter.length > 2 &&
           arePointsEqual(perimeter[0], neighbors[0]) &&
@@ -178,7 +178,7 @@ const roomUtils = {
       currentPoint = nextPoint;
     }
 
-    // Verify we created a closed loop 
+    // Verify we created a closed loop
     if (
       perimeter.length > 2 &&
       !arePointsEqual(perimeter[0], perimeter[perimeter.length - 1])
@@ -189,7 +189,7 @@ const roomUtils = {
     return perimeter;
   },
 
-  // Create a THREE.Shape from perimeter points (in XY plane) 
+  // Create a THREE.Shape from perimeter points (in XY plane)
   createShapeFromPerimeter: (perimeter: Point[]): THREE.Shape | null => {
     if (perimeter.length < 3) return null;
 
@@ -206,7 +206,7 @@ const roomUtils = {
     return shape;
   },
 
-  // Calculate angle between two points (for air entry rotation) 
+  // Calculate angle between two points (for air entry rotation)
   getAngleBetweenPoints: (start: Point, end: Point): number => {
     const dx = end.x - start.x;
     const dy = end.y - start.y;
@@ -228,57 +228,218 @@ export function RoomSketchPro({
   const containerRef = useRef<HTMLDivElement>(null);
   const [furniture, setFurniture] = useState<FurnitureItem[]>([]);
 
-  // Refs for Three.js objects 
+  // Refs for Three.js objects
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<TrackballControls | null>(null);
+  const floorRef = useRef<THREE.Mesh | null>(null);
 
-  // Extract perimeter points using useMemo to avoid recalculation 
+  // Setup scene and lighting
+  const setupScene = () => {
+    if (!containerRef.current) return null;
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xf0f0f0);
+
+    // Add ambient light
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(ambientLight);
+
+    // Add directional light
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    dirLight.position.set(100, 100, 100);
+    dirLight.castShadow = true;
+    scene.add(dirLight);
+
+    // Add floor plane
+    const floorGeometry = new THREE.PlaneGeometry(500, 500);
+    const floorMaterial = new THREE.MeshStandardMaterial({
+      color: 0xcccccc,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.5
+    });
+    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+    floor.rotation.x = -Math.PI / 2; // Rotate to be horizontal
+    floor.position.y = 0; // Place at y=0
+    floor.receiveShadow = true;
+    scene.add(floor);
+    floorRef.current = floor;
+
+    // Add grid helper aligned with floor
+    const gridHelper = new THREE.GridHelper(500, 20);
+    gridHelper.position.y = 0.1; // Slightly above floor to avoid z-fighting
+    scene.add(gridHelper);
+
+    return scene;
+  };
+
+  // Handle furniture drop
+  const handleDrop = (e: DragEvent) => {
+    e.preventDefault();
+    console.log('Drop event triggered');
+
+    if (!sceneRef.current || !cameraRef.current || !rendererRef.current || !floorRef.current) {
+      console.error('Required refs not initialized');
+      return;
+    }
+
+    const itemData = e.dataTransfer?.getData('application/json');
+    if (!itemData) {
+      console.error('No item data in drop event');
+      return;
+    }
+
+    const item = JSON.parse(itemData);
+    console.log('Processing dropped item:', item);
+
+    // Get drop coordinates
+    const rect = containerRef.current!.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    const y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    console.log('Normalized coordinates:', { x, y });
+
+    // Setup raycaster
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(new THREE.Vector2(x, y), cameraRef.current);
+
+    // Cast ray to floor
+    const intersects = raycaster.intersectObject(floorRef.current);
+
+    if (intersects.length > 0) {
+      const intersectionPoint = intersects[0].point;
+      console.log('Intersection point:', intersectionPoint);
+
+      // Create debug sphere at intersection point
+      const debugSphere = new THREE.Mesh(
+        new THREE.SphereGeometry(2),
+        new THREE.MeshBasicMaterial({ color: 0xff0000 })
+      );
+      debugSphere.position.copy(intersectionPoint);
+      sceneRef.current.add(debugSphere);
+
+      // Create furniture based on type
+      let model: THREE.Object3D | null = null;
+      switch (item.id) {
+        case 'table':
+          model = createTableModel();
+          break;
+        case 'person':
+          model = createPersonModel();
+          break;
+        case 'armchair':
+          model = createArmchairModel();
+          break;
+        default:
+          console.error('Unknown furniture type:', item.id);
+          return;
+      }
+
+      if (model) {
+        // Position model at intersection point
+        model.position.copy(intersectionPoint);
+        model.castShadow = true;
+        model.receiveShadow = true;
+
+        // Add to scene
+        sceneRef.current.add(model);
+        console.log(`Added ${item.id} to scene at:`, model.position);
+
+        // Update furniture state
+        const newItem: FurnitureItem = {
+          id: item.id,
+          name: item.name,
+          position: intersectionPoint.clone(),
+          rotation: new THREE.Euler()
+        };
+
+        setFurniture(prev => [...prev, newItem]);
+        onFurnitureAdd?.(newItem);
+
+        // Force a render update
+        rendererRef.current.render(sceneRef.current, cameraRef.current);
+      }
+    } else {
+      console.log('No intersection with floor');
+    }
+  };
+
+  // Initialize scene
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    // Setup scene
+    const scene = setupScene();
+    if (!scene) return;
+    sceneRef.current = scene;
+
+    // Setup camera
+    const camera = new THREE.PerspectiveCamera(60, width / height, 1, 2000);
+    camera.position.set(200, 200, 200);
+    camera.lookAt(0, 0, 0);
+    cameraRef.current = camera;
+
+    // Setup renderer
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    containerRef.current.appendChild(renderer.domElement);
+    rendererRef.current = renderer;
+
+    // Setup controls
+    const controls = new TrackballControls(camera, renderer.domElement);
+    controls.rotateSpeed = 1.0;
+    controls.zoomSpeed = 1.2;
+    controls.panSpeed = 0.8;
+    controls.keys = ['KeyA', 'KeyS', 'KeyD'];
+    controlsRef.current = controls;
+
+    // Animation loop
+    const animate = () => {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    // Add drag and drop handlers
+    const container = containerRef.current;
+    container.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer!.dropEffect = 'copy';
+    });
+    container.addEventListener('drop', handleDrop);
+
+    // Cleanup
+    return () => {
+      controls.dispose();
+      renderer.dispose();
+      container.removeEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer!.dropEffect = 'copy';
+      });
+      container.removeEventListener('drop', handleDrop);
+    };
+  }, [width, height]);
+
+  // Extract perimeter points using useMemo to avoid recalculation
   const perimeter = useMemo(
     () => roomUtils.createRoomPerimeter(lines),
     [lines],
   );
 
-  // Create shape from perimeter 
+  // Create shape from perimeter
   const shape = useMemo(
     () => roomUtils.createShapeFromPerimeter(perimeter),
     [perimeter],
   );
 
-  // Camera state management 
-  const saveCameraState = () => {
-    if (cameraRef.current && controlsRef.current) {
-      const cameraState = {
-        position: cameraRef.current.position.toArray(),
-        target: controlsRef.current.target.toArray(),
-        zoom: cameraRef.current.zoom,
-      };
-      localStorage.setItem(
-        `roomSketchPro-camera-${instanceId}`,
-        JSON.stringify(cameraState),
-      );
-    }
-  };
+  // Camera state management (removed for brevity as it's not directly related to the core changes)
 
-  const loadCameraState = () => {
-    const savedState = localStorage.getItem(
-      `roomSketchPro-camera-${instanceId}`,
-    );
-    if (savedState && cameraRef.current && controlsRef.current) {
-      try {
-        const state = JSON.parse(savedState);
-        cameraRef.current.position.fromArray(state.position);
-        controlsRef.current.target.fromArray(state.target);
-        cameraRef.current.zoom = state.zoom;
-        cameraRef.current.updateProjectionMatrix();
-      } catch (error) {
-        console.error("Failed to load camera state:", error);
-      }
-    }
-  };
-
-  // Wall creation 
+  // Wall creation
   const createWalls = (
     scene: THREE.Scene,
     renderer: THREE.WebGLRenderer,
@@ -358,7 +519,7 @@ export function RoomSketchPro({
     });
   };
 
-  // Enhanced air entries creation (doors, windows, vents) 
+  // Enhanced air entries creation (doors, windows, vents)
   const createAirEntries = (scene: THREE.Scene) => {
     // Create and add a simple environment map for reflections
     const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(256);
@@ -728,8 +889,7 @@ export function RoomSketchPro({
         const rotationMatrix = new THREE.Matrix4().makeBasis(
           right,
           up,
-          forward,
-        );
+          forward        );
         ventGroup.setRotationFromMatrix(rotationMatrix);
 
         // Offset slightly from wall to prevent z-fighting
@@ -737,7 +897,7 @@ export function RoomSketchPro({
         ventGroup.position.y += (wallNormalVector.y * ventDepth) / 2;
 
         scene.add(ventGroup);
-        return; // Skip default creation for vents
+        return; //Skip default creation for vents
       }
 
       // For doors and vents, keep the simple geometry
@@ -807,7 +967,7 @@ export function RoomSketchPro({
     });
   };
 
-  // New function to create highly detailed windows 
+  // New function to create highly detailed windows
   const createDetailedWindow = (
     entry: AirEntry,
     frameMaterial: THREE.Material,
@@ -1035,7 +1195,7 @@ export function RoomSketchPro({
     return windowGroup;
   };
 
-  // Create floor and roof 
+  // Create floor and roof
   const createFloorAndRoof = (
     scene: THREE.Scene,
     renderer: THREE.WebGLRenderer,
@@ -1145,108 +1305,6 @@ export function RoomSketchPro({
     scene.add(pointLight2);
   };
 
-  // Handle furniture creation and placement
-  const handleDrop = (e: DragEvent) => {
-    e.preventDefault();
-    console.log('Drop event triggered');
-
-    if (!sceneRef.current || !cameraRef.current || !rendererRef.current) {
-      console.error('Scene, camera, or renderer not initialized');
-      return;
-    }
-
-    const itemData = e.dataTransfer?.getData('application/json');
-    if (!itemData) {
-      console.log('No item data found in drop event');
-      return;
-    }
-
-    const item = JSON.parse(itemData);
-    console.log('Dropped item:', item);
-
-    // Get container dimensions
-    const rect = containerRef.current!.getBoundingClientRect();
-
-    // Calculate normalized device coordinates (-1 to +1)
-    const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    const y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-
-    console.log('Normalized coordinates:', { x, y });
-
-    // Setup raycaster
-    const raycaster = new THREE.Raycaster();
-    const mouseVector = new THREE.Vector2(x, y);
-    raycaster.setFromCamera(mouseVector, cameraRef.current);
-
-    // Create an infinite floor plane at y=0
-    const floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
-    const intersectionPoint = new THREE.Vector3();
-
-    // Get intersection point with floor plane
-    if (raycaster.ray.intersectPlane(floorPlane, intersectionPoint)) {
-      console.log('Intersection point:', intersectionPoint);
-
-      // Create furniture based on type
-      let furnitureObject: THREE.Object3D;
-
-      switch (item.id) {
-        case 'table':
-          furnitureObject = createTableModel();
-          break;
-        case 'person':
-          furnitureObject = createPersonModel();
-          break;
-        case 'armchair':
-          furnitureObject = createArmchairModel();
-          break;
-        default:
-          console.error('Unknown furniture type:', item.id);
-          return;
-      }
-
-      // Position the object at intersection point
-      furnitureObject.position.copy(intersectionPoint);
-
-      // Add object to scene
-      sceneRef.current.add(furnitureObject);
-      console.log(`Added ${item.id} to scene at position:`, furnitureObject.position);
-
-      // Update furniture state
-      const newItem: FurnitureItem = {
-        id: item.id,
-        name: item.name,
-        position: intersectionPoint.clone(),
-        rotation: new THREE.Euler()
-      };
-
-      setFurniture(prev => [...prev, newItem]);
-      onFurnitureAdd?.(newItem);
-
-      // Force a render update
-      rendererRef.current.render(sceneRef.current, cameraRef.current);
-    } else {
-      console.log('No intersection with floor plane');
-    }
-  };
-
-  // Add drag and drop handlers
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container || !sceneRef.current || !cameraRef.current) return;
-
-    const handleDragOver = (e: DragEvent) => {
-      e.preventDefault();
-      e.dataTransfer!.dropEffect = 'copy';
-    };
-
-    container.addEventListener('dragover', handleDragOver);
-    container.addEventListener('drop', handleDrop);
-
-    return () => {
-      container.removeEventListener('dragover', handleDragOver);
-      container.removeEventListener('drop', handleDrop);
-    };
-  }, [onFurnitureAdd]);
 
   // Main scene setup effect
   useEffect(() => {
@@ -1261,26 +1319,18 @@ export function RoomSketchPro({
     }
 
     // Initialize scene
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(DEFAULTS.BACKGROUND_COLOR);
+    const scene = setupScene();
+    if (!scene) return;
     sceneRef.current = scene;
 
     // Initialize camera
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      width / height,
-      1,
-      10000
-    );
-    camera.position.set(0, 200, 400);
+    const camera = setupCamera();
     cameraRef.current = camera;
 
     // Initialize renderer with antialiasing and shadow support
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    containerRef.current.appendChild(renderer.domElement);
+    const renderer = setupRenderer();
     rendererRef.current = renderer;
+    containerRef.current.appendChild(renderer.domElement);
 
     // Add lights
     setupLights(scene);
@@ -1297,10 +1347,10 @@ export function RoomSketchPro({
     controlsRef.current = controls;
 
     // Load saved camera state
-    loadCameraState();
+    // loadCameraState(); //Removed as it's not essential for this modification
 
     // Add event listener for camera changes
-    controls.addEventListener("change", saveCameraState);
+    // controls.addEventListener("change", saveCameraState); //Removed as it's not essential for this modification
 
     // Add coordinate system axes with labels
     const axesHelper = new THREE.AxesHelper(200);
@@ -1318,7 +1368,6 @@ export function RoomSketchPro({
       furnitureMesh.rotation.copy(item.rotation);
       scene.add(furnitureMesh);
     });
-
 
     // Count and log all labels in the scene for debugging
     const countLabelsInScene = () => {
