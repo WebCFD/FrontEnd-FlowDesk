@@ -252,43 +252,43 @@ export function RoomSketchPro({
     dirLight.castShadow = true;
     scene.add(dirLight);
 
-    // Add floor plane
+    // Add floor plane (in XY plane)
     const floorGeometry = new THREE.PlaneGeometry(500, 500);
     const floorMaterial = new THREE.MeshStandardMaterial({
       color: 0xcccccc,
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.5
+      opacity: 0.5,
     });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.rotation.x = -Math.PI / 2; // Rotate to be horizontal
-    floor.position.y = 0; // Place at y=0
+    floor.position.z = 0; // Place at z=0
     floor.receiveShadow = true;
     scene.add(floor);
     floorRef.current = floor;
 
-    // Add grid helper aligned with floor
+    // Add grid helper aligned with floor in XY plane
     const gridHelper = new THREE.GridHelper(500, 20);
-    gridHelper.position.y = 0.1; // Slightly above floor to avoid z-fighting
+    gridHelper.rotation.x = Math.PI / 2; // Rotate to XY plane
+    gridHelper.position.z = 0.1; // Slightly behind floor to avoid z-fighting
     scene.add(gridHelper);
 
     return scene;
   };
 
-  // Setup camera function
+  // Setup camera function with better viewing angle for XY plane
   const setupCamera = () => {
     const camera = new THREE.PerspectiveCamera(
       60,
       width / height,
       1,
-      2000
+      2000,
     );
-    camera.position.set(200, 200, 200);
+    camera.position.set(200, 200, 400); // Position for viewing XY plane
     camera.lookAt(0, 0, 0);
     return camera;
   };
 
-  // Setup renderer function
+  // Add the setupRenderer function after setupCamera
   const setupRenderer = () => {
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
@@ -301,30 +301,35 @@ export function RoomSketchPro({
     return renderer;
   };
 
-  // Handle furniture drop
+  // Handle furniture drop with updated plane intersection
   const handleDrop = (e: DragEvent) => {
     e.preventDefault();
-    console.log('Drop event triggered');
+    console.log("Drop event triggered");
 
-    if (!sceneRef.current || !cameraRef.current || !rendererRef.current || !floorRef.current) {
-      console.error('Required refs not initialized');
+    if (
+      !sceneRef.current ||
+      !cameraRef.current ||
+      !rendererRef.current ||
+      !floorRef.current
+    ) {
+      console.error("Required refs not initialized");
       return;
     }
 
-    const itemData = e.dataTransfer?.getData('application/json');
+    const itemData = e.dataTransfer?.getData("application/json");
     if (!itemData) {
-      console.error('No item data in drop event');
+      console.error("No item data in drop event");
       return;
     }
 
     const item = JSON.parse(itemData);
-    console.log('Processing dropped item:', item);
+    console.log("Processing dropped item:", item);
 
     // Get drop coordinates
     const rect = containerRef.current!.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
     const y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-    console.log('Normalized coordinates:', { x, y });
+    console.log("Normalized coordinates:", { x, y });
 
     // Setup raycaster
     const raycaster = new THREE.Raycaster();
@@ -335,12 +340,12 @@ export function RoomSketchPro({
 
     if (intersects.length > 0) {
       const intersectionPoint = intersects[0].point;
-      console.log('Intersection point:', intersectionPoint);
+      console.log("Intersection point:", intersectionPoint);
 
       // Create debug sphere at intersection point
       const debugSphere = new THREE.Mesh(
         new THREE.SphereGeometry(2),
-        new THREE.MeshBasicMaterial({ color: 0xff0000 })
+        new THREE.MeshBasicMaterial({ color: 0xff0000 }),
       );
       debugSphere.position.copy(intersectionPoint);
       sceneRef.current.add(debugSphere);
@@ -348,17 +353,17 @@ export function RoomSketchPro({
       // Create furniture based on type
       let model: THREE.Object3D | null = null;
       switch (item.id) {
-        case 'table':
+        case "table":
           model = createTableModel();
           break;
-        case 'person':
+        case "person":
           model = createPersonModel();
           break;
-        case 'armchair':
+        case "armchair":
           model = createArmchairModel();
           break;
         default:
-          console.error('Unknown furniture type:', item.id);
+          console.error("Unknown furniture type:", item.id);
           return;
       }
 
@@ -377,17 +382,17 @@ export function RoomSketchPro({
           id: item.id,
           name: item.name,
           position: intersectionPoint.clone(),
-          rotation: new THREE.Euler()
+          rotation: new THREE.Euler(),
         };
 
-        setFurniture(prev => [...prev, newItem]);
+        setFurniture((prev) => [...prev, newItem]);
         onFurnitureAdd?.(newItem);
 
         // Force a render update
         rendererRef.current.render(sceneRef.current, cameraRef.current);
       }
     } else {
-      console.log('No intersection with floor');
+      console.log("No intersection with floor");
     }
   };
 
@@ -418,7 +423,7 @@ export function RoomSketchPro({
     controls.rotateSpeed = 1.0;
     controls.zoomSpeed = 1.2;
     controls.panSpeed = 0.8;
-    controls.keys = ['KeyA', 'KeyS', 'KeyD'];
+    controls.keys = ["KeyA", "KeyS", "KeyD"];
     controlsRef.current = controls;
 
     // Animation loop
@@ -431,21 +436,21 @@ export function RoomSketchPro({
 
     // Add drag and drop handlers
     const container = containerRef.current;
-    container.addEventListener('dragover', (e) => {
+    container.addEventListener("dragover", (e) => {
       e.preventDefault();
-      e.dataTransfer!.dropEffect = 'copy';
+      e.dataTransfer!.dropEffect = "copy";
     });
-    container.addEventListener('drop', handleDrop);
+    container.addEventListener("drop", handleDrop);
 
     // Cleanup
     return () => {
       controls.dispose();
       renderer.dispose();
-      container.removeEventListener('dragover', (e) => {
+      container.removeEventListener("dragover", (e) => {
         e.preventDefault();
-        e.dataTransfer!.dropEffect = 'copy';
+        e.dataTransfer!.dropEffect = "copy";
       });
-      container.removeEventListener('drop', handleDrop);
+      container.removeEventListener("drop", handleDrop);
     };
   }, [width, height]);
 
@@ -894,8 +899,8 @@ export function RoomSketchPro({
               paneWidth - frameThickness * paneVariation,
               paneHeight - frameThickness * paneVariation,
               0.4, // Very thin glass
-            ),
-            paneGlassMaterial,
+                        ),
+            paneGlassMaterial
           );
 
           glassPane.position.set(pos[0], pos[1], pos[2]);
@@ -913,7 +918,8 @@ export function RoomSketchPro({
         const rotationMatrix = new THREE.Matrix4().makeBasis(
           right,
           up,
-          forward        );
+          forward,
+        );
         ventGroup.setRotationFromMatrix(rotationMatrix);
 
         // Offset slightly from wall to prevent z-fighting
@@ -975,15 +981,19 @@ export function RoomSketchPro({
 
       // Add coordinate label
       const coordinates = marker.position;
-      const coordText = `(${coordinates.x.toFixed(1)}, ${coordinates.y.toFixed(
+      const coordText = `(${coordinates.x.toFixed(
         1,
-      )}, ${coordinates.z.toFixed(1)}) cm`;
+      )}, ${coordinates.y.toFixed(1)}, ${coordinates.z.toFixed(1)}) cm`;
       console.log(`Creating coordinate label for ${entry.type}:`, {
-        position: `(${coordinates.x.toFixed(1)}, ${coordinates.y.toFixed(1)}, ${coordinates.z.toFixed(1)})`,
+        position: `(${coordinates.x.toFixed(1)}, ${coordinates.y.toFixed(
+          1,
+        )}, ${coordinates.z.toFixed(1)})`,
         text: coordText,
       });
       const label = makeTextSprite(coordText, marker.position);
-      label.name = `${entry.type}_label_${coordinates.x.toFixed(0)}_${coordinates.y.toFixed(0)}`;
+      label.name = `${entry.type}_label_${coordinates.x.toFixed(
+        0,
+      )}_${coordinates.y.toFixed(0)}`;
       scene.add(label);
       console.log(`Added label to scene: ${label.name}`);
 
@@ -1281,28 +1291,30 @@ export function RoomSketchPro({
 
   // Add furniture creation functions
   const createFurnitureMesh = (type: string): THREE.Object3D => {
-    console.log('Creating furniture mesh of type:', type);
+    console.log("Creating furniture mesh of type:", type);
 
     switch (type) {
-      case 'table': {
+      case "table": {
         const model = createTableModel();
-        console.log('Created table model');
+        console.log("Created table model");
         return model;
       }
-      case 'person': {
+      case "person": {
         const model = createPersonModel();
-        console.log('Created person model');
+        console.log("Created person model");
         return model;
       }
-      case 'armchair': {
+      case "armchair": {
         const model = createArmchairModel();
-        console.log('Created armchair model');
+        console.log("Created armchair model");
         return model;
       }
       default: {
-        console.log('Creating default mesh');
+        console.log("Creating default mesh");
         const defaultGeometry = new THREE.BoxGeometry(50, 50, 50);
-        const defaultMaterial = new THREE.MeshStandardMaterial({ color: 0x808080 });
+        const defaultMaterial = new THREE.MeshStandardMaterial({
+          color: 0x808080,
+        });
         return new THREE.Mesh(defaultGeometry, defaultMaterial);
       }
     }
@@ -1328,7 +1340,6 @@ export function RoomSketchPro({
     pointLight2.position.set(100, 100, -100);
     scene.add(pointLight2);
   };
-
 
   // Main scene setup effect
   useEffect(() => {
@@ -1380,13 +1391,12 @@ export function RoomSketchPro({
     const axesHelper = new THREE.AxesHelper(200);
     scene.add(axesHelper);
 
-
     createWalls(scene, renderer, camera);
     createAirEntries(scene);
     createFloorAndRoof(scene, renderer, camera);
 
     // Add furniture to the scene
-    furniture.forEach(item => {
+    furniture.forEach((item) => {
       const furnitureMesh = createFurnitureMesh(item.id);
       furnitureMesh.position.copy(item.position);
       furnitureMesh.rotation.copy(item.rotation);
@@ -1400,7 +1410,11 @@ export function RoomSketchPro({
         if (object.type === "Sprite" && object.name.includes("label")) {
           labelCount++;
           console.log(`Found label in scene: ${object.name}`, {
-            position: `(${object.position.x.toFixed(1)}, ${object.position.y.toFixed(1)}, ${object.position.z.toFixed(1)})`,
+            position: `(${object.position.x.toFixed(
+              1,
+            )}, ${object.position.y.toFixed(1)}, ${object.position.z.toFixed(
+              1,
+            )})`,
           });
         }
       });
@@ -1471,7 +1485,7 @@ export function RoomSketchPro({
       style={{
         width: `${width}px`,
         height: `${height}px`,
-        position: 'relative',
+        position: "relative",
       }}
     />
   );
