@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { PlusCircle, Play, Mail, FileEdit } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { FurnitureMenu } from "@/components/sketch/FurnitureMenu";
 
 interface Point {
   x: number;
@@ -362,16 +363,25 @@ export default function WizardDesign() {
     console.log('Rendering Step 2 content');
     return (
       <div className="space-y-6">
-        {/* Independent 3D View for Step 2 */}
-        <div className="w-full h-[600px] border rounded-lg overflow-hidden bg-white">
-          <RoomSketchPro 
-            width={800} 
-            height={600}
-            key="step2-view"
-            instanceId="step2-view"
-            lines={lines}
-            airEntries={airEntries}
+        <div className="flex gap-6">
+          {/* Left side - Furniture Menu */}
+          <FurnitureMenu 
+            onDragStart={(item) => {
+              console.log('Started dragging:', item.name);
+            }}
           />
+
+          {/* Right side - 3D View */}
+          <div className="flex-1 h-[600px] border rounded-lg overflow-hidden bg-white">
+            <RoomSketchPro 
+              width={800} 
+              height={600}
+              key="step2-view"
+              instanceId="step2-view"
+              lines={lines}
+              airEntries={airEntries}
+            />
+          </div>
         </div>
 
         {/* Parameters Card */}
