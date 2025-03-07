@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { Slider } from "@/components/ui/slider";
 
 interface FurnitureItem {
   id: string;
@@ -8,6 +9,8 @@ interface FurnitureItem {
 
 interface FurnitureMenuProps {
   onDragStart: (item: FurnitureItem) => void;
+  wallTransparency: number;
+  onWallTransparencyChange: (value: number) => void;
 }
 
 const furnitureItems: FurnitureItem[] = [
@@ -46,9 +49,24 @@ const furnitureItems: FurnitureItem[] = [
   }
 ];
 
-export function FurnitureMenu({ onDragStart }: FurnitureMenuProps) {
+export function FurnitureMenu({ onDragStart, wallTransparency, onWallTransparencyChange }: FurnitureMenuProps) {
   return (
     <div className="w-48 space-y-6">
+      <div className="space-y-4">
+        <h3 className="font-semibold">View Controls</h3>
+        <div className="space-y-2">
+          <label className="text-sm text-gray-600">Wall Transparency</label>
+          <Slider
+            value={[wallTransparency]}
+            onValueChange={(values) => onWallTransparencyChange(values[0])}
+            min={0}
+            max={1}
+            step={0.1}
+            className="w-full"
+          />
+        </div>
+      </div>
+
       <div className="space-y-4">
         <h3 className="font-semibold">Furniture</h3>
         <div className="grid grid-cols-1 gap-2">
