@@ -275,6 +275,32 @@ export function RoomSketchPro({
     return scene;
   };
 
+  // Setup camera function
+  const setupCamera = () => {
+    const camera = new THREE.PerspectiveCamera(
+      60,
+      width / height,
+      1,
+      2000
+    );
+    camera.position.set(200, 200, 200);
+    camera.lookAt(0, 0, 0);
+    return camera;
+  };
+
+  // Setup renderer function
+  const setupRenderer = () => {
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true
+    });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    return renderer;
+  };
+
   // Handle furniture drop
   const handleDrop = (e: DragEvent) => {
     e.preventDefault();
@@ -375,13 +401,11 @@ export function RoomSketchPro({
     sceneRef.current = scene;
 
     // Setup camera
-    const camera = new THREE.PerspectiveCamera(60, width / height, 1, 2000);
-    camera.position.set(200, 200, 200);
-    camera.lookAt(0, 0, 0);
+    const camera = setupCamera();
     cameraRef.current = camera;
 
     // Setup renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    const renderer = setupRenderer();
     renderer.setSize(width, height);
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.shadowMap.enabled = true;
@@ -878,7 +902,7 @@ export function RoomSketchPro({
           ventGroup.add(glassPane);
         });
 
-        // Position and rotate the vent group
+        // Positionand rotate the vent group
         ventGroup.position.set(position.x, position.y, ventZPosition);
 
         // Apply Wall's Local Coordinate System approach
