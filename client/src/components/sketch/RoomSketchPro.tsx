@@ -891,7 +891,8 @@ export function RoomSketchPro({
           glassPane.position.set(pos[0], pos[1], pos[2]);
           ventGroup.add(glassPane);
         });        // Positionand rotate the vent group
-        ventGroup.position.set(position.x, position.y, ventZPosition);// Apply Wall's Local Coordinate System approach
+        ventGroup.position.set(position.x, position.y, ventZPosition);
+        // Apply Wall's Local Coordinate System approach
         const forward = wallNormalVector.clone();
         const up = new THREE.Vector3(0, 0, 1);
         const right = new THREE.Vector3().crossVectors(up, forward).normalize();
@@ -1485,13 +1486,6 @@ export function RoomSketchPro({
         position: "relative",
       }}
     >
-      <div className="absolute top-4 left-4">
-        <FurnitureMenu
-          onDragStart={handleDragStart}
-          wallTransparency={wallTransparency}
-          onWallTransparencyChange={onWallTransparencyChange}
-        />
-      </div>
     </div>
   );
 }
