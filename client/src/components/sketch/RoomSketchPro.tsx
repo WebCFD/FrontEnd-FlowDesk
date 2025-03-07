@@ -1,47 +1,7 @@
-import { useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import * as THREE from "three";
 import { TrackballControls } from "three/addons/controls/TrackballControls.js";
-
-// Utility function to create text sprites
-const makeTextSprite = (
-  message: string,
-  position: THREE.Vector3,
-): THREE.Sprite => {
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
-  if (!context) {
-    return new THREE.Sprite();
-  }
-
-  canvas.width = 5;
-  canvas.height = 5;
-
-  // Fill background (dark semi-transparent background for better contrast)
-  context.fillStyle = "rgba(0,0,0,0.7)";
-  context.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Draw text
-  context.font = "bold 24px Arial";
-  context.fillStyle = "white"; // White text for better visibility
-  context.textAlign = "center";
-  context.fillText(message, canvas.width / 2, canvas.height / 2);
-
-  const texture = new THREE.CanvasTexture(canvas);
-  const spriteMaterial = new THREE.SpriteMaterial({
-    map: texture,
-    transparent: true,
-  });
-  const sprite = new THREE.Sprite(spriteMaterial);
-
-  sprite.position.copy(position);
-  // Offset slightly to avoid overlap with marker
-  //sprite.position.z += 5;
-
-  //sprite.scale.set(50, 25, 1);
-  //sprite.renderOrder = 999; // Ensure it's drawn on top
-
-  return sprite;
-};
+import { makeTextSprite } from "@/lib/three-utils";
 
 // Types
 interface Point {
@@ -65,6 +25,15 @@ interface AirEntry {
   line: Line;
 }
 
+// Add FurnitureItem interface
+interface FurnitureItem {
+  id: string;
+  name: string;
+  position: THREE.Vector3;
+  rotation: THREE.Euler;
+}
+
+// Update RoomSketchProProps
 interface RoomSketchProProps {
   width: number;
   height: number;
@@ -72,10 +41,7 @@ interface RoomSketchProProps {
   lines?: Line[];
   airEntries?: AirEntry[];
   roomHeight?: number;
-  backgroundColor?: string;
-  wallColor?: string;
-  floorColor?: string;
-  roofColor?: string;
+  onFurnitureAdd?: (item: FurnitureItem) => void;
 }
 
 // Constants
@@ -90,7 +56,7 @@ const DEFAULTS = {
   ROOF_COLOR: 0xe0e0e0,
 };
 
-// Helper functions separated for better organization
+// Helper functions 
 const roomUtils = {
   // Transform 2D point to 3D space (XY plane as ground, Z as height)
   transform2DTo3D: (point: Point, height: number = 0): THREE.Vector3 => {
@@ -108,21 +74,21 @@ const roomUtils = {
     );
   },
 
-  // Create a closed polygon from line segments using proper graph traversal
+  // Create a closed polygon from line segments using proper graph traversal 
   createRoomPerimeter: (lines: Line[]): Point[] => {
     if (lines.length === 0) return [];
 
-    // Function to check if two points are approximately equal
+    // Function to check if two points are approximately equal 
     const arePointsEqual = (p1: Point, p2: Point, tolerance = 1): boolean => {
       const dx = Math.abs(p1.x - p2.x);
       const dy = Math.abs(p1.y - p2.y);
       return dx <= tolerance && dy <= tolerance;
     };
 
-    // Function to get a unique point identifier
+    // Function to get a unique point identifier 
     const pointToString = (p: Point) => `${Math.round(p.x)},${Math.round(p.y)}`;
 
-    // Create a graph of connected points
+    // Create a graph of connected points 
     const pointGraph = new Map<string, Point[]>();
     const allPoints = new Set<string>();
 
@@ -136,7 +102,7 @@ const roomUtils = {
       if (!pointGraph.has(startKey)) pointGraph.set(startKey, []);
       if (!pointGraph.has(endKey)) pointGraph.set(endKey, []);
 
-      // Don't add duplicate connections
+      // Don't add duplicate connections 
       const startConnections = pointGraph.get(startKey)!;
       if (!startConnections.some((p) => pointToString(p) === endKey)) {
         startConnections.push(line.end);
@@ -148,7 +114,7 @@ const roomUtils = {
       }
     });
 
-    // Find points with only one connection (likely perimeter endpoints)
+    // Find points with only one connection (likely perimeter endpoints) 
     const findEndpoints = (): Point[] => {
       const endpoints: Point[] = [];
       pointGraph.forEach((connections, pointKey) => {
@@ -160,14 +126,14 @@ const roomUtils = {
       return endpoints;
     };
 
-    // Start from a perimeter endpoint if available, otherwise use first point
+    // Start from a perimeter endpoint if available, otherwise use first point 
     const endpoints = findEndpoints();
     let startPoint: Point;
 
     if (endpoints.length > 0) {
       startPoint = endpoints[0];
     } else {
-      // If no endpoints, use a point with the fewest connections
+      // If no endpoints, use a point with the fewest connections 
       let minConnections = Infinity;
       let minPoint: Point | null = null;
 
@@ -182,7 +148,7 @@ const roomUtils = {
       startPoint = minPoint || lines[0].start;
     }
 
-    // Trace the perimeter using graph traversal
+    // Trace the perimeter using graph traversal 
     const perimeter: Point[] = [startPoint];
     const visited = new Set<string>([pointToString(startPoint)]);
     let currentPoint = startPoint;
@@ -191,11 +157,11 @@ const roomUtils = {
       const currentKey = pointToString(currentPoint);
       const neighbors = pointGraph.get(currentKey) || [];
 
-      // Find unvisited neighbor
+      // Find unvisited neighbor 
       const nextPoint = neighbors.find((p) => !visited.has(pointToString(p)));
 
       if (!nextPoint) {
-        // Try to close the loop if possible
+        // Try to close the loop if possible 
         if (
           perimeter.length > 2 &&
           arePointsEqual(perimeter[0], neighbors[0]) &&
@@ -211,7 +177,7 @@ const roomUtils = {
       currentPoint = nextPoint;
     }
 
-    // Verify we created a closed loop
+    // Verify we created a closed loop 
     if (
       perimeter.length > 2 &&
       !arePointsEqual(perimeter[0], perimeter[perimeter.length - 1])
@@ -222,7 +188,7 @@ const roomUtils = {
     return perimeter;
   },
 
-  // Create a THREE.Shape from perimeter points (in XY plane)
+  // Create a THREE.Shape from perimeter points (in XY plane) 
   createShapeFromPerimeter: (perimeter: Point[]): THREE.Shape | null => {
     if (perimeter.length < 3) return null;
 
@@ -239,7 +205,7 @@ const roomUtils = {
     return shape;
   },
 
-  // Calculate angle between two points (for air entry rotation)
+  // Calculate angle between two points (for air entry rotation) 
   getAngleBetweenPoints: (start: Point, end: Point): number => {
     const dx = end.x - start.x;
     const dy = end.y - start.y;
@@ -256,32 +222,30 @@ export function RoomSketchPro({
   lines = [],
   airEntries = [],
   roomHeight = DEFAULTS.ROOM_HEIGHT,
-  backgroundColor = DEFAULTS.BACKGROUND_COLOR,
-  wallColor = DEFAULTS.WALL_COLOR,
-  floorColor = DEFAULTS.FLOOR_COLOR,
-  roofColor = DEFAULTS.ROOF_COLOR,
+  onFurnitureAdd,
 }: RoomSketchProProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [furniture, setFurniture] = useState<FurnitureItem[]>([]);
 
-  // Refs for Three.js objects
+  // Refs for Three.js objects 
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<TrackballControls | null>(null);
 
-  // Extract perimeter points using useMemo to avoid recalculation
+  // Extract perimeter points using useMemo to avoid recalculation 
   const perimeter = useMemo(
     () => roomUtils.createRoomPerimeter(lines),
     [lines],
   );
 
-  // Create shape from perimeter
+  // Create shape from perimeter 
   const shape = useMemo(
     () => roomUtils.createShapeFromPerimeter(perimeter),
     [perimeter],
   );
 
-  // Camera state management
+  // Camera state management 
   const saveCameraState = () => {
     if (cameraRef.current && controlsRef.current) {
       const cameraState = {
@@ -313,7 +277,7 @@ export function RoomSketchPro({
     }
   };
 
-  // Wall creation
+  // Wall creation 
   const createWalls = (
     scene: THREE.Scene,
     renderer: THREE.WebGLRenderer,
@@ -393,7 +357,7 @@ export function RoomSketchPro({
     });
   };
 
-  // Enhanced air entries creation (doors, windows, vents)
+  // Enhanced air entries creation (doors, windows, vents) 
   const createAirEntries = (scene: THREE.Scene) => {
     // Create and add a simple environment map for reflections
     const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(256);
@@ -826,7 +790,9 @@ export function RoomSketchPro({
 
       // Add coordinate label
       const coordinates = marker.position;
-      const coordText = `(${coordinates.x.toFixed(1)}, ${coordinates.y.toFixed(1)}, ${coordinates.z.toFixed(1)}) cm`;
+      const coordText = `(${coordinates.x.toFixed(1)}, ${coordinates.y.toFixed(
+        1,
+      )}, ${coordinates.z.toFixed(1)}) cm`;
       console.log(`Creating coordinate label for ${entry.type}:`, {
         position: `(${coordinates.x.toFixed(1)}, ${coordinates.y.toFixed(1)}, ${coordinates.z.toFixed(1)})`,
         text: coordText,
@@ -840,7 +806,7 @@ export function RoomSketchPro({
     });
   };
 
-  // New function to create highly detailed windows
+  // New function to create highly detailed windows 
   const createDetailedWindow = (
     entry: AirEntry,
     frameMaterial: THREE.Material,
@@ -888,7 +854,7 @@ export function RoomSketchPro({
     // Frame parameters
     const frameThickness = width * 0.06; // Frame thickness proportional to window width
     const frameDepth = windowDepth;
-    const sillDepth = windowDepth * 1.2; // Slightly deeper than window
+    const sillDepth = windowDepth * 1.2; // Slightlydeeper than window
     const sillHeight = frameThickness * 1.5;
 
     // Create outer frame (top, bottom, left, right)
@@ -1068,7 +1034,7 @@ export function RoomSketchPro({
     return windowGroup;
   };
 
-  // Create floor and roof
+  // Create floor and roof 
   const createFloorAndRoof = (
     scene: THREE.Scene,
     renderer: THREE.WebGLRenderer,
@@ -1117,7 +1083,7 @@ export function RoomSketchPro({
       // Create roof geometry and mesh
       const roofGeometry = new THREE.ShapeGeometry(shape);
       const roofMaterial = new THREE.MeshPhongMaterial({
-        color: roofColor,
+        color: DEFAULTS.ROOF_COLOR,
         opacity: 0.2,
         transparent: true,
         side: THREE.DoubleSide,
@@ -1128,7 +1094,146 @@ export function RoomSketchPro({
     }
   };
 
-  // Main effect for scene setup
+  // Add furniture creation functions
+  const createFurnitureMesh = (type: string): THREE.Object3D => {
+    switch (type) {
+      case 'table':
+        const tableGeometry = new THREE.BoxGeometry(80, 60, 75);
+        const tableMaterial = new THREE.MeshPhongMaterial({ 
+          color: 0x8B4513,
+          roughness: 0.8,
+          metalness: 0.2
+        });
+        const table = new THREE.Mesh(tableGeometry, tableMaterial);
+        table.position.y = 37.5; // Half height to sit on floor
+        return table;
+
+      case 'person':
+        const personGroup = new THREE.Group();
+
+        // Body
+        const bodyGeometry = new THREE.CylinderGeometry(20, 20, 120, 8);
+        const bodyMaterial = new THREE.MeshPhongMaterial({ 
+          color: 0x4A5568,
+          roughness: 0.9,
+          metalness: 0.1
+        });
+        const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+        body.position.y = 60;
+        personGroup.add(body);
+
+        // Head
+        const headGeometry = new THREE.SphereGeometry(15, 16, 16);
+        const head = new THREE.Mesh(headGeometry, bodyMaterial);
+        head.position.y = 120;
+        personGroup.add(head);
+
+        return personGroup;
+
+      case 'armchair':
+        const chairGroup = new THREE.Group();
+
+        const chairMaterial = new THREE.MeshPhongMaterial({ 
+          color: 0x718096,
+          roughness: 0.7,
+          metalness: 0.3
+        });
+
+        // Seat
+        const seatGeometry = new THREE.BoxGeometry(80, 80, 45);
+        const seat = new THREE.Mesh(seatGeometry, chairMaterial);
+        seat.position.y = 22.5;
+        chairGroup.add(seat);
+
+        // Back
+        const backGeometry = new THREE.BoxGeometry(80, 20, 60);
+        const back = new THREE.Mesh(backGeometry, chairMaterial);
+        back.position.y = 45;
+        back.position.z = -30;
+        chairGroup.add(back);
+
+        return chairGroup;
+
+      default:
+        const defaultGeometry = new THREE.BoxGeometry(50, 50, 50);
+        const defaultMaterial = new THREE.MeshPhongMaterial({ color: 0x808080 });
+        return new THREE.Mesh(defaultGeometry, defaultMaterial);
+    }
+  };
+
+  // Add drag and drop handlers
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || !sceneRef.current || !cameraRef.current) return;
+
+    const handleDragOver = (e: DragEvent) => {
+      e.preventDefault();
+      e.dataTransfer!.dropEffect = 'copy';
+    };
+
+    const handleDrop = (e: DragEvent) => {
+      e.preventDefault();
+
+      const itemData = e.dataTransfer?.getData('application/json');
+      if (!itemData) return;
+
+      const item = JSON.parse(itemData);
+
+      // Calculate drop position in 3D space
+      const rect = container.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / container.clientWidth) * 2 - 1;
+      const y = -((e.clientY - rect.top) / container.clientHeight) * 2 + 1;
+
+      const raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera(new THREE.Vector2(x, y), cameraRef.current!);
+
+      // Create an invisible plane at y=0 (floor level)
+      const floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+      const intersectionPoint = new THREE.Vector3();
+
+      raycaster.ray.intersectPlane(floorPlane, intersectionPoint);
+
+      // Create and add furniture
+      const furnitureMesh = createFurnitureMesh(item.id);
+      furnitureMesh.position.copy(intersectionPoint);
+
+      // Ensure base is at floor level
+      if (item.id === 'table') {
+        furnitureMesh.position.y = 37.5; // Half height of table
+      } else if (item.id === 'person') {
+        furnitureMesh.position.y = 0;
+      } else if (item.id === 'armchair') {
+        furnitureMesh.position.y = 22.5; // Half height of chair
+      }
+
+      sceneRef.current?.add(furnitureMesh);
+
+      const newItem: FurnitureItem = {
+        id: item.id,
+        name: item.name,
+        position: intersectionPoint.clone(),
+        rotation: new THREE.Euler(),
+      };
+
+      setFurniture(prev => [...prev, newItem]);
+      onFurnitureAdd?.(newItem);
+
+      // Force a re-render
+      if (rendererRef.current && sceneRef.current && cameraRef.current) {
+        rendererRef.current.render(sceneRef.current, cameraRef.current);
+      }
+    };
+
+    container.addEventListener('dragover', handleDragOver);
+    container.addEventListener('drop', handleDrop);
+
+    return () => {
+      container.removeEventListener('dragover', handleDragOver);
+      container.removeEventListener('drop', handleDrop);
+    };
+  }, [onFurnitureAdd]);
+
+  // Main effect for scene setup 
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -1142,7 +1247,7 @@ export function RoomSketchPro({
 
     // Initialize scene
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(backgroundColor);
+    scene.background = new THREE.Color(DEFAULTS.BACKGROUND_COLOR);
     sceneRef.current = scene;
 
     // Initialize camera
@@ -1211,6 +1316,15 @@ export function RoomSketchPro({
     createWalls(scene, renderer, camera);
     createAirEntries(scene);
     createFloorAndRoof(scene, renderer, camera);
+
+    // Add furniture to the scene
+    furniture.forEach(item => {
+      const furnitureMesh = createFurnitureMesh(item.id);
+      furnitureMesh.position.copy(item.position);
+      furnitureMesh.rotation.copy(item.rotation);
+      scene.add(furnitureMesh);
+    });
+
 
     // Count and log all labels in the scene for debugging
     const countLabelsInScene = () => {
@@ -1281,11 +1395,17 @@ export function RoomSketchPro({
     perimeter,
     shape,
     roomHeight,
-    backgroundColor,
-    wallColor,
-    floorColor,
-    roofColor,
+    furniture,
   ]);
 
-  return <div ref={containerRef} style={{ height }} />;
+  return (
+    <div
+      ref={containerRef}
+      style={{
+        width: `${width}px`,
+        height: `${height}px`,
+        position: 'relative',
+      }}
+    />
+  );
 }
