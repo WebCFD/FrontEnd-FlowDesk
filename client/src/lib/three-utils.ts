@@ -5,21 +5,29 @@ export const makeTextSprite = (message: string, position: THREE.Vector3): THREE.
   const context = canvas.getContext('2d');
   if (!context) return new THREE.Sprite();
 
-  canvas.width = 128;  // Reduced from 256
-  canvas.height = 64;  // Reduced from 128
+  // Use device pixel ratio for sharp rendering
+  const pixelRatio = window.devicePixelRatio || 1;
+  canvas.width = 256 * pixelRatio;  // Base size * pixel ratio
+  canvas.height = 64 * pixelRatio;  // Maintain aspect ratio
+  context.scale(pixelRatio, pixelRatio);
 
-  // Fill background (dark semi-transparent background for better contrast)
-  context.fillStyle = "rgba(0,0,0,0.5)";  // More transparent background
-  context.fillRect(0, 0, canvas.width, canvas.height);
+  // Clear background
+  context.fillStyle = "rgba(0,0,0,0.5)";
+  context.fillRect(0, 0, canvas.width / pixelRatio, canvas.height / pixelRatio);
 
-  // Draw text
-  context.font = "bold 16px Arial";  // Smaller font size
-  context.fillStyle = "white";
+  // Draw text with sharp edges
+  context.font = "14px 'Arial'";
   context.textAlign = "center";
   context.textBaseline = "middle";
-  context.fillText(message, canvas.width/2, canvas.height/2);
+
+  // Add slight text shadow for better contrast
+  context.fillStyle = "rgba(255,255,255,0.8)";
+  context.fillText(message, canvas.width / (2 * pixelRatio), canvas.height / (2 * pixelRatio));
 
   const texture = new THREE.CanvasTexture(canvas);
+  texture.minFilter = THREE.LinearFilter;
+  texture.magFilter = THREE.LinearFilter;
+
   const spriteMaterial = new THREE.SpriteMaterial({ 
     map: texture,
     sizeAttenuation: false  // Makes the sprite size independent of distance
@@ -27,8 +35,8 @@ export const makeTextSprite = (message: string, position: THREE.Vector3): THREE.
 
   const sprite = new THREE.Sprite(spriteMaterial);
   sprite.position.copy(position);
-  sprite.position.z += 2;  // Smaller offset from the point
-  sprite.scale.set(30, 15, 1);  // Smaller scale values
+  sprite.position.z += 5;  // Offset from the point
+  sprite.scale.set(20, 5, 1);  // Adjusted scale for better visibility
   sprite.renderOrder = 999;  // Ensure it's drawn on top
 
   return sprite;
