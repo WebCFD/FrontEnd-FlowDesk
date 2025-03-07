@@ -3,6 +3,8 @@ import * as THREE from "three";
 import { TrackballControls } from "three/addons/controls/TrackballControls.js";
 import { makeTextSprite } from "@/lib/three-utils";
 import { createTableModel, createPersonModel, createArmchairModel } from "./furniture-models";
+import { FurnitureMenu } from "./FurnitureMenu"; // Change to named import
+
 
 // Types
 interface Point {
@@ -888,9 +890,7 @@ export function RoomSketchPro({
 
           glassPane.position.set(pos[0], pos[1], pos[2]);
           ventGroup.add(glassPane);
-        });
-
-        // Positionand rotate the vent group
+        });        // Positionand rotate the vent group
         ventGroup.position.set(position.x, position.y, ventZPosition);// Apply Wall's Local Coordinate System approach
         const forward = wallNormalVector.clone();
         const up = new THREE.Vector3(0, 0, 1);
@@ -1472,7 +1472,7 @@ export function RoomSketchPro({
     }
   }, [wallTransparency]);
 
-  const handleDragStart = (item: any) => {
+  const handleDragStart = (item: FurnitureItem) => {
     console.log("Drag started:", item);
   };
 
@@ -1484,6 +1484,14 @@ export function RoomSketchPro({
         height: `${height}px`,
         position: "relative",
       }}
-    />
+    >
+      <div className="absolute top-4 left-4">
+        <FurnitureMenu
+          onDragStart={handleDragStart}
+          wallTransparency={wallTransparency}
+          onWallTransparencyChange={onWallTransparencyChange}
+        />
+      </div>
+    </div>
   );
 }
