@@ -3,7 +3,10 @@ import * as THREE from "three";
 import { TrackballControls } from "three/addons/controls/TrackballControls.js";
 
 // Utility function to create text sprites
-const makeTextSprite = (message: string, position: THREE.Vector3): THREE.Sprite => {
+const makeTextSprite = (
+  message: string,
+  position: THREE.Vector3,
+): THREE.Sprite => {
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
   if (!context) {
@@ -24,9 +27,9 @@ const makeTextSprite = (message: string, position: THREE.Vector3): THREE.Sprite 
   context.fillText(message, canvas.width / 2, canvas.height / 2);
 
   const texture = new THREE.CanvasTexture(canvas);
-  const spriteMaterial = new THREE.SpriteMaterial({ 
+  const spriteMaterial = new THREE.SpriteMaterial({
     map: texture,
-    transparent: true
+    transparent: true,
   });
   const sprite = new THREE.Sprite(spriteMaterial);
 
@@ -34,7 +37,7 @@ const makeTextSprite = (message: string, position: THREE.Vector3): THREE.Sprite 
   // Offset slightly to avoid overlap with marker
   sprite.position.z += 5;
 
-  sprite.scale.set(75, 35, 1); // Larger sprite
+  sprite.scale.set(50, 25, 1);
   sprite.renderOrder = 999; // Ensure it's drawn on top
 
   return sprite;
@@ -816,14 +819,17 @@ export function RoomSketchPro({
       marker.position.copy(mesh.position);
       scene.add(marker);
 
-      console.log(`Creating coordinate label for ${entry.type} at:`, marker.position); // Added logging
+      console.log(
+        `Creating coordinate label for ${entry.type} at:`,
+        marker.position,
+      ); // Added logging
 
       // Add coordinate label
       const coordinates = marker.position;
       const coordText = `(${coordinates.x.toFixed(1)}, ${coordinates.y.toFixed(1)}, ${coordinates.z.toFixed(1)}) cm`;
       console.log(`Creating coordinate label for ${entry.type}:`, {
         position: `(${coordinates.x.toFixed(1)}, ${coordinates.y.toFixed(1)}, ${coordinates.z.toFixed(1)})`,
-        text: coordText
+        text: coordText,
       });
       const label = makeTextSprite(coordText, marker.position);
       label.name = `${entry.type}_label_${coordinates.x.toFixed(0)}_${coordinates.y.toFixed(0)}`;
@@ -1213,7 +1219,7 @@ export function RoomSketchPro({
         if (object.type === "Sprite" && object.name.includes("label")) {
           labelCount++;
           console.log(`Found label in scene: ${object.name}`, {
-            position: `(${object.position.x.toFixed(1)}, ${object.position.y.toFixed(1)}, ${object.position.z.toFixed(1)})`
+            position: `(${object.position.x.toFixed(1)}, ${object.position.y.toFixed(1)}, ${object.position.z.toFixed(1)})`,
           });
         }
       });
