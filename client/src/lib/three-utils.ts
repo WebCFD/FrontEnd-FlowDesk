@@ -7,8 +7,8 @@ export const makeTextSprite = (message: string, position: THREE.Vector3): THREE.
 
   // Use device pixel ratio for sharp rendering
   const pixelRatio = window.devicePixelRatio || 1;
-  canvas.width = 128 * pixelRatio;  // Reduced from 256 to 128
-  canvas.height = 32 * pixelRatio;  // Reduced from 64 to 32
+  canvas.width = 128 * pixelRatio;
+  canvas.height = 32 * pixelRatio;
   context.scale(pixelRatio, pixelRatio);
 
   // Clear background
@@ -16,7 +16,7 @@ export const makeTextSprite = (message: string, position: THREE.Vector3): THREE.
   context.fillRect(0, 0, canvas.width / pixelRatio, canvas.height / pixelRatio);
 
   // Draw text with sharp edges
-  context.font = "10px 'Arial'";  // Reduced from 14px to 10px
+  context.font = "12px 'Arial'";
   context.textAlign = "center";
   context.textBaseline = "middle";
 
@@ -30,14 +30,14 @@ export const makeTextSprite = (message: string, position: THREE.Vector3): THREE.
 
   const spriteMaterial = new THREE.SpriteMaterial({ 
     map: texture,
-    sizeAttenuation: false  // Makes the sprite size independent of distance
+    sizeAttenuation: true  // Enable size attenuation to scale with distance
   });
 
   const sprite = new THREE.Sprite(spriteMaterial);
   sprite.position.copy(position);
-  sprite.position.z += 2;  // Reduced offset from 5 to 2
-  sprite.scale.set(10, 2.5, 1);  // Reduced scale from (20, 5, 1) to (10, 2.5, 1)
-  sprite.renderOrder = 999;  // Ensure it's drawn on top
+  sprite.position.z += 15;  // Increased offset for better visibility
+  sprite.scale.set(40, 10, 1);  // Adjusted scale to be more proportional
+  sprite.renderOrder = 999;
 
   return sprite;
 };
