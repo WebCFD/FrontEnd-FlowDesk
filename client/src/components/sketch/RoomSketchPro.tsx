@@ -4,6 +4,7 @@ import { TrackballControls } from "three/addons/controls/TrackballControls.js";
 import { makeTextSprite } from "@/lib/three-utils";
 import { createTableModel, createPersonModel, createArmchairModel } from "./furniture-models";
 import { ControlMenu } from "./ControlMenu";
+import { FurnitureMenu } from "./FurnitureMenu"; // Import FurnitureMenu
 
 // Types
 interface Point {
@@ -1491,12 +1492,22 @@ export function RoomSketchPro({
     }
   }, [wallTransparency]);
 
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+    e.dataTransfer!.setData("application/json", JSON.stringify({
+      id: e.target.id,
+      name: e.target.getAttribute('data-name')
+    }));
+  };
+
   return (
-    <div className="flex flex-col">
-      <ControlMenu
-        transparency={wallTransparency}
-        onTransparencyChange={setWallTransparency}
-      />
+    <div className="flex">
+      <div className="space-y-6">
+        <ControlMenu
+          transparency={wallTransparency}
+          onTransparencyChange={setWallTransparency}
+        />
+        <FurnitureMenu onDragStart={handleDragStart} />
+      </div>
       <div
         ref={containerRef}
         style={{
