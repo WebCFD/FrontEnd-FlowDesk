@@ -476,7 +476,6 @@ export function RoomSketchPro({
     renderer: THREE.WebGLRenderer,
     camera: THREE.PerspectiveCamera,
   ) => {
-    // Create texture loader and load brick texture
     const textureLoader = new THREE.TextureLoader();
     const brickTexture = textureLoader.load(
       "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/brick_diffuse.jpg",
@@ -498,15 +497,13 @@ export function RoomSketchPro({
     });
     wallMaterialRef.current = wallMaterial;
 
-    // Convert 2D lines to 3D walls using transformed coordinates
+    // Convert 2D lines to 3D walls
     lines.forEach((line) => {
-      // Create vertices for wall corners
       const start_bottom = transform2DTo3D(line.start);
       const end_bottom = transform2DTo3D(line.end);
       const start_top = transform2DTo3D(line.start, DEFAULTS.ROOM_HEIGHT);
       const end_top = transform2DTo3D(line.end, DEFAULTS.ROOM_HEIGHT);
 
-      // Create vertices array from points
       const vertices = new Float32Array([
         start_bottom.x,
         start_bottom.y,
@@ -522,29 +519,16 @@ export function RoomSketchPro({
         end_top.z,
       ]);
 
-      // Create faces indices (triangles)
       const indices = new Uint16Array([0, 1, 2, 1, 3, 2]);
 
-      // Create UV coordinates for proper texture mapping
-      const uvs = new Float32Array([
-        0,
-        0, // bottom left
-        1,
-        0, // bottom right
-        0,
-        1, // top left
-        1,
-        1, // top right
-      ]);
+      const uvs = new Float32Array([0, 0, 1, 0, 0, 1, 1, 1]);
 
-      // Create the wall geometry
       const geometry = new THREE.BufferGeometry();
       geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
       geometry.setAttribute("uv", new THREE.BufferAttribute(uvs, 2));
       geometry.setIndex(new THREE.BufferAttribute(indices, 1));
       geometry.computeVertexNormals();
 
-      // Create the wall mesh
       const wall = new THREE.Mesh(geometry, wallMaterial);
       wall.name = "wall";
       scene.add(wall);
@@ -896,11 +880,11 @@ export function RoomSketchPro({
           // Create glass pane with slight thickness
           const glassPane = new THREE.Mesh(
             new THREE.BoxGeometry(
-              paneWidth- frameThickness * paneVariation,
+              paneWidth - frameThickness * paneVariation,
               paneHeight - frameThickness * paneVariation,
-              0.4 // Very thin glass
+              0.4, // Very thin glass
             ),
-            paneGlassMaterial
+            paneGlassMaterial,
           );
 
           glassPane.position.set(pos[0], pos[1], pos[2]);
@@ -955,7 +939,7 @@ export function RoomSketchPro({
         .normalize();
 
       const geometry = new THREE.PlaneGeometry(width, height);
-      material = entry.type === "door" ? doorMaterial : new THREE.MeshBasicMaterial({color: 0x808080}); // Assign material based on entry type
+      material = entry.type === "door" ? doorMaterial : new THREE.MeshBasicMaterial({ color: 0x808080 }); // Assign material based on entry type
       const mesh = new THREE.Mesh(geometry, material);
       const position = transform2DTo3D(entry.position);
       mesh.position.set(position.x, position.y, zPosition);
@@ -1480,7 +1464,7 @@ export function RoomSketchPro({
     furniture,
   ]);
 
-  // Update effect to use props instead of local state
+  // Update effect for wall transparency
   useEffect(() => {
     if (wallMaterialRef.current) {
       wallMaterialRef.current.opacity = wallTransparency;
