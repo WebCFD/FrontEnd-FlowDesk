@@ -1,0 +1,79 @@
+To prevent air entries from jumping to different walls when dragging line endpoints, we need to more strictly maintain the association between an air entry and its specific wall. The current issue likely happens because we're matching walls by their endpoints, which can be ambiguous when multiple walls share the same endpoint (at junctions).
+Here's an improved implementation that ensures air entries stay with their original wall:
+typescriptCopy// Update the updateAirEntriesWithWalls function to track the specific wall more precisely
+const updateAirEntriesWithWalls = (newLines: Line[], oldLines: Line[]) => {
+  if (airEntries.length === 0) return;
+  
+  // Create a map to track which new line corresponds to which old line
+  const lineMapping = new Map<string, Line>();
+  
+  // For each old line, find its corresponding new line
+  oldLines.forEach(oldLine => {
+    // Get old line's unique identifier
+    const oldLineKey = getLineIdentifier(oldLine);
+    
+    // Find the matching new line by comparing endpoints
+    const matchingNewLine = newLines.find(newLine => {
+      // Check if this new line is a modified version of the old line
+      return (arePointsNearlyEqual(oldLine.start, newLine.start) || arePointsNearlyEqual(oldLine.start, newLine.end)) &&
+             (arePointsNearlyEqual(oldLine.end, newLine.start) || arePointsNearlyEqual(oldLine.end, newLine.end));
+    });
+    
+    if (matchingNewLine) {
+      lineMapping.set(oldLineKey, matchingNewLine);
+    }
+  });
+  
+  // Now update air entries based on this mapping
+  const newAirEntries = [...airEntries];
+  let entriesUpdated = false;
+  
+  newAirEntries.forEach((entry, index) => {
+    // Get the identifier for this entry's line
+    const entryLineKey = getLineIdentifier(entry.line);
+    
+    // Find the updated line this entry should be attached to
+    const updatedLine = lineMapping.get(entryLineKey);
+    
+    if (updatedLine) {
+      // Calculate relative position on original line
+      const relativePos = getRelativePositionOnLine(entry.position, entry.line);
+      
+      // Apply the same relative position to the updated line
+      const newPosition = getPointAtRelativePosition(updatedLine, relativePos);
+      
+      // Update the entry with new line and position
+      newAirEntries[index] = {
+        ...entry,
+        line: updatedLine,
+        position: newPosition
+      };
+      
+      entriesUpdated = true;
+    }
+  });
+  
+  // Update state if needed
+  if (entriesUpdated && onAirEntriesUpdate) {
+    onAirEntriesUpdate(newAirEntries);
+  }
+};
+
+// Helper function to create a unique identifier for a line
+const getLineIdentifier = (line: Line): string => {
+  // Sort coordinates to ensure consistent identification regardless of line direction
+  const [x1, y1, x2, y2] = [
+    Math.round(line.start.x), 
+    Math.round(line.start.y),
+    Math.round(line.end.x), 
+    Math.round(line.end.y)
+  ].sort();
+  
+  return `${x1},${y1}_${x2},${y2}`;
+};
+This approach has a few key improvements:
+
+Direct line-to-line mapping: We create a direct mapping from old lines to new lines, ensuring each air entry follows its specific wall.
+Better line identification: The getLineIdentifier function creates a unique string identifier for each line based on its endpoints, making it easier to track lines across updates.
+Coordinate sorting: By sorting the coordinates when creating line identifiers, we ensure consistent identification even if the line orientation changes.
+One-to-one line matching: We match old lines to new lines directly, rather than checking each air entry against all lines.
