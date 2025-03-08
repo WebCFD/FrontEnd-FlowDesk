@@ -3,6 +3,9 @@ import { Minus, Plus, Move } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
+let isProcessingMouseMove = false;
+let lastMouseMoveEvent: MouseEvent | null = null;
+
 interface Point {
   x: number;
   y: number;
@@ -494,6 +497,48 @@ export default function Canvas2D({
     return nearest;
   };
 
+  const processMouseMove = (e: MouseEvent) => {
+    const point = getCanvasPoint(e);
+
+    // Only calculate nearest grid point when needed (not drawing or panning)
+    if (!isDrawing && !isPanning) {
+      const nearestGridPoint = findNearestGridPoint(point);
+      setHoveredGridPoint(nearestGridPoint);
+    }
+
+    // Wall drawing logic
+    if (currentTool === 'wall' && isDrawing && currentLine) {
+      const nearestPoint = findNearestEndpoint(point);
+      const endPoint = nearestPoint || snapToGrid(point);
+      setCurrentLine(prev => prev ? { ...prev, end: endPoint } : null);
+      setCursorPoint(endPoint);
+    } 
+    // Highlighting logic - only execute if in eraser or air entry mode
+    else if (currentTool === 'eraser' || currentAirEntry) {
+      setHighlightedLines(findLinesNearPoint(point));
+    }
+  };
+
+  const throttleMouseMove = (e: MouseEvent) => {
+    // Store the latest mouse event
+    lastMouseMoveEvent = e;
+
+    // If we're already processing, don't queue another one
+    if (isProcessingMouseMove) return;
+
+    isProcessingMouseMove = true;
+
+    // Use requestAnimationFrame to sync with browser's rendering cycle
+    requestAnimationFrame(() => {
+      if (lastMouseMoveEvent) {
+        processMouseMove(lastMouseMoveEvent);
+      }
+      isProcessingMouseMove = false;
+      lastMouseMoveEvent = null;
+    });
+  };
+
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -628,53 +673,15 @@ export default function Canvas2D({
       }
     };
 
-    const handleMouseMove = (e: MouseEvent) => {
-      if (isPanning) {
-        handlePanMove(e);
-        return;
-      }
+    // ... rest of the existing setup code ...
 
-      const point = getCanvasPoint(e);
-      const nearestGridPoint = findNearestGridPoint(point);
-      setHoveredGridPoint(nearestGridPoint);
-
-      if (currentTool === 'wall' && isDrawing && currentLine) {
-        const nearestPoint = findNearestEndpoint(point);
-        const endPoint = nearestPoint || snapToGrid(point);
-        setCurrentLine(prev => prev ? { ...prev, end: endPoint } : null);
-        setCursorPoint(endPoint);
-      } else if (currentTool === 'eraser' || currentAirEntry) {
-        setHighlightedLines(findLinesNearPoint(point));
-      }
-    };
-
-    const handleMouseUp = (e: MouseEvent) => {
-      if (panMode || e.button === 2) {
-        handlePanEnd();
-        return;
-      }
-
-      if (currentTool === 'wall' && isDrawing && currentLine) {
-        if (currentLine.start.x !== currentLine.end.x || currentLine.start.y !== currentLine.end.y) {
-          const newLines = [...lines, currentLine];
-          onLinesUpdate?.(newLines);
-        }
-        setCurrentLine(null);
-        setIsDrawing(false);
-        setCursorPoint(null);
-      }
-    };
-
-    const handleMouseLeave = () => {
-      handlePanEnd();
-      setHighlightedLines([]);
-      setHoveredGridPoint(null);
-      if (isDrawing) {
-        setCurrentLine(null);
-        setIsDrawing(false);
-        setCursorPoint(null);
-      }
-    };
+    canvas.addEventListener('mousedown', handleMouseDown);
+    canvas.addEventListener('mousemove', throttleMouseMove, { passive: true });
+    canvas.addEventListener('mouseup', handleMouseUp);
+    canvas.addEventListener('mouseleave', handleMouseLeave);
+    canvas.addEventListener('wheel', handleZoomWheel, { passive: false });
+    canvas.addEventListener('wheel', handleRegularWheel, { passive: true });
+    canvas.addEventListener('contextmenu', e => e.preventDefault());
 
     // Animation loop with performance optimization
     let lastFrameTime = 0;
@@ -694,29 +701,8 @@ export default function Canvas2D({
 
     let animationFrameId = requestAnimationFrame(animate);
 
-    // Add throttling to mouse move events
-    let mouseMoveThrottleTimer: number | null = null;
-    const throttleMouseMove = (e: MouseEvent) => {
-      if (!mouseMoveThrottleTimer) {
-        mouseMoveThrottleTimer = window.setTimeout(() => {
-          handleMouseMove(e);
-          mouseMoveThrottleTimer = null;
-        }, 16); // ~60fps throttle
-      }
-    };
-
-    canvas.addEventListener('mousedown', handleMouseDown);
-    canvas.addEventListener('mousemove', throttleMouseMove);
-    canvas.addEventListener('mouseup', handleMouseUp);
-    canvas.addEventListener('mouseleave', handleMouseLeave);
-    canvas.addEventListener('wheel', handleZoomWheel, { passive: false });
-    canvas.addEventListener('wheel', handleRegularWheel, { passive: true });
-    canvas.addEventListener('contextmenu', e => e.preventDefault());
 
     return () => {
-      if (mouseMoveThrottleTimer) {
-        clearTimeout(mouseMoveThrottleTimer);
-      }
       canvas.removeEventListener('mousedown', handleMouseDown);
       canvas.removeEventListener('mousemove', throttleMouseMove);
       canvas.removeEventListener('mouseup', handleMouseUp);
@@ -746,6 +732,34 @@ export default function Canvas2D({
   const handleZoomInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.currentTarget.blur();
+    }
+  };
+
+  const handleMouseUp = (e: MouseEvent) => {
+    if (panMode || e.button === 2) {
+      handlePanEnd();
+      return;
+    }
+
+    if (currentTool === 'wall' && isDrawing && currentLine) {
+      if (currentLine.start.x !== currentLine.end.x || currentLine.start.y !== currentLine.end.y) {
+        const newLines = [...lines, currentLine];
+        onLinesUpdate?.(newLines);
+      }
+      setCurrentLine(null);
+      setIsDrawing(false);
+      setCursorPoint(null);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    handlePanEnd();
+    setHighlightedLines([]);
+    setHoveredGridPoint(null);
+    if (isDrawing) {
+      setCurrentLine(null);
+      setIsDrawing(false);
+      setCursorPoint(null);
     }
   };
 
