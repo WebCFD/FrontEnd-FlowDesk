@@ -1,0 +1,33 @@
+
+Canvas2D.tsx:758 [Violation] Added non-passive event listener to a scroll-blocking 'wheel' event. Consider marking event handler as 'passive' to make the page more responsive. See https://www.chromestatus.com/feature/5745543795965952
+(anonymous) @ Canvas2D.tsx:758
+commitHookEffectListMount @ chunk-WERSD76P.js?v=02805512:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=02805512:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=02805512:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=02805512:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=02805512:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=02805512:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=02805512:19447
+commitRootImpl @ chunk-WERSD76P.js?v=02805512:19416
+commitRoot @ chunk-WERSD76P.js?v=02805512:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=02805512:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=02805512:9119
+(anonymous) @ chunk-WERSD76P.js?v=02805512:18627
+Show 12 more frames
+Show less
+Canvas2D.tsx:758 [Violation] Added non-passive event listener to a scroll-blocking 'wheel' event. Consider marking event handler as 'passive' to make the page more responsive. See https://www.chromestatus.com/feature/5745543795965952
+(anonymous) @ Canvas2D.tsx:758
+commitHookEffectListMount @ chunk-WERSD76P.js?v=02805512:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=02805512:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=02805512:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=02805512:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=02805512:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=02805512:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=02805512:19447
+(anonymous) @ chunk-WERSD76P.js?v=02805512:19328
+workLoop @ chunk-WERSD76P.js?v=02805512:197
+flushWork @ chunk-WERSD76P.js?v=02805512:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=02805512:384
+Show 11 more frames
+Show less
+Canvas2D.tsx:637 [Violation] 'requestAnimationFrame' handler took 86ms

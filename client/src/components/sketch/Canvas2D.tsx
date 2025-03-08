@@ -200,7 +200,6 @@ export default function Canvas2D({
 
   const handleWheel = (e: WheelEvent) => {
     if (e.ctrlKey || e.metaKey) {
-      e.preventDefault();
       const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
       const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom + delta));
       handleZoomChange(newZoom);
@@ -755,7 +754,7 @@ export default function Canvas2D({
     canvas.addEventListener('mousemove', throttleMouseMove);
     canvas.addEventListener('mouseup', handleMouseUp);
     canvas.addEventListener('mouseleave', handleMouseLeave);
-    canvas.addEventListener('wheel', handleWheel);
+    canvas.addEventListener('wheel', handleWheel, { passive: true });
     canvas.addEventListener('contextmenu', e => e.preventDefault());
 
     return () => {
