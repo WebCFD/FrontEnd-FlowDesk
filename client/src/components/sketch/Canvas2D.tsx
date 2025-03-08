@@ -670,8 +670,8 @@ export default function Canvas2D({
     lines.forEach(line => {
       const A = point.x - line.start.x;
       const B = point.y - line.start.y;
-      const C = lineEnd.x - lineStart.x;
-      const D = lineEnd.y - lineStart.y;
+      const C = line.end.x - line.start.x;
+      const D = line.end.y - line.start.y;
 
       const dot = A * C + B * D;
       const lenSq = C * C + D * D;
@@ -837,7 +837,7 @@ export default function Canvas2D({
     for (const key in groupedPoints) {
       const { point, lines, isStart } = groupedPoints[key];
       const dx = clickPoint.x - point.x;
-      const dy = clickPoint.y - point.y;
+      const dy = clickPoint.y -point.y;
       const distance = Math.sqrt(dx * dx + dy * dy);      if (distance < POINT_RADIUS / zoom * 1.5) {  
         return { point, lines, isStart };
       }
