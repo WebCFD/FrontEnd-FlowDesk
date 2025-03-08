@@ -892,7 +892,7 @@ export function RoomSketchPro({
         // Apply Wall's Local Coordinate System approach
         const forward = wallNormalVector.clone();
         const up = new THREE.Vector3(0, 0, 1);
-        constright = new THREE.Vector3().crossVectors(up, forward).normalize();
+        const right = new THREE.Vector3().crossVectors(up, forward).normalize();
         forward.crossVectors(right, up).normalize();
         const rotationMatrix = new THREE.Matrix4().makeBasis(
           right,
