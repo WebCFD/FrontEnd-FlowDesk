@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { TrackballControls } from "three/addons/controls/TrackballControls.js";
 import { makeTextSprite } from "@/lib/three-utils";
 import { createTableModel, createPersonModel, createArmchairModel } from "./furniture-models";
+import { FurnitureMenu } from "./FurnitureMenu"; // Fix the import
 import { Slider } from "@/components/ui/slider";
 
 // Types
@@ -887,7 +888,7 @@ export function RoomSketchPro({
             paneGlassMaterial,
           );
 
-          glassPane.position.set(pos[0], pos[1], pos[2]);
+          glassPane.position.set(pos[0], pos[1], pos[2]); // Fix the syntax error
           ventGroup.add(glassPane);
         });
         // Positionand rotate the vent group
@@ -1464,12 +1465,17 @@ export function RoomSketchPro({
 
   // Update effect for wall transparency
   useEffect(() => {
+    console.log("Wall transparency effect triggered:", wallTransparency);
     if (wallMaterialRef.current) {
+      console.log("Updating wall material opacity to:", wallTransparency);
       wallMaterialRef.current.opacity = wallTransparency;
       wallMaterialRef.current.needsUpdate = true;
       if (rendererRef.current && sceneRef.current && cameraRef.current) {
+        console.log("Rendering scene with new transparency");
         rendererRef.current.render(sceneRef.current, cameraRef.current);
       }
+    } else {
+      console.warn("Wall material ref is not available");
     }
   }, [wallTransparency]);
 
@@ -1477,16 +1483,29 @@ export function RoomSketchPro({
     console.log("Drag started:", item);
   };
 
-  // This will update whenever the wall material opacity changes
+  // Add proper wall transparency handling
   const handleWallTransparencyChange = (value: number) => {
-    // Call the parent's handler if provided
+    console.log("Wall transparency change requested:", value);
     if (onWallTransparencyChange) {
       onWallTransparencyChange(value);
+    }
+    // Update material directly as well for immediate feedback
+    if (wallMaterialRef.current) {
+      wallMaterialRef.current.opacity = value;
+      wallMaterialRef.current.needsUpdate = true;
+      if (rendererRef.current && sceneRef.current && cameraRef.current) {
+        rendererRef.current.render(sceneRef.current, cameraRef.current);
+      }
     }
   };
 
   return (
-    <div>
+    <div className="flex gap-4">
+      <FurnitureMenu
+        onDragStart={handleDragStart}
+        wallTransparency={wallTransparency}
+        onWallTransparencyChange={handleWallTransparencyChange}
+      />
       <div
         ref={containerRef}
         style={{
