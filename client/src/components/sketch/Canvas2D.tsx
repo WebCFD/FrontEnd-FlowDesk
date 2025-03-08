@@ -103,20 +103,9 @@ export default function Canvas2D({
   const [zoomInput, setZoomInput] = useState('100');
   const [hoveredGridPoint, setHoveredGridPoint] = useState<Point | null>(null);
 
-  const createCoordinateSystem = (): Line[] => {
-    const centerX = dimensions.width / 2;
-    const centerY = dimensions.height / 2;
-    const arrowLength = 150;
-
-    return [
-      { start: { x: centerX - arrowLength, y: centerY }, end: { x: centerX + arrowLength, y: centerY } },
-      { start: { x: centerX + arrowLength, y: centerY }, end: { x: centerX + arrowLength - 10, y: centerY - 5 } },
-      { start: { x: centerX + arrowLength, y: centerY }, end: { x: centerX + arrowLength - 10, y: centerY + 5 } },
-      { start: { x: centerX, y: centerY + arrowLength }, end: { x: centerX, y: centerY - arrowLength } },
-      { start: { x: centerX, y: centerY - arrowLength }, end: { x: centerX - 5, y: centerY - arrowLength + 10 } },
-      { start: { x: centerX, y: centerY - arrowLength }, end: { x: centerX + 5, y: centerY - arrowLength + 10 } },
-    ];
-  };
+  const gridPointsCache = useRef<Point[]>([]);
+  const coordSystemCache = useRef<Line[]>([]);
+  const needsUpdate = useRef<boolean>(true);
 
   const createGridLines = (): Line[] => {
     const gridLines: Line[] = [];
@@ -138,6 +127,49 @@ export default function Canvas2D({
     }
 
     return gridLines;
+  };
+
+  const calculateGridPoints = () => {
+    if (gridPointsCache.current.length > 0) return gridPointsCache.current;
+
+    const points: Point[] = [];
+    const centerX = dimensions.width / 2;
+    const centerY = dimensions.height / 2;
+    const snapSize = 4; // 4 pixels = 5cm
+
+    for (let x = -GRID_RANGE; x <= GRID_RANGE; x += snapSize) {
+      for (let y = -GRID_RANGE; y <= GRID_RANGE; y += snapSize) {
+        const relativeX = Math.round(x / snapSize);
+        const relativeY = Math.round(y / snapSize);
+
+        if ((relativeX + relativeY) % 2 === 0) {
+          points.push({
+            x: centerX + x,
+            y: centerY + y
+          });
+        }
+      }
+    }
+    gridPointsCache.current = points;
+    return points;
+  };
+
+  const calculateCoordinateSystem = () => {
+    if (coordSystemCache.current.length > 0) return coordSystemCache.current;
+
+    const centerX = dimensions.width / 2;
+    const centerY = dimensions.height / 2;
+    const arrowLength = 150;
+
+    coordSystemCache.current = [
+      { start: { x: centerX - arrowLength, y: centerY }, end: { x: centerX + arrowLength, y: centerY } },
+      { start: { x: centerX + arrowLength, y: centerY }, end: { x: centerX + arrowLength - 10, y: centerY - 5 } },
+      { start: { x: centerX + arrowLength, y: centerY }, end: { x: centerX + arrowLength - 10, y: centerY + 5 } },
+      { start: { x: centerX, y: centerY + arrowLength }, end: { x: centerX, y: centerY - arrowLength } },
+      { start: { x: centerX, y: centerY - arrowLength }, end: { x: centerX - 5, y: centerY - arrowLength + 10 } },
+      { start: { x: centerX, y: centerY - arrowLength }, end: { x: centerX + 5, y: centerY - arrowLength + 10 } },
+    ];
+    return coordSystemCache.current;
   };
 
   const handleZoomChange = (newZoom: number) => {
@@ -449,30 +481,8 @@ export default function Canvas2D({
     ctx.restore();
   };
 
-  const getGridPoints = (): Point[] => {
-    const points: Point[] = [];
-    const centerX = dimensions.width / 2;
-    const centerY = dimensions.height / 2;
-    const snapSize = 4; // 4 pixels = 5cm
-
-    for (let x = -GRID_RANGE; x <= GRID_RANGE; x += snapSize) {
-      for (let y = -GRID_RANGE; y <= GRID_RANGE; y += snapSize) {
-        const relativeX = Math.round(x / snapSize);
-        const relativeY = Math.round(y / snapSize);
-
-        if ((relativeX + relativeY) % 2 === 0) {
-          points.push({
-            x: centerX + x,
-            y: centerY + y
-          });
-        }
-      }
-    }
-    return points;
-  };
-
   const findNearestGridPoint = (point: Point): Point | null => {
-    const gridPoints = getGridPoints();
+    const gridPoints = calculateGridPoints();
     let nearest: Point | null = null;
     let minDistance = HOVER_DISTANCE;
 
@@ -489,6 +499,126 @@ export default function Canvas2D({
     return nearest;
   };
 
+  const optimizedDraw = () => {
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext('2d');
+    if (!canvas || !ctx) return;
+
+    // Only clear and redraw if needed
+    if (!needsUpdate.current) return;
+
+    ctx.clearRect(0, 0, dimensions.width, dimensions.height);
+    ctx.save();
+    ctx.translate(pan.x, pan.y);
+    ctx.scale(zoom, zoom);
+
+    // Draw grid (static)
+    ctx.beginPath();
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 1 / zoom;
+    createGridLines().forEach(line => {
+      ctx.moveTo(line.start.x, line.start.y);
+      ctx.lineTo(line.end.x, line.end.y);
+    });
+    ctx.stroke();
+
+    // Draw grid points (cached)
+    const gridPoints = calculateGridPoints();
+    ctx.fillStyle = '#e2e8f0';
+    gridPoints.forEach(point => {
+      ctx.beginPath();
+      ctx.arc(
+        point.x,
+        point.y,
+        GRID_POINT_RADIUS / zoom,
+        0,
+        2 * Math.PI
+      );
+      ctx.fill();
+    });
+
+    // Draw coordinate system (cached)
+    const coordSystem = calculateCoordinateSystem();
+    coordSystem.forEach((line, index) => {
+      ctx.beginPath();
+      ctx.strokeStyle = index < 3 ? '#ef4444' : '#22c55e';
+      ctx.lineWidth = 2 / zoom;
+      ctx.moveTo(line.start.x, line.start.y);
+      ctx.lineTo(line.end.x, line.end.y);
+      ctx.stroke();
+    });
+
+    lines.forEach(line => {
+      if (highlightedLines.includes(line)) {
+        ctx.strokeStyle = getHighlightColor();
+        ctx.lineWidth = 3 / zoom;
+      } else {
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 2 / zoom;
+      }
+      ctx.beginPath();
+      ctx.moveTo(line.start.x, line.start.y);
+      ctx.lineTo(line.end.x, line.end.y);
+      ctx.stroke();
+
+      const midX = (line.start.x + line.end.x) / 2;
+      const midY = (line.start.y + line.end.y) / 2;
+      const length = Math.round(getLineLength(line));
+      ctx.font = `${12 / zoom}px sans-serif`;
+      ctx.fillStyle = '#64748b';
+      ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
+    });
+
+    if (currentLine) {
+      ctx.beginPath();
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 2 / zoom;
+      ctx.moveTo(currentLine.start.x, currentLine.start.y);
+      ctx.lineTo(currentLine.end.x, currentLine.end.y);
+      ctx.stroke();
+
+      const length = Math.round(getLineLength(currentLine));
+      const midX = (currentLine.start.x + currentLine.end.x) / 2;
+      const midY = (currentLine.start.y + currentLine.end.y) / 2;
+      ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
+    }
+
+    airEntries.forEach(entry => {
+      drawAirEntry(ctx, entry);
+    });
+
+    const endpoints = [...new Set(lines.flatMap(line => [line.start, line.end]))];
+    endpoints.forEach(point => {
+      const connections = findConnectedLines(point).length;
+      let color = '#fb923c';
+
+      if (connections > 1) {
+        if (isInClosedContour(point, lines)) {
+          color = '#22c55e';
+        } else {
+          color = '#3b82f6';
+        }
+      }
+
+      ctx.beginPath();
+      ctx.fillStyle = color;
+      ctx.arc(point.x, point.y, POINT_RADIUS / zoom, 0, 2 * Math.PI);
+      ctx.fill();
+
+      ctx.font = `${12 / zoom}px sans-serif`;
+      drawCoordinateLabel(ctx, point, color);
+    });
+
+    if (cursorPoint && isDrawing) {
+      ctx.font = `${12 / zoom}px sans-serif`;
+      drawCoordinateLabel(ctx, cursorPoint, '#fb923c');
+    }
+
+    ctx.restore();
+    needsUpdate.current = false;
+  };
+
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -497,128 +627,25 @@ export default function Canvas2D({
     if (!ctx) return;
 
     const draw = () => {
-      ctx.clearRect(0, 0, dimensions.width, dimensions.height);
-
-      ctx.save();
-      ctx.translate(pan.x, pan.y);
-      ctx.scale(zoom, zoom);
-
-      ctx.beginPath();
-      ctx.strokeStyle = '#64748b';
-      ctx.lineWidth = 1 / zoom;
-      createGridLines().forEach(line => {
-        ctx.moveTo(line.start.x, line.start.y);
-        ctx.lineTo(line.end.x, line.end.y);
-      });
-      ctx.stroke();
-
-      const gridPoints = getGridPoints();
-      gridPoints.forEach(point => {
-        ctx.beginPath();
-        ctx.fillStyle = '#e2e8f0';
-        ctx.arc(
-          point.x,
-          point.y,
-          GRID_POINT_RADIUS / zoom,
-          0,
-          2 * Math.PI
-        );
-        ctx.fill();
-
-        if (hoveredGridPoint &&
-          point.x === hoveredGridPoint.x &&
-          point.y === hoveredGridPoint.y &&
-          !isDrawing) {
-          const coords = getRelativeCoordinates(point);
-          ctx.font = `${12 / zoom}px sans-serif`;
-          ctx.fillStyle = '#000000';
-          ctx.textAlign = 'left';
-          ctx.fillText(
-            `(${coords.x}, ${coords.y})`,
-            point.x + 8 / zoom,
-            point.y - 8 / zoom
-          );
-        }
-      });
-
-      const coordSystem = createCoordinateSystem();
-      coordSystem.forEach((line, index) => {
-        ctx.beginPath();
-        ctx.strokeStyle = index < 3 ? '#ef4444' : '#22c55e';
-        ctx.lineWidth = 2 / zoom;
-        ctx.moveTo(line.start.x, line.start.y);
-        ctx.lineTo(line.end.x, line.end.y);
-        ctx.stroke();
-      });
-
-      lines.forEach(line => {
-        if (highlightedLines.includes(line)) {
-          ctx.strokeStyle = getHighlightColor();
-          ctx.lineWidth = 3 / zoom;
-        } else {
-          ctx.strokeStyle = '#000000';
-          ctx.lineWidth = 2 / zoom;
-        }
-        ctx.beginPath();
-        ctx.moveTo(line.start.x, line.start.y);
-        ctx.lineTo(line.end.x, line.end.y);
-        ctx.stroke();
-
-        const midX = (line.start.x + line.end.x) / 2;
-        const midY = (line.start.y + line.end.y) / 2;
-        const length = Math.round(getLineLength(line));
-        ctx.font = `${12 / zoom}px sans-serif`;
-        ctx.fillStyle = '#64748b';
-        ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
-      });
-
-      if (currentLine) {
-        ctx.beginPath();
-        ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 2 / zoom;
-        ctx.moveTo(currentLine.start.x, currentLine.start.y);
-        ctx.lineTo(currentLine.end.x, currentLine.end.y);
-        ctx.stroke();
-
-        const length = Math.round(getLineLength(currentLine));
-        const midX = (currentLine.start.x + currentLine.end.x) / 2;
-        const midY = (currentLine.start.y + currentLine.end.y) / 2;
-        ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
-      }
-
-      airEntries.forEach(entry => {
-        drawAirEntry(ctx, entry);
-      });
-
-      const endpoints = [...new Set(lines.flatMap(line => [line.start, line.end]))];
-      endpoints.forEach(point => {
-        const connections = findConnectedLines(point).length;
-        let color = '#fb923c';
-
-        if (connections > 1) {
-          if (isInClosedContour(point, lines)) {
-            color = '#22c55e';
-          } else {
-            color = '#3b82f6';
-          }
-        }
-
-        ctx.beginPath();
-        ctx.fillStyle = color;
-        ctx.arc(point.x, point.y, POINT_RADIUS / zoom, 0, 2 * Math.PI);
-        ctx.fill();
-
-        ctx.font = `${12 / zoom}px sans-serif`;
-        drawCoordinateLabel(ctx, point, color);
-      });
-
-      if (cursorPoint && isDrawing) {
-        ctx.font = `${12 / zoom}px sans-serif`;
-        drawCoordinateLabel(ctx, cursorPoint, '#fb923c');
-      }
-
-      ctx.restore();
+        optimizedDraw();
     };
+
+    let lastFrameTime = 0;
+    const targetFPS = 30; // Limit to 30 FPS to reduce CPU usage
+    const frameInterval = 1000 / targetFPS;
+
+    const animate = (currentTime: number) => {
+      const deltaTime = currentTime - lastFrameTime;
+
+      if (deltaTime > frameInterval) {
+        lastFrameTime = currentTime - (deltaTime % frameInterval);
+        draw();
+      }
+
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    let animationFrameId = requestAnimationFrame(animate);
 
     const handleMouseDown = (e: MouseEvent) => {
       if (panMode || e.button === 2) {
@@ -652,6 +679,16 @@ export default function Canvas2D({
       }
     };
 
+    const throttleMouseMove = (e: MouseEvent) => {
+      if (!mouseMoveThrottleTimer) {
+        mouseMoveThrottleTimer = window.setTimeout(() => {
+          handleMouseMove(e);
+          mouseMoveThrottleTimer = null;
+        }, 16); // ~60fps throttle
+      }
+    };
+    let mouseMoveThrottleTimer: number | null = null;
+
     const handleMouseMove = (e: MouseEvent) => {
       if (isPanning) {
         handlePanMove(e);
@@ -660,15 +697,29 @@ export default function Canvas2D({
 
       const point = getCanvasPoint(e);
       const nearestGridPoint = findNearestGridPoint(point);
-      setHoveredGridPoint(nearestGridPoint);
+
+      if (JSON.stringify(hoveredGridPoint) !== JSON.stringify(nearestGridPoint)) {
+        setHoveredGridPoint(nearestGridPoint);
+        needsUpdate.current = true;
+      }
 
       if (currentTool === 'wall' && isDrawing && currentLine) {
         const nearestPoint = findNearestEndpoint(point);
         const endPoint = nearestPoint || snapToGrid(point);
-        setCurrentLine(prev => prev ? { ...prev, end: endPoint } : null);
+        setCurrentLine(prev => {
+          if (prev && (prev.end.x !== endPoint.x || prev.end.y !== endPoint.y)) {
+            needsUpdate.current = true;
+            return { ...prev, end: endPoint };
+          }
+          return prev;
+        });
         setCursorPoint(endPoint);
       } else if (currentTool === 'eraser' || currentAirEntry) {
-        setHighlightedLines(findLinesNearPoint(point));
+        const newHighlightedLines = findLinesNearPoint(point);
+        if (JSON.stringify(highlightedLines) !== JSON.stringify(newHighlightedLines)) {
+          setHighlightedLines(newHighlightedLines);
+          needsUpdate.current = true;
+        }
       }
     };
 
@@ -697,35 +748,6 @@ export default function Canvas2D({
         setCurrentLine(null);
         setIsDrawing(false);
         setCursorPoint(null);
-      }
-    };
-
-    // Animation loop with performance optimization
-    let lastFrameTime = 0;
-    const targetFPS = 30; // Limit to 30 FPS to reduce CPU usage
-    const frameInterval = 1000 / targetFPS;
-
-    const animate = (currentTime: number) => {
-      const deltaTime = currentTime - lastFrameTime;
-
-      if (deltaTime > frameInterval) {
-        lastFrameTime = currentTime - (deltaTime % frameInterval);
-        draw();
-      }
-
-      animationFrameId = requestAnimationFrame(animate);
-    };
-
-    let animationFrameId = requestAnimationFrame(animate);
-
-    // Add throttling to mouse move events
-    let mouseMoveThrottleTimer: number | null = null;
-    const throttleMouseMove = (e: MouseEvent) => {
-      if (!mouseMoveThrottleTimer) {
-        mouseMoveThrottleTimer = window.setTimeout(() => {
-          handleMouseMove(e);
-          mouseMoveThrottleTimer = null;
-        }, 16); // ~60fps throttle
       }
     };
 
