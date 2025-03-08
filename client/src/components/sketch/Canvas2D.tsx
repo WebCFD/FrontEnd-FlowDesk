@@ -41,6 +41,8 @@ const MIN_ZOOM = 0.25;
 const MAX_ZOOM = 4;
 const ZOOM_STEP = 0.1;
 const GRID_RANGE = 2000;
+const GRID_POINT_RADIUS = 1;
+const HOVER_DISTANCE = 10;
 
 const cmToPixels = (cm: number): number => {
   return cm / PIXELS_TO_CM;
@@ -87,7 +89,8 @@ export default function Canvas2D({
   onLinesUpdate
 }: Canvas2DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [dimensions] = useState({ width: 800, height: 600 });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
   const [currentLine, setCurrentLine] = useState<Line | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [highlightedLines, setHighlightedLines] = useState<Line[]>([]);
@@ -96,14 +99,51 @@ export default function Canvas2D({
   const [isPanning, setIsPanning] = useState(false);
   const [lastPanPoint, setLastPanPoint] = useState<Point | null>(null);
   const [panMode, setPanMode] = useState(false);
+  const [cursorPoint, setCursorPoint] = useState<Point | null>(null);
   const [zoomInput, setZoomInput] = useState('100');
+  const [hoveredGridPoint, setHoveredGridPoint] = useState<Point | null>(null);
 
-  const requestRender = useRef<(() => void) | null>(null);
-  const renderPending = useRef(false);
+  const createCoordinateSystem = (): Line[] => {
+    const centerX = dimensions.width / 2;
+    const centerY = dimensions.height / 2;
+    const arrowLength = 150;
+
+    return [
+      { start: { x: centerX - arrowLength, y: centerY }, end: { x: centerX + arrowLength, y: centerY } },
+      { start: { x: centerX + arrowLength, y: centerY }, end: { x: centerX + arrowLength - 10, y: centerY - 5 } },
+      { start: { x: centerX + arrowLength, y: centerY }, end: { x: centerX + arrowLength - 10, y: centerY + 5 } },
+      { start: { x: centerX, y: centerY + arrowLength }, end: { x: centerX, y: centerY - arrowLength } },
+      { start: { x: centerX, y: centerY - arrowLength }, end: { x: centerX - 5, y: centerY - arrowLength + 10 } },
+      { start: { x: centerX, y: centerY - arrowLength }, end: { x: centerX + 5, y: centerY - arrowLength + 10 } },
+    ];
+  };
+
+  const createGridLines = (): Line[] => {
+    const gridLines: Line[] = [];
+    const centerX = dimensions.width / 2;
+    const centerY = dimensions.height / 2;
+
+    for (let x = -GRID_RANGE; x <= GRID_RANGE; x += gridSize) {
+      gridLines.push({
+        start: { x: centerX + x, y: centerY - GRID_RANGE },
+        end: { x: centerX + x, y: centerY + GRID_RANGE }
+      });
+    }
+
+    for (let y = -GRID_RANGE; y <= GRID_RANGE; y += gridSize) {
+      gridLines.push({
+        start: { x: centerX - GRID_RANGE, y: centerY + y },
+        end: { x: centerX + GRID_RANGE, y: centerY + y }
+      });
+    }
+
+    return gridLines;
+  };
 
   const handleZoomChange = (newZoom: number) => {
     const oldZoom = zoom;
     const zoomDiff = newZoom - oldZoom;
+
     const centerX = dimensions.width / 2;
     const centerY = dimensions.height / 2;
 
@@ -117,17 +157,21 @@ export default function Canvas2D({
   };
 
   const handleZoomIn = () => {
-    handleZoomChange(Math.min(zoom + ZOOM_STEP, MAX_ZOOM));
+    const newZoom = Math.min(zoom + ZOOM_STEP, MAX_ZOOM);
+    handleZoomChange(newZoom);
   };
 
   const handleZoomOut = () => {
-    handleZoomChange(Math.max(zoom - ZOOM_STEP, MIN_ZOOM));
+    const newZoom = Math.max(zoom - ZOOM_STEP, MIN_ZOOM);
+    handleZoomChange(newZoom);
   };
 
   const handleWheel = (e: WheelEvent) => {
     if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
       const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
-      handleZoomChange(Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom + delta)));
+      const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom + delta));
+      handleZoomChange(newZoom);
     }
   };
 
@@ -155,7 +199,9 @@ export default function Canvas2D({
 
   const togglePanMode = () => {
     setPanMode(!panMode);
-    if (isPanning) handlePanEnd();
+    if (isPanning) {
+      handlePanEnd();
+    }
   };
 
   const getCanvasPoint = (e: MouseEvent): Point => {
@@ -172,8 +218,16 @@ export default function Canvas2D({
     };
   };
 
+
+  const getLineLength = (line: Line): number => {
+    const dx = line.end.x - line.start.x;
+    const dy = line.end.y - line.start.y;
+    const lengthInPixels = Math.sqrt(dx * dx + dy * dy);
+    return pixelsToCm(lengthInPixels);
+  };
+
   const snapToGrid = (point: Point): Point => {
-    const snapSize = gridSize;
+    const snapSize = 4; // 4 pixels = 5cm
     const centerX = dimensions.width / 2;
     const centerY = dimensions.height / 2;
 
@@ -214,8 +268,64 @@ export default function Canvas2D({
     return nearest;
   };
 
+  const findConnectedLines = (point: Point): Line[] => {
+    return lines.filter(line =>
+      arePointsClose(line.start, point) || arePointsClose(line.end, point)
+    );
+  };
+
+  const isInClosedContour = (point: Point, lines: Line[]): boolean => {
+    const arePointsEqual = (p1: Point, p2: Point): boolean => {
+      const dx = p1.x - p2.x;
+      const dy = p1.y - p2.y;
+      return Math.sqrt(dx * dx + dy * dy) < 5;
+    };
+
+    const connectedLines = lines.filter(line =>
+      arePointsEqual(line.start, point) || arePointsEqual(line.end, point)
+    );
+
+    for (const startLine of connectedLines) {
+      const visited = new Set<string>();
+      const pointKey = (p: Point) => `${Math.round(p.x)},${Math.round(p.y)}`;
+      const stack: { point: Point; path: Line[] }[] = [{
+        point: arePointsEqual(startLine.start, point) ? startLine.end : startLine.start,
+        path: [startLine]
+      }];
+
+      while (stack.length > 0) {
+        const { point: currentPoint, path } = stack.pop()!;
+        const key = pointKey(currentPoint);
+
+        if (path.length >= 2 && arePointsEqual(currentPoint, point)) {
+          return true;
+        }
+
+        if (visited.has(key)) continue;
+        visited.add(key);
+
+        const nextLines = lines.filter(line =>
+          !path.includes(line) &&
+          (arePointsEqual(line.start, currentPoint) || arePointsEqual(line.end, currentPoint))
+        );
+
+        for (const nextLine of nextLines) {
+          const nextPoint = arePointsEqual(nextLine.start, currentPoint) ? nextLine.end : nextLine.start;
+          stack.push({
+            point: nextPoint,
+            path: [...path, nextLine]
+          });
+        }
+      }
+    }
+
+    return false;
+  };
+
   const findLinesNearPoint = (point: Point): Line[] => {
-    return lines.filter(line => {
+    const nearbyLines: Line[] = [];
+
+    lines.forEach(line => {
       const A = point.x - line.start.x;
       const B = point.y - line.start.y;
       const C = line.end.x - line.start.x;
@@ -243,188 +353,26 @@ export default function Canvas2D({
       const dy = point.y - yy;
       const distance = Math.sqrt(dx * dx + dy * dy);
 
-      return distance < SNAP_DISTANCE;
+      if (distance < SNAP_DISTANCE) {
+        nearbyLines.push(line);
+      }
     });
+
+    return nearbyLines;
   };
 
-  const draw = () => {
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext('2d');
-    if (!canvas || !ctx) return;
+  const gridSizeToCm = (pixels: number): number => pixels * PIXELS_TO_CM;
 
-    ctx.clearRect(0, 0, dimensions.width, dimensions.height);
-    ctx.save();
+  const getHighlightColor = () => {
+    if (!currentAirEntry) return 'rgba(239, 68, 68, 0.5)';
 
-    ctx.translate(pan.x, pan.y);
-    ctx.scale(zoom, zoom);
-
-    // Draw grid
-    ctx.beginPath();
-    ctx.strokeStyle = '#64748b';
-    ctx.lineWidth = 1 / zoom;
-    const centerX = dimensions.width / 2;
-    const centerY = dimensions.height / 2;
-
-    for (let x = -GRID_RANGE; x <= GRID_RANGE; x += gridSize) {
-      ctx.moveTo(centerX + x, centerY - GRID_RANGE);
-      ctx.lineTo(centerX + x, centerY + GRID_RANGE);
-    }
-    for (let y = -GRID_RANGE; y <= GRID_RANGE; y += gridSize) {
-      ctx.moveTo(centerX - GRID_RANGE, centerY + y);
-      ctx.lineTo(centerX + GRID_RANGE, centerY + y);
-    }
-    ctx.stroke();
-
-    // Draw walls
-    ctx.lineWidth = 2 / zoom;
-    for (const line of lines) {
-      ctx.beginPath();
-      ctx.strokeStyle = highlightedLines.includes(line) ? 'rgba(239, 68, 68, 0.5)' : '#000000';
-      ctx.moveTo(line.start.x, line.start.y);
-      ctx.lineTo(line.end.x, line.end.y);
-      ctx.stroke();
-    }
-
-    // Draw current line
-    if (currentLine) {
-      ctx.beginPath();
-      ctx.strokeStyle = '#000000';
-      ctx.moveTo(currentLine.start.x, currentLine.start.y);
-      ctx.lineTo(currentLine.end.x, currentLine.end.y);
-      ctx.stroke();
-    }
-
-    ctx.restore();
-    renderPending.current = false;
-  };
-
-  // Request a render on next frame
-  const scheduleRender = () => {
-    if (!renderPending.current && requestRender.current) {
-      renderPending.current = true;
-      requestAnimationFrame(requestRender.current);
-    }
-  };
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    requestRender.current = draw;
-
-    const handleMouseDown = (e: MouseEvent) => {
-      if (panMode || e.button === 2) {
-        handlePanStart(e);
-        return;
-      }
-
-      const point = getCanvasPoint(e);
-
-      if (currentTool === 'wall') {
-        const startPoint = findNearestEndpoint(point) || snapToGrid(point);
-        setCurrentLine({ start: startPoint, end: startPoint });
-        setIsDrawing(true);
-        scheduleRender();
-      } else if (currentTool === 'eraser') {
-        const linesToErase = findLinesNearPoint(point);
-        if (linesToErase.length > 0) {
-          onLinesUpdate?.(lines.filter(line => !linesToErase.includes(line)));
-          scheduleRender();
-        }
-      } else if (currentAirEntry && onLineSelect) {
-        const selectedLines = findLinesNearPoint(point);
-        if (selectedLines.length > 0) {
-          onLineSelect(selectedLines[0], point);
-        }
-      }
+    const colors = {
+      window: 'rgba(59, 130, 246, 0.5)',
+      door: 'rgba(180, 83, 9, 0.5)',
+      vent: 'rgba(34, 197, 94, 0.5)'
     };
 
-    const handleMouseMove = (e: MouseEvent) => {
-      if (isPanning) {
-        handlePanMove(e);
-        scheduleRender();
-        return;
-      }
-
-      const point = getCanvasPoint(e);
-
-      if (currentTool === 'wall' && isDrawing && currentLine) {
-        const endPoint = findNearestEndpoint(point) || snapToGrid(point);
-        setCurrentLine(prev => prev ? { ...prev, end: endPoint } : null);
-        scheduleRender();
-      } else if (currentTool === 'eraser' || currentAirEntry) {
-        setHighlightedLines(findLinesNearPoint(point));
-        scheduleRender();
-      }
-    };
-
-    const handleMouseUp = (e: MouseEvent) => {
-      if (panMode || e.button === 2) {
-        handlePanEnd();
-        scheduleRender();
-        return;
-      }
-
-      if (currentTool === 'wall' && isDrawing && currentLine) {
-        if (currentLine.start.x !== currentLine.end.x || currentLine.start.y !== currentLine.end.y) {
-          onLinesUpdate?.([...lines, currentLine]);
-        }
-        setCurrentLine(null);
-        setIsDrawing(false);
-        scheduleRender();
-      }
-    };
-
-    canvas.addEventListener('mousedown', handleMouseDown);
-    canvas.addEventListener('mousemove', handleMouseMove);
-    canvas.addEventListener('mouseup', handleMouseUp);
-    canvas.addEventListener('wheel', handleWheel, { passive: true });
-    canvas.addEventListener('contextmenu', e => e.preventDefault());
-
-    scheduleRender();
-
-    return () => {
-      canvas.removeEventListener('mousedown', handleMouseDown);
-      canvas.removeEventListener('mousemove', handleMouseMove);
-      canvas.removeEventListener('mouseup', handleMouseUp);
-      canvas.removeEventListener('wheel', handleWheel);
-      canvas.removeEventListener('contextmenu', e => e.preventDefault());
-      requestRender.current = null;
-    };
-  }, [
-    currentTool,
-    isDrawing,
-    currentLine,
-    lines,
-    zoom,
-    pan,
-    isPanning,
-    panMode,
-    currentAirEntry,
-    onLineSelect,
-    onLinesUpdate,
-    gridSize
-  ]);
-
-  const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/[^0-9]/g, '');
-    setZoomInput(value);
-  };
-
-  const handleZoomInputBlur = () => {
-    let newZoom = parseInt(zoomInput) / 100;
-    if (isNaN(newZoom)) {
-      newZoom = zoom;
-    } else {
-      newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newZoom));
-    }
-    handleZoomChange(newZoom);
-  };
-
-  const handleZoomInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.currentTarget.blur();
-    }
+    return colors[currentAirEntry];
   };
 
   const getAirEntryColor = (type: 'window' | 'door' | 'vent'): string => {
@@ -434,6 +382,24 @@ export default function Canvas2D({
       vent: '#22c55e'
     };
     return colors[type];
+  };
+
+  const getRelativeCoordinates = (point: Point): { x: number; y: number } => {
+    const centerX = dimensions.width / 2;
+    const centerY = dimensions.height / 2;
+    const relativeX = point.x - centerX;
+    const relativeY = centerY - point.y;
+    return {
+      x: Math.round(pixelsToCm(relativeX)),
+      y: Math.round(pixelsToCm(relativeY))
+    };
+  };
+
+  const drawCoordinateLabel = (ctx: CanvasRenderingContext2D, point: Point, color: string) => {
+    const coords = getRelativeCoordinates(point);
+    ctx.fillStyle = color;
+    ctx.textAlign = 'left';
+    ctx.fillText(`(${coords.x}, ${coords.y})`, point.x + 8, point.y - 8);
   };
 
   const drawAirEntry = (ctx: CanvasRenderingContext2D, entry: AirEntry) => {
@@ -483,8 +449,330 @@ export default function Canvas2D({
     ctx.restore();
   };
 
+  const getGridPoints = (): Point[] => {
+    const points: Point[] = [];
+    const centerX = dimensions.width / 2;
+    const centerY = dimensions.height / 2;
+    const snapSize = 4; // 4 pixels = 5cm
+
+    for (let x = -GRID_RANGE; x <= GRID_RANGE; x += snapSize) {
+      for (let y = -GRID_RANGE; y <= GRID_RANGE; y += snapSize) {
+        const relativeX = Math.round(x / snapSize);
+        const relativeY = Math.round(y / snapSize);
+
+        if ((relativeX + relativeY) % 2 === 0) {
+          points.push({
+            x: centerX + x,
+            y: centerY + y
+          });
+        }
+      }
+    }
+    return points;
+  };
+
+  const findNearestGridPoint = (point: Point): Point | null => {
+    const gridPoints = getGridPoints();
+    let nearest: Point | null = null;
+    let minDistance = HOVER_DISTANCE;
+
+    gridPoints.forEach(gridPoint => {
+      const dx = point.x - gridPoint.x;
+      const dy = point.y - gridPoint.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      if (distance < minDistance) {
+        minDistance = distance;
+        nearest = gridPoint;
+      }
+    });
+
+    return nearest;
+  };
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const draw = () => {
+      ctx.clearRect(0, 0, dimensions.width, dimensions.height);
+
+      ctx.save();
+      ctx.translate(pan.x, pan.y);
+      ctx.scale(zoom, zoom);
+
+      ctx.beginPath();
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 1 / zoom;
+      createGridLines().forEach(line => {
+        ctx.moveTo(line.start.x, line.start.y);
+        ctx.lineTo(line.end.x, line.end.y);
+      });
+      ctx.stroke();
+
+      const gridPoints = getGridPoints();
+      gridPoints.forEach(point => {
+        ctx.beginPath();
+        ctx.fillStyle = '#e2e8f0';
+        ctx.arc(
+          point.x,
+          point.y,
+          GRID_POINT_RADIUS / zoom,
+          0,
+          2 * Math.PI
+        );
+        ctx.fill();
+
+        if (hoveredGridPoint &&
+          point.x === hoveredGridPoint.x &&
+          point.y === hoveredGridPoint.y &&
+          !isDrawing) {
+          const coords = getRelativeCoordinates(point);
+          ctx.font = `${12 / zoom}px sans-serif`;
+          ctx.fillStyle = '#000000';
+          ctx.textAlign = 'left';
+          ctx.fillText(
+            `(${coords.x}, ${coords.y})`,
+            point.x + 8 / zoom,
+            point.y - 8 / zoom
+          );
+        }
+      });
+
+      const coordSystem = createCoordinateSystem();
+      coordSystem.forEach((line, index) => {
+        ctx.beginPath();
+        ctx.strokeStyle = index < 3 ? '#ef4444' : '#22c55e';
+        ctx.lineWidth = 2 / zoom;
+        ctx.moveTo(line.start.x, line.start.y);
+        ctx.lineTo(line.end.x, line.end.y);
+        ctx.stroke();
+      });
+
+      lines.forEach(line => {
+        if (highlightedLines.includes(line)) {
+          ctx.strokeStyle = getHighlightColor();
+          ctx.lineWidth = 3 / zoom;
+        } else {
+          ctx.strokeStyle = '#000000';
+          ctx.lineWidth = 2 / zoom;
+        }
+        ctx.beginPath();
+        ctx.moveTo(line.start.x, line.start.y);
+        ctx.lineTo(line.end.x, line.end.y);
+        ctx.stroke();
+
+        const midX = (line.start.x + line.end.x) / 2;
+        const midY = (line.start.y + line.end.y) / 2;
+        const length = Math.round(getLineLength(line));
+        ctx.font = `${12 / zoom}px sans-serif`;
+        ctx.fillStyle = '#64748b';
+        ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
+      });
+
+      if (currentLine) {
+        ctx.beginPath();
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 2 / zoom;
+        ctx.moveTo(currentLine.start.x, currentLine.start.y);
+        ctx.lineTo(currentLine.end.x, currentLine.end.y);
+        ctx.stroke();
+
+        const length = Math.round(getLineLength(currentLine));
+        const midX = (currentLine.start.x + currentLine.end.x) / 2;
+        const midY = (currentLine.start.y + currentLine.end.y) / 2;
+        ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
+      }
+
+      airEntries.forEach(entry => {
+        drawAirEntry(ctx, entry);
+      });
+
+      const endpoints = [...new Set(lines.flatMap(line => [line.start, line.end]))];
+      endpoints.forEach(point => {
+        const connections = findConnectedLines(point).length;
+        let color = '#fb923c';
+
+        if (connections > 1) {
+          if (isInClosedContour(point, lines)) {
+            color = '#22c55e';
+          } else {
+            color = '#3b82f6';
+          }
+        }
+
+        ctx.beginPath();
+        ctx.fillStyle = color;
+        ctx.arc(point.x, point.y, POINT_RADIUS / zoom, 0, 2 * Math.PI);
+        ctx.fill();
+
+        ctx.font = `${12 / zoom}px sans-serif`;
+        drawCoordinateLabel(ctx, point, color);
+      });
+
+      if (cursorPoint && isDrawing) {
+        ctx.font = `${12 / zoom}px sans-serif`;
+        drawCoordinateLabel(ctx, cursorPoint, '#fb923c');
+      }
+
+      ctx.restore();
+    };
+
+    const handleMouseDown = (e: MouseEvent) => {
+      if (panMode || e.button === 2) {
+        e.preventDefault();
+        handlePanStart(e);
+        return;
+      }
+
+      const clickPoint = getCanvasPoint(e);
+
+      if (currentTool === 'wall') {
+        const nearestPoint = findNearestEndpoint(clickPoint);
+        const startPoint = nearestPoint || snapToGrid(clickPoint);
+        const coords = getRelativeCoordinates(startPoint);
+        setCurrentLine({ start: startPoint, end: startPoint });
+        setIsDrawing(true);
+        setCursorPoint(startPoint);
+      } else if (currentTool === 'eraser') {
+        const linesToErase = findLinesNearPoint(clickPoint);
+        if (linesToErase.length > 0) {
+          const newLines = lines.filter(line => !linesToErase.includes(line));
+          onLinesUpdate?.(newLines);
+          setHighlightedLines([]);
+        }
+      } else if (currentAirEntry && onLineSelect) {
+        const selectedLines = findLinesNearPoint(clickPoint);
+        if (selectedLines.length > 0) {
+          const exactPoint = getPointOnLine(selectedLines[0], clickPoint);
+          onLineSelect(selectedLines[0], exactPoint);
+        }
+      }
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isPanning) {
+        handlePanMove(e);
+        return;
+      }
+
+      const point = getCanvasPoint(e);
+      const nearestGridPoint = findNearestGridPoint(point);
+      setHoveredGridPoint(nearestGridPoint);
+
+      if (currentTool === 'wall' && isDrawing && currentLine) {
+        const nearestPoint = findNearestEndpoint(point);
+        const endPoint = nearestPoint || snapToGrid(point);
+        setCurrentLine(prev => prev ? { ...prev, end: endPoint } : null);
+        setCursorPoint(endPoint);
+      } else if (currentTool === 'eraser' || currentAirEntry) {
+        setHighlightedLines(findLinesNearPoint(point));
+      }
+    };
+
+    const handleMouseUp = (e: MouseEvent) => {
+      if (panMode || e.button === 2) {
+        handlePanEnd();
+        return;
+      }
+
+      if (currentTool === 'wall' && isDrawing && currentLine) {
+        if (currentLine.start.x !== currentLine.end.x || currentLine.start.y !== currentLine.end.y) {
+          const newLines = [...lines, currentLine];
+          onLinesUpdate?.(newLines);
+        }
+        setCurrentLine(null);
+        setIsDrawing(false);
+        setCursorPoint(null);
+      }
+    };
+
+    const handleMouseLeave = () => {
+      handlePanEnd();
+      setHighlightedLines([]);
+      setHoveredGridPoint(null);
+      if (isDrawing) {
+        setCurrentLine(null);
+        setIsDrawing(false);
+        setCursorPoint(null);
+      }
+    };
+
+    // Animation loop with performance optimization
+    let lastFrameTime = 0;
+    const targetFPS = 30; // Limit to 30 FPS to reduce CPU usage
+    const frameInterval = 1000 / targetFPS;
+
+    const animate = (currentTime: number) => {
+      const deltaTime = currentTime - lastFrameTime;
+
+      if (deltaTime > frameInterval) {
+        lastFrameTime = currentTime - (deltaTime % frameInterval);
+        draw();
+      }
+
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    let animationFrameId = requestAnimationFrame(animate);
+
+    // Add throttling to mouse move events
+    let mouseMoveThrottleTimer: number | null = null;
+    const throttleMouseMove = (e: MouseEvent) => {
+      if (!mouseMoveThrottleTimer) {
+        mouseMoveThrottleTimer = window.setTimeout(() => {
+          handleMouseMove(e);
+          mouseMoveThrottleTimer = null;
+        }, 16); // ~60fps throttle
+      }
+    };
+
+    canvas.addEventListener('mousedown', handleMouseDown);
+    canvas.addEventListener('mousemove', throttleMouseMove);
+    canvas.addEventListener('mouseup', handleMouseUp);
+    canvas.addEventListener('mouseleave', handleMouseLeave);
+    canvas.addEventListener('wheel', handleWheel);
+    canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+    return () => {
+      if (mouseMoveThrottleTimer) {
+        clearTimeout(mouseMoveThrottleTimer);
+      }
+      canvas.removeEventListener('mousedown', handleMouseDown);
+      canvas.removeEventListener('mousemove', throttleMouseMove);
+      canvas.removeEventListener('mouseup', handleMouseUp);
+      canvas.removeEventListener('mouseleave', handleMouseLeave);
+      canvas.removeEventListener('wheel', handleWheel);
+      canvas.removeEventListener('contextmenu', e => e.preventDefault());
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode, cursorPoint, currentAirEntry, onLineSelect, airEntries, onLinesUpdate, hoveredGridPoint]);
+
+  const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/[^0-9]/g, '');
+    setZoomInput(value);
+  };
+
+  const handleZoomInputBlur = () => {
+    let newZoom = parseInt(zoomInput) / 100;
+    if (isNaN(newZoom)) {
+      newZoom = zoom;
+    } else {
+      newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newZoom));
+    }
+    handleZoomChange(newZoom);
+  };
+
+  const handleZoomInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.currentTarget.blur();
+    }
+  };
+
   return (
-    <div className="w-full h-full relative">
+    <div ref={containerRef} className="w-full h-full relative">
       <canvas
         ref={canvasRef}
         width={dimensions.width}
