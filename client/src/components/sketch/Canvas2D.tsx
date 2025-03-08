@@ -590,6 +590,28 @@ export default function Canvas2D({
         drawAirEntry(ctx, entry);
       });
 
+      const endpoints = [...new Set(lines.flatMap(line => [line.start, line.end]))];
+      endpoints.forEach(point => {
+        const connections = findConnectedLines(point).length;
+        let color = '#fb923c';
+
+        if (connections > 1) {
+          if (isInClosedContour(point, lines)) {
+            color = '#22c55e';
+          } else {
+            color = '#3b82f6';
+          }
+        }
+
+        ctx.beginPath();
+        ctx.fillStyle = color;
+        ctx.arc(point.x, point.y, POINT_RADIUS / zoom, 0, 2 * Math.PI);
+        ctx.fill();
+
+        ctx.font = `${12 / zoom}px sans-serif`;
+        drawCoordinateLabel(ctx, point, color);
+      });
+
       if (cursorPoint && isDrawing) {
         ctx.font = `${12 / zoom}px sans-serif`;
         drawCoordinateLabel(ctx, cursorPoint, '#fb923c');
