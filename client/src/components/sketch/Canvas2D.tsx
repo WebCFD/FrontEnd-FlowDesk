@@ -512,35 +512,6 @@ export default function Canvas2D({
       });
       ctx.stroke();
 
-      const gridPoints = getGridPoints();
-      gridPoints.forEach(point => {
-        ctx.beginPath();
-        ctx.fillStyle = '#e2e8f0';
-        ctx.arc(
-          point.x,
-          point.y,
-          GRID_POINT_RADIUS / zoom,
-          0,
-          2 * Math.PI
-        );
-        ctx.fill();
-
-        if (hoveredGridPoint &&
-          point.x === hoveredGridPoint.x &&
-          point.y === hoveredGridPoint.y &&
-          !isDrawing) {
-          const coords = getRelativeCoordinates(point);
-          ctx.font = `${12 / zoom}px sans-serif`;
-          ctx.fillStyle = '#000000';
-          ctx.textAlign = 'left';
-          ctx.fillText(
-            `(${coords.x}, ${coords.y})`,
-            point.x + 8 / zoom,
-            point.y - 8 / zoom
-          );
-        }
-      });
-
       const coordSystem = createCoordinateSystem();
       coordSystem.forEach((line, index) => {
         ctx.beginPath();
