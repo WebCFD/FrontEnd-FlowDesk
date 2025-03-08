@@ -867,7 +867,7 @@ export default function Canvas2D({
     if (currentTool === 'wall') {
       const nearestPoint = findNearestEndpoint(clickPoint);
       const startPoint = nearestPoint || snapToGrid(clickPoint);
-      setCurrentLine({ start: startPoint, end: startPoint });
+      setCurrentLine({ start: startPoint, end: startPoint});
       setIsDrawing(true);
       setCursorPoint(startPoint);
     } else if (currentTool === 'eraser') {
@@ -974,47 +974,87 @@ export default function Canvas2D({
 
     if (airEntries.length === 0) return;
 
-    const modifiedLineMap = new Map<number, Line>();
+    // Create a mapping from old line to new line using a unique reference
+    const oldToNewLineMap = new Map<string, Line>();
 
-    oldLines.forEach((oldLine, oldIndex) => {
-      const matchingNewLineIndex = newLines.findIndex(newLine =>
-        (arePointsNearlyEqual(oldLine.start, newLine.start) && !arePointsNearlyEqual(oldLine.end, newLine.end)) ||
-        (arePointsNearlyEqual(oldLine.end, newLine.end) && !arePointsNearlyEqual(oldLine.start, newLine.start)) ||
-        (arePointsNearlyEqual(oldLine.start, newLine.end) && !arePointsNearlyEqual(oldLine.end, newLine.start)) ||
-        (arePointsNearlyEqual(oldLine.end, newLine.start) && !arePointsNearlyEqual(oldLine.start, newLine.end)) ||
-        (arePointsNearlyEqual(oldLine.start, newLine.start) && arePointsNearlyEqual(oldLine.end, newLine.end)) ||
-        (arePointsNearlyEqual(oldLine.start, newLine.end) && arePointsNearlyEqual(oldLine.end, newLine.start))
-      );
+    // For each air entry, find which wall was modified and map it
+    airEntries.forEach(entry => {
+      // Get stringified version of the entry's line for comparison
+      const entryLineStr = JSON.stringify([
+        [Math.round(entry.line.start.x), Math.round(entry.line.start.y)],
+        [Math.round(entry.line.end.x), Math.round(entry.line.end.y)]
+      ]);
 
-      if (matchingNewLineIndex !== -1) {
-        modifiedLineMap.set(oldIndex, newLines[matchingNewLineIndex]);
+      // Find the old line that matches this entry's line
+      const oldLineIndex = oldLines.findIndex(line => {
+        const lineStr = JSON.stringify([
+          [Math.round(line.start.x), Math.round(line.start.y)],
+          [Math.round(line.end.x), Math.round(line.end.y)]
+        ]);
+        return lineStr === entryLineStr;
+      });
+
+      if (oldLineIndex !== -1) {
+        // Find the corresponding new line (must share at least one endpoint)
+        const oldLine = oldLines[oldLineIndex];
+        const matchingNewLine = newLines.find(newLine => {
+          // Check if this new line shares at least one endpoint with the old line
+          return (
+            arePointsNearlyEqual(oldLine.start, newLine.start) || 
+            arePointsNearlyEqual(oldLine.start, newLine.end) || 
+            arePointsNearlyEqual(oldLine.end, newLine.start) || 
+            arePointsNearlyEqual(oldLine.end, newLine.end)
+          );
+        });
+
+        if (matchingNewLine) {
+          oldToNewLineMap.set(entryLineStr, matchingNewLine);
+        }
       }
     });
 
-    const newAirEntries = [...airEntries];
-    let entriesUpdated = false;
+    // Now update each air entry if its line was modified
+    const newAirEntries = airEntries.map(entry => {
+      // Get stringified version of this entry's line
+      const entryLineStr = JSON.stringify([
+        [Math.round(entry.line.start.x), Math.round(entry.line.start.y)],
+        [Math.round(entry.line.end.x), Math.round(entry.line.end.y)]
+      ]);
 
-    newAirEntries.forEach((entry, index) => {
-      const entryLineKey = getLineIdentifier(entry.line);
-      const updatedLine = modifiedLineMap.get(oldLines.findIndex(line => getLineIdentifier(line) === entryLineKey));
+      // If this entry's line was modified, update it
+      if (oldToNewLineMap.has(entryLineStr)) {
+        const newLine = oldToNewLineMap.get(entryLineStr)!;
 
-      if (updatedLine) {
+        // Calculate relative position on the old line (0-1)
         const relativePos = getRelativePositionOnLine(entry.position, entry.line);
-        const newPosition = getPointAtRelativePosition(updatedLine, relativePos);
+        console.log(`Entry relative position: ${relativePos} on line from 
+                    (${entry.line.start.x}, ${entry.line.start.y}) to 
+                    (${entry.line.end.x}, ${entry.line.end.y})`);
 
-        newAirEntries[index] = {
+        // Calculate the new position using that same relative position
+        const newPosition = getPointAtRelativePosition(newLine, relativePos);
+        console.log(`New position: (${newPosition.x}, ${newPosition.y}) on line from 
+                    (${newLine.start.x}, ${newLine.start.y}) to 
+                    (${newLine.end.x}, ${newLine.end.y})`);
+
+        // Return updated entry
+        return {
           ...entry,
-          line: updatedLine,
+          line: newLine,
           position: newPosition
         };
-
-        entriesUpdated = true;
       }
+
+      // If this entry's line wasn't modified, return it unchanged
+      return entry;
     });
 
-    if (entriesUpdated && onAirEntriesUpdate) {
-      console.log("Updating air entries state with:", newAirEntries);
+    // Only update if something actually changed
+    if (JSON.stringify(newAirEntries) !== JSON.stringify(airEntries) && onAirEntriesUpdate) {
+      console.log("Updating air entries state:", newAirEntries);
       onAirEntriesUpdate(newAirEntries);
+    } else {
+      console.log("No air entries were changed");
     }
   };
 
