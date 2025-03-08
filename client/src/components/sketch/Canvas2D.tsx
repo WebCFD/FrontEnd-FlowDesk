@@ -506,68 +506,93 @@ export default function Canvas2D({
     // Only clear and redraw if needed
     if (!needsUpdate.current) return;
 
+    const startTime = performance.now();
+
     ctx.clearRect(0, 0, dimensions.width, dimensions.height);
     ctx.save();
     ctx.translate(pan.x, pan.y);
     ctx.scale(zoom, zoom);
 
-    // Draw grid (static)
+    // Batch all line drawing operations
     ctx.beginPath();
     ctx.strokeStyle = '#64748b';
     ctx.lineWidth = 1 / zoom;
-    createGridLines().forEach(line => {
+
+    // Draw grid lines in a single path
+    const gridLines = createGridLines();
+    gridLines.forEach(line => {
       ctx.moveTo(line.start.x, line.start.y);
       ctx.lineTo(line.end.x, line.end.y);
     });
     ctx.stroke();
 
-    // Draw grid points (cached)
-    const gridPoints = calculateGridPoints();
+    // Batch all grid point drawing
+    ctx.beginPath();
     ctx.fillStyle = '#e2e8f0';
-    gridPoints.forEach(point => {
-      ctx.beginPath();
-      ctx.arc(
-        point.x,
-        point.y,
-        GRID_POINT_RADIUS / zoom,
-        0,
-        2 * Math.PI
-      );
-      ctx.fill();
+    calculateGridPoints().forEach(point => {
+      ctx.moveTo(point.x, point.y);
+      ctx.arc(point.x, point.y, GRID_POINT_RADIUS / zoom, 0, 2 * Math.PI);
     });
+    ctx.fill();
 
-    // Draw coordinate system (cached)
+    // Draw coordinate system in a single path
     const coordSystem = calculateCoordinateSystem();
-    coordSystem.forEach((line, index) => {
-      ctx.beginPath();
-      ctx.strokeStyle = index < 3 ? '#ef4444' : '#22c55e';
-      ctx.lineWidth = 2 / zoom;
+    ctx.lineWidth = 2 / zoom;
+
+    // X-axis (red)
+    ctx.beginPath();
+    ctx.strokeStyle = '#ef4444';
+    coordSystem.slice(0, 3).forEach(line => {
       ctx.moveTo(line.start.x, line.start.y);
       ctx.lineTo(line.end.x, line.end.y);
-      ctx.stroke();
     });
+    ctx.stroke();
 
-    lines.forEach(line => {
-      if (highlightedLines.includes(line)) {
-        ctx.strokeStyle = getHighlightColor();
-        ctx.lineWidth = 3 / zoom;
-      } else {
-        ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 2 / zoom;
-      }
-      ctx.beginPath();
+    // Y-axis (green)
+    ctx.beginPath();
+    ctx.strokeStyle = '#22c55e';
+    coordSystem.slice(3).forEach(line => {
       ctx.moveTo(line.start.x, line.start.y);
       ctx.lineTo(line.end.x, line.end.y);
-      ctx.stroke();
+    });
+    ctx.stroke();
 
+    // Batch normal lines
+    const normalLines = lines.filter(line => !highlightedLines.includes(line));
+    if (normalLines.length > 0) {
+      ctx.beginPath();
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 2 / zoom;
+      normalLines.forEach(line => {
+        ctx.moveTo(line.start.x, line.start.y);
+        ctx.lineTo(line.end.x, line.end.y);
+      });
+      ctx.stroke();
+    }
+
+    // Batch highlighted lines
+    if (highlightedLines.length > 0) {
+      ctx.beginPath();
+      ctx.strokeStyle = getHighlightColor();
+      ctx.lineWidth = 3 / zoom;
+      highlightedLines.forEach(line => {
+        ctx.moveTo(line.start.x, line.start.y);
+        ctx.lineTo(line.end.x, line.end.y);
+      });
+      ctx.stroke();
+    }
+
+    // Draw measurements and labels with minimal state changes
+    ctx.font = `${12 / zoom}px sans-serif`;
+    ctx.fillStyle = '#64748b';
+    lines.forEach(line => {
       const midX = (line.start.x + line.end.x) / 2;
       const midY = (line.start.y + line.end.y) / 2;
       const length = Math.round(getLineLength(line));
-      ctx.font = `${12 / zoom}px sans-serif`;
-      ctx.fillStyle = '#64748b';
       ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
     });
 
+    // Draw current line if exists
     if (currentLine) {
       ctx.beginPath();
       ctx.strokeStyle = '#000000';
@@ -582,32 +607,30 @@ export default function Canvas2D({
       ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
     }
 
-    airEntries.forEach(entry => {
-      drawAirEntry(ctx, entry);
-    });
+    // Batch all air entries
+    airEntries.forEach(entry => drawAirEntry(ctx, entry));
 
+    // Draw endpoints with minimal state changes
     const endpoints = [...new Set(lines.flatMap(line => [line.start, line.end]))];
-    endpoints.forEach(point => {
-      const connections = findConnectedLines(point).length;
-      let color = '#fb923c';
+    ['#fb923c', '#22c55e', '#3b82f6'].forEach(color => {
+      const pointsForColor = endpoints.filter(point => {
+        const connections = findConnectedLines(point).length;
+        if (connections <= 1) return color === '#fb923c';
+        return isInClosedContour(point, lines) ? color === '#22c55e' : color === '#3b82f6';
+      });
 
-      if (connections > 1) {
-        if (isInClosedContour(point, lines)) {
-          color = '#22c55e';
-        } else {
-          color = '#3b82f6';
-        }
+      if (pointsForColor.length > 0) {
+        ctx.beginPath();
+        ctx.fillStyle = color;
+        pointsForColor.forEach(point => {
+          ctx.moveTo(point.x, point.y);
+          ctx.arc(point.x, point.y, POINT_RADIUS / zoom, 0, 2 * Math.PI);
+        });
+        ctx.fill();
       }
-
-      ctx.beginPath();
-      ctx.fillStyle = color;
-      ctx.arc(point.x, point.y, POINT_RADIUS / zoom, 0, 2 * Math.PI);
-      ctx.fill();
-
-      ctx.font = `${12 / zoom}px sans-serif`;
-      drawCoordinateLabel(ctx, point, color);
     });
 
+    // Draw cursor point if needed
     if (cursorPoint && isDrawing) {
       ctx.font = `${12 / zoom}px sans-serif`;
       drawCoordinateLabel(ctx, cursorPoint, '#fb923c');
@@ -615,9 +638,15 @@ export default function Canvas2D({
 
     ctx.restore();
     needsUpdate.current = false;
+
+    const endTime = performance.now();
+    const frameTime = endTime - startTime;
+    if (frameTime > 16) {
+      console.debug(`Frame took ${Math.round(frameTime)}ms to render`);
+    }
   };
 
-
+  // Update the animation loop to use frame skipping
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -625,151 +654,39 @@ export default function Canvas2D({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const draw = () => {
-        optimizedDraw();
-    };
-
+    let frameId: number;
     let lastFrameTime = 0;
-    const targetFPS = 30; // Limit to 30 FPS to reduce CPU usage
-    const frameInterval = 1000 / targetFPS;
+    const targetFrameInterval = 1000 / 30; // Target 30 FPS
+    let skipCount = 0;
 
-    const animate = (currentTime: number) => {
-      const deltaTime = currentTime - lastFrameTime;
+    const animate = (timestamp: number) => {
+      const elapsed = timestamp - lastFrameTime;
 
-      if (deltaTime > frameInterval) {
-        lastFrameTime = currentTime - (deltaTime % frameInterval);
-        draw();
-      }
-
-      animationFrameId = requestAnimationFrame(animate);
-    };
-
-    let animationFrameId = requestAnimationFrame(animate);
-
-    const handleMouseDown = (e: MouseEvent) => {
-      if (panMode || e.button === 2) {
-        e.preventDefault();
-        handlePanStart(e);
-        return;
-      }
-
-      const clickPoint = getCanvasPoint(e);
-
-      if (currentTool === 'wall') {
-        const nearestPoint = findNearestEndpoint(clickPoint);
-        const startPoint = nearestPoint || snapToGrid(clickPoint);
-        const coords = getRelativeCoordinates(startPoint);
-        setCurrentLine({ start: startPoint, end: startPoint });
-        setIsDrawing(true);
-        setCursorPoint(startPoint);
-      } else if (currentTool === 'eraser') {
-        const linesToErase = findLinesNearPoint(clickPoint);
-        if (linesToErase.length > 0) {
-          const newLines = lines.filter(line => !linesToErase.includes(line));
-          onLinesUpdate?.(newLines);
-          setHighlightedLines([]);
-        }
-      } else if (currentAirEntry && onLineSelect) {
-        const selectedLines = findLinesNearPoint(clickPoint);
-        if (selectedLines.length > 0) {
-          const exactPoint = getPointOnLine(selectedLines[0], clickPoint);
-          onLineSelect(selectedLines[0], exactPoint);
-        }
-      }
-    };
-
-    const throttleMouseMove = (e: MouseEvent) => {
-      if (!mouseMoveThrottleTimer) {
-        mouseMoveThrottleTimer = window.setTimeout(() => {
-          handleMouseMove(e);
-          mouseMoveThrottleTimer = null;
-        }, 16); // ~60fps throttle
-      }
-    };
-    let mouseMoveThrottleTimer: number | null = null;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      if (isPanning) {
-        handlePanMove(e);
-        return;
-      }
-
-      const point = getCanvasPoint(e);
-      const nearestGridPoint = findNearestGridPoint(point);
-
-      if (JSON.stringify(hoveredGridPoint) !== JSON.stringify(nearestGridPoint)) {
-        setHoveredGridPoint(nearestGridPoint);
-        needsUpdate.current = true;
-      }
-
-      if (currentTool === 'wall' && isDrawing && currentLine) {
-        const nearestPoint = findNearestEndpoint(point);
-        const endPoint = nearestPoint || snapToGrid(point);
-        setCurrentLine(prev => {
-          if (prev && (prev.end.x !== endPoint.x || prev.end.y !== endPoint.y)) {
-            needsUpdate.current = true;
-            return { ...prev, end: endPoint };
+      if (elapsed >= targetFrameInterval) {
+        // Skip frame if we're falling behind
+        if (elapsed >= targetFrameInterval * 2) {
+          skipCount++;
+          if (skipCount > 3) {
+            console.debug(`Skipped ${skipCount} frames due to performance`);
+            skipCount = 0;
           }
-          return prev;
-        });
-        setCursorPoint(endPoint);
-      } else if (currentTool === 'eraser' || currentAirEntry) {
-        const newHighlightedLines = findLinesNearPoint(point);
-        if (JSON.stringify(highlightedLines) !== JSON.stringify(newHighlightedLines)) {
-          setHighlightedLines(newHighlightedLines);
-          needsUpdate.current = true;
+        } else {
+          skipCount = 0;
         }
+
+        lastFrameTime = timestamp - (elapsed % targetFrameInterval);
+        optimizedDraw();
       }
+
+      frameId = requestAnimationFrame(animate);
     };
 
-    const handleMouseUp = (e: MouseEvent) => {
-      if (panMode || e.button === 2) {
-        handlePanEnd();
-        return;
-      }
-
-      if (currentTool === 'wall' && isDrawing && currentLine) {
-        if (currentLine.start.x !== currentLine.end.x || currentLine.start.y !== currentLine.end.y) {
-          const newLines = [...lines, currentLine];
-          onLinesUpdate?.(newLines);
-        }
-        setCurrentLine(null);
-        setIsDrawing(false);
-        setCursorPoint(null);
-      }
-    };
-
-    const handleMouseLeave = () => {
-      handlePanEnd();
-      setHighlightedLines([]);
-      setHoveredGridPoint(null);
-      if (isDrawing) {
-        setCurrentLine(null);
-        setIsDrawing(false);
-        setCursorPoint(null);
-      }
-    };
-
-    canvas.addEventListener('mousedown', handleMouseDown);
-    canvas.addEventListener('mousemove', throttleMouseMove);
-    canvas.addEventListener('mouseup', handleMouseUp);
-    canvas.addEventListener('mouseleave', handleMouseLeave);
-    canvas.addEventListener('wheel', handleWheel, { passive: true });
-    canvas.addEventListener('contextmenu', e => e.preventDefault());
+    frameId = requestAnimationFrame(animate);
 
     return () => {
-      if (mouseMoveThrottleTimer) {
-        clearTimeout(mouseMoveThrottleTimer);
-      }
-      canvas.removeEventListener('mousedown', handleMouseDown);
-      canvas.removeEventListener('mousemove', throttleMouseMove);
-      canvas.removeEventListener('mouseup', handleMouseUp);
-      canvas.removeEventListener('mouseleave', handleMouseLeave);
-      canvas.removeEventListener('wheel', handleWheel);
-      canvas.removeEventListener('contextmenu', e => e.preventDefault());
-      cancelAnimationFrame(animationFrameId);
+      cancelAnimationFrame(frameId);
     };
-  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode, cursorPoint, currentAirEntry, onLineSelect, airEntries, onLinesUpdate, hoveredGridPoint]);
+  }, [dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode, cursorPoint, currentAirEntry, airEntries]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, '');
