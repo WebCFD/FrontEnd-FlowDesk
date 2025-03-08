@@ -842,7 +842,7 @@ export default function Canvas2D({
       // Calculate new position along the wall
       const newPosition = calculatePositionAlongWall(entry.line, point);
 
-      // Create a new array of air entries with the updated position
+      // Create a new array ofair entries with the updated position
       const newAirEntries = [...airEntries];
       newAirEntries[draggedAirEntry.index] = {
         ...entry,
@@ -931,6 +931,12 @@ export default function Canvas2D({
       return;
     }
 
+    if (isDraggingEndpoint) {
+      setIsDraggingEndpoint(false);
+      setDraggedPoint({ point: { x: 0, y: 0 }, lines: [], isStart: [] });
+      return;
+    }
+
     if (panMode) {
       handlePanEnd();
       return;
@@ -952,6 +958,11 @@ export default function Canvas2D({
     if (isDraggingAirEntry) {
       setIsDraggingAirEntry(false);
       setDraggedAirEntry({ index: -1, entry: {} as AirEntry, startPoint: { x: 0, y: 0 } });
+    }
+
+    if (isDraggingEndpoint) {
+      setIsDraggingEndpoint(false);
+      setDraggedPoint({ point: { x: 0, y: 0 }, lines: [], isStart: [] });
     }
 
     handlePanEnd();
@@ -1220,20 +1231,38 @@ export default function Canvas2D({
     };
 
     const handleMouseMove = (e: MouseEvent) => {
+      // Handle AirEntry dragging first
+      if (isDraggingAirEntry && draggedAirEntry.index !== -1) {
+        const point = getCanvasPoint(e);
+        const entry = draggedAirEntry.entry;
+
+        // Calculate new position along the wall
+        const newPosition = calculatePositionAlongWall(entry.line, point);
+
+        // Create a new array of air entries with the updated position
+        const newAirEntries = [...airEntries];
+        newAirEntries[draggedAirEntry.index] = {
+          ...entry,
+          position: newPosition
+        };
+
+        // Update air entries through the callback
+        if (onAirEntriesUpdate) {
+          onAirEntriesUpdate(newAirEntries);
+        }
+        return;
+      }
+
+      // Handle endpoint dragging
       if (isDraggingEndpoint) {
         const point = getCanvasPoint(e);
-
-        // For dragging, use the finer snapping function
         const targetPoint = fineDragSnap(point);
 
-        // Store lineIDs instead of line references for reliable tracking
         if (draggedPoint.lines.length > 0) {
-          // Create a new array of lines with the updated positions
           const newLines = [...lines];
           let linesUpdated = false;
 
           draggedPoint.lines.forEach((line, index) => {
-            // Find the line by comparing coordinates
             const lineIndex = newLines.findIndex(l =>
               arePointsEqual(l.start, line.start) && arePointsEqual(l.end, line.end)
             );
@@ -1255,10 +1284,8 @@ export default function Canvas2D({
           });
 
           if (linesUpdated) {
-            // Update the lines state
             onLinesUpdate?.(newLines);
 
-            // Update draggedPoint with the new line references and point position
             const updatedLines: Line[] = [];
             const updatedIsStart: boolean[] = [];
 
@@ -1285,43 +1312,20 @@ export default function Canvas2D({
         return;
       }
 
-      // Handle AirEntry dragging
-      if (isDraggingAirEntry && draggedAirEntry.index !== -1) {
-        const point = getCanvasPoint(e);
-        const entry = draggedAirEntry.entry;
-
-        // Calculate new position along the wall
-        const newPosition = calculatePositionAlongWall(entry.line, point);
-
-        // Create a new array of air entries with the updated position
-        const newAirEntries = [...airEntries];
-        newAirEntries[draggedAirEntry.index] = {
-          ...entry,
-          position: newPosition
-        };
-
-        // If there's a way to update the air entries in the parent component
-        if (onAirEntriesUpdate) {
-          onAirEntriesUpdate(newAirEntries);
-        }
-
-        return;
-      }
-
-      // Your original mouse move handling
+      // Regular mouse move handling
       throttleMouseMove(e);
     };
 
     const handleMouseUp = () => {
-      if (isDraggingEndpoint) {
-        setIsDraggingEndpoint(false);
-        setDraggedPoint({ point: { x: 0, y: 0 }, lines: [], isStart: [] });
-        return;
-      }
-
       if (isDraggingAirEntry) {
         setIsDraggingAirEntry(false);
         setDraggedAirEntry({ index: -1, entry: {} as AirEntry, startPoint: { x: 0, y: 0 } });
+        return;
+      }
+
+      if (isDraggingEndpoint) {
+        setIsDraggingEndpoint(false);
+        setDraggedPoint({ point: { x: 0, y: 0 }, lines: [], isStart: [] });
         return;
       }
 
@@ -1341,16 +1345,15 @@ export default function Canvas2D({
       }
     };
 
-    // Update handleMouseLeave to handle endpoint dragging
     const handleMouseLeave = () => {
-      if (isDraggingEndpoint) {
-        setIsDraggingEndpoint(false);
-        setDraggedPoint({ point: { x: 0, y: 0 }, lines: [], isStart: [] });
-      }
-
       if (isDraggingAirEntry) {
         setIsDraggingAirEntry(false);
         setDraggedAirEntry({ index: -1, entry: {} as AirEntry, startPoint: { x: 0, y: 0 } });
+      }
+
+      if (isDraggingEndpoint) {
+        setIsDraggingEndpoint(false);
+        setDraggedPoint({ point: { x: 0, y: 0 }, lines: [], isStart: [] });
       }
 
       handlePanEnd();
@@ -1380,42 +1383,7 @@ export default function Canvas2D({
     canvas.addEventListener('wheel', handleRegularWheel, { passive: true });
     canvas.addEventListener('contextmenu', handleContextMenu);
 
-    // Add lastRenderTime at component level
-    let lastRenderTime = 0;
-
-    // Animation loop with performance optimization
-    let lastFrameTime = 0;
-    const targetFPS = 30; // Limit to 30 FPS to reduce CPU usage
-    const frameInterval = 1000 / targetFPS;
-
-    const animate = (currentTime: number) => {
-      const deltaTime = currentTime - lastFrameTime;
-
-      if (deltaTime > frameInterval) {
-        lastFrameTime = currentTime - (deltaTime % frameInterval);
-
-        // Skip rendering frames if there's no user interaction and nothing has changed
-        const shouldRender =
-          isPanning ||
-          isDrawing ||
-          highlightedLines.length > 0 ||
-          hoveredGridPoint !== null ||
-          hoverPoint !== null ||
-          isDraggingEndpoint ||
-          isDraggingAirEntry;
-
-        if (shouldRender || !lastRenderTime || currentTime - lastRenderTime > 500) {
-          draw();
-          lastRenderTime = currentTime;
-        }
-      }
-
-      animationFrameId = requestAnimationFrame(animate);
-    };
-
-    let animationFrameId = requestAnimationFrame(animate);
-
-
+    // Cleanup
     return () => {
       canvas.removeEventListener('mousedown', handleMouseDown);
       canvas.removeEventListener('mousemove', handleMouseMove);
@@ -1426,7 +1394,13 @@ export default function Canvas2D({
       canvas.removeEventListener('contextmenu', handleContextMenu);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode, cursorPoint, currentAirEntry, onLineSelect, airEntries, onLinesUpdate, hoveredGridPoint, hoverPoint, isDraggingEndpoint, draggedPoint, isDraggingAirEntry, draggedAirEntry, onAirEntriesUpdate]);
+  }, [
+    gridSize, dimensions, lines, currentLine, isDrawing, currentTool,
+    highlightedLines, zoom, pan, isPanning, panMode, cursorPoint,
+    currentAirEntry, onLineSelect, airEntries, onLinesUpdate,
+    hoveredGridPoint, hoverPoint, isDraggingEndpoint, draggedPoint,
+    isDraggingAirEntry, draggedAirEntry, onAirEntriesUpdate
+  ]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, '');
