@@ -1181,143 +1181,6 @@ export default function Canvas2D({
       ctx.restore();
     };
 
-    const handleMouseDown = (e: MouseEvent) => {
-      if (e.button === 2) {
-        console.log("Right click detected");
-        e.preventDefault();
-
-        const clickPoint = getCanvasPoint(e);
-        console.log("Click point:", clickPoint);
-
-        const airEntryInfo = findAirEntryAtLocation(clickPoint);
-        console.log("Air entry found:", airEntryInfo);
-
-        if (airEntryInfo) {
-          setIsDraggingAirEntry(true);
-          setDraggedAirEntry({
-            index: airEntryInfo.index,
-            entry: airEntryInfo.entry,
-            startPoint: clickPoint
-          });
-          return;
-        }
-
-        const pointInfo = findPointAtLocation(clickPoint);
-        if (pointInfo) {
-          setIsDraggingEndpoint(true);
-          setDraggedPoint(pointInfo);
-          return;
-        }
-
-        handlePanStart(e);
-        return;
-      }
-
-      const clickPoint = getCanvasPoint(e);
-
-      if (currentTool === 'wall') {
-        const nearestPoint = findNearestEndpoint(clickPoint);
-        const startPoint = nearestPoint || snapToGrid(clickPoint);
-        const newLineId = Math.random().toString(36).substring(2, 9);
-        setCurrentLine({
-          id: newLineId,
-          start: startPoint,
-          end: startPoint
-        });
-        setIsDrawing(true);
-        setCursorPoint(startPoint);
-      } else if (currentTool === 'eraser') {
-        if (highlightState.airEntry) {
-          const newAirEntries = airEntries.filter((_, index) => index !== highlightState.airEntry!.index);
-          onAirEntriesUpdate?.(newAirEntries);
-          setHighlightState({ lines: [], airEntry: null });
-        } else if (highlightState.lines.length > 0) {
-          const lineIdsToErase = new Set(highlightState.lines.map(line => line.id));
-          const newLines = lines.filter(line => !lineIdsToErase.has(line.id));
-          const newAirEntries = airEntries.filter(entry => !lineIdsToErase.has(entry.lineId));
-          onLinesUpdate?.(newLines);
-          if (airEntries.length !== newAirEntries.length) {
-            onAirEntriesUpdate?.(newAirEntries);
-          }
-          setHighlightState({ lines: [], airEntry: null });
-        }
-      } else if (currentAirEntry) {
-        const selectedLines = findLinesNearPoint(clickPoint);
-        if (selectedLines.length > 0) {
-          const exactPoint = getPointOnLine(selectedLines[0], clickPoint);
-          const selectedLine = selectedLines[0];
-          const newAirEntry: AirEntry = {
-            type: currentAirEntry,
-            position: exactPoint,
-            dimensions: { width: 100, height: 60 },
-            line: selectedLine,
-            lineId: selectedLine.id
-          };
-          onAirEntriesUpdate?.([...airEntries, newAirEntry]);
-        }
-      }
-    };
-
-    const handleMouseUp = (e: MouseEvent) => {
-      if (isDraggingAirEntry) {
-        setIsDraggingAirEntry(false);
-        setDraggedAirEntry({ index: -1, entry: {} as AirEntry, startPoint: { x: 0, y: 0 } });
-        return;
-      }
-
-      if (isDraggingEndpoint) {
-        setIsDraggingEndpoint(false);
-        setDraggedPoint({ point: { x: 0, y: 0 }, lines: [], isStart: [] });
-        return;
-      }
-
-      if (panMode) {
-        handlePanEnd();
-        return;
-      }
-
-      if (currentTool === 'wall' && isDrawing && currentLine) {
-        if (currentLine.start.x !== currentLine.end.x || currentLine.start.y !== currentLine.end.y) {
-          const newLine = {
-            ...currentLine
-          };
-          const newLines = [...lines, newLine];
-          onLinesUpdate?.(newLines);
-        }
-        setCurrentLine(null);
-        setIsDrawing(false);
-        setCursorPoint(null);
-      }
-    };
-
-    const handleMouseLeave = () => {
-      if (isDraggingAirEntry) {
-        setIsDraggingAirEntry(false);
-        setDraggedAirEntry({ index: -1, entry: {} as AirEntry, startPoint: { x: 0, y: 0 } });
-      }
-
-      if (isDraggingEndpoint) {
-        setIsDraggingEndpoint(false);
-        setDraggedPoint({ point: { x: 0, y: 0 }, lines: [], isStart: [] });
-      }
-
-      handlePanEnd();
-      setHighlightState({ lines: [], airEntry: null });
-      setHoveredGridPoint(null);
-      setHoverPoint(null);
-
-      if (isDrawing) {
-        setCurrentLine(null);
-        setIsDrawing(false);
-        setCursorPoint(null);
-      }
-    };
-
-    const handleContextMenu = (e: Event) => {
-      console.log("Context menu prevented");
-      e.preventDefault();
-    };
-
     canvas.addEventListener('mousedown', handleMouseDown);
     canvas.addEventListener('mousemove', handleMouseMove);
     canvas.addEventListener('mouseup', handleMouseUp);
@@ -1328,38 +1191,18 @@ export default function Canvas2D({
     canvas.addEventListener('dblclick', handleDoubleClick);
 
     let lastRenderTime = 0;
-
-    const targetFPS = 30;
-    const frameInterval = 1000 / targetFPS;
     let animationFrameId: number;
 
-    const animate = (currentTime: number) => {
-      const deltaTime = currentTime - lastFrameTime;
-
-      if (deltaTime > frameInterval) {
-        lastFrameTime = currentTime - (deltaTime % frameInterval);
-
-        const shouldRender =
-          isPanning ||
-          isDrawing ||
-          highlightState.lines.length > 0 ||
-          highlightState.airEntry !== null ||
-          hoveredGridPoint !== null ||
-          hoverPoint !== null ||
-          isDraggingEndpoint ||
-          isDraggingAirEntry;
-
-        if (shouldRender || !lastRenderTime || currentTime - lastRenderTime > 500) {
-          draw();
-          lastRenderTime = currentTime;
-        }
+    const render = (timestamp: number) => {
+      const elapsed = timestamp - lastRenderTime;
+      if (elapsed > 1000 / 60) {
+        draw();
+        lastRenderTime = timestamp;
       }
-
-      animationFrameId = requestAnimationFrame(animate);
+      animationFrameId = requestAnimationFrame(render);
     };
 
-    let lastFrameTime = 0;
-    animationFrameId = requestAnimationFrame(animate);
+    animationFrameId = requestAnimationFrame(render);
 
     return () => {
       canvas.removeEventListener('mousedown', handleMouseDown);
@@ -1370,12 +1213,13 @@ export default function Canvas2D({
       canvas.removeEventListener('wheel', handleRegularWheel);
       canvas.removeEventListener('contextmenu', handleContextMenu);
       canvas.removeEventListener('dblclick', handleDoubleClick);
+
       if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
       }
     };
   }, [
-    gridSize, dimensions, lines, currentLine, isDrawing, currentTool,
+    dimensions, lines, currentLine, isDrawing,
     zoom, pan, isPanning, panMode, cursorPoint,
     currentAirEntry, airEntries, onLinesUpdate,
     hoveredGridPoint, hoverPoint, isDraggingEndpoint, draggedPoint,
@@ -1471,6 +1315,11 @@ export default function Canvas2D({
 
     onAirEntriesUpdate?.([...airEntries, newAirEntry]);
     setNewAirEntryDetails(null);
+  };
+
+  const handleContextMenu = (e: Event) => {
+    console.log("Context menu prevented");
+    e.preventDefault();
   };
 
   return (
