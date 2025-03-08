@@ -1,0 +1,87 @@
+I still see an issue that could cause the jumping behavior. The problem might be in how you're identifying which air entries need to be updated.
+The issue is in the line matching logic. When you drag an endpoint that affects multiple walls, the algorithm might get confused about which wall an air entry should stay attached to.
+Here's what I think you should change:
+
+The most important change: Store the wall ID with each air entry
+
+typescriptCopy// Add an ID field to your Line interface
+interface Line {
+  id?: string; // Add a unique identifier
+  start: Point;
+  end: Point;
+}
+
+// When creating a new line, assign it a unique ID
+const handleMouseUp = (e: MouseEvent) => {
+  // ...
+  if (currentTool === 'wall' && isDrawing && currentLine) {
+    if (currentLine.start.x !== currentLine.end.x || currentLine.start.y !== currentLine.end.y) {
+      const newLine = {
+        ...currentLine,
+        id: Math.random().toString(36).substring(2, 9) // Simple unique ID
+      };
+      const newLines = [...lines, newLine];
+      onLinesUpdate?.(newLines);
+    }
+    // ...
+  }
+};
+
+// When creating an air entry, store the line's ID
+const onLineSelect = (line: Line, clickPoint: Point) => {
+  const newAirEntry = {
+    type: currentAirEntry,
+    position: clickPoint,
+    dimensions: { width: 100, height: 60 },
+    line: line,
+    lineId: line.id // Store the line ID
+  };
+  // ...
+};
+
+Then, update your air entries matching logic to use the ID instead of geometry
+
+typescriptCopyconst updateAirEntriesWithWalls = (newLines: Line[], oldLines: Line[]) => {
+  console.log("Updating air entries with walls");
+  
+  if (airEntries.length === 0) return;
+  
+  // Create a map of line IDs to their new versions
+  const idMap = new Map<string, Line>();
+  
+  oldLines.forEach(oldLine => {
+    if (!oldLine.id) return;
+    
+    // Find the new version of this line
+    const newLine = newLines.find(nl => nl.id === oldLine.id);
+    if (newLine) {
+      idMap.set(oldLine.id, newLine);
+    }
+  });
+  
+  // Update air entries using the ID map
+  const newAirEntries = airEntries.map(entry => {
+    // Skip entries without a line ID
+    if (!entry.lineId || !entry.line.id) return entry;
+    
+    // Find the updated version of this line
+    const updatedLine = idMap.get(entry.lineId);
+    if (!updatedLine) return entry;
+    
+    // Calculate relative position and update
+    const relativePos = getRelativePositionOnLine(entry.position, entry.line);
+    const newPosition = getPointAtRelativePosition(updatedLine, relativePos);
+    
+    return {
+      ...entry,
+      line: updatedLine,
+      position: newPosition
+    };
+  });
+  
+  // Update state if needed
+  if (JSON.stringify(newAirEntries) !== JSON.stringify(airEntries) && onAirEntriesUpdate) {
+    onAirEntriesUpdate(newAirEntries);
+  }
+};
+Since the version of your code I'm seeing doesn't include this ID-based approach, geometry-based matching will be prone to ambiguity, especially in complex layouts where multiple walls share endpoints. By adding IDs, you create a reliable way to track which wall an air entry belongs to, regardless of how the walls are moved or reshaped.

@@ -12,6 +12,7 @@ interface Point {
 }
 
 interface Line {
+  id: string;
   start: Point;
   end: Point;
 }
@@ -25,13 +26,13 @@ interface AirEntry {
     distanceToFloor?: number;
   };
   line: Line;
+  lineId: string;
 }
 
 interface Canvas2DProps {
   gridSize: number;
   currentTool: 'wall' | 'eraser' | null;
   currentAirEntry: 'vent' | 'door' | 'window' | null;
-  onLineSelect?: (line: Line, clickPoint: Point) => void;
   airEntries: AirEntry[];
   lines: Line[];
   onLinesUpdate?: (lines: Line[]) => void;
@@ -230,7 +231,6 @@ export default function Canvas2D({
   gridSize,
   currentTool,
   currentAirEntry,
-  onLineSelect,
   airEntries = [],
   lines = [],
   onLinesUpdate,
@@ -271,12 +271,12 @@ export default function Canvas2D({
     const arrowLength = 150;
 
     return [
-      { start: { x: centerX - arrowLength, y: centerY }, end: { x: centerX + arrowLength, y: centerY } },
-      { start: { x: centerX + arrowLength, y: centerY }, end: { x: centerX + arrowLength - 10, y: centerY - 5 } },
-      { start: { x: centerX + arrowLength, y: centerY }, end: { x: centerX + arrowLength - 10, y: centerY + 5 } },
-      { start: { x: centerX, y: centerY + arrowLength }, end: { x: centerX, y: centerY - arrowLength } },
-      { start: { x: centerX, y: centerY - arrowLength }, end: { x: centerX - 5, y: centerY - arrowLength + 10 } },
-      { start: { x: centerX, y: centerY - arrowLength }, end: { x: centerX + 5, y: centerY - arrowLength + 10 } },
+      { id: 'coord-x', start: { x: centerX - arrowLength, y: centerY }, end: { x: centerX + arrowLength, y: centerY } },
+      { id: 'coord-2', start: { x: centerX + arrowLength, y: centerY }, end: { x: centerX + arrowLength - 10, y: centerY - 5 } },
+      { id: 'coord-3', start: { x: centerX + arrowLength, y: centerY }, end: { x: centerX + arrowLength - 10, y: centerY + 5 } },
+      { id: 'coord-y', start: { x: centerX, y: centerY + arrowLength }, end: { x: centerX, y: centerY - arrowLength } },
+      { id: 'coord-5', start: { x: centerX, y: centerY - arrowLength }, end: { x: centerX - 5, y: centerY - arrowLength + 10 } },
+      { id: 'coord-6', start: { x: centerX, y: centerY - arrowLength }, end: { x: centerX + 5, y: centerY - arrowLength + 10 } },
     ];
   };
 
@@ -287,6 +287,7 @@ export default function Canvas2D({
 
     for (let x = -GRID_RANGE; x <= GRID_RANGE; x += gridSize) {
       gridLines.push({
+        id: `grid-x-${x}`,
         start: { x: centerX + x, y: centerY - GRID_RANGE },
         end: { x: centerX + x, y: centerY + GRID_RANGE }
       });
@@ -294,6 +295,7 @@ export default function Canvas2D({
 
     for (let y = -GRID_RANGE; y <= GRID_RANGE; y += gridSize) {
       gridLines.push({
+        id: `grid-y-${y}`,
         start: { x: centerX - GRID_RANGE, y: centerY + y },
         end: { x: centerX + GRID_RANGE, y: centerY + y }
       });
@@ -762,8 +764,6 @@ export default function Canvas2D({
       if (onAirEntriesUpdate) {
         console.log("Updating air entries with:", newAirEntries);
         onAirEntriesUpdate(newAirEntries);
-      } else {
-        console.log("onAirEntriesUpdate callback is missing");
       }
       return;
     }
@@ -778,22 +778,16 @@ export default function Canvas2D({
         let linesUpdated = false;
 
         draggedPoint.lines.forEach((line, index) => {
-          const lineIndex = newLines.findIndex(l =>
-            arePointsEqual(l.start, line.start) && arePointsEqual(l.end, line.end)
-          );
+          const lineIndex = newLines.findIndex(l => l.id === line.id);
 
           if (lineIndex >= 0) {
-            if (draggedPoint.isStart[index]) {
-              newLines[lineIndex] = {
-                ...newLines[lineIndex],
-                start: targetPoint
-              };
-            } else {
-              newLines[lineIndex] = {
-                ...newLines[lineIndex],
-                end: targetPoint
-              };
-            }
+            newLines[lineIndex] = {
+              ...newLines[lineIndex],
+              ...(draggedPoint.isStart[index]
+                ? { start: targetPoint }
+                : { end: targetPoint }
+              )
+            };
             linesUpdated = true;
           }
         });
@@ -806,15 +800,10 @@ export default function Canvas2D({
           const updatedIsStart: boolean[] = [];
 
           draggedPoint.lines.forEach((line, index) => {
-            const isStart = draggedPoint.isStart[index];
-            const newLine = newLines.find(l =>
-              (isStart && arePointsEqual(l.start, targetPoint) && arePointsEqual(l.end, line.end)) ||
-              (!isStart && arePointsEqual(l.start, line.start) && arePointsEqual(l.end, targetPoint))
-            );
-
+            const newLine = newLines.find(l => l.id === line.id);
             if (newLine) {
               updatedLines.push(newLine);
-              updatedIsStart.push(isStart);
+              updatedIsStart.push(draggedPoint.isStart[index]);
             }
           });
 
@@ -833,15 +822,11 @@ export default function Canvas2D({
 
   const handleMouseDown = (e: MouseEvent) => {
     if (e.button === 2) {
-      console.log("Right click detected");
       e.preventDefault();
 
       const clickPoint = getCanvasPoint(e);
-      console.log("Click point:", clickPoint);
 
       const airEntryInfo = findAirEntryAtLocation(clickPoint);
-      console.log("Air entry found:", airEntryInfo);
-
       if (airEntryInfo) {
         setIsDraggingAirEntry(true);
         setDraggedAirEntry({
@@ -868,7 +853,12 @@ export default function Canvas2D({
     if (currentTool === 'wall') {
       const nearestPoint = findNearestEndpoint(clickPoint);
       const startPoint = nearestPoint || snapToGrid(clickPoint);
-      setCurrentLine({ start: startPoint, end: startPoint });
+      const newLineId = Math.random().toString(36).substring(2, 9);
+      setCurrentLine({
+        id: newLineId,
+        start: startPoint,
+        end: startPoint
+      });
       setIsDrawing(true);
       setCursorPoint(startPoint);
     } else if (currentTool === 'eraser') {
@@ -878,11 +868,19 @@ export default function Canvas2D({
         onLinesUpdate?.(newLines);
         setHighlightedLines([]);
       }
-    } else if (currentAirEntry && onLineSelect) {
+    } else if (currentAirEntry) {
       const selectedLines = findLinesNearPoint(clickPoint);
       if (selectedLines.length > 0) {
-        const exactPoint = getPointOnLine(selectedLines[0], clickPoint);
-        onLineSelect(selectedLines[0], exactPoint);
+        const selectedLine = selectedLines[0];
+        const exactPoint = getPointOnLine(selectedLine, clickPoint);
+        const newAirEntry: AirEntry = {
+          type: currentAirEntry,
+          position: exactPoint,
+          dimensions: { width: 100, height: 60 },
+          line: selectedLine,
+          lineId: selectedLine.id
+        };
+        onAirEntriesUpdate?.([...airEntries, newAirEntry]);
       }
     }
   };
@@ -897,11 +895,6 @@ export default function Canvas2D({
     if (isDraggingEndpoint) {
       setIsDraggingEndpoint(false);
       setDraggedPoint({ point: { x: 0, y: 0 }, lines: [], isStart: [] });
-      return;
-    }
-
-    if (panMode) {
-      handlePanEnd();
       return;
     }
 
@@ -976,109 +969,42 @@ export default function Canvas2D({
 
     if (airEntries.length === 0) return;
 
-    // Create a mapping from old line to new line using a unique reference
-    const oldToNewLineMap = new Map<string, Line>();
+    // Create a map of line IDs to their new versions
+    const idMap = new Map<string, Line>();
 
-    // For each air entry, find which wall was modified and map it
-    airEntries.forEach(entry => {
-      // Get stringified version of the entry's line for comparison
-      const entryLineStr = JSON.stringify([
-        [Math.round(entry.line.start.x), Math.round(entry.line.start.y)],
-        [Math.round(entry.line.end.x), Math.round(entry.line.end.y)]
-      ]);
+    oldLines.forEach(oldLine => {
+      if (!oldLine.id) return;
 
-      // Find the old line that matches this entry's line
-      const oldLineIndex = oldLines.findIndex(line => {
-        const lineStr = JSON.stringify([
-          [Math.round(line.start.x), Math.round(line.start.y)],
-          [Math.round(line.end.x), Math.round(line.end.y)]
-        ]);
-        return lineStr === entryLineStr;
-      });
-
-      if (oldLineIndex !== -1) {
-        const oldLine = oldLines[oldLineIndex];
-
-        // Find the corresponding new line with improved matching logic
-        const matchingNewLine = newLines.find(newLine => {
-          // First, check exact matches (no movement)
-          const exactMatch = (
-            arePointsNearlyEqual(oldLine.start, newLine.start) &&
-            arePointsNearlyEqual(oldLine.end, newLine.end)
-          ) || (
-            arePointsNearlyEqual(oldLine.start, newLine.end) &&
-            arePointsNearlyEqual(oldLine.end, newLine.start)
-          );
-
-          if (exactMatch) return true;
-
-          // Then, check for modified lines (one endpoint moved)
-          const startMoved = arePointsNearlyEqual(oldLine.end, newLine.end) &&
-                           !arePointsNearlyEqual(oldLine.start, newLine.start);
-          const endMoved = arePointsNearlyEqual(oldLine.start, newLine.start) &&
-                          !arePointsNearlyEqual(oldLine.end, newLine.end);
-          const startMovedReversed = arePointsNearlyEqual(oldLine.end, newLine.start) &&
-                                   !arePointsNearlyEqual(oldLine.start, newLine.end);
-          const endMovedReversed = arePointsNearlyEqual(oldLine.start, newLine.end) &&
-                                  !arePointsNearlyEqual(oldLine.end, newLine.start);
-
-          // When multiple lines share an endpoint, prioritize the one where the other endpoint moved
-          return startMoved || endMoved || startMovedReversed || endMovedReversed;
-        });
-
-        if (matchingNewLine) {
-          console.log("Found matching line:", {
-            oldLine,
-            matchingNewLine,
-            entryLine: entry.line
-          });
-          oldToNewLineMap.set(entryLineStr, matchingNewLine);
-        }
+      // Find the new version of this line
+      const newLine = newLines.find(nl => nl.id === oldLine.id);
+      if (newLine) {
+        idMap.set(oldLine.id, newLine);
       }
     });
 
-    // Now update each air entry if its line was modified
+    // Update air entries using the ID map
     const newAirEntries = airEntries.map(entry => {
-      // Get stringified version of this entry's line
-      const entryLineStr = JSON.stringify([
-        [Math.round(entry.line.start.x), Math.round(entry.line.start.y)],
-        [Math.round(entry.line.end.x), Math.round(entry.line.end.y)]
-      ]);
+      // Skip entries without a line ID
+      if (!entry.lineId) return entry;
 
-      // If this entry's line was modified, update it
-      if (oldToNewLineMap.has(entryLineStr)) {
-        const newLine = oldToNewLineMap.get(entryLineStr)!;
+      // Find the updated version of this line
+      const updatedLine = idMap.get(entry.lineId);
+      if (!updatedLine) return entry;
 
-        // Calculate relative position on the old line (0-1)
-        const relativePos = getRelativePositionOnLine(entry.position, entry.line);
-        console.log(`Entry relative position: ${relativePos} on line from 
-                    (${entry.line.start.x}, ${entry.line.start.y}) to 
-                    (${entry.line.end.x}, ${entry.line.end.y})`);
+      // Calculate relative position and update
+      const relativePos = getRelativePositionOnLine(entry.position, entry.line);
+      const newPosition = getPointAtRelativePosition(updatedLine, relativePos);
 
-        // Calculate the new position using that same relative position
-        const newPosition = getPointAtRelativePosition(newLine, relativePos);
-        console.log(`New position: (${newPosition.x}, ${newPosition.y}) on line from 
-                    (${newLine.start.x}, ${newLine.start.y}) to 
-                    (${newLine.end.x}, ${newLine.end.y})`);
-
-        // Return updated entry
-        return {
-          ...entry,
-          line: newLine,
-          position: newPosition
-        };
-      }
-
-      // If this entry's line wasn't modified, return it unchanged
-      return entry;
+      return {
+        ...entry,
+        line: updatedLine,
+        position: newPosition
+      };
     });
 
-    // Only update if something actually changed
+    // Update state if needed
     if (JSON.stringify(newAirEntries) !== JSON.stringify(airEntries) && onAirEntriesUpdate) {
-      console.log("Updating air entries state:", newAirEntries);
       onAirEntriesUpdate(newAirEntries);
-    } else {
-      console.log("No air entries were changed");
     }
   };
 
@@ -1288,7 +1214,12 @@ export default function Canvas2D({
       if (currentTool === 'wall') {
         const nearestPoint = findNearestEndpoint(clickPoint);
         const startPoint = nearestPoint || snapToGrid(clickPoint);
-        setCurrentLine({ start: startPoint, end: startPoint });
+        const newLineId = Math.random().toString(36).substring(2, 9);
+        setCurrentLine({
+          id: newLineId,
+          start: startPoint,
+          end: startPoint
+        });
         setIsDrawing(true);
         setCursorPoint(startPoint);
       } else if (currentTool === 'eraser') {
@@ -1298,11 +1229,19 @@ export default function Canvas2D({
           onLinesUpdate?.(newLines);
           setHighlightedLines([]);
         }
-      } else if (currentAirEntry && onLineSelect) {
+      } else if (currentAirEntry) {
         const selectedLines = findLinesNearPoint(clickPoint);
         if (selectedLines.length > 0) {
           const exactPoint = getPointOnLine(selectedLines[0], clickPoint);
-          onLineSelect(selectedLines[0], exactPoint);
+          const selectedLine = selectedLines[0];
+          const newAirEntry: AirEntry = {
+            type: currentAirEntry,
+            position: exactPoint,
+            dimensions: { width: 100, height: 60 },
+            line: selectedLine,
+            lineId: selectedLine.id
+          };
+          onAirEntriesUpdate?.([...airEntries, newAirEntry]);
         }
       }
     };
@@ -1327,7 +1266,10 @@ export default function Canvas2D({
 
       if (currentTool === 'wall' && isDrawing && currentLine) {
         if (currentLine.start.x !== currentLine.end.x || currentLine.start.y !== currentLine.end.y) {
-          const newLines = [...lines, currentLine];
+          const newLine = {
+            ...currentLine
+          };
+          const newLines = [...lines, newLine];
           onLinesUpdate?.(newLines);
         }
         setCurrentLine(null);
@@ -1420,7 +1362,7 @@ export default function Canvas2D({
   }, [
     gridSize, dimensions, lines, currentLine, isDrawing, currentTool,
     highlightedLines, zoom, pan, isPanning, panMode, cursorPoint,
-    currentAirEntry, onLineSelect, airEntries, onLinesUpdate,
+    currentAirEntry, airEntries, onLinesUpdate,
     hoveredGridPoint, hoverPoint, isDraggingEndpoint, draggedPoint,
     isDraggingAirEntry, draggedAirEntry, onAirEntriesUpdate
   ]);
@@ -1467,6 +1409,7 @@ export default function Canvas2D({
       y: centerY + snappedY
     };
   };
+
 
   return (
     <div ref={containerRef} className="w-full h-full relative">
