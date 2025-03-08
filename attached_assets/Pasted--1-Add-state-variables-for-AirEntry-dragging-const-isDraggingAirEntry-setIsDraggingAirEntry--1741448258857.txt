@@ -1,0 +1,190 @@
+// 1. Add state variables for AirEntry dragging
+const [isDraggingAirEntry, setIsDraggingAirEntry] = useState(false);
+const [draggedAirEntry, setDraggedAirEntry] = useState<{
+  index: number;
+  entry: AirEntry;
+  startPoint: Point;
+}>({ index: -1, entry: {} as AirEntry, startPoint: { x: 0, y: 0 } });
+
+// 2. Add a function to find an AirEntry near a point
+const findAirEntryAtLocation = (clickPoint: Point): { index: number; entry: AirEntry } | null => {
+  for (let i = 0; i < airEntries.length; i++) {
+    const entry = airEntries[i];
+    const normal = calculateNormal(entry.line);
+    const widthInPixels = cmToPixels(entry.dimensions.width);
+    const halfWidth = widthInPixels / 2;
+    
+    // Calculate the entry's endpoints
+    const start = {
+      x: entry.position.x - normal.x * halfWidth,
+      y: entry.position.y - normal.y * halfWidth
+    };
+    
+    const end = {
+      x: entry.position.x + normal.x * halfWidth,
+      y: entry.position.y + normal.y * halfWidth
+    };
+    
+    // Check if click is near the entry's line segment
+    const distanceToEntry = distanceToLineSegment(clickPoint, start, end);
+    if (distanceToEntry < 10 / zoom) { // 10px hit area, adjusted for zoom
+      return { index: i, entry };
+    }
+  }
+  
+  return null;
+};
+
+// 3. Add a helper function to calculate distance from point to line segment
+const distanceToLineSegment = (point: Point, lineStart: Point, lineEnd: Point): number => {
+  const A = point.x - lineStart.x;
+  const B = point.y - lineStart.y;
+  const C = lineEnd.x - lineStart.x;
+  const D = lineEnd.y - lineStart.y;
+  
+  const dot = A * C + B * D;
+  const lenSq = C * C + D * D;
+  let param = -1;
+  
+  if (lenSq !== 0) param = dot / lenSq;
+  
+  let xx, yy;
+  
+  if (param < 0) {
+    xx = lineStart.x;
+    yy = lineStart.y;
+  } else if (param > 1) {
+    xx = lineEnd.x;
+    yy = lineEnd.y;
+  } else {
+    xx = lineStart.x + param * C;
+    yy = lineStart.y + param * D;
+  }
+  
+  const dx = point.x - xx;
+  const dy = point.y - yy;
+  
+  return Math.sqrt(dx * dx + dy * dy);
+};
+
+// 4. Add a function to calculate a new position along the wall
+const calculatePositionAlongWall = (line: Line, point: Point): Point => {
+  // Project the point onto the line
+  const projectedPoint = getPointOnLine(line, point);
+  
+  // Create a buffer near the ends of the wall to prevent the entry from going off the line
+  const dx = line.end.x - line.start.x;
+  const dy = line.end.y - line.start.y;
+  const lineLength = Math.sqrt(dx * dx + dy * dy);
+  
+  // Calculate unit vector along the line
+  const ux = dx / lineLength;
+  const uy = dy / lineLength;
+  
+  // Calculate the position along the line as a scalar
+  const ax = projectedPoint.x - line.start.x;
+  const ay = projectedPoint.y - line.start.y;
+  const position = (ax * ux + ay * uy);
+  
+  // Enforce bounds (keep a small margin from the ends)
+  const margin = 10; // Minimum 10px from each end
+  const boundedPosition = Math.max(margin, Math.min(lineLength - margin, position));
+  
+  // Convert back to x,y coordinates
+  return {
+    x: line.start.x + boundedPosition * ux,
+    y: line.start.y + boundedPosition * uy
+  };
+};
+
+// 5. Modify handleMouseDown to detect clicks on AirEntry elements
+const handleMouseDown = (e: MouseEvent) => {
+  // Handle right-click on AirEntry
+  if (e.button === 2) {
+    const clickPoint = getCanvasPoint(e);
+    
+    // First, check for AirEntry elements
+    const airEntryInfo = findAirEntryAtLocation(clickPoint);
+    if (airEntryInfo) {
+      e.preventDefault();
+      setIsDraggingAirEntry(true);
+      setDraggedAirEntry({
+        index: airEntryInfo.index,
+        entry: airEntryInfo.entry,
+        startPoint: clickPoint
+      });
+      return;
+    }
+    
+    // Then check for endpoints (existing code)
+    const pointInfo = findPointAtLocation(clickPoint);
+    if (pointInfo) {
+      e.preventDefault();
+      setIsDraggingEndpoint(true);
+      setDraggedPoint(pointInfo);
+      return;
+    }
+    
+    // Default to panning
+    e.preventDefault();
+    handlePanStart(e);
+    return;
+  }
+  
+  // Rest of existing code...
+};
+
+// 6. Update handleMouseMove to handle AirEntry dragging
+const handleMouseMove = (e: MouseEvent) => {
+  // Handle AirEntry dragging
+  if (isDraggingAirEntry && draggedAirEntry.index !== -1) {
+    const point = getCanvasPoint(e);
+    const entry = draggedAirEntry.entry;
+    
+    // Calculate new position along the wall
+    const newPosition = calculatePositionAlongWall(entry.line, point);
+    
+    // Create a new array of air entries with the updated position
+    const newAirEntries = [...airEntries];
+    newAirEntries[draggedAirEntry.index] = {
+      ...entry,
+      position: newPosition
+    };
+    
+    // If there's a way to update the air entries in the parent component
+    if (onAirEntriesUpdate) {
+      onAirEntriesUpdate(newAirEntries);
+    }
+    
+    return;
+  }
+  
+  // Handle endpoint dragging (existing code)
+  if (isDraggingEndpoint) {
+    // Existing code...
+  }
+  
+  // Normal mouse move handling
+  throttleMouseMove(e);
+};
+
+// 7. Update handleMouseUp to end AirEntry dragging
+const handleMouseUp = (e: MouseEvent) => {
+  if (isDraggingAirEntry) {
+    setIsDraggingAirEntry(false);
+    setDraggedAirEntry({ index: -1, entry: {} as AirEntry, startPoint: { x: 0, y: 0 } });
+    return;
+  }
+  
+  // Rest of existing code...
+};
+
+// 8. Update handleMouseLeave to handle AirEntry dragging
+const handleMouseLeave = () => {
+  if (isDraggingAirEntry) {
+    setIsDraggingAirEntry(false);
+    setDraggedAirEntry({ index: -1, entry: {} as AirEntry, startPoint: { x: 0, y: 0 } });
+  }
+  
+  // Rest of existing code...
+};

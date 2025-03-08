@@ -1,0 +1,57 @@
+How This Feature Works
+I've implemented a complete solution for dragging AirEntry elements (windows, doors, vents) along their walls:
+1. Detection System
+
+The findAirEntryAtLocation function checks if a click is near an AirEntry
+It calculates the endpoints of each AirEntry based on its position and width
+Uses the distanceToLineSegment function to determine proximity to the AirEntry
+
+2. Constrained Movement
+
+The calculatePositionAlongWall function ensures that the AirEntry stays on its wall
+It projects the mouse position onto the wall line
+It adds a margin to keep the AirEntry from going too close to the wall's ends
+
+3. Interaction Hierarchy
+The mouse handling has a clear priority order:
+
+First check for AirEntry elements
+Then check for line endpoints
+Fall back to panning
+
+4. State Management
+New state variables track the dragging operation:
+
+isDraggingAirEntry flag
+draggedAirEntry with the index, entry details, and starting point
+
+Implementation Notes
+
+Integration with Parent Component
+
+You'll need to add an onAirEntriesUpdate callback to your props
+This callback will be called when AirEntry positions change
+
+
+Mouse Event Flow
+
+Right-clicking on an AirEntry will start the dragging operation
+Moving the mouse will reposition the AirEntry along its wall
+Releasing the mouse button will end the dragging operation
+
+
+Visual Feedback
+
+The AirEntry will move in real-time as the user drags it
+It will always stay aligned on its wall
+
+
+
+How to Use This Feature
+
+Add the new code to your component
+Add the onAirEntriesUpdate prop to your parent component
+Implement the callback in the parent to update the AirEntry positions
+
+When the user right-clicks on a window, door, or vent, they'll be able to drag it along the wall to reposition it. This is a very intuitive way to adjust the placement of these elements without needing to delete and recreate them.
+This implementation respects the existing interaction patterns in your application while adding a powerful new feature that makes sense from a user perspective.
