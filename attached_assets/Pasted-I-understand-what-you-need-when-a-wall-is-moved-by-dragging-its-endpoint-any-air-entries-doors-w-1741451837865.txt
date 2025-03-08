@@ -1,0 +1,145 @@
+I understand what you need: when a wall is moved by dragging its endpoint, any air entries (doors, windows, vents) attached to that wall should move along with it, maintaining their relative position on the wall.
+
+Let's implement this feature. The key is to update air entries whenever wall lines are modified. Here's how we can approach it:
+
+```typescript
+// This function should be called whenever lines are updated
+const updateAirEntriesWithWalls = (newLines: Line[], oldLines: Line[]) => {
+  // Only proceed if we have air entries to update
+  if (airEntries.length === 0) return;
+  
+  // Create a map of old lines to easily find them
+  const oldLineMap = new Map<string, Line>();
+  oldLines.forEach(line => {
+    // Create a unique key for each line
+    const key = `${Math.round(line.start.x)},${Math.round(line.start.y)}_${Math.round(line.end.x)},${Math.round(line.end.y)}`;
+    oldLineMap.set(key, line);
+  });
+  
+  // For each new line, find if it was modified from an old line
+  const newAirEntries = [...airEntries];
+  let entriesUpdated = false;
+  
+  newLines.forEach(newLine => {
+    // Check each air entry to see if it's attached to this line
+    newAirEntries.forEach((entry, index) => {
+      const entryLine = entry.line;
+      
+      // Skip if this entry isn't affected by the current line
+      if (!arePointsNearlyEqual(entryLine.start, newLine.start) && 
+          !arePointsNearlyEqual(entryLine.end, newLine.end) &&
+          !arePointsNearlyEqual(entryLine.start, newLine.end) && 
+          !arePointsNearlyEqual(entryLine.end, newLine.start)) {
+        return;
+      }
+      
+      // Find the old line that this entry was attached to
+      const oldLine = findMatchingLine(entryLine, oldLines);
+      if (!oldLine) return;
+      
+      // Calculate relative position on the old line (0-1)
+      const relativePos = getRelativePositionOnLine(entry.position, oldLine);
+      
+      // Apply that same relative position to the new line
+      const newPosition = getPointAtRelativePosition(newLine, relativePos);
+      
+      // Update the entry with the new line and position
+      newAirEntries[index] = {
+        ...entry,
+        line: newLine,
+        position: newPosition
+      };
+      
+      entriesUpdated = true;
+    });
+  });
+  
+  // If any entries were updated, update the state
+  if (entriesUpdated && onAirEntriesUpdate) {
+    onAirEntriesUpdate(newAirEntries);
+  }
+};
+
+// Helper to find a matching line by comparing endpoints
+const findMatchingLine = (line: Line, lines: Line[]): Line | undefined => {
+  return lines.find(l => 
+    (arePointsNearlyEqual(l.start, line.start) && arePointsNearlyEqual(l.end, line.end)) ||
+    (arePointsNearlyEqual(l.start, line.end) && arePointsNearlyEqual(l.end, line.start))
+  );
+};
+
+// Helper to check if points are nearly equal (allowing for small floating-point differences)
+const arePointsNearlyEqual = (p1: Point, p2: Point): boolean => {
+  const dx = p1.x - p2.x;
+  const dy = p1.y - p2.y;
+  return Math.sqrt(dx * dx + dy * dy) < 1;
+};
+
+// Get relative position (0-1) of a point along a line
+const getRelativePositionOnLine = (point: Point, line: Line): number => {
+  // Project the point onto the line
+  const projectedPoint = getPointOnLine(line, point);
+  
+  // Calculate distance from start to projected point
+  const dx1 = projectedPoint.x - line.start.x;
+  const dy1 = projectedPoint.y - line.start.y;
+  const distanceFromStart = Math.sqrt(dx1 * dx1 + dy1 * dy1);
+  
+  // Calculate total line length
+  const dx2 = line.end.x - line.start.x;
+  const dy2 = line.end.y - line.start.y;
+  const lineLength = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+  
+  // Return relative position (0 = start, 1 = end)
+  return lineLength > 0 ? distanceFromStart / lineLength : 0;
+};
+
+// Get a point at a relative position (0-1) along a line
+const getPointAtRelativePosition = (line: Line, relativePos: number): Point => {
+  return {
+    x: line.start.x + (line.end.x - line.start.x) * relativePos,
+    y: line.start.y + (line.end.y - line.start.y) * relativePos
+  };
+};
+```
+
+Now, we need to integrate this function into the existing code. Specifically, we need to call it whenever the lines are updated by dragging endpoints:
+
+```typescript
+// In the handleMouseMove function, where we update lines for endpoint dragging
+if (linesUpdated) {
+  // Update the lines state
+  // Store the old lines for comparison
+  const oldLines = [...lines];
+  
+  // Update lines through the callback
+  onLinesUpdate?.(newLines);
+  
+  // Also update any air entries attached to these lines
+  updateAirEntriesWithWalls(newLines, oldLines);
+  
+  // ... rest of the existing code
+}
+```
+
+Similarly, we need to integrate this into the useEffect where the actual DOM event listeners are set up:
+
+```typescript
+// In the useEffect's handleMouseMove function
+if (linesUpdated) {
+  // Store the old lines for comparison
+  const oldLines = [...lines];
+  
+  // Update the lines state
+  onLinesUpdate?.(newLines);
+  
+  // Also update any air entries attached to these lines
+  updateAirEntriesWithWalls(newLines, oldLines);
+  
+  // ... rest of the existing code
+}
+```
+
+This implementation will keep air entries attached to their walls even when the walls are moved by dragging endpoints. The air entries will maintain the same relative position along the wall.
+
+Let me know if you'd like to see modifications to this approach or if you need further clarification on any part of the implementation!
