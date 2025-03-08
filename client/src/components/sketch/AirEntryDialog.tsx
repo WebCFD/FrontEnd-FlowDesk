@@ -20,6 +20,11 @@ interface AirEntryDialogProps {
     height: number;
     distanceToFloor?: number;
   }) => void;
+  initialDimensions?: {
+    width: number;
+    height: number;
+    distanceToFloor?: number;
+  };
 }
 
 const windowDefaults = {
@@ -39,8 +44,12 @@ const ventDefaults = {
   distanceToFloor: 120
 };
 
-export default function AirEntryDialog({ type, isOpen, onClose, onConfirm }: AirEntryDialogProps) {
+export default function AirEntryDialog({ type, isOpen, onClose, onConfirm, initialDimensions }: AirEntryDialogProps) {
   const getDefaultValues = () => {
+    if (initialDimensions) {
+      return initialDimensions;
+    }
+
     switch (type) {
       case 'window':
         return windowDefaults;
@@ -55,12 +64,12 @@ export default function AirEntryDialog({ type, isOpen, onClose, onConfirm }: Air
 
   const [dimensions, setDimensions] = useState(getDefaultValues());
 
-  // Reset dimensions when dialog opens with new type
+  // Reset dimensions when dialog opens with new type or initialDimensions
   useEffect(() => {
     if (isOpen) {
       setDimensions(getDefaultValues());
     }
-  }, [isOpen, type]);
+  }, [isOpen, type, initialDimensions]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,15 +78,15 @@ export default function AirEntryDialog({ type, isOpen, onClose, onConfirm }: Air
   };
 
   const titles = {
-    window: "Window Dimensions",
-    door: "Door Dimensions",
-    vent: "Vent Grid Dimensions"
+    window: initialDimensions ? "Edit Window" : "Window Dimensions",
+    door: initialDimensions ? "Edit Door" : "Door Dimensions",
+    vent: initialDimensions ? "Edit Vent Grid" : "Vent Grid Dimensions"
   };
 
   const descriptions = {
-    window: "Set the dimensions for the window",
-    door: "Set the dimensions for the door",
-    vent: "Set the dimensions for the ventilation grid"
+    window: initialDimensions ? "Modify the dimensions of this window" : "Set the dimensions for the window",
+    door: initialDimensions ? "Modify the dimensions of this door" : "Set the dimensions for the door",
+    vent: initialDimensions ? "Modify the dimensions of this ventilation grid" : "Set the dimensions for the ventilation grid"
   };
 
   return (

@@ -37,6 +37,7 @@ interface Canvas2DProps {
   lines: Line[];
   onLinesUpdate?: (lines: Line[]) => void;
   onAirEntriesUpdate?: (airEntries: AirEntry[]) => void;
+  onAirEntryEdit?: (entry: AirEntry, index: number) => void; // New prop for handling edit requests
 }
 
 interface HighlightState {
@@ -239,7 +240,8 @@ export default function Canvas2D({
   airEntries = [],
   lines = [],
   onLinesUpdate,
-  onAirEntriesUpdate
+  onAirEntriesUpdate,
+  onAirEntryEdit
 }: Canvas2DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -845,6 +847,10 @@ export default function Canvas2D({
     throttleMouseMove(e);
   };
 
+  // Add state for tracking double-clicks
+  const [lastClickTime, setLastClickTime] = useState<number>(0);
+  const [lastClickPosition, setLastClickPosition] = useState<Point | null>(null);
+
   const handleMouseDown = (e: MouseEvent) => {
     if (e.button === 2) {
       e.preventDefault();
@@ -874,6 +880,26 @@ export default function Canvas2D({
 
     const clickPoint = getCanvasPoint(e);
 
+    // Check for double-click
+    const currentTime = Date.now();
+    const isDoubleClick = currentTime - lastClickTime < 300 &&
+                         lastClickPosition &&
+                         Math.abs(clickPoint.x - lastClickPosition.x) < 10 &&
+                         Math.abs(clickPoint.y - lastClickPosition.y) < 10;
+
+    setLastClickTime(currentTime);
+    setLastClickPosition(clickPoint);
+
+    // If it's a double-click, check if we clicked on an air entry
+    if (isDoubleClick) {
+      const airEntryInfo = findAirEntryAtLocation(clickPoint);
+      if (airEntryInfo && onAirEntryEdit) {
+        onAirEntryEdit(airEntryInfo.entry, airEntryInfo.index);
+        return;
+      }
+    }
+
+    // Continue with existing single-click logic
     if (currentTool === 'wall') {
       const nearestPoint = findNearestEndpoint(clickPoint);
       const startPoint = nearestPoint || snapToGrid(clickPoint);
@@ -1393,7 +1419,7 @@ export default function Canvas2D({
     zoom, pan, isPanning, panMode, cursorPoint,
     currentAirEntry, airEntries, onLinesUpdate,
     hoveredGridPoint, hoverPoint, isDraggingEndpoint, draggedPoint,
-    isDraggingAirEntry, draggedAirEntry, onAirEntriesUpdate, highlightState
+    isDraggingAirEntry, draggedAirEntry, onAirEntriesUpdate, highlightState, onAirEntryEdit
   ]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
