@@ -1477,6 +1477,14 @@ export function RoomSketchPro({
     console.log("Drag started:", item);
   };
 
+  // This will update whenever the wall material opacity changes
+  const handleWallTransparencyChange = (value: number) => {
+    // Call the parent's handler if provided
+    if (onWallTransparencyChange) {
+      onWallTransparencyChange(value);
+    }
+  };
+
   return (
     <div>
       <div
