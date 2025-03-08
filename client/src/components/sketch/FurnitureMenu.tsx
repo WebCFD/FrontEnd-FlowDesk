@@ -51,10 +51,16 @@ const furnitureItems: FurnitureItem[] = [
 
 export function FurnitureMenu({ onDragStart, wallTransparency = 0.8, onWallTransparencyChange }: FurnitureMenuProps) {
   const handleTransparencyChange = (values: number[]) => {
-    console.log("Slider value changed:", values[0]);
-    console.log("Current wall transparency:", wallTransparency);
+    const newValue = values[0];
+    console.log("=== FurnitureMenu Transparency Change ===");
+    console.log("Previous transparency:", wallTransparency);
+    console.log("New transparency value:", newValue);
+
     if (onWallTransparencyChange) {
-      onWallTransparencyChange(values[0]);
+      console.log("Calling onWallTransparencyChange with value:", newValue);
+      onWallTransparencyChange(newValue);
+    } else {
+      console.warn("onWallTransparencyChange callback is not provided");
     }
   };
 
