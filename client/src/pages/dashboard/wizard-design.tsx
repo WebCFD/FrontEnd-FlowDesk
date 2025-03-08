@@ -11,7 +11,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
 import { Save, Upload, Eraser, ArrowRight, ArrowLeft } from "lucide-react";
 import Canvas2D from "@/components/sketch/Canvas2D";
-import { RoomSketchPro } from "@/components/sketch/RoomSketchPro";
+import { RoomSketchPro } from "@/components/sketch/RoomSketchPro"; 
 import { cn } from "@/lib/utils";
 import AirEntryDialog from "@/components/sketch/AirEntryDialog";
 import Canvas3D from "@/components/sketch/Canvas3D";
@@ -38,19 +38,6 @@ interface Point {
 interface Line {
   start: Point;
   end: Point;
-  id?: number; // Added id for easier identification
-}
-
-interface AirEntry {
-  type: 'vent' | 'door' | 'window';
-  position: Point;
-  dimensions: {
-    width: number;
-    height: number;
-    distanceToFloor?: number;
-  };
-  line: Line;
-  lineId?: number; // Added id for easier identification
 }
 
 const calculateNormal = (line: Line | null): { x: number; y: number } => {
@@ -76,7 +63,6 @@ export default function WizardDesign() {
   const [tab, setTab] = useState<"2d-editor" | "3d-preview">("2d-editor");
   const [showStartSimulationPrompt, setShowStartSimulationPrompt] = useState(false);
   const [wallTransparency, setWallTransparency] = useState(0.8);
-  const [selectedAirEntry, setSelectedAirEntry] = useState<{ entry: AirEntry; index: number } | null>(null);
 
   // Use the global room store
   const { lines, airEntries, hasClosedContour, setLines, setAirEntries, setHasClosedContour } = useRoomStore();
@@ -155,25 +141,22 @@ export default function WizardDesign() {
     height: number;
     distanceToFloor?: number;
   }) => {
-    if (selectedAirEntry) {
-      // Update existing air entry
-      const newAirEntries = [...airEntries];
-      newAirEntries[selectedAirEntry.index] = {
-        ...selectedAirEntry.entry,
-        dimensions
-      };
-      setAirEntries(newAirEntries);
-      setSelectedAirEntry(null);
-    } else if (selectedLine && clickedPoint && currentAirEntry) {
-      // Create new air entry
+    if (selectedLine && clickedPoint && currentAirEntry) {
+      const normal = calculateNormal(selectedLine);
+      console.log(`Creating new ${currentAirEntry} air entry:`);
+      console.log(`Position: (${clickedPoint.x}, ${clickedPoint.y})`);
+      console.log(`Dimensions: width=${dimensions.width}cm, height=${dimensions.height}cm`);
+      console.log(`Wall normal: (${normal.x.toFixed(3)}, ${normal.y.toFixed(3)})`);
+
       const newAirEntry: AirEntry = {
         type: currentAirEntry,
         position: clickedPoint,
         dimensions,
-        line: selectedLine,
-        lineId: selectedLine.id
+        line: selectedLine
       };
-      setAirEntries([...airEntries, newAirEntry]);
+
+      const newAirEntries = [...airEntries, newAirEntry];
+      setAirEntries(newAirEntries);
       setSelectedLine(null);
       setClickedPoint(null);
       setCurrentAirEntry(null);
@@ -348,7 +331,6 @@ export default function WizardDesign() {
                       setHasClosedContour(hasClosedContour);
                     }}
                     onAirEntriesUpdate={setAirEntries}
-                    onAirEntryEdit={handleAirEntryEdit}
                   />
                 </div>
               </div>
@@ -368,15 +350,13 @@ export default function WizardDesign() {
         </CardContent>
       </Card>
       <AirEntryDialog
-        type={(selectedAirEntry?.entry.type || currentAirEntry || 'window') as 'window' | 'door' | 'vent'}
+        type={currentAirEntry || 'window'}
         isOpen={isAirEntryDialogOpen}
         onClose={() => {
           setIsAirEntryDialogOpen(false);
           setSelectedLine(null);
-          setSelectedAirEntry(null);
         }}
         onConfirm={handleAirEntryDimensionsConfirm}
-        initialDimensions={selectedAirEntry?.entry.dimensions}
       />
     </>
   );
@@ -387,7 +367,7 @@ export default function WizardDesign() {
       <div className="space-y-6">
         <div className="flex gap-6">
           {/* Left side - Furniture Menu */}
-          <FurnitureMenu
+          <FurnitureMenu 
             onDragStart={(item) => {
               console.log('Started dragging:', item.name);
             }}
@@ -400,8 +380,8 @@ export default function WizardDesign() {
 
           {/* Right side - 3D View */}
           <div className="flex-1 h-[600px] border rounded-lg overflow-hidden bg-white">
-            <RoomSketchPro
-              width={800}
+            <RoomSketchPro 
+              width={800} 
               height={600}
               key="step2-view"
               instanceId="step2-view"
@@ -622,15 +602,11 @@ export default function WizardDesign() {
     if (step > 1) setStep(step - 1);
   };
 
-  const handleAirEntryEdit = (entry: AirEntry, index: number) => {
-    setSelectedAirEntry({ entry, index });
-    setIsAirEntryDialogOpen(true);
-  };
-
   return (
     <DashboardLayout>
       <div className="container mx-auto py-6 space-y-6">
         {renderStepIndicator()}
+
         <div className="min-h-[600px]">
           {step === 1 && renderStep1()}
           {step === 2 && renderStep2()}
