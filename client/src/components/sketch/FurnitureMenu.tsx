@@ -49,7 +49,7 @@ const furnitureItems: FurnitureItem[] = [
   }
 ];
 
-export function FurnitureMenu({ onDragStart, wallTransparency, onWallTransparencyChange }: FurnitureMenuProps) {
+export function FurnitureMenu({ onDragStart, wallTransparency = 0.8, onWallTransparencyChange }: FurnitureMenuProps) {
   const handleTransparencyChange = (values: number[]) => {
     console.log("Slider value changed:", values[0]);
     console.log("Current wall transparency:", wallTransparency);
@@ -60,6 +60,9 @@ export function FurnitureMenu({ onDragStart, wallTransparency, onWallTransparenc
 
   console.log("FurnitureMenu render - wallTransparency:", wallTransparency);
 
+  // Ensure wallTransparency has a valid value before using toFixed
+  const displayValue = typeof wallTransparency === 'number' ? wallTransparency.toFixed(1) : '0.8';
+
   return (
     <div className="w-48 space-y-6">
       <div className="space-y-4">
@@ -67,7 +70,7 @@ export function FurnitureMenu({ onDragStart, wallTransparency, onWallTransparenc
         <div className="space-y-2">
           <label className="text-sm text-gray-600">Wall Transparency</label>
           <Slider
-            value={[wallTransparency]}
+            value={[typeof wallTransparency === 'number' ? wallTransparency : 0.8]}
             onValueChange={handleTransparencyChange}
             min={0}
             max={1}
@@ -75,7 +78,7 @@ export function FurnitureMenu({ onDragStart, wallTransparency, onWallTransparenc
             className="w-full"
           />
           <div className="text-xs text-gray-500">
-            Current: {wallTransparency.toFixed(1)}
+            Current: {displayValue}
           </div>
         </div>
       </div>
