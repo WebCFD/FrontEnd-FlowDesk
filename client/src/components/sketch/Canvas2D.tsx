@@ -569,21 +569,52 @@ export default function Canvas2D({
     if (!ctx) return;
 
     const draw = () => {
+      if (!ctx) return;
+
       ctx.clearRect(0, 0, dimensions.width, dimensions.height);
 
       ctx.save();
       ctx.translate(pan.x, pan.y);
       ctx.scale(zoom, zoom);
 
+      // Only draw grid lines that are visible on screen
+      const visibleStartX = -pan.x / zoom;
+      const visibleEndX = (-pan.x + dimensions.width) / zoom;
+      const visibleStartY = -pan.y / zoom;
+      const visibleEndY = (-pan.y + dimensions.height) / zoom;
+
+      const centerX = dimensions.width / 2;
+      const centerY = dimensions.height / 2;
+
+      // Draw grid lines with adaptive density based on zoom
       ctx.beginPath();
       ctx.strokeStyle = '#64748b';
       ctx.lineWidth = 1 / zoom;
-      createGridLines().forEach(line => {
-        ctx.moveTo(line.start.x, line.start.y);
-        ctx.lineTo(line.end.x, line.end.y);
-      });
+
+      // Calculate step size based on zoom level to prevent too many grid lines
+      const zoomAdjustedGridSize = Math.max(gridSize, Math.ceil(5 / zoom) * 4);
+
+      // Vertical grid lines
+      const startXGrid = Math.floor((visibleStartX - centerX) / zoomAdjustedGridSize) * zoomAdjustedGridSize;
+      const endXGrid = Math.ceil((visibleEndX - centerX) / zoomAdjustedGridSize) * zoomAdjustedGridSize;
+
+      for (let x = startXGrid; x <= endXGrid; x += zoomAdjustedGridSize) {
+        ctx.moveTo(centerX + x, visibleStartY);
+        ctx.lineTo(centerX + x, visibleEndY);
+      }
+
+      // Horizontal grid lines
+      const startYGrid = Math.floor((visibleStartY - centerY) / zoomAdjustedGridSize) * zoomAdjustedGridSize;
+      const endYGrid = Math.ceil((visibleEndY - centerY) / zoomAdjustedGridSize) * zoomAdjustedGridSize;
+
+      for (let y = startYGrid; y <= endYGrid; y += zoomAdjustedGridSize) {
+        ctx.moveTo(visibleStartX, centerY + y);
+        ctx.lineTo(visibleEndX, centerY + y);
+      }
+
       ctx.stroke();
 
+      // Draw coordinate system
       const coordSystem = createCoordinateSystem();
       coordSystem.forEach((line, index) => {
         ctx.beginPath();
@@ -594,6 +625,9 @@ export default function Canvas2D({
         ctx.stroke();
       });
 
+      // Batch similar operations to reduce context switches
+
+      // Draw walls/lines
       lines.forEach(line => {
         if (highlightedLines.includes(line)) {
           ctx.strokeStyle = getHighlightColor();
@@ -606,15 +640,19 @@ export default function Canvas2D({
         ctx.moveTo(line.start.x, line.start.y);
         ctx.lineTo(line.end.x, line.end.y);
         ctx.stroke();
+      });
 
+      // Draw line measurements in one batch
+      ctx.font = `${12 / zoom}px sans-serif`;
+      ctx.fillStyle = '#64748b';
+      lines.forEach(line => {
         const midX = (line.start.x + line.end.x) / 2;
         const midY = (line.start.y + line.end.y) / 2;
         const length = Math.round(getLineLength(line));
-        ctx.font = `${12 / zoom}px sans-serif`;
-        ctx.fillStyle = '#64748b';
         ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
       });
 
+      // Draw current line if exists
       if (currentLine) {
         ctx.beginPath();
         ctx.strokeStyle = '#000000';
@@ -629,32 +667,56 @@ export default function Canvas2D({
         ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
       }
 
+      // Draw air entries
       airEntries.forEach(entry => {
         drawAirEntry(ctx, entry);
       });
 
+      // Draw endpoints with color coding
       const endpoints = [...new Set(lines.flatMap(line => [line.start, line.end]))];
+      const endpointsByColor = {
+        '#fb923c': [], // orange
+        '#3b82f6': [], // blue
+        '#22c55e': []  // green
+      };
+
+      // Group endpoints by color to batch drawing operations
       endpoints.forEach(point => {
         const connections = findConnectedLines(point).length;
-        let color = '#fb923c';
+        let color = '#fb923c'; // Default orange
 
         if (connections > 1) {
+          // Check this less frequently - only for corner points
           if (isInClosedContour(point, lines)) {
-            color = '#22c55e';
+            color = '#22c55e'; // Green for closed contours
           } else {
-            color = '#3b82f6';
+            color = '#3b82f6'; // Blue for connections > 1
           }
         }
 
-        ctx.beginPath();
-        ctx.fillStyle = color;
-        ctx.arc(point.x, point.y, POINT_RADIUS / zoom, 0, 2 * Math.PI);
-        ctx.fill();
-
-        ctx.font = `${12 / zoom}px sans-serif`;
-        drawCoordinateLabel(ctx, point, color);
+        endpointsByColor[color].push(point);
       });
 
+      // Draw points by color groups
+      Object.entries(endpointsByColor).forEach(([color, points]) => {
+        ctx.fillStyle = color;
+        ctx.beginPath();
+
+        points.forEach(point => {
+          ctx.moveTo(point.x, point.y);
+          ctx.arc(point.x, point.y, POINT_RADIUS / zoom, 0, 2 * Math.PI);
+        });
+
+        ctx.fill();
+
+        // Draw coordinate labels
+        ctx.font = `${12 / zoom}px sans-serif`;
+        points.forEach(point => {
+          drawCoordinateLabel(ctx, point, color);
+        });
+      });
+
+      // Draw cursor point when drawing
       if (cursorPoint && isDrawing) {
         ctx.font = `${12 / zoom}px sans-serif`;
         drawCoordinateLabel(ctx, cursorPoint, '#fb923c');
@@ -783,7 +845,7 @@ export default function Canvas2D({
     }
   };
 
-  return (
+    return (
     <div ref={containerRef} className="w-full h-full relative">
       <canvas
         ref={canvasRef}
