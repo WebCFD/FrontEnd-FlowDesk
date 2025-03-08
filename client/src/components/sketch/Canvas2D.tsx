@@ -166,13 +166,18 @@ export default function Canvas2D({
     handleZoomChange(newZoom);
   };
 
-  const handleWheel = (e: WheelEvent) => {
+  const handleZoomWheel = (e: WheelEvent) => {
     if (e.ctrlKey || e.metaKey) {
       e.preventDefault();
       const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
       const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom + delta));
       handleZoomChange(newZoom);
     }
+  };
+
+  const handleRegularWheel = (e: WheelEvent) => {
+    // Handle regular scrolling - no need to prevent default
+    // This will be a passive event listener
   };
 
   const handlePanStart = (e: MouseEvent) => {
@@ -704,7 +709,8 @@ export default function Canvas2D({
     canvas.addEventListener('mousemove', throttleMouseMove);
     canvas.addEventListener('mouseup', handleMouseUp);
     canvas.addEventListener('mouseleave', handleMouseLeave);
-    canvas.addEventListener('wheel', handleWheel);
+    canvas.addEventListener('wheel', handleZoomWheel, { passive: false });
+    canvas.addEventListener('wheel', handleRegularWheel, { passive: true });
     canvas.addEventListener('contextmenu', e => e.preventDefault());
 
     return () => {
@@ -715,7 +721,8 @@ export default function Canvas2D({
       canvas.removeEventListener('mousemove', throttleMouseMove);
       canvas.removeEventListener('mouseup', handleMouseUp);
       canvas.removeEventListener('mouseleave', handleMouseLeave);
-      canvas.removeEventListener('wheel', handleWheel);
+      canvas.removeEventListener('wheel', handleZoomWheel);
+      canvas.removeEventListener('wheel', handleRegularWheel);
       canvas.removeEventListener('contextmenu', e => e.preventDefault());
       cancelAnimationFrame(animationFrameId);
     };
