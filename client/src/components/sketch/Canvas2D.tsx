@@ -35,7 +35,7 @@ interface Canvas2DProps {
   airEntries: AirEntry[];
   lines: Line[];
   onLinesUpdate?: (lines: Line[]) => void;
-  onAirEntriesUpdate?: (airEntries: AirEntry[]) => void; // Add this line
+  onAirEntriesUpdate?: (airEntries: AirEntry[]) => void;
 }
 
 const POINT_RADIUS = 4;
@@ -129,7 +129,8 @@ export default function Canvas2D({
   onLineSelect,
   airEntries = [],
   lines = [],
-  onLinesUpdate
+  onLinesUpdate,
+  onAirEntriesUpdate
 }: Canvas2DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -836,7 +837,8 @@ export default function Canvas2D({
       // Create a new array of air entries with the updated position
       const newAirEntries = [...airEntries];
       newAirEntries[draggedAirEntry.index] = {
-        ...entry,        position: newPosition
+        ...entry,
+        position: newPosition
       };
 
       // If there's a way to update the air entries in the parent component
@@ -1085,7 +1087,7 @@ export default function Canvas2D({
 
       // Draw endpoints with color coding
       const endpoints = [...new Set(lines.flatMap(line => [line.start, line.end]))];
-      const endpointsByColor = {
+      const endpointColorMap: Record<string, Point[]> = {
         '#fb923c': [], // orange
         '#3b82f6': [], // blue
         '#22c55e': []  // green
@@ -1105,11 +1107,14 @@ export default function Canvas2D({
           }
         }
 
-        endpointsByColor[color].push(point);
+        // Ensure color exists in our map
+        if (color in endpointColorMap) {
+          endpointColorMap[color].push(point);
+        }
       });
 
       // Draw points by color groups
-      Object.entries(endpointsByColor).forEach(([color, points]) => {
+      Object.entries(endpointColorMap).forEach(([color, points]) => {
         ctx.fillStyle = color;
         ctx.beginPath();
 
