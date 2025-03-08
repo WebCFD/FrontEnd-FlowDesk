@@ -170,7 +170,7 @@ const calculatePositionAlongWall = (line: Line, point: Point): Point => {
 
     const dotProduct = pointVector.x * unitVector.x + pointVector.y * unitVector.y;
 
-    const margin = 20; 
+    const margin = 20;
     const clampedDot = Math.max(margin, Math.min(lineLength - margin, dotProduct));
 
     const finalPosition = {
@@ -384,7 +384,7 @@ export default function Canvas2D({
   };
 
   const snapToGrid = (point: Point): Point => {
-    const snapSize = 4; 
+    const snapSize = 4;
     const centerX = dimensions.width / 2;
     const centerY = dimensions.height / 2;
 
@@ -699,7 +699,8 @@ export default function Canvas2D({
       const { point, lines, isStart } = groupedPoints[key];
       const dx = clickPoint.x - point.x;
       const dy = clickPoint.y - point.y;
-      const distance = Math.sqrt(dx * dx + dy * dy);      if (distance < POINT_RADIUS / zoom * 1.5) {  
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      if (distance < POINT_RADIUS / zoom * 1.5) {
         return { point, lines, isStart };
       }
     }
@@ -833,7 +834,7 @@ export default function Canvas2D({
   const handleMouseDown = (e: MouseEvent) => {
     if (e.button === 2) {
       console.log("Right click detected");
-      e.preventDefault(); 
+      e.preventDefault();
 
       const clickPoint = getCanvasPoint(e);
       console.log("Click point:", clickPoint);
@@ -867,7 +868,7 @@ export default function Canvas2D({
     if (currentTool === 'wall') {
       const nearestPoint = findNearestEndpoint(clickPoint);
       const startPoint = nearestPoint || snapToGrid(clickPoint);
-      setCurrentLine({ start: startPoint, end: startPoint});
+      setCurrentLine({ start: startPoint, end: startPoint });
       setIsDrawing(true);
       setCursorPoint(startPoint);
     } else if (currentTool === 'eraser') {
@@ -911,7 +912,8 @@ export default function Canvas2D({
       }
       setCurrentLine(null);
       setIsDrawing(false);
-      setCursorPoint(null);    }
+      setCursorPoint(null);
+    }
   };
 
   const handleMouseLeave = () => {
@@ -995,19 +997,41 @@ export default function Canvas2D({
       });
 
       if (oldLineIndex !== -1) {
-        // Find the corresponding new line (must share at least one endpoint)
         const oldLine = oldLines[oldLineIndex];
+
+        // Find the corresponding new line with improved matching logic
         const matchingNewLine = newLines.find(newLine => {
-          // Check if this new line shares at least one endpoint with the old line
-          return (
-            arePointsNearlyEqual(oldLine.start, newLine.start) || 
-            arePointsNearlyEqual(oldLine.start, newLine.end) || 
-            arePointsNearlyEqual(oldLine.end, newLine.start) || 
+          // First, check exact matches (no movement)
+          const exactMatch = (
+            arePointsNearlyEqual(oldLine.start, newLine.start) &&
             arePointsNearlyEqual(oldLine.end, newLine.end)
+          ) || (
+            arePointsNearlyEqual(oldLine.start, newLine.end) &&
+            arePointsNearlyEqual(oldLine.end, newLine.start)
           );
+
+          if (exactMatch) return true;
+
+          // Then, check for modified lines (one endpoint moved)
+          const startMoved = arePointsNearlyEqual(oldLine.end, newLine.end) &&
+                           !arePointsNearlyEqual(oldLine.start, newLine.start);
+          const endMoved = arePointsNearlyEqual(oldLine.start, newLine.start) &&
+                          !arePointsNearlyEqual(oldLine.end, newLine.end);
+          const startMovedReversed = arePointsNearlyEqual(oldLine.end, newLine.start) &&
+                                   !arePointsNearlyEqual(oldLine.start, newLine.end);
+          const endMovedReversed = arePointsNearlyEqual(oldLine.start, newLine.end) &&
+                                  !arePointsNearlyEqual(oldLine.end, newLine.start);
+
+          // When multiple lines share an endpoint, prioritize the one where the other endpoint moved
+          return startMoved || endMoved || startMovedReversed || endMovedReversed;
         });
 
         if (matchingNewLine) {
+          console.log("Found matching line:", {
+            oldLine,
+            matchingNewLine,
+            entryLine: entry.line
+          });
           oldToNewLineMap.set(entryLineStr, matchingNewLine);
         }
       }
@@ -1174,20 +1198,20 @@ export default function Canvas2D({
 
       const endpoints = [...new Set(lines.flatMap(line => [line.start, line.end]))];
       const endpointColorMap: Record<string, Point[]> = {
-        '#fb923c': [], 
-        '#3b82f6': [], 
-        '#22c55e': []  
+        '#fb923c': [],
+        '#3b82f6': [],
+        '#22c55e': []
       };
 
       endpoints.forEach(point => {
         const connections = findConnectedLines(point).length;
-        let color = '#fb923c'; 
+        let color = '#fb923c';
 
         if (connections > 1) {
           if (isInClosedContour(point, lines)) {
-            color = '#22c55e'; 
+            color = '#22c55e';
           } else {
-            color = '#3b82f6'; 
+            color = '#3b82f6';
           }
         }
 
@@ -1230,7 +1254,7 @@ export default function Canvas2D({
     const handleMouseDown = (e: MouseEvent) => {
       if (e.button === 2) {
         console.log("Right click detected");
-        e.preventDefault(); 
+        e.preventDefault();
 
         const clickPoint = getCanvasPoint(e);
         console.log("Click point:", clickPoint);
@@ -1350,7 +1374,7 @@ export default function Canvas2D({
 
     let lastRenderTime = 0;
 
-    const targetFPS = 30; 
+    const targetFPS = 30;
     const frameInterval = 1000 / targetFPS;
     let animationFrameId: number;
 
