@@ -668,6 +668,13 @@ export default function Canvas2D({
     };
   };
 
+  // Helper to check if points are nearly equal (allowing for small floating-point differences)
+  const arePointsNearlyEqual = (p1: Point, p2: Point): boolean => {
+    const dx = p1.x - p2.x;
+    const dy = p1.y - p2.y;
+    return Math.sqrt(dx * dx + dy * dy) < 1;
+  };
+
   // Add helper functions after existing utility functions
   const findAirEntryAtLocation = (clickPoint: Point): { index: number; entry: AirEntry } | null => {
     // Add logging to debug hit detection
@@ -744,35 +751,35 @@ export default function Canvas2D({
       const dy = line.end.y - line.start.y;
       const lineLength = Math.sqrt(dx * dx + dy * dy);
 
-      if (lineLength === 0) return line.start;
+      if (lineLength === 0) {
+        console.warn("Zero length line detected");
+        return line.start;
+      }
 
-      // Calculate unit vector of the line
-      const ux = dx / lineLength;
-      const uy = dy / lineLength;
-
-      // Calculate vector from line start to point
+      // Project point onto line
       const px = point.x - line.start.x;
       const py = point.y - line.start.y;
 
-      // Calculate dot product to get projection length
-      const dot = px * ux + py * uy;
+      // Calculate projection scalar
+      const projectionScalar = (px * dx + py * dy) / (lineLength * lineLength);
 
-      // Clamp projection to line segment
-      const margin = 10; // Minimum distance from ends
-      const clampedDot = Math.max(margin, Math.min(lineLength - margin, dot));
+      // Add margin to prevent entries from getting too close to endpoints
+      const margin = 20; // pixels
+      const marginScalar = margin / lineLength;
+      const clampedScalar = Math.max(marginScalar, Math.min(1 - marginScalar, projectionScalar));
 
       // Calculate final position
       return {
-        x: line.start.x + ux * clampedDot,
-        y: line.start.y + uy * clampedDot
+        x: line.start.x + dx * clampedScalar,
+        y: line.start.y + dy * clampedScalar
       };
     } catch (error) {
-      console.error("Error calculating position:", error);
+      console.error("Error in calculatePositionAlongWall:", error);
       return point;
     }
   };
 
-  // Update the updateAirEntriesWithWalls function for better wall attachment
+  // Update the updateAirEntriesWithWalls function
   const updateAirEntriesWithWalls = (newLines: Line[], oldLines: Line[]) => {
     if (airEntries.length === 0) return;
 
@@ -781,24 +788,41 @@ export default function Canvas2D({
 
     // Process each air entry
     newAirEntries.forEach((entry, index) => {
-      // Find the corresponding wall in the new lines
       const oldLine = entry.line;
+
+      // Find the matching new line by comparing endpoints
       const matchingNewLine = newLines.find(newLine => {
-        // Check both orientations of the line
-        return (
-          (arePointsNearlyEqual(newLine.start, oldLine.start) && arePointsNearlyEqual(newLine.end, oldLine.end)) ||
-          (arePointsNearlyEqual(newLine.start, oldLine.end) && arePointsNearlyEqual(newLine.end, oldLine.start))
-        );
+        const startMatch = arePointsNearlyEqual(oldLine.start, newLine.start);
+        const endMatch = arePointsNearlyEqual(oldLine.end, newLine.end);
+        const reverseMatch = arePointsNearlyEqual(oldLine.start, newLine.end) &&
+          arePointsNearlyEqual(oldLine.end, newLine.start);
+        return (startMatch && endMatch) || reverseMatch;
       });
 
       if (matchingNewLine) {
-        // Calculate the relative position (0-1) along the old line
-        const oldRelativePos = getRelativePositionOnLine(entry.position, oldLine);
+        // Calculate relative distance along the line
+        const oldLength = Math.sqrt(
+          Math.pow(oldLine.end.x - oldLine.start.x, 2) +
+          Math.pow(oldLine.end.y - oldLine.start.y, 2)
+        );
 
-        // Apply the same relative position to the new line
-        const newPosition = getPointAtRelativePosition(matchingNewLine, oldRelativePos);
+        // Calculate relative position (0-1) on old line
+        const oldDx = entry.position.x - oldLine.start.x;
+        const oldDy = entry.position.y - oldLine.start.y;
+        const relativePos = Math.sqrt(oldDx * oldDx + oldDy * oldDy) / oldLength;
 
-        // Update the entry with the new line and position
+        // Apply same relative position to new line
+        const newLength = Math.sqrt(
+          Math.pow(matchingNewLine.end.x - matchingNewLine.start.x, 2) +
+          Math.pow(matchingNewLine.end.y - matchingNewLine.start.y, 2)
+        );
+
+        const newPosition = {
+          x: matchingNewLine.start.x + (matchingNewLine.end.x - matchingNewLine.start.x) * relativePos,
+          y: matchingNewLine.start.y + (matchingNewLine.end.y - matchingNewLine.start.y) * relativePos
+        };
+
+        // Update the entry with new line and position
         newAirEntries[index] = {
           ...entry,
           line: matchingNewLine,
@@ -812,36 +836,6 @@ export default function Canvas2D({
     if (entriesUpdated && onAirEntriesUpdate) {
       onAirEntriesUpdate(newAirEntries);
     }
-  };
-
-  // Helper to get relative position (0-1) along a line
-  const getRelativePositionOnLine = (point: Point, line: Line): number => {
-    const dx = line.end.x - line.start.x;
-    const dy = line.end.y - line.start.y;
-    const lineLength = Math.sqrt(dx * dx + dy * dy);
-
-    if (lineLength === 0) return 0;
-
-    // Project point onto line
-    const px = point.x - line.start.x;
-    const py = point.y - line.start.y;
-
-    // Calculate dot product and normalize
-    const dot = (px * dx + py * dy) / (lineLength * lineLength);
-
-    // Clamp to [0,1]
-    return Math.max(0, Math.min(1, dot));
-  };
-
-  // Helper to get point at relative position
-  const getPointAtRelativePosition = (line: Line, relativePos: number): Point => {
-    // Ensure relativePos is clamped between 0 and 1
-    const t = Math.max(0, Math.min(1, relativePos));
-
-    return {
-      x: line.start.x + (line.end.x - line.start.x) * t,
-      y: line.start.y + (line.end.y - line.start.y) * t
-    };
   };
 
   const handleMouseMove = (e: MouseEvent) => {
@@ -1604,42 +1598,3 @@ export default function Canvas2D({
     </div>
   );
 }
-
-// Add these helper functions after existing utility functions
-
-// Helper to check if points are nearly equal (allowing for small floating-point differences)
-const arePointsNearlyEqual = (p1: Point, p2: Point): boolean => {
-  const dx = p1.x - p2.x;
-  const dy = p1.y - p2.y;
-  return Math.sqrt(dx * dx + dy * dy) < 1;
-};
-
-// Helper to get relative position (0-1) along a line
-const getRelativePositionOnLine = (point: Point, line: Line): number => {
-  const dx = line.end.x - line.start.x;
-  const dy = line.end.y - line.start.y;
-  const lineLength = Math.sqrt(dx * dx + dy * dy);
-
-  if (lineLength === 0) return 0;
-
-  // Project point onto line
-  const px = point.x - line.start.x;
-  const py = point.y - line.start.y;
-
-  // Calculate dot product and normalize
-  const dot = (px * dx + py * dy) / (lineLength * lineLength);
-
-  // Clamp to [0,1]
-  return Math.max(0, Math.min(1, dot));
-};
-
-// Helper to get point at relative position
-const getPointAtRelativePosition = (line: Line, relativePos: number): Point => {
-  // Ensure relativePos is clamped between 0 and 1
-  const t = Math.max(0, Math.min(1, relativePos));
-
-  return {
-    x: line.start.x + (line.end.x - line.start.x) * t,
-    y: line.start.y + (line.end.y - line.start.y) * t
-  };
-};
