@@ -144,6 +144,8 @@ export default function Canvas2D({
   const [cursorPoint, setCursorPoint] = useState<Point | null>(null);
   const [zoomInput, setZoomInput] = useState('100');
   const [hoveredGridPoint, setHoveredGridPoint] = useState<Point | null>(null);
+  // Add hoverPoint state
+  const [hoverPoint, setHoverPoint] = useState<Point | null>(null);
 
   const createCoordinateSystem = (): Line[] => {
     const centerX = dimensions.width / 2;
@@ -534,8 +536,12 @@ export default function Canvas2D({
     return nearest;
   };
 
+  // Update processMouseMove to track hover position
   const processMouseMove = (e: MouseEvent) => {
     const point = getCanvasPoint(e);
+
+    // Always update the hover point when the mouse moves
+    setHoverPoint(point);
 
     // Only calculate nearest grid point when needed (not drawing or panning)
     if (!isDrawing && !isPanning) {
@@ -550,7 +556,7 @@ export default function Canvas2D({
       setCurrentLine(prev => prev ? { ...prev, end: endPoint } : null);
       setCursorPoint(endPoint);
     }
-    // Highlighting logic - only execute if in eraser or air entry mode
+    // Highlighting logic
     else if (currentTool === 'eraser' || currentAirEntry) {
       setHighlightedLines(findLinesNearPoint(point));
     }
@@ -582,6 +588,25 @@ export default function Canvas2D({
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+
+    // Add crosshair drawing helper
+    const drawCrosshair = (ctx: CanvasRenderingContext2D, point: Point) => {
+      const size = 10 / zoom;
+
+      ctx.beginPath();
+      ctx.strokeStyle = '#718096';
+      ctx.lineWidth = 1 / zoom;
+
+      // Horizontal line
+      ctx.moveTo(point.x - size, point.y);
+      ctx.lineTo(point.x + size, point.y);
+
+      // Vertical line
+      ctx.moveTo(point.x, point.y - size);
+      ctx.lineTo(point.x, point.y + size);
+
+      ctx.stroke();
+    };
 
     const draw = () => {
       if (!ctx) return;
@@ -731,10 +756,18 @@ export default function Canvas2D({
         });
       });
 
-      // Draw cursor point when drawing
+      // Draw cursor point when drawing (unchanged - keeps orange coordinates)
       if (cursorPoint && isDrawing) {
         ctx.font = `${12 / zoom}px sans-serif`;
         drawCoordinateLabel(ctx, cursorPoint, '#fb923c');
+      }
+
+      // Draw hover point coordinates (only when not drawing)
+      if (hoverPoint && !isDrawing && !isPanning) {
+        ctx.font = `${12 / zoom}px sans-serif`;
+        // Use a light gray that's visible but not distracting
+        drawCoordinateLabel(ctx, hoverPoint, '#718096');
+        drawCrosshair(ctx, hoverPoint);
       }
 
       ctx.restore();
@@ -789,10 +822,12 @@ export default function Canvas2D({
       }
     };
 
+    // Update handleMouseLeave to clear hover point
     const handleMouseLeave = () => {
       handlePanEnd();
       setHighlightedLines([]);
       setHoveredGridPoint(null);
+      setHoverPoint(null); // Clear hover point when mouse leaves
       if (isDrawing) {
         setCurrentLine(null);
         setIsDrawing(false);
@@ -831,7 +866,8 @@ export default function Canvas2D({
           isPanning ||
           isDrawing ||
           highlightedLines.length > 0 ||
-          hoveredGridPoint !== null;
+          hoveredGridPoint !== null ||
+          hoverPoint !== null;
 
         if (shouldRender || !lastRenderTime || currentTime - lastRenderTime > 500) {
           draw();
@@ -854,7 +890,7 @@ export default function Canvas2D({
       canvas.removeEventListener('contextmenu', handleContextMenu);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode, cursorPoint, currentAirEntry, onLineSelect, airEntries, onLinesUpdate, hoveredGridPoint]);
+  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode, cursorPoint, currentAirEntry, onLineSelect, airEntries, onLinesUpdate, hoveredGridPoint, hoverPoint]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, '');
