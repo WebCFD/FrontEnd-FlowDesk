@@ -265,7 +265,6 @@ export default function Canvas2D({
     startPoint: Point;
   }>({ index: -1, entry: {} as AirEntry, startPoint: { x: 0, y: 0 } });
 
-
   const createCoordinateSystem = (): Line[] => {
     const centerX = dimensions.width / 2;
     const centerY = dimensions.height / 2;
@@ -612,10 +611,51 @@ export default function Canvas2D({
     ctx.restore();
   };
 
-  const visibleGridPoints = useMemo(() =>
-    getVisibleGridPoints(dimensions, pan, zoom),
-    [dimensions, pan, zoom]
-  );
+  const getVisibleGridPoints = (): Point[] => {
+    const points: Point[] = [];
+    const centerX = dimensions.width / 2;
+    const centerY = dimensions.height / 2;
+    const snapSize = gridSize / 2;
+
+    // Calculate visible area based on current pan and zoom
+    const visibleStartX = -pan.x / zoom - snapSize;
+    const visibleEndX = (-pan.x + dimensions.width) / zoom + snapSize;
+    const visibleStartY = -pan.y / zoom - snapSize;
+    const visibleEndY = (-pan.y + dimensions.height) / zoom + snapSize;
+
+    // Get grid coordinates
+    const startXGrid = Math.floor(visibleStartX / snapSize) * snapSize;
+    const endXGrid = Math.ceil(visibleEndX / snapSize) * snapSize;
+    const startYGrid = Math.floor(visibleStartY / snapSize) * snapSize;
+    const endYGrid = Math.ceil(visibleEndY / snapSize) * snapSize;
+
+    // Limit maximum number of points for performance
+    const maxPoints = 2000;
+    const step = Math.max(
+      snapSize,
+      Math.ceil((endXGrid - startXGrid) * (endYGrid - startYGrid) / maxPoints / snapSize) * snapSize
+    );
+
+    // Generate grid points
+    for (let x = startXGrid; x <= endXGrid; x += step) {
+      for (let y = startYGrid; y <= endYGrid; y += step) {
+        const relativeX = Math.round(x / snapSize);
+        const relativeY = Math.round(y / snapSize);
+
+        // Create checkerboard pattern
+        if ((relativeX + relativeY) % 2 === 0) {
+          points.push({
+            x: centerX + x * zoom,
+            y: centerY + y * zoom
+          });
+        }
+      }
+    }
+
+    return points;
+  };
+
+  const visibleGridPoints = useMemo(() => getVisibleGridPoints(), [dimensions, pan, zoom, gridSize]);
 
   const findNearestGridPoint = (point: Point): Point | null => {
     let nearest: Point | null = null;
