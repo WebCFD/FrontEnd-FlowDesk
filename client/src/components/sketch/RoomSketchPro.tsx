@@ -1463,7 +1463,7 @@ export function RoomSketchPro({
   // Update effect for wall transparency with proper type checking
   useEffect(() => {
     console.log("Wall transparency effect triggered:", wallTransparency);
-    if (wallMaterialRef.current && typeof wallTransparency === 'number') {
+    if (wallMaterialRef.current && typeof wallTransparency === "number") {
       console.log("Updating wall material opacity to:", wallTransparency);
       wallMaterialRef.current.opacity = wallTransparency;
       wallMaterialRef.current.needsUpdate = true;
@@ -1480,6 +1480,20 @@ export function RoomSketchPro({
   // Handle wall transparency changes
   const handleWallTransparencyChange = (value: number) => {
     console.log("Wall transparency change requested:", value);
+
+    // Update wall material directly for immediate feedback
+    if (wallMaterialRef.current) {
+      console.log("Updating wall material opacity to:", value);
+      wallMaterialRef.current.opacity = value;
+      wallMaterialRef.current.needsUpdate = true;
+
+      // Render the scene to show changes
+      if (rendererRef.current && sceneRef.current && cameraRef.current) {
+        rendererRef.current.render(sceneRef.current, cameraRef.current);
+      }
+    }
+
+    // Notify parent component if callback exists
     if (onWallTransparencyChange) {
       onWallTransparencyChange(value);
     }
@@ -1487,6 +1501,11 @@ export function RoomSketchPro({
 
   return (
     <div className="flex gap-4">
+      <FurnitureMenu
+        onDragStart={handleDragStart}
+        wallTransparency={wallTransparency}
+        onWallTransparencyChange={handleWallTransparencyChange}
+      />
       <div
         ref={containerRef}
         style={{
