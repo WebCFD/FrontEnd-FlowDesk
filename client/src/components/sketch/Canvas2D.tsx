@@ -559,18 +559,34 @@ export default function Canvas2D({
     ctx.fillText(`(${coords.x}, ${coords.y})`, point.x + 8, point.y - 8);
   };
 
+  const [hoveredAirEntry, setHoveredAirEntry] = useState<{ index: number; entry: AirEntry } | null>(null);
+
   const drawAirEntry = (ctx: CanvasRenderingContext2D, entry: AirEntry, index: number) => {
     const normal = calculateNormal(entry.line);
     const isHighlighted = highlightState.airEntry?.index === index;
-    const color = isHighlighted ? '#ef4444' : getAirEntryColor(entry.type);
+    const isHovered = hoveredAirEntry?.index === index;
+    let color = getAirEntryColor(entry.type);
+
+    if (isHighlighted) {
+      color = '#ef4444'; // Red for deletion highlight
+    } else if (isHovered) {
+      // Apply a brighter version of the color when hovered
+      const brighterColor = {
+        window: '#60a5fa', // Brighter blue
+        door: '#d97706',   // Brighter brown
+        vent: '#34d399'    // Brighter green
+      }[entry.type];
+      color = brighterColor;
+    }
 
     const widthInPixels = cmToPixels(entry.dimensions.width);
     const halfWidth = widthInPixels / 2;
 
     ctx.save();
     ctx.strokeStyle = color;
-    ctx.lineWidth = 4 / zoom;
+    ctx.lineWidth = isHovered ? 6 / zoom : 4 / zoom; // Thicker line when hovered
 
+    // Draw the main line
     ctx.beginPath();
     ctx.moveTo(
       entry.position.x - normal.x * halfWidth,
@@ -582,6 +598,7 @@ export default function Canvas2D({
     );
     ctx.stroke();
 
+    // Draw the end markers
     const perpX = -normal.y * 4 / zoom;
     const perpY = normal.x * 4 / zoom;
 
@@ -603,6 +620,18 @@ export default function Canvas2D({
       entry.position.y + normal.y * halfWidth + perpY
     );
     ctx.stroke();
+
+    // Add a "double-click to edit" tooltip when hovered
+    if (isHovered) {
+      ctx.font = `${12 / zoom}px Arial`;
+      ctx.fillStyle = color;
+      ctx.textAlign = 'center';
+      ctx.fillText(
+        'Double-click to edit',
+        entry.position.x,
+        entry.position.y - 15 / zoom
+      );
+    }
 
     ctx.restore();
   };
@@ -711,6 +740,30 @@ export default function Canvas2D({
     if (!isDrawing && !isPanning) {
       const nearestGridPoint = findNearestGridPoint(point);
       setHoveredGridPoint(nearestGridPoint);
+
+      // Check for air entry hover
+      const airEntryInfo = findAirEntryAtLocation(point);
+      setHoveredAirEntry(airEntryInfo);
+
+      if (currentTool === 'eraser') {
+        if (airEntryInfo) {
+          setHighlightState({
+            lines: [],
+            airEntry: { index: airEntryInfo.index, entry: airEntryInfo.entry }
+          });
+        } else {
+          const nearbyLines = findLinesNearPoint(point);
+          setHighlightState({
+            lines: nearbyLines,
+            airEntry: null
+          });
+        }
+      } else if (currentAirEntry) {
+        setHighlightState({
+          lines: findLinesNearPoint(point),
+          airEntry: null
+        });
+      }
     }
 
     if (currentTool === 'wall' && isDrawing && currentLine) {
@@ -718,25 +771,6 @@ export default function Canvas2D({
       const endPoint = nearestPoint || snapToGrid(point);
       setCurrentLine(prev => prev ? { ...prev, end: endPoint } : null);
       setCursorPoint(endPoint);
-    } else if (currentTool === 'eraser') {
-      const airEntryInfo = findAirEntryAtLocation(point);
-      if (airEntryInfo) {
-        setHighlightState({
-          lines: [],
-          airEntry: { index: airEntryInfo.index, entry: airEntryInfo.entry }
-        });
-      } else {
-        const nearbyLines = findLinesNearPoint(point);
-        setHighlightState({
-          lines: nearbyLines,
-          airEntry: null
-        });
-      }
-    } else if (currentAirEntry) {
-      setHighlightState({
-        lines: findLinesNearPoint(point),
-        airEntry: null
-      });
     }
   };
 
@@ -940,6 +974,7 @@ export default function Canvas2D({
     setHighlightState({ lines: [], airEntry: null });
     setHoveredGridPoint(null);
     setHoverPoint(null);
+    setHoveredAirEntry(null);
 
     if (isDrawing) {
       setCurrentLine(null);
@@ -1223,7 +1258,8 @@ export default function Canvas2D({
     zoom, pan, isPanning, panMode, cursorPoint,
     currentAirEntry, airEntries, onLinesUpdate,
     hoveredGridPoint, hoverPoint, isDraggingEndpoint, draggedPoint,
-    isDraggingAirEntry, draggedAirEntry, onAirEntriesUpdate, highlightState, editingAirEntry
+    isDraggingAirEntry, draggedAirEntry, onAirEntriesUpdate, highlightState,
+    editingAirEntry, hoveredAirEntry
   ]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
