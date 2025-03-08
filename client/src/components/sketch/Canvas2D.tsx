@@ -793,6 +793,9 @@ export default function Canvas2D({
     canvas.addEventListener('wheel', handleRegularWheel, { passive: true });
     canvas.addEventListener('contextmenu', e => e.preventDefault());
 
+    // Add lastRenderTime at component level
+    let lastRenderTime = 0;
+
     // Animation loop with performance optimization
     let lastFrameTime = 0;
     const targetFPS = 30; // Limit to 30 FPS to reduce CPU usage
@@ -803,7 +806,18 @@ export default function Canvas2D({
 
       if (deltaTime > frameInterval) {
         lastFrameTime = currentTime - (deltaTime % frameInterval);
-        draw();
+
+        // Skip rendering frames if there's no user interaction and nothing has changed
+        const shouldRender =
+          isPanning ||
+          isDrawing ||
+          highlightedLines.length > 0 ||
+          hoveredGridPoint !== null;
+
+        if (shouldRender || !lastRenderTime || currentTime - lastRenderTime > 500) {
+          draw();
+          lastRenderTime = currentTime;
+        }
       }
 
       animationFrameId = requestAnimationFrame(animate);
