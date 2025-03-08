@@ -51,10 +51,14 @@ const furnitureItems: FurnitureItem[] = [
 
 export function FurnitureMenu({ onDragStart, wallTransparency, onWallTransparencyChange }: FurnitureMenuProps) {
   const handleTransparencyChange = (values: number[]) => {
+    console.log("Slider value changed:", values[0]);
+    console.log("Current wall transparency:", wallTransparency);
     if (onWallTransparencyChange) {
       onWallTransparencyChange(values[0]);
     }
   };
+
+  console.log("FurnitureMenu render - wallTransparency:", wallTransparency);
 
   return (
     <div className="w-48 space-y-6">
@@ -70,6 +74,9 @@ export function FurnitureMenu({ onDragStart, wallTransparency, onWallTransparenc
             step={0.1}
             className="w-full"
           />
+          <div className="text-xs text-gray-500">
+            Current: {wallTransparency.toFixed(1)}
+          </div>
         </div>
       </div>
 
