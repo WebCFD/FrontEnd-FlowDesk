@@ -800,13 +800,17 @@ export default function Canvas2D({
       }
     };
 
+    // Add the event listeners
     canvas.addEventListener('mousedown', handleMouseDown);
     canvas.addEventListener('mousemove', throttleMouseMove, { passive: true });
     canvas.addEventListener('mouseup', handleMouseUp);
     canvas.addEventListener('mouseleave', handleMouseLeave);
     canvas.addEventListener('wheel', handleZoomWheel, { passive: false });
     canvas.addEventListener('wheel', handleRegularWheel, { passive: true });
-    canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+    // Store the preventDefault reference
+    const handleContextMenu = (e: Event) => e.preventDefault();
+    canvas.addEventListener('contextmenu', handleContextMenu);
 
     // Add lastRenderTime at component level
     let lastRenderTime = 0;
@@ -841,14 +845,13 @@ export default function Canvas2D({
     let animationFrameId = requestAnimationFrame(animate);
 
 
-    return () => {
-      canvas.removeEventListener('mousedown', handleMouseDown);
+    return () => {      canvas.removeEventListener('mousedown', handleMouseDown);
       canvas.removeEventListener('mousemove', throttleMouseMove);
       canvas.removeEventListener('mouseup', handleMouseUp);
       canvas.removeEventListener('mouseleave', handleMouseLeave);
       canvas.removeEventListener('wheel', handleZoomWheel);
       canvas.removeEventListener('wheel', handleRegularWheel);
-      canvas.removeEventListener('contextmenu', e => e.preventDefault);
+      canvas.removeEventListener('contextmenu', handleContextMenu);
       cancelAnimationFrame(animationFrameId);
     };
   }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode, cursorPoint, currentAirEntry, onLineSelect, airEntries, onLinesUpdate, hoveredGridPoint]);
