@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Point, Line, AirEntry } from '@/types';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -858,7 +858,7 @@ export default function Canvas2D({
     } else if (currentTool === 'eraser') {
       if (highlightState.airEntry) {
         const newAirEntries = airEntries.filter((_, index) => index !== highlightState.airEntry!.index);
-        onAirEntriesUpdate?.(newAirEntries);
+                onAirEntriesUpdate?.(newAirEntries);
         setHighlightState({ lines: [], airEntry: null });
       } else if (highlightState.lines.length > 0) {
         const lineIdsToErase = new Set(highlightState.lines.map(line => line.id));
