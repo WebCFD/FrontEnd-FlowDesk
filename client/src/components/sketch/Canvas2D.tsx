@@ -825,7 +825,6 @@ export default function Canvas2D({
       e.preventDefault();
 
       const clickPoint = getCanvasPoint(e);
-
       const airEntryInfo = findAirEntryAtLocation(clickPoint);
       if (airEntryInfo) {
         setIsDraggingAirEntry(true);
@@ -864,8 +863,22 @@ export default function Canvas2D({
     } else if (currentTool === 'eraser') {
       const linesToErase = findLinesNearPoint(clickPoint);
       if (linesToErase.length > 0) {
-        const newLines = lines.filter(line => !linesToErase.includes(line));
+        // Collect IDs of lines to be erased
+        const lineIdsToErase = new Set(linesToErase.map(line => line.id));
+
+        
+        // Filter out the erased lines
+        const newLines = lines.filter(line => !lineIdsToErase.has(line.id));
+
+        // Remove any air entries attached to the erased lines
+        const newAirEntries = airEntries.filter(entry => !lineIdsToErase.has(entry.lineId));
+
+        // Update both lines and air entries
         onLinesUpdate?.(newLines);
+        if (airEntries.length !== newAirEntries.length) {
+          onAirEntriesUpdate?.(newAirEntries);
+        }
+
         setHighlightedLines([]);
       }
     } else if (currentAirEntry) {
@@ -1225,8 +1238,13 @@ export default function Canvas2D({
       } else if (currentTool === 'eraser') {
         const linesToErase = findLinesNearPoint(clickPoint);
         if (linesToErase.length > 0) {
-          const newLines = lines.filter(line => !linesToErase.includes(line));
+          const lineIdsToErase = new Set(linesToErase.map(line => line.id));
+          const newLines = lines.filter(line => !lineIdsToErase.has(line.id));
+          const newAirEntries = airEntries.filter(entry => !lineIdsToErase.has(entry.lineId));
           onLinesUpdate?.(newLines);
+          if (airEntries.length !== newAirEntries.length) {
+            onAirEntriesUpdate?.(newAirEntries);
+          }
           setHighlightedLines([]);
         }
       } else if (currentAirEntry) {
