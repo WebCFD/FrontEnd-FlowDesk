@@ -840,9 +840,7 @@ export default function Canvas2D({
       const entry = draggedAirEntry.entry;
 
       // Calculate new position along the wall
-      const newPosition = calculatePositionAlongWall(entry.line, point);
-
-      // Create a new array ofair entries with the updated position
+      const newPosition = calculatePositionAlongWall(entry.line, point);      // Create a new arrayofair entries with the updated position
       const newAirEntries = [...airEntries];
       newAirEntries[draggedAirEntry.index] = {
         ...entry,
@@ -1383,7 +1381,44 @@ export default function Canvas2D({
     canvas.addEventListener('wheel', handleRegularWheel, { passive: true });
     canvas.addEventListener('contextmenu', handleContextMenu);
 
-    // Cleanup
+    // Add lastRenderTime at component level
+    let lastRenderTime = 0;
+
+    // Animation loop with performance optimization
+    let lastFrameTime = 0;
+    const targetFPS = 30; // Limit to 30 FPS to reduce CPU usage
+    const frameInterval = 1000 / targetFPS;
+    let animationFrameId: number;
+
+    const animate = (currentTime: number) => {
+      const deltaTime = currentTime - lastFrameTime;
+
+      if (deltaTime > frameInterval) {
+        lastFrameTime = currentTime - (deltaTime % frameInterval);
+
+        // Skip rendering frames if there's no user interaction and nothing has changed
+        const shouldRender =
+          isPanning ||
+          isDrawing ||
+          highlightedLines.length > 0 ||
+          hoveredGridPoint !== null ||
+          hoverPoint !== null ||
+          isDraggingEndpoint ||
+          isDraggingAirEntry;
+
+        if (shouldRender || !lastRenderTime || currentTime - lastRenderTime > 500) {
+          draw();
+          lastRenderTime = currentTime;
+        }
+      }
+
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    // Start the animation loop
+    animationFrameId = requestAnimationFrame(animate);
+
+    // Cleanup function
     return () => {
       canvas.removeEventListener('mousedown', handleMouseDown);
       canvas.removeEventListener('mousemove', handleMouseMove);
@@ -1392,7 +1427,9 @@ export default function Canvas2D({
       canvas.removeEventListener('wheel', handleZoomWheel);
       canvas.removeEventListener('wheel', handleRegularWheel);
       canvas.removeEventListener('contextmenu', handleContextMenu);
-      cancelAnimationFrame(animationFrameId);
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
     };
   }, [
     gridSize, dimensions, lines, currentLine, isDrawing, currentTool,
