@@ -828,9 +828,7 @@ export default function Canvas2D({
 
         entriesUpdated = true;
       }
-    });
-
-    // Update state if needed
+    });    // Update state if needed
     if (entriesUpdated && onAirEntriesUpdate) {
       onAirEntriesUpdate(newAirEntries);
     }
@@ -1609,3 +1607,39 @@ export default function Canvas2D({
     </div>
   );
 }
+
+// Add these helper functions after existing utility functions
+
+  // Helper to check if points are nearly equal (allowing for small floating-point differences)
+  const arePointsNearlyEqual = (p1: Point, p2: Point): boolean => {
+    const dx = p1.x - p2.x;
+    const dy = p1.y - p2.y;
+    return Math.sqrt(dx * dx + dy * dy) < 1;
+  };
+
+  // Get relative position (0-1) of a point along a line
+  const getRelativePositionOnLine = (point: Point, line: Line): number => {
+    // Project the point onto the line
+    const projectedPoint = getPointOnLine(line, point);
+
+    // Calculate distance from start to projected point
+    const dx1 = projectedPoint.x - line.start.x;
+    const dy1 = projectedPoint.y - line.start.y;
+    const distanceFromStart = Math.sqrt(dx1 * dx1 + dy1 * dy1);
+
+    // Calculate total line length
+    const dx2 = line.end.x - line.start.x;
+    const dy2 = line.end.y - line.start.y;
+    const lineLength = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+
+    // Return relative position (0 = start, 1 = end)
+    return lineLength > 0 ? distanceFromStart / lineLength : 0;
+  };
+
+  // Get a point at a relative position (0-1) along a line
+  const getPointAtRelativePosition = (line: Line, relativePos: number): Point => {
+    return {
+      x: line.start.x + (line.end.x - line.start.x) * relativePos,
+      y: line.start.y + (line.end.y - line.start.y) * relativePos
+    };
+  };
