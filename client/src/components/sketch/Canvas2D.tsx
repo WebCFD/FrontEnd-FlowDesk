@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import { Minus, Plus, Move } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -81,6 +81,45 @@ const getPointOnLine = (line: Line, point: Point): Point => {
   };
 };
 
+
+const getVisibleGridPoints = (dimensions: { width: number; height: number }, pan: Point, zoom: number): Point[] => {
+  const points: Point[] = [];
+  const centerX = dimensions.width / 2;
+  const centerY = dimensions.height / 2;
+  const snapSize = 4; // 4 pixels = 5cm
+
+  // Only calculate grid points in the visible area based on current pan and zoom
+  const visibleStartX = -pan.x / zoom - snapSize;
+  const visibleEndX = (-pan.x + dimensions.width) / zoom + snapSize;
+  const visibleStartY = -pan.y / zoom - snapSize;
+  const visibleEndY = (-pan.y + dimensions.height) / zoom + snapSize;
+
+  // Calculate steps in grid coordinates
+  const startXGrid = Math.floor(visibleStartX / snapSize) * snapSize;
+  const endXGrid = Math.ceil(visibleEndX / snapSize) * snapSize;
+  const startYGrid = Math.floor(visibleStartY / snapSize) * snapSize;
+  const endYGrid = Math.ceil(visibleEndY / snapSize) * snapSize;
+
+  // Limit the maximum number of grid points to avoid performance issues
+  const maxPoints = 2000;
+  const step = Math.max(snapSize, Math.ceil((endXGrid - startXGrid) * (endYGrid - startYGrid) / maxPoints / snapSize) * snapSize);
+
+  for (let x = startXGrid; x <= endXGrid; x += step) {
+    for (let y = startYGrid; y <= endYGrid; y += step) {
+      const relativeX = Math.round(x / snapSize);
+      const relativeY = Math.round(y / snapSize);
+
+      if ((relativeX + relativeY) % 2 === 0) {
+        points.push({
+          x: centerX + x * zoom,
+          y: centerY + y * zoom
+        });
+      }
+    }
+  }
+
+  return points;
+};
 
 export default function Canvas2D({
   gridSize,
@@ -457,34 +496,17 @@ export default function Canvas2D({
     ctx.restore();
   };
 
-  const getGridPoints = (): Point[] => {
-    const points: Point[] = [];
-    const centerX = dimensions.width / 2;
-    const centerY = dimensions.height / 2;
-    const snapSize = 4; // 4 pixels = 5cm
-
-    for (let x = -GRID_RANGE; x <= GRID_RANGE; x += snapSize) {
-      for (let y = -GRID_RANGE; y <= GRID_RANGE; y += snapSize) {
-        const relativeX = Math.round(x / snapSize);
-        const relativeY = Math.round(y / snapSize);
-
-        if ((relativeX + relativeY) % 2 === 0) {
-          points.push({
-            x: centerX + x,
-            y: centerY + y
-          });
-        }
-      }
-    }
-    return points;
-  };
+  // Memoize grid points calculation
+  const visibleGridPoints = useMemo(() =>
+    getVisibleGridPoints(dimensions, pan, zoom),
+    [dimensions, pan, zoom]
+  );
 
   const findNearestGridPoint = (point: Point): Point | null => {
-    const gridPoints = getGridPoints();
     let nearest: Point | null = null;
     let minDistance = HOVER_DISTANCE;
 
-    gridPoints.forEach(gridPoint => {
+    visibleGridPoints.forEach(gridPoint => {
       const dx = point.x - gridPoint.x;
       const dy = point.y - gridPoint.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
@@ -512,7 +534,7 @@ export default function Canvas2D({
       const endPoint = nearestPoint || snapToGrid(point);
       setCurrentLine(prev => prev ? { ...prev, end: endPoint } : null);
       setCursorPoint(endPoint);
-    } 
+    }
     // Highlighting logic - only execute if in eraser or air entry mode
     else if (currentTool === 'eraser' || currentAirEntry) {
       setHighlightedLines(findLinesNearPoint(point));
@@ -673,7 +695,33 @@ export default function Canvas2D({
       }
     };
 
-    // ... rest of the existing setup code ...
+    const handleMouseUp = () => {
+      if (panMode) {
+        handlePanEnd();
+        return;
+      }
+
+      if (currentTool === 'wall' && isDrawing && currentLine) {
+        if (currentLine.start.x !== currentLine.end.x || currentLine.start.y !== currentLine.end.y) {
+          const newLines = [...lines, currentLine];
+          onLinesUpdate?.(newLines);
+        }
+        setCurrentLine(null);
+        setIsDrawing(false);
+        setCursorPoint(null);
+      }
+    };
+
+    const handleMouseLeave = () => {
+      handlePanEnd();
+      setHighlightedLines([]);
+      setHoveredGridPoint(null);
+      if (isDrawing) {
+        setCurrentLine(null);
+        setIsDrawing(false);
+        setCursorPoint(null);
+      }
+    };
 
     canvas.addEventListener('mousedown', handleMouseDown);
     canvas.addEventListener('mousemove', throttleMouseMove, { passive: true });
@@ -732,34 +780,6 @@ export default function Canvas2D({
   const handleZoomInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.currentTarget.blur();
-    }
-  };
-
-  const handleMouseUp = (e: MouseEvent) => {
-    if (panMode || e.button === 2) {
-      handlePanEnd();
-      return;
-    }
-
-    if (currentTool === 'wall' && isDrawing && currentLine) {
-      if (currentLine.start.x !== currentLine.end.x || currentLine.start.y !== currentLine.end.y) {
-        const newLines = [...lines, currentLine];
-        onLinesUpdate?.(newLines);
-      }
-      setCurrentLine(null);
-      setIsDrawing(false);
-      setCursorPoint(null);
-    }
-  };
-
-  const handleMouseLeave = () => {
-    handlePanEnd();
-    setHighlightedLines([]);
-    setHoveredGridPoint(null);
-    if (isDrawing) {
-      setCurrentLine(null);
-      setIsDrawing(false);
-      setCursorPoint(null);
     }
   };
 
