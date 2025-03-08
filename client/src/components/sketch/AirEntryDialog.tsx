@@ -20,6 +20,12 @@ interface AirEntryDialogProps {
     height: number;
     distanceToFloor?: number;
   }) => void;
+  isEditing?: boolean;
+  initialValues?: {
+    width: number;
+    height: number;
+    distanceToFloor?: number;
+  };
 }
 
 const windowDefaults = {
@@ -39,8 +45,17 @@ const ventDefaults = {
   distanceToFloor: 120
 };
 
-export default function AirEntryDialog({ type, isOpen, onClose, onConfirm }: AirEntryDialogProps) {
+export default function AirEntryDialog({ 
+  type, 
+  isOpen, 
+  onClose, 
+  onConfirm,
+  isEditing = false,
+  initialValues 
+}: AirEntryDialogProps) {
   const getDefaultValues = () => {
+    if (initialValues) return initialValues;
+
     switch (type) {
       case 'window':
         return windowDefaults;
@@ -55,12 +70,12 @@ export default function AirEntryDialog({ type, isOpen, onClose, onConfirm }: Air
 
   const [dimensions, setDimensions] = useState(getDefaultValues());
 
-  // Reset dimensions when dialog opens with new type
+  // Reset dimensions when dialog opens with new type or initialValues
   useEffect(() => {
     if (isOpen) {
       setDimensions(getDefaultValues());
     }
-  }, [isOpen, type]);
+  }, [isOpen, type, initialValues]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,15 +84,15 @@ export default function AirEntryDialog({ type, isOpen, onClose, onConfirm }: Air
   };
 
   const titles = {
-    window: "Window Dimensions",
-    door: "Door Dimensions",
-    vent: "Vent Grid Dimensions"
+    window: isEditing ? "Edit Window" : "Window Dimensions",
+    door: isEditing ? "Edit Door" : "Door Dimensions",
+    vent: isEditing ? "Edit Vent" : "Vent Grid Dimensions"
   };
 
   const descriptions = {
-    window: "Set the dimensions for the window",
-    door: "Set the dimensions for the door",
-    vent: "Set the dimensions for the ventilation grid"
+    window: isEditing ? "Modify the dimensions for this window" : "Set the dimensions for the window",
+    door: isEditing ? "Modify the dimensions for this door" : "Set the dimensions for the door",
+    vent: isEditing ? "Modify the dimensions for this vent" : "Set the dimensions for the ventilation grid"
   };
 
   return (
@@ -132,7 +147,7 @@ export default function AirEntryDialog({ type, isOpen, onClose, onConfirm }: Air
             )}
           </div>
           <DialogFooter>
-            <Button type="submit">Save Changes</Button>
+            <Button type="submit">{isEditing ? 'Save Changes' : 'Create'}</Button>
           </DialogFooter>
         </form>
       </DialogContent>
