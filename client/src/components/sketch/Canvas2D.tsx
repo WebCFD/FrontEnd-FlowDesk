@@ -321,7 +321,23 @@ export default function Canvas2D({
     );
   };
 
+  // Create a cache for closed contour results
+  const closedContourCache = new Map<string, boolean>();
+  const pointKey = (p: Point) => `${Math.round(p.x)},${Math.round(p.y)}`;
+
+  // Add optimized isInClosedContour function
   const isInClosedContour = (point: Point, lines: Line[]): boolean => {
+    // Cache results for points we've already checked
+    if (!closedContourCache.has(pointKey(point))) {
+      const result = checkClosedContour(point, lines);
+      closedContourCache.set(pointKey(point), result);
+      return result;
+    }
+    return closedContourCache.get(pointKey(point))!;
+  };
+
+  // Move the expensive calculation to a separate function
+  const checkClosedContour = (point: Point, lines: Line[]): boolean => {
     const arePointsEqual = (p1: Point, p2: Point): boolean => {
       const dx = p1.x - p2.x;
       const dy = p1.y - p2.y;
@@ -334,7 +350,6 @@ export default function Canvas2D({
 
     for (const startLine of connectedLines) {
       const visited = new Set<string>();
-      const pointKey = (p: Point) => `${Math.round(p.x)},${Math.round(p.y)}`;
       const stack: { point: Point; path: Line[] }[] = [{
         point: arePointsEqual(startLine.start, point) ? startLine.end : startLine.start,
         path: [startLine]
@@ -833,7 +848,7 @@ export default function Canvas2D({
       canvas.removeEventListener('mouseleave', handleMouseLeave);
       canvas.removeEventListener('wheel', handleZoomWheel);
       canvas.removeEventListener('wheel', handleRegularWheel);
-      canvas.removeEventListener('contextmenu', e => e.preventDefault());
+      canvas.removeEventListener('contextmenu', e => e.preventDefault);
       cancelAnimationFrame(animationFrameId);
     };
   }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode, cursorPoint, currentAirEntry, onLineSelect, airEntries, onLinesUpdate, hoveredGridPoint]);
@@ -859,7 +874,7 @@ export default function Canvas2D({
     }
   };
 
-    return (
+  return (
     <div ref={containerRef} className="w-full h-full relative">
       <canvas
         ref={canvasRef}

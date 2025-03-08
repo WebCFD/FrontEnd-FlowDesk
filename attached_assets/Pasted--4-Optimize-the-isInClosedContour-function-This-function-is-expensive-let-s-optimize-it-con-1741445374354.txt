@@ -1,0 +1,64 @@
+
+// 4. Optimize the isInClosedContour function
+// This function is expensive - let's optimize it
+const isInClosedContour = (point: Point, lines: Line[]): boolean => {
+  // Cache results for points we've already checked
+  if (!closedContourCache.has(pointKey(point))) {
+    const result = checkClosedContour(point, lines);
+    closedContourCache.set(pointKey(point), result);
+    return result;
+  }
+  return closedContourCache.get(pointKey(point))!;
+};
+
+// Create a cache for closed contour results
+const closedContourCache = new Map<string, boolean>();
+const pointKey = (p: Point) => `${Math.round(p.x)},${Math.round(p.y)}`;
+
+// Move the expensive calculation to a separate function
+const checkClosedContour = (point: Point, lines: Line[]): boolean => {
+  const arePointsEqual = (p1: Point, p2: Point): boolean => {
+    const dx = p1.x - p2.x;
+    const dy = p1.y - p2.y;
+    return Math.sqrt(dx * dx + dy * dy) < 5;
+  };
+
+  const connectedLines = lines.filter(line =>
+    arePointsEqual(line.start, point) || arePointsEqual(line.end, point)
+  );
+
+  for (const startLine of connectedLines) {
+    const visited = new Set<string>();
+    const stack: { point: Point; path: Line[] }[] = [{
+      point: arePointsEqual(startLine.start, point) ? startLine.end : startLine.start,
+      path: [startLine]
+    }];
+
+    while (stack.length > 0) {
+      const { point: currentPoint, path } = stack.pop()!;
+      const key = pointKey(currentPoint);
+
+      if (path.length >= 2 && arePointsEqual(currentPoint, point)) {
+        return true;
+      }
+
+      if (visited.has(key)) continue;
+      visited.add(key);
+
+      const nextLines = lines.filter(line =>
+        !path.includes(line) &&
+        (arePointsEqual(line.start, currentPoint) || arePointsEqual(line.end, currentPoint))
+      );
+
+      for (const nextLine of nextLines) {
+        const nextPoint = arePointsEqual(nextLine.start, currentPoint) ? nextLine.end : nextLine.start;
+        stack.push({
+          point: nextPoint,
+          path: [...path, nextLine]
+        });
+      }
+    }
+  }
+
+  return false;
+};
