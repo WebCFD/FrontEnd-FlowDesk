@@ -752,37 +752,50 @@ export default function Canvas2D({
         point
       });
 
-      const dx = line.end.x - line.start.x;
-      const dy = line.end.y - line.start.y;
-      const lineLength = Math.sqrt(dx * dx + dy * dy);
+      // Calculate the vector from start to end of the line
+      const lineVector = {
+        x: line.end.x - line.start.x,
+        y: line.end.y - line.start.y
+      };
 
+      // Calculate the length of the line
+      const lineLength = Math.sqrt(lineVector.x * lineVector.x + lineVector.y * lineVector.y);
       if (lineLength === 0) {
         console.warn("Zero length line detected");
         return line.start;
       }
 
-      console.log("Line length:", lineLength);
-
-      // Project point onto line
-      const px = point.x - line.start.x;
-      const py = point.y - line.start.y;
-
-      // Calculate projection scalar
-      const projectionScalar = (px * dx + py * dy) / (lineLength * lineLength);
-      console.log("Initial projection scalar:", projectionScalar);
-
-      // Add margin to prevent entries from getting too close to endpoints
-      const margin = 20; // pixels
-      const marginScalar = margin / lineLength;
-      const clampedScalar = Math.max(marginScalar, Math.min(1 - marginScalar, projectionScalar));
-      console.log("Clamped scalar:", clampedScalar);
-
-      // Calculate final position
-      const finalPosition = {
-        x: line.start.x + dx * clampedScalar,
-        y: line.start.y + dy * clampedScalar
+      // Calculate the unit vector of the line
+      const unitVector = {
+        x: lineVector.x / lineLength,
+        y: lineVector.y / lineLength
       };
-      console.log("Final calculated position:", finalPosition);
+
+      // Calculate the vector from line start to point
+      const pointVector = {
+        x: point.x - line.start.x,
+        y: point.y - line.start.y
+      };
+
+      // Calculate the dot product to get the projection length
+      const dotProduct = pointVector.x * unitVector.x + pointVector.y * unitVector.y;
+
+      // Clamp the position to keep it on the line with margins
+      const margin = 20; // pixels from the ends
+      const clampedDot = Math.max(margin, Math.min(lineLength - margin, dotProduct));
+
+      // Calculate the final position
+      const finalPosition = {
+        x: line.start.x + unitVector.x * clampedDot,
+        y: line.start.y + unitVector.y * clampedDot
+      };
+
+      console.log("Position calculation:", {
+        lineLength,
+        dotProduct,
+        clampedDot,
+        finalPosition
+      });
 
       return finalPosition;
     } catch (error) {
@@ -815,60 +828,77 @@ export default function Canvas2D({
 
       // Find the matching new line by comparing endpoints
       const matchingNewLine = newLines.find(newLine => {
-        const startMatch = arePointsNearlyEqual(oldLine.start, newLine.start);
-        const endMatch = arePointsNearlyEqual(oldLine.end, newLine.end);
-        const reverseMatch = arePointsNearlyEqual(oldLine.start, newLine.end) &&
+        // Compare both possible orientations with a small tolerance
+        const matchesForward = 
+          arePointsNearlyEqual(oldLine.start, newLine.start) && 
+          arePointsNearlyEqual(oldLine.end, newLine.end);
+        const matchesReversed = 
+          arePointsNearlyEqual(oldLine.start, newLine.end) && 
           arePointsNearlyEqual(oldLine.end, newLine.start);
 
-        console.log("Checking line match:", {
-          startMatch,
-          endMatch,
-          reverseMatch,
-          oldLine,
-          newLine
+        // Calculate distances for debugging
+        const startDist = Math.sqrt(
+          Math.pow(oldLine.start.x - newLine.start.x, 2) +
+          Math.pow(oldLine.start.y - newLine.start.y, 2)
+        );
+        const endDist = Math.sqrt(
+          Math.pow(oldLine.end.x - newLine.end.x, 2) +
+          Math.pow(oldLine.end.y - newLine.end.y, 2)
+        );
+
+        console.log("Line matching details:", {
+          matchesForward,
+          matchesReversed,
+          startDistance: startDist,
+          endDistance: endDist
         });
 
-        return (startMatch && endMatch) || reverseMatch;
+        return matchesForward || matchesReversed;
       });
 
       if (matchingNewLine) {
         console.log("Found matching line:", matchingNewLine);
 
-        // Calculate relative distance along the line
-        const oldLength = Math.sqrt(
-          Math.pow(oldLine.end.x - oldLine.start.x, 2) +
-          Math.pow(oldLine.end.y - oldLine.start.y, 2)
-        );
+        // Calculate the current relative position along the old line
+        const oldVector = {
+          x: oldLine.end.x - oldLine.start.x,
+          y: oldLine.end.y - oldLine.start.y
+        };
+        const oldLength = Math.sqrt(oldVector.x * oldVector.x + oldVector.y * oldVector.y);
 
-                // Calculate relative position (0-1) on old line
-        const oldDx = entry.position.x - oldLine.start.x;
-        const oldDy = entry.position.y - oldLine.start.y;
-        const relativePos = Math.sqrt(oldDx * oldDx + oldDy * oldDy) / oldLength;
+        // Vector from line start to air entry position
+        const posVector = {
+          x: entry.position.x - oldLine.start.x,
+          y: entry.position.y - oldLine.start.y
+        };
+
+        // Calculate relative position (0-1)
+        const relativePos = (posVector.x * oldVector.x + posVector.y * oldVector.y) / 
+                          (oldLength * oldLength);
 
         console.log("Position calculation:", {
           oldLength,
           relativePos,
-          oldDx,
-          oldDy
+          posVector
         });
 
-        // Apply same relative position to new line
-        const newLength = Math.sqrt(
-          Math.pow(matchingNewLine.end.x - matchingNewLine.start.x, 2) +
-          Math.pow(matchingNewLine.end.y - matchingNewLine.start.y, 2)
-        );
+        // Calculate new position maintaining the same relative position
+        const newVector = {
+          x: matchingNewLine.end.x - matchingNewLine.start.x,
+          y: matchingNewLine.end.y - matchingNewLine.start.y
+        };
 
         const newPosition = {
-          x: matchingNewLine.start.x + (matchingNewLine.end.x - matchingNewLine.start.x) * relativePos,
-          y: matchingNewLine.start.y + (matchingNewLine.end.y - matchingNewLine.start.y) * relativePos
+          x: matchingNewLine.start.x + newVector.x * relativePos,
+          y: matchingNewLine.start.y + newVector.y * relativePos
         };
 
         console.log("New position calculated:", {
-          newLength,
-          newPosition
+          newPosition,
+          newVector
         });
 
-        // Update the entry with new line and position
+        // Update the entry with the new line and position
         newAirEntries[index] = {
           ...entry,
           line: matchingNewLine,
