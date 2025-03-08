@@ -226,7 +226,7 @@ export function RoomSketchPro({
   airEntries = [],
   roomHeight = DEFAULTS.ROOM_HEIGHT,
   onFurnitureAdd,
-  wallTransparency = 0.8,
+  wallTransparency = 0.8, // Ensure default value
   onWallTransparencyChange,
 }: RoomSketchProProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -888,8 +888,7 @@ export function RoomSketchPro({
             paneGlassMaterial,
           );
 
-          glassPane.position.set(pos[0], pos[1], pos[2]); // Fix the syntax error
-          ventGroup.add(glassPane);
+          glassPane.position.set(pos[0], pos[1], pos[2]); // Fix the syntax error          ventGroup.add(glassPane);
         });
         // Positionand rotate the vent group
         ventGroup.position.set(position.x, position.y, ventZPosition);
@@ -1463,19 +1462,16 @@ export function RoomSketchPro({
     furniture,
   ]);
 
-  // Update effect for wall transparency
+  // Update effect for wall transparency with proper type checking
   useEffect(() => {
     console.log("Wall transparency effect triggered:", wallTransparency);
-    if (wallMaterialRef.current) {
+    if (wallMaterialRef.current && typeof wallTransparency === 'number') {
       console.log("Updating wall material opacity to:", wallTransparency);
       wallMaterialRef.current.opacity = wallTransparency;
       wallMaterialRef.current.needsUpdate = true;
       if (rendererRef.current && sceneRef.current && cameraRef.current) {
-        console.log("Rendering scene with new transparency");
         rendererRef.current.render(sceneRef.current, cameraRef.current);
       }
-    } else {
-      console.warn("Wall material ref is not available");
     }
   }, [wallTransparency]);
 
@@ -1491,6 +1487,7 @@ export function RoomSketchPro({
     }
     // Update material directly as well for immediate feedback
     if (wallMaterialRef.current) {
+      console.log("Updating wall material opacity to:", value);
       wallMaterialRef.current.opacity = value;
       wallMaterialRef.current.needsUpdate = true;
       if (rendererRef.current && sceneRef.current && cameraRef.current) {
