@@ -215,6 +215,8 @@ const roomUtils = {
 };
 
 const transform2DTo3D = roomUtils.transform2DTo3D;
+const createRoomPerimeter = roomUtils.createRoomPerimeter;
+const ROOM_HEIGHT = DEFAULTS.ROOM_HEIGHT;
 
 export function RoomSketchPro({
   width,
