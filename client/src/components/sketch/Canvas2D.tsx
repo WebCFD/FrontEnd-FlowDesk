@@ -39,6 +39,11 @@ interface Canvas2DProps {
   onAirEntriesUpdate?: (airEntries: AirEntry[]) => void;
 }
 
+interface HighlightState {
+  lines: Line[];
+  airEntry: { index: number; entry: AirEntry } | null;
+}
+
 const POINT_RADIUS = 4;
 const SNAP_DISTANCE = 15;
 const PIXELS_TO_CM = 25 / 20;
@@ -241,7 +246,6 @@ export default function Canvas2D({
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
   const [currentLine, setCurrentLine] = useState<Line | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [highlightedLines, setHighlightedLines] = useState<Line[]>([]);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
@@ -264,6 +268,10 @@ export default function Canvas2D({
     entry: AirEntry;
     startPoint: Point;
   }>({ index: -1, entry: {} as AirEntry, startPoint: { x: 0, y: 0 } });
+  const [highlightState, setHighlightState] = useState<HighlightState>({
+    lines: [],
+    airEntry: null
+  });
 
   const createCoordinateSystem = (): Line[] => {
     const centerX = dimensions.width / 2;
@@ -566,9 +574,10 @@ export default function Canvas2D({
     ctx.fillText(`(${coords.x}, ${coords.y})`, point.x + 8, point.y - 8);
   };
 
-  const drawAirEntry = (ctx: CanvasRenderingContext2D, entry: AirEntry) => {
+  const drawAirEntry = (ctx: CanvasRenderingContext2D, entry: AirEntry, index: number) => {
     const normal = calculateNormal(entry.line);
-    const color = getAirEntryColor(entry.type);
+    const isHighlighted = highlightState.airEntry?.index === index;
+    const color = isHighlighted ? '#ef4444' : getAirEntryColor(entry.type);
 
     const widthInPixels = cmToPixels(entry.dimensions.width);
     const halfWidth = widthInPixels / 2;
@@ -712,7 +721,6 @@ export default function Canvas2D({
 
   const processMouseMove = (e: MouseEvent) => {
     const point = getCanvasPoint(e);
-
     setHoverPoint(point);
 
     if (!isDrawing && !isPanning) {
@@ -725,8 +733,25 @@ export default function Canvas2D({
       const endPoint = nearestPoint || snapToGrid(point);
       setCurrentLine(prev => prev ? { ...prev, end: endPoint } : null);
       setCursorPoint(endPoint);
-    } else if (currentTool === 'eraser' || currentAirEntry) {
-      setHighlightedLines(findLinesNearPoint(point));
+    } else if (currentTool === 'eraser') {
+      const airEntryInfo = findAirEntryAtLocation(point);
+      if (airEntryInfo) {
+        setHighlightState({
+          lines: [],
+          airEntry: { index: airEntryInfo.index, entry: airEntryInfo.entry }
+        });
+      } else {
+        const nearbyLines = findLinesNearPoint(point);
+        setHighlightState({
+          lines: nearbyLines,
+          airEntry: null
+        });
+      }
+    } else if (currentAirEntry) {
+      setHighlightState({
+        lines: findLinesNearPoint(point),
+        airEntry: null
+      });
     }
   };
 
@@ -861,25 +886,19 @@ export default function Canvas2D({
       setIsDrawing(true);
       setCursorPoint(startPoint);
     } else if (currentTool === 'eraser') {
-      const linesToErase = findLinesNearPoint(clickPoint);
-      if (linesToErase.length > 0) {
-        // Collect IDs of lines to be erased
-        const lineIdsToErase = new Set(linesToErase.map(line => line.id));
-
-        
-        // Filter out the erased lines
+      if (highlightState.airEntry) {
+        const newAirEntries = airEntries.filter((_, index) => index !== highlightState.airEntry!.index);
+        onAirEntriesUpdate?.(newAirEntries);
+        setHighlightState({ lines: [], airEntry: null });
+      } else if (highlightState.lines.length > 0) {
+        const lineIdsToErase = new Set(highlightState.lines.map(line => line.id));
         const newLines = lines.filter(line => !lineIdsToErase.has(line.id));
-
-        // Remove any air entries attached to the erased lines
         const newAirEntries = airEntries.filter(entry => !lineIdsToErase.has(entry.lineId));
-
-        // Update both lines and air entries
         onLinesUpdate?.(newLines);
         if (airEntries.length !== newAirEntries.length) {
           onAirEntriesUpdate?.(newAirEntries);
         }
-
-        setHighlightedLines([]);
+        setHighlightState({ lines: [], airEntry: null });
       }
     } else if (currentAirEntry) {
       const selectedLines = findLinesNearPoint(clickPoint);
@@ -934,7 +953,7 @@ export default function Canvas2D({
     }
 
     handlePanEnd();
-    setHighlightedLines([]);
+    setHighlightState({ lines: [], airEntry: null });
     setHoveredGridPoint(null);
     setHoverPoint(null);
 
@@ -982,29 +1001,23 @@ export default function Canvas2D({
 
     if (airEntries.length === 0) return;
 
-    // Create a map of line IDs to their new versions
     const idMap = new Map<string, Line>();
 
     oldLines.forEach(oldLine => {
       if (!oldLine.id) return;
 
-      // Find the new version of this line
       const newLine = newLines.find(nl => nl.id === oldLine.id);
       if (newLine) {
         idMap.set(oldLine.id, newLine);
       }
     });
 
-    // Update air entries using the ID map
     const newAirEntries = airEntries.map(entry => {
-      // Skip entries without a line ID
       if (!entry.lineId) return entry;
 
-      // Find the updated version of this line
       const updatedLine = idMap.get(entry.lineId);
       if (!updatedLine) return entry;
 
-      // Calculate relative position and update
       const relativePos = getRelativePositionOnLine(entry.position, entry.line);
       const newPosition = getPointAtRelativePosition(updatedLine, relativePos);
 
@@ -1015,7 +1028,6 @@ export default function Canvas2D({
       };
     });
 
-    // Update state if needed
     if (JSON.stringify(newAirEntries) !== JSON.stringify(airEntries) && onAirEntriesUpdate) {
       onAirEntriesUpdate(newAirEntries);
     }
@@ -1095,13 +1107,8 @@ export default function Canvas2D({
 
 
       lines.forEach(line => {
-        if (highlightedLines.includes(line)) {
-          ctx.strokeStyle = getHighlightColor();
-          ctx.lineWidth = 3 / zoom;
-        } else {
-          ctx.strokeStyle = '#000000';
-          ctx.lineWidth = 2 / zoom;
-        }
+        ctx.strokeStyle = highlightState.lines.includes(line) ? getHighlightColor() : '#000000';
+        ctx.lineWidth = 3 / zoom;
         ctx.beginPath();
         ctx.moveTo(line.start.x, line.start.y);
         ctx.lineTo(line.end.x, line.end.y);
@@ -1131,8 +1138,8 @@ export default function Canvas2D({
         ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
       }
 
-      airEntries.forEach(entry => {
-        drawAirEntry(ctx, entry);
+      airEntries.forEach((entry, index) => {
+        drawAirEntry(ctx, entry, index);
       });
 
       const endpoints = [...new Set(lines.flatMap(line => [line.start, line.end]))];
@@ -1236,16 +1243,19 @@ export default function Canvas2D({
         setIsDrawing(true);
         setCursorPoint(startPoint);
       } else if (currentTool === 'eraser') {
-        const linesToErase = findLinesNearPoint(clickPoint);
-        if (linesToErase.length > 0) {
-          const lineIdsToErase = new Set(linesToErase.map(line => line.id));
+        if (highlightState.airEntry) {
+          const newAirEntries = airEntries.filter((_, index) => index !== highlightState.airEntry!.index);
+          onAirEntriesUpdate?.(newAirEntries);
+          setHighlightState({ lines: [], airEntry: null });
+        } else if (highlightState.lines.length > 0) {
+          const lineIdsToErase = new Set(highlightState.lines.map(line => line.id));
           const newLines = lines.filter(line => !lineIdsToErase.has(line.id));
           const newAirEntries = airEntries.filter(entry => !lineIdsToErase.has(entry.lineId));
           onLinesUpdate?.(newLines);
           if (airEntries.length !== newAirEntries.length) {
             onAirEntriesUpdate?.(newAirEntries);
           }
-          setHighlightedLines([]);
+          setHighlightState({ lines: [], airEntry: null });
         }
       } else if (currentAirEntry) {
         const selectedLines = findLinesNearPoint(clickPoint);
@@ -1308,7 +1318,7 @@ export default function Canvas2D({
       }
 
       handlePanEnd();
-      setHighlightedLines([]);
+      setHighlightState({ lines: [], airEntry: null });
       setHoveredGridPoint(null);
       setHoverPoint(null);
 
@@ -1347,7 +1357,8 @@ export default function Canvas2D({
         const shouldRender =
           isPanning ||
           isDrawing ||
-          highlightedLines.length > 0 ||
+          highlightState.lines.length > 0 ||
+          highlightState.airEntry !== null ||
           hoveredGridPoint !== null ||
           hoverPoint !== null ||
           isDraggingEndpoint ||
@@ -1379,10 +1390,10 @@ export default function Canvas2D({
     };
   }, [
     gridSize, dimensions, lines, currentLine, isDrawing, currentTool,
-    highlightedLines, zoom, pan, isPanning, panMode, cursorPoint,
+    zoom, pan, isPanning, panMode, cursorPoint,
     currentAirEntry, airEntries, onLinesUpdate,
     hoveredGridPoint, hoverPoint, isDraggingEndpoint, draggedPoint,
-    isDraggingAirEntry, draggedAirEntry, onAirEntriesUpdate
+    isDraggingAirEntry, draggedAirEntry, onAirEntriesUpdate, highlightState
   ]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
