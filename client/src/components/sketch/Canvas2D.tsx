@@ -144,8 +144,13 @@ export default function Canvas2D({
   const [cursorPoint, setCursorPoint] = useState<Point | null>(null);
   const [zoomInput, setZoomInput] = useState('100');
   const [hoveredGridPoint, setHoveredGridPoint] = useState<Point | null>(null);
-  // Add hoverPoint state
   const [hoverPoint, setHoverPoint] = useState<Point | null>(null);
+  const [isDraggingEndpoint, setIsDraggingEndpoint] = useState(false);
+  const [draggedPoint, setDraggedPoint] = useState<{
+    point: Point;
+    lines: Line[];
+    isStart: boolean[];
+  }>({ point: { x: 0, y: 0 }, lines: [], isStart: [] });
 
   const createCoordinateSystem = (): Line[] => {
     const centerX = dimensions.width / 2;
@@ -536,7 +541,46 @@ export default function Canvas2D({
     return nearest;
   };
 
-  // Update processMouseMove to track hover position
+  // Add findPointAtLocation function after other utility functions
+  const findPointAtLocation = (clickPoint: Point): {
+    point: Point;
+    lines: Line[];
+    isStart: boolean[];
+  } | null => {
+    // Get all endpoints
+    const endpoints = lines.flatMap(line => [
+      { point: line.start, line, isStart: true },
+      { point: line.end, line, isStart: false }
+    ]);
+
+    // Group by position (to handle overlapping endpoints)
+    const groupedPoints: Record<string, { point: Point; lines: Line[]; isStart: boolean[] }> = {};
+
+    endpoints.forEach(({ point, line, isStart }) => {
+      const key = `${Math.round(point.x)},${Math.round(point.y)}`;
+      if (!groupedPoints[key]) {
+        groupedPoints[key] = { point, lines: [], isStart: [] };
+      }
+      groupedPoints[key].lines.push(line);
+      groupedPoints[key].isStart.push(isStart);
+    });
+
+    // Find a point near the click location
+    for (const key in groupedPoints) {
+      const { point, lines, isStart } = groupedPoints[key];
+      const dx = clickPoint.x - point.x;
+      const dy = clickPoint.y - point.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < POINT_RADIUS / zoom * 1.5) {  // Making hit area slightly larger than visual radius
+        return { point, lines, isStart };
+      }
+    }
+
+    return null;
+  };
+
+
   const processMouseMove = (e: MouseEvent) => {
     const point = getCanvasPoint(e);
 
@@ -774,18 +818,30 @@ export default function Canvas2D({
     };
 
     const handleMouseDown = (e: MouseEvent) => {
+      // Standard pan handling (unchanged)
       if (panMode || e.button === 2) {
+        // Only handle pan if we're not clicking on an endpoint with right click
+        const clickPoint = getCanvasPoint(e);
+        const pointInfo = findPointAtLocation(clickPoint);
+
+        if (e.button === 2 && pointInfo) {
+          e.preventDefault();
+          setIsDraggingEndpoint(true);
+          setDraggedPoint(pointInfo);
+          return;
+        }
+
         e.preventDefault();
         handlePanStart(e);
         return;
       }
 
+      // Rest of your existing handleMouseDown code
       const clickPoint = getCanvasPoint(e);
 
       if (currentTool === 'wall') {
         const nearestPoint = findNearestEndpoint(clickPoint);
         const startPoint = nearestPoint || snapToGrid(clickPoint);
-        const coords = getRelativeCoordinates(startPoint);
         setCurrentLine({ start: startPoint, end: startPoint });
         setIsDrawing(true);
         setCursorPoint(startPoint);
@@ -805,7 +861,56 @@ export default function Canvas2D({
       }
     };
 
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isDraggingEndpoint) {
+        const point = getCanvasPoint(e);
+
+        // Snap to grid or nearest endpoint
+        const nearestPoint = findNearestEndpoint(point);
+        const targetPoint = nearestPoint || snapToGrid(point);
+
+        // Update the dragged point
+        setDraggedPoint(prev => ({ ...prev, point: targetPoint }));
+
+        // Update all connected lines
+        const newLines = [...lines];
+        draggedPoint.lines.forEach((line, index) => {
+          const lineIndex = newLines.findIndex(l =>
+            (l.start.x === line.start.x && l.start.y === line.start.y &&
+              l.end.x === line.end.x && l.end.y === line.end.y)
+          );
+
+          if (lineIndex >= 0) {
+            if (draggedPoint.isStart[index]) {
+              newLines[lineIndex] = {
+                ...newLines[lineIndex],
+                start: targetPoint
+              };
+            } else {
+              newLines[lineIndex] = {
+                ...newLines[lineIndex],
+                end: targetPoint
+              };
+            }
+          }
+        });
+
+        // Update the lines state
+        onLinesUpdate?.(newLines);
+        return;
+      }
+
+      // Your original mouse move handling
+      throttleMouseMove(e);
+    };
+
     const handleMouseUp = () => {
+      if (isDraggingEndpoint) {
+        setIsDraggingEndpoint(false);
+        setDraggedPoint({ point: { x: 0, y: 0 }, lines: [], isStart: [] });
+        return;
+      }
+
       if (panMode) {
         handlePanEnd();
         return;
@@ -822,12 +927,18 @@ export default function Canvas2D({
       }
     };
 
-    // Update handleMouseLeave to clear hover point
+    // Update handleMouseLeave to handle endpoint dragging
     const handleMouseLeave = () => {
+      if (isDraggingEndpoint) {
+        setIsDraggingEndpoint(false);
+        setDraggedPoint({ point: { x: 0, y: 0 }, lines: [], isStart: [] });
+      }
+
       handlePanEnd();
       setHighlightedLines([]);
       setHoveredGridPoint(null);
-      setHoverPoint(null); // Clear hover point when mouse leaves
+      setHoverPoint(null);
+
       if (isDrawing) {
         setCurrentLine(null);
         setIsDrawing(false);
@@ -837,7 +948,7 @@ export default function Canvas2D({
 
     // Add the event listeners
     canvas.addEventListener('mousedown', handleMouseDown);
-    canvas.addEventListener('mousemove', throttleMouseMove, { passive: true });
+    canvas.addEventListener('mousemove', handleMouseMove, { passive: true });
     canvas.addEventListener('mouseup', handleMouseUp);
     canvas.addEventListener('mouseleave', handleMouseLeave);
     canvas.addEventListener('wheel', handleZoomWheel, { passive: false });
@@ -867,7 +978,8 @@ export default function Canvas2D({
           isDrawing ||
           highlightedLines.length > 0 ||
           hoveredGridPoint !== null ||
-          hoverPoint !== null;
+          hoverPoint !== null ||
+          isDraggingEndpoint;
 
         if (shouldRender || !lastRenderTime || currentTime - lastRenderTime > 500) {
           draw();
@@ -881,8 +993,9 @@ export default function Canvas2D({
     let animationFrameId = requestAnimationFrame(animate);
 
 
-    return () => {      canvas.removeEventListener('mousedown', handleMouseDown);
-      canvas.removeEventListener('mousemove', throttleMouseMove);
+    return () => {
+      canvas.removeEventListener('mousedown', handleMouseDown);
+      canvas.removeEventListener('mousemove', handleMouseMove);
       canvas.removeEventListener('mouseup', handleMouseUp);
       canvas.removeEventListener('mouseleave', handleMouseLeave);
       canvas.removeEventListener('wheel', handleZoomWheel);
@@ -890,7 +1003,7 @@ export default function Canvas2D({
       canvas.removeEventListener('contextmenu', handleContextMenu);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode, cursorPoint, currentAirEntry, onLineSelect, airEntries, onLinesUpdate, hoveredGridPoint, hoverPoint]);
+  }, [gridSize, dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode, cursorPoint, currentAirEntry, onLineSelect, airEntries, onLinesUpdate, hoveredGridPoint, hoverPoint, isDraggingEndpoint, draggedPoint]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, '');
