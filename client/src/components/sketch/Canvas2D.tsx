@@ -257,6 +257,12 @@ export default function Canvas2D({
     position: Point;
     line: Line;
   } | null>(null);
+  const [hoveredEndpoint, setHoveredEndpoint] = useState<{
+    point: Point;
+    lines: Line[];
+    isStart: boolean[];
+  } | null>(null);
+  const [hoveredAirEntry, setHoveredAirEntry] = useState<{ index: number; entry: AirEntry } | null>(null);
 
   const createCoordinateSystem = (): Line[] => {
     const centerX = dimensions.width / 2;
@@ -559,7 +565,6 @@ export default function Canvas2D({
     ctx.fillText(`(${coords.x}, ${coords.y})`, point.x + 8, point.y - 8);
   };
 
-  const [hoveredAirEntry, setHoveredAirEntry] = useState<{ index: number; entry: AirEntry } | null>(null);
 
   const drawAirEntry = (ctx: CanvasRenderingContext2D, entry: AirEntry, index: number) => {
     const normal = calculateNormal(entry.line);
@@ -741,6 +746,10 @@ export default function Canvas2D({
       const nearestGridPoint = findNearestGridPoint(point);
       setHoveredGridPoint(nearestGridPoint);
 
+      // Check for endpoint hover
+      const pointInfo = findPointAtLocation(point);
+      setHoveredEndpoint(pointInfo);
+
       // Check for air entry hover
       const airEntryInfo = findAirEntryAtLocation(point);
       setHoveredAirEntry(airEntryInfo);
@@ -828,7 +837,7 @@ export default function Canvas2D({
             newLines[lineIndex] = {
               ...newLines[lineIndex],
               ...(draggedPoint.isStart[index]
-                ? { start: targetPoint }
+                                ? { start: targetPoint }
                 : { end: targetPoint }
               )
             };
@@ -975,6 +984,7 @@ export default function Canvas2D({
     setHoveredGridPoint(null);
     setHoverPoint(null);
     setHoveredAirEntry(null);
+    setHoveredEndpoint(null);
 
     if (isDrawing) {
       setCurrentLine(null);
@@ -1161,6 +1171,49 @@ export default function Canvas2D({
         drawAirEntry(ctx, entry, index);
       });
 
+      const drawEndpoints = () => {
+        const drawnPoints = new Set<string>();
+
+        lines.forEach(line => {
+          [
+            { point: line.start, isStart: true },
+            { point: line.end, isStart: false }
+          ].forEach(({ point, isStart }) => {
+            const key = `${Math.round(point.x)},${Math.round(point.y)}`;
+            if (!drawnPoints.has(key)) {
+              drawnPoints.add(key);
+
+              const isHovered = hoveredEndpoint?.point &&
+                arePointsNearlyEqual(hoveredEndpoint.point, point);
+
+              ctx.beginPath();
+              ctx.arc(point.x, point.y,
+                isHovered ? POINT_RADIUS * 1.5 / zoom : POINT_RADIUS / zoom,
+                0, Math.PI * 2);
+
+              if (isHovered) {
+                ctx.fillStyle = '#fbbf24'; // Amber color for hover
+                // Add tooltip
+                ctx.font = `${12 / zoom}px Arial`;
+                ctx.fillStyle = '#000000';
+                ctx.textAlign = 'center';
+                ctx.fillText(
+                  'Right-click to drag',
+                  point.x,
+                  point.y - 15 / zoom
+                );
+              } else {
+                ctx.fillStyle = '#3b82f6'; // Blue color
+              }
+
+              ctx.fill();
+            }
+          });
+        });
+      };
+
+      drawEndpoints();
+
       const endpoints = [...new Set(lines.flatMap(line => [line.start, line.end]))];
       const endpointColorMap: Record<string, Point[]> = {
         '#fb923c': [],
@@ -1259,7 +1312,7 @@ export default function Canvas2D({
     currentAirEntry, airEntries, onLinesUpdate,
     hoveredGridPoint, hoverPoint, isDraggingEndpoint, draggedPoint,
     isDraggingAirEntry, draggedAirEntry, onAirEntriesUpdate, highlightState,
-    editingAirEntry, hoveredAirEntry
+    editingAirEntry, hoveredAirEntry, hoveredEndpoint
   ]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
