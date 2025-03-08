@@ -670,6 +670,9 @@ export default function Canvas2D({
 
   // Add helper functions after existing utility functions
   const findAirEntryAtLocation = (clickPoint: Point): { index: number; entry: AirEntry } | null => {
+    // Add logging to debug hit detection
+    console.log("Checking for AirEntry at point:", clickPoint);
+
     for (let i = 0; i < airEntries.length; i++) {
       const entry = airEntries[i];
       const normal = calculateNormal(entry.line);
@@ -689,11 +692,16 @@ export default function Canvas2D({
 
       // Check if click is near the entry's line segment
       const distanceToEntry = distanceToLineSegment(clickPoint, start, end);
-      if (distanceToEntry < 10 / zoom) { // 10px hit area, adjusted for zoom
+      console.log("Distance to entry:", distanceToEntry, "Entry index:", i);
+
+      // Increased hit area from 10 to 20
+      if (distanceToEntry < 20 / zoom) {
+        console.log("Found AirEntry at index:", i);
         return { index: i, entry };
       }
     }
 
+    console.log("No AirEntry found at point");
     return null;
   };
 
@@ -857,12 +865,17 @@ export default function Canvas2D({
   const handleMouseDown = (e: MouseEvent) => {
     // Handle right-click
     if (e.button === 2) {
+      console.log("Right click detected");
+      e.preventDefault(); // Prevent context menu immediately
+
       const clickPoint = getCanvasPoint(e);
+      console.log("Click point:", clickPoint);
 
       // First, check for AirEntry elements
       const airEntryInfo = findAirEntryAtLocation(clickPoint);
+      console.log("Air entry found:", airEntryInfo);
+
       if (airEntryInfo) {
-        e.preventDefault();
         setIsDraggingAirEntry(true);
         setDraggedAirEntry({
           index: airEntryInfo.index,
@@ -872,17 +885,15 @@ export default function Canvas2D({
         return;
       }
 
-      // Then check for endpoints (existing code)
+      // Then check for endpoints
       const pointInfo = findPointAtLocation(clickPoint);
       if (pointInfo) {
-        e.preventDefault();
         setIsDraggingEndpoint(true);
         setDraggedPoint(pointInfo);
         return;
       }
 
       // Default to panning
-      e.preventDefault();
       handlePanStart(e);
       return;
     }
@@ -959,9 +970,6 @@ export default function Canvas2D({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
     // Add crosshair drawing helper
     const drawCrosshair = (ctx: CanvasRenderingContext2D, point: Point) => {
       const size = 10 / zoom;
@@ -982,6 +990,7 @@ export default function Canvas2D({
     };
 
     const draw = () => {
+      const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
       ctx.clearRect(0, 0, dimensions.width, dimensions.height);
@@ -1152,12 +1161,17 @@ export default function Canvas2D({
     const handleMouseDown = (e: MouseEvent) => {
       // Handle right-click
       if (e.button === 2) {
+        console.log("Right click detected");
+        e.preventDefault(); // Prevent context menu immediately
+
         const clickPoint = getCanvasPoint(e);
+        console.log("Click point:", clickPoint);
 
         // First, check for AirEntry elements
         const airEntryInfo = findAirEntryAtLocation(clickPoint);
+        console.log("Air entry found:", airEntryInfo);
+
         if (airEntryInfo) {
-          e.preventDefault();
           setIsDraggingAirEntry(true);
           setDraggedAirEntry({
             index: airEntryInfo.index,
@@ -1167,17 +1181,15 @@ export default function Canvas2D({
           return;
         }
 
-        // Then check for endpoints (existing code)
+        // Then check for endpoints
         const pointInfo = findPointAtLocation(clickPoint);
         if (pointInfo) {
-          e.preventDefault();
           setIsDraggingEndpoint(true);
           setDraggedPoint(pointInfo);
           return;
         }
 
         // Default to panning
-        e.preventDefault();
         handlePanStart(e);
         return;
       }
@@ -1353,16 +1365,19 @@ export default function Canvas2D({
       }
     };
 
+    // Store the preventDefault reference
+    const handleContextMenu = (e: Event) => {
+      console.log("Context menu prevented");
+      e.preventDefault();
+    };
+
     // Add the event listeners
     canvas.addEventListener('mousedown', handleMouseDown);
-    canvas.addEventListener('mousemove', handleMouseMove, { passive: true });
+    canvas.addEventListener('mousemove', handleMouseMove);
     canvas.addEventListener('mouseup', handleMouseUp);
     canvas.addEventListener('mouseleave', handleMouseLeave);
     canvas.addEventListener('wheel', handleZoomWheel, { passive: false });
     canvas.addEventListener('wheel', handleRegularWheel, { passive: true });
-
-    // Store the preventDefault reference
-    const handleContextMenu = (e: Event) => e.preventDefault();
     canvas.addEventListener('contextmenu', handleContextMenu);
 
     // Add lastRenderTime at component level
