@@ -3,8 +3,7 @@ import * as THREE from "three";
 import { TrackballControls } from "three/addons/controls/TrackballControls.js";
 import { makeTextSprite } from "@/lib/three-utils";
 import { createTableModel, createPersonModel, createArmchairModel } from "./furniture-models";
-import { FurnitureMenu } from "./FurnitureMenu"; // Fix the import
-import { Slider } from "@/components/ui/slider";
+import { FurnitureMenu } from "./FurnitureMenu";
 
 // Types
 interface Point {
@@ -226,7 +225,7 @@ export function RoomSketchPro({
   airEntries = [],
   roomHeight = DEFAULTS.ROOM_HEIGHT,
   onFurnitureAdd,
-  wallTransparency = 0.8, // Ensure default value
+  wallTransparency = 0.8,
   onWallTransparencyChange,
 }: RoomSketchProProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -890,8 +889,7 @@ export function RoomSketchPro({
 
           glassPane.position.set(pos[0], pos[1], pos[2]); // Fix the syntax error          ventGroup.add(glassPane);
         });
-        // Positionand rotate the vent group
-        ventGroup.position.set(position.x, position.y, ventZPosition);
+        // Positionand rotate the vent group        ventGroup.position.set(position.x, position.y, ventZPosition);
         // Apply Wall's Local Coordinate System approach
         const forward = wallNormalVector.clone();
         const up = new THREE.Vector3(0, 0, 1);
@@ -1479,30 +1477,16 @@ export function RoomSketchPro({
     console.log("Drag started:", item);
   };
 
-  // Add proper wall transparency handling
+  // Handle wall transparency changes
   const handleWallTransparencyChange = (value: number) => {
     console.log("Wall transparency change requested:", value);
     if (onWallTransparencyChange) {
       onWallTransparencyChange(value);
     }
-    // Update material directly as well for immediate feedback
-    if (wallMaterialRef.current) {
-      console.log("Updating wall material opacity to:", value);
-      wallMaterialRef.current.opacity = value;
-      wallMaterialRef.current.needsUpdate = true;
-      if (rendererRef.current && sceneRef.current && cameraRef.current) {
-        rendererRef.current.render(sceneRef.current, cameraRef.current);
-      }
-    }
   };
 
   return (
     <div className="flex gap-4">
-      <FurnitureMenu
-        onDragStart={handleDragStart}
-        wallTransparency={wallTransparency}
-        onWallTransparencyChange={handleWallTransparencyChange}
-      />
       <div
         ref={containerRef}
         style={{
