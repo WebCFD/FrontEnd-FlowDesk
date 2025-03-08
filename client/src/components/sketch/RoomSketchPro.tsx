@@ -1478,12 +1478,7 @@ export function RoomSketchPro({
   };
 
   return (
-    <div className="flex gap-4">
-      <FurnitureMenu
-        onDragStart={handleDragStart}
-        wallTransparency={wallTransparency}
-        onWallTransparencyChange={onWallTransparencyChange}
-      />
+    <div>
       <div
         ref={containerRef}
         style={{
