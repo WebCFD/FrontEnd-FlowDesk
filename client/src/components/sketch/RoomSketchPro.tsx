@@ -3,7 +3,6 @@ import * as THREE from "three";
 import { TrackballControls } from "three/addons/controls/TrackballControls.js";
 import { makeTextSprite } from "@/lib/three-utils";
 import { createTableModel, createPersonModel, createArmchairModel } from "./furniture-models";
-import { FurnitureMenu } from "./FurnitureMenu";
 
 // Types
 interface Point {
@@ -893,7 +892,7 @@ export function RoomSketchPro({
         // Apply Wall's Local Coordinate System approach
         const forward = wallNormalVector.clone();
         const up = new THREE.Vector3(0, 0, 1);
-        const right = new THREE.Vector3().crossVectors(up, forward).normalize();
+        constright = new THREE.Vector3().crossVectors(up, forward).normalize();
         forward.crossVectors(right, up).normalize();
         const rotationMatrix = new THREE.Matrix4().makeBasis(
           right,
@@ -1501,11 +1500,6 @@ export function RoomSketchPro({
 
   return (
     <div className="flex gap-4">
-      <FurnitureMenu
-        onDragStart={handleDragStart}
-        wallTransparency={wallTransparency}
-        onWallTransparencyChange={handleWallTransparencyChange}
-      />
       <div
         ref={containerRef}
         style={{
