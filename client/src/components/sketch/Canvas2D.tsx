@@ -631,14 +631,40 @@ export default function Canvas2D({
     return Math.sqrt(dx * dx + dy * dy) < 1; // Small threshold for floating point comparison
   };
 
-  // Replace handleMouseMove with improved version
+  // Add this function for finer snapping during dragging
+  const fineDragSnap = (point: Point): Point => {
+    // Regular snap size is 4 pixels = 5cm
+    // Let's use half that size for dragging: 2 pixels = 2.5cm
+    const snapSize = 2; // Half the normal snap size
+    const centerX = dimensions.width / 2;
+    const centerY = dimensions.height / 2;
+
+    const relativeX = point.x - centerX;
+    const relativeY = point.y - centerY;
+
+    // Try to snap to nearby endpoints first (same as regular)
+    const nearestPoint = findNearestEndpoint(point);
+    if (nearestPoint) {
+      return nearestPoint;
+    }
+
+    // If no endpoint nearby, snap to the finer grid
+    const snappedX = Math.round(relativeX / snapSize) * snapSize;
+    const snappedY = Math.round(relativeY / snapSize) * snapSize;
+
+    return {
+      x: centerX + snappedX,
+      y: centerY + snappedY
+    };
+  };
+
+  // Replace the existing handleMouseMove function with this improved version
   const handleMouseMove = (e: MouseEvent) => {
     if (isDraggingEndpoint) {
       const point = getCanvasPoint(e);
 
-      // Snap to grid or nearest endpoint
-      const nearestPoint = findNearestEndpoint(point);
-      const targetPoint = nearestPoint || snapToGrid(point);
+      // For dragging, use the finer snapping function
+      const targetPoint = fineDragSnap(point);
 
       // Store lineIDs instead of line references for reliable tracking
       if (draggedPoint.lines.length > 0) {
@@ -673,7 +699,6 @@ export default function Canvas2D({
           onLinesUpdate?.(newLines);
 
           // Update draggedPoint with the new line references and point position
-          // This is the key step: we need to update our references to point to the new lines
           const updatedLines: Line[] = [];
           const updatedIsStart: boolean[] = [];
 
@@ -817,7 +842,7 @@ export default function Canvas2D({
       // Draw current line if exists
       if (currentLine) {
         ctx.beginPath();
-        ctx.strokeStyle = '#000000';
+        ctx.strokeStyle = '#00000';
         ctx.lineWidth = 2 / zoom;
         ctx.moveTo(currentLine.start.x, currentLine.start.y);
         ctx.lineTo(currentLine.end.x, currentLine.end.y);

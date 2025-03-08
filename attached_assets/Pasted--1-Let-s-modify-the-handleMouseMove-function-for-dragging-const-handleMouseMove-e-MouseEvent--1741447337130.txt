@@ -1,0 +1,101 @@
+// 1. Let's modify the handleMouseMove function for dragging
+const handleMouseMove = (e: MouseEvent) => {
+  if (isDraggingEndpoint) {
+    const point = getCanvasPoint(e);
+    
+    // For dragging, use a smaller snap size to get more precision
+    // Instead of using snapToGrid, we'll create a finer snapping function
+    const targetPoint = fineDragSnap(point);
+    
+    // Rest of your existing dragging code
+    // ...
+    
+    if (draggedPoint.lines.length > 0) {
+      // Create a new array of lines with the updated positions
+      const newLines = [...lines];
+      let linesUpdated = false;
+
+      draggedPoint.lines.forEach((line, index) => {
+        // Find the line by comparing coordinates
+        const lineIndex = newLines.findIndex(l => 
+          arePointsEqual(l.start, line.start) && arePointsEqual(l.end, line.end)
+        );
+
+        if (lineIndex >= 0) {
+          if (draggedPoint.isStart[index]) {
+            newLines[lineIndex] = {
+              ...newLines[lineIndex],
+              start: targetPoint
+            };
+          } else {
+            newLines[lineIndex] = {
+              ...newLines[lineIndex],
+              end: targetPoint
+            };
+          }
+          linesUpdated = true;
+        }
+      });
+
+      if (linesUpdated) {
+        // Update the lines state
+        onLinesUpdate?.(newLines);
+        
+        // Update draggedPoint with the new line references and point position
+        const updatedLines: Line[] = [];
+        const updatedIsStart: boolean[] = [];
+        
+        draggedPoint.lines.forEach((line, index) => {
+          const isStart = draggedPoint.isStart[index];
+          const newLine = newLines.find(l => 
+            (isStart && arePointsEqual(l.start, targetPoint) && arePointsEqual(l.end, line.end)) ||
+            (!isStart && arePointsEqual(l.start, line.start) && arePointsEqual(l.end, targetPoint))
+          );
+          
+          if (newLine) {
+            updatedLines.push(newLine);
+            updatedIsStart.push(isStart);
+          }
+        });
+        
+        setDraggedPoint({
+          point: targetPoint,
+          lines: updatedLines,
+          isStart: updatedIsStart
+        });
+      }
+    }
+    return;
+  }
+
+  // Your original mouse move handling
+  throttleMouseMove(e);
+};
+
+// 2. Add this function for finer snapping during dragging
+// This will snap to a grid with half the cell size of the regular grid
+const fineDragSnap = (point: Point): Point => {
+  // Regular snap size is 4 pixels = 5cm
+  // Let's use half that size for dragging: 2 pixels = 2.5cm
+  const snapSize = 2; // Half the normal snap size
+  const centerX = dimensions.width / 2;
+  const centerY = dimensions.height / 2;
+
+  const relativeX = point.x - centerX;
+  const relativeY = point.y - centerY;
+
+  // Try to snap to nearby endpoints first (same as regular)
+  const nearestPoint = findNearestEndpoint(point);
+  if (nearestPoint) {
+    return nearestPoint;
+  }
+
+  // If no endpoint nearby, snap to the finer grid
+  const snappedX = Math.round(relativeX / snapSize) * snapSize;
+  const snappedY = Math.round(relativeY / snapSize) * snapSize;
+
+  return {
+    x: centerX + snappedX,
+    y: centerY + snappedY
+  };
+};
