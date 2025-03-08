@@ -201,6 +201,16 @@ const getPointAtRelativePosition = (line: Line, relativePos: number): Point => {
   };
 };
 
+interface Canvas2DProps {
+  gridSize: number;
+  currentTool: 'wall' | 'eraser' | null;
+  currentAirEntry: 'window' | 'door' | 'vent' | null;
+  airEntries: AirEntry[];
+  lines: Line[];
+  onLinesUpdate?: (lines: Line[]) => void;
+  onAirEntriesUpdate?: (airEntries: AirEntry[]) => void;
+}
+
 export default function Canvas2D({
   gridSize,
   currentTool,
@@ -242,6 +252,11 @@ export default function Canvas2D({
     airEntry: null
   });
   const [editingAirEntry, setEditingAirEntry] = useState<{ index: number; entry: AirEntry } | null>(null);
+  const [newAirEntryDetails, setNewAirEntryDetails] = useState<{
+    type: 'window' | 'door' | 'vent';
+    position: Point;
+    line: Line;
+  } | null>(null);
 
   const createCoordinateSystem = (): Line[] => {
     const centerX = dimensions.width / 2;
@@ -858,7 +873,7 @@ export default function Canvas2D({
     } else if (currentTool === 'eraser') {
       if (highlightState.airEntry) {
         const newAirEntries = airEntries.filter((_, index) => index !== highlightState.airEntry!.index);
-                onAirEntriesUpdate?.(newAirEntries);
+        onAirEntriesUpdate?.(newAirEntries);
         setHighlightState({ lines: [], airEntry: null });
       } else if (highlightState.lines.length > 0) {
         const lineIdsToErase = new Set(highlightState.lines.map(line => line.id));
@@ -875,14 +890,13 @@ export default function Canvas2D({
       if (selectedLines.length > 0) {
         const selectedLine = selectedLines[0];
         const exactPoint = getPointOnLine(selectedLine, clickPoint);
-        const newAirEntry: AirEntry = {
+
+        // Instead of creating the air entry immediately, store the details and show dialog
+        setNewAirEntryDetails({
           type: currentAirEntry,
           position: exactPoint,
-          dimensions: { width: 100, height: 60 },
-          line: selectedLine,
-          lineId: selectedLine.id
-        };
-        onAirEntriesUpdate?.([...airEntries, newAirEntry]);
+          line: selectedLine
+        });
       }
     }
   };
@@ -1440,6 +1454,25 @@ export default function Canvas2D({
     setEditingAirEntry(null);
   };
 
+  const handleNewAirEntryConfirm = (dimensions: {
+    width: number;
+    height: number;
+    distanceToFloor?: number;
+  }) => {
+    if (!newAirEntryDetails) return;
+
+    const newAirEntry: AirEntry = {
+      type: newAirEntryDetails.type,
+      position: newAirEntryDetails.position,
+      dimensions,
+      line: newAirEntryDetails.line,
+      lineId: newAirEntryDetails.line.id
+    };
+
+    onAirEntriesUpdate?.([...airEntries, newAirEntry]);
+    setNewAirEntryDetails(null);
+  };
+
   return (
     <div ref={containerRef} className="w-full h-full relative">
       <canvas
@@ -1497,6 +1530,16 @@ export default function Canvas2D({
           onConfirm={handleAirEntryUpdate}
           isEditing={true}
           initialValues={editingAirEntry.entry.dimensions}
+        />
+      )}
+
+      {newAirEntryDetails && (
+        <AirEntryDialog
+          type={newAirEntryDetails.type}
+          isOpen={true}
+          onClose={() => setNewAirEntryDetails(null)}
+          onConfirm={handleNewAirEntryConfirm}
+          isEditing={false}
         />
       )}
     </div>
