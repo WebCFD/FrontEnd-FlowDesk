@@ -278,15 +278,15 @@ export function RoomSketchPro({
     return scene;
   };
 
-  // Setup camera function with better viewing angle for XY plane
+  // Setup camera function with settings matching Canvas3D
   const setupCamera = () => {
     const camera = new THREE.PerspectiveCamera(
-      60,
+      45,  // Match Canvas3D's field of view
       width / height,
       1,
-      2000,
+      10000  // Match Canvas3D's far plane
     );
-    camera.position.set(200, 200, 400); // Position for viewing XY plane
+    camera.position.set(0, 0, 1000); // Match Canvas3D's camera position
     camera.lookAt(0, 0, 0);
     return camera;
   };
@@ -894,7 +894,7 @@ export function RoomSketchPro({
         // Apply Wall's Local Coordinate System approach
         const forward = wallNormalVector.clone();
         const up = new THREE.Vector3(0, 0, 1);
-        const right = new THREE.Vector3().crossVectors(up, forward).normalize();
+const right = new THREE.Vector3().crossVectors(up, forward).normalize();
         forward.crossVectors(right, up).normalize();
         const rotationMatrix = new THREE.Matrix4().makeBasis(
           right,
