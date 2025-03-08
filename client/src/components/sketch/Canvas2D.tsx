@@ -1,43 +1,12 @@
-import { useEffect, useRef, useState, useMemo } from 'react';
-import { Minus, Plus, Move } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { useState, useEffect, useRef } from 'react';
+import { Point, Line, AirEntry } from '@/types';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Minus, Plus, Move } from "lucide-react";
+import AirEntryDialog from './AirEntryDialog';
 
 let isProcessingMouseMove = false;
 let lastMouseMoveEvent: MouseEvent | null = null;
-
-interface Point {
-  x: number;
-  y: number;
-}
-
-interface Line {
-  id: string;
-  start: Point;
-  end: Point;
-}
-
-interface AirEntry {
-  type: 'window' | 'door' | 'vent';
-  position: Point;
-  dimensions: {
-    width: number;
-    height: number;
-    distanceToFloor?: number;
-  };
-  line: Line;
-  lineId: string;
-}
-
-interface Canvas2DProps {
-  gridSize: number;
-  currentTool: 'wall' | 'eraser' | null;
-  currentAirEntry: 'vent' | 'door' | 'window' | null;
-  airEntries: AirEntry[];
-  lines: Line[];
-  onLinesUpdate?: (lines: Line[]) => void;
-  onAirEntriesUpdate?: (airEntries: AirEntry[]) => void;
-}
 
 interface HighlightState {
   lines: Line[];
@@ -272,6 +241,7 @@ export default function Canvas2D({
     lines: [],
     airEntry: null
   });
+  const [editingAirEntry, setEditingAirEntry] = useState<{ index: number; entry: AirEntry } | null>(null);
 
   const createCoordinateSystem = (): Line[] => {
     const centerX = dimensions.width / 2;
@@ -1341,6 +1311,7 @@ export default function Canvas2D({
     canvas.addEventListener('wheel', handleZoomWheel, { passive: false });
     canvas.addEventListener('wheel', handleRegularWheel, { passive: true });
     canvas.addEventListener('contextmenu', handleContextMenu);
+    canvas.addEventListener('dblclick', handleDoubleClick);
 
     let lastRenderTime = 0;
 
@@ -1384,6 +1355,7 @@ export default function Canvas2D({
       canvas.removeEventListener('wheel', handleZoomWheel);
       canvas.removeEventListener('wheel', handleRegularWheel);
       canvas.removeEventListener('contextmenu', handleContextMenu);
+      canvas.removeEventListener('dblclick', handleDoubleClick);
       if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
       }
@@ -1393,7 +1365,7 @@ export default function Canvas2D({
     zoom, pan, isPanning, panMode, cursorPoint,
     currentAirEntry, airEntries, onLinesUpdate,
     hoveredGridPoint, hoverPoint, isDraggingEndpoint, draggedPoint,
-    isDraggingAirEntry, draggedAirEntry, onAirEntriesUpdate, highlightState
+    isDraggingAirEntry, draggedAirEntry, onAirEntriesUpdate, highlightState, editingAirEntry
   ]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1439,6 +1411,34 @@ export default function Canvas2D({
     };
   };
 
+  const handleDoubleClick = (e: MouseEvent) => {
+    const clickPoint = getCanvasPoint(e);
+    const airEntryInfo = findAirEntryAtLocation(clickPoint);
+
+    if (airEntryInfo) {
+      setEditingAirEntry({
+        index: airEntryInfo.index,
+        entry: airEntryInfo.entry
+      });
+    }
+  };
+
+  const handleAirEntryUpdate = (dimensions: {
+    width: number;
+    height: number;
+    distanceToFloor?: number;
+  }) => {
+    if (!editingAirEntry) return;
+
+    const updatedAirEntries = [...airEntries];
+    updatedAirEntries[editingAirEntry.index] = {
+      ...editingAirEntry.entry,
+      dimensions
+    };
+
+    onAirEntriesUpdate?.(updatedAirEntries);
+    setEditingAirEntry(null);
+  };
 
   return (
     <div ref={containerRef} className="w-full h-full relative">
@@ -1488,6 +1488,17 @@ export default function Canvas2D({
           <Move className="h-4 w-4" />
         </Button>
       </div>
+
+      {editingAirEntry && (
+        <AirEntryDialog
+          type={editingAirEntry.entry.type}
+          isOpen={true}
+          onClose={() => setEditingAirEntry(null)}
+          onConfirm={handleAirEntryUpdate}
+          isEditing={true}
+          initialValues={editingAirEntry.entry.dimensions}
+        />
+      )}
     </div>
   );
 }
