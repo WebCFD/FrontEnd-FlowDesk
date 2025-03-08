@@ -62,6 +62,7 @@ export default function WizardDesign() {
   const [clickedPoint, setClickedPoint] = useState<Point | null>(null);
   const [tab, setTab] = useState<"2d-editor" | "3d-preview">("2d-editor");
   const [showStartSimulationPrompt, setShowStartSimulationPrompt] = useState(false);
+  const [wallTransparency, setWallTransparency] = useState(0.8);
 
   // Use the global room store
   const { lines, airEntries, hasClosedContour, setLines, setAirEntries, setHasClosedContour } = useRoomStore();
@@ -369,6 +370,11 @@ export default function WizardDesign() {
             onDragStart={(item) => {
               console.log('Started dragging:', item.name);
             }}
+            wallTransparency={wallTransparency}
+            onWallTransparencyChange={(value) => {
+              console.log('Wizard: Wall transparency changing to:', value);
+              setWallTransparency(value);
+            }}
           />
 
           {/* Right side - 3D View */}
@@ -380,6 +386,11 @@ export default function WizardDesign() {
               instanceId="step2-view"
               lines={lines}
               airEntries={airEntries}
+              wallTransparency={wallTransparency}
+              onWallTransparencyChange={(value) => {
+                console.log('Wizard: Wall transparency changing to:', value);
+                setWallTransparency(value);
+              }}
             />
           </div>
         </div>
