@@ -1,0 +1,122 @@
+ I see the issue. The implementation of updateAirEntriesWithWalls is in place, but there's a problem with how it tracks and updates air entries.
+The main issue is that when comparing lines, the function is being too strict with the point comparisons. When dragging endpoints, the lines can change significantly, and the current implementation might not find the matching lines correctly.
+Here's what I'd change:
+
+The key problem is in the line matching logic in updateAirEntriesWithWalls. Instead of comparing exact points, we need to track which lines are being modified:
+
+typescriptCopy// Modify the updateAirEntriesWithWalls function
+const updateAirEntriesWithWalls = (newLines: Line[], oldLines: Line[]) => {
+  console.log("Updating air entries with walls");
+  
+  if (airEntries.length === 0) return;
+  
+  // When dragging a wall endpoint, we need to track which old lines became which new lines
+  // Create a map of modified lines
+  const modifiedLineMap = new Map<number, Line>();
+  
+  // For each old line, find its corresponding new line
+  oldLines.forEach((oldLine, oldIndex) => {
+    // When a line is modified, one endpoint stays the same while the other changes
+    const matchingNewLineIndex = newLines.findIndex(newLine => 
+      // Find a new line that shares exactly one endpoint with the old line
+      (arePointsNearlyEqual(oldLine.start, newLine.start) && !arePointsNearlyEqual(oldLine.end, newLine.end)) || 
+      (arePointsNearlyEqual(oldLine.end, newLine.end) && !arePointsNearlyEqual(oldLine.start, newLine.start)) ||
+      (arePointsNearlyEqual(oldLine.start, newLine.end) && !arePointsNearlyEqual(oldLine.end, newLine.start)) ||
+      (arePointsNearlyEqual(oldLine.end, newLine.start) && !arePointsNearlyEqual(oldLine.start, newLine.end)) ||
+      // Or both endpoints are the same (line wasn't modified)
+      (arePointsNearlyEqual(oldLine.start, newLine.start) && arePointsNearlyEqual(oldLine.end, newLine.end)) ||
+      (arePointsNearlyEqual(oldLine.start, newLine.end) && arePointsNearlyEqual(oldLine.end, newLine.start))
+    );
+    
+    if (matchingNewLineIndex !== -1) {
+      modifiedLineMap.set(oldIndex, newLines[matchingNewLineIndex]);
+    }
+  });
+  
+  // Now update air entries based on this mapping
+  const newAirEntries = [...airEntries];
+  let entriesUpdated = false;
+  
+  newAirEntries.forEach((entry, index) => {
+    // Find the index of this entry's line in the old lines array
+    const oldLineIndex = oldLines.findIndex(oldLine => 
+      (arePointsNearlyEqual(oldLine.start, entry.line.start) && arePointsNearlyEqual(oldLine.end, entry.line.end)) ||
+      (arePointsNearlyEqual(oldLine.start, entry.line.end) && arePointsNearlyEqual(oldLine.end, entry.line.start))
+    );
+    
+    if (oldLineIndex !== -1 && modifiedLineMap.has(oldLineIndex)) {
+      const newLine = modifiedLineMap.get(oldLineIndex)!;
+      
+      // Calculate the relative position along the old line
+      const oldLineLength = getLineLength(entry.line);
+      const distanceFromStart = distanceToLineSegment(entry.position, entry.line.start, entry.position);
+      const relativePosition = distanceFromStart / oldLineLength;
+      
+      // Apply that same relative position to the new line
+      const newLineLength = getLineLength(newLine);
+      const newPosition = calculatePositionAlongWall(newLine, {
+        x: newLine.start.x + (newLine.end.x - newLine.start.x) * relativePosition,
+        y: newLine.start.y + (newLine.end.y - newLine.start.y) * relativePosition
+      });
+      
+      // Update the entry
+      newAirEntries[index] = {
+        ...entry,
+        line: newLine,
+        position: newPosition
+      };
+      
+      entriesUpdated = true;
+    }
+  });
+  
+  // If any entries were updated, update the state
+  if (entriesUpdated && onAirEntriesUpdate) {
+    console.log("Updating air entries state with:", newAirEntries);
+    onAirEntriesUpdate(newAirEntries);
+  }
+};
+
+The issue might also be related to how you're calculating the relative position. Let's improve the calculatePositionAlongWall function to be more precise:
+
+typescriptCopyconst calculatePositionAlongWall = (line: Line, point: Point): Point => {
+  try {
+    // Get the vector of the line
+    const lineVector = {
+      x: line.end.x - line.start.x,
+      y: line.end.y - line.start.y
+    };
+    
+    // Calculate line length
+    const lineLength = Math.sqrt(lineVector.x * lineVector.x + lineVector.y * lineVector.y);
+    if (lineLength === 0) return line.start;
+    
+    // Project the point onto the line
+    const projectedPoint = getPointOnLine(line, point);
+    
+    // Calculate the relative position (0-1)
+    const relativePos = Math.sqrt(
+      Math.pow(projectedPoint.x - line.start.x, 2) + 
+      Math.pow(projectedPoint.y - line.start.y, 2)
+    ) / lineLength;
+    
+    // Apply margins to prevent edges
+    const margin = 10; // pixels
+    const marginFactor = margin / lineLength;
+    const boundedRelativePos = Math.max(marginFactor, Math.min(1 - marginFactor, relativePos));
+    
+    // Calculate the final position
+    return {
+      x: line.start.x + lineVector.x * boundedRelativePos,
+      y: line.start.y + lineVector.y * boundedRelativePos
+    };
+  } catch (error) {
+    console.error("Error in calculatePositionAlongWall:", error);
+    return point;
+  }
+};
+
+Make sure both implementations (in the component and in the useEffect) are synchronized and use the same logic.
+
+The underlying issue is likely that your air entries are losing their association with their walls because the line comparison is failing. This improved implementation should track the lines through their modifications and ensure the air entries stay properly attached.
+If this doesn't solve the problem, try adding additional debugging output to see exactly which part is failing - whether it's finding the modified lines or calculating the new positions.

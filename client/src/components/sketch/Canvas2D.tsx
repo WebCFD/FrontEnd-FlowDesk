@@ -66,6 +66,33 @@ const calculateNormal = (line: Line): Point => {
   };
 };
 
+
+// Point comparison utilities
+const arePointsEqual = (p1: Point, p2: Point): boolean => {
+  const dx = p1.x - p2.x;
+  const dy = p1.y - p2.y;
+  return Math.sqrt(dx * dx + dy * dy) < 1;
+};
+
+const arePointsNearlyEqual = (p1: Point, p2: Point): boolean => {
+  const dx = p1.x - p2.x;
+  const dy = p1.y - p2.y;
+  return Math.sqrt(dx * dx + dy * dy) < 1;
+};
+
+const arePointsClose = (p1: Point, p2: Point): boolean => {
+  const dx = p1.x - p2.x;
+  const dy = p1.y - p2.y;
+  return Math.sqrt(dx * dx + dy * dy) < SNAP_DISTANCE;
+};
+
+// Line calculation utilities
+const getLineLength = (line: Line): number => {
+  const dx = line.end.x - line.start.x;
+  const dy = line.end.y - line.start.y;
+  return Math.sqrt(dx * dx + dy * dy);
+};
+
 const getPointOnLine = (line: Line, point: Point): Point => {
   const dx = line.end.x - line.start.x;
   const dy = line.end.y - line.start.y;
@@ -82,26 +109,282 @@ const getPointOnLine = (line: Line, point: Point): Point => {
   };
 };
 
+const distanceToLineSegment = (point: Point, lineStart: Point, lineEnd: Point): number => {
+  const A = point.x - lineStart.x;
+  const B = point.y - lineStart.y;
+  const C = lineEnd.x - lineStart.x;
+  const D = lineEnd.y - lineStart.y;
+
+  const dot = A * C + B * D;
+  const lenSq = C * C + D * D;
+  let param = -1;
+
+  if (lenSq !== 0) param = dot / lenSq;
+
+  let xx, yy;
+
+  if (param < 0) {
+    xx = lineStart.x;
+    yy = lineStart.y;
+  } else if (param > 1) {
+    xx = lineEnd.x;
+    yy = lineEnd.y;
+  } else {
+    xx = lineStart.x + param * C;
+    yy = lineStart.y + param * D;
+  }
+
+  const dx = point.x - xx;
+  const dy = point.y - yy;
+
+  return Math.sqrt(dx * dx + dy * dy);
+};
+
+// Air entry position utilities
+const calculatePositionAlongWall = (line: Line, point: Point): Point => {
+  try {
+    console.log("Calculating position along wall:", {
+      line: { start: line.start, end: line.end },
+      point
+    });
+
+    const lineVector = {
+      x: line.end.x - line.start.x,
+      y: line.end.y - line.start.y
+    };
+
+    const lineLength = Math.sqrt(lineVector.x * lineVector.x + lineVector.y * lineVector.y);
+    if (lineLength === 0) {
+      console.warn("Zero length line detected");
+      return line.start;
+    }
+
+    const unitVector = {
+      x: lineVector.x / lineLength,
+      y: lineVector.y / lineLength
+    };
+
+    const pointVector = {
+      x: point.x - line.start.x,
+      y: point.y - line.start.y
+    };
+
+    const dotProduct = pointVector.x * unitVector.x + pointVector.y * unitVector.y;
+
+    const margin = 20; 
+    const clampedDot = Math.max(margin, Math.min(lineLength - margin, dotProduct));
+
+    const finalPosition = {
+      x: line.start.x + unitVector.x * clampedDot,
+      y: line.start.y + unitVector.y * clampedDot
+    };
+
+    console.log("Position calculation:", {
+      lineLength,
+      dotProduct,
+      clampedDot,
+      finalPosition
+    });
+
+    return finalPosition;
+  } catch (error) {
+    console.error("Error in calculatePositionAlongWall:", error);
+    return point;
+  }
+};
+
+// Line identification and position mapping
+const getLineIdentifier = (line: Line): string => {
+  const [x1, y1, x2, y2] = [
+    Math.round(line.start.x),
+    Math.round(line.start.y),
+    Math.round(line.end.x),
+    Math.round(line.end.y)
+  ].sort();
+  return `${x1},${y1}_${x2},${y2}`;
+};
+
+const getRelativePositionOnLine = (point: Point, line: Line): number => {
+  const dx = line.end.x - line.start.x;
+  const dy = line.end.y - line.start.y;
+  const lineLength = Math.sqrt(dx * dx + dy * dy);
+
+  if (lineLength === 0) return 0;
+
+  const px = point.x - line.start.x;
+  const py = point.y - line.start.y;
+
+  const dot = (px * dx + py * dy) / (lineLength * lineLength);
+
+  return Math.max(0, Math.min(1, dot));
+};
+
+const getPointAtRelativePosition = (line: Line, relativePos: number): Point => {
+  const t = Math.max(0, Math.min(1, relativePos));
+
+  return {
+    x: line.start.x + (line.end.x - line.start.x) * t,
+    y: line.start.y + (line.end.y - line.start.y) * t
+  };
+};
+
+const updateAirEntriesWithWalls = (newLines: Line[], oldLines: Line[]) => {
+  console.log("Updating air entries with walls");
+
+  if (airEntries.length === 0) return;
+
+  const modifiedLineMap = new Map<number, Line>();
+
+  oldLines.forEach((oldLine, oldIndex) => {
+    const matchingNewLineIndex = newLines.findIndex(newLine =>
+      (arePointsNearlyEqual(oldLine.start, newLine.start) && !arePointsNearlyEqual(oldLine.end, newLine.end)) ||
+      (arePointsNearlyEqual(oldLine.end, newLine.end) && !arePointsNearlyEqual(oldLine.start, newLine.start)) ||
+      (arePointsNearlyEqual(oldLine.start, newLine.end) && !arePointsNearlyEqual(oldLine.end, newLine.start)) ||
+      (arePointsNearlyEqual(oldLine.end, newLine.start) && !arePointsNearlyEqual(oldLine.start, newLine.end)) ||
+      (arePointsNearlyEqual(oldLine.start, newLine.start) && arePointsNearlyEqual(oldLine.end, newLine.end)) ||
+      (arePointsNearlyEqual(oldLine.start, newLine.end) && arePointsNearlyEqual(oldLine.end, newLine.start))
+    );
+
+    if (matchingNewLineIndex !== -1) {
+      modifiedLineMap.set(oldIndex, newLines[matchingNewLineIndex]);
+    }
+  });
+
+  const newAirEntries = [...airEntries];
+  let entriesUpdated = false;
+
+  newAirEntries.forEach((entry, index) => {
+    const entryLineKey = getLineIdentifier(entry.line);
+    const updatedLine = modifiedLineMap.get(oldLines.findIndex(line => getLineIdentifier(line) === entryLineKey));
+
+    if (updatedLine) {
+      const relativePos = getRelativePositionOnLine(entry.position, entry.line);
+      const newPosition = getPointAtRelativePosition(updatedLine, relativePos);
+
+      newAirEntries[index] = {
+        ...entry,
+        line: updatedLine,
+        position: newPosition
+      };
+
+      entriesUpdated = true;
+    }
+  });
+
+  if (entriesUpdated && onAirEntriesUpdate) {
+    console.log("Updating air entries state with:", newAirEntries);
+    onAirEntriesUpdate(newAirEntries);
+  }
+};
+
+// Mouse event handling utilities
+const findAirEntryAtLocation = (clickPoint: Point): { index: number; entry: AirEntry } | null => {
+  console.log("Checking for AirEntry at point:", clickPoint);
+
+  for (let i = 0; i < airEntries.length; i++) {
+    const entry = airEntries[i];
+    const normal = calculateNormal(entry.line);
+    const widthInPixels = cmToPixels(entry.dimensions.width);
+    const halfWidth = widthInPixels / 2;
+
+    const start = {
+      x: entry.position.x - normal.x * halfWidth,
+      y: entry.position.y - normal.y * halfWidth
+    };
+
+    const end = {
+      x: entry.position.x + normal.x * halfWidth,
+      y: entry.position.y + normal.y * halfWidth
+    };
+
+    const distanceToEntry = distanceToLineSegment(clickPoint, start, end);
+    console.log("Distance to entry:", distanceToEntry, "Entry index:", i);
+
+    if (distanceToEntry < 20 / zoom) {
+      console.log("Found AirEntry at index:", i);
+      return { index: i, entry };
+    }
+  }
+
+  console.log("No AirEntry found at point");
+  return null;
+};
+
+// Grid snapping utilities
+const fineDragSnap = (point: Point): Point => {
+  const snapSize = 2;
+  const centerX = dimensions.width / 2;
+  const centerY = dimensions.height / 2;
+
+  const relativeX = point.x - centerX;
+  const relativeY = point.y - centerY;
+
+  const nearestPoint = findNearestEndpoint(point);
+  if (nearestPoint) {
+    return nearestPoint;
+  }
+
+  const snappedX = Math.round(relativeX / snapSize) * snapSize;
+  const snappedY = Math.round(relativeY / snapSize) * snapSize;
+
+  return {
+    x: centerX + snappedX,
+    y: centerY + snappedY
+  };
+};
+
+// Mouse event handlers
+const processMouseMove = (e: MouseEvent) => {
+  const point = getCanvasPoint(e);
+  setHoverPoint(point);
+
+  if (!isDrawing && !isPanning) {
+    const nearestGridPoint = findNearestGridPoint(point);
+    setHoveredGridPoint(nearestGridPoint);
+  }
+
+  if (currentTool === 'wall' && isDrawing && currentLine) {
+    const nearestPoint = findNearestEndpoint(point);
+    const endPoint = nearestPoint || snapToGrid(point);
+    setCurrentLine(prev => prev ? { ...prev, end: endPoint } : null);
+    setCursorPoint(endPoint);
+  } else if (currentTool === 'eraser' || currentAirEntry) {
+    setHighlightedLines(findLinesNearPoint(point));
+  }
+};
+
+const throttleMouseMove = (e: MouseEvent) => {
+  lastMouseMoveEvent = e;
+
+  if (isProcessingMouseMove) return;
+
+  isProcessingMouseMove = true;
+
+  requestAnimationFrame(() => {
+    if (lastMouseMoveEvent) {
+      processMouseMove(lastMouseMoveEvent);
+    }
+    isProcessingMouseMove = false;
+    lastMouseMoveEvent = null;
+  });
+};
 
 const getVisibleGridPoints = (dimensions: { width: number; height: number }, pan: Point, zoom: number): Point[] => {
   const points: Point[] = [];
   const centerX = dimensions.width / 2;
   const centerY = dimensions.height / 2;
-  const snapSize = 2; // 4 pixels = 5cm
+  const snapSize = 2; 
 
-  // Only calculate grid points in the visible area based on current pan and zoom
   const visibleStartX = -pan.x / zoom - snapSize;
   const visibleEndX = (-pan.x + dimensions.width) / zoom + snapSize;
   const visibleStartY = -pan.y / zoom - snapSize;
   const visibleEndY = (-pan.y + dimensions.height) / zoom + snapSize;
 
-  // Calculate steps in grid coordinates
   const startXGrid = Math.floor(visibleStartX / snapSize) * snapSize;
   const endXGrid = Math.ceil(visibleEndX / snapSize) * snapSize;
   const startYGrid = Math.floor(visibleStartY / snapSize) * snapSize;
   const endYGrid = Math.ceil(visibleEndY / snapSize) * snapSize;
 
-  // Limit the maximum number of grid points to avoid performance issues
   const maxPoints = 2000;
   const step = Math.max(snapSize, Math.ceil((endXGrid - startXGrid) * (endYGrid - startYGrid) / maxPoints / snapSize) * snapSize);
 
@@ -235,8 +518,6 @@ export default function Canvas2D({
   };
 
   const handleRegularWheel = (e: WheelEvent) => {
-    // Handle regular scrolling - no need to prevent default
-    // This will be a passive event listener
   };
 
   const handlePanStart = (e: MouseEvent) => {
@@ -282,16 +563,8 @@ export default function Canvas2D({
     };
   };
 
-
-  const getLineLength = (line: Line): number => {
-    const dx = line.end.x - line.start.x;
-    const dy = line.end.y - line.start.y;
-    const lengthInPixels = Math.sqrt(dx * dx + dy * dy);
-    return pixelsToCm(lengthInPixels);
-  };
-
   const snapToGrid = (point: Point): Point => {
-    const snapSize = 4; // 4 pixels = 5cm
+    const snapSize = 4; 
     const centerX = dimensions.width / 2;
     const centerY = dimensions.height / 2;
 
@@ -305,12 +578,6 @@ export default function Canvas2D({
       x: centerX + snappedX,
       y: centerY + snappedY
     };
-  };
-
-  const arePointsClose = (p1: Point, p2: Point): boolean => {
-    const dx = p1.x - p2.x;
-    const dy = p1.y - p2.y;
-    return Math.sqrt(dx * dx + dy * dy) < SNAP_DISTANCE;
   };
 
   const findNearestEndpoint = (point: Point): Point | null => {
@@ -338,13 +605,10 @@ export default function Canvas2D({
     );
   };
 
-  // Create a cache for closed contour results
   const closedContourCache = new Map<string, boolean>();
   const pointKey = (p: Point) => `${Math.round(p.x)},${Math.round(p.y)}`;
 
-  // Add optimized isInClosedContour function
   const isInClosedContour = (point: Point, lines: Line[]): boolean => {
-    // Cache results for points we've already checked
     if (!closedContourCache.has(pointKey(point))) {
       const result = checkClosedContour(point, lines);
       closedContourCache.set(pointKey(point), result);
@@ -353,7 +617,6 @@ export default function Canvas2D({
     return closedContourCache.get(pointKey(point))!;
   };
 
-  // Move the expensive calculation to a separate function
   const checkClosedContour = (point: Point, lines: Line[]): boolean => {
     const arePointsEqual = (p1: Point, p2: Point): boolean => {
       const dx = p1.x - p2.x;
@@ -407,8 +670,8 @@ export default function Canvas2D({
     lines.forEach(line => {
       const A = point.x - line.start.x;
       const B = point.y - line.start.y;
-      const C = line.end.x - line.start.x;
-      const D = line.end.y - line.start.y;
+      const C = lineEnd.x - lineStart.x;
+      const D = lineEnd.y - lineStart.y;
 
       const dot = A * C + B * D;
       const lenSq = C * C + D * D;
@@ -528,7 +791,6 @@ export default function Canvas2D({
     ctx.restore();
   };
 
-  // Memoize grid points calculation
   const visibleGridPoints = useMemo(() =>
     getVisibleGridPoints(dimensions, pan, zoom),
     [dimensions, pan, zoom]
@@ -551,19 +813,16 @@ export default function Canvas2D({
     return nearest;
   };
 
-  // Add findPointAtLocation function after other utility functions
   const findPointAtLocation = (clickPoint: Point): {
     point: Point;
     lines: Line[];
     isStart: boolean[];
   } | null => {
-    // Get all endpoints
     const endpoints = lines.flatMap(line => [
       { point: line.start, line, isStart: true },
       { point: line.end, line, isStart: false }
     ]);
 
-    // Group by position (to handle overlapping endpoints)
     const groupedPoints: Record<string, { point: Point; lines: Line[]; isStart: boolean[] }> = {};
 
     endpoints.forEach(({ point, line, isStart }) => {
@@ -575,14 +834,11 @@ export default function Canvas2D({
       groupedPoints[key].isStart.push(isStart);
     });
 
-    // Find a point near the click location
     for (const key in groupedPoints) {
       const { point, lines, isStart } = groupedPoints[key];
       const dx = clickPoint.x - point.x;
       const dy = clickPoint.y - point.y;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-
-      if (distance < POINT_RADIUS / zoom * 1.5) {  // Making hit area slightly larger than visual radius
+      const distance = Math.sqrt(dx * dx + dy * dy);      if (distance < POINT_RADIUS / zoom * 1.5) {  
         return { point, lines, isStart };
       }
     }
@@ -593,38 +849,30 @@ export default function Canvas2D({
   const processMouseMove = (e: MouseEvent) => {
     const point = getCanvasPoint(e);
 
-    // Always update the hover point when the mouse moves
     setHoverPoint(point);
 
-    // Only calculate nearest grid point when needed (not drawing or panning)
     if (!isDrawing && !isPanning) {
       const nearestGridPoint = findNearestGridPoint(point);
       setHoveredGridPoint(nearestGridPoint);
     }
 
-    // Wall drawing logic
     if (currentTool === 'wall' && isDrawing && currentLine) {
       const nearestPoint = findNearestEndpoint(point);
       const endPoint = nearestPoint || snapToGrid(point);
       setCurrentLine(prev => prev ? { ...prev, end: endPoint } : null);
       setCursorPoint(endPoint);
-    }
-    // Highlighting logic
-    else if (currentTool === 'eraser' || currentAirEntry) {
+    } else if (currentTool === 'eraser' || currentAirEntry) {
       setHighlightedLines(findLinesNearPoint(point));
     }
   };
 
   const throttleMouseMove = (e: MouseEvent) => {
-    // Store the latest mouse event
     lastMouseMoveEvent = e;
 
-    // If we're already processing, don't queue another one
     if (isProcessingMouseMove) return;
 
     isProcessingMouseMove = true;
 
-    // Use requestAnimationFrame to sync with browser's rendering cycle
     requestAnimationFrame(() => {
       if (lastMouseMoveEvent) {
         processMouseMove(lastMouseMoveEvent);
@@ -634,310 +882,21 @@ export default function Canvas2D({
     });
   };
 
-  // Add a helper function for point comparison
-  const arePointsEqual = (p1: Point, p2: Point): boolean => {
-    const dx = p1.x - p2.x;
-    const dy = p1.y - p2.y;
-    return Math.sqrt(dx * dx + dy * dy) < 1; // Small threshold for floating point comparison
-  };
-
-  // Add this function for finer snapping during dragging
-  const fineDragSnap = (point: Point): Point => {
-    // Regular snap size is 4 pixels = 5cm
-    // Let's use half that size for dragging: 2 pixels = 2.5cm
-    const snapSize = 2; // Half the normal snap size
-    const centerX = dimensions.width / 2;
-    const centerY = dimensions.height / 2;
-
-    const relativeX = point.x - centerX;
-    const relativeY = point.y - centerY;
-
-    // Try to snap to nearby endpoints first (same as regular)
-    const nearestPoint = findNearestEndpoint(point);
-    if (nearestPoint) {
-      return nearestPoint;
-    }
-
-    // If no endpoint nearby, snap to the finer grid
-    const snappedX = Math.round(relativeX / snapSize) * snapSize;
-    const snappedY = Math.round(relativeY / snapSize) * snapSize;
-
-    return {
-      x: centerX + snappedX,
-      y: centerY + snappedY
-    };
-  };
-
-  // Helper to check if points are nearly equal (allowing for small floating-point differences)
-  const arePointsNearlyEqual = (p1: Point, p2: Point): boolean => {
-    const dx = p1.x - p2.x;
-    const dy = p1.y - p2.y;
-    return Math.sqrt(dx * dx + dy * dy) < 1;
-  };
-
-  // Add helper functions after existing utility functions
-  const findAirEntryAtLocation = (clickPoint: Point): { index: number; entry: AirEntry } | null => {
-    // Add logging to debug hit detection
-    console.log("Checking for AirEntry at point:", clickPoint);
-
-    for (let i = 0; i < airEntries.length; i++) {
-      const entry = airEntries[i];
-      const normal = calculateNormal(entry.line);
-      const widthInPixels = cmToPixels(entry.dimensions.width);
-      const halfWidth = widthInPixels / 2;
-
-      // Calculate the entry's endpoints
-      const start = {
-        x: entry.position.x - normal.x * halfWidth,
-        y: entry.position.y - normal.y * halfWidth
-      };
-
-      const end = {
-        x: entry.position.x + normal.x * halfWidth,
-        y: entry.position.y + normal.y * halfWidth
-      };
-
-      // Check if click is near the entry's line segment
-      const distanceToEntry = distanceToLineSegment(clickPoint, start, end);
-      console.log("Distance to entry:", distanceToEntry, "Entry index:", i);
-
-      // Increased hit area from 10 to 20
-      if (distanceToEntry < 20 / zoom) {
-        console.log("Found AirEntry at index:", i);
-        return { index: i, entry };
-      }
-    }
-
-    console.log("No AirEntry found at point");
-    return null;
-  };
-
-  // Add distance to line segment helper function
-  const distanceToLineSegment = (point: Point, lineStart: Point, lineEnd: Point): number => {
-    const A = point.x - lineStart.x;
-    const B = point.y - lineStart.y;
-    const C = lineEnd.x - lineStart.x;
-    const D = lineEnd.y - lineStart.y;
-
-    const dot = A * C + B * D;
-    const lenSq = C * C + D * D;
-    let param = -1;
-
-    if (lenSq !== 0) param = dot / lenSq;
-
-    let xx, yy;
-
-    if (param < 0) {
-      xx = lineStart.x;
-      yy = lineStart.y;
-    } else if (param > 1) {
-      xx = lineEnd.x;
-      yy = lineEnd.y;
-    } else {
-      xx = lineStart.x + param * C;
-      yy = lineStart.y + param * D;
-    }
-
-    const dx = point.x - xx;
-    const dy = point.y - yy;
-
-    return Math.sqrt(dx * dx + dy * dy);
-  };
-
-  // Update calculatePositionAlongWall function
-  const calculatePositionAlongWall = (line: Line, point: Point): Point => {
-    try {
-      console.log("Calculating position along wall:", {
-        line: { start: line.start, end: line.end },
-        point
-      });
-
-      // Calculate the vector from start to end of the line
-      const lineVector = {
-        x: line.end.x - line.start.x,
-        y: line.end.y - line.start.y
-      };
-
-      // Calculate the length of the line
-      const lineLength = Math.sqrt(lineVector.x * lineVector.x + lineVector.y * lineVector.y);
-      if (lineLength === 0) {
-        console.warn("Zero length line detected");
-        return line.start;
-      }
-
-      // Calculate the unit vector of the line
-      const unitVector = {
-        x: lineVector.x / lineLength,
-        y: lineVector.y / lineLength
-      };
-
-      // Calculate the vector from line start to point
-      const pointVector = {
-        x: point.x - line.start.x,
-        y: point.y - line.start.y
-      };
-
-      // Calculate the dot product to get the projection length
-      const dotProduct = pointVector.x * unitVector.x + pointVector.y * unitVector.y;
-
-      // Clamp the position to keep it on the line with margins
-      const margin = 20; // pixels from the ends
-      const clampedDot = Math.max(margin, Math.min(lineLength - margin, dotProduct));
-
-      // Calculate the final position
-      const finalPosition = {
-        x: line.start.x + unitVector.x * clampedDot,
-        y: line.start.y + unitVector.y * clampedDot
-      };
-
-      console.log("Position calculation:", {
-        lineLength,
-        dotProduct,
-        clampedDot,
-        finalPosition
-      });
-
-      return finalPosition;
-    } catch (error) {
-      console.error("Error in calculatePositionAlongWall:", error);
-      return point;
-    }
-  };
-
-  // Update the updateAirEntriesWithWalls function
-  const updateAirEntriesWithWalls = (newLines: Line[], oldLines: Line[]) => {
-    console.log("Updating air entries with walls:", {
-      airEntriesCount: airEntries.length,
-      newLinesCount: newLines.length,
-      oldLinesCount: oldLines.length
-    });
-
-    if (airEntries.length === 0) return;
-
-    const newAirEntries = [...airEntries];
-    let entriesUpdated = false;
-
-    // Process each air entry
-    newAirEntries.forEach((entry, index) => {
-      const oldLine = entry.line;
-      console.log(`Processing air entry ${index}:`, {
-        type: entry.type,
-        position: entry.position,
-        line: oldLine
-      });
-
-      // Find the matching new line by comparing endpoints
-      const matchingNewLine = newLines.find(newLine => {
-        // Compare both possible orientations with a small tolerance
-        const matchesForward = 
-          arePointsNearlyEqual(oldLine.start, newLine.start) && 
-          arePointsNearlyEqual(oldLine.end, newLine.end);
-        const matchesReversed = 
-          arePointsNearlyEqual(oldLine.start, newLine.end) && 
-          arePointsNearlyEqual(oldLine.end, newLine.start);
-
-        // Calculate distances for debugging
-        const startDist = Math.sqrt(
-          Math.pow(oldLine.start.x - newLine.start.x, 2) +
-          Math.pow(oldLine.start.y - newLine.start.y, 2)
-        );
-        const endDist = Math.sqrt(
-          Math.pow(oldLine.end.x - newLine.end.x, 2) +
-          Math.pow(oldLine.end.y - newLine.end.y, 2)
-        );
-
-        console.log("Line matching details:", {
-          matchesForward,
-          matchesReversed,
-          startDistance: startDist,
-          endDistance: endDist
-        });
-
-        return matchesForward || matchesReversed;
-      });
-
-      if (matchingNewLine) {
-        console.log("Found matching line:", matchingNewLine);
-
-        // Calculate the current relative position along the old line
-        const oldVector = {
-          x: oldLine.end.x - oldLine.start.x,
-          y: oldLine.end.y - oldLine.start.y
-        };
-        const oldLength = Math.sqrt(oldVector.x * oldVector.x + oldVector.y * oldVector.y);
-
-        // Vector from line start to air entry position
-        const posVector = {
-          x: entry.position.x - oldLine.start.x,
-          y: entry.position.y - oldLine.start.y
-        };
-
-        // Calculate relative position (0-1)
-        const relativePos = (posVector.x * oldVector.x + posVector.y * oldVector.y) / 
-                          (oldLength * oldLength);
-
-        console.log("Position calculation:", {
-          oldLength,
-          relativePos,
-          posVector
-        });
-
-        // Calculate new position maintaining the same relative position
-        const newVector = {
-          x: matchingNewLine.end.x - matchingNewLine.start.x,
-          y: matchingNewLine.end.y - matchingNewLine.start.y
-        };
-
-        const newPosition = {
-          x: matchingNewLine.start.x + newVector.x * relativePos,
-          y: matchingNewLine.start.y + newVector.y * relativePos
-        };
-
-        console.log("New position calculated:", {
-          newPosition,
-          newVector
-        });
-
-        // Update the entry with the new line and position
-        newAirEntries[index] = {
-          ...entry,
-          line: matchingNewLine,
-          position: newPosition
-        };
-
-        entriesUpdated = true;
-      } else {
-        console.warn("No matching line found for air entry:", index);
-      }
-    });
-
-    if (entriesUpdated && onAirEntriesUpdate) {
-      console.log("Updating air entries state with:", newAirEntries);
-      onAirEntriesUpdate(newAirEntries);
-    } else {
-      console.log("No air entries were updated");
-    }
-  };
-
   const handleMouseMove = (e: MouseEvent) => {
-    // Handle AirEntry dragging first
     if (isDraggingAirEntry && draggedAirEntry.index !== -1) {
       const point = getCanvasPoint(e);
       console.log("Mouse move with drag state:", isDraggingAirEntry, draggedAirEntry.index);
-      const entry = draggedAirEntry.entry;
+      const entry= draggedAirEntry.entry;
 
-      // Calculate new position along the wall
       const newPosition = calculatePositionAlongWall(entry.line, point);
       console.log("New position calculated:", newPosition);
 
-      // Create a new array of air entries with the updated position
       const newAirEntries = [...airEntries];
       newAirEntries[draggedAirEntry.index] = {
         ...entry,
         position: newPosition
       };
 
-      // Update air entries through the callback
       if (onAirEntriesUpdate) {
         console.log("Updating air entries with:", newAirEntries);
         onAirEntriesUpdate(newAirEntries);
@@ -947,7 +906,6 @@ export default function Canvas2D({
       return;
     }
 
-    // Handle endpoint dragging
     if (isDraggingEndpoint) {
       const point = getCanvasPoint(e);
       const targetPoint = fineDragSnap(point);
@@ -979,13 +937,9 @@ export default function Canvas2D({
         });
 
         if (linesUpdated) {
-          // Update the lines state first
           onLinesUpdate?.(newLines);
-
-          // Then update any air entries attached to these lines
           updateAirEntriesWithWalls(newLines, oldLines);
 
-          // Update draggedPoint with new line references
           const updatedLines: Line[] = [];
           const updatedIsStart: boolean[] = [];
 
@@ -1012,21 +966,17 @@ export default function Canvas2D({
       }
     }
 
-    // Regular mouse move handling
     throttleMouseMove(e);
   };
 
-  // Update handleMouseDown function to handle right-click on AirEntry elements
   const handleMouseDown = (e: MouseEvent) => {
-    // Handle right-click
     if (e.button === 2) {
       console.log("Right click detected");
-      e.preventDefault(); // Prevent context menu immediately
+      e.preventDefault(); 
 
       const clickPoint = getCanvasPoint(e);
       console.log("Click point:", clickPoint);
 
-      // First, check for AirEntry elements
       const airEntryInfo = findAirEntryAtLocation(clickPoint);
       console.log("Air entry found:", airEntryInfo);
 
@@ -1040,7 +990,6 @@ export default function Canvas2D({
         return;
       }
 
-      // Then check for endpoints
       const pointInfo = findPointAtLocation(clickPoint);
       if (pointInfo) {
         setIsDraggingEndpoint(true);
@@ -1048,12 +997,10 @@ export default function Canvas2D({
         return;
       }
 
-      // Default to panning
       handlePanStart(e);
       return;
     }
 
-    // Rest of your existing handleMouseDown code...
     const clickPoint = getCanvasPoint(e);
 
     if (currentTool === 'wall') {
@@ -1078,7 +1025,6 @@ export default function Canvas2D({
     }
   };
 
-  // Update handleMouseUp to end AirEntry dragging
   const handleMouseUp = (e: MouseEvent) => {
     if (isDraggingAirEntry) {
       setIsDraggingAirEntry(false);
@@ -1108,7 +1054,6 @@ export default function Canvas2D({
     }
   };
 
-  // Update handleMouseLeave to handle AirEntry dragging
   const handleMouseLeave = () => {
     if (isDraggingAirEntry) {
       setIsDraggingAirEntry(false);
@@ -1136,7 +1081,6 @@ export default function Canvas2D({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Add crosshair drawing helper
     const drawCrosshair = (ctx: CanvasRenderingContext2D, point: Point) => {
       const size = 10 / zoom;
 
@@ -1144,11 +1088,9 @@ export default function Canvas2D({
       ctx.strokeStyle = '#718096';
       ctx.lineWidth = 1 / zoom;
 
-      // Horizontal line
       ctx.moveTo(point.x - size, point.y);
       ctx.lineTo(point.x + size, point.y);
 
-      // Vertical line
       ctx.moveTo(point.x, point.y - size);
       ctx.lineTo(point.x, point.y + size);
 
@@ -1165,7 +1107,6 @@ export default function Canvas2D({
       ctx.translate(pan.x, pan.y);
       ctx.scale(zoom, zoom);
 
-      // Only draw grid lines that are visible on screen
       const visibleStartX = -pan.x / zoom;
       const visibleEndX = (-pan.x + dimensions.width) / zoom;
       const visibleStartY = -pan.y / zoom;
@@ -1174,15 +1115,12 @@ export default function Canvas2D({
       const centerX = dimensions.width / 2;
       const centerY = dimensions.height / 2;
 
-      // Draw grid lines with adaptive density based on zoom
       ctx.beginPath();
       ctx.strokeStyle = '#64748b';
       ctx.lineWidth = 1 / zoom;
 
-      // Calculate step size based on zoom level to prevent too many grid lines
       const zoomAdjustedGridSize = Math.max(gridSize, Math.ceil(5 / zoom) * 4);
 
-      // Vertical grid lines
       const startXGrid = Math.floor((visibleStartX - centerX) / zoomAdjustedGridSize) * zoomAdjustedGridSize;
       const endXGrid = Math.ceil((visibleEndX - centerX) / zoomAdjustedGridSize) * zoomAdjustedGridSize;
 
@@ -1191,7 +1129,6 @@ export default function Canvas2D({
         ctx.lineTo(centerX + x, visibleEndY);
       }
 
-      // Horizontal grid lines
       const startYGrid = Math.floor((visibleStartY - centerY) / zoomAdjustedGridSize) * zoomAdjustedGridSize;
       const endYGrid = Math.ceil((visibleEndY - centerY) / zoomAdjustedGridSize) * zoomAdjustedGridSize;
 
@@ -1202,7 +1139,6 @@ export default function Canvas2D({
 
       ctx.stroke();
 
-      // Draw coordinate system
       const coordSystem = createCoordinateSystem();
       coordSystem.forEach((line, index) => {
         ctx.beginPath();
@@ -1213,9 +1149,7 @@ export default function Canvas2D({
         ctx.stroke();
       });
 
-      // Batch similar operations to reduce context switches
 
-      // Draw walls/lines
       lines.forEach(line => {
         if (highlightedLines.includes(line)) {
           ctx.strokeStyle = getHighlightColor();
@@ -1230,7 +1164,6 @@ export default function Canvas2D({
         ctx.stroke();
       });
 
-      // Draw line measurements in one batch
       ctx.font = `${12 / zoom}px sans-serif`;
       ctx.fillStyle = '#64748b';
       lines.forEach(line => {
@@ -1240,7 +1173,6 @@ export default function Canvas2D({
         ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
       });
 
-      // Draw current line if exists
       if (currentLine) {
         ctx.beginPath();
         ctx.strokeStyle = '#00000';
@@ -1255,40 +1187,34 @@ export default function Canvas2D({
         ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
       }
 
-      // Draw air entries
       airEntries.forEach(entry => {
         drawAirEntry(ctx, entry);
       });
 
-      // Draw endpoints with color coding
       const endpoints = [...new Set(lines.flatMap(line => [line.start, line.end]))];
       const endpointColorMap: Record<string, Point[]> = {
-        '#fb923c': [], // orange
-        '#3b82f6': [], // blue
-        '#22c55e': []  // green
+        '#fb923c': [], 
+        '#3b82f6': [], 
+        '#22c55e': []  
       };
 
-      // Group endpoints by color to batch drawing operations
       endpoints.forEach(point => {
         const connections = findConnectedLines(point).length;
-        let color = '#fb923c'; // Default orange
+        let color = '#fb923c'; 
 
         if (connections > 1) {
-          // Check this less frequently - only for corner points
           if (isInClosedContour(point, lines)) {
-            color = '#22c55e'; // Green for closed contours
+            color = '#22c55e'; 
           } else {
-            color = '#3b82f6'; // Blue for connections > 1
+            color = '#3b82f6'; 
           }
         }
 
-        // Ensure color exists in our map
         if (color in endpointColorMap) {
           endpointColorMap[color].push(point);
         }
       });
 
-      // Draw points by color groups
       Object.entries(endpointColorMap).forEach(([color, points]) => {
         ctx.fillStyle = color;
         ctx.beginPath();
@@ -1300,23 +1226,19 @@ export default function Canvas2D({
 
         ctx.fill();
 
-        // Draw coordinate labels
         ctx.font = `${12 / zoom}px sans-serif`;
         points.forEach(point => {
           drawCoordinateLabel(ctx, point, color);
         });
       });
 
-      // Draw cursor point when drawing (unchanged - keeps orange coordinates)
       if (cursorPoint && isDrawing) {
         ctx.font = `${12 / zoom}px sans-serif`;
         drawCoordinateLabel(ctx, cursorPoint, '#fb923c');
       }
 
-      // Draw hover point coordinates (only when not drawing)
       if (hoverPoint && !isDrawing && !isPanning) {
         ctx.font = `${12 / zoom}px sans-serif`;
-        // Use a light gray that's visible but not distracting
         drawCoordinateLabel(ctx, hoverPoint, '#718096');
         drawCrosshair(ctx, hoverPoint);
       }
@@ -1325,15 +1247,13 @@ export default function Canvas2D({
     };
 
     const handleMouseDown = (e: MouseEvent) => {
-      // Handle right-click
       if (e.button === 2) {
         console.log("Right click detected");
-        e.preventDefault(); // Prevent context menu immediately
+        e.preventDefault(); 
 
         const clickPoint = getCanvasPoint(e);
         console.log("Click point:", clickPoint);
 
-        // First, check for AirEntry elements
         const airEntryInfo = findAirEntryAtLocation(clickPoint);
         console.log("Air entry found:", airEntryInfo);
 
@@ -1347,7 +1267,6 @@ export default function Canvas2D({
           return;
         }
 
-        // Then check for endpoints
         const pointInfo = findPointAtLocation(clickPoint);
         if (pointInfo) {
           setIsDraggingEndpoint(true);
@@ -1355,12 +1274,10 @@ export default function Canvas2D({
           return;
         }
 
-        // Default to panning
         handlePanStart(e);
         return;
       }
 
-      // Rest of your existing handleMouseDown code...
       const clickPoint = getCanvasPoint(e);
 
       if (currentTool === 'wall') {
@@ -1385,104 +1302,7 @@ export default function Canvas2D({
       }
     };
 
-    const handleMouseMove = (e: MouseEvent) => {
-      // Handle AirEntry dragging first
-      if (isDraggingAirEntry && draggedAirEntry.index !== -1) {
-        const point = getCanvasPoint(e);
-        console.log("Mouse move with drag state:", isDraggingAirEntry, draggedAirEntry.index);
-        const entry = draggedAirEntry.entry;
-
-        // Calculate new position along the wall
-        const newPosition = calculatePositionAlongWall(entry.line, point);
-        console.log("New position calculated:", newPosition);
-
-        // Create a new array of air entries with the updated position
-        const newAirEntries = [...airEntries];
-        newAirEntries[draggedAirEntry.index] = {
-          ...entry,
-          position: newPosition
-        };
-
-        // Update air entries through the callback
-        if (onAirEntriesUpdate) {
-          console.log("Updating air entries with:", newAirEntries);
-          onAirEntriesUpdate(newAirEntries);
-        } else {
-          console.log("onAirEntriesUpdate callback is missing");
-        }
-        return;
-      }
-
-      // Handle endpoint dragging
-      if (isDraggingEndpoint) {
-        const point = getCanvasPoint(e);
-        const targetPoint = fineDragSnap(point);
-
-        if (draggedPoint.lines.length > 0) {
-          const oldLines = [...lines];
-          const newLines = [...lines];
-          let linesUpdated = false;
-
-          draggedPoint.lines.forEach((line, index) => {
-            const lineIndex = newLines.findIndex(l =>
-              arePointsEqual(l.start, line.start) && arePointsEqual(l.end, line.end)
-            );
-
-            if (lineIndex >= 0) {
-              if (draggedPoint.isStart[index]) {
-                newLines[lineIndex] = {
-                  ...newLines[lineIndex],
-                  start: targetPoint
-                };
-              } else {
-                newLines[lineIndex] = {
-                  ...newLines[lineIndex],
-                  end: targetPoint
-                };
-              }
-              linesUpdated = true;
-            }
-          });
-
-          if (linesUpdated) {
-            // Update the lines state first
-            onLinesUpdate?.(newLines);
-
-            // Then update any air entries attached to these lines
-            updateAirEntriesWithWalls(newLines, oldLines);
-
-            // Update draggedPoint with new line references
-            const updatedLines: Line[] = [];
-            const updatedIsStart: boolean[] = [];
-
-            draggedPoint.lines.forEach((line, index) => {
-              const isStart = draggedPoint.isStart[index];
-              const newLine = newLines.find(l =>
-                (isStart && arePointsEqual(l.start, targetPoint) && arePointsEqual(l.end, line.end)) ||
-                (!isStart && arePointsEqual(l.start, line.start) && arePointsEqual(l.end, targetPoint))
-              );
-
-              if (newLine) {
-                updatedLines.push(newLine);
-                updatedIsStart.push(isStart);
-              }
-            });
-
-            setDraggedPoint({
-              point: targetPoint,
-              lines: updatedLines,
-              isStart: updatedIsStart
-            });
-          }
-          return;
-        }
-      }
-
-      // Regular mouse move handling
-      throttleMouseMove(e);
-    };
-
-    const handleMouseUp = () => {
+    const handleMouseUp = (e: MouseEvent) => {
       if (isDraggingAirEntry) {
         setIsDraggingAirEntry(false);
         setDraggedAirEntry({ index: -1, entry: {} as AirEntry, startPoint: { x: 0, y: 0 } });
@@ -1534,13 +1354,11 @@ export default function Canvas2D({
       }
     };
 
-    // Store the preventDefault reference
     const handleContextMenu = (e: Event) => {
       console.log("Context menu prevented");
       e.preventDefault();
     };
 
-    // Add the event listeners
     canvas.addEventListener('mousedown', handleMouseDown);
     canvas.addEventListener('mousemove', handleMouseMove);
     canvas.addEventListener('mouseup', handleMouseUp);
@@ -1549,12 +1367,9 @@ export default function Canvas2D({
     canvas.addEventListener('wheel', handleRegularWheel, { passive: true });
     canvas.addEventListener('contextmenu', handleContextMenu);
 
-    // Add lastRenderTime at component level
     let lastRenderTime = 0;
 
-    // Animation loop with performance optimization
-    let lastFrameTime = 0;
-    const targetFPS = 30; // Limit to 30 FPS to reduce CPU usage
+    const targetFPS = 30; 
     const frameInterval = 1000 / targetFPS;
     let animationFrameId: number;
 
@@ -1564,7 +1379,6 @@ export default function Canvas2D({
       if (deltaTime > frameInterval) {
         lastFrameTime = currentTime - (deltaTime % frameInterval);
 
-        // Skip rendering frames if there's no user interaction and nothing has changed
         const shouldRender =
           isPanning ||
           isDrawing ||
@@ -1583,10 +1397,9 @@ export default function Canvas2D({
       animationFrameId = requestAnimationFrame(animate);
     };
 
-    // Start the animation loop
+    let lastFrameTime = 0;
     animationFrameId = requestAnimationFrame(animate);
 
-    // Cleanup function
     return () => {
       canvas.removeEventListener('mousedown', handleMouseDown);
       canvas.removeEventListener('mousemove', handleMouseMove);
