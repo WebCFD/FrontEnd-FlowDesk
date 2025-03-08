@@ -105,7 +105,6 @@ export default function Canvas2D({
 
   const gridPointsCache = useRef<Point[]>([]);
   const coordSystemCache = useRef<Line[]>([]);
-  const needsUpdate = useRef<boolean>(true);
 
   const createGridLines = (): Line[] => {
     const gridLines: Line[] = [];
@@ -503,22 +502,14 @@ export default function Canvas2D({
     const ctx = canvas?.getContext('2d');
     if (!canvas || !ctx) return;
 
-    // Only clear and redraw if needed
-    if (!needsUpdate.current) return;
-
-    const startTime = performance.now();
-
     ctx.clearRect(0, 0, dimensions.width, dimensions.height);
     ctx.save();
     ctx.translate(pan.x, pan.y);
     ctx.scale(zoom, zoom);
 
-    // Batch all line drawing operations
     ctx.beginPath();
     ctx.strokeStyle = '#64748b';
     ctx.lineWidth = 1 / zoom;
-
-    // Draw grid lines in a single path
     const gridLines = createGridLines();
     gridLines.forEach(line => {
       ctx.moveTo(line.start.x, line.start.y);
@@ -526,7 +517,6 @@ export default function Canvas2D({
     });
     ctx.stroke();
 
-    // Batch all grid point drawing
     ctx.beginPath();
     ctx.fillStyle = '#e2e8f0';
     calculateGridPoints().forEach(point => {
@@ -535,11 +525,8 @@ export default function Canvas2D({
     });
     ctx.fill();
 
-    // Draw coordinate system in a single path
     const coordSystem = calculateCoordinateSystem();
     ctx.lineWidth = 2 / zoom;
-
-    // X-axis (red)
     ctx.beginPath();
     ctx.strokeStyle = '#ef4444';
     coordSystem.slice(0, 3).forEach(line => {
@@ -548,7 +535,6 @@ export default function Canvas2D({
     });
     ctx.stroke();
 
-    // Y-axis (green)
     ctx.beginPath();
     ctx.strokeStyle = '#22c55e';
     coordSystem.slice(3).forEach(line => {
@@ -557,7 +543,6 @@ export default function Canvas2D({
     });
     ctx.stroke();
 
-    // Batch normal lines
     const normalLines = lines.filter(line => !highlightedLines.includes(line));
     if (normalLines.length > 0) {
       ctx.beginPath();
@@ -570,7 +555,6 @@ export default function Canvas2D({
       ctx.stroke();
     }
 
-    // Batch highlighted lines
     if (highlightedLines.length > 0) {
       ctx.beginPath();
       ctx.strokeStyle = getHighlightColor();
@@ -582,7 +566,6 @@ export default function Canvas2D({
       ctx.stroke();
     }
 
-    // Draw measurements and labels with minimal state changes
     ctx.font = `${12 / zoom}px sans-serif`;
     ctx.fillStyle = '#64748b';
     lines.forEach(line => {
@@ -592,7 +575,6 @@ export default function Canvas2D({
       ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
     });
 
-    // Draw current line if exists
     if (currentLine) {
       ctx.beginPath();
       ctx.strokeStyle = '#000000';
@@ -607,10 +589,8 @@ export default function Canvas2D({
       ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
     }
 
-    // Batch all air entries
     airEntries.forEach(entry => drawAirEntry(ctx, entry));
 
-    // Draw endpoints with minimal state changes
     const endpoints = [...new Set(lines.flatMap(line => [line.start, line.end]))];
     ['#fb923c', '#22c55e', '#3b82f6'].forEach(color => {
       const pointsForColor = endpoints.filter(point => {
@@ -630,23 +610,14 @@ export default function Canvas2D({
       }
     });
 
-    // Draw cursor point if needed
     if (cursorPoint && isDrawing) {
       ctx.font = `${12 / zoom}px sans-serif`;
       drawCoordinateLabel(ctx, cursorPoint, '#fb923c');
     }
 
     ctx.restore();
-    needsUpdate.current = false;
-
-    const endTime = performance.now();
-    const frameTime = endTime - startTime;
-    if (frameTime > 16) {
-      console.debug(`Frame took ${Math.round(frameTime)}ms to render`);
-    }
   };
 
-  // Update the animation loop to use frame skipping
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -656,24 +627,12 @@ export default function Canvas2D({
 
     let frameId: number;
     let lastFrameTime = 0;
-    const targetFrameInterval = 1000 / 30; // Target 30 FPS
-    let skipCount = 0;
+    const targetFrameInterval = 1000 / 60; 
 
     const animate = (timestamp: number) => {
       const elapsed = timestamp - lastFrameTime;
 
-      if (elapsed >= targetFrameInterval) {
-        // Skip frame if we're falling behind
-        if (elapsed >= targetFrameInterval * 2) {
-          skipCount++;
-          if (skipCount > 3) {
-            console.debug(`Skipped ${skipCount} frames due to performance`);
-            skipCount = 0;
-          }
-        } else {
-          skipCount = 0;
-        }
-
+      if (elapsed > targetFrameInterval) {
         lastFrameTime = timestamp - (elapsed % targetFrameInterval);
         optimizedDraw();
       }
@@ -683,7 +642,6 @@ export default function Canvas2D({
 
     frameId = requestAnimationFrame(animate);
 
-    // Restore mouse event handlers
     const handleMouseDown = (e: MouseEvent) => {
       if (panMode || e.button === 2) {
         e.preventDefault();
@@ -699,14 +657,12 @@ export default function Canvas2D({
         setCurrentLine({ start: startPoint, end: startPoint });
         setIsDrawing(true);
         setCursorPoint(startPoint);
-        needsUpdate.current = true;
       } else if (currentTool === 'eraser') {
         const linesToErase = findLinesNearPoint(clickPoint);
         if (linesToErase.length > 0) {
           const newLines = lines.filter(line => !linesToErase.includes(line));
           onLinesUpdate?.(newLines);
           setHighlightedLines([]);
-          needsUpdate.current = true;
         }
       } else if (currentAirEntry && onLineSelect) {
         const selectedLines = findLinesNearPoint(clickPoint);
@@ -717,16 +673,6 @@ export default function Canvas2D({
       }
     };
 
-    let mouseMoveThrottleTimer: number | null = null;
-    const throttleMouseMove = (e: MouseEvent) => {
-      if (!mouseMoveThrottleTimer) {
-        mouseMoveThrottleTimer = window.setTimeout(() => {
-          handleMouseMove(e);
-          mouseMoveThrottleTimer = null;
-        }, 16); // ~60fps throttle
-      }
-    };
-
     const handleMouseMove = (e: MouseEvent) => {
       if (isPanning) {
         handlePanMove(e);
@@ -734,31 +680,18 @@ export default function Canvas2D({
       }
 
       const point = getCanvasPoint(e);
-      const nearestGridPoint = findNearestGridPoint(point);
-
-      if (JSON.stringify(hoveredGridPoint) !== JSON.stringify(nearestGridPoint)) {
-        setHoveredGridPoint(nearestGridPoint);
-        needsUpdate.current = true;
-      }
 
       if (currentTool === 'wall' && isDrawing && currentLine) {
         const nearestPoint = findNearestEndpoint(point);
         const endPoint = nearestPoint || snapToGrid(point);
-        setCurrentLine(prev => {
-          if (prev && (prev.end.x !== endPoint.x || prev.end.y !== endPoint.y)) {
-            needsUpdate.current = true;
-            return { ...prev, end: endPoint };
-          }
-          return prev;
-        });
+        setCurrentLine(prev => prev ? { ...prev, end: endPoint } : null);
         setCursorPoint(endPoint);
       } else if (currentTool === 'eraser' || currentAirEntry) {
-        const newHighlightedLines = findLinesNearPoint(point);
-        if (JSON.stringify(highlightedLines) !== JSON.stringify(newHighlightedLines)) {
-          setHighlightedLines(newHighlightedLines);
-          needsUpdate.current = true;
-        }
+        setHighlightedLines(findLinesNearPoint(point));
       }
+
+      const nearestGridPoint = findNearestGridPoint(point);
+      setHoveredGridPoint(nearestGridPoint);
     };
 
     const handleMouseUp = (e: MouseEvent) => {
@@ -775,7 +708,6 @@ export default function Canvas2D({
         setCurrentLine(null);
         setIsDrawing(false);
         setCursorPoint(null);
-        needsUpdate.current = true;
       }
     };
 
@@ -788,24 +720,19 @@ export default function Canvas2D({
         setIsDrawing(false);
         setCursorPoint(null);
       }
-      needsUpdate.current = true;
     };
 
-    // Add event listeners
     canvas.addEventListener('mousedown', handleMouseDown);
-    canvas.addEventListener('mousemove', throttleMouseMove);
+    canvas.addEventListener('mousemove', handleMouseMove);
     canvas.addEventListener('mouseup', handleMouseUp);
     canvas.addEventListener('mouseleave', handleMouseLeave);
     canvas.addEventListener('wheel', handleWheel, { passive: true });
     canvas.addEventListener('contextmenu', e => e.preventDefault());
 
     return () => {
-      if (mouseMoveThrottleTimer) {
-        clearTimeout(mouseMoveThrottleTimer);
-      }
       cancelAnimationFrame(frameId);
       canvas.removeEventListener('mousedown', handleMouseDown);
-      canvas.removeEventListener('mousemove', throttleMouseMove);
+      canvas.removeEventListener('mousemove', handleMouseMove);
       canvas.removeEventListener('mouseup', handleMouseUp);
       canvas.removeEventListener('mouseleave', handleMouseLeave);
       canvas.removeEventListener('wheel', handleWheel);
@@ -827,7 +754,8 @@ export default function Canvas2D({
     onLineSelect,
     airEntries,
     onLinesUpdate,
-    hoveredGridPoint
+    hoveredGridPoint,
+    gridSize
   ]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
