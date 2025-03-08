@@ -683,10 +683,152 @@ export default function Canvas2D({
 
     frameId = requestAnimationFrame(animate);
 
-    return () => {
-      cancelAnimationFrame(frameId);
+    // Restore mouse event handlers
+    const handleMouseDown = (e: MouseEvent) => {
+      if (panMode || e.button === 2) {
+        e.preventDefault();
+        handlePanStart(e);
+        return;
+      }
+
+      const clickPoint = getCanvasPoint(e);
+
+      if (currentTool === 'wall') {
+        const nearestPoint = findNearestEndpoint(clickPoint);
+        const startPoint = nearestPoint || snapToGrid(clickPoint);
+        setCurrentLine({ start: startPoint, end: startPoint });
+        setIsDrawing(true);
+        setCursorPoint(startPoint);
+        needsUpdate.current = true;
+      } else if (currentTool === 'eraser') {
+        const linesToErase = findLinesNearPoint(clickPoint);
+        if (linesToErase.length > 0) {
+          const newLines = lines.filter(line => !linesToErase.includes(line));
+          onLinesUpdate?.(newLines);
+          setHighlightedLines([]);
+          needsUpdate.current = true;
+        }
+      } else if (currentAirEntry && onLineSelect) {
+        const selectedLines = findLinesNearPoint(clickPoint);
+        if (selectedLines.length > 0) {
+          const exactPoint = getPointOnLine(selectedLines[0], clickPoint);
+          onLineSelect(selectedLines[0], exactPoint);
+        }
+      }
     };
-  }, [dimensions, lines, currentLine, isDrawing, currentTool, highlightedLines, zoom, pan, isPanning, panMode, cursorPoint, currentAirEntry, airEntries]);
+
+    let mouseMoveThrottleTimer: number | null = null;
+    const throttleMouseMove = (e: MouseEvent) => {
+      if (!mouseMoveThrottleTimer) {
+        mouseMoveThrottleTimer = window.setTimeout(() => {
+          handleMouseMove(e);
+          mouseMoveThrottleTimer = null;
+        }, 16); // ~60fps throttle
+      }
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isPanning) {
+        handlePanMove(e);
+        return;
+      }
+
+      const point = getCanvasPoint(e);
+      const nearestGridPoint = findNearestGridPoint(point);
+
+      if (JSON.stringify(hoveredGridPoint) !== JSON.stringify(nearestGridPoint)) {
+        setHoveredGridPoint(nearestGridPoint);
+        needsUpdate.current = true;
+      }
+
+      if (currentTool === 'wall' && isDrawing && currentLine) {
+        const nearestPoint = findNearestEndpoint(point);
+        const endPoint = nearestPoint || snapToGrid(point);
+        setCurrentLine(prev => {
+          if (prev && (prev.end.x !== endPoint.x || prev.end.y !== endPoint.y)) {
+            needsUpdate.current = true;
+            return { ...prev, end: endPoint };
+          }
+          return prev;
+        });
+        setCursorPoint(endPoint);
+      } else if (currentTool === 'eraser' || currentAirEntry) {
+        const newHighlightedLines = findLinesNearPoint(point);
+        if (JSON.stringify(highlightedLines) !== JSON.stringify(newHighlightedLines)) {
+          setHighlightedLines(newHighlightedLines);
+          needsUpdate.current = true;
+        }
+      }
+    };
+
+    const handleMouseUp = (e: MouseEvent) => {
+      if (panMode || e.button === 2) {
+        handlePanEnd();
+        return;
+      }
+
+      if (currentTool === 'wall' && isDrawing && currentLine) {
+        if (currentLine.start.x !== currentLine.end.x || currentLine.start.y !== currentLine.end.y) {
+          const newLines = [...lines, currentLine];
+          onLinesUpdate?.(newLines);
+        }
+        setCurrentLine(null);
+        setIsDrawing(false);
+        setCursorPoint(null);
+        needsUpdate.current = true;
+      }
+    };
+
+    const handleMouseLeave = () => {
+      handlePanEnd();
+      setHighlightedLines([]);
+      setHoveredGridPoint(null);
+      if (isDrawing) {
+        setCurrentLine(null);
+        setIsDrawing(false);
+        setCursorPoint(null);
+      }
+      needsUpdate.current = true;
+    };
+
+    // Add event listeners
+    canvas.addEventListener('mousedown', handleMouseDown);
+    canvas.addEventListener('mousemove', throttleMouseMove);
+    canvas.addEventListener('mouseup', handleMouseUp);
+    canvas.addEventListener('mouseleave', handleMouseLeave);
+    canvas.addEventListener('wheel', handleWheel, { passive: true });
+    canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+    return () => {
+      if (mouseMoveThrottleTimer) {
+        clearTimeout(mouseMoveThrottleTimer);
+      }
+      cancelAnimationFrame(frameId);
+      canvas.removeEventListener('mousedown', handleMouseDown);
+      canvas.removeEventListener('mousemove', throttleMouseMove);
+      canvas.removeEventListener('mouseup', handleMouseUp);
+      canvas.removeEventListener('mouseleave', handleMouseLeave);
+      canvas.removeEventListener('wheel', handleWheel);
+      canvas.removeEventListener('contextmenu', e => e.preventDefault());
+    };
+  }, [
+    dimensions,
+    lines,
+    currentLine,
+    isDrawing,
+    currentTool,
+    highlightedLines,
+    zoom,
+    pan,
+    isPanning,
+    panMode,
+    cursorPoint,
+    currentAirEntry,
+    onLineSelect,
+    airEntries,
+    onLinesUpdate,
+    hoveredGridPoint
+  ]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, '');
