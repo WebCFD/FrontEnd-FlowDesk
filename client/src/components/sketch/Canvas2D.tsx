@@ -747,6 +747,11 @@ export default function Canvas2D({
   // Update calculatePositionAlongWall function
   const calculatePositionAlongWall = (line: Line, point: Point): Point => {
     try {
+      console.log("Calculating position along wall:", {
+        line: { start: line.start, end: line.end },
+        point
+      });
+
       const dx = line.end.x - line.start.x;
       const dy = line.end.y - line.start.y;
       const lineLength = Math.sqrt(dx * dx + dy * dy);
@@ -756,23 +761,30 @@ export default function Canvas2D({
         return line.start;
       }
 
+      console.log("Line length:", lineLength);
+
       // Project point onto line
       const px = point.x - line.start.x;
       const py = point.y - line.start.y;
 
       // Calculate projection scalar
       const projectionScalar = (px * dx + py * dy) / (lineLength * lineLength);
+      console.log("Initial projection scalar:", projectionScalar);
 
       // Add margin to prevent entries from getting too close to endpoints
       const margin = 20; // pixels
       const marginScalar = margin / lineLength;
       const clampedScalar = Math.max(marginScalar, Math.min(1 - marginScalar, projectionScalar));
+      console.log("Clamped scalar:", clampedScalar);
 
       // Calculate final position
-      return {
+      const finalPosition = {
         x: line.start.x + dx * clampedScalar,
         y: line.start.y + dy * clampedScalar
       };
+      console.log("Final calculated position:", finalPosition);
+
+      return finalPosition;
     } catch (error) {
       console.error("Error in calculatePositionAlongWall:", error);
       return point;
@@ -781,6 +793,12 @@ export default function Canvas2D({
 
   // Update the updateAirEntriesWithWalls function
   const updateAirEntriesWithWalls = (newLines: Line[], oldLines: Line[]) => {
+    console.log("Updating air entries with walls:", {
+      airEntriesCount: airEntries.length,
+      newLinesCount: newLines.length,
+      oldLinesCount: oldLines.length
+    });
+
     if (airEntries.length === 0) return;
 
     const newAirEntries = [...airEntries];
@@ -789,6 +807,11 @@ export default function Canvas2D({
     // Process each air entry
     newAirEntries.forEach((entry, index) => {
       const oldLine = entry.line;
+      console.log(`Processing air entry ${index}:`, {
+        type: entry.type,
+        position: entry.position,
+        line: oldLine
+      });
 
       // Find the matching new line by comparing endpoints
       const matchingNewLine = newLines.find(newLine => {
@@ -796,20 +819,38 @@ export default function Canvas2D({
         const endMatch = arePointsNearlyEqual(oldLine.end, newLine.end);
         const reverseMatch = arePointsNearlyEqual(oldLine.start, newLine.end) &&
           arePointsNearlyEqual(oldLine.end, newLine.start);
+
+        console.log("Checking line match:", {
+          startMatch,
+          endMatch,
+          reverseMatch,
+          oldLine,
+          newLine
+        });
+
         return (startMatch && endMatch) || reverseMatch;
       });
 
       if (matchingNewLine) {
+        console.log("Found matching line:", matchingNewLine);
+
         // Calculate relative distance along the line
         const oldLength = Math.sqrt(
           Math.pow(oldLine.end.x - oldLine.start.x, 2) +
           Math.pow(oldLine.end.y - oldLine.start.y, 2)
         );
 
-        // Calculate relative position (0-1) on old line
+                // Calculate relative position (0-1) on old line
         const oldDx = entry.position.x - oldLine.start.x;
         const oldDy = entry.position.y - oldLine.start.y;
         const relativePos = Math.sqrt(oldDx * oldDx + oldDy * oldDy) / oldLength;
+
+        console.log("Position calculation:", {
+          oldLength,
+          relativePos,
+          oldDx,
+          oldDy
+        });
 
         // Apply same relative position to new line
         const newLength = Math.sqrt(
@@ -822,6 +863,11 @@ export default function Canvas2D({
           y: matchingNewLine.start.y + (matchingNewLine.end.y - matchingNewLine.start.y) * relativePos
         };
 
+        console.log("New position calculated:", {
+          newLength,
+          newPosition
+        });
+
         // Update the entry with new line and position
         newAirEntries[index] = {
           ...entry,
@@ -830,11 +876,16 @@ export default function Canvas2D({
         };
 
         entriesUpdated = true;
+      } else {
+        console.warn("No matching line found for air entry:", index);
       }
     });
 
     if (entriesUpdated && onAirEntriesUpdate) {
+      console.log("Updating air entries state with:", newAirEntries);
       onAirEntriesUpdate(newAirEntries);
+    } else {
+      console.log("No air entries were updated");
     }
   };
 
