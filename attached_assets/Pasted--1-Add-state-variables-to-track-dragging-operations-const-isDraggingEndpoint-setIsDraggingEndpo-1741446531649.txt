@@ -1,0 +1,185 @@
+// 1. Add state variables to track dragging operations
+const [isDraggingEndpoint, setIsDraggingEndpoint] = useState(false);
+const [draggedPoint, setDraggedPoint] = useState<{
+  point: Point; 
+  lines: Line[];
+  isStart: boolean[];  // Array of booleans indicating if the point is the start or end of each line
+}>({ point: { x: 0, y: 0 }, lines: [], isStart: [] });
+
+// 2. Add a function to find point at a specific location
+const findPointAtLocation = (clickPoint: Point): { 
+  point: Point; 
+  lines: Line[]; 
+  isStart: boolean[]; 
+} | null => {
+  // Get all endpoints
+  const endpoints = lines.flatMap(line => [
+    { point: line.start, line, isStart: true },
+    { point: line.end, line, isStart: false }
+  ]);
+  
+  // Group by position (to handle overlapping endpoints)
+  const groupedPoints: Record<string, { point: Point; lines: Line[]; isStart: boolean[] }> = {};
+  
+  endpoints.forEach(({ point, line, isStart }) => {
+    const key = `${Math.round(point.x)},${Math.round(point.y)}`;
+    if (!groupedPoints[key]) {
+      groupedPoints[key] = { point, lines: [], isStart: [] };
+    }
+    groupedPoints[key].lines.push(line);
+    groupedPoints[key].isStart.push(isStart);
+  });
+  
+  // Find a point near the click location
+  for (const key in groupedPoints) {
+    const { point, lines, isStart } = groupedPoints[key];
+    const dx = clickPoint.x - point.x;
+    const dy = clickPoint.y - point.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    
+    if (distance < POINT_RADIUS / zoom * 1.5) {  // Making hit area slightly larger than visual radius
+      return { point, lines, isStart };
+    }
+  }
+  
+  return null;
+};
+
+// 3. Modify handleMouseDown to handle right-click on endpoints
+const handleMouseDown = (e: MouseEvent) => {
+  // Standard pan handling (unchanged)
+  if (panMode || e.button === 2) {
+    // Only handle pan if we're not clicking on an endpoint with right click
+    const clickPoint = getCanvasPoint(e);
+    const pointInfo = findPointAtLocation(clickPoint);
+    
+    if (e.button === 2 && pointInfo) {
+      e.preventDefault();
+      setIsDraggingEndpoint(true);
+      setDraggedPoint(pointInfo);
+      return;
+    }
+    
+    e.preventDefault();
+    handlePanStart(e);
+    return;
+  }
+
+  // Rest of your existing handleMouseDown code for drawing, erasing, etc.
+  const clickPoint = getCanvasPoint(e);
+  
+  if (currentTool === 'wall') {
+    // ... existing wall drawing code ...
+  } else if (currentTool === 'eraser') {
+    // ... existing eraser code ...
+  } else if (currentAirEntry && onLineSelect) {
+    // ... existing air entry code ...
+  }
+};
+
+// 4. Update handleMouseMove to handle endpoint dragging
+const handleMouseMove = (e: MouseEvent) => {
+  // This is the existing throttled mouse move handler
+  if (isDraggingEndpoint) {
+    const point = getCanvasPoint(e);
+    
+    // Snap to grid or nearest endpoint
+    const nearestPoint = findNearestEndpoint(point);
+    const targetPoint = nearestPoint || snapToGrid(point);
+    
+    // Update the dragged point
+    setDraggedPoint(prev => ({ ...prev, point: targetPoint }));
+    
+    // Update all connected lines
+    const newLines = [...lines];
+    draggedPoint.lines.forEach((line, index) => {
+      const lineIndex = newLines.findIndex(l => 
+        (l.start.x === line.start.x && l.start.y === line.start.y &&
+         l.end.x === line.end.x && l.end.y === line.end.y)
+      );
+      
+      if (lineIndex >= 0) {
+        if (draggedPoint.isStart[index]) {
+          newLines[lineIndex] = { 
+            ...newLines[lineIndex], 
+            start: targetPoint 
+          };
+        } else {
+          newLines[lineIndex] = { 
+            ...newLines[lineIndex], 
+            end: targetPoint 
+          };
+        }
+      }
+    });
+    
+    // Update the lines state
+    onLinesUpdate?.(newLines);
+    return;
+  }
+  
+  // Your original mouse move handling
+  throttleMouseMove(e);
+};
+
+// 5. Update handleMouseUp to end dragging
+const handleMouseUp = (e: MouseEvent) => {
+  if (isDraggingEndpoint) {
+    setIsDraggingEndpoint(false);
+    setDraggedPoint({ point: { x: 0, y: 0 }, lines: [], isStart: [] });
+    return;
+  }
+  
+  if (panMode || e.button === 2) {
+    handlePanEnd();
+    return;
+  }
+
+  // Rest of your existing handleMouseUp code
+  if (currentTool === 'wall' && isDrawing && currentLine) {
+    // ... existing code for finishing wall drawing ...
+  }
+};
+
+// 6. Update the useEffect to listen for mouse events
+useEffect(() => {
+  const canvas = canvasRef.current;
+  if (!canvas) return;
+
+  // ... existing setup code ...
+
+  // Update the event listeners to use the new handlers
+  canvas.addEventListener('mousedown', handleMouseDown);
+  canvas.addEventListener('mousemove', handleMouseMove);
+  canvas.addEventListener('mouseup', handleMouseUp);
+  canvas.addEventListener('mouseleave', handleMouseLeave);
+  
+  // ... rest of your existing useEffect code ...
+
+  return () => {
+    canvas.removeEventListener('mousedown', handleMouseDown);
+    canvas.removeEventListener('mousemove', handleMouseMove);
+    canvas.removeEventListener('mouseup', handleMouseUp);
+    canvas.removeEventListener('mouseleave', handleMouseLeave);
+    // ... other cleanup ...
+  };
+}, [/* your existing dependencies */]);
+
+// 7. Update the handleMouseLeave function to handle endpoint dragging
+const handleMouseLeave = () => {
+  if (isDraggingEndpoint) {
+    setIsDraggingEndpoint(false);
+    setDraggedPoint({ point: { x: 0, y: 0 }, lines: [], isStart: [] });
+  }
+  
+  handlePanEnd();
+  setHighlightedLines([]);
+  setHoveredGridPoint(null);
+  setHoverPoint(null);
+  
+  if (isDrawing) {
+    setCurrentLine(null);
+    setIsDrawing(false);
+    setCursorPoint(null);
+  }
+};
