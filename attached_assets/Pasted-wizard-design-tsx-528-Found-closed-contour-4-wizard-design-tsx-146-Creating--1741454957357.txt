@@ -1,0 +1,349 @@
+wizard-design.tsx:528 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+wizard-design.tsx:146 Creating new vent air entry:
+wizard-design.tsx:147 Position: (297.16573859840025, 272.0040534125711)
+wizard-design.tsx:148 Dimensions: width=50cm, height=50cm
+wizard-design.tsx:149 Wall normal: (-0.758, -0.653)
+Canvas2D.tsx:1300 Right click detected
+Canvas2D.tsx:1304 Click point: {x: 404.6713650431541, y: 148.71196853166848}
+Canvas2D.tsx:681 Checking for AirEntry at point: {x: 404.6713650431541, y: 148.71196853166848}
+Canvas2D.tsx:702 Distance to entry: 143.58034686289292 Entry index: 0
+Canvas2D.tsx:711 No AirEntry found at point
+Canvas2D.tsx:1308 Air entry found: null
+Canvas2D.tsx:1509 Context menu prevented
+wizard-design.tsx:528 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:796 Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+Canvas2D.tsx:810 Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: true, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:835 Found matching line: {start: {…}, end: {…}}
+Canvas2D.tsx:848 Position calculation: {oldLength: 343.1850812608264, relativePos: 0.47693866697142734, oldDx: -106.83426140159975, oldDy: 124.00405341257112}
+Canvas2D.tsx:866 New position calculated: {newLength: 343.1850812608264, newPosition: {…}}
+Canvas2D.tsx:885 Updating air entries state with: [{…}]
+wizard-design.tsx:528 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:796 Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+Canvas2D.tsx:810 Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: true, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:835 Found matching line: {start: {…}, end: {…}}
+Canvas2D.tsx:848 Position calculation: {oldLength: 343.1850812608264, relativePos: 0.47693866697142734, oldDx: -106.83426140159975, oldDy: 124.00405341257112}
+Canvas2D.tsx:866 New position calculated: {newLength: 343.1850812608264, newPosition: {…}}
+Canvas2D.tsx:885 Updating air entries state with: [{…}]
+wizard-design.tsx:528 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+ Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+ Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: true, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Found matching line: {start: {…}, end: {…}}
+ Position calculation: {oldLength: 343.1850812608264, relativePos: 0.47693866697142734, oldDx: -106.83426140159975, oldDy: 124.00405341257112}
+ New position calculated: {newLength: 343.1850812608264, newPosition: {…}}
+ Updating air entries state with: [{…}]
+ Found closed contour: (4) [{…}, {…}, {…}, {…}]
+ Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+ Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:888 No air entries were updated
+wizard-design.tsx:528 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:796 Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+Canvas2D.tsx:810 Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:888 No air entries were updated
+wizard-design.tsx:528 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:796 Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+Canvas2D.tsx:810 Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:888 No air entries were updated
+wizard-design.tsx:528 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:796 Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+Canvas2D.tsx:810 Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:888 No air entries were updated
+wizard-design.tsx:528 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:796 Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+Canvas2D.tsx:810 Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:888 No air entries were updated
+wizard-design.tsx:528 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:796 Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+Canvas2D.tsx:810 Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:888 No air entries were updated
+wizard-design.tsx:528 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:796 Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+Canvas2D.tsx:810 Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:888 No air entries were updated
+ Found closed contour: (4) [{…}, {…}, {…}, {…}]
+ Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+ Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ No air entries were updated
+ Found closed contour: (4) [{…}, {…}, {…}, {…}]
+ Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+ Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ No air entries were updated
+ Found closed contour: (4) [{…}, {…}, {…}, {…}]
+ Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+ Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ No air entries were updated
+ Found closed contour: (4) [{…}, {…}, {…}, {…}]
+ Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+ Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ No air entries were updated
+ Found closed contour: (4) [{…}, {…}, {…}, {…}]
+ Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+ Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ No air entries were updated
+ Found closed contour: (4) [{…}, {…}, {…}, {…}]
+ Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+ Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ No air entries were updated
+ Found closed contour: (4) [{…}, {…}, {…}, {…}]
+ Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+ Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ No air entries were updated
+ Found closed contour: (4) [{…}, {…}, {…}, {…}]
+ Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+ Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ No air entries were updated
+ Found closed contour: (4) [{…}, {…}, {…}, {…}]
+ Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+ Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:888 No air entries were updated
+wizard-design.tsx:528 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:796 Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+Canvas2D.tsx:810 Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:888 No air entries were updated
+wizard-design.tsx:528 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:796 Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+Canvas2D.tsx:810 Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:888 No air entries were updated
+wizard-design.tsx:528 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:796 Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+Canvas2D.tsx:810 Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:888 No air entries were updated
+wizard-design.tsx:528 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:796 Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+Canvas2D.tsx:810 Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:888 No air entries were updated
+wizard-design.tsx:528 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:796 Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+Canvas2D.tsx:810 Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:888 No air entries were updated
+wizard-design.tsx:528 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:796 Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+Canvas2D.tsx:810 Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:888 No air entries were updated
+ Found closed contour: (4) [{…}, {…}, {…}, {…}]
+ Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+ Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ No air entries were updated
+ Found closed contour: (4) [{…}, {…}, {…}, {…}]
+ Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+ Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ No air entries were updated
+ Found closed contour: (4) [{…}, {…}, {…}, {…}]
+ Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+ Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ No air entries were updated
+ Found closed contour: (4) [{…}, {…}, {…}, {…}]
+ Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+ Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ No air entries were updated
+ Found closed contour: (4) [{…}, {…}, {…}, {…}]
+ Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+ Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ No air entries were updated
+ Found closed contour: (4) [{…}, {…}, {…}, {…}]
+ Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+ Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ No air entries were updated
+ Found closed contour: (4) [{…}, {…}, {…}, {…}]
+ Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+ Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+ Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:888 No air entries were updated
+wizard-design.tsx:528 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:796 Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+Canvas2D.tsx:810 Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:888 No air entries were updated
+wizard-design.tsx:528 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:796 Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+Canvas2D.tsx:810 Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:888 No air entries were updated
+wizard-design.tsx:528 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:796 Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+Canvas2D.tsx:810 Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:888 No air entries were updated
+wizard-design.tsx:528 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:796 Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+Canvas2D.tsx:810 Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:888 No air entries were updated
+wizard-design.tsx:528 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:796 Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+Canvas2D.tsx:810 Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:888 No air entries were updated
+wizard-design.tsx:528 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:796 Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+Canvas2D.tsx:810 Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:888 No air entries were updated
+wizard-design.tsx:528 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:796 Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+Canvas2D.tsx:810 Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:888 No air entries were updated
+wizard-design.tsx:528 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:796 Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+Canvas2D.tsx:810 Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:888 No air entries were updated
+wizard-design.tsx:528 Found closed contour: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:796 Updating air entries with walls: {airEntriesCount: 1, newLinesCount: 4, oldLinesCount: 4}
+Canvas2D.tsx:810 Processing air entry 0: {type: 'vent', position: {…}, line: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: false, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:823 Checking line match: {startMatch: false, endMatch: true, reverseMatch: false, oldLine: {…}, newLine: {…}}
+Canvas2D.tsx:888 No air entries were updated
