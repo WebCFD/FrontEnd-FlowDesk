@@ -737,52 +737,84 @@ export default function Canvas2D({
     return Math.sqrt(dx * dx + dy * dy);
   };
 
-  // Add function to calculate a new position along the wall
+  // Update calculatePositionAlongWall function
   const calculatePositionAlongWall = (line: Line, point: Point): Point => {
-    // Project the point onto the line
-    const projectedPoint = getPointOnLine(line, point);
+    try {
+      // Project the point onto the line
+      const projectedPoint = getPointOnLine(line, point);
+      console.log("Projected point:", projectedPoint);
 
-    // Create a buffer near the ends of the wall to prevent the entry from going off the line
-    const dx = line.end.x - line.start.x;
-    const dy = line.end.y - line.start.y;
-    const lineLength = Math.sqrt(dx * dx + dy * dy);
+      // Create a buffer near the ends of the wall to prevent the entry from going off the line
+      const dx = line.end.x - line.start.x;
+      const dy = line.end.y - line.start.y;
+      const lineLength = Math.sqrt(dx * dx + dy * dy);
+      console.log("Line length:", lineLength);
 
-    // Calculate unit vector along the line
-    const ux = dx / lineLength;
-    const uy = dy / lineLength;
+      // Calculate unit vector along the line
+      const ux = dx / lineLength;
+      const uy = dy / lineLength;
 
-    // Calculate the position along the line as a scalar
-    const ax = projectedPoint.x - line.start.x;
-    const ay = projectedPoint.y - line.start.y;
-    const position = (ax * ux + ay * uy);
+      // Calculate the position along the line as a scalar
+      const ax = projectedPoint.x - line.start.x;
+      const ay = projectedPoint.y - line.start.y;
+      const position = (ax * ux + ay * uy);
+      console.log("Position along line:", position);
 
-    // Enforce bounds (keep a small margin from the ends)
-    const margin = 10; // Minimum 10px from each end
-    const boundedPosition = Math.max(margin, Math.min(lineLength - margin, position));
+      // Enforce bounds (keep a small margin from the ends)
+      const margin = 10; // Minimum 10px from each end
+      const boundedPosition = Math.max(margin, Math.min(lineLength - margin, position));
 
-    // Convert back to x,y coordinates
-    return {
-      x: line.start.x + boundedPosition * ux,
-      y: line.start.y + boundedPosition * uy
-    };
+      // Convert back to x,y coordinates
+      const newPosition = {
+        x: line.start.x + boundedPosition * ux,
+        y: line.start.y + boundedPosition * uy
+      };
+      console.log("New calculated position:", newPosition);
+      return newPosition;
+    } catch (error) {
+      console.error("Error calculating position:", error);
+      return point; // Return original point on error
+    }
   };
 
-  // Replace the existing handleMouseMove function with this improved version
   const handleMouseMove = (e: MouseEvent) => {
+    // Handle AirEntry dragging first
+    if (isDraggingAirEntry && draggedAirEntry.index !== -1) {
+      const point = getCanvasPoint(e);
+      console.log("Mouse move with drag state:", isDraggingAirEntry, draggedAirEntry.index);
+      const entry = draggedAirEntry.entry;
+
+      // Calculate new position along the wall
+      const newPosition = calculatePositionAlongWall(entry.line, point);
+      console.log("New position calculated:", newPosition);
+
+      // Create a new array of air entries with the updated position
+      const newAirEntries = [...airEntries];
+      newAirEntries[draggedAirEntry.index] = {
+        ...entry,
+        position: newPosition
+      };
+
+      // Update air entries through the callback
+      if (onAirEntriesUpdate) {
+        console.log("Updating air entries with:", newAirEntries);
+        onAirEntriesUpdate(newAirEntries);
+      } else {
+        console.log("onAirEntriesUpdate callback is missing");
+      }
+      return;
+    }
+
+    // Rest of the existing handleMouseMove code...
     if (isDraggingEndpoint) {
       const point = getCanvasPoint(e);
-
-      // For dragging, use the finer snapping function
       const targetPoint = fineDragSnap(point);
 
-      // Store lineIDs instead of line references for reliable tracking
       if (draggedPoint.lines.length > 0) {
-        // Create a new array of lines with the updated positions
         const newLines = [...lines];
         let linesUpdated = false;
 
         draggedPoint.lines.forEach((line, index) => {
-          // Find the line by comparing coordinates
           const lineIndex = newLines.findIndex(l =>
             arePointsEqual(l.start, line.start) && arePointsEqual(l.end, line.end)
           );
@@ -804,10 +836,8 @@ export default function Canvas2D({
         });
 
         if (linesUpdated) {
-          // Update the lines state
           onLinesUpdate?.(newLines);
 
-          // Update draggedPoint with the new line references and point position
           const updatedLines: Line[] = [];
           const updatedIsStart: boolean[] = [];
 
@@ -831,27 +861,6 @@ export default function Canvas2D({
           });
         }
       }
-      return;
-    }
-
-    // Handle AirEntry dragging
-    if (isDraggingAirEntry && draggedAirEntry.index !== -1) {
-      const point = getCanvasPoint(e);
-      const entry = draggedAirEntry.entry;
-
-      // Calculate new position along the wall
-      const newPosition = calculatePositionAlongWall(entry.line, point);      // Create a new arrayofair entries with the updated position
-      const newAirEntries = [...airEntries];
-      newAirEntries[draggedAirEntry.index] = {
-        ...entry,
-        position: newPosition
-      };
-
-      // If there's a way to update the air entries in the parent component
-      if (onAirEntriesUpdate) {
-        onAirEntriesUpdate(newAirEntries);
-      }
-
       return;
     }
 
@@ -1232,10 +1241,12 @@ export default function Canvas2D({
       // Handle AirEntry dragging first
       if (isDraggingAirEntry && draggedAirEntry.index !== -1) {
         const point = getCanvasPoint(e);
+        console.log("Mouse move with drag state:", isDraggingAirEntry, draggedAirEntry.index);
         const entry = draggedAirEntry.entry;
 
         // Calculate new position along the wall
         const newPosition = calculatePositionAlongWall(entry.line, point);
+        console.log("New position calculated:", newPosition);
 
         // Create a new array of air entries with the updated position
         const newAirEntries = [...airEntries];
@@ -1246,7 +1257,10 @@ export default function Canvas2D({
 
         // Update air entries through the callback
         if (onAirEntriesUpdate) {
+          console.log("Updating air entries with:", newAirEntries);
           onAirEntriesUpdate(newAirEntries);
+        } else {
+          console.log("onAirEntriesUpdate callback is missing");
         }
         return;
       }

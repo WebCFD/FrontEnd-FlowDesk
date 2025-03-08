@@ -1,0 +1,59 @@
+Based on the console logs, it appears the detection part of the functionality is working correctly - your right-clicks are being detected, the context menu is being prevented, and the AirEntry element is being found (index 1 with a very close distance).
+The issue seems to be with how the dragging is being handled after detection. Here are the key things to check:
+
+Check if draggedAirEntry state is being updated correctly:
+Add a console log right after setting the state to confirm:
+javascriptCopysetDraggedAirEntry({
+  index: airEntryInfo.index,
+  entry: airEntryInfo.entry,
+  startPoint: clickPoint
+});
+console.log("Set dragged air entry:", { index: airEntryInfo.index, entry: airEntryInfo.entry });
+
+Check if isDraggingAirEntry state is being set correctly:
+Add another console log:
+javascriptCopysetIsDraggingAirEntry(true);
+console.log("isDraggingAirEntry set to true");
+
+Verify the mouse move handler is responding to the drag state:
+At the beginning of the mouse move handler, add:
+javascriptCopyconsole.log("Mouse move with drag state:", isDraggingAirEntry, draggedAirEntry.index);
+
+Check if the onAirEntriesUpdate callback is being passed and called:
+Add logs to verify the callback:
+javascriptCopyif (onAirEntriesUpdate) {
+  console.log("Updating air entries with:", newAirEntries);
+  onAirEntriesUpdate(newAirEntries);
+} else {
+  console.log("onAirEntriesUpdate callback is missing");
+}
+
+Verify that the parent component is passing down the onAirEntriesUpdate prop:
+This would need to be checked in the parent component that uses Canvas2D.
+Ensure there's no silent error in calculatePositionAlongWall:
+Add error handling and logging:
+javascriptCopyconst calculatePositionAlongWall = (line: Line, point: Point): Point => {
+  try {
+    // Existing calculation logic
+    console.log("New position calculated:", newPosition);
+    return newPosition;
+  } catch (error) {
+    console.error("Error calculating position:", error);
+    return entry.position; // Return original position on error
+  }
+};
+
+Check for React state update batching issues:
+React batches state updates, and sometimes this can cause issues with sequential updates. Try adding a slight delay between setting the drag state and the first move handling:
+javascriptCopysetIsDraggingAirEntry(true);
+setDraggedAirEntry({
+  index: airEntryInfo.index,
+  entry: airEntryInfo.entry,
+  startPoint: clickPoint
+});
+
+// Force an update to ensure state is propagated
+setTimeout(() => console.log("Drag state ready"), 0);
+
+
+Based on your logs, there's a clear indication that the detection works, but something is going wrong with either the state updates or the mouse move handling. Adding these logs will help pinpoint exactly where the process is breaking down.
