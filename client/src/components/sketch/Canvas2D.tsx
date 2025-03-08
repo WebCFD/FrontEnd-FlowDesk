@@ -580,7 +580,6 @@ export default function Canvas2D({
     return null;
   };
 
-
   const processMouseMove = (e: MouseEvent) => {
     const point = getCanvasPoint(e);
 
@@ -625,6 +624,85 @@ export default function Canvas2D({
     });
   };
 
+  // Add a helper function for point comparison
+  const arePointsEqual = (p1: Point, p2: Point): boolean => {
+    const dx = p1.x - p2.x;
+    const dy = p1.y - p2.y;
+    return Math.sqrt(dx * dx + dy * dy) < 1; // Small threshold for floating point comparison
+  };
+
+  // Replace handleMouseMove with improved version
+  const handleMouseMove = (e: MouseEvent) => {
+    if (isDraggingEndpoint) {
+      const point = getCanvasPoint(e);
+
+      // Snap to grid or nearest endpoint
+      const nearestPoint = findNearestEndpoint(point);
+      const targetPoint = nearestPoint || snapToGrid(point);
+
+      // Store lineIDs instead of line references for reliable tracking
+      if (draggedPoint.lines.length > 0) {
+        // Create a new array of lines with the updated positions
+        const newLines = [...lines];
+        let linesUpdated = false;
+
+        draggedPoint.lines.forEach((line, index) => {
+          // Find the line by comparing coordinates
+          const lineIndex = newLines.findIndex(l =>
+            arePointsEqual(l.start, line.start) && arePointsEqual(l.end, line.end)
+          );
+
+          if (lineIndex >= 0) {
+            if (draggedPoint.isStart[index]) {
+              newLines[lineIndex] = {
+                ...newLines[lineIndex],
+                start: targetPoint
+              };
+            } else {
+              newLines[lineIndex] = {
+                ...newLines[lineIndex],
+                end: targetPoint
+              };
+            }
+            linesUpdated = true;
+          }
+        });
+
+        if (linesUpdated) {
+          // Update the lines state
+          onLinesUpdate?.(newLines);
+
+          // Update draggedPoint with the new line references and point position
+          // This is the key step: we need to update our references to point to the new lines
+          const updatedLines: Line[] = [];
+          const updatedIsStart: boolean[] = [];
+
+          draggedPoint.lines.forEach((line, index) => {
+            const isStart = draggedPoint.isStart[index];
+            const newLine = newLines.find(l =>
+              (isStart && arePointsEqual(l.start, targetPoint) && arePointsEqual(l.end, line.end)) ||
+              (!isStart && arePointsEqual(l.start, line.start) && arePointsEqual(l.end, targetPoint))
+            );
+
+            if (newLine) {
+              updatedLines.push(newLine);
+              updatedIsStart.push(isStart);
+            }
+          });
+
+          setDraggedPoint({
+            point: targetPoint,
+            lines: updatedLines,
+            isStart: updatedIsStart
+          });
+        }
+      }
+      return;
+    }
+
+    // Your original mouse move handling
+    throttleMouseMove(e);
+  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -869,34 +947,63 @@ export default function Canvas2D({
         const nearestPoint = findNearestEndpoint(point);
         const targetPoint = nearestPoint || snapToGrid(point);
 
-        // Update the dragged point
-        setDraggedPoint(prev => ({ ...prev, point: targetPoint }));
+        // Store lineIDs instead of line references for reliable tracking
+        if (draggedPoint.lines.length > 0) {
+          // Create a new array of lines with the updated positions
+          const newLines = [...lines];
+          let linesUpdated = false;
 
-        // Update all connected lines
-        const newLines = [...lines];
-        draggedPoint.lines.forEach((line, index) => {
-          const lineIndex = newLines.findIndex(l =>
-            (l.start.x === line.start.x && l.start.y === line.start.y &&
-              l.end.x === line.end.x && l.end.y === line.end.y)
-          );
+          draggedPoint.lines.forEach((line, index) => {
+            // Find the line by comparing coordinates
+            const lineIndex = newLines.findIndex(l =>
+              arePointsEqual(l.start, line.start) && arePointsEqual(l.end, line.end)
+            );
 
-          if (lineIndex >= 0) {
-            if (draggedPoint.isStart[index]) {
-              newLines[lineIndex] = {
-                ...newLines[lineIndex],
-                start: targetPoint
-              };
-            } else {
-              newLines[lineIndex] = {
-                ...newLines[lineIndex],
-                end: targetPoint
-              };
+            if (lineIndex >= 0) {
+              if (draggedPoint.isStart[index]) {
+                newLines[lineIndex] = {
+                  ...newLines[lineIndex],
+                  start: targetPoint
+                };
+              } else {
+                newLines[lineIndex] = {
+                  ...newLines[lineIndex],
+                  end: targetPoint
+                };
+              }
+              linesUpdated = true;
             }
-          }
-        });
+          });
 
-        // Update the lines state
-        onLinesUpdate?.(newLines);
+          if (linesUpdated) {
+            // Update the lines state
+            onLinesUpdate?.(newLines);
+
+            // Update draggedPoint with the new line references and point position
+            // This is the key step: we need to update our references to point to the new lines
+            const updatedLines: Line[] = [];
+            const updatedIsStart: boolean[] = [];
+
+            draggedPoint.lines.forEach((line, index) => {
+              const isStart = draggedPoint.isStart[index];
+              const newLine = newLines.find(l =>
+                (isStart && arePointsEqual(l.start, targetPoint) && arePointsEqual(l.end, line.end)) ||
+                (!isStart && arePointsEqual(l.start, line.start) && arePointsEqual(l.end, targetPoint))
+              );
+
+              if (newLine) {
+                updatedLines.push(newLine);
+                updatedIsStart.push(isStart);
+              }
+            });
+
+            setDraggedPoint({
+              point: targetPoint,
+              lines: updatedLines,
+              isStart: updatedIsStart
+            });
+          }
+        }
         return;
       }
 
