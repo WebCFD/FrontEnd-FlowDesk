@@ -330,6 +330,7 @@ export default function WizardDesign() {
                         );
                       setHasClosedContour(hasClosedContour);
                     }}
+                    onAirEntriesUpdate={setAirEntries}
                   />
                 </div>
               </div>
