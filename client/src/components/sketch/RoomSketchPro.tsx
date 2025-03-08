@@ -269,12 +269,6 @@ export function RoomSketchPro({
     scene.add(floor);
     floorRef.current = floor;
 
-    // Add grid helper aligned with floor in XY plane
-    const gridHelper = new THREE.GridHelper(500, 20);
-    gridHelper.rotation.x = Math.PI / 2; // Rotate to XY plane
-    gridHelper.position.z = 0.1; // Slightly behind floor to avoid z-fighting
-    scene.add(gridHelper);
-
     return scene;
   };
 
@@ -894,7 +888,7 @@ export function RoomSketchPro({
         // Apply Wall's Local Coordinate System approach
         const forward = wallNormalVector.clone();
         const up = new THREE.Vector3(0, 0, 1);
-const right = new THREE.Vector3().crossVectors(up, forward).normalize();
+        const right = new THREE.Vector3().crossVectors(up, forward).normalize();
         forward.crossVectors(right, up).normalize();
         const rotationMatrix = new THREE.Matrix4().makeBasis(
           right,
