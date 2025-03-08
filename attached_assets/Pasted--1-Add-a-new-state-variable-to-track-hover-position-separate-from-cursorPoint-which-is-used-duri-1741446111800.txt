@@ -1,0 +1,89 @@
+// 1. Add a new state variable to track hover position (separate from cursorPoint which is used during drawing)
+const [hoverPoint, setHoverPoint] = useState<Point | null>(null);
+
+// 2. Update the processMouseMove function to track hover position
+const processMouseMove = (e: MouseEvent) => {
+  const point = getCanvasPoint(e);
+  
+  // Always update the hover point when the mouse moves
+  setHoverPoint(point);
+  
+  // Only calculate nearest grid point when needed (not drawing or panning)
+  if (!isDrawing && !isPanning) {
+    const nearestGridPoint = findNearestGridPoint(point);
+    setHoveredGridPoint(nearestGridPoint);
+  }
+
+  // Wall drawing logic - this remains unchanged
+  if (currentTool === 'wall' && isDrawing && currentLine) {
+    const nearestPoint = findNearestEndpoint(point);
+    const endPoint = nearestPoint || snapToGrid(point);
+    setCurrentLine(prev => prev ? { ...prev, end: endPoint } : null);
+    setCursorPoint(endPoint);
+  } 
+  // Highlighting logic - also unchanged
+  else if (currentTool === 'eraser' || currentAirEntry) {
+    setHighlightedLines(findLinesNearPoint(point));
+  }
+};
+
+// 3. Update handleMouseLeave to clear the hover point
+const handleMouseLeave = () => {
+  handlePanEnd();
+  setHighlightedLines([]);
+  setHoveredGridPoint(null);
+  setHoverPoint(null); // Clear hover point when mouse leaves
+  if (isDrawing) {
+    setCurrentLine(null);
+    setIsDrawing(false);
+    setCursorPoint(null);
+  }
+};
+
+// 4. Update the draw function to display hover coordinates
+// Add this to your draw function, just before ctx.restore();
+const draw = () => {
+  // ... existing draw function code ...
+  
+  // Draw cursor point when drawing (unchanged - keeps orange coordinates)
+  if (cursorPoint && isDrawing) {
+    ctx.font = `${12 / zoom}px sans-serif`;
+    drawCoordinateLabel(ctx, cursorPoint, '#fb923c');
+  }
+  
+  // Draw hover point coordinates (only when not drawing)
+  if (hoverPoint && !isDrawing && !isPanning) {
+    ctx.font = `${12 / zoom}px sans-serif`;
+    // Use a different color to distinguish from drawing coordinates
+    // A light gray that's visible but not distracting
+    drawCoordinateLabel(ctx, hoverPoint, '#718096');
+  }
+  
+  ctx.restore();
+};
+
+// Optional: Add a helper function to draw a crosshair at the hover point
+const drawCrosshair = (ctx: CanvasRenderingContext2D, point: Point) => {
+  const size = 10 / zoom;
+  
+  ctx.beginPath();
+  ctx.strokeStyle = '#718096';
+  ctx.lineWidth = 1 / zoom;
+  
+  // Horizontal line
+  ctx.moveTo(point.x - size, point.y);
+  ctx.lineTo(point.x + size, point.y);
+  
+  // Vertical line
+  ctx.moveTo(point.x, point.y - size);
+  ctx.lineTo(point.x, point.y + size);
+  
+  ctx.stroke();
+};
+
+// To use the crosshair, add this to your draw function:
+if (hoverPoint && !isDrawing && !isPanning) {
+  drawCrosshair(ctx, hoverPoint);
+  ctx.font = `${12 / zoom}px sans-serif`;
+  drawCoordinateLabel(ctx, hoverPoint, '#718096');
+}
