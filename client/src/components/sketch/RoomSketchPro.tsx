@@ -886,9 +886,11 @@ export function RoomSketchPro({
             paneGlassMaterial,
           );
 
-          glassPane.position.set(pos[0], pos[1], pos[2]); // Fix the syntax error          ventGroup.add(glassPane);
+          glassPane.position.set(pos[0], pos[1], pos[2]); // Fix the syntax error
+          ventGroup.add(glassPane);
         });
-        // Positionand rotate the vent group        ventGroup.position.set(position.x, position.y, ventZPosition);
+        // Position and rotate the vent group
+        ventGroup.position.set(position.x, position.y, ventZPosition);
         // Apply Wall's Local Coordinate System approach
         const forward = wallNormalVector.clone();
         const up = new THREE.Vector3(0, 0, 1);
@@ -1029,7 +1031,7 @@ export function RoomSketchPro({
     // Frame parameters
     const frameThickness = width * 0.06; // Frame thickness proportional to window width
     const frameDepth = windowDepth;
-    const sillDepth = windowDepth * 1.2; // Slightlydeeper than window
+    const sillDepth = windowDepth * 1.2; // Slightly deeper than window
     const sillHeight = frameThickness * 1.5;
 
     // Create outer frame (top, bottom, left, right)
@@ -1459,43 +1461,79 @@ export function RoomSketchPro({
     furniture,
   ]);
 
-  // Update effect for wall transparency with proper type checking
+  // Update effect for wall transparency with detailed logging
   useEffect(() => {
-    console.log("Wall transparency effect triggered:", wallTransparency);
+    console.log("=== Wall Transparency Effect ===");
+    console.log("Transparency value:", wallTransparency);
+    console.log("Wall material ref exists:", !!wallMaterialRef.current);
+
     if (wallMaterialRef.current && typeof wallTransparency === "number") {
-      console.log("Updating wall material opacity to:", wallTransparency);
+      console.log("Updating wall material:");
+      console.log("- Current opacity:", wallMaterialRef.current.opacity);
+      console.log("- New opacity:", wallTransparency);
+
       wallMaterialRef.current.opacity = wallTransparency;
       wallMaterialRef.current.needsUpdate = true;
+
       if (rendererRef.current && sceneRef.current && cameraRef.current) {
+        console.log("Rendering scene with new transparency");
         rendererRef.current.render(sceneRef.current, cameraRef.current);
+      } else {
+        console.warn("Missing required refs for rendering:", {
+          renderer: !!rendererRef.current,
+          scene: !!sceneRef.current,
+          camera: !!cameraRef.current
+        });
       }
+    } else {
+      console.warn("Cannot update wall transparency:", {
+        materialExists: !!wallMaterialRef.current,
+        transparencyValue: wallTransparency,
+        transparencyType: typeof wallTransparency
+      });
     }
   }, [wallTransparency]);
 
-  const handleDragStart = (item: FurnitureItem) => {
-    console.log("Drag started:", item);
-  };
-
-  // Handle wall transparency changes
+  // Handle wall transparency changes with logging
   const handleWallTransparencyChange = (value: number) => {
-    console.log("Wall transparency change requested:", value);
+    console.log("=== Handle Wall Transparency Change ===");
+    console.log("New value received:", value);
+    console.log("Current wallTransparency:", wallTransparency);
+    console.log("Wall material exists:", !!wallMaterialRef.current);
 
     // Update wall material directly for immediate feedback
     if (wallMaterialRef.current) {
-      console.log("Updating wall material opacity to:", value);
+      console.log("Updating wall material directly:");
+      console.log("- Current opacity:", wallMaterialRef.current.opacity);
+      console.log("- New opacity:", value);
+
       wallMaterialRef.current.opacity = value;
       wallMaterialRef.current.needsUpdate = true;
 
       // Render the scene to show changes
       if (rendererRef.current && sceneRef.current && cameraRef.current) {
+        console.log("Rendering scene with new transparency");
         rendererRef.current.render(sceneRef.current, cameraRef.current);
+      } else {
+        console.warn("Missing required refs for rendering:", {
+          renderer: !!rendererRef.current,
+          scene: !!sceneRef.current,
+          camera: !!cameraRef.current
+        });
       }
+    } else {
+      console.warn("Wall material ref is not available for direct update");
     }
 
     // Notify parent component if callback exists
     if (onWallTransparencyChange) {
+      console.log("Calling parent onWallTransparencyChange with value:", value);
       onWallTransparencyChange(value);
     }
+  };
+
+  const handleDragStart = (item: FurnitureItem) => {
+    console.log("Drag started:", item);
   };
 
   return (
