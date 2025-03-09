@@ -1,12 +1,32 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Point, Line, AirEntry } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Minus, Plus, Move, Eraser, Ruler } from "lucide-react";
 import AirEntryDialog from "./AirEntryDialog";
 
-let isProcessingMouseMove = false;
-let lastMouseMoveEvent: MouseEvent | null = null;
+// Types
+interface Point {
+  x: number;
+  y: number;
+}
+
+interface Line {
+  id: string;
+  start: Point;
+  end: Point;
+}
+
+interface AirEntry {
+  type: "window" | "door" | "vent";
+  position: Point;
+  dimensions: {
+    width: number;
+    height: number;
+    distanceToFloor?: number;
+  };
+  line: Line;
+  lineId: string;
+}
 
 interface HighlightState {
   lines: Line[];
@@ -22,6 +42,9 @@ const ZOOM_STEP = 0.1;
 const GRID_RANGE = 2000;
 const GRID_POINT_RADIUS = 1;
 const HOVER_DISTANCE = 10;
+
+let isProcessingMouseMove = false;
+let lastMouseMoveEvent: MouseEvent | null = null;
 
 const cmToPixels = (cm: number): number => {
   return cm / PIXELS_TO_CM;
@@ -1242,7 +1265,6 @@ export default function Canvas2D({
         ctx.save();
         ctx.strokeStyle = "rgba(75, 85, 99, 0.8)"; // Slightly darker gray with less transparency
         ctx.lineWidth = 2 / zoom;
-        // Remove the setLineDash to make the line continuous
 
         // Draw main line
         ctx.beginPath();
