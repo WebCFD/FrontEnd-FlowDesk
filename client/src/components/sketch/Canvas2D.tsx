@@ -5,6 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Minus, Plus, Move, Eraser, Ruler } from "lucide-react";
 import AirEntryDialog from "./AirEntryDialog";
 
+interface Measurement {
+  start: Point;
+  end: Point;
+  distance: number;
+}
+
 let isProcessingMouseMove = false;
 let lastMouseMoveEvent: MouseEvent | null = null;
 
@@ -217,8 +223,10 @@ interface Canvas2DProps {
   currentAirEntry: "window" | "door" | "vent" | null;
   airEntries: AirEntry[];
   lines: Line[];
+  measurements: Measurement[];
   onLinesUpdate?: (lines: Line[]) => void;
   onAirEntriesUpdate?: (airEntries: AirEntry[]) => void;
+  onMeasurementsUpdate?: (measurements: Measurement[]) => void;
 }
 
 export default function Canvas2D({
@@ -227,8 +235,10 @@ export default function Canvas2D({
   currentAirEntry,
   airEntries = [],
   lines = [],
+  measurements = [],
   onLinesUpdate,
   onAirEntriesUpdate,
+  onMeasurementsUpdate,
 }: Canvas2DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -1007,6 +1017,25 @@ export default function Canvas2D({
         } else {
           setMeasureEnd(clickPoint);
           setIsMeasuring(false);
+
+          // Calculate distance and add the measurement
+          const dx = clickPoint.x - measureStart.x;
+          const dy = clickPoint.y - measureStart.y;
+          const distanceInPixels = Math.sqrt(dx * dx + dy * dy);
+          const distanceInCm = Math.round(pixelsToCm(distanceInPixels));
+
+          const newMeasurement = {
+            start: measureStart,
+            end: clickPoint,
+            distance: distanceInCm,
+          };
+
+          const updatedMeasurements = [...measurements, newMeasurement];
+          onMeasurementsUpdate?.(updatedMeasurements);
+
+          // Reset measurement state for next measurement
+          setMeasureStart(null);
+          setMeasureEnd(null);
         }
         return;
       }
@@ -1227,94 +1256,88 @@ export default function Canvas2D({
       ctx.stroke();
     };
 
-    const drawMeasurement = (ctx: CanvasRenderingContext2D) => {
-      if (measureStart && measureEnd) {
-        const startPoint = measureStart;
-        const endPoint = measureEnd;
+    const drawMeasurement = (ctx: CanvasRenderingContext2D, start: Point, end: Point) => {
+      const dx = end.x - start.x;
+      const dy = end.y - start.y;
+      const distanceInPixels = Math.sqrt(dx * dx + dy * dy);
+      const distanceInCm = Math.round(pixelsToCm(distanceInPixels));
 
-        // Calculate distance in pixels and cm
-        const dx = endPoint.x - startPoint.x;
-        const dy = endPoint.y - startPoint.y;
-        const distanceInPixels = Math.sqrt(dx * dx + dy * dy);
-        const distanceInCm = Math.round(pixelsToCm(distanceInPixels));
+      // Draw arrow line
+      ctx.save();
+      ctx.strokeStyle = "rgba(75, 85, 99, 0.6)"; // Light gray with some transparency
+      ctx.lineWidth = 2 / zoom;
+      ctx.setLineDash([5, 5]); // Dashed line
 
-        // Draw arrow line
-        ctx.save();
-        ctx.strokeStyle = "rgba(75, 85, 99, 0.6)"; // Light gray with some transparency
-        ctx.lineWidth = 2 / zoom;
-        ctx.setLineDash([5, 5]); // Dashed line
+      // Draw main line
+      ctx.beginPath();
+      ctx.moveTo(start.x, start.y);
+      ctx.lineTo(end.x, end.y);
+      ctx.stroke();
 
-        // Draw main line
-        ctx.beginPath();
-        ctx.moveTo(startPoint.x, startPoint.y);
-        ctx.lineTo(endPoint.x, endPoint.y);
-        ctx.stroke();
+      // Reset dash settings for arrows
+      ctx.setLineDash([]);
 
-        // Reset dash settings for arrows
-        ctx.setLineDash([]);
+      // Calculate arrow parameters
+      const angle = Math.atan2(dy, dx);
+      const arrowLength = 15 / zoom;
+      const arrowHeadLength = 10 / zoom;
+      const arrowWidth = 6 / zoom;
 
-        // Calculate arrow parameters
-        const angle = Math.atan2(dy, dx);
-        const arrowLength = 15 / zoom;
-        const arrowHeadLength = 10 / zoom;
-        const arrowWidth = 6 / zoom;
+      // Draw start arrow (pointing outward)
+      ctx.beginPath();
+      // Arrow shaft
+      ctx.moveTo(start.x, start.y);
+      ctx.lineTo(
+        start.x + arrowLength * Math.cos(angle),
+        start.y + arrowLength * Math.sin(angle),
+      );
+      // Arrow head
+      ctx.moveTo(start.x, start.y);
+      ctx.lineTo(
+        start.x + arrowHeadLength * Math.cos(angle) + arrowWidth * Math.sin(angle),
+        start.y + arrowHeadLength * Math.sin(angle) - arrowWidth * Math.cos(angle),
+      );
+      ctx.moveTo(start.x, start.y);
+      ctx.lineTo(
+        start.x + arrowHeadLength * Math.cos(angle) - arrowWidth * Math.sin(angle),
+        start.y + arrowHeadLength * Math.sin(angle) + arrowWidth * Math.cos(angle),
+      );
+      ctx.stroke();
 
-        // Draw start arrow (pointing outward)
-        ctx.beginPath();
-        // Arrow shaft
-        ctx.moveTo(startPoint.x, startPoint.y);
-        ctx.lineTo(
-          startPoint.x + arrowLength * Math.cos(angle),
-          startPoint.y + arrowLength * Math.sin(angle),
-        );
-        // Arrow head
-        ctx.moveTo(startPoint.x, startPoint.y);
-        ctx.lineTo(
-          startPoint.x + arrowHeadLength * Math.cos(angle) + arrowWidth * Math.sin(angle),
-          startPoint.y + arrowHeadLength * Math.sin(angle) - arrowWidth * Math.cos(angle),
-        );
-        ctx.moveTo(startPoint.x, startPoint.y);
-        ctx.lineTo(
-          startPoint.x + arrowHeadLength * Math.cos(angle) - arrowWidth * Math.sin(angle),
-          startPoint.y + arrowHeadLength * Math.sin(angle) + arrowWidth * Math.cos(angle),
-        );
-        ctx.stroke();
+      // Draw end arrow (pointing outward)
+      ctx.beginPath();
+      // Arrow shaft
+      ctx.moveTo(end.x, end.y);
+      ctx.lineTo(
+        end.x - arrowLength * Math.cos(angle),
+        end.y - arrowLength * Math.sin(angle),
+      );
+      // Arrow head
+      ctx.moveTo(end.x, end.y);
+      ctx.lineTo(
+        end.x - arrowHeadLength * Math.cos(angle) + arrowWidth * Math.sin(angle),
+        end.y - arrowHeadLength * Math.sin(angle) - arrowWidth * Math.cos(angle),
+      );
+      ctx.moveTo(end.x, end.y);
+      ctx.lineTo(
+        end.x - arrowHeadLength * Math.cos(angle) - arrowWidth * Math.sin(angle),
+        end.y - arrowHeadLength * Math.sin(angle) + arrowWidth * Math.cos(angle),
+      );
+      ctx.stroke();
 
-        // Draw end arrow (pointing outward)
-        ctx.beginPath();
-        // Arrow shaft
-        ctx.moveTo(endPoint.x, endPoint.y);
-        ctx.lineTo(
-          endPoint.x - arrowLength * Math.cos(angle),
-          endPoint.y - arrowLength * Math.sin(angle),
-        );
-        // Arrow head
-        ctx.moveTo(endPoint.x, endPoint.y);
-        ctx.lineTo(
-          endPoint.x - arrowHeadLength * Math.cos(angle) + arrowWidth * Math.sin(angle),
-          endPoint.y - arrowHeadLength * Math.sin(angle) - arrowWidth * Math.cos(angle),
-        );
-        ctx.moveTo(endPoint.x, endPoint.y);
-        ctx.lineTo(
-          endPoint.x - arrowHeadLength * Math.cos(angle) - arrowWidth * Math.sin(angle),
-          endPoint.y - arrowHeadLength * Math.sin(angle) + arrowWidth * Math.cos(angle),
-        );
-        ctx.stroke();
+      // Draw measurement label
+      const midPoint = {
+        x: (start.x + end.x) / 2,
+        y: (start.y + end.y) / 2,
+      };
 
-        // Draw measurement label
-        const midPoint = {
-          x: (startPoint.x + endPoint.x) / 2,
-          y: (startPoint.y + endPoint.y) / 2,
-        };
+      ctx.font = `${14 / zoom}px Arial`;
+      ctx.fillStyle = "rgba(75, 85, 99, 0.8)";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "bottom";
+      ctx.fillText(`${distanceInCm} cm`, midPoint.x, midPoint.y - 5 / zoom);
 
-        ctx.font = `${14 / zoom}px Arial`;
-        ctx.fillStyle = "rgba(75, 85, 99, 0.8)";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "bottom";
-        ctx.fillText(`${distanceInCm} cm`, midPoint.x, midPoint.y - 5 / zoom);
-
-        ctx.restore();
-      }
+      ctx.restore();
     };
 
     const drawWallMeasurements = (ctx: CanvasRenderingContext2D, line: Line) => {
@@ -1429,7 +1452,7 @@ export default function Canvas2D({
         const midY = (line.start.y + line.end.y) / 2;
         const length = Math.round(getLineLength(line));
         // Removed this line as wall measurements are handled by drawWallMeasurements
-        // ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
+
       });
 
       if (currentLine) {
@@ -1444,7 +1467,7 @@ export default function Canvas2D({
         const midX = (currentLine.start.x + currentLine.end.x) / 2;
         const midY = (currentLine.start.y + currentLine.end.y) / 2;
         // Removed this line as wall measurements are handled by drawWallMeasurements
-        // ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
+
       }
 
       airEntries.forEach((entry, index) => {
@@ -1553,8 +1576,15 @@ export default function Canvas2D({
       }
 
       if (currentTool === "measure") {
-        drawMeasurement(ctx);
+        if (measureStart && measureEnd) {
+          drawMeasurement(ctx, measureStart, measureEnd);
+        }
       }
+
+      // Draw all saved measurements
+      measurements.forEach((measurement) => {
+        drawMeasurement(ctx, measurement.start, measurement.end);
+      });
 
       // Add wall measurements after drawing lines
       lines.forEach((line) => {
@@ -1628,6 +1658,8 @@ export default function Canvas2D({
     measureStart,
     measureEnd,
     isMeasuring,
+    measurements,
+    onMeasurementsUpdate,
   ]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
