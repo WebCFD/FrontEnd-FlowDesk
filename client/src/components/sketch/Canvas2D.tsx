@@ -1304,6 +1304,7 @@ export default function Canvas2D({
       ctx: CanvasRenderingContext2D,
       start: Point,
       end: Point,
+      isHighlighted: boolean = false
     ) => {
       const dx = end.x - start.x;
       const dy = end.y - start.y;
@@ -1312,8 +1313,11 @@ export default function Canvas2D({
 
       // Draw arrow line
       ctx.save();
-      ctx.strokeStyle = "rgba(75, 85, 99, 0.6)"; // Light gray with some transparency
-      ctx.lineWidth = 2 / zoom;
+      // Change color if highlighted
+      ctx.strokeStyle = isHighlighted
+        ? "rgba(239, 68, 68, 0.8)" // Red with more opacity for highlight
+        : "rgba(75, 85, 99, 0.6)"; // Default gray with transparency
+      ctx.lineWidth = isHighlighted ? 3 / zoom : 2 / zoom; // Thicker line when highlighted
       ctx.setLineDash([5, 5]); // Dashed line
 
       // Draw main line
@@ -1345,18 +1349,12 @@ export default function Canvas2D({
         start.x +
           arrowHeadLength * Math.cos(angle) +
           arrowWidth * Math.sin(angle),
-        start.y +
-          arrowHeadLength * Math.sin(angle) -
-          arrowWidth * Math.cos(angle),
+        start.y + arrowHeadLength * Math.sin(angle) - arrowWidth * Math.cos(angle),
       );
       ctx.moveTo(start.x, start.y);
       ctx.lineTo(
-        start.x +
-          arrowHeadLength * Math.cos(angle) -
-          arrowWidth * Math.sin(angle),
-        start.y +
-          arrowHeadLength * Math.sin(angle) +
-          arrowWidth * Math.cos(angle),
+        start.x + arrowHeadLength * Math.cos(angle) - arrowWidth * Math.sin(angle),
+        start.y + arrowHeadLength * Math.sin(angle) + arrowWidth * Math.cos(angle),
       );
       ctx.stroke();
 
@@ -1371,21 +1369,13 @@ export default function Canvas2D({
       // Arrow head
       ctx.moveTo(end.x, end.y);
       ctx.lineTo(
-        end.x -
-          arrowHeadLength * Math.cos(angle) +
-          arrowWidth * Math.sin(angle),
-        end.y -
-          arrowHeadLength * Math.sin(angle) -
-          arrowWidth * Math.cos(angle),
+        end.x - arrowHeadLength * Math.cos(angle) + arrowWidth * Math.sin(angle),
+        end.y - arrowHeadLength * Math.sin(angle) - arrowWidth * Math.cos(angle),
       );
       ctx.moveTo(end.x, end.y);
       ctx.lineTo(
-        end.x -
-          arrowHeadLength * Math.cos(angle) -
-          arrowWidth * Math.sin(angle),
-        end.y -
-          arrowHeadLength * Math.sin(angle) +
-          arrowWidth * Math.cos(angle),
+        end.x - arrowHeadLength * Math.cos(angle) - arrowWidth * Math.sin(angle),
+        end.y - arrowHeadLength * Math.sin(angle) + arrowWidth * Math.cos(angle),
       );
       ctx.stroke();
 
@@ -1396,7 +1386,9 @@ export default function Canvas2D({
       };
 
       ctx.font = `${14 / zoom}px Arial`;
-      ctx.fillStyle = "rgba(75, 85, 99, 0.8)";
+      ctx.fillStyle = isHighlighted
+        ? "rgba(239, 68, 68, 0.8)" // Red text when highlighted
+        : "rgba(75, 85, 99, 0.8)"; // Default gray text
       ctx.textAlign = "center";
       ctx.textBaseline = "bottom";
       ctx.fillText(`${distanceInCm} cm`, midPoint.x, midPoint.y - 5 / zoom);
@@ -1645,13 +1637,11 @@ export default function Canvas2D({
 
         // Draw all saved measurements
         measurements.forEach((measurement, index) => {
-          const isHighlighted = highlightState.measurement?.index === index;
-          ctx.save();
-          if (isHighlighted) {
-            ctx.strokeStyle = "rgba(239, 68, 68, 0.6)"; // Red color for deletion highlight
-          }
-          drawMeasurement(ctx, measurement.start, measurement.end);
-          ctx.restore();
+          const isHighlighted =
+            highlightState.measurement?.index === index ||
+            (currentTool === "eraser" && findMeasurementAtPoint({ x: hoverPoint?.x || 0, y: hoverPoint?.y || 0 }, [measurement])?.index === 0);
+
+          drawMeasurement(ctx, measurement.start, measurement.end, isHighlighted);
         });
       };
       drawMeasurements(ctx);
@@ -1663,6 +1653,98 @@ export default function Canvas2D({
 
       ctx.restore();
     };
+
+    const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value.replace(/[^0-9]/g, "");
+      setZoomInput(value);
+    };
+
+    const handleZoomInputBlur = () => {
+      let newZoom = parseInt(zoomInput) / 100;
+      if (isNaN(newZoom)) {
+        newZoom = zoom;
+      } else {
+        newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newZoom));
+      }
+      handleZoomChange(newZoom);
+    };
+
+    const handleZoomInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        e.currentTarget.blur();
+      }
+    };
+
+    const fineDragSnap = (point: Point): Point => {
+      // Simply return the original point without snapping
+      return point;
+    };
+
+    const handleDoubleClick = (e: MouseEvent) => {
+      const clickPoint = getCanvasPoint(e);
+      const airEntryInfo = findAirEntryAtLocation(clickPoint);
+
+      if (airEntryInfo) {
+        setEditingAirEntry({
+          index: airEntryInfo.index,
+          entry: airEntryInfo.entry,
+        });
+      }
+    };
+
+    const handleEditingAirEntryConfirm = (dimensions: {
+      width: number;
+      height: number;
+      distanceToFloor?: number;
+    }) => {
+      if (!editingAirEntry) return;
+
+      const updatedAirEntries = [...airEntries];
+      updatedAirEntries[editingAirEntry.index] = {
+        ...editingAirEntry.entry,
+        dimensions,
+      };
+
+      onAirEntriesUpdate?.(updatedAirEntries);
+      setEditingAirEntry(null);
+    };
+
+    const handleNewAirEntryConfirm = (dimensions: {
+      width: number;
+      height: number;
+      distanceToFloor?: number;
+    }) => {
+      if (!newAirEntryDetails) return;
+
+      const newAirEntry: AirEntry = {
+        type: newAirEntryDetails.type,
+        position: newAirEntryDetails.position,
+        dimensions,
+        line: newAirEntryDetails.line,
+        lineId: newAirEntryDetails.line.id,
+      };
+
+      onAirEntriesUpdate?.([...airEntries, newAirEntry]);
+      setNewAirEntryDetails(null);
+    };
+
+    const handleContextMenu = (e: Event) => {
+      console.log("Context menu prevented");
+      e.preventDefault();
+    };
+
+    const [currentToolState, setCurrentToolState] = useState<"wall" | "eraser" | "measure" | null>(null);
+    const setCurrentTool = (tool: "wall" | "eraser" | "measure" | null) => {
+      setCurrentToolState(tool);
+    };
+
+    const getCursor = (): string => {
+      if (panMode) return "move";
+      if (currentTool === "measure" && isMeasuring) return "crosshair";
+      if (currentTool === "eraser") return "pointer";
+      return "default";
+    };
+
 
     canvas.addEventListener("mousedown", handleMouseDown);
     canvas.addEventListener("mousemove", handleMouseMove);
@@ -1766,8 +1848,7 @@ export default function Canvas2D({
       setEditingAirEntry({
         index: airEntryInfo.index,
         entry: airEntryInfo.entry,
-      });
-    }
+      });    }
   };
 
   const handleEditingAirEntryConfirm = (dimensions: {
