@@ -869,6 +869,12 @@ export default function Canvas2D({
   };
 
   const handleMouseMove = (e: MouseEvent) => {
+    // Check for panning first
+    if (isPanning) {
+      handlePanMove(e);
+      return;
+    }
+
     if (isDraggingAirEntry && draggedAirEntry.index !== -1) {
       const point = getCanvasPoint(e);
       console.log(
