@@ -1315,6 +1315,7 @@ export default function Canvas2D({
       ctx.translate(pan.x, pan.y);
       ctx.scale(zoom, zoom);
 
+      // Draw grid
       const visibleStartX = -pan.x / zoom;
       const visibleEndX = (-pan.x + dimensions.width) / zoom;
       const visibleStartY = -pan.y / zoom;
@@ -1329,32 +1330,25 @@ export default function Canvas2D({
 
       const zoomAdjustedGridSize = Math.max(gridSize, Math.ceil(5 / zoom) * 4);
 
-      const startXGrid =
-        Math.floor((visibleStartX - centerX) / zoomAdjustedGridSize) *
-        zoomAdjustedGridSize;
-      const endXGrid =
-        Math.ceil((visibleEndX - centerX) / zoomAdjustedGridSize) *
-        zoomAdjustedGridSize;
-
-      for (let x = startXGrid; x <= endXGrid; x += zoomAdjustedGridSize) {
-        ctx.moveTo(centerX + x, visibleStartY);
-        ctx.lineTo(centerX + x, visibleEndY);
+      // Draw vertical grid lines
+      for (let x = Math.floor(visibleStartX / zoomAdjustedGridSize) * zoomAdjustedGridSize;
+           x <= Math.ceil(visibleEndX / zoomAdjustedGridSize) * zoomAdjustedGridSize;
+           x += zoomAdjustedGridSize) {
+        ctx.moveTo(x, visibleStartY);
+        ctx.lineTo(x, visibleEndY);
       }
 
-      const startYGrid =
-        Math.floor((visibleStartY - centerY) / zoomAdjustedGridSize) *
-        zoomAdjustedGridSize;
-      const endYGrid =
-        Math.ceil((visibleEndY - centerY) / zoomAdjustedGridSize) *
-        zoomAdjustedGridSize;
-
-      for (let y = startYGrid; y <= endYGrid; y += zoomAdjustedGridSize) {
-        ctx.moveTo(visibleStartX, centerY + y);
-        ctx.lineTo(visibleEndX, centerY + y);
+      // Draw horizontal grid lines
+      for (let y = Math.floor(visibleStartY / zoomAdjustedGridSize) * zoomAdjustedGridSize;
+           y <= Math.ceil(visibleEndY / zoomAdjustedGridSize) * zoomAdjustedGridSize;
+           y += zoomAdjustedGridSize) {
+        ctx.moveTo(visibleStartX, y);
+        ctx.lineTo(visibleEndX, y);
       }
 
       ctx.stroke();
 
+      // Draw coordinate system
       const coordSystem = createCoordinateSystem();
       coordSystem.forEach((line, index) => {
         ctx.beginPath();
@@ -1365,6 +1359,7 @@ export default function Canvas2D({
         ctx.stroke();
       });
 
+      // Draw lines
       lines.forEach((line) => {
         ctx.strokeStyle = highlightState.lines.includes(line)
           ? getHighlightColor()
@@ -1376,35 +1371,22 @@ export default function Canvas2D({
         ctx.stroke();
       });
 
-      ctx.font = `${12 / zoom}px sans-serif`;
-      ctx.fillStyle = "#64748b";
-      lines.forEach((line) => {
-        const midX = (line.start.x + line.end.x) / 2;
-        const midY = (line.start.y + line.end.y) / 2;
-        const length = Math.round(getLineLength(line));
-        // Removed this line as wall measurements are handled by drawWallMeasurements
-
-      });
-
+      // Draw current line if drawing
       if (currentLine) {
         ctx.beginPath();
-        ctx.strokeStyle = "#00000";
+        ctx.strokeStyle = "#000000";
         ctx.lineWidth = 2 / zoom;
         ctx.moveTo(currentLine.start.x, currentLine.start.y);
         ctx.lineTo(currentLine.end.x, currentLine.end.y);
         ctx.stroke();
-
-        const length = Math.round(getLineLength(currentLine));
-        const midX = (currentLine.start.x + currentLine.end.x) / 2;
-        const midY = (currentLine.start.y + currentLine.end.y) / 2;
-        // Removed this line as wall measurements are handled by drawWallMeasurements
-
       }
 
+      // Draw air entries
       airEntries.forEach((entry, index) => {
         drawAirEntry(ctx, entry, index);
       });
 
+      // Draw endpoints
       const drawEndpoints = () => {
         const drawnPoints = new Set<string>();
 
@@ -1425,92 +1407,99 @@ export default function Canvas2D({
                   point.y,
                   isHovered ? (POINT_RADIUS * 1.5) / zoom : POINT_RADIUS / zoom,
                   0,
-                  Math.PI * 2,
+                  Math.PI * 2
                 );
 
                 if (isHovered) {
-                  ctx.fillStyle = "#fbbf24"; // Amber color for hover
-                  // Add tooltip
+                  ctx.fillStyle = "#fbbf24";
                   ctx.font = `${12 / zoom}px Arial`;
                   ctx.fillStyle = "#000000";
                   ctx.textAlign = "center";
                   ctx.fillText(
                     "Right-click to drag",
                     point.x,
-                    point.y - 15 / zoom,
+                    point.y - 15 / zoom
                   );
                 } else {
-                  ctx.fillStyle = "#3b82f6"; // Blue color
+                  ctx.fillStyle = "#3b82f6";
                 }
 
                 ctx.fill();
               }
-            },
+            }
           );
         });
       };
 
       drawEndpoints();
 
-      const endpoints = [
-        ...new Set(lines.flatMap((line) => [line.start, line.end])),
-      ];
-      const endpointColorMap: Record<string, Point[]> = {
-        "#fb923c": [],
-        "#3b82f6": [],
-        "#22c55e": [],
-      };
+      // Draw measurement if active
+      if (currentTool === "measure" && measureStart && measureEnd) {
+        ctx.save();
+        ctx.strokeStyle = "rgba(75, 85, 99, 0.6)";
+        ctx.lineWidth = 2 / zoom;
 
-      endpoints.forEach((point) => {
-        const connections = findConnectedLines(point).length;
-        let color = "#fb923c";
-
-        if (connections > 1) {
-          if (isInClosedContour(point, lines)) {
-            color = "#22c55e";
-          } else {
-            color = "#3b82f6";
-          }
-        }
-
-        if (color in endpointColorMap) {
-          endpointColorMap[color].push(point);
-        }
-      });
-
-      Object.entries(endpointColorMap).forEach(([color, points]) => {
-        ctx.fillStyle = color;
+        // Draw main line
         ctx.beginPath();
+        ctx.moveTo(measureStart.x, measureStart.y);
+        ctx.lineTo(measureEnd.x, measureEnd.y);
+        ctx.stroke();
 
-        points.forEach((point) => {
-          ctx.moveTo(point.x, point.y);
-          ctx.arc(point.x, point.y, POINT_RADIUS / zoom, 0, 2 * Math.PI);
-        });
+        // Calculate measurement
+        const dx = measureEnd.x - measureStart.x;
+        const dy = measureEnd.y - measureStart.y;
+        const distanceInPixels = Math.sqrt(dx * dx + dy * dy);
+        const distanceInCm = Math.round(pixelsToCm(distanceInPixels));
 
-        ctx.fill();
+        // Calculate arrow parameters
+        const angle = Math.atan2(dy, dx);
+        const arrowLength = 15 / zoom;
+        const arrowAngle = Math.PI / 6;
 
-        ctx.font = `${12 / zoom}px sans-serif`;
-        points.forEach((point) => {
-          drawCoordinateLabel(ctx, point, color);
-        });
-      });
+        // Draw start arrow (pointing outward)
+        ctx.beginPath();
+        ctx.moveTo(measureStart.x, measureStart.y);
+        ctx.lineTo(
+          measureStart.x - arrowLength * Math.cos(angle - arrowAngle),
+          measureStart.y - arrowLength * Math.sin(angle - arrowAngle)
+        );
+        ctx.moveTo(measureStart.x, measureStart.y);
+        ctx.lineTo(
+          measureStart.x - arrowLength * Math.cos(angle + arrowAngle),
+          measureStart.y - arrowLength * Math.sin(angle + arrowAngle)
+        );
+        ctx.stroke();
 
-      if (cursorPoint && isDrawing) {
-        ctx.font = `${12 / zoom}px sans-serif`;
-        drawCoordinateLabel(ctx, cursorPoint, "#fb923c");
+        // Draw end arrow (pointing outward)
+        ctx.beginPath();
+        ctx.moveTo(measureEnd.x, measureEnd.y);
+        ctx.lineTo(
+          measureEnd.x + arrowLength * Math.cos(angle - arrowAngle),
+          measureEnd.y + arrowLength * Math.sin(angle - arrowAngle)
+        );
+        ctx.moveTo(measureEnd.x, measureEnd.y);
+        ctx.lineTo(
+          measureEnd.x + arrowLength * Math.cos(angle + arrowAngle),
+          measureEnd.y + arrowLength * Math.sin(angle + arrowAngle)
+        );
+        ctx.stroke();
+
+        // Draw measurement label
+        const midPoint = {
+          x: (measureStart.x + measureEnd.x) / 2,
+          y: (measureStart.y + measureEnd.y) / 2
+        };
+
+        ctx.font = `${14 / zoom}px Arial`;
+        ctx.fillStyle = "rgba(75, 85, 99, 0.8)";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "bottom";
+        ctx.fillText(`${distanceInCm} cm`, midPoint.x, midPoint.y - 5 / zoom);
+
+        ctx.restore();
       }
 
-      if (hoverPoint && !isDrawing && !isPanning) {
-        ctx.font = `${12 / zoom}px sans-serif`;
-        drawCoordinateLabel(ctx, hoverPoint, "#718096");
-        drawCrosshair(ctx, hoverPoint);
-      }
-
-      if (currentTool === "measure") {
-        drawMeasurement(ctx);
-      }
-
-      // Add wall measurements after drawing lines
+      // Draw wall measurements
       lines.forEach((line) => {
         drawWallMeasurements(ctx, line);
       });
