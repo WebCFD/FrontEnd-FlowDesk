@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { Point, Line, AirEntry } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Minus, Plus, Move } from "lucide-react";
+import { Minus, Plus, Move, Eraser, Ruler } from "lucide-react";
 import AirEntryDialog from "./AirEntryDialog";
 
 let isProcessingMouseMove = false;
@@ -213,7 +213,7 @@ const getPointAtRelativePosition = (line: Line, relativePos: number): Point => {
 
 interface Canvas2DProps {
   gridSize: number;
-  currentTool: "wall" | "eraser" | null;
+  currentTool: "wall" | "eraser" | "measure" | null;
   currentAirEntry: "window" | "door" | "vent" | null;
   airEntries: AirEntry[];
   lines: Line[];
@@ -279,6 +279,9 @@ export default function Canvas2D({
     index: number;
     entry: AirEntry;
   } | null>(null);
+  const [measureStart, setMeasureStart] = useState<Point | null>(null);
+  const [measureEnd, setMeasureEnd] = useState<Point | null>(null);
+  const [isMeasuring, setIsMeasuring] = useState(false);
 
   const createCoordinateSystem = (): Line[] => {
     const centerX = dimensions.width / 2;
@@ -875,6 +878,12 @@ export default function Canvas2D({
       return;
     }
 
+    // Handle measurement preview
+    if (currentTool === "measure" && isMeasuring) {
+      const point = getCanvasPoint(e);
+      setMeasureEnd(point);
+    }
+
     if (isDraggingAirEntry && draggedAirEntry.index !== -1) {
       const point = getCanvasPoint(e);
       console.log(
@@ -965,7 +974,7 @@ export default function Canvas2D({
         setDraggedAirEntry({
           index: airEntryInfo.index,
           entry: airEntryInfo.entry,
-          startPoint: clickPoint,
+          startPoint: clickPoint
         });
         return;
       }
@@ -990,7 +999,18 @@ export default function Canvas2D({
         return;
       }
 
-      // Otherwise, handle normal drawing tools
+      // Handle measurement tool
+      if (currentTool === "measure") {
+        if (!measureStart) {
+          setMeasureStart(clickPoint);
+          setIsMeasuring(true);
+        } else {
+          setMeasureEnd(clickPoint);
+          setIsMeasuring(false);
+        }
+        return;
+      }
+
       if (currentTool === "wall") {
         const nearestPoint = findNearestEndpoint(clickPoint);
         const startPoint = nearestPoint || snapToGrid(clickPoint);
@@ -1047,7 +1067,13 @@ export default function Canvas2D({
       return;
     }
 
-    // Then handle other cases
+    // Clean up measurement when switching tools
+    if (currentTool !== "measure") {
+      setMeasureStart(null);
+      setMeasureEnd(null);
+      setIsMeasuring(false);
+    }
+
     if (isDraggingAirEntry) {
       setIsDraggingAirEntry(false);
       setDraggedAirEntry({
@@ -1199,6 +1225,78 @@ export default function Canvas2D({
       ctx.lineTo(point.x, point.y + size);
 
       ctx.stroke();
+    };
+
+    const drawMeasurement = (ctx: CanvasRenderingContext2D) => {
+      if (measureStart && measureEnd) {
+        const startPoint = measureStart;
+        const endPoint = measureEnd;
+
+        // Calculate distance in pixels and cm
+        const dx = endPoint.x - startPoint.x;
+        const dy = endPoint.y - startPoint.y;
+        const distanceInPixels = Math.sqrt(dx * dx + dy * dy);
+        const distanceInCm = Math.round(pixelsToCm(distanceInPixels));
+
+        // Draw arrow line
+        ctx.save();
+        ctx.strokeStyle = 'rgba(75, 85, 99, 0.6)'; // Light gray with some transparency
+        ctx.lineWidth = 2 / zoom;
+        ctx.setLineDash([5, 5]); // Dashed line
+
+        // Draw main line
+        ctx.beginPath();
+        ctx.moveTo(startPoint.x, startPoint.y);
+        ctx.lineTo(endPoint.x, endPoint.y);
+        ctx.stroke();
+
+        // Calculate arrow head points
+        const angle = Math.atan2(dy, dx);
+        const arrowLength = 15 / zoom;
+        const arrowAngle = Math.PI / 6; // 30 degrees
+
+        // Draw start arrow head
+        ctx.beginPath();
+        ctx.moveTo(startPoint.x, startPoint.y);
+        ctx.lineTo(
+          startPoint.x + arrowLength * Math.cos(angle + Math.PI + arrowAngle),
+          startPoint.y + arrowLength * Math.sin(angle + Math.PI + arrowAngle)
+        );
+        ctx.moveTo(startPoint.x, startPoint.y);
+        ctx.lineTo(
+          startPoint.x + arrowLength * Math.cos(angle + Math.PI - arrowAngle),
+          startPoint.y + arrowLength * Math.sin(angle + Math.PI - arrowAngle)
+        );
+        ctx.stroke();
+
+        // Draw end arrow head
+        ctx.beginPath();
+        ctx.moveTo(endPoint.x, endPoint.y);
+        ctx.lineTo(
+          endPoint.x + arrowLength * Math.cos(angle + arrowAngle),
+          endPoint.y + arrowLength * Math.sin(angle + arrowAngle)
+        );
+        ctx.moveTo(endPoint.x, endPoint.y);
+        ctx.lineTo(
+          endPoint.x + arrowLength * Math.cos(angle - arrowAngle),
+          endPoint.y + arrowLength * Math.sin(angle - arrowAngle)
+        );
+        ctx.stroke();
+
+        // Draw measurement label
+        const midPoint = {
+          x: (startPoint.x + endPoint.x) / 2,
+          y: (startPoint.y + endPoint.y) / 2
+        };
+
+        ctx.font = `${14 / zoom}px Arial`;
+        ctx.fillStyle = 'rgba(75, 85, 99, 0.8)';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(`${distanceInCm} cm`, midPoint.x, midPoint.y - 5 / zoom);
+
+        ctx.restore();
+      }
     };
 
     const draw = () => {
@@ -1401,6 +1499,10 @@ export default function Canvas2D({
         drawCrosshair(ctx, hoverPoint);
       }
 
+      if (currentTool === "measure") {
+        drawMeasurement(ctx);
+      }
+
       ctx.restore();
     };
 
@@ -1465,6 +1567,9 @@ export default function Canvas2D({
     editingAirEntry,
     hoveredAirEntry,
     hoveredEndpoint,
+    measureStart,
+    measureEnd,
+    isMeasuring,
   ]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1491,29 +1596,6 @@ export default function Canvas2D({
   const fineDragSnap = (point: Point): Point => {
     // Simply return the original point without snapping
     return point;
-
-    // Comment out or remove the following code:
-    /*
-    const snapSize = 2;
-    const centerX = dimensions.width / 2;
-    const centerY = dimensions.height / 2;
-
-    const relativeX = point.x - centerX;
-    const relativeY = point.y - centerY;
-
-    const nearestPoint = findNearestEndpoint(point);
-    if (nearestPoint) {
-      return nearestPoint;
-    }
-
-    const snappedX = Math.round(relativeX / snapSize) * snapSize;
-    const snappedY = Math.round(relativeY / snapSize) * snapSize;
-
-    return {
-      x: centerX + snappedX,
-      y: centerY + snappedY
-    };
-    */
   };
 
   const handleDoubleClick = (e: MouseEvent) => {
@@ -1569,6 +1651,11 @@ export default function Canvas2D({
     e.preventDefault();
   };
 
+  const [currentToolState, setCurrentToolState] = useState<"wall" | "eraser" | "measure" | null>(null);
+  const setCurrentTool = (tool: "wall" | "eraser" | "measure" | null) => {
+    setCurrentToolState(tool);
+  };
+
   return (
     <div ref={containerRef} className="w-full h-full relative">
       <canvas
@@ -1616,6 +1703,41 @@ export default function Canvas2D({
         >
           <Move className="h-4 w-4" />
         </Button>
+      </div>
+      <div className="absolute top-4 left-4 flex flex-col gap-2">
+        <div className="flex gap-2 items-center bg-white/80 backdrop-blur-sm p-2 rounded-lg shadow-sm">
+          <span className="text-sm font-medium mr-2">Tools</span>
+          <Button
+            variant={currentToolState === "wall" ? "default" : "outline"}
+            size="icon"
+            onClick={() => {
+              setCurrentTool("wall");
+              setCurrentAirEntry(null);
+            }}
+          >
+            <Minus className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={currentToolState === "eraser" ? "default" : "outline"}
+            size="icon"
+            onClick={() => {
+              setCurrentTool("eraser");
+              setCurrentAirEntry(null);
+            }}
+          >
+            <Eraser className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={currentToolState === "measure" ? "default" : "outline"}
+            size="icon"
+            onClick={() => {
+              setCurrentTool("measure");
+              setCurrentAirEntry(null);
+            }}
+          >
+            <Ruler className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
       {editingAirEntry && (
