@@ -1712,40 +1712,6 @@ export default function Canvas2D({
         </Button>
       </div>
 
-      <div className="absolute top-4 left-4 flex gap-2 items-center bg-white/80 backdrop-blur-sm p-2 rounded-lg shadow-sm">
-        <span className="text-sm font-medium mr-2">Tools</span>
-        <Button
-          variant={currentTool === "wall" ? "default" : "outline"}
-          size="icon"
-          onClick={() => {
-            setCurrentTool(currentTool === "wall" ? null : "wall");
-            setCurrentAirEntry(null);
-          }}
-        >
-          <Minus className="h-4 w-4" />
-        </Button>
-        <Button
-          variant={currentTool === "eraser" ? "default" : "outline"}
-          size="icon"
-          onClick={() => {
-            setCurrentTool(currentTool === "eraser" ? null : "eraser");
-            setCurrentAirEntry(null);
-          }}
-        >
-          <Eraser className="h-4 w-4" />
-        </Button>
-        <Button
-          variant={currentTool === "measure" ? "default" : "outline"}
-          size="icon"
-          onClick={() => {
-            setCurrentTool(currentTool === "measure" ? null : "measure");
-            setCurrentAirEntry(null);
-          }}
-        >
-          <Ruler className="h-4 w-4" />
-        </Button>
-      </div>
-
       {editingAirEntry && (
         <AirEntryDialog
           type={editingAirEntry.entry.type}
@@ -1756,7 +1722,6 @@ export default function Canvas2D({
           initialValues={editingAirEntry.entry.dimensions}
         />
       )}
-
       {newAirEntryDetails && (
         <AirEntryDialog
           type={newAirEntryDetails.type}
