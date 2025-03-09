@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
-import { Save, Upload, Eraser, ArrowRight, ArrowLeft } from "lucide-react";
+import { Save, Upload, Eraser, ArrowRight, ArrowLeft, Ruler } from "lucide-react";
 import Canvas2D from "@/components/sketch/Canvas2D";
 import { RoomSketchPro } from "@/components/sketch/RoomSketchPro"; 
 import { cn } from "@/lib/utils";
@@ -54,7 +54,7 @@ export default function WizardDesign() {
   const [step, setStep] = useState(1);
   const [simulationName, setSimulationName] = useState("");
   const [gridSize, setGridSize] = useState(20);
-  const [currentTool, setCurrentTool] = useState<'wall' | 'eraser' | null>('wall');
+  const [currentTool, setCurrentTool] = useState<'wall' | 'eraser' | 'measure'| null>('wall');
   const [currentAirEntry, setCurrentAirEntry] = useState<'vent' | 'door' | 'window' | null>(null);
   const { toast } = useToast();
   const [isAirEntryDialogOpen, setIsAirEntryDialogOpen] = useState(false);
@@ -81,13 +81,9 @@ export default function WizardDesign() {
     return pixels * (25 / 20);
   };
 
-  const handleToolSelect = (tool: 'wall' | 'eraser') => {
-    if (currentTool === tool) {
-      setCurrentTool(null);
-    } else {
-      setCurrentTool(tool);
-      setCurrentAirEntry(null);
-    }
+  const handleToolSelect = (tool: 'wall' | 'eraser' | 'measure') => {
+    setCurrentTool(tool);
+    setCurrentAirEntry(null);
   };
 
   const handleAirEntrySelect = (entry: 'vent' | 'door' | 'window') => {
@@ -237,7 +233,7 @@ export default function WizardDesign() {
                 <div className="w-48 space-y-6">
                   <div className="space-y-4">
                     <h3 className="font-semibold">Tools</h3>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-3 gap-2">
                       <Button
                         variant={currentTool === 'wall' ? 'default' : 'outline'}
                         className="w-full h-16 flex flex-col items-center justify-center gap-1"
@@ -253,6 +249,14 @@ export default function WizardDesign() {
                       >
                         <Eraser className="w-6 h-6" />
                         <span className="text-xs">Eraser</span>
+                      </Button>
+                      <Button
+                        variant={currentTool === 'measure' ? 'default' : 'outline'}
+                        className="w-full h-16 flex flex-col items-center justify-center gap-1"
+                        onClick={() => handleToolSelect('measure')}
+                      >
+                        <Ruler className="w-6 h-6" />
+                        <span className="text-xs">Measure</span>
                       </Button>
                     </div>
                   </div>

@@ -974,7 +974,7 @@ export default function Canvas2D({
         setDraggedAirEntry({
           index: airEntryInfo.index,
           entry: airEntryInfo.entry,
-          startPoint: clickPoint
+          startPoint: clickPoint,
         });
         return;
       }
@@ -1240,7 +1240,7 @@ export default function Canvas2D({
 
         // Draw arrow line
         ctx.save();
-        ctx.strokeStyle = 'rgba(75, 85, 99, 0.6)'; // Light gray with some transparency
+        ctx.strokeStyle = "rgba(75, 85, 99, 0.6)"; // Light gray with some transparency
         ctx.lineWidth = 2 / zoom;
         ctx.setLineDash([5, 5]); // Dashed line
 
@@ -1260,12 +1260,12 @@ export default function Canvas2D({
         ctx.moveTo(startPoint.x, startPoint.y);
         ctx.lineTo(
           startPoint.x + arrowLength * Math.cos(angle + Math.PI + arrowAngle),
-          startPoint.y + arrowLength * Math.sin(angle + Math.PI + arrowAngle)
+          startPoint.y + arrowLength * Math.sin(angle + Math.PI + arrowAngle),
         );
         ctx.moveTo(startPoint.x, startPoint.y);
         ctx.lineTo(
           startPoint.x + arrowLength * Math.cos(angle + Math.PI - arrowAngle),
-          startPoint.y + arrowLength * Math.sin(angle + Math.PI - arrowAngle)
+          startPoint.y + arrowLength * Math.sin(angle + Math.PI - arrowAngle),
         );
         ctx.stroke();
 
@@ -1274,25 +1274,25 @@ export default function Canvas2D({
         ctx.moveTo(endPoint.x, endPoint.y);
         ctx.lineTo(
           endPoint.x + arrowLength * Math.cos(angle + arrowAngle),
-          endPoint.y + arrowLength * Math.sin(angle + arrowAngle)
+          endPoint.y + arrowLength * Math.sin(angle + arrowAngle),
         );
         ctx.moveTo(endPoint.x, endPoint.y);
         ctx.lineTo(
           endPoint.x + arrowLength * Math.cos(angle - arrowAngle),
-          endPoint.y + arrowLength * Math.sin(angle - arrowAngle)
+          endPoint.y + arrowLength * Math.sin(angle - arrowAngle),
         );
         ctx.stroke();
 
         // Draw measurement label
         const midPoint = {
           x: (startPoint.x + endPoint.x) / 2,
-          y: (startPoint.y + endPoint.y) / 2
+          y: (startPoint.y + endPoint.y) / 2,
         };
 
         ctx.font = `${14 / zoom}px Arial`;
-        ctx.fillStyle = 'rgba(75, 85, 99, 0.8)';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'bottom';
+        ctx.fillStyle = "rgba(75, 85, 99, 0.8)";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "bottom";
         ctx.fillText(`${distanceInCm} cm`, midPoint.x, midPoint.y - 5 / zoom);
 
         ctx.restore();
@@ -1401,45 +1401,44 @@ export default function Canvas2D({
         const drawnPoints = new Set<string>();
 
         lines.forEach((line) => {
-          [
-            { point: line.start, isStart: true },
-            { point: line.end, isStart: false },
-          ].forEach(({ point, isStart }) => {
-            const key = `${Math.round(point.x)},${Math.round(point.y)}`;
-            if (!drawnPoints.has(key)) {
-              drawnPoints.add(key);
+          [{ point: line.start, isStart: true }, { point: line.end, isStart: false }].forEach(
+            ({ point, isStart }) => {
+              const key = `${Math.round(point.x)},${Math.round(point.y)}`;
+              if (!drawnPoints.has(key)) {
+                drawnPoints.add(key);
 
-              const isHovered =
-                hoveredEndpoint?.point &&
-                arePointsNearlyEqual(hoveredEndpoint.point, point);
+                const isHovered =
+                  hoveredEndpoint?.point &&
+                  arePointsNearlyEqual(hoveredEndpoint.point, point);
 
-              ctx.beginPath();
-              ctx.arc(
-                point.x,
-                point.y,
-                isHovered ? (POINT_RADIUS * 1.5) / zoom : POINT_RADIUS / zoom,
-                0,
-                Math.PI * 2,
-              );
-
-              if (isHovered) {
-                ctx.fillStyle = "#fbbf24"; // Amber color for hover
-                // Add tooltip
-                ctx.font = `${12 / zoom}px Arial`;
-                ctx.fillStyle = "#000000";
-                ctx.textAlign = "center";
-                ctx.fillText(
-                  "Right-click to drag",
+                ctx.beginPath();
+                ctx.arc(
                   point.x,
-                  point.y - 15 / zoom,
+                  point.y,
+                  isHovered ? (POINT_RADIUS * 1.5) / zoom : POINT_RADIUS / zoom,
+                  0,
+                  Math.PI * 2,
                 );
-              } else {
-                ctx.fillStyle = "#3b82f6"; // Blue color
-              }
 
-              ctx.fill();
-            }
-          });
+                if (isHovered) {
+                  ctx.fillStyle = "#fbbf24"; // Amber color for hover
+                  // Add tooltip
+                  ctx.font = `${12 / zoom}px Arial`;
+                  ctx.fillStyle = "#000000";
+                  ctx.textAlign = "center";
+                  ctx.fillText(
+                    "Right-click to drag",
+                    point.x,
+                    point.y - 15 / zoom,
+                  );
+                } else {
+                  ctx.fillStyle = "#3b82f6"; // Blue color
+                }
+
+                ctx.fill();
+              }
+            },
+          );
         });
       };
 
@@ -1610,7 +1609,7 @@ export default function Canvas2D({
     }
   };
 
-  const handleAirEntryUpdate = (dimensions: {
+  const handleEditingAirEntryConfirm = (dimensions: {
     width: number;
     height: number;
     distanceToFloor?: number;
@@ -1656,104 +1655,95 @@ export default function Canvas2D({
     setCurrentToolState(tool);
   };
 
+  const getCursor = (): string => {
+    if (panMode) return "move";
+    if (currentTool === "measure" && isMeasuring) return "crosshair";
+    if (currentTool === "eraser") return "pointer";
+    return "default";
+  };
+
+
   return (
-    <div ref={containerRef} className="w-full h-full relative">
+    <div ref={containerRef} className="relative w-full h-full">
       <canvas
         ref={canvasRef}
         width={dimensions.width}
         height={dimensions.height}
-        className={`w-full h-full ${panMode ? "cursor-move" : "cursor-default"}`}
+        className={`w-full h-full`}
+        style={{ cursor: getCursor() }}
       />
-      <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-white/80 p-2 rounded-lg shadow">
+      <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-white/80 p-2 rounded-lg shadow-sm">
         <Button
           variant="outline"
           size="icon"
           onClick={handleZoomOut}
           disabled={zoom <= MIN_ZOOM}
-          className="h-8 w-8"
         >
           <Minus className="h-4 w-4" />
         </Button>
-        <Input
-          type="number"
-          value={zoomInput}
-          onChange={handleZoomInputChange}
-          onBlur={handleZoomInputBlur}
-          onKeyDown={handleZoomInputKeyDown}
-          className="w-16 h-8 text-center text-sm"
-          min={MIN_ZOOM * 100}
-          max={MAX_ZOOM * 100}
-        />
-        <span className="text-sm font-medium -ml-6">%</span>
+        <div className="flex items-center">
+          <Input
+            type="number"
+            value={zoomInput}
+            onChange={handleZoomInputChange}
+            onBlur={handleZoomInputBlur}
+            onKeyDown={handleZoomInputKeyDown}
+            className="w-16 h-8 text-center text-sm"
+            min={MIN_ZOOM * 100}
+            max={MAX_ZOOM * 100}
+          />
+          <span className="text-sm font-medium ml-1">%</span>
+        </div>
         <Button
           variant="outline"
           size="icon"
           onClick={handleZoomIn}
           disabled={zoom >= MAX_ZOOM}
-          className="h-8 w-8"
         >
           <Plus className="h-4 w-4" />
         </Button>
         <div className="w-px h-6 bg-border mx-2" />
         <Button
-          variant={panMode ? "destructive" : "outline"}
+          variant={panMode ? "default" : "outline"}
           size="icon"
           onClick={togglePanMode}
-          className="h-8 w-8"
         >
           <Move className="h-4 w-4" />
         </Button>
       </div>
-      <div className="absolute top-4 left-4 flex flex-col gap-2">
-        <div className="flex gap-2 items-center bg-white/80 backdrop-blur-sm p-2 rounded-lg shadow-sm">
-          <span className="text-sm font-medium mr-2">Tools</span>
-          <Button
-            variant={currentTool === "wall" ? "default" : "outline"}
-            size="icon"
-            onClick={() => {
-              if (currentTool === "wall") {
-                setCurrentTool(null);
-              } else {
-                setCurrentTool("wall");
-                setCurrentAirEntry(null);
-              }
-            }}
-          >
-            <Minus className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={currentTool === "eraser" ? "default" : "outline"}
-            size="icon"
-            onClick={() => {
-              if (currentTool === "eraser") {
-                setCurrentTool(null);
-              } else {
-                setCurrentTool("eraser");
-                setCurrentAirEntry(null);
-              }
-            }}
-          >
-            <Eraser className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={currentTool === "measure" ? "default" : "outline"}
-            size="icon"
-            onClick={() => {
-              if (currentTool === "measure") {
-                setCurrentTool(null);
-                setMeasureStart(null);
-                setMeasureEnd(null);
-                setIsMeasuring(false);
-              } else {
-                setCurrentTool("measure");
-                setCurrentAirEntry(null);
-              }
-            }}
-          >
-            <Ruler className="h-4 w-4" />
-          </Button>
-        </div>
 
+      <div className="absolute top-4 left-4 flex gap-2 items-center bg-white/80 backdrop-blur-sm p-2 rounded-lg shadow-sm">
+        <span className="text-sm font-medium mr-2">Tools</span>
+        <Button
+          variant={currentTool === "wall" ? "default" : "outline"}
+          size="icon"
+          onClick={() => {
+            setCurrentTool(currentTool === "wall" ? null : "wall");
+            setCurrentAirEntry(null);
+          }}
+        >
+          <Minus className="h-4 w-4" />
+        </Button>
+        <Button
+          variant={currentTool === "eraser" ? "default" : "outline"}
+          size="icon"
+          onClick={() => {
+            setCurrentTool(currentTool === "eraser" ? null : "eraser");
+            setCurrentAirEntry(null);
+          }}
+        >
+          <Eraser className="h-4 w-4" />
+        </Button>
+        <Button
+          variant={currentTool === "measure" ? "default" : "outline"}
+          size="icon"
+          onClick={() => {
+            setCurrentTool(currentTool === "measure" ? null : "measure");
+            setCurrentAirEntry(null);
+          }}
+        >
+          <Ruler className="h-4 w-4" />
+        </Button>
       </div>
 
       {editingAirEntry && (
@@ -1761,7 +1751,7 @@ export default function Canvas2D({
           type={editingAirEntry.entry.type}
           isOpen={true}
           onClose={() => setEditingAirEntry(null)}
-          onConfirm={handleAirEntryUpdate}
+          onConfirm={handleEditingAirEntryConfirm}
           isEditing={true}
           initialValues={editingAirEntry.entry.dimensions}
         />
