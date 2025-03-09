@@ -885,7 +885,7 @@ export default function Canvas2D({
     }
 
     if (isDraggingAirEntry && draggedAirEntry.index !== -1) {
-      const point= getCanvasPoint(e);
+      const point = getCanvasPoint(e);
       console.log(
         "Mouse move with drag state:",
         isDraggingAirEntry,
@@ -1600,6 +1600,7 @@ export default function Canvas2D({
       onAirEntriesUpdate?.(updatedAirEntries);
       setEditingAirEntry(null);
     };
+
 
     const handleNewAirEntryConfirm = (dimensions: {
       width: number;
