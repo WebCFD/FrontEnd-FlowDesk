@@ -884,7 +884,7 @@ export default function Canvas2D({
       setMeasureEnd(point);
     }
 
-    if (isDraggingAirEntry&& draggedAirEntry.index !== -1) {
+    if (isDraggingAirEntry && draggedAirEntry.index !== -1) {
       const point = getCanvasPoint(e);
       console.log(
         "Mouse move with drag state:",
@@ -1250,36 +1250,53 @@ export default function Canvas2D({
         ctx.lineTo(endPoint.x, endPoint.y);
         ctx.stroke();
 
-        // Calculate arrow head points
-        const angle = Math.atan2(dy, dx);
-        const arrowLength = 15 / zoom;
-        const arrowAngle = Math.PI / 6; // 30 degrees
+        // Reset dash settings for arrows
+        ctx.setLineDash([]);
 
-        // Draw start arrow head
+        // Calculate arrow parameters
+        const angle = Math.atan2(dy, dx);
+        const arrowLength = 20 / zoom;
+        const arrowWidth = 12 / zoom;
+
+        // Draw start arrow (pointing outward)
         ctx.beginPath();
         ctx.moveTo(startPoint.x, startPoint.y);
         ctx.lineTo(
-          startPoint.x + arrowLength * Math.cos(angle + Math.PI + arrowAngle),
-          startPoint.y + arrowLength * Math.sin(angle + Math.PI + arrowAngle),
+          startPoint.x - arrowLength * Math.cos(angle),
+          startPoint.y - arrowLength * Math.sin(angle)
         );
-        ctx.moveTo(startPoint.x, startPoint.y);
         ctx.lineTo(
-          startPoint.x + arrowLength * Math.cos(angle + Math.PI - arrowAngle),
-          startPoint.y + arrowLength * Math.sin(angle + Math.PI - arrowAngle),
+          startPoint.x - arrowLength * Math.cos(angle) + arrowWidth * Math.sin(angle),
+          startPoint.y - arrowLength * Math.sin(angle) - arrowWidth * Math.cos(angle)
+        );
+        ctx.moveTo(
+          startPoint.x - arrowLength * Math.cos(angle),
+          startPoint.y - arrowLength * Math.sin(angle)
+        );
+        ctx.lineTo(
+          startPoint.x - arrowLength * Math.cos(angle) - arrowWidth * Math.sin(angle),
+          startPoint.y - arrowLength * Math.sin(angle) + arrowWidth * Math.cos(angle)
         );
         ctx.stroke();
 
-        // Draw end arrow head
+        // Draw end arrow (pointing outward)
         ctx.beginPath();
         ctx.moveTo(endPoint.x, endPoint.y);
         ctx.lineTo(
-          endPoint.x + arrowLength * Math.cos(angle + arrowAngle),
-          endPoint.y + arrowLength * Math.sin(angle + arrowAngle),
+          endPoint.x + arrowLength * Math.cos(angle),
+          endPoint.y + arrowLength * Math.sin(angle)
         );
-        ctx.moveTo(endPoint.x, endPoint.y);
         ctx.lineTo(
-          endPoint.x + arrowLength * Math.cos(angle - arrowAngle),
-          endPoint.y + arrowLength * Math.sin(angle - arrowAngle),
+          endPoint.x + arrowLength * Math.cos(angle) + arrowWidth * Math.sin(angle),
+          endPoint.y + arrowLength * Math.sin(angle) - arrowWidth * Math.cos(angle)
+        );
+        ctx.moveTo(
+          endPoint.x + arrowLength * Math.cos(angle),
+          endPoint.y + arrowLength * Math.sin(angle)
+        );
+        ctx.lineTo(
+          endPoint.x + arrowLength * Math.cos(angle) - arrowWidth * Math.sin(angle),
+          endPoint.y + arrowLength * Math.sin(angle) + arrowWidth * Math.cos(angle)
         );
         ctx.stroke();
 
