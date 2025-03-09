@@ -1041,6 +1041,13 @@ export default function Canvas2D({
   };
 
   const handleMouseUp = (e: MouseEvent) => {
+    // First check if we're panning and need to stop
+    if (isPanning) {
+      handlePanEnd();
+      return;
+    }
+
+    // Then handle other cases
     if (isDraggingAirEntry) {
       setIsDraggingAirEntry(false);
       setDraggedAirEntry({
