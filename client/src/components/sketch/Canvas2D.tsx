@@ -11,13 +11,14 @@ interface Measurement {
   distance: number;
 }
 
-let isProcessingMouseMove = false;
-let lastMouseMoveEvent: MouseEvent | null = null;
-
 interface HighlightState {
   lines: Line[];
   airEntry: { index: number; entry: AirEntry } | null;
+  measurement: { index: number; measurement: Measurement } | null;
 }
+
+let isProcessingMouseMove = false;
+let lastMouseMoveEvent: MouseEvent | null = null;
 
 const POINT_RADIUS = 4;
 const SNAP_DISTANCE = 15;
@@ -270,6 +271,7 @@ export default function Canvas2D({
   const [highlightState, setHighlightState] = useState<HighlightState>({
     lines: [],
     airEntry: null,
+    measurement: null,
   });
   const [editingAirEntry, setEditingAirEntry] = useState<{
     index: number;
@@ -837,22 +839,37 @@ export default function Canvas2D({
       setHoveredAirEntry(airEntryInfo);
 
       if (currentTool === "eraser") {
+        const airEntryInfo = findAirEntryAtLocation(point);
+        const measurementInfo = findMeasurementAtPoint(point, measurements);
+
         if (airEntryInfo) {
           setHighlightState({
             lines: [],
             airEntry: { index: airEntryInfo.index, entry: airEntryInfo.entry },
+            measurement: null,
+          });
+        } else if (measurementInfo) {
+          setHighlightState({
+            lines: [],
+            airEntry: null,
+            measurement: {
+              index: measurementInfo.index,
+              measurement: measurementInfo.measurement,
+            },
           });
         } else {
           const nearbyLines = findLinesNearPoint(point);
           setHighlightState({
             lines: nearbyLines,
             airEntry: null,
+            measurement: null,
           });
         }
       } else if (currentAirEntry) {
         setHighlightState({
           lines: findLinesNearPoint(point),
           airEntry: null,
+          measurement: null,
         });
       }
     }
@@ -1052,26 +1069,35 @@ export default function Canvas2D({
         setIsDrawing(true);
         setCursorPoint(startPoint);
       } else if (currentTool === "eraser") {
-        if (highlightState.airEntry) {
+        const airEntryInfo = findAirEntryAtLocation(clickPoint);
+        const measurementInfo = findMeasurementAtPoint(clickPoint, measurements);
+
+        if (airEntryInfo) {
           const newAirEntries = airEntries.filter(
-            (_, index) => index !== highlightState.airEntry!.index,
+            (_, i) => i !== airEntryInfo.index,
           );
           onAirEntriesUpdate?.(newAirEntries);
-          setHighlightState({ lines: [], airEntry: null });
-        } else if (highlightState.lines.length > 0) {
-          const lineIdsToErase = new Set(
-            highlightState.lines.map((line) => line.id),
+        } else if (measurementInfo) {
+          const newMeasurements = measurements.filter(
+            (_, i) => i !== measurementInfo.index,
           );
-          const newLines = lines.filter((line) => !lineIdsToErase.has(line.id));
-          const newAirEntries = airEntries.filter(
-            (entry) => !lineIdsToErase.has(entry.lineId),
-          );
-          onLinesUpdate?.(newLines);
-          if (airEntries.length !== newAirEntries.length) {
-            onAirEntriesUpdate?.(newAirEntries);
+          onMeasurementsUpdate?.(newMeasurements);
+        } else {
+          const nearbyLines = findLinesNearPoint(clickPoint);
+          if (nearbyLines.length > 0) {
+            const newLines = lines.filter(
+              (line) =>
+                !nearbyLines.some(
+                  (nearbyLine) =>
+                    arePointsNearlyEqual(line.start, nearbyLine.start) &&
+                    arePointsNearlyEqual(line.end, nearbyLine.end),
+                ),
+            );
+            onLinesUpdate?.(newLines);
           }
-          setHighlightState({ lines: [], airEntry: null });
         }
+        setHighlightState({ lines: [], airEntry: null, measurement: null });
+        return;
       } else if (currentAirEntry) {
         const selectedLines = findLinesNearPoint(clickPoint);
         if (selectedLines.length > 0) {
@@ -1149,7 +1175,7 @@ export default function Canvas2D({
     }
 
     handlePanEnd();
-    setHighlightState({ lines: [], airEntry: null });
+    setHighlightState({ lines: [], airEntry: null, measurement: null });
     setHoveredGridPoint(null);
     setHoverPoint(null);
     setHoveredAirEntry(null);
@@ -1236,6 +1262,24 @@ export default function Canvas2D({
     }
   };
 
+  const findMeasurementAtPoint = (
+    point: Point,
+    measurements: Measurement[],
+  ): { index: number; measurement: Measurement } | null => {
+    for (let i = 0; i < measurements.length; i++) {
+      const measurement = measurements[i];
+      const distance = distanceToLineSegment(
+        point,
+        measurement.start,
+        measurement.end,
+      );
+      if (distance < HOVER_DISTANCE) {
+        return { index: i, measurement };
+      }
+    }
+    return null;
+  };
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -1256,7 +1300,11 @@ export default function Canvas2D({
       ctx.stroke();
     };
 
-    const drawMeasurement = (ctx: CanvasRenderingContext2D, start: Point, end: Point) => {
+    const drawMeasurement = (
+      ctx: CanvasRenderingContext2D,
+      start: Point,
+      end: Point,
+    ) => {
       const dx = end.x - start.x;
       const dy = end.y - start.y;
       const distanceInPixels = Math.sqrt(dx * dx + dy * dy);
@@ -1294,13 +1342,21 @@ export default function Canvas2D({
       // Arrow head
       ctx.moveTo(start.x, start.y);
       ctx.lineTo(
-        start.x + arrowHeadLength * Math.cos(angle) + arrowWidth * Math.sin(angle),
-        start.y + arrowHeadLength * Math.sin(angle) - arrowWidth * Math.cos(angle),
+        start.x +
+          arrowHeadLength * Math.cos(angle) +
+          arrowWidth * Math.sin(angle),
+        start.y +
+          arrowHeadLength * Math.sin(angle) -
+          arrowWidth * Math.cos(angle),
       );
       ctx.moveTo(start.x, start.y);
       ctx.lineTo(
-        start.x + arrowHeadLength * Math.cos(angle) - arrowWidth * Math.sin(angle),
-        start.y + arrowHeadLength * Math.sin(angle) + arrowWidth * Math.cos(angle),
+        start.x +
+          arrowHeadLength * Math.cos(angle) -
+          arrowWidth * Math.sin(angle),
+        start.y +
+          arrowHeadLength * Math.sin(angle) +
+          arrowWidth * Math.cos(angle),
       );
       ctx.stroke();
 
@@ -1315,13 +1371,21 @@ export default function Canvas2D({
       // Arrow head
       ctx.moveTo(end.x, end.y);
       ctx.lineTo(
-        end.x - arrowHeadLength * Math.cos(angle) + arrowWidth * Math.sin(angle),
-        end.y - arrowHeadLength * Math.sin(angle) - arrowWidth * Math.cos(angle),
+        end.x -
+          arrowHeadLength * Math.cos(angle) +
+          arrowWidth * Math.sin(angle),
+        end.y -
+          arrowHeadLength * Math.sin(angle) -
+          arrowWidth * Math.cos(angle),
       );
       ctx.moveTo(end.x, end.y);
       ctx.lineTo(
-        end.x - arrowHeadLength * Math.cos(angle) - arrowWidth * Math.sin(angle),
-        end.y - arrowHeadLength * Math.sin(angle) + arrowWidth * Math.cos(angle),
+        end.x -
+          arrowHeadLength * Math.cos(angle) -
+          arrowWidth * Math.sin(angle),
+        end.y -
+          arrowHeadLength * Math.sin(angle) +
+          arrowWidth * Math.cos(angle),
       );
       ctx.stroke();
 
@@ -1451,8 +1515,7 @@ export default function Canvas2D({
         const midX = (line.start.x + line.end.x) / 2;
         const midY = (line.start.y + line.end.y) / 2;
         const length = Math.round(getLineLength(line));
-        // Removed this line as wall measurements are handled by drawWallMeasurements
-
+        drawWallMeasurements(ctx, line);
       });
 
       if (currentLine) {
@@ -1466,8 +1529,7 @@ export default function Canvas2D({
         const length = Math.round(getLineLength(currentLine));
         const midX = (currentLine.start.x + currentLine.end.x) / 2;
         const midY = (currentLine.start.y + currentLine.end.y) / 2;
-        // Removed this line as wall measurements are handled by drawWallMeasurements
-
+        drawWallMeasurements(ctx, currentLine);
       }
 
       airEntries.forEach((entry, index) => {
@@ -1575,16 +1637,24 @@ export default function Canvas2D({
         drawCrosshair(ctx, hoverPoint);
       }
 
-      if (currentTool === "measure") {
-        if (measureStart && measureEnd) {
+      const drawMeasurements = (ctx: CanvasRenderingContext2D) => {
+        // Draw current measurement if in measure mode
+        if (currentTool === "measure" && measureStart && measureEnd) {
           drawMeasurement(ctx, measureStart, measureEnd);
         }
-      }
 
-      // Draw all saved measurements
-      measurements.forEach((measurement) => {
-        drawMeasurement(ctx, measurement.start, measurement.end);
-      });
+        // Draw all saved measurements
+        measurements.forEach((measurement, index) => {
+          const isHighlighted = highlightState.measurement?.index === index;
+          ctx.save();
+          if (isHighlighted) {
+            ctx.strokeStyle = "rgba(239, 68, 68, 0.6)"; // Red color for deletion highlight
+          }
+          drawMeasurement(ctx, measurement.start, measurement.end);
+          ctx.restore();
+        });
+      };
+      drawMeasurements(ctx);
 
       // Add wall measurements after drawing lines
       lines.forEach((line) => {
@@ -1795,7 +1865,7 @@ export default function Canvas2D({
         </Button>
         <div className="w-px h-6 bg-border mx-2" />
         <Button
-          variant={panMode ? "default" : "outline"}
+          variant={panMode ? "default" :"outline"}
           size="icon"
           onClick={togglePanMode}
         >
