@@ -612,7 +612,9 @@ export default function Canvas2D({
     return colors[type];
   };
 
-  const getRelativeCoordinates = (point: Point): { x: number; y: number } => {
+  const getRelativeCoordinates = (
+    point: Point,
+  ): { x: number; y: number } => {
     const centerX = dimensions.width / 2;
     const centerY = dimensions.height / 2;
     const relativeX = point.x - centerX;
@@ -877,8 +879,7 @@ export default function Canvas2D({
     if (currentTool === "wall" && isDrawing && currentLine) {
       const nearestPoint = findNearestEndpoint(point);
       const endPoint = nearestPoint || snapToGrid(point);
-      setCurrentLine((prev) => (prev ? { ...prev, end: endPoint } : null));
-      setCursorPoint(endPoint);
+      setCurrentLine((prev) => (prev ? { ...prev, end: endPoint } : null));      setCursorPoint(endPoint);
     }
   };
 
@@ -1848,131 +1849,130 @@ export default function Canvas2D({
       setEditingAirEntry({
         index: airEntryInfo.index,
         entry: airEntryInfo.entry,
-      });    }
+      });
+    }
   };
 
   const handleEditingAirEntryConfirm = (dimensions: {
     width: number;
-    height: number;
-    distanceToFloor?: number;
-  }) => {
-    if (!editingAirEntry) return;
+      height: number;
+      distanceToFloor?: number;
+    }) => {
+      if (!editingAirEntry) return;
 
-    const updatedAirEntries = [...airEntries];
-    updatedAirEntries[editingAirEntry.index] = {
-      ...editingAirEntry.entry,
-      dimensions,
+      const updatedAirEntries = [...airEntries];
+      updatedAirEntries[editingAirEntry.index] = {
+        ...editingAirEntry.entry,
+        dimensions,
+      };
+
+      onAirEntriesUpdate?.(updatedAirEntries);
+      setEditingAirEntry(null);
     };
 
-    onAirEntriesUpdate?.(updatedAirEntries);
-    setEditingAirEntry(null);
-  };
+    const handleNewAirEntryConfirm = (dimensions: {
+      width: number;
+      height: number;
+      distanceToFloor?: number;
+    }) => {
+      if (!newAirEntryDetails) return;
 
-  const handleNewAirEntryConfirm = (dimensions: {
-    width: number;
-    height: number;
-    distanceToFloor?: number;
-  }) => {
-    if (!newAirEntryDetails) return;
+      const newAirEntry: AirEntry = {
+        type: newAirEntryDetails.type,
+        position: newAirEntryDetails.position,
+        dimensions,
+        line: newAirEntryDetails.line,
+        lineId: newAirEntryDetails.line.id,
+      };
 
-    const newAirEntry: AirEntry = {
-      type: newAirEntryDetails.type,
-      position: newAirEntryDetails.position,
-      dimensions,
-      line: newAirEntryDetails.line,
-      lineId: newAirEntryDetails.line.id,
+      onAirEntriesUpdate?.([...airEntries, newAirEntry]);
+      setNewAirEntryDetails(null);
     };
 
-    onAirEntriesUpdate?.([...airEntries, newAirEntry]);
-    setNewAirEntryDetails(null);
-  };
+    const handleContextMenu = (e: Event) => {
+      console.log("Context menu prevented");
+      e.preventDefault();
+    };
 
-  const handleContextMenu = (e: Event) => {
-    console.log("Context menu prevented");
-    e.preventDefault();
-  };
+    const [currentToolState, setCurrentToolState] = useState<"wall" | "eraser" | "measure" | null>(null);
+    const setCurrentTool = (tool: "wall" | "eraser" | "measure" | null) => {
+      setCurrentToolState(tool);
+    };
 
-  const [currentToolState, setCurrentToolState] = useState<"wall" | "eraser" | "measure" | null>(null);
-  const setCurrentTool = (tool: "wall" | "eraser" | "measure" | null) => {
-    setCurrentToolState(tool);
-  };
+    const getCursor = (): string => {
+      if (panMode) return "move";
+      if (currentTool === "measure" && isMeasuring) return "crosshair";
+      if (currentTool === "eraser") return "pointer";
+      return "default";
+    };
 
-  const getCursor = (): string => {
-    if (panMode) return "move";
-    if (currentTool === "measure" && isMeasuring) return "crosshair";
-    if (currentTool === "eraser") return "pointer";
-    return "default";
-  };
-
-
-  return (
-    <div ref={containerRef} className="relative w-full h-full">
-      <canvas
-        ref={canvasRef}
-        width={dimensions.width}
-        height={dimensions.height}
-        className={`w-full h-full`}
-        style={{ cursor: getCursor() }}
-      />
-      <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-white/80 p-2 rounded-lg shadow-sm">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={handleZoomOut}
-          disabled={zoom <= MIN_ZOOM}
-        >
-          <Minus className="h-4 w-4" />
-        </Button>
-        <div className="flex items-center">
-          <Input
-            type="number"
-            value={zoomInput}
-            onChange={handleZoomInputChange}
-            onBlur={handleZoomInputBlur}
-            onKeyDown={handleZoomInputKeyDown}
-            className="w-16 h-8 text-center text-sm"
-            min={MIN_ZOOM * 100}
-            max={MAX_ZOOM * 100}
-          />
-          <span className="text-sm font-medium ml-1">%</span>
+    return (
+      <div ref={containerRef} className="relative w-full h-full">
+        <canvas
+          ref={canvasRef}
+          width={dimensions.width}
+          height={dimensions.height}
+          className="w-full h-full"
+          style={{ cursor: getCursor() }}
+        />
+        <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-white/80 p-2 rounded-lg shadow-sm">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleZoomOut}
+            disabled={zoom <= MIN_ZOOM}
+          >
+            <Minus className="h-4 w-4" />
+          </Button>
+          <div className="flex items-center">
+            <Input
+              type="number"
+              value={zoomInput}
+              onChange={handleZoomInputChange}
+              onBlur={handleZoomInputBlur}
+              onKeyDown={handleZoomInputKeyDown}
+              className="w-16 h-8 text-center text-sm"
+              min={MIN_ZOOM * 100}
+              max={MAX_ZOOM * 100}
+            />
+            <span className="text-sm font-medium ml-1">%</span>
+          </div>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleZoomIn}
+            disabled={zoom >= MAX_ZOOM}
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+          <div className="w-px h-6 bg-border mx-2" />
+          <Button
+            variant={panMode ? "default" : "outline"}
+            size="icon"
+            onClick={togglePanMode}
+          >
+            <Move className="h-4 w-4" />
+          </Button>
         </div>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={handleZoomIn}
-          disabled={zoom >= MAX_ZOOM}
-        >
-          <Plus className="h-4 w-4" />
-        </Button>
-        <div className="w-px h-6 bg-border mx-2" />
-        <Button
-          variant={panMode ? "default" :"outline"}
-          size="icon"
-          onClick={togglePanMode}
-        >
-          <Move className="h-4 w-4" />
-        </Button>
-      </div>
 
-      {editingAirEntry && (
-        <AirEntryDialog
-          type={editingAirEntry.entry.type}
-          isOpen={true}
-          onClose={() => setEditingAirEntry(null)}
-          onConfirm={handleEditingAirEntryConfirm}
-          isEditing={true}
-          initialValues={editingAirEntry.entry.dimensions}
-        />
-      )}
-      {newAirEntryDetails && (
-        <AirEntryDialog
-          type={newAirEntryDetails.type}
-          isOpen={true}
-          onClose={() => setNewAirEntryDetails(null)}
-          onConfirm={handleNewAirEntryConfirm}
-          isEditing={false}
-        />
-      )}
-    </div>
-  );
-}
+        {editingAirEntry && (
+          <AirEntryDialog
+            type={editingAirEntry.entry.type}
+            isOpen={true}
+            onClose={() => setEditingAirEntry(null)}
+            onConfirm={handleEditingAirEntryConfirm}
+            isEditing={true}
+            initialValues={editingAirEntry.entry.dimensions}
+          />
+        )}
+        {newAirEntryDetails && (
+          <AirEntryDialog
+            type={newAirEntryDetails.type}
+            isOpen={true}
+            onClose={() => setNewAirEntryDetails(null)}
+            onConfirm={handleNewAirEntryConfirm}
+          />
+        )}
+      </div>
+    );
+  }
