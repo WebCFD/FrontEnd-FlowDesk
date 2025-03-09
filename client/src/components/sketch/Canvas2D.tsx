@@ -884,7 +884,7 @@ export default function Canvas2D({
       setMeasureEnd(point);
     }
 
-    if (isDraggingAirEntry&& draggedAirEntry.index !== -1) {
+    if (isDraggingAirEntry && draggedAirEntry.index !== -1) {
       const point = getCanvasPoint(e);
       console.log(
         "Mouse move with drag state:",
@@ -1244,44 +1244,8 @@ export default function Canvas2D({
         ctx.lineWidth = 2 / zoom;
         ctx.setLineDash([5, 5]); // Dashed line
 
-        // Draw main line
-        ctx.beginPath();
-        ctx.moveTo(startPoint.x, startPoint.y);
-        ctx.lineTo(endPoint.x, endPoint.y);
-        ctx.stroke();
-
-        // Calculate arrow head points
-        const angle = Math.atan2(dy, dx);
-        const arrowLength = 15 / zoom;
-        const arrowAngle = Math.PI / 6; // 30 degrees
-
-        // Draw start arrow head
-        ctx.beginPath();
-        ctx.moveTo(startPoint.x, startPoint.y);
-        ctx.lineTo(
-          startPoint.x + arrowLength * Math.cos(angle + Math.PI + arrowAngle),
-          startPoint.y + arrowLength * Math.sin(angle + Math.PI + arrowAngle),
-        );
-        ctx.moveTo(startPoint.x, startPoint.y);
-        ctx.lineTo(
-          startPoint.x + arrowLength * Math.cos(angle + Math.PI - arrowAngle),
-          startPoint.y + arrowLength * Math.sin(angle + Math.PI - arrowAngle),
-        );
-        ctx.stroke();
-
-        // Draw end arrow head
-        ctx.beginPath();
-        ctx.moveTo(endPoint.x, endPoint.y);
-        ctx.lineTo(
-          endPoint.x + arrowLength * Math.cos(angle + arrowAngle),
-          endPoint.y + arrowLength * Math.sin(angle + arrowAngle),
-        );
-        ctx.moveTo(endPoint.x, endPoint.y);
-        ctx.lineTo(
-          endPoint.x + arrowLength * Math.cos(angle - arrowAngle),
-          endPoint.y + arrowLength * Math.sin(angle - arrowAngle),
-        );
-        ctx.stroke();
+        // Draw the arrow using the new drawArrow function
+        drawArrow(ctx, startPoint, endPoint);
 
         // Draw measurement label
         const midPoint = {
@@ -1544,6 +1508,48 @@ export default function Canvas2D({
       });
 
       ctx.restore();
+    };
+
+    const drawArrow = (ctx: CanvasRenderingContext2D, from: Point, to: Point) => {
+      const headLength = 10 / zoom;
+      const headAngle = Math.PI / 6; // 30 degrees
+
+      // Calculate the angle of the line
+      const angle = Math.atan2(to.y - from.y, to.x - from.x);
+
+      // Draw the main line
+      ctx.beginPath();
+      ctx.moveTo(from.x, from.y);
+      ctx.lineTo(to.x, to.y);
+      ctx.stroke();
+
+      // Draw the start arrow head (pointing outward)
+      ctx.beginPath();
+      ctx.moveTo(from.x, from.y);
+      ctx.lineTo(
+        from.x + headLength * Math.cos(angle + Math.PI + headAngle),
+        from.y + headLength * Math.sin(angle + Math.PI + headAngle)
+      );
+      ctx.moveTo(from.x, from.y);
+      ctx.lineTo(
+        from.x + headLength * Math.cos(angle + Math.PI - headAngle),
+        from.y + headLength * Math.sin(angle + Math.PI - headAngle)
+      );
+      ctx.stroke();
+
+      // Draw the end arrow head (pointing outward)
+      ctx.beginPath();
+      ctx.moveTo(to.x, to.y);
+      ctx.lineTo(
+        to.x + headLength * Math.cos(angle + headAngle),
+        to.y + headLength * Math.sin(angle + headAngle)
+      );
+      ctx.moveTo(to.x, to.y);
+      ctx.lineTo(
+        to.x + headLength * Math.cos(angle - headAngle),
+        to.y + headLength * Math.sin(angle - headAngle)
+      );
+      ctx.stroke();
     };
 
     canvas.addEventListener("mousedown", handleMouseDown);
