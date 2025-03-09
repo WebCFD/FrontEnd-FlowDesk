@@ -65,7 +65,7 @@ export default function WizardDesign() {
   const [wallTransparency, setWallTransparency] = useState(0.8);
 
   // Use the global room store
-  const { lines, airEntries, hasClosedContour, setLines, setAirEntries, setHasClosedContour } = useRoomStore();
+  const { lines, airEntries, measurements, hasClosedContour, setLines, setAirEntries, setMeasurements, setHasClosedContour } = useRoomStore();
 
   const steps = [
     { id: 1, name: "Upload" },
@@ -324,6 +324,8 @@ export default function WizardDesign() {
                     currentAirEntry={currentAirEntry}
                     onLineSelect={handleLineSelect}
                     airEntries={airEntries}
+                    measurements={measurements}
+                    onMeasurementsUpdate={setMeasurements}
                     lines={lines}
                     onLinesUpdate={(newLines) => {
                       setLines(newLines);
@@ -591,6 +593,7 @@ export default function WizardDesign() {
   const reset = () => {
     setLines([]);
     setAirEntries([]);
+    setMeasurements([]);
     setHasClosedContour(false);
     setSimulationName("");
     setGridSize(20);

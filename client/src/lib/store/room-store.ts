@@ -22,12 +22,20 @@ interface AirEntry {
   line: Line;
 }
 
+interface Measurement {
+  start: Point;
+  end: Point;
+  distance: number;
+}
+
 interface RoomState {
   lines: Line[];
   airEntries: AirEntry[];
+  measurements: Measurement[];
   hasClosedContour: boolean;
   setLines: (lines: Line[]) => void;
   setAirEntries: (entries: AirEntry[]) => void;
+  setMeasurements: (measurements: Measurement[]) => void;
   setHasClosedContour: (hasContour: boolean) => void;
   reset: () => void;
 }
@@ -38,11 +46,13 @@ export const useRoomStore = create<RoomState>()(
       (set) => ({
         lines: [],
         airEntries: [],
+        measurements: [],
         hasClosedContour: false,
         setLines: (lines) => set({ lines }),
         setAirEntries: (airEntries) => set({ airEntries }),
+        setMeasurements: (measurements) => set({ measurements }),
         setHasClosedContour: (hasClosedContour) => set({ hasClosedContour }),
-        reset: () => set({ lines: [], airEntries: [], hasClosedContour: false }),
+        reset: () => set({ lines: [], airEntries: [], measurements: [], hasClosedContour: false }),
       }),
       {
         name: 'room-storage',
