@@ -1255,48 +1255,49 @@ export default function Canvas2D({
 
         // Calculate arrow parameters
         const angle = Math.atan2(dy, dx);
-        const arrowLength = 20 / zoom;
-        const arrowWidth = 12 / zoom;
+        const arrowLength = 15 / zoom;
+        const arrowHeadLength = 10 / zoom;
+        const arrowWidth = 6 / zoom;
 
         // Draw start arrow (pointing outward)
         ctx.beginPath();
+        // Arrow shaft
         ctx.moveTo(startPoint.x, startPoint.y);
         ctx.lineTo(
           startPoint.x - arrowLength * Math.cos(angle),
           startPoint.y - arrowLength * Math.sin(angle)
         );
+        // Arrow head
+        ctx.moveTo(startPoint.x, startPoint.y);
         ctx.lineTo(
-          startPoint.x - arrowLength * Math.cos(angle) + arrowWidth * Math.sin(angle),
-          startPoint.y - arrowLength * Math.sin(angle) - arrowWidth * Math.cos(angle)
+          startPoint.x - arrowHeadLength * Math.cos(angle) + arrowWidth * Math.sin(angle),
+          startPoint.y - arrowHeadLength * Math.sin(angle) - arrowWidth * Math.cos(angle)
         );
-        ctx.moveTo(
-          startPoint.x - arrowLength * Math.cos(angle),
-          startPoint.y - arrowLength * Math.sin(angle)
-        );
+        ctx.moveTo(startPoint.x, startPoint.y);
         ctx.lineTo(
-          startPoint.x - arrowLength * Math.cos(angle) - arrowWidth * Math.sin(angle),
-          startPoint.y - arrowLength * Math.sin(angle) + arrowWidth * Math.cos(angle)
+          startPoint.x - arrowHeadLength * Math.cos(angle) - arrowWidth * Math.sin(angle),
+          startPoint.y - arrowHeadLength * Math.sin(angle) + arrowWidth * Math.cos(angle)
         );
         ctx.stroke();
 
         // Draw end arrow (pointing outward)
         ctx.beginPath();
+        // Arrow shaft
         ctx.moveTo(endPoint.x, endPoint.y);
         ctx.lineTo(
           endPoint.x + arrowLength * Math.cos(angle),
           endPoint.y + arrowLength * Math.sin(angle)
         );
+        // Arrow head
+        ctx.moveTo(endPoint.x, endPoint.y);
         ctx.lineTo(
-          endPoint.x + arrowLength * Math.cos(angle) + arrowWidth * Math.sin(angle),
-          endPoint.y + arrowLength * Math.sin(angle) - arrowWidth * Math.cos(angle)
+          endPoint.x + arrowHeadLength * Math.cos(angle) + arrowWidth * Math.sin(angle),
+          endPoint.y + arrowHeadLength * Math.sin(angle) - arrowWidth * Math.cos(angle)
         );
-        ctx.moveTo(
-          endPoint.x + arrowLength * Math.cos(angle),
-          endPoint.y + arrowLength * Math.sin(angle)
-        );
+        ctx.moveTo(endPoint.x, endPoint.y);
         ctx.lineTo(
-          endPoint.x + arrowLength * Math.cos(angle) - arrowWidth * Math.sin(angle),
-          endPoint.y + arrowLength * Math.sin(angle) + arrowWidth * Math.cos(angle)
+          endPoint.x + arrowHeadLength * Math.cos(angle) - arrowWidth * Math.sin(angle),
+          endPoint.y + arrowHeadLength * Math.sin(angle) + arrowWidth * Math.cos(angle)
         );
         ctx.stroke();
 
