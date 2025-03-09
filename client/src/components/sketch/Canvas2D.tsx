@@ -1708,36 +1708,52 @@ export default function Canvas2D({
         <div className="flex gap-2 items-center bg-white/80 backdrop-blur-sm p-2 rounded-lg shadow-sm">
           <span className="text-sm font-medium mr-2">Tools</span>
           <Button
-            variant={currentToolState === "wall" ? "default" : "outline"}
+            variant={currentTool === "wall" ? "default" : "outline"}
             size="icon"
             onClick={() => {
-              setCurrentTool("wall");
-              setCurrentAirEntry(null);
+              if (currentTool === "wall") {
+                setCurrentTool(null);
+              } else {
+                setCurrentTool("wall");
+                setCurrentAirEntry(null);
+              }
             }}
           >
             <Minus className="h-4 w-4" />
           </Button>
           <Button
-            variant={currentToolState === "eraser" ? "default" : "outline"}
+            variant={currentTool === "eraser" ? "default" : "outline"}
             size="icon"
             onClick={() => {
-              setCurrentTool("eraser");
-              setCurrentAirEntry(null);
+              if (currentTool === "eraser") {
+                setCurrentTool(null);
+              } else {
+                setCurrentTool("eraser");
+                setCurrentAirEntry(null);
+              }
             }}
           >
             <Eraser className="h-4 w-4" />
           </Button>
           <Button
-            variant={currentToolState === "measure" ? "default" : "outline"}
+            variant={currentTool === "measure" ? "default" : "outline"}
             size="icon"
             onClick={() => {
-              setCurrentTool("measure");
-              setCurrentAirEntry(null);
+              if (currentTool === "measure") {
+                setCurrentTool(null);
+                setMeasureStart(null);
+                setMeasureEnd(null);
+                setIsMeasuring(false);
+              } else {
+                setCurrentTool("measure");
+                setCurrentAirEntry(null);
+              }
             }}
           >
             <Ruler className="h-4 w-4" />
           </Button>
         </div>
+
       </div>
 
       {editingAirEntry && (
