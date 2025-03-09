@@ -884,7 +884,7 @@ export default function Canvas2D({
       setMeasureEnd(point);
     }
 
-    if (isDraggingAirEntry && draggedAirEntry.index !== -1) {
+    if (isDraggingAirEntry&& draggedAirEntry.index !== -1) {
       const point = getCanvasPoint(e);
       console.log(
         "Mouse move with drag state:",
@@ -1299,6 +1299,40 @@ export default function Canvas2D({
       }
     };
 
+    const drawWallMeasurements = (ctx: CanvasRenderingContext2D, line: Line) => {
+      const dx = line.end.x - line.start.x;
+      const dy = line.end.y - line.start.y;
+      const length = Math.sqrt(dx * dx + dy * dy);
+      const lengthInCm = Math.round(pixelsToCm(length));
+
+      // Calculate midpoint of the line
+      const midX = (line.start.x + line.end.x) / 2;
+      const midY = (line.start.y + line.end.y) / 2;
+
+      // Offset the label slightly above the line
+      const offset = 15 / zoom;
+      const angle = Math.atan2(dy, dx);
+      const labelX = midX - (offset * Math.sin(angle));
+      const labelY = midY + (offset * Math.cos(angle));
+
+      // Draw the measurement
+      ctx.save();
+      ctx.font = `${12 / zoom}px Arial`;
+      ctx.fillStyle = '#6b7280'; // Gray color
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      // Rotate the text to align with the wall
+      ctx.translate(labelX, labelY);
+      if (dx < 0) {
+        ctx.rotate(angle + Math.PI);
+      } else {
+        ctx.rotate(angle);
+      }
+      ctx.fillText(`${lengthInCm} cm`, 0, 0);
+      ctx.restore();
+    };
+
     const draw = () => {
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
@@ -1376,7 +1410,8 @@ export default function Canvas2D({
         const midX = (line.start.x + line.end.x) / 2;
         const midY = (line.start.y + line.end.y) / 2;
         const length = Math.round(getLineLength(line));
-        ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
+        // Removed this line as wall measurements are handled by drawWallMeasurements
+        // ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
       });
 
       if (currentLine) {
@@ -1390,7 +1425,8 @@ export default function Canvas2D({
         const length = Math.round(getLineLength(currentLine));
         const midX = (currentLine.start.x + currentLine.end.x) / 2;
         const midY = (currentLine.start.y + currentLine.end.y) / 2;
-        ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
+        // Removed this line as wall measurements are handled by drawWallMeasurements
+        // ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
       }
 
       airEntries.forEach((entry, index) => {
@@ -1501,6 +1537,11 @@ export default function Canvas2D({
       if (currentTool === "measure") {
         drawMeasurement(ctx);
       }
+
+      // Add wall measurements after drawing lines
+      lines.forEach((line) => {
+        drawWallMeasurements(ctx, line);
+      });
 
       ctx.restore();
     };
