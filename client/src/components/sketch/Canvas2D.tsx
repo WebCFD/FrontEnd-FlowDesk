@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
-import { Point, Line, AirEntry } from '@/types';
+import { useState, useEffect, useRef, useMemo } from "react";
+import { Point, Line, AirEntry } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Minus, Plus, Move } from "lucide-react";
-import AirEntryDialog from './AirEntryDialog';
+import AirEntryDialog from "./AirEntryDialog";
 
 let isProcessingMouseMove = false;
 let lastMouseMoveEvent: MouseEvent | null = null;
@@ -37,10 +37,9 @@ const calculateNormal = (line: Line): Point => {
   const length = Math.sqrt(dx * dx + dy * dy);
   return {
     x: dx / length,
-    y: dy / length
+    y: dy / length,
   };
 };
-
 
 // Point comparison utilities
 const arePointsEqual = (p1: Point, p2: Point): boolean => {
@@ -75,16 +74,21 @@ const getPointOnLine = (line: Line, point: Point): Point => {
 
   if (len2 === 0) return line.start;
 
-  const t = ((point.x - line.start.x) * dx + (point.y - line.start.y) * dy) / len2;
+  const t =
+    ((point.x - line.start.x) * dx + (point.y - line.start.y) * dy) / len2;
   const tt = Math.max(0, Math.min(1, t));
 
   return {
     x: line.start.x + tt * dx,
-    y: line.start.y + tt * dy
+    y: line.start.y + tt * dy,
   };
 };
 
-const distanceToLineSegment = (point: Point, lineStart: Point, lineEnd: Point): number => {
+const distanceToLineSegment = (
+  point: Point,
+  lineStart: Point,
+  lineEnd: Point,
+): number => {
   const A = point.x - lineStart.x;
   const B = point.y - lineStart.y;
   const C = lineEnd.x - lineStart.x;
@@ -119,15 +123,17 @@ const calculatePositionAlongWall = (line: Line, point: Point): Point => {
   try {
     console.log("Calculating position along wall:", {
       line: { start: line.start, end: line.end },
-      point
+      point,
     });
 
     const lineVector = {
       x: line.end.x - line.start.x,
-      y: line.end.y - line.start.y
+      y: line.end.y - line.start.y,
     };
 
-    const lineLength = Math.sqrt(lineVector.x * lineVector.x + lineVector.y * lineVector.y);
+    const lineLength = Math.sqrt(
+      lineVector.x * lineVector.x + lineVector.y * lineVector.y,
+    );
     if (lineLength === 0) {
       console.warn("Zero length line detected");
       return line.start;
@@ -135,29 +141,33 @@ const calculatePositionAlongWall = (line: Line, point: Point): Point => {
 
     const unitVector = {
       x: lineVector.x / lineLength,
-      y: lineVector.y / lineLength
+      y: lineVector.y / lineLength,
     };
 
     const pointVector = {
       x: point.x - line.start.x,
-      y: point.y - line.start.y
+      y: point.y - line.start.y,
     };
 
-    const dotProduct = pointVector.x * unitVector.x + pointVector.y * unitVector.y;
+    const dotProduct =
+      pointVector.x * unitVector.x + pointVector.y * unitVector.y;
 
     const margin = 20;
-    const clampedDot = Math.max(margin, Math.min(lineLength - margin, dotProduct));
+    const clampedDot = Math.max(
+      margin,
+      Math.min(lineLength - margin, dotProduct),
+    );
 
     const finalPosition = {
       x: line.start.x + unitVector.x * clampedDot,
-      y: line.start.y + unitVector.y * clampedDot
+      y: line.start.y + unitVector.y * clampedDot,
     };
 
     console.log("Position calculation:", {
       lineLength,
       dotProduct,
       clampedDot,
-      finalPosition
+      finalPosition,
     });
 
     return finalPosition;
@@ -172,7 +182,7 @@ const getLineIdentifier = (line: Line): string => {
     Math.round(line.start.x),
     Math.round(line.start.y),
     Math.round(line.end.x),
-    Math.round(line.end.y)
+    Math.round(line.end.y),
   ].sort();
   return `${x1},${y1}_${x2},${y2}`;
 };
@@ -197,14 +207,14 @@ const getPointAtRelativePosition = (line: Line, relativePos: number): Point => {
 
   return {
     x: line.start.x + (line.end.x - line.start.x) * t,
-    y: line.start.y + (line.end.y - line.start.y) * t
+    y: line.start.y + (line.end.y - line.start.y) * t,
   };
 };
 
 interface Canvas2DProps {
   gridSize: number;
-  currentTool: 'wall' | 'eraser' | null;
-  currentAirEntry: 'window' | 'door' | 'vent' | null;
+  currentTool: "wall" | "eraser" | null;
+  currentAirEntry: "window" | "door" | "vent" | null;
   airEntries: AirEntry[];
   lines: Line[];
   onLinesUpdate?: (lines: Line[]) => void;
@@ -218,7 +228,7 @@ export default function Canvas2D({
   airEntries = [],
   lines = [],
   onLinesUpdate,
-  onAirEntriesUpdate
+  onAirEntriesUpdate,
 }: Canvas2DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -231,7 +241,7 @@ export default function Canvas2D({
   const [lastPanPoint, setLastPanPoint] = useState<Point | null>(null);
   const [panMode, setPanMode] = useState(false);
   const [cursorPoint, setCursorPoint] = useState<Point | null>(null);
-  const [zoomInput, setZoomInput] = useState('100');
+  const [zoomInput, setZoomInput] = useState("100");
   const [hoveredGridPoint, setHoveredGridPoint] = useState<Point | null>(null);
   const [hoverPoint, setHoverPoint] = useState<Point | null>(null);
   const [isDraggingEndpoint, setIsDraggingEndpoint] = useState(false);
@@ -249,11 +259,14 @@ export default function Canvas2D({
   }>({ index: -1, entry: {} as AirEntry, startPoint: { x: 0, y: 0 } });
   const [highlightState, setHighlightState] = useState<HighlightState>({
     lines: [],
-    airEntry: null
+    airEntry: null,
   });
-  const [editingAirEntry, setEditingAirEntry] = useState<{ index: number; entry: AirEntry } | null>(null);
+  const [editingAirEntry, setEditingAirEntry] = useState<{
+    index: number;
+    entry: AirEntry;
+  } | null>(null);
   const [newAirEntryDetails, setNewAirEntryDetails] = useState<{
-    type: 'window' | 'door' | 'vent';
+    type: "window" | "door" | "vent";
     position: Point;
     line: Line;
   } | null>(null);
@@ -262,7 +275,10 @@ export default function Canvas2D({
     lines: Line[];
     isStart: boolean[];
   } | null>(null);
-  const [hoveredAirEntry, setHoveredAirEntry] = useState<{ index: number; entry: AirEntry } | null>(null);
+  const [hoveredAirEntry, setHoveredAirEntry] = useState<{
+    index: number;
+    entry: AirEntry;
+  } | null>(null);
 
   const createCoordinateSystem = (): Line[] => {
     const centerX = dimensions.width / 2;
@@ -270,12 +286,36 @@ export default function Canvas2D({
     const arrowLength = 150;
 
     return [
-      { id: 'coord-x', start: { x: centerX - arrowLength, y: centerY }, end: { x: centerX + arrowLength, y: centerY } },
-      { id: 'coord-2', start: { x: centerX + arrowLength, y: centerY }, end: { x: centerX + arrowLength - 10, y: centerY - 5 } },
-      { id: 'coord-3', start: { x: centerX + arrowLength, y: centerY }, end: { x: centerX + arrowLength - 10, y: centerY + 5 } },
-      { id: 'coord-y', start: { x: centerX, y: centerY + arrowLength }, end: { x: centerX, y: centerY - arrowLength } },
-      { id: 'coord-5', start: { x: centerX, y: centerY - arrowLength }, end: { x: centerX - 5, y: centerY - arrowLength + 10 } },
-      { id: 'coord-6', start: { x: centerX, y: centerY - arrowLength }, end: { x: centerX + 5, y: centerY - arrowLength + 10 } },
+      {
+        id: "coord-x",
+        start: { x: centerX - arrowLength, y: centerY },
+        end: { x: centerX + arrowLength, y: centerY },
+      },
+      {
+        id: "coord-2",
+        start: { x: centerX + arrowLength, y: centerY },
+        end: { x: centerX + arrowLength - 10, y: centerY - 5 },
+      },
+      {
+        id: "coord-3",
+        start: { x: centerX + arrowLength, y: centerY },
+        end: { x: centerX + arrowLength - 10, y: centerY + 5 },
+      },
+      {
+        id: "coord-y",
+        start: { x: centerX, y: centerY + arrowLength },
+        end: { x: centerX, y: centerY - arrowLength },
+      },
+      {
+        id: "coord-5",
+        start: { x: centerX, y: centerY - arrowLength },
+        end: { x: centerX - 5, y: centerY - arrowLength + 10 },
+      },
+      {
+        id: "coord-6",
+        start: { x: centerX, y: centerY - arrowLength },
+        end: { x: centerX + 5, y: centerY - arrowLength + 10 },
+      },
     ];
   };
 
@@ -288,7 +328,7 @@ export default function Canvas2D({
       gridLines.push({
         id: `grid-x-${x}`,
         start: { x: centerX + x, y: centerY - GRID_RANGE },
-        end: { x: centerX + x, y: centerY + GRID_RANGE }
+        end: { x: centerX + x, y: centerY + GRID_RANGE },
       });
     }
 
@@ -296,7 +336,7 @@ export default function Canvas2D({
       gridLines.push({
         id: `grid-y-${y}`,
         start: { x: centerX - GRID_RANGE, y: centerY + y },
-        end: { x: centerX + GRID_RANGE, y: centerY + y }
+        end: { x: centerX + GRID_RANGE, y: centerY + y },
       });
     }
 
@@ -310,9 +350,9 @@ export default function Canvas2D({
     const centerX = dimensions.width / 2;
     const centerY = dimensions.height / 2;
 
-    setPan(prev => ({
-      x: prev.x - (centerX * zoomDiff),
-      y: prev.y - (centerY * zoomDiff)
+    setPan((prev) => ({
+      x: prev.x - centerX * zoomDiff,
+      y: prev.y - centerY * zoomDiff,
     }));
 
     setZoom(newZoom);
@@ -338,10 +378,10 @@ export default function Canvas2D({
     }
   };
 
-  const handleRegularWheel = (e: WheelEvent) => {
-  };
+  const handleRegularWheel = (e: WheelEvent) => {};
 
   const handlePanStart = (e: MouseEvent) => {
+    // Start panning for right-click OR when panMode is active
     if (panMode || e.button === 2) {
       e.preventDefault();
       setIsPanning(true);
@@ -353,7 +393,7 @@ export default function Canvas2D({
     if (isPanning && lastPanPoint) {
       const dx = e.clientX - lastPanPoint.x;
       const dy = e.clientY - lastPanPoint.y;
-      setPan(prev => ({ x: prev.x + dx, y: prev.y + dy }));
+      setPan((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
       setLastPanPoint({ x: e.clientX, y: e.clientY });
     }
   };
@@ -380,7 +420,7 @@ export default function Canvas2D({
 
     return {
       x: ((e.clientX - rect.left) * scaleX - pan.x) / zoom,
-      y: ((e.clientY - rect.top) * scaleY - pan.y) / zoom
+      y: ((e.clientY - rect.top) * scaleY - pan.y) / zoom,
     };
   };
 
@@ -397,7 +437,7 @@ export default function Canvas2D({
 
     return {
       x: centerX + snappedX,
-      y: centerY + snappedY
+      y: centerY + snappedY,
     };
   };
 
@@ -405,8 +445,8 @@ export default function Canvas2D({
     let nearest: Point | null = null;
     let minDistance = SNAP_DISTANCE;
 
-    lines.forEach(line => {
-      [line.start, line.end].forEach(endpoint => {
+    lines.forEach((line) => {
+      [line.start, line.end].forEach((endpoint) => {
         const dx = point.x - endpoint.x;
         const dy = point.y - endpoint.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
@@ -421,8 +461,9 @@ export default function Canvas2D({
   };
 
   const findConnectedLines = (point: Point): Line[] => {
-    return lines.filter(line =>
-      arePointsClose(line.start, point) || arePointsClose(line.end, point)
+    return lines.filter(
+      (line) =>
+        arePointsClose(line.start, point) || arePointsClose(line.end, point),
     );
   };
 
@@ -445,16 +486,21 @@ export default function Canvas2D({
       return Math.sqrt(dx * dx + dy * dy) < 5;
     };
 
-    const connectedLines = lines.filter(line =>
-      arePointsEqual(line.start, point) || arePointsEqual(line.end, point)
+    const connectedLines = lines.filter(
+      (line) =>
+        arePointsEqual(line.start, point) || arePointsEqual(line.end, point),
     );
 
     for (const startLine of connectedLines) {
       const visited = new Set<string>();
-      const stack: { point: Point; path: Line[] }[] = [{
-        point: arePointsEqual(startLine.start, point) ? startLine.end : startLine.start,
-        path: [startLine]
-      }];
+      const stack: { point: Point; path: Line[] }[] = [
+        {
+          point: arePointsEqual(startLine.start, point)
+            ? startLine.end
+            : startLine.start,
+          path: [startLine],
+        },
+      ];
 
       while (stack.length > 0) {
         const { point: currentPoint, path } = stack.pop()!;
@@ -467,16 +513,20 @@ export default function Canvas2D({
         if (visited.has(key)) continue;
         visited.add(key);
 
-        const nextLines = lines.filter(line =>
-          !path.includes(line) &&
-          (arePointsEqual(line.start, currentPoint) || arePointsEqual(line.end, currentPoint))
+        const nextLines = lines.filter(
+          (line) =>
+            !path.includes(line) &&
+            (arePointsEqual(line.start, currentPoint) ||
+              arePointsEqual(line.end, currentPoint)),
         );
 
         for (const nextLine of nextLines) {
-          const nextPoint = arePointsEqual(nextLine.start, currentPoint) ? nextLine.end : nextLine.start;
+          const nextPoint = arePointsEqual(nextLine.start, currentPoint)
+            ? nextLine.end
+            : nextLine.start;
           stack.push({
             point: nextPoint,
-            path: [...path, nextLine]
+            path: [...path, nextLine],
           });
         }
       }
@@ -488,7 +538,7 @@ export default function Canvas2D({
   const findLinesNearPoint = (point: Point): Line[] => {
     const nearbyLines: Line[] = [];
 
-    lines.forEach(line => {
+    lines.forEach((line) => {
       const A = point.x - line.start.x;
       const B = point.y - line.start.y;
       const C = line.end.x - line.start.x;
@@ -527,22 +577,22 @@ export default function Canvas2D({
   const gridSizeToCm = (pixels: number): number => pixels * PIXELS_TO_CM;
 
   const getHighlightColor = () => {
-    if (!currentAirEntry) return 'rgba(239, 68, 68, 0.5)';
+    if (!currentAirEntry) return "rgba(239, 68, 68, 0.5)";
 
     const colors = {
-      window: 'rgba(59, 130, 246, 0.5)',
-      door: 'rgba(180, 83, 9, 0.5)',
-      vent: 'rgba(34, 197, 94, 0.5)'
+      window: "rgba(59, 130, 246, 0.5)",
+      door: "rgba(180, 83, 9, 0.5)",
+      vent: "rgba(34, 197, 94, 0.5)",
     };
 
     return colors[currentAirEntry];
   };
 
-  const getAirEntryColor = (type: 'window' | 'door' | 'vent'): string => {
+  const getAirEntryColor = (type: "window" | "door" | "vent"): string => {
     const colors = {
-      window: '#3b82f6',
-      door: '#b45309',
-      vent: '#22c55e'
+      window: "#3b82f6",
+      door: "#b45309",
+      vent: "#22c55e",
     };
     return colors[type];
   };
@@ -554,32 +604,39 @@ export default function Canvas2D({
     const relativeY = centerY - point.y;
     return {
       x: Math.round(pixelsToCm(relativeX)),
-      y: Math.round(pixelsToCm(relativeY))
+      y: Math.round(pixelsToCm(relativeY)),
     };
   };
 
-  const drawCoordinateLabel = (ctx: CanvasRenderingContext2D, point: Point, color: string) => {
+  const drawCoordinateLabel = (
+    ctx: CanvasRenderingContext2D,
+    point: Point,
+    color: string,
+  ) => {
     const coords = getRelativeCoordinates(point);
     ctx.fillStyle = color;
-    ctx.textAlign = 'left';
+    ctx.textAlign = "left";
     ctx.fillText(`(${coords.x}, ${coords.y})`, point.x + 8, point.y - 8);
   };
 
-
-  const drawAirEntry = (ctx: CanvasRenderingContext2D, entry: AirEntry, index: number) => {
+  const drawAirEntry = (
+    ctx: CanvasRenderingContext2D,
+    entry: AirEntry,
+    index: number,
+  ) => {
     const normal = calculateNormal(entry.line);
     const isHighlighted = highlightState.airEntry?.index === index;
     const isHovered = hoveredAirEntry?.index === index;
     let color = getAirEntryColor(entry.type);
 
     if (isHighlighted) {
-      color = '#ef4444'; // Red for deletion highlight
+      color = "#ef4444"; // Red for deletion highlight
     } else if (isHovered) {
       // Apply a brighter version of the color when hovered
       const brighterColor = {
-        window: '#60a5fa', // Brighter blue
-        door: '#d97706',   // Brighter brown
-        vent: '#34d399'    // Brighter green
+        window: "#60a5fa", // Brighter blue
+        door: "#d97706", // Brighter brown
+        vent: "#34d399", // Brighter green
       }[entry.type];
       color = brighterColor;
     }
@@ -595,34 +652,34 @@ export default function Canvas2D({
     ctx.beginPath();
     ctx.moveTo(
       entry.position.x - normal.x * halfWidth,
-      entry.position.y - normal.y * halfWidth
+      entry.position.y - normal.y * halfWidth,
     );
     ctx.lineTo(
       entry.position.x + normal.x * halfWidth,
-      entry.position.y + normal.y * halfWidth
+      entry.position.y + normal.y * halfWidth,
     );
     ctx.stroke();
 
     // Draw the end markers
-    const perpX = -normal.y * 4 / zoom;
-    const perpY = normal.x * 4 / zoom;
+    const perpX = (-normal.y * 4) / zoom;
+    const perpY = (normal.x * 4) / zoom;
 
     ctx.beginPath();
     ctx.moveTo(
       entry.position.x - normal.x * halfWidth - perpX,
-      entry.position.y - normal.y * halfWidth - perpY
+      entry.position.y - normal.y * halfWidth - perpY,
     );
     ctx.lineTo(
       entry.position.x - normal.x * halfWidth + perpX,
-      entry.position.y - normal.y * halfWidth + perpY
+      entry.position.y - normal.y * halfWidth + perpY,
     );
     ctx.moveTo(
       entry.position.x + normal.x * halfWidth - perpX,
-      entry.position.y + normal.y * halfWidth - perpY
+      entry.position.y + normal.y * halfWidth - perpY,
     );
     ctx.lineTo(
       entry.position.x + normal.x * halfWidth + perpX,
-      entry.position.y + normal.y * halfWidth + perpY
+      entry.position.y + normal.y * halfWidth + perpY,
     );
     ctx.stroke();
 
@@ -630,11 +687,11 @@ export default function Canvas2D({
     if (isHovered) {
       ctx.font = `${12 / zoom}px Arial`;
       ctx.fillStyle = color;
-      ctx.textAlign = 'center';
+      ctx.textAlign = "center";
       ctx.fillText(
-        'Double-click to edit',
+        "Double-click to edit",
         entry.position.x,
-        entry.position.y - 15 / zoom
+        entry.position.y - 15 / zoom,
       );
     }
 
@@ -663,7 +720,11 @@ export default function Canvas2D({
     const maxPoints = 2000;
     const step = Math.max(
       snapSize,
-      Math.ceil((endXGrid - startXGrid) * (endYGrid - startYGrid) / maxPoints / snapSize) * snapSize
+      Math.ceil(
+        ((endXGrid - startXGrid) * (endYGrid - startYGrid)) /
+          maxPoints /
+          snapSize,
+      ) * snapSize,
     );
 
     // Generate grid points
@@ -676,7 +737,7 @@ export default function Canvas2D({
         if ((relativeX + relativeY) % 2 === 0) {
           points.push({
             x: centerX + x * zoom,
-            y: centerY + y * zoom
+            y: centerY + y * zoom,
           });
         }
       }
@@ -685,13 +746,16 @@ export default function Canvas2D({
     return points;
   };
 
-  const visibleGridPoints = useMemo(() => getVisibleGridPoints(), [dimensions, pan, zoom, gridSize]);
+  const visibleGridPoints = useMemo(
+    () => getVisibleGridPoints(),
+    [dimensions, pan, zoom, gridSize],
+  );
 
   const findNearestGridPoint = (point: Point): Point | null => {
     let nearest: Point | null = null;
     let minDistance = HOVER_DISTANCE;
 
-    visibleGridPoints.forEach(gridPoint => {
+    visibleGridPoints.forEach((gridPoint) => {
       const dx = point.x - gridPoint.x;
       const dy = point.y - gridPoint.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
@@ -704,17 +768,22 @@ export default function Canvas2D({
     return nearest;
   };
 
-  const findPointAtLocation = (clickPoint: Point): {
+  const findPointAtLocation = (
+    clickPoint: Point,
+  ): {
     point: Point;
     lines: Line[];
     isStart: boolean[];
   } | null => {
-    const endpoints = lines.flatMap(line => [
+    const endpoints = lines.flatMap((line) => [
       { point: line.start, line, isStart: true },
-      { point: line.end, line, isStart: false }
+      { point: line.end, line, isStart: false },
     ]);
 
-    const groupedPoints: Record<string, { point: Point; lines: Line[]; isStart: boolean[] }> = {};
+    const groupedPoints: Record<
+      string,
+      { point: Point; lines: Line[]; isStart: boolean[] }
+    > = {};
 
     endpoints.forEach(({ point, line, isStart }) => {
       const key = `${Math.round(point.x)},${Math.round(point.y)}`;
@@ -730,7 +799,7 @@ export default function Canvas2D({
       const dx = clickPoint.x - point.x;
       const dy = clickPoint.y - point.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
-      if (distance < POINT_RADIUS / zoom * 1.5) {
+      if (distance < (POINT_RADIUS / zoom) * 1.5) {
         return { point, lines, isStart };
       }
     }
@@ -754,31 +823,31 @@ export default function Canvas2D({
       const airEntryInfo = findAirEntryAtLocation(point);
       setHoveredAirEntry(airEntryInfo);
 
-      if (currentTool === 'eraser') {
+      if (currentTool === "eraser") {
         if (airEntryInfo) {
           setHighlightState({
             lines: [],
-            airEntry: { index: airEntryInfo.index, entry: airEntryInfo.entry }
+            airEntry: { index: airEntryInfo.index, entry: airEntryInfo.entry },
           });
         } else {
           const nearbyLines = findLinesNearPoint(point);
           setHighlightState({
             lines: nearbyLines,
-            airEntry: null
+            airEntry: null,
           });
         }
       } else if (currentAirEntry) {
         setHighlightState({
           lines: findLinesNearPoint(point),
-          airEntry: null
+          airEntry: null,
         });
       }
     }
 
-    if (currentTool === 'wall' && isDrawing && currentLine) {
+    if (currentTool === "wall" && isDrawing && currentLine) {
       const nearestPoint = findNearestEndpoint(point);
       const endPoint = nearestPoint || snapToGrid(point);
-      setCurrentLine(prev => prev ? { ...prev, end: endPoint } : null);
+      setCurrentLine((prev) => (prev ? { ...prev, end: endPoint } : null));
       setCursorPoint(endPoint);
     }
   };
@@ -802,7 +871,11 @@ export default function Canvas2D({
   const handleMouseMove = (e: MouseEvent) => {
     if (isDraggingAirEntry && draggedAirEntry.index !== -1) {
       const point = getCanvasPoint(e);
-      console.log("Mouse move with drag state:", isDraggingAirEntry, draggedAirEntry.index);
+      console.log(
+        "Mouse move with drag state:",
+        isDraggingAirEntry,
+        draggedAirEntry.index,
+      );
       const entry = draggedAirEntry.entry;
 
       const newPosition = calculatePositionAlongWall(entry.line, point);
@@ -811,8 +884,7 @@ export default function Canvas2D({
       const newAirEntries = [...airEntries];
       newAirEntries[draggedAirEntry.index] = {
         ...entry,
-        position: newPosition
-      };
+        position: newPosition,      };
 
       if (onAirEntriesUpdate) {
         console.log("Updating air entries with:", newAirEntries);
@@ -831,15 +903,14 @@ export default function Canvas2D({
         let linesUpdated = false;
 
         draggedPoint.lines.forEach((line, index) => {
-          const lineIndex = newLines.findIndex(l => l.id === line.id);
+          const lineIndex = newLines.findIndex((l) => l.id === line.id);
 
           if (lineIndex >= 0) {
             newLines[lineIndex] = {
               ...newLines[lineIndex],
               ...(draggedPoint.isStart[index]
-                                ? { start: targetPoint }
-                : { end: targetPoint }
-              )
+                ? { start: targetPoint }
+                : { end: targetPoint }),
             };
             linesUpdated = true;
           }
@@ -853,7 +924,7 @@ export default function Canvas2D({
           const updatedIsStart: boolean[] = [];
 
           draggedPoint.lines.forEach((line, index) => {
-            const newLine = newLines.find(l => l.id === line.id);
+            const newLine = newLines.find((l) => l.id === line.id);
             if (newLine) {
               updatedLines.push(newLine);
               updatedIsStart.push(draggedPoint.isStart[index]);
@@ -863,7 +934,7 @@ export default function Canvas2D({
           setDraggedPoint({
             point: targetPoint,
             lines: updatedLines,
-            isStart: updatedIsStart
+            isStart: updatedIsStart,
           });
         }
         return;
@@ -874,10 +945,13 @@ export default function Canvas2D({
   };
 
   const handleMouseDown = (e: MouseEvent) => {
+    const clickPoint = getCanvasPoint(e);
+
+    // For right-click (button 2)
     if (e.button === 2) {
       e.preventDefault();
 
-      const clickPoint = getCanvasPoint(e);
+      // First check if clicking on an element that needs special handling
       const airEntryInfo = findAirEntryAtLocation(clickPoint);
       if (airEntryInfo) {
         setIsDraggingAirEntry(true);
@@ -896,50 +970,59 @@ export default function Canvas2D({
         return;
       }
 
+      // If not clicking on any element, allow panning (always for right-click)
       handlePanStart(e);
       return;
     }
 
-    const clickPoint = getCanvasPoint(e);
-
-    if (currentTool === 'wall') {
-      const nearestPoint = findNearestEndpoint(clickPoint);
-      const startPoint = nearestPoint || snapToGrid(clickPoint);
-      const newLineId = Math.random().toString(36).substring(2, 9);
-      setCurrentLine({
-        id: newLineId,
-        start: startPoint,
-        end: startPoint
-      });
-      setIsDrawing(true);
-      setCursorPoint(startPoint);
-    } else if (currentTool === 'eraser') {
-      if (highlightState.airEntry) {
-        const newAirEntries = airEntries.filter((_, index) => index !== highlightState.airEntry!.index);
-        onAirEntriesUpdate?.(newAirEntries);
-        setHighlightState({ lines: [], airEntry: null });
-      } else if (highlightState.lines.length > 0) {
-        const lineIdsToErase = new Set(highlightState.lines.map(line => line.id));
-        const newLines = lines.filter(line => !lineIdsToErase.has(line.id));
-        const newAirEntries = airEntries.filter(entry => !lineIdsToErase.has(entry.lineId));
-        onLinesUpdate?.(newLines);
-        if (airEntries.length !== newAirEntries.length) {
-          onAirEntriesUpdate?.(newAirEntries);
-        }
-        setHighlightState({ lines: [], airEntry: null });
+    // For left-click (button 0)
+    if (e.button === 0) {
+      // If pan mode is active, use left-click for panning
+      if (panMode) {
+        handlePanStart(e);
+        return;
       }
-    } else if (currentAirEntry) {
-      const selectedLines = findLinesNearPoint(clickPoint);
-      if (selectedLines.length > 0) {
-        const selectedLine = selectedLines[0];
-        const exactPoint = getPointOnLine(selectedLine, clickPoint);
 
-        // Instead of creating the air entry immediately, store the details and show dialog
-        setNewAirEntryDetails({
-          type: currentAirEntry,
-          position: exactPoint,
-          line: selectedLine
+      // Otherwise, handle normal drawing tools
+      if (currentTool === 'wall') {
+        const nearestPoint = findNearestEndpoint(clickPoint);
+        const startPoint = nearestPoint || snapToGrid(clickPoint);
+        const newLineId = Math.random().toString(36).substring(2, 9);
+        setCurrentLine({
+          id: newLineId,
+          start: startPoint,
+          end: startPoint
         });
+        setIsDrawing(true);
+        setCursorPoint(startPoint);
+      } else if (currentTool === 'eraser') {
+        if (highlightState.airEntry) {
+          const newAirEntries = airEntries.filter((_, index) => index !== highlightState.airEntry!.index);
+          onAirEntriesUpdate?.(newAirEntries);
+          setHighlightState({ lines: [], airEntry: null });
+        } else if (highlightState.lines.length > 0) {
+          const lineIdsToErase = new Set(highlightState.lines.map(line => line.id));
+          const newLines = lines.filter(line => !lineIdsToErase.has(line.id));
+          const newAirEntries = airEntries.filter(entry => !lineIdsToErase.has(entry.lineId));
+          onLinesUpdate?.(newLines);
+          if (airEntries.length !== newAirEntries.length) {
+            onAirEntriesUpdate?.(newAirEntries);
+          }
+          setHighlightState({ lines: [], airEntry: null });
+        }
+      } else if (currentAirEntry) {
+        const selectedLines = findLinesNearPoint(clickPoint);
+        if (selectedLines.length > 0) {
+          const selectedLine = selectedLines[0];
+          const exactPoint = getPointOnLine(selectedLine, clickPoint);
+
+          // Instead of creating the air entry immediately, store the details and show dialog
+          setNewAirEntryDetails({
+            type: currentAirEntry,
+            position: exactPoint,
+            line: selectedLine
+          });
+        }
       }
     }
   };
@@ -947,7 +1030,11 @@ export default function Canvas2D({
   const handleMouseUp = (e: MouseEvent) => {
     if (isDraggingAirEntry) {
       setIsDraggingAirEntry(false);
-      setDraggedAirEntry({ index: -1, entry: {} as AirEntry, startPoint: { x: 0, y: 0 } });
+      setDraggedAirEntry({
+        index: -1,
+        entry: {} as AirEntry,
+        startPoint: { x: 0, y: 0 },
+      });
       return;
     }
 
@@ -957,8 +1044,11 @@ export default function Canvas2D({
       return;
     }
 
-    if (currentTool === 'wall' && isDrawing && currentLine) {
-      if (currentLine.start.x !== currentLine.end.x || currentLine.start.y !== currentLine.end.y) {
+    if (currentTool === "wall" && isDrawing && currentLine) {
+      if (
+        currentLine.start.x !== currentLine.end.x ||
+        currentLine.start.y !== currentLine.end.y
+      ) {
         const newLines = [...lines, currentLine];
         onLinesUpdate?.(newLines);
       }
@@ -971,7 +1061,11 @@ export default function Canvas2D({
   const handleMouseLeave = () => {
     if (isDraggingAirEntry) {
       setIsDraggingAirEntry(false);
-      setDraggedAirEntry({ index: -1, entry: {} as AirEntry, startPoint: { x: 0, y: 0 } });
+      setDraggedAirEntry({
+        index: -1,
+        entry: {} as AirEntry,
+        startPoint: { x: 0, y: 0 },
+      });
     }
 
     if (isDraggingEndpoint) {
@@ -993,7 +1087,9 @@ export default function Canvas2D({
     }
   };
 
-  const findAirEntryAtLocation = (clickPoint: Point): { index: number; entry: AirEntry } | null => {
+  const findAirEntryAtLocation = (
+    clickPoint: Point,
+  ): { index: number; entry: AirEntry } | null => {
     console.log("Checking for AirEntry at point:", clickPoint);
 
     for (let i = 0; i < airEntries.length; i++) {
@@ -1004,12 +1100,12 @@ export default function Canvas2D({
 
       const start = {
         x: entry.position.x - normal.x * halfWidth,
-        y: entry.position.y - normal.y * halfWidth
+        y: entry.position.y - normal.y * halfWidth,
       };
 
       const end = {
         x: entry.position.x + normal.x * halfWidth,
-        y: entry.position.y + normal.y * halfWidth
+        y: entry.position.y + normal.y * halfWidth,
       };
 
       const distanceToEntry = distanceToLineSegment(clickPoint, start, end);
@@ -1032,16 +1128,16 @@ export default function Canvas2D({
 
     const idMap = new Map<string, Line>();
 
-    oldLines.forEach(oldLine => {
+    oldLines.forEach((oldLine) => {
       if (!oldLine.id) return;
 
-      const newLine = newLines.find(nl => nl.id === oldLine.id);
+      const newLine = newLines.find((nl) => nl.id === oldLine.id);
       if (newLine) {
         idMap.set(oldLine.id, newLine);
       }
     });
 
-    const newAirEntries = airEntries.map(entry => {
+    const newAirEntries = airEntries.map((entry) => {
       if (!entry.lineId) return entry;
 
       const updatedLine = idMap.get(entry.lineId);
@@ -1053,11 +1149,14 @@ export default function Canvas2D({
       return {
         ...entry,
         line: updatedLine,
-        position: newPosition
+        position: newPosition,
       };
     });
 
-    if (JSON.stringify(newAirEntries) !== JSON.stringify(airEntries) && onAirEntriesUpdate) {
+    if (
+      JSON.stringify(newAirEntries) !== JSON.stringify(airEntries) &&
+      onAirEntriesUpdate
+    ) {
       onAirEntriesUpdate(newAirEntries);
     }
   };
@@ -1070,7 +1169,7 @@ export default function Canvas2D({
       const size = 10 / zoom;
 
       ctx.beginPath();
-      ctx.strokeStyle = '#718096';
+      ctx.strokeStyle = "#718096";
       ctx.lineWidth = 1 / zoom;
 
       ctx.moveTo(point.x - size, point.y);
@@ -1083,7 +1182,7 @@ export default function Canvas2D({
     };
 
     const draw = () => {
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
       ctx.clearRect(0, 0, dimensions.width, dimensions.height);
@@ -1101,21 +1200,29 @@ export default function Canvas2D({
       const centerY = dimensions.height / 2;
 
       ctx.beginPath();
-      ctx.strokeStyle = '#64748b';
+      ctx.strokeStyle = "#64748b";
       ctx.lineWidth = 1 / zoom;
 
       const zoomAdjustedGridSize = Math.max(gridSize, Math.ceil(5 / zoom) * 4);
 
-      const startXGrid = Math.floor((visibleStartX - centerX) / zoomAdjustedGridSize) * zoomAdjustedGridSize;
-      const endXGrid = Math.ceil((visibleEndX - centerX) / zoomAdjustedGridSize) * zoomAdjustedGridSize;
+      const startXGrid =
+        Math.floor((visibleStartX - centerX) / zoomAdjustedGridSize) *
+        zoomAdjustedGridSize;
+      const endXGrid =
+        Math.ceil((visibleEndX - centerX) / zoomAdjustedGridSize) *
+        zoomAdjustedGridSize;
 
       for (let x = startXGrid; x <= endXGrid; x += zoomAdjustedGridSize) {
         ctx.moveTo(centerX + x, visibleStartY);
         ctx.lineTo(centerX + x, visibleEndY);
       }
 
-      const startYGrid = Math.floor((visibleStartY - centerY) / zoomAdjustedGridSize) * zoomAdjustedGridSize;
-      const endYGrid = Math.ceil((visibleEndY - centerY) / zoomAdjustedGridSize) * zoomAdjustedGridSize;
+      const startYGrid =
+        Math.floor((visibleStartY - centerY) / zoomAdjustedGridSize) *
+        zoomAdjustedGridSize;
+      const endYGrid =
+        Math.ceil((visibleEndY - centerY) / zoomAdjustedGridSize) *
+        zoomAdjustedGridSize;
 
       for (let y = startYGrid; y <= endYGrid; y += zoomAdjustedGridSize) {
         ctx.moveTo(visibleStartX, centerY + y);
@@ -1127,16 +1234,17 @@ export default function Canvas2D({
       const coordSystem = createCoordinateSystem();
       coordSystem.forEach((line, index) => {
         ctx.beginPath();
-        ctx.strokeStyle = index < 3 ? '#ef4444' : '#22c55e';
+        ctx.strokeStyle = index < 3 ? "#ef4444" : "#22c55e";
         ctx.lineWidth = 2 / zoom;
         ctx.moveTo(line.start.x, line.start.y);
         ctx.lineTo(line.end.x, line.end.y);
         ctx.stroke();
       });
 
-
-      lines.forEach(line => {
-        ctx.strokeStyle = highlightState.lines.includes(line) ? getHighlightColor() : '#000000';
+      lines.forEach((line) => {
+        ctx.strokeStyle = highlightState.lines.includes(line)
+          ? getHighlightColor()
+          : "#000000";
         ctx.lineWidth = 3 / zoom;
         ctx.beginPath();
         ctx.moveTo(line.start.x, line.start.y);
@@ -1145,8 +1253,8 @@ export default function Canvas2D({
       });
 
       ctx.font = `${12 / zoom}px sans-serif`;
-      ctx.fillStyle = '#64748b';
-      lines.forEach(line => {
+      ctx.fillStyle = "#64748b";
+      lines.forEach((line) => {
         const midX = (line.start.x + line.end.x) / 2;
         const midY = (line.start.y + line.end.y) / 2;
         const length = Math.round(getLineLength(line));
@@ -1155,7 +1263,7 @@ export default function Canvas2D({
 
       if (currentLine) {
         ctx.beginPath();
-        ctx.strokeStyle = '#00000';
+        ctx.strokeStyle = "#00000";
         ctx.lineWidth = 2 / zoom;
         ctx.moveTo(currentLine.start.x, currentLine.start.y);
         ctx.lineTo(currentLine.end.x, currentLine.end.y);
@@ -1174,36 +1282,41 @@ export default function Canvas2D({
       const drawEndpoints = () => {
         const drawnPoints = new Set<string>();
 
-        lines.forEach(line => {
+        lines.forEach((line) => {
           [
             { point: line.start, isStart: true },
-            { point: line.end, isStart: false }
+            { point: line.end, isStart: false },
           ].forEach(({ point, isStart }) => {
             const key = `${Math.round(point.x)},${Math.round(point.y)}`;
             if (!drawnPoints.has(key)) {
               drawnPoints.add(key);
 
-              const isHovered = hoveredEndpoint?.point &&
+              const isHovered =
+                hoveredEndpoint?.point &&
                 arePointsNearlyEqual(hoveredEndpoint.point, point);
 
               ctx.beginPath();
-              ctx.arc(point.x, point.y,
-                isHovered ? POINT_RADIUS * 1.5 / zoom : POINT_RADIUS / zoom,
-                0, Math.PI * 2);
+              ctx.arc(
+                point.x,
+                point.y,
+                isHovered ? (POINT_RADIUS * 1.5) / zoom : POINT_RADIUS / zoom,
+                0,
+                Math.PI * 2,
+              );
 
               if (isHovered) {
-                ctx.fillStyle = '#fbbf24'; // Amber color for hover
+                ctx.fillStyle = "#fbbf24"; // Amber color for hover
                 // Add tooltip
                 ctx.font = `${12 / zoom}px Arial`;
-                ctx.fillStyle = '#000000';
-                ctx.textAlign = 'center';
+                ctx.fillStyle = "#000000";
+                ctx.textAlign = "center";
                 ctx.fillText(
-                  'Right-click to drag',
+                  "Right-click to drag",
                   point.x,
-                  point.y - 15 / zoom
+                  point.y - 15 / zoom,
                 );
               } else {
-                ctx.fillStyle = '#3b82f6'; // Blue color
+                ctx.fillStyle = "#3b82f6"; // Blue color
               }
 
               ctx.fill();
@@ -1214,22 +1327,24 @@ export default function Canvas2D({
 
       drawEndpoints();
 
-      const endpoints = [...new Set(lines.flatMap(line => [line.start, line.end]))];
+      const endpoints = [
+        ...new Set(lines.flatMap((line) => [line.start, line.end])),
+      ];
       const endpointColorMap: Record<string, Point[]> = {
-        '#fb923c': [],
-        '#3b82f6': [],
-        '#22c55e': []
+        "#fb923c": [],
+        "#3b82f6": [],
+        "#22c55e": [],
       };
 
-      endpoints.forEach(point => {
+      endpoints.forEach((point) => {
         const connections = findConnectedLines(point).length;
-        let color = '#fb923c';
+        let color = "#fb923c";
 
         if (connections > 1) {
           if (isInClosedContour(point, lines)) {
-            color = '#22c55e';
+            color = "#22c55e";
           } else {
-            color = '#3b82f6';
+            color = "#3b82f6";
           }
         }
 
@@ -1242,7 +1357,7 @@ export default function Canvas2D({
         ctx.fillStyle = color;
         ctx.beginPath();
 
-        points.forEach(point => {
+        points.forEach((point) => {
           ctx.moveTo(point.x, point.y);
           ctx.arc(point.x, point.y, POINT_RADIUS / zoom, 0, 2 * Math.PI);
         });
@@ -1250,33 +1365,33 @@ export default function Canvas2D({
         ctx.fill();
 
         ctx.font = `${12 / zoom}px sans-serif`;
-        points.forEach(point => {
+        points.forEach((point) => {
           drawCoordinateLabel(ctx, point, color);
         });
       });
 
       if (cursorPoint && isDrawing) {
         ctx.font = `${12 / zoom}px sans-serif`;
-        drawCoordinateLabel(ctx, cursorPoint, '#fb923c');
+        drawCoordinateLabel(ctx, cursorPoint, "#fb923c");
       }
 
       if (hoverPoint && !isDrawing && !isPanning) {
         ctx.font = `${12 / zoom}px sans-serif`;
-        drawCoordinateLabel(ctx, hoverPoint, '#718096');
+        drawCoordinateLabel(ctx, hoverPoint, "#718096");
         drawCrosshair(ctx, hoverPoint);
       }
 
       ctx.restore();
     };
 
-    canvas.addEventListener('mousedown', handleMouseDown);
-    canvas.addEventListener('mousemove', handleMouseMove);
-    canvas.addEventListener('mouseup', handleMouseUp);
-    canvas.addEventListener('mouseleave', handleMouseLeave);
-    canvas.addEventListener('wheel', handleZoomWheel, { passive: false });
-    canvas.addEventListener('wheel', handleRegularWheel, { passive: true });
-    canvas.addEventListener('contextmenu', handleContextMenu);
-    canvas.addEventListener('dblclick', handleDoubleClick);
+    canvas.addEventListener("mousedown", handleMouseDown);
+    canvas.addEventListener("mousemove", handleMouseMove);
+    canvas.addEventListener("mouseup", handleMouseUp);
+    canvas.addEventListener("mouseleave", handleMouseLeave);
+    canvas.addEventListener("wheel", handleZoomWheel, { passive: false });
+    canvas.addEventListener("wheel", handleRegularWheel, { passive: true });
+    canvas.addEventListener("contextmenu", handleContextMenu);
+    canvas.addEventListener("dblclick", handleDoubleClick);
 
     let lastRenderTime = 0;
     let animationFrameId: number;
@@ -1293,30 +1408,47 @@ export default function Canvas2D({
     animationFrameId = requestAnimationFrame(render);
 
     return () => {
-      canvas.removeEventListener('mousedown', handleMouseDown);
-      canvas.removeEventListener('mousemove', handleMouseMove);
-      canvas.removeEventListener('mouseup', handleMouseUp);
-      canvas.removeEventListener('mouseleave', handleMouseLeave);
-      canvas.removeEventListener('wheel', handleZoomWheel);
-      canvas.removeEventListener('wheel', handleRegularWheel);
-      canvas.removeEventListener('contextmenu', handleContextMenu);
-      canvas.removeEventListener('dblclick', handleDoubleClick);
+      canvas.removeEventListener("mousedown", handleMouseDown);
+      canvas.removeEventListener("mousemove", handleMouseMove);
+      canvas.removeEventListener("mouseup", handleMouseUp);
+      canvas.removeEventListener("mouseleave", handleMouseLeave);
+      canvas.removeEventListener("wheel", handleZoomWheel);
+      canvas.removeEventListener("wheel", handleRegularWheel);
+      canvas.removeEventListener("contextmenu", handleContextMenu);
+      canvas.removeEventListener("dblclick", handleDoubleClick);
 
       if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
       }
     };
   }, [
-    dimensions, lines, currentLine, isDrawing,
-    zoom, pan, isPanning, panMode, cursorPoint,
-    currentAirEntry, airEntries, onLinesUpdate,
-    hoveredGridPoint, hoverPoint, isDraggingEndpoint, draggedPoint,
-    isDraggingAirEntry, draggedAirEntry, onAirEntriesUpdate, highlightState,
-    editingAirEntry, hoveredAirEntry, hoveredEndpoint
+    dimensions,
+    lines,
+    currentLine,
+    isDrawing,
+    zoom,
+    pan,
+    isPanning,
+    panMode,
+    cursorPoint,
+    currentAirEntry,
+    airEntries,
+    onLinesUpdate,
+    hoveredGridPoint,
+    hoverPoint,
+    isDraggingEndpoint,
+    draggedPoint,
+    isDraggingAirEntry,
+    draggedAirEntry,
+    onAirEntriesUpdate,
+    highlightState,
+    editingAirEntry,
+    hoveredAirEntry,
+    hoveredEndpoint,
   ]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/[^0-9]/g, '');
+    const value = e.target.value.replace(/[^0-9]/g, "");
     setZoomInput(value);
   };
 
@@ -1331,12 +1463,17 @@ export default function Canvas2D({
   };
 
   const handleZoomInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.currentTarget.blur();
     }
   };
 
   const fineDragSnap = (point: Point): Point => {
+    // Simply return the original point without snapping
+    return point;
+
+    // Comment out or remove the following code:
+    /*
     const snapSize = 2;
     const centerX = dimensions.width / 2;
     const centerY = dimensions.height / 2;
@@ -1356,6 +1493,7 @@ export default function Canvas2D({
       x: centerX + snappedX,
       y: centerY + snappedY
     };
+    */
   };
 
   const handleDoubleClick = (e: MouseEvent) => {
@@ -1365,7 +1503,7 @@ export default function Canvas2D({
     if (airEntryInfo) {
       setEditingAirEntry({
         index: airEntryInfo.index,
-        entry: airEntryInfo.entry
+        entry: airEntryInfo.entry,
       });
     }
   };
@@ -1380,7 +1518,7 @@ export default function Canvas2D({
     const updatedAirEntries = [...airEntries];
     updatedAirEntries[editingAirEntry.index] = {
       ...editingAirEntry.entry,
-      dimensions
+      dimensions,
     };
 
     onAirEntriesUpdate?.(updatedAirEntries);
@@ -1399,7 +1537,7 @@ export default function Canvas2D({
       position: newAirEntryDetails.position,
       dimensions,
       line: newAirEntryDetails.line,
-      lineId: newAirEntryDetails.line.id
+      lineId: newAirEntryDetails.line.id,
     };
 
     onAirEntriesUpdate?.([...airEntries, newAirEntry]);
@@ -1417,7 +1555,7 @@ export default function Canvas2D({
         ref={canvasRef}
         width={dimensions.width}
         height={dimensions.height}
-        className={`w-full h-full ${panMode ? 'cursor-move' : 'cursor-default'}`}
+        className={`w-full h-full ${panMode ? "cursor-move" : "cursor-default"}`}
       />
       <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-white/80 p-2 rounded-lg shadow">
         <Button
