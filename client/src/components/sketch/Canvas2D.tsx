@@ -11,14 +11,14 @@ interface Measurement {
   distance: number;
 }
 
+let isProcessingMouseMove = false;
+let lastMouseMoveEvent: MouseEvent | null = null;
+
 interface HighlightState {
   lines: Line[];
   airEntry: { index: number; entry: AirEntry } | null;
   measurement: { index: number; measurement: Measurement } | null;
 }
-
-let isProcessingMouseMove = false;
-let lastMouseMoveEvent: MouseEvent | null = null;
 
 const POINT_RADIUS = 4;
 const SNAP_DISTANCE = 15;
@@ -294,7 +294,6 @@ const Canvas2D = ({
   const [measureStart, setMeasureStart] = useState<Point | null>(null);
   const [measureEnd, setMeasureEnd] = useState<Point | null>(null);
   const [isMeasuring, setIsMeasuring] = useState(false);
-  const [currentToolState, setCurrentToolState] = useState<"wall" | "eraser" | "measure" | null>(null);
 
 
   const createCoordinateSystem = (): Line[] => {
@@ -385,17 +384,6 @@ const Canvas2D = ({
     const newZoom = Math.max(zoom - ZOOM_STEP, MIN_ZOOM);
     handleZoomChange(newZoom);
   };
-
-  const handleZoomWheel = (e: WheelEvent) => {
-    if (e.ctrlKey || e.metaKey) {
-      e.preventDefault();
-      const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
-      const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom + delta));
-      handleZoomChange(newZoom);
-    }
-  };
-
-  const handleRegularWheel = (e: WheelEvent) => {};
 
   const handlePanStart = (e: MouseEvent) => {
     // Start panning for right-click OR when panMode is active
@@ -881,7 +869,8 @@ const Canvas2D = ({
     if (currentTool === "wall" && isDrawing && currentLine) {
       const nearestPoint = findNearestEndpoint(point);
       const endPoint = nearestPoint || snapToGrid(point);
-      setCurrentLine((prev) => (prev ? { ...prev, end: endPoint } : null));      setCursorPoint(endPoint);
+      setCurrentLine((prev) => (prev ? { ...prev, end: endPoint } : null));
+      setCursorPoint(endPoint);
     }
   };
 
@@ -897,7 +886,7 @@ const Canvas2D = ({
         processMouseMove(lastMouseMoveEvent);
       }
       isProcessingMouseMove = false;
-      lastMouseMoveEvent = null;
+            lastMouseMoveEvent = null;
     });
   };
 
@@ -1874,40 +1863,40 @@ const Canvas2D = ({
   };
 
   const handleEditingAirEntryConfirm = (dimensions: {
-    width: number;
-    height: number;
-    distanceToFloor?: number;
-  }) => {
-    if (!editingAirEntry) return;
+      width: number;
+      height: number;
+      distanceToFloor?: number;
+    }) => {
+      if (!editingAirEntry) return;
 
-    const updatedAirEntries = [...airEntries];
-    updatedAirEntries[editingAirEntry.index] = {
-      ...editingAirEntry.entry,
-      dimensions,
+      const updatedAirEntries = [...airEntries];
+      updatedAirEntries[editingAirEntry.index] = {
+        ...editingAirEntry.entry,
+        dimensions,
+      };
+
+      onAirEntriesUpdate?.(updatedAirEntries);
+      setEditingAirEntry(null);
     };
-
-    onAirEntriesUpdate?.(updatedAirEntries);
-    setEditingAirEntry(null);
-  };
 
   const handleNewAirEntryConfirm = (dimensions: {
-    width: number;
-    height: number;
-    distanceToFloor?: number;
-  }) => {
-    if (!newAirEntryDetails) return;
+      width: number;
+      height: number;
+      distanceToFloor?: number;
+    }) => {
+      if (!newAirEntryDetails) return;
 
-    const newAirEntry: AirEntry = {
-      type: newAirEntryDetails.type,
-      position: newAirEntryDetails.position,
-      dimensions,
-      line: newAirEntryDetails.line,
-      lineId: newAirEntryDetails.line.id,
+      const newAirEntry: AirEntry = {
+        type: newAirEntryDetails.type,
+        position: newAirEntryDetails.position,
+        dimensions,
+        line: newAirEntryDetails.line,
+        lineId: newAirEntryDetails.line.id,
+      };
+
+      onAirEntriesUpdate?.([...airEntries, newAirEntry]);
+      setNewAirEntryDetails(null);
     };
-
-    onAirEntriesUpdate?.([...airEntries, newAirEntry]);
-    setNewAirEntryDetails(null);
-  };
 
   const handleContextMenu = (e: Event) => {
     console.log("Context menu prevented");
@@ -1917,6 +1906,17 @@ const Canvas2D = ({
   const setCurrentTool = (tool: "wall" | "eraser" | "measure" | null) => {
     setCurrentToolState(tool);
   };
+
+  const handleZoomWheel = (e: WheelEvent) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
+      const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom + delta));
+      handleZoomChange(newZoom);
+    }
+  };
+
+  const handleRegularWheel = (e: WheelEvent) => {};
 
   return (
     <div ref={containerRef} className="relative w-full h-full">
