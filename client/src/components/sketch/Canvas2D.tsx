@@ -121,11 +121,6 @@ const distanceToLineSegment = (
 
 const calculatePositionAlongWall = (line: Line, point: Point): Point => {
   try {
-    console.log("Calculating position along wall:", {
-      line: { start: line.start, end: line.end },
-      point,
-    });
-
     const lineVector = {
       x: line.end.x - line.start.x,
       y: line.end.y - line.start.y,
@@ -162,13 +157,6 @@ const calculatePositionAlongWall = (line: Line, point: Point): Point => {
       x: line.start.x + unitVector.x * clampedDot,
       y: line.start.y + unitVector.y * clampedDot,
     };
-
-    console.log("Position calculation:", {
-      lineLength,
-      dotProduct,
-      clampedDot,
-      finalPosition,
-    });
 
     return finalPosition;
   } catch (error) {
@@ -885,16 +873,9 @@ export default function Canvas2D({
     }
 
     if (isDraggingAirEntry && draggedAirEntry.index !== -1) {
-      constpoint = getCanvasPoint(e);
-      console.log(
-        "Mouse move with drag state:",
-        isDraggingAirEntry,
-        draggedAirEntry.index,
-      );
+      const point = getCanvasPoint(e);
       const entry = draggedAirEntry.entry;
-
       const newPosition = calculatePositionAlongWall(entry.line, point);
-      console.log("New position calculated:", newPosition);
 
       const newAirEntries = [...airEntries];
       newAirEntries[draggedAirEntry.index] = {
@@ -903,7 +884,6 @@ export default function Canvas2D({
       };
 
       if (onAirEntriesUpdate) {
-        console.log("Updating air entries with:", newAirEntries);
         onAirEntriesUpdate(newAirEntries);
       }
       return;
@@ -1136,8 +1116,6 @@ export default function Canvas2D({
   const findAirEntryAtLocation = (
     clickPoint: Point,
   ): { index: number; entry: AirEntry } | null => {
-    console.log("Checking for AirEntry at point:", clickPoint);
-
     for (let i = 0; i < airEntries.length; i++) {
       const entry = airEntries[i];
       const normal = calculateNormal(entry.line);
@@ -1155,21 +1133,16 @@ export default function Canvas2D({
       };
 
       const distanceToEntry = distanceToLineSegment(clickPoint, start, end);
-      console.log("Distance to entry:", distanceToEntry, "Entry index:", i);
 
       if (distanceToEntry < 20 / zoom) {
-        console.log("Found AirEntry at index:", i);
         return { index: i, entry };
       }
     }
 
-    console.log("No AirEntry found at point");
     return null;
   };
 
   const updateAirEntriesWithWalls = (newLines: Line[], oldLines: Line[]) => {
-    console.log("Updating air entries with walls");
-
     if (airEntries.length === 0) return;
 
     const idMap = new Map<string, Line>();
@@ -1258,13 +1231,13 @@ export default function Canvas2D({
         ctx.beginPath();
         ctx.moveTo(startPoint.x, startPoint.y);
         ctx.lineTo(
-          startPoint.x + arrowLength * Math.cos(angle + Math.PI + arrowAngle),
-          startPoint.y + arrowLength * Math.sin(angle + Math.PI + arrowAngle)
+          startPoint.x - arrowLength * Math.cos(angle),
+          startPoint.y - arrowLength * Math.sin(angle)
         );
         ctx.moveTo(startPoint.x, startPoint.y);
         ctx.lineTo(
-          startPoint.x + arrowLength * Math.cos(angle + Math.PI - arrowAngle),
-          startPoint.y + arrowLength * Math.sin(angle + Math.PI - arrowAngle)
+          startPoint.x - arrowLength * Math.cos(angle - 2 * arrowAngle),
+          startPoint.y - arrowLength * Math.sin(angle - 2 * arrowAngle)
         );
         ctx.stroke();
 
@@ -1272,13 +1245,13 @@ export default function Canvas2D({
         ctx.beginPath();
         ctx.moveTo(endPoint.x, endPoint.y);
         ctx.lineTo(
-          endPoint.x + arrowLength * Math.cos(angle + arrowAngle),
-          endPoint.y + arrowLength * Math.sin(angle + arrowAngle)
+          endPoint.x + arrowLength * Math.cos(angle),
+          endPoint.y + arrowLength * Math.sin(angle)
         );
         ctx.moveTo(endPoint.x, endPoint.y);
         ctx.lineTo(
-          endPoint.x + arrowLength * Math.cos(angle - arrowAngle),
-          endPoint.y + arrowLength * Math.sin(angle - arrowAngle)
+          endPoint.x + arrowLength * Math.cos(angle + 2 * arrowAngle),
+          endPoint.y + arrowLength * Math.sin(angle + 2 * arrowAngle)
         );
         ctx.stroke();
 
@@ -1410,7 +1383,7 @@ export default function Canvas2D({
         const midY = (line.start.y + line.end.y) / 2;
         const length = Math.round(getLineLength(line));
         // Removed this line as wall measurements are handled by drawWallMeasurements
-        // ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
+
       });
 
       if (currentLine) {
@@ -1425,7 +1398,7 @@ export default function Canvas2D({
         const midX = (currentLine.start.x + currentLine.end.x) / 2;
         const midY = (currentLine.start.y + currentLine.end.y) / 2;
         // Removed this line as wall measurements are handled by drawWallMeasurements
-        // ctx.fillText(`${length} cm`, midX, midY - 5 / zoom);
+
       }
 
       airEntries.forEach((entry, index) => {
