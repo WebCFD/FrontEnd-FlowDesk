@@ -884,7 +884,8 @@ export default function Canvas2D({
       const newAirEntries = [...airEntries];
       newAirEntries[draggedAirEntry.index] = {
         ...entry,
-        position: newPosition,      };
+        position: newPosition,
+      };
 
       if (onAirEntriesUpdate) {
         console.log("Updating air entries with:", newAirEntries);
@@ -958,7 +959,7 @@ export default function Canvas2D({
         setDraggedAirEntry({
           index: airEntryInfo.index,
           entry: airEntryInfo.entry,
-          startPoint: clickPoint
+          startPoint: clickPoint,
         });
         return;
       }
@@ -984,26 +985,32 @@ export default function Canvas2D({
       }
 
       // Otherwise, handle normal drawing tools
-      if (currentTool === 'wall') {
+      if (currentTool === "wall") {
         const nearestPoint = findNearestEndpoint(clickPoint);
         const startPoint = nearestPoint || snapToGrid(clickPoint);
         const newLineId = Math.random().toString(36).substring(2, 9);
         setCurrentLine({
           id: newLineId,
           start: startPoint,
-          end: startPoint
+          end: startPoint,
         });
         setIsDrawing(true);
         setCursorPoint(startPoint);
-      } else if (currentTool === 'eraser') {
+      } else if (currentTool === "eraser") {
         if (highlightState.airEntry) {
-          const newAirEntries = airEntries.filter((_, index) => index !== highlightState.airEntry!.index);
+          const newAirEntries = airEntries.filter(
+            (_, index) => index !== highlightState.airEntry!.index,
+          );
           onAirEntriesUpdate?.(newAirEntries);
           setHighlightState({ lines: [], airEntry: null });
         } else if (highlightState.lines.length > 0) {
-          const lineIdsToErase = new Set(highlightState.lines.map(line => line.id));
-          const newLines = lines.filter(line => !lineIdsToErase.has(line.id));
-          const newAirEntries = airEntries.filter(entry => !lineIdsToErase.has(entry.lineId));
+          const lineIdsToErase = new Set(
+            highlightState.lines.map((line) => line.id),
+          );
+          const newLines = lines.filter((line) => !lineIdsToErase.has(line.id));
+          const newAirEntries = airEntries.filter(
+            (entry) => !lineIdsToErase.has(entry.lineId),
+          );
           onLinesUpdate?.(newLines);
           if (airEntries.length !== newAirEntries.length) {
             onAirEntriesUpdate?.(newAirEntries);
@@ -1020,7 +1027,7 @@ export default function Canvas2D({
           setNewAirEntryDetails({
             type: currentAirEntry,
             position: exactPoint,
-            line: selectedLine
+            line: selectedLine,
           });
         }
       }
