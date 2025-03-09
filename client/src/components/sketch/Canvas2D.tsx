@@ -1523,17 +1523,17 @@ export default function Canvas2D({
       ctx.lineTo(to.x, to.y);
       ctx.stroke();
 
-      // Draw the start arrow head (pointing outward)
+      // Draw the start arrow head (pointing inward towards start point)
       ctx.beginPath();
       ctx.moveTo(from.x, from.y);
       ctx.lineTo(
-        from.x + headLength * Math.cos(angle + Math.PI + headAngle),
-        from.y + headLength * Math.sin(angle + Math.PI + headAngle)
+        from.x - headLength * Math.cos(angle - headAngle),
+        from.y - headLength * Math.sin(angle - headAngle)
       );
       ctx.moveTo(from.x, from.y);
       ctx.lineTo(
-        from.x + headLength * Math.cos(angle + Math.PI - headAngle),
-        from.y + headLength * Math.sin(angle + Math.PI - headAngle)
+        from.x - headLength * Math.cos(angle + headAngle),
+        from.y - headLength * Math.sin(angle + headAngle)
       );
       ctx.stroke();
 
@@ -1541,13 +1541,13 @@ export default function Canvas2D({
       ctx.beginPath();
       ctx.moveTo(to.x, to.y);
       ctx.lineTo(
-        to.x + headLength * Math.cos(angle + headAngle),
-        to.y + headLength * Math.sin(angle + headAngle)
+        to.x + headLength * Math.cos(angle - headAngle),
+        to.y + headLength * Math.sin(angle - headAngle)
       );
       ctx.moveTo(to.x, to.y);
       ctx.lineTo(
-        to.x + headLength * Math.cos(angle - headAngle),
-        to.y + headLength * Math.sin(angle - headAngle)
+        to.x + headLength * Math.cos(angle + headAngle),
+        to.y + headLength * Math.sin(angle + headAngle)
       );
       ctx.stroke();
     };
