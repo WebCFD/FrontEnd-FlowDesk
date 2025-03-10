@@ -330,28 +330,30 @@ export default function WizardDesign() {
             </div>
 
             {/* Right side - View container */}
-            <div className="flex-1 border rounded-lg overflow-hidden bg-white h-[600px]">
+            <div className="flex-1 border rounded-lg overflow-hidden bg-white h-[600px] flex items-center justify-center">
               {tab === "2d-editor" ? (
-                <Canvas2D
-                  gridSize={gridSize}
-                  currentTool={currentTool}
-                  currentAirEntry={currentAirEntry}
-                  onLineSelect={handleLineSelect}
-                  airEntries={airEntries}
-                  measurements={measurements}
-                  onMeasurementsUpdate={setMeasurements}
-                  lines={lines}
-                  onLinesUpdate={(newLines) => {
-                    setLines(newLines);
-                    const hasClosedContour = newLines.length > 0 &&
-                      newLines.some(line =>
-                        isInClosedContour(line.start, newLines) ||
-                        isInClosedContour(line.end, newLines)
-                      );
-                    setHasClosedContour(hasClosedContour);
-                  }}
-                  onAirEntriesUpdate={setAirEntries}
-                />
+                <div className="w-[800px] h-[600px]"> {/* Fixed dimensions container */}
+                  <Canvas2D
+                    gridSize={gridSize}
+                    currentTool={currentTool}
+                    currentAirEntry={currentAirEntry}
+                    onLineSelect={handleLineSelect}
+                    airEntries={airEntries}
+                    measurements={measurements}
+                    onMeasurementsUpdate={setMeasurements}
+                    lines={lines}
+                    onLinesUpdate={(newLines) => {
+                      setLines(newLines);
+                      const hasClosedContour = newLines.length > 0 &&
+                        newLines.some(line =>
+                          isInClosedContour(line.start, newLines) ||
+                          isInClosedContour(line.end, newLines)
+                        );
+                      setHasClosedContour(hasClosedContour);
+                    }}
+                    onAirEntriesUpdate={setAirEntries}
+                  />
+                </div>
               ) : (
                 <Canvas3D
                   lines={lines}
