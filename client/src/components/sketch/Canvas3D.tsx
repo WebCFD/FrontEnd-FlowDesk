@@ -35,6 +35,7 @@ interface Canvas3DProps {
   floors: Record<string, FloorData>;
   currentFloor: string;
   ceilingHeight?: number;
+  floorDeckThickness?: number; // Add prop for floor deck thickness
 }
 
 const PIXELS_TO_CM = 25 / 20;
@@ -104,6 +105,7 @@ export default function Canvas3D({
   floors,
   currentFloor,
   ceilingHeight = 210,
+  floorDeckThickness = 35, // Default to 35cm if not provided
 }: Canvas3DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -121,7 +123,7 @@ export default function Canvas3D({
     for (let i = 0; i < index; i++) {
       const previousFloor = floorOrder[i];
       if (floors[previousFloor]?.hasClosedContour) {
-        baseHeight += ceilingHeight;
+        baseHeight += ceilingHeight + floorDeckThickness; // Add deck thickness to the total height
       }
     }
     return baseHeight;
@@ -365,7 +367,7 @@ export default function Canvas3D({
       }
     });
 
-  }, [floors, currentFloor, ceilingHeight]);
+  }, [floors, currentFloor, ceilingHeight, floorDeckThickness]);
 
   return <div ref={containerRef} className="w-full h-full" />;
 }

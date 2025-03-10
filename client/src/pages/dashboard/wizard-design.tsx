@@ -874,7 +874,7 @@ export default function WizardDesign() {
           isMultifloor={isMultifloor}
           onLinesUpdate={(newLines) => {
             setLines(newLines);
-            const hasClosedContour =newLines.length > 0 &&
+            const hasClosedContour = newLines.length > 0 &&
               newLines.some(line =>
                 isInClosedContour(line.start, newLines) ||
                 isInClosedContour(line.end, newLines)
@@ -889,6 +889,7 @@ export default function WizardDesign() {
           floors={floors}
           currentFloor={currentFloor}
           ceilingHeight={ceilingHeight}
+          floorDeckThickness={floorDeckThickness} // Add the prop
         />
       )}
     </div>
