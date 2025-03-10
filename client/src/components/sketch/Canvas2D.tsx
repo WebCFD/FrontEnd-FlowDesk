@@ -339,7 +339,20 @@ export default function Canvas2D({
     const centerX = dimensions.width / 2;
     const centerY = dimensions.height / 2;
 
-    for (let x = -GRID_RANGE; x <= GRID_RANGE; x += gridSize) {
+    // Calculate visible area based on current pan and zoom
+    const visibleStartX = -pan.x / zoom - gridSize;
+    const visibleEndX = (-pan.x + dimensions.width) / zoom + gridSize;
+    const visibleStartY = -pan.y / zoom - gridSize;
+    const visibleEndY = (-pan.y + dimensions.height) / zoom + gridSize;
+
+    // Get grid coordinates using gridSize
+    const startXGrid = Math.floor((visibleStartX - centerX) / gridSize) * gridSize;
+    const endXGrid = Math.ceil((visibleEndX - centerX) / gridSize) * gridSize;
+    const startYGrid = Math.floor((visibleStartY - centerY) / gridSize) * gridSize;
+    const endYGrid = Math.ceil((visibleEndY - centerY) / gridSize) * gridSize;
+
+    // Draw vertical grid lines
+    for (let x = startXGrid; x <= endXGrid; x += gridSize) {
       gridLines.push({
         id: `grid-x-${x}`,
         start: { x: centerX + x, y: centerY - GRID_RANGE },
@@ -347,7 +360,8 @@ export default function Canvas2D({
       });
     }
 
-    for (let y = -GRID_RANGE; y <= GRID_RANGE; y += gridSize) {
+    // Draw horizontal grid lines
+    for (let y = startYGrid; y <= endYGrid; y += gridSize) {
       gridLines.push({
         id: `grid-y-${y}`,
         start: { x: centerX - GRID_RANGE, y: centerY + y },
