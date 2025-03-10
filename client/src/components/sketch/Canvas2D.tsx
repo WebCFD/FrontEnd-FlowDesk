@@ -1798,7 +1798,7 @@ export default function Canvas2D({
     }
   };
 
-  const handleAirEntryEdit = (dimensions: {
+  const handleAirEntryEdit = (index: number, dimensions: {
     width: number;
     height: number;
     distanceToFloor?: number;
@@ -1851,8 +1851,7 @@ export default function Canvas2D({
     if (panMode || isPanning) return "move";
 
     // 2. Check for specific tools and return custom SVG cursors matching Lucide icons
-    if (currentTool === "eraser") {
-      // Eraser icon matching the LucideEraser component
+    if (currentTool === "eraser") {      // Eraser icon matching the LucideEraser component
       return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000000\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L15 19\"/><path d=\"M22 21H7\"/><path d=\"m5 11 9 9\"/></svg>') 5 15, auto";
     }
 
@@ -1946,8 +1945,17 @@ export default function Canvas2D({
           type={editingAirEntry.entry.type}
           isOpen={true}
           onClose={() => setEditingAirEntry(null)}
-          onConfirm={(dimensions) => handleAirEntryEdit(dimensions)}
+          onConfirm={(dimensions) => handleAirEntryEdit(editingAirEntry.index, dimensions)}
           initialDimensions={editingAirEntry.entry.dimensions}
+        />
+      )}
+      {/* Add new dialog for creating air entries */}
+      {newAirEntryDetails && (
+        <AirEntryDialog
+          type={newAirEntryDetails.type}
+          isOpen={true}
+          onClose={() => setNewAirEntryDetails(null)}
+          onConfirm={handleNewAirEntryConfirm}
         />
       )}
     </div>
