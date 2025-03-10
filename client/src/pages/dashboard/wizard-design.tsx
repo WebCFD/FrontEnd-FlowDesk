@@ -11,7 +11,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
 import { Save, Upload, Eraser, ArrowRight, ArrowLeft, Ruler } from "lucide-react";
 import Canvas2D from "@/components/sketch/Canvas2D";
-import { RoomSketchPro } from "@/components/sketch/RoomSketchPro"; 
+import { RoomSketchPro } from "@/components/sketch/RoomSketchPro";
 import { cn } from "@/lib/utils";
 import AirEntryDialog from "@/components/sketch/AirEntryDialog";
 import Canvas3D from "@/components/sketch/Canvas3D";
@@ -29,6 +29,8 @@ import {
 import { PlusCircle, Play, Mail, FileEdit } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FurnitureMenu } from "@/components/sketch/FurnitureMenu";
+import { ToolbarToggle } from "@/components/sketch/ToolbarToggle";
+import { Toolbar3D } from "@/components/sketch/Toolbar3D";
 
 interface Point {
   x: number;
@@ -54,7 +56,7 @@ export default function WizardDesign() {
   const [step, setStep] = useState(1);
   const [simulationName, setSimulationName] = useState("");
   const [gridSize, setGridSize] = useState(20);
-  const [currentTool, setCurrentTool] = useState<'wall' | 'eraser' | 'measure'| null>('wall');
+  const [currentTool, setCurrentTool] = useState<'wall' | 'eraser' | 'measure' | null>('wall');
   const [currentAirEntry, setCurrentAirEntry] = useState<'vent' | 'door' | 'window' | null>(null);
   const { toast } = useToast();
   const [isAirEntryDialogOpen, setIsAirEntryDialogOpen] = useState(false);
@@ -207,9 +209,9 @@ export default function WizardDesign() {
 
       <Card className="mt-6">
         <CardContent className="p-6">
-          <Tabs
-            value={tab}
-            onValueChange={(value: "2d-editor" | "3d-preview") => {
+          <ToolbarToggle
+            mode={tab}
+            onModeChange={(value: "2d-editor" | "3d-preview") => {
               if (value === "3d-preview" && !hasClosedContour) {
                 toast({
                   title: "Invalid Room Layout",
@@ -220,16 +222,17 @@ export default function WizardDesign() {
               }
               setTab(value);
             }}
-          >
-            <TabsList>
-              <TabsTrigger value="2d-editor">2D Editor</TabsTrigger>
-              <TabsTrigger value="3d-preview" disabled={!hasClosedContour}>
-                3D Preview
-              </TabsTrigger>
-            </TabsList>
+            hasClosedContour={hasClosedContour}
+          />
 
-            <TabsContent value="2d-editor" className="mt-6">
-              <div className="flex gap-6">
+          <div className="flex gap-6">
+            {/* Left sidebar with toolbars */}
+            <div className="flex flex-col gap-6">
+              {/* 2D Toolbar */}
+              <div className={cn(
+                "transition-opacity duration-200",
+                tab === "2d-editor" ? "opacity-100" : "opacity-50 pointer-events-none"
+              )}>
                 <div className="w-48 space-y-6">
                   <div className="space-y-4">
                     <h3 className="font-semibold">Tools</h3>
@@ -316,43 +319,48 @@ export default function WizardDesign() {
                     </Button>
                   </div>
                 </div>
-
-                <div className="flex-1 border rounded-lg overflow-hidden">
-                  <Canvas2D
-                    gridSize={gridSize}
-                    currentTool={currentTool}
-                    currentAirEntry={currentAirEntry}
-                    onLineSelect={handleLineSelect}
-                    airEntries={airEntries}
-                    measurements={measurements}
-                    onMeasurementsUpdate={setMeasurements}
-                    lines={lines}
-                    onLinesUpdate={(newLines) => {
-                      setLines(newLines);
-                      const hasClosedContour = newLines.length > 0 &&
-                        newLines.some(line =>
-                          isInClosedContour(line.start, newLines) ||
-                          isInClosedContour(line.end, newLines)
-                        );
-                      setHasClosedContour(hasClosedContour);
-                    }}
-                    onAirEntriesUpdate={setAirEntries}
-                  />
-                </div>
               </div>
-            </TabsContent>
 
-            <TabsContent value="3d-preview">
-              <div className="h-[600px] border rounded-lg overflow-hidden">
+              {/* 3D Toolbar */}
+              <Toolbar3D
+                isActive={tab === "3d-preview"}
+                wallTransparency={wallTransparency}
+                onWallTransparencyChange={setWallTransparency}
+              />
+            </div>
+
+            {/* Right side - View container */}
+            <div className="flex-1 border rounded-lg overflow-hidden bg-white h-[600px]">
+              {tab === "2d-editor" ? (
+                <Canvas2D
+                  gridSize={gridSize}
+                  currentTool={currentTool}
+                  currentAirEntry={currentAirEntry}
+                  onLineSelect={handleLineSelect}
+                  airEntries={airEntries}
+                  measurements={measurements}
+                  onMeasurementsUpdate={setMeasurements}
+                  lines={lines}
+                  onLinesUpdate={(newLines) => {
+                    setLines(newLines);
+                    const hasClosedContour = newLines.length > 0 &&
+                      newLines.some(line =>
+                        isInClosedContour(line.start, newLines) ||
+                        isInClosedContour(line.end, newLines)
+                      );
+                    setHasClosedContour(hasClosedContour);
+                  }}
+                  onAirEntriesUpdate={setAirEntries}
+                />
+              ) : (
                 <Canvas3D
                   lines={lines}
                   airEntries={airEntries}
                   height={600}
-                  instanceId="step1-preview"
                 />
-              </div>
-            </TabsContent>
-          </Tabs>
+              )}
+            </div>
+          </div>
         </CardContent>
       </Card>
       <AirEntryDialog
@@ -373,7 +381,7 @@ export default function WizardDesign() {
       <div className="space-y-6">
         <div className="flex gap-6">
           {/* Left side - Furniture Menu */}
-          <FurnitureMenu 
+          <FurnitureMenu
             onDragStart={(item) => {
               console.log('Started dragging:', item.name);
             }}
@@ -386,8 +394,8 @@ export default function WizardDesign() {
 
           {/* Right side - 3D View */}
           <div className="flex-1 h-[600px] border rounded-lg overflow-hidden bg-white">
-            <RoomSketchPro 
-              width={800} 
+            <RoomSketchPro
+              width={800}
               height={600}
               key="step2-view"
               instanceId="step2-view"
