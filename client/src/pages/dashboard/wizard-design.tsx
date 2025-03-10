@@ -337,9 +337,9 @@ export default function WizardDesign() {
                     </div>
                   </div>
 
-                  {/* 3D Menu */}
+                  {/* 3D Tools */}
                   <div className="border rounded-lg p-4">
-                    <h3 className="font-semibold text-lg mb-4">3D Menu</h3>
+                    <h3 className="font-semibold text-lg mb-4">3D Tools</h3>
                     <div className="space-y-4">
                       <div className="grid grid-cols-3 gap-2">
                         <Button variant="outline" className="w-full h-16 flex flex-col items-center justify-center gap-1">
@@ -356,9 +356,22 @@ export default function WizardDesign() {
                         </Button>
                       </div>
                     </div>
+
+                    <div className="space-y-4 mt-4">
+                      <h3 className="font-semibold">Wall Transparency</h3>
+                      <div className="px-2">
+                        <Slider
+                          defaultValue={[80]}
+                          max={100}
+                          step={1}
+                          onValueChange={(value) => setWallTransparency(value[0] / 100)}
+                        />
+                        <div className="text-sm text-right mt-1">{wallTransparency * 100}%</div>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Files Menu */}
+                  {/* Files */}
                   <div className="border rounded-lg p-4">
                     <h3 className="font-semibold text-lg mb-4">Files</h3>
                     <div className="space-y-2">
@@ -373,49 +386,49 @@ export default function WizardDesign() {
                     </div>
                   </div>
                 </div>
+
+                {/* 3D Toolbar */}
+                <Toolbar3D
+                  isActive={tab === "3d-preview"}
+                  wallTransparency={wallTransparency}
+                  onWallTransparencyChange={setWallTransparency}
+                />
               </div>
 
-              {/* 3D Toolbar */}
-              <Toolbar3D
-                isActive={tab === "3d-preview"}
-                wallTransparency={wallTransparency}
-                onWallTransparencyChange={setWallTransparency}
-              />
-            </div>
-
-            {/* Right side - View container */}
-            <div className="flex-1 border rounded-lg overflow-hidden bg-white flex items-center justify-center relative">
-              {tab === "2d-editor" ? (
-                <div className="w-full h-full"> {/* Responsive container */}
-                  <Canvas2D
-                    gridSize={gridSize}
-                    currentTool={currentTool}
-                    currentAirEntry={currentAirEntry}
-                    onLineSelect={handleLineSelect}
-                    airEntries={airEntries}
-                    measurements={measurements}
-                    onMeasurementsUpdate={setMeasurements}
-                    lines={lines}
-                    onLinesUpdate={(newLines) => {
-                      setLines(newLines);
-                      const hasClosedContour = newLines.length > 0 &&
-                        newLines.some(line =>
-                          isInClosedContour(line.start, newLines) ||
-                          isInClosedContour(line.end, newLines)
-                        );
-                      setHasClosedContour(hasClosedContour);
-                    }}
-                    onAirEntriesUpdate={setAirEntries}
-                  />
-                </div>
-              ) : (
-                <div className="w-full h-full"> {/* Responsive container */}
-                  <Canvas3D
-                    lines={lines}
-                    airEntries={airEntries}
-                  />
-                </div>
-              )}
+              {/* Right side - View container */}
+              <div className="flex-1 border rounded-lg overflow-hidden bg-white flex items-center justify-center relative">
+                {tab === "2d-editor" ? (
+                  <div className="w-full h-full"> {/* Responsive container */}
+                    <Canvas2D
+                      gridSize={gridSize}
+                      currentTool={currentTool}
+                      currentAirEntry={currentAirEntry}
+                      onLineSelect={handleLineSelect}
+                      airEntries={airEntries}
+                      measurements={measurements}
+                      onMeasurementsUpdate={setMeasurements}
+                      lines={lines}
+                      onLinesUpdate={(newLines) => {
+                        setLines(newLines);
+                        const hasClosedContour = newLines.length > 0 &&
+                          newLines.some(line =>
+                            isInClosedContour(line.start, newLines) ||
+                            isInClosedContour(line.end, newLines)
+                          );
+                        setHasClosedContour(hasClosedContour);
+                      }}
+                      onAirEntriesUpdate={setAirEntries}
+                    />
+                  </div>
+                ) : (
+                  <div className="w-full h-full"> {/* Responsive container */}
+                    <Canvas3D
+                      lines={lines}
+                      airEntries={airEntries}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </CardContent>
