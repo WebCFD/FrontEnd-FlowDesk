@@ -287,11 +287,11 @@ export default function Canvas3D({
       objects.push(xArrow, yArrow, zArrow);
 
       // Add coordinate label
-      const coordText = `(${Math.round(position.x)}, ${Math.round(position.y)}, ${Math.round(zPosition)})`;
+      const coordText = `(${Math.round(position.x)}, ${Math.round(position.y)}, ${Math.round(zPosition)}) cm`;
       const labelSprite = makeTextSprite(coordText, {
         fontsize: 28,
         fontface: "Arial",
-        textColor: { r: 128, g: 128, b: 128, a: 1.0 }, // Medium gray color
+        textColor: { r: 160, g: 160, b: 160, a: 1.0 }, // Lighter gray color
         backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 } // Transparent background
       });
       labelSprite.position.set(position.x, position.y, zPosition + 15); // Position closer to the yellow point
