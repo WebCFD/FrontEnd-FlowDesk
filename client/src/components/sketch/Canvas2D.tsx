@@ -730,36 +730,24 @@ export default function Canvas2D({
     const points: Point[] = [];
     const centerX = dimensions.width / 2;
     const centerY = dimensions.height / 2;
-    const snapSize = gridSize / 2;
 
     // Calculate visible area based on current pan and zoom
-    const visibleStartX = -pan.x / zoom - snapSize;
-    const visibleEndX = (-pan.x + dimensions.width) / zoom + snapSize;
-    const visibleStartY = -pan.y / zoom - snapSize;
-    const visibleEndY = (-pan.y + dimensions.height) / zoom + snapSize;
+    const visibleStartX = -pan.x / zoom - gridSize;
+    const visibleEndX = (-pan.x + dimensions.width) / zoom + gridSize;
+    const visibleStartY = -pan.y / zoom - gridSize;
+    const visibleEndY = (-pan.y + dimensions.height) / zoom + gridSize;
 
-    // Get grid coordinates
-    const startXGrid = Math.floor(visibleStartX / snapSize) * snapSize;
-    const endXGrid = Math.ceil(visibleEndX / snapSize) * snapSize;
-    const startYGrid = Math.floor(visibleStartY / snapSize) * snapSize;
-    const endYGrid = Math.ceil(visibleEndY / snapSize) * snapSize;
-
-    // Limit maximum number of points for performance
-    const maxPoints = 2000;
-    const step = Math.max(
-      snapSize,
-      Math.ceil(
-        ((endXGrid - startXGrid) * (endYGrid - startYGrid)) /
-          maxPoints /
-          snapSize,
-      ) * snapSize,
-    );
+    // Get grid coordinates using regular gridSize
+    const startXGrid = Math.floor((visibleStartX - centerX) / gridSize) * gridSize;
+    const endXGrid = Math.ceil((visibleEndX - centerX) / gridSize) * gridSize;
+    const startYGrid = Math.floor((visibleStartY - centerY) / gridSize) * gridSize;
+    const endYGrid = Math.ceil((visibleEndY - centerY) / gridSize) * gridSize;
 
     // Generate grid points
-    for (let x = startXGrid; x <= endXGrid; x += step) {
-      for (let y = startYGrid; y <= endYGrid; y += step) {
-        const relativeX = Math.round(x / snapSize);
-        const relativeY = Math.round(y / snapSize);
+    for (let x = startXGrid; x <= endXGrid; x += gridSize) {
+      for (let y = startYGrid; y <= endYGrid; y += gridSize) {
+        const relativeX = Math.round(x / gridSize);
+        const relativeY = Math.round(y / gridSize);
 
         // Create checkerboard pattern
         if ((relativeX + relativeY) % 2 === 0) {
@@ -1857,7 +1845,7 @@ export default function Canvas2D({
 
     if (currentTool === "measure") {
       // Ruler icon matching the Lucide Ruler component
-      return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000000\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z\"/><path d=\"m14.5 12.5 2-2\"/><path d=\"m11.5 9.5 2-2\"/><path d=\"m8.5 6.5 2-2\"/><path d=\"m17.5 15.5 2-2\"/></svg>') 5 15, auto";
+      return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%2300000\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z\"/><path d=\"m14.5 12.5 2-2\"/><path d=\"m11.5 9.5 2-2\"/><path d=\"m8.5 6.5 2-2\"/><path d=\"m17.5 15.5 2-2\"/></svg>') 5 15, auto";
     }
 
     // 3. Check for Air Entry element placement modes
