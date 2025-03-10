@@ -5,6 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -55,6 +62,7 @@ export default function WizardDesign() {
   const { user, setReturnTo } = useAuth();
   const [step, setStep] = useState(1);
   const [simulationName, setSimulationName] = useState("");
+  const [simulationType, setSimulationType] = useState("comfort");
   const [gridSize, setGridSize] = useState(20);
   const [currentTool, setCurrentTool] = useState<'wall' | 'eraser' | 'measure' | null>('wall');
   const [currentAirEntry, setCurrentAirEntry] = useState<'vent' | 'door' | 'window' | null>(null);
@@ -197,14 +205,32 @@ export default function WizardDesign() {
 
   const renderStep1 = () => (
     <>
-      <div className="max-w-xl">
-        <Label htmlFor="simulation-name">Simulation name</Label>
-        <Input
-          id="simulation-name"
-          value={simulationName}
-          onChange={(e) => setSimulationName(e.target.value)}
-          placeholder="Enter simulation name"
-        />
+      <div className="max-w-xl space-y-4">
+        <div>
+          <Label htmlFor="simulation-name">Simulation name</Label>
+          <Input
+            id="simulation-name"
+            value={simulationName}
+            onChange={(e) => setSimulationName(e.target.value)}
+            placeholder="Enter simulation name"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="simulation-type">Simulation type</Label>
+          <Select
+            value={simulationType}
+            onValueChange={setSimulationType}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select simulation type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="comfort">Comfort Simulation (steady run)</SelectItem>
+              <SelectItem value="renovation">Air Renovation Convection Simulation (transient run)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <Card className="mt-6">
