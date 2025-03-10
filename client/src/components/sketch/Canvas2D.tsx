@@ -226,7 +226,8 @@ interface Canvas2DProps {
   airEntries: AirEntry[];
   lines: Line[];
   measurements: Measurement[];
-  floorText: string; // Add new prop
+  floorText: string;
+  isMultifloor: boolean; // Add new prop
   onLinesUpdate?: (lines: Line[]) => void;
   onAirEntriesUpdate?: (airEntries: AirEntry[]) => void;
   onMeasurementsUpdate?: (measurements: Measurement[]) => void;
@@ -240,6 +241,7 @@ export default function Canvas2D({
   lines = [],
   measurements = [],
   floorText,
+  isMultifloor, // Add new prop
   onLinesUpdate,
   onAirEntriesUpdate,
   onMeasurementsUpdate,
@@ -1755,6 +1757,7 @@ export default function Canvas2D({
     isMeasuring,
     measurements,
     onMeasurementsUpdate,
+    isMultifloor, // Add isMultifloor to useEffect dependencies
   ]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1892,11 +1895,13 @@ export default function Canvas2D({
         onContextMenu={(e) => e.preventDefault()}
       />
       <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-white/80 p-2 rounded-lg shadow-sm">
-        <Input
-          value={floorText}
-          readOnly
-          className="w-32 h-8 text-center text-sm bg-muted cursor-default"
-        />
+        {isMultifloor && (
+          <Input
+            value={floorText}
+            readOnly
+            className="w-32 h-8 text-center text-sm bg-muted cursor-default"
+          />
+        )}
         <div className="w-px h-6 bg-border mx-2" />
         <Button
           variant="outline"

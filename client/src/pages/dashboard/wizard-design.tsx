@@ -498,6 +498,7 @@ export default function WizardDesign() {
                   onMeasurementsUpdate={setMeasurements}
                   lines={lines}
                   floorText={formatFloorText(selectedFloor)}
+                  isMultifloor={isMultifloor}
                   onLinesUpdate={(newLines) => {
                     setLines(newLines);
                     const hasClosedContour = newLines.length > 0 &&
