@@ -27,9 +27,9 @@ interface AirEntry {
 interface Canvas3DProps {
   lines: Line[];
   airEntries?: AirEntry[];
+  ceilingHeight?: number; // Add ceilingHeight prop
 }
 
-const ROOM_HEIGHT = 210; // Room height in cm
 const PIXELS_TO_CM = 25 / 20; // 25cm = 20px ratio
 const GRID_SIZE = 1000; // Size of the grid in cm
 const GRID_DIVISIONS = 40; // Number of divisions in the grid
@@ -106,6 +106,7 @@ const calculateNormal = (line: Line): Point => {
 export default function Canvas3D({
   lines,
   airEntries = [],
+  ceilingHeight = 210, // Default to 210cm if not provided
 }: Canvas3DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -221,7 +222,7 @@ export default function Canvas3D({
         side: THREE.DoubleSide,
       });
       const roof = new THREE.Mesh(roofGeometry, roofMaterial);
-      roof.position.set(0, 0, ROOM_HEIGHT); // Place at Z=ROOM_HEIGHT
+      roof.position.set(0, 0, ceilingHeight); // Use ceilingHeight instead of ROOM_HEIGHT
       scene.add(roof);
     }
 
@@ -297,7 +298,7 @@ export default function Canvas3D({
         side: THREE.DoubleSide,
       });
       const roof = new THREE.Mesh(roofGeometry, roofMaterial);
-      roof.position.set(0, 0, ROOM_HEIGHT); // Place at Z=ROOM_HEIGHT
+      roof.position.set(0, 0, ceilingHeight); // Use ceilingHeight instead of ROOM_HEIGHT
       sceneRef.current.add(roof);
     }
 
@@ -326,8 +327,8 @@ export default function Canvas3D({
       // Create vertices for wall corners using the transformation
       const start_bottom = transform2DTo3D(line.start);
       const end_bottom = transform2DTo3D(line.end);
-      const start_top = transform2DTo3D(line.start, ROOM_HEIGHT);
-      const end_top = transform2DTo3D(line.end, ROOM_HEIGHT);
+      const start_top = transform2DTo3D(line.start, ceilingHeight); // Use ceilingHeight
+      const end_top = transform2DTo3D(line.end, ceilingHeight); // Use ceilingHeight
 
       // Calculate wall direction and normal vectors
       const wallDirection = new THREE.Vector3()
@@ -352,7 +353,7 @@ export default function Canvas3D({
       const wallMidPoint = new THREE.Vector3()
         .addVectors(start_bottom, end_bottom)
         .multiplyScalar(0.5)
-        .setZ(ROOM_HEIGHT / 2);
+        .setZ(ceilingHeight / 2); // Use ceilingHeight
 
       // Add debug arrow for wall normal (blue)
       const wallArrowHelper = new THREE.ArrowHelper(
@@ -414,11 +415,11 @@ export default function Canvas3D({
       const width = entry.dimensions.width;
       const height = entry.dimensions.height;
 
-      // Calculate Z position based on entry type
+      // Calculate Z position based on entry type and ceilingHeight
       const zPosition =
         entry.type === "door"
-          ? height / 2
-          : entry.dimensions.distanceToFloor || 0;
+          ? entry.dimensions.height / 2
+          : (entry.dimensions.distanceToFloor || 0);
 
       // Calculate wall direction and normal vectors using the same method as walls
       const wallDirection = new THREE.Vector3()
@@ -474,7 +475,7 @@ export default function Canvas3D({
       const showDebugArrows = true; // Set to false to hide coordinate system arrows
 
       if (showDebugArrows) {
-        const arrowLength = 30;
+        const arrowLength = ceilingHeight * 0.15; // Make arrows proportional to room height
         const arrowPosition = new THREE.Vector3(position.x, position.y, zPosition);
 
         // Forward arrow (blue) - shows normal direction
@@ -543,7 +544,7 @@ export default function Canvas3D({
         normal: `(${wallNormalVector.x.toFixed(4)}, ${wallNormalVector.y.toFixed(4)}, ${wallNormalVector.z.toFixed(4)})`,
       });
     });
-  }, [lines, airEntries]);
+  }, [lines, airEntries, ceilingHeight]); // Add ceilingHeight to dependencies
 
   return <div ref={containerRef} className="w-full h-full" />;
 }
