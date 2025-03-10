@@ -225,8 +225,6 @@ interface Canvas2DProps {
   airEntries: AirEntry[];
   lines: Line[];
   measurements: Measurement[];
-  isMultifloor?: boolean;
-  currentFloorName?: string;
   onLinesUpdate?: (lines: Line[]) => void;
   onAirEntriesUpdate?: (airEntries: AirEntry[]) => void;
   onMeasurementsUpdate?: (measurements: Measurement[]) => void;
@@ -239,8 +237,6 @@ export default function Canvas2D({
   airEntries = [],
   lines = [],
   measurements = [],
-  isMultifloor = false,
-  currentFloorName = "",
   onLinesUpdate,
   onAirEntriesUpdate,
   onMeasurementsUpdate,
@@ -869,7 +865,7 @@ export default function Canvas2D({
           });
         } else if (measurementInfo) {
           setHighlightState({
-            lines: [],
+                        lines: [],
             airEntry: null,
             measurement: {
               index: measurementInfo.index,
@@ -1024,6 +1020,7 @@ export default function Canvas2D({
         });
         return;
       }
+
       const pointInfo = findPointAtLocation(clickPoint);
       if (pointInfo) {
         setIsDraggingEndpoint(true);
@@ -1851,7 +1848,7 @@ export default function Canvas2D({
     // 2. Check for specific tools and return custom SVG cursors matching Lucide icons
     if (currentTool === "eraser") {
       // Eraser icon matching the Lucide Eraser component
-      return `url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000000\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L15 19\"/><path d=\"M22 21H7\"/><path d=\"m5 11 9 9\"/></svg>') 5 15, auto`;
+      return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000000\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L15 19\"/><path d=\"M22 21H7\"/><path d=\"m5 11 9 9\"/></svg>') 5 15, auto";
     }
 
     if (currentTool === "measure") {
@@ -1880,12 +1877,12 @@ export default function Canvas2D({
   };
 
   return (
-    <div className="relative w-full h-full">
+    <div ref={containerRef} className="relative w-full h-full">
       <canvas
         ref={canvasRef}
         width={dimensions.width}
         height={dimensions.height}
-        className="w-full h-full"
+        className={`w-full h-full`}
         style={{ cursor: getCursor() }}
       />
       <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-white/80 p-2 rounded-lg shadow-sm">
@@ -1894,52 +1891,57 @@ export default function Canvas2D({
           size="icon"
           onClick={handleZoomOut}
           disabled={zoom <= MIN_ZOOM}
-          className="h-8 w-8"
         >
           <Minus className="h-4 w-4" />
         </Button>
-
-        <div className="min-w-[3rem] px-2 py-1 text-sm text-center bg-background/90 rounded-md border">
-          {Math.round(zoom * 100)}%
+        <div className="flex items-center">
+          <Input
+            type="number"
+            value={zoomInput}
+            onChange={handleZoomInputChange}
+            onBlur={handleZoomInputBlur}
+            onKeyDown={handleZoomInputKeyDown}
+            className="w-16 h-8 text-center text-sm"
+            min={MIN_ZOOM * 100}
+            max={MAX_ZOOM * 100}
+          />
+          <span className="text-sm font-medium ml-1">%</span>
         </div>
-
         <Button
           variant="outline"
           size="icon"
           onClick={handleZoomIn}
           disabled={zoom >= MAX_ZOOM}
-          className="h-8 w-8"
         >
           <Plus className="h-4 w-4" />
         </Button>
-
+        <div className="w-px h-6 bg-border mx-2" />
         <Button
           variant={panMode ? "default" : "outline"}
           size="icon"
           onClick={togglePanMode}
-          className="h-8 w-8"
         >
           <Move className="h-4 w-4" />
         </Button>
-
-        {/* Floor label - only show in multifloor mode */}
-        {isMultifloor && currentFloorName && (
-          <div className="min-w-[4rem] px-2 py-1 text-sm text-center bg-background/90 rounded-md border text-muted-foreground">
-            {currentFloorName}
-          </div>
-        )}
       </div>
 
       {editingAirEntry && (
         <AirEntryDialog
-          entry={editingAirEntry.entry}
+          type={editingAirEntry.entry.type}
+          isOpen={true}
           onClose={() => setEditingAirEntry(null)}
-          onSave={(updatedEntry) => {
-            const newAirEntries = [...airEntries];
-            newAirEntries[editingAirEntry.index] = updatedEntry;
-            onAirEntriesUpdate?.(newAirEntries);
-            setEditingAirEntry(null);
-          }}
+          onConfirm={handleEditingAirEntryConfirm}
+          isEditing={true}
+          initialValues={editingAirEntry.entry.dimensions}
+        />
+      )}
+      {newAirEntryDetails && (
+        <AirEntryDialog
+          type={newAirEntryDetails.type}
+          isOpen={true}
+          onClose={() => setNewAirEntryDetails(null)}
+          onConfirm={handleNewAirEntryConfirm}
+          isEditing={false}
         />
       )}
     </div>
