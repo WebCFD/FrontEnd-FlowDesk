@@ -248,6 +248,53 @@ export default function Canvas3D({
       mesh.setRotationFromMatrix(rotationMatrix);
 
       objects.push(mesh);
+
+      // Add yellow sphere marker
+      const markerGeometry = new THREE.SphereGeometry(5, 16, 16);
+      const markerMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+      const marker = new THREE.Mesh(markerGeometry, markerMaterial);
+      marker.position.set(position.x, position.y, zPosition);
+      objects.push(marker);
+
+      // Add coordinate system axes
+      const axisLength = 50; // Length of the coordinate axes
+
+      // X axis - Red (Right)
+      const xArrow = new THREE.ArrowHelper(
+        right,
+        new THREE.Vector3(position.x, position.y, zPosition),
+        axisLength,
+        0xff0000
+      );
+
+      // Y axis - Green (Forward/Normal)
+      const yArrow = new THREE.ArrowHelper(
+        forward,
+        new THREE.Vector3(position.x, position.y, zPosition),
+        axisLength,
+        0x00ff00
+      );
+
+      // Z axis - Blue (Up)
+      const zArrow = new THREE.ArrowHelper(
+        up,
+        new THREE.Vector3(position.x, position.y, zPosition),
+        axisLength,
+        0x0000ff
+      );
+
+      objects.push(xArrow, yArrow, zArrow);
+
+      // Add coordinate label
+      const coordText = `(${Math.round(position.x)}, ${Math.round(position.y)}, ${Math.round(zPosition)})`;
+      const labelSprite = makeTextSprite(coordText, {
+        fontsize: 24,
+        fontface: "Arial",
+        textColor: { r: 0, g: 0, b: 0, a: 1.0 },
+        backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 } // Transparent background
+      });
+      labelSprite.position.set(position.x, position.y, zPosition + 30); // Position above the air entry
+      objects.push(labelSprite);
     });
 
     return objects;
