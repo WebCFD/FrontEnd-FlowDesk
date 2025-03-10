@@ -1,0 +1,131 @@
+Looking at your code, I see that both Canvas2D and Canvas3D are currently placed in fixed-width containers:
+jsxCopy<div className="w-[800px] h-[690px]"> {/* Fixed dimensions container */}
+  <Canvas2D
+    // props...
+  />
+</div>
+And similarly for the 3D view:
+jsxCopy<div className="w-[800px] h-[690px]"> {/* Same fixed dimensions for 3D view */}
+  <Canvas3D
+    // props...
+  />
+</div>
+To make both canvases occupy all available area, you need to:
+
+Remove the fixed width and height
+Make the container use the full available space
+Ensure the canvas components themselves adapt to their container dimensions
+
+Here's how to modify your code:
+Step 1: Update the container in WizardDesign.tsx
+Replace the fixed-dimension containers with fluid ones:
+jsxCopy{/* Right side - View container */}
+<div className="flex-1 border rounded-lg overflow-hidden bg-white h-[690px] flex items-center justify-center">
+  {tab === "2d-editor" ? (
+    <div className="w-full h-full"> {/* Changed from fixed to full dimensions */}
+      <Canvas2D
+        // props...
+      />
+    </div>
+  ) : (
+    <div className="w-full h-full"> {/* Changed from fixed to full dimensions */}
+      <Canvas3D
+        // props...
+      />
+    </div>
+  )}
+</div>
+Step 2: Modify Canvas2D to adapt to container size
+In your Canvas2D component, update the dimensions handling:
+jsxCopyexport default function Canvas2D({
+  // other props
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  // Instead of fixed dimensions
+  const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
+  
+  // Add this effect to adapt to container size
+  useEffect(() => {
+    const updateDimensions = () => {
+      if (containerRef.current) {
+        setDimensions({
+          width: containerRef.current.clientWidth,
+          height: containerRef.current.clientHeight
+        });
+      }
+    };
+    
+    // Initial sizing
+    updateDimensions();
+    
+    // Update on resize
+    const resizeObserver = new ResizeObserver(updateDimensions);
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+    
+    // Cleanup
+    return () => {
+      if (containerRef.current) {
+        resizeObserver.disconnect();
+      }
+    };
+  }, []);
+  
+  return (
+    <div ref={containerRef} className="w-full h-full relative">
+      <canvas
+        ref={canvasRef}
+        width={dimensions.width}
+        height={dimensions.height}
+        className="w-full h-full"
+        // other props
+      />
+      {/* Rest of the component */}
+    </div>
+  );
+}
+Step 3: Modify Canvas3D to adapt to container size
+Similarly for Canvas3D:
+jsxCopyexport default function Canvas3D({
+  lines,
+  airEntries = [],
+  height = "100%", // Change to accept percentage
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    if (!containerRef.current) return;
+    
+    // Initialize renderer with container dimensions
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
+    containerRef.current.appendChild(renderer.domElement);
+    rendererRef.current = renderer;
+    
+    // Add resize handler
+    const handleResize = () => {
+      if (!containerRef.current || !cameraRef.current || !rendererRef.current) return;
+      
+      cameraRef.current.aspect = containerRef.current.clientWidth / containerRef.current.clientHeight;
+      cameraRef.current.updateProjectionMatrix();
+      rendererRef.current.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
+    };
+    
+    const resizeObserver = new ResizeObserver(handleResize);
+    resizeObserver.observe(containerRef.current);
+    
+    return () => {
+      if (containerRef.current && renderer.domElement) {
+        containerRef.current.removeChild(renderer.domElement);
+      }
+      resizeObserver.disconnect();
+      renderer.dispose();
+    };
+  }, []);
+  
+  return (
+    <div ref={containerRef} className="w-full h-full" />
+  );
+}
+These changes will make both canvases fluidly adapt to whatever container size is available to them, rather than having fixed dimensions. Using ResizeObserver ensures they'll update properly when the container size changes, and the w-full h-full classes make them use all available space in their parent container.
