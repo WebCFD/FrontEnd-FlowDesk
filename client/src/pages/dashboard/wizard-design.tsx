@@ -252,21 +252,27 @@ export default function WizardDesign() {
     distanceToFloor?: number;
   }) => {
     if (selectedLine && clickedPoint && currentAirEntry) {
-      const normal = calculateNormal(selectedLine);
-      console.log(`Creating new ${currentAirEntry} air entry:`);
-      console.log(`Position: (${clickedPoint.x}, ${clickedPoint.y})`);
-      console.log(`Dimensions: width=${dimensions.width}cm, height=${dimensions.height}cm`);
-      console.log(`Wall normal: (${normal.x.toFixed(3)}, ${normal.y.toFixed(3)})`);
+      console.log('Creating new air entry with:', {
+        currentFloor,
+        dimensions,
+        selectedLine,
+        clickPoint: clickedPoint,
+        type: currentAirEntry
+      });
 
-      const newAirEntry: AirEntry = {
+      const newAirEntry = {
         type: currentAirEntry,
         position: clickedPoint,
         dimensions,
         line: selectedLine
       };
 
-      const newAirEntries = [...airEntries, newAirEntry];
-      setAirEntries(newAirEntries);
+      // Update air entries in the current floor's state
+      const updatedAirEntries = [...airEntries, newAirEntry];
+      console.log('Updating air entries:', updatedAirEntries);
+      setAirEntries(updatedAirEntries);
+
+      // Reset selection state
       setSelectedLine(null);
       setClickedPoint(null);
       setCurrentAirEntry(null);
@@ -276,6 +282,12 @@ export default function WizardDesign() {
 
   const handleLineSelect = (line: Line, clickPoint: Point) => {
     if (currentAirEntry) {
+      console.log('Line selected for air entry:', {
+        line,
+        clickPoint,
+        currentAirEntry,
+        currentFloor
+      });
       setSelectedLine(line);
       setClickedPoint(clickPoint);
       setIsAirEntryDialogOpen(true);
@@ -869,8 +881,7 @@ export default function WizardDesign() {
           airEntries={airEntries}
           measurements={measurements}
           onMeasurementsUpdate={setMeasurements}
-          lines={lines}
-          floorText={formatFloorText(currentFloor)}
+          lines={lines}          floorText={formatFloorText(currentFloor)}
           isMultifloor={isMultifloor}
           onLinesUpdate={(newLines) => {
             setLines(newLines);
@@ -883,13 +894,14 @@ export default function WizardDesign() {
           }}
           onAirEntriesUpdate={setAirEntries}
           onLineSelect={handleLineSelect}
+          onMeasurementsUpdate={setMeasurements}
         />
       ) : (
         <Canvas3D
           floors={floors}
           currentFloor={currentFloor}
           ceilingHeight={ceilingHeight}
-          floorDeckThickness={floorDeckThickness} // Add the prop
+          floorDeckThickness={floorDeckThickness}
         />
       )}
     </div>
