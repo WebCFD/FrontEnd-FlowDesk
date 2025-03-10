@@ -11,7 +11,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
 import { Save, Upload, Eraser, ArrowRight, ArrowLeft, Ruler } from "lucide-react";
 import Canvas2D from "@/components/sketch/Canvas2D";
-import { RoomSketchPro } from "@/components/sketch/RoomSketchPro"; 
+import { RoomSketchPro } from "@/components/sketch/RoomSketchPro";
 import { cn } from "@/lib/utils";
 import AirEntryDialog from "@/components/sketch/AirEntryDialog";
 import Canvas3D from "@/components/sketch/Canvas3D";
@@ -29,6 +29,7 @@ import {
 import { PlusCircle, Play, Mail, FileEdit } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FurnitureMenu } from "@/components/sketch/FurnitureMenu";
+import { ViewModeToggle } from "@/components/sketch/ViewModeToggle";
 
 interface Point {
   x: number;
@@ -38,6 +39,17 @@ interface Point {
 interface Line {
   start: Point;
   end: Point;
+}
+
+interface AirEntry {
+  type: 'vent' | 'door' | 'window';
+  position: Point;
+  dimensions: {
+    width: number;
+    height: number;
+    distanceToFloor?: number;
+  };
+  line: Line | null;
 }
 
 const calculateNormal = (line: Line | null): { x: number; y: number } => {
@@ -205,11 +217,11 @@ export default function WizardDesign() {
         />
       </div>
 
-      <Card className="mt-6">
+      <Card className="mt-6 relative">
         <CardContent className="p-6">
-          <Tabs
-            value={tab}
-            onValueChange={(value: "2d-editor" | "3d-preview") => {
+          <ViewModeToggle
+            viewMode={tab}
+            onViewModeChange={(value: "2d-editor" | "3d-preview") => {
               if (value === "3d-preview" && !hasClosedContour) {
                 toast({
                   title: "Invalid Room Layout",
@@ -220,141 +232,136 @@ export default function WizardDesign() {
               }
               setTab(value);
             }}
-          >
-            <TabsList>
-              <TabsTrigger value="2d-editor">2D Editor</TabsTrigger>
-              <TabsTrigger value="3d-preview" disabled={!hasClosedContour}>
-                3D Preview
-              </TabsTrigger>
-            </TabsList>
+            disabled={tab === "3d-preview" && !hasClosedContour}
+          />
 
-            <TabsContent value="2d-editor" className="mt-6">
-              <div className="flex gap-6">
-                <div className="w-48 space-y-6">
-                  <div className="space-y-4">
-                    <h3 className="font-semibold">Tools</h3>
-                    <div className="grid grid-cols-3 gap-2">
-                      <Button
-                        variant={currentTool === 'wall' ? 'default' : 'outline'}
-                        className="w-full h-16 flex flex-col items-center justify-center gap-1"
-                        onClick={() => handleToolSelect('wall')}
-                      >
-                        <div className="w-6 h-6 bg-primary/20 rounded-sm" />
-                        <span className="text-xs">Wall Line</span>
-                      </Button>
-                      <Button
-                        variant={currentTool === 'eraser' ? 'default' : 'outline'}
-                        className="w-full h-16 flex flex-col items-center justify-center gap-1"
-                        onClick={() => handleToolSelect('eraser')}
-                      >
-                        <Eraser className="w-6 h-6" />
-                        <span className="text-xs">Eraser</span>
-                      </Button>
-                      <Button
-                        variant={currentTool === 'measure' ? 'default' : 'outline'}
-                        className="w-full h-16 flex flex-col items-center justify-center gap-1"
-                        onClick={() => handleToolSelect('measure')}
-                      >
-                        <Ruler className="w-6 h-6" />
-                        <span className="text-xs">Measure</span>
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="font-semibold">Grid Size</h3>
-                    <div className="px-2">
-                      <Slider
-                        defaultValue={[gridSize]}
-                        max={50}
-                        min={10}
-                        step={1}
-                        onValueChange={handleGridSizeChange}
-                      />
-                      <div className="text-sm text-right mt-1">{gridSizeToCm(gridSize).toFixed(1)}cm/cell</div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="font-semibold">Air Entries</h3>
-                    <div className="grid grid-cols-3 gap-2">
-                      <Button
-                        variant="outline"
-                        className={getAirEntryStyles('window')}
-                        onClick={() => handleAirEntrySelect('window')}
-                      >
-                        <div className="w-6 h-6 border-2 border-blue-500 grid grid-cols-2" />
-                        <span className="text-xs mt-1">Window</span>
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className={getAirEntryStyles('door')}
-                        onClick={() => handleAirEntrySelect('door')}
-                      >
-                        <div className="w-6 h-6 border-2 border-amber-500" />
-                        <span className="text-xs mt-1">Door</span>
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className={getAirEntryStyles('vent')}
-                        onClick={() => handleAirEntrySelect('vent')}
-                      >
-                        <div className="w-6 h-6 border-2 border-green-500 grid grid-cols-2 grid-rows-2" />
-                        <span className="text-xs mt-1">Vent-Grid</span>
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Button variant="outline" className="w-full justify-start">
-                      <Save className="mr-2 h-4 w-4" />
-                      Save Design
+          <div className={tab === "2d-editor" ? "block" : "hidden"}>
+            <div className="flex gap-6">
+              <div className="w-48 space-y-6">
+                <div className="space-y-4">
+                  <h3 className="font-semibold">Tools</h3>
+                  <div className="grid grid-cols-3 gap-2">
+                    <Button
+                      variant={currentTool === 'wall' ? 'default' : 'outline'}
+                      className="w-full h-16 flex flex-col items-center justify-center gap-1"
+                      onClick={() => handleToolSelect('wall')}
+                    >
+                      <div className="w-6 h-6 bg-primary/20 rounded-sm" />
+                      <span className="text-xs">Wall Line</span>
                     </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <Upload className="mr-2 h-4 w-4" />
-                      Load Design
+                    <Button
+                      variant={currentTool === 'eraser' ? 'default' : 'outline'}
+                      className="w-full h-16 flex flex-col items-center justify-center gap-1"
+                      onClick={() => handleToolSelect('eraser')}
+                    >
+                      <Eraser className="w-6 h-6" />
+                      <span className="text-xs">Eraser</span>
+                    </Button>
+                    <Button
+                      variant={currentTool === 'measure' ? 'default' : 'outline'}
+                      className="w-full h-16 flex flex-col items-center justify-center gap-1"
+                      onClick={() => handleToolSelect('measure')}
+                    >
+                      <Ruler className="w-6 h-6" />
+                      <span className="text-xs">Measure</span>
                     </Button>
                   </div>
                 </div>
 
-                <div className="flex-1 border rounded-lg overflow-hidden">
-                  <Canvas2D
-                    gridSize={gridSize}
-                    currentTool={currentTool}
-                    currentAirEntry={currentAirEntry}
-                    onLineSelect={handleLineSelect}
-                    airEntries={airEntries}
-                    measurements={measurements}
-                    onMeasurementsUpdate={setMeasurements}
-                    lines={lines}
-                    onLinesUpdate={(newLines) => {
-                      setLines(newLines);
-                      const hasClosedContour = newLines.length > 0 &&
-                        newLines.some(line =>
-                          isInClosedContour(line.start, newLines) ||
-                          isInClosedContour(line.end, newLines)
-                        );
-                      setHasClosedContour(hasClosedContour);
-                    }}
-                    onAirEntriesUpdate={setAirEntries}
-                  />
+                <div className="space-y-4">
+                  <h3 className="font-semibold">Grid Size</h3>
+                  <div className="px-2">
+                    <Slider
+                      defaultValue={[gridSize]}
+                      max={50}
+                      min={10}
+                      step={1}
+                      onValueChange={handleGridSizeChange}
+                    />
+                    <div className="text-sm text-right mt-1">{gridSizeToCm(gridSize).toFixed(1)}cm/cell</div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="font-semibold">Air Entries</h3>
+                  <div className="grid grid-cols-3 gap-2">
+                    <Button
+                      variant="outline"
+                      className={getAirEntryStyles('window')}
+                      onClick={() => handleAirEntrySelect('window')}
+                    >
+                      <div className="w-6 h-6 border-2 border-blue-500 grid grid-cols-2" />
+                      <span className="text-xs mt-1">Window</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className={getAirEntryStyles('door')}
+                      onClick={() => handleAirEntrySelect('door')}
+                    >
+                      <div className="w-6 h-6 border-2 border-amber-500" />
+                      <span className="text-xs mt-1">Door</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className={getAirEntryStyles('vent')}
+                      onClick={() => handleAirEntrySelect('vent')}
+                    >
+                      <div className="w-6 h-6 border-2 border-green-500 grid grid-cols-2 grid-rows-2" />
+                      <span className="text-xs mt-1">Vent-Grid</span>
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Button variant="outline" className="w-full justify-start">
+                    <Save className="mr-2 h-4 w-4" />
+                    Save Design
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start">
+                    <Upload className="mr-2 h-4 w-4" />
+                    Load Design
+                  </Button>
                 </div>
               </div>
-            </TabsContent>
 
-            <TabsContent value="3d-preview">
-              <div className="h-[600px] border rounded-lg overflow-hidden">
-                <Canvas3D
-                  lines={lines}
+              <div className="flex-1 border rounded-lg overflow-hidden">
+                <Canvas2D
+                  gridSize={gridSize}
+                  currentTool={currentTool}
+                  currentAirEntry={currentAirEntry}
+                  onLineSelect={handleLineSelect}
                   airEntries={airEntries}
-                  height={600}
-                  instanceId="step1-preview"
+                  measurements={measurements}
+                  onMeasurementsUpdate={setMeasurements}
+                  lines={lines}
+                  onLinesUpdate={(newLines) => {
+                    setLines(newLines);
+                    const hasClosedContour = newLines.length > 0 &&
+                      newLines.some(line =>
+                        isInClosedContour(line.start, newLines) ||
+                        isInClosedContour(line.end, newLines)
+                      );
+                    setHasClosedContour(hasClosedContour);
+                  }}
+                  onAirEntriesUpdate={setAirEntries}
                 />
               </div>
-            </TabsContent>
-          </Tabs>
+            </div>
+          </div>
+
+          <div className={tab === "3d-preview" ? "block" : "hidden"}>
+            <div className="h-[600px] border rounded-lg overflow-hidden">
+              <Canvas3D
+                lines={lines}
+                airEntries={airEntries}
+                height={600}
+                instanceId="step1-preview"
+              />
+            </div>
+          </div>
         </CardContent>
       </Card>
+
       <AirEntryDialog
         type={currentAirEntry || 'window'}
         isOpen={isAirEntryDialogOpen}
@@ -373,7 +380,7 @@ export default function WizardDesign() {
       <div className="space-y-6">
         <div className="flex gap-6">
           {/* Left side - Furniture Menu */}
-          <FurnitureMenu 
+          <FurnitureMenu
             onDragStart={(item) => {
               console.log('Started dragging:', item.name);
             }}
@@ -386,8 +393,8 @@ export default function WizardDesign() {
 
           {/* Right side - 3D View */}
           <div className="flex-1 h-[600px] border rounded-lg overflow-hidden bg-white">
-            <RoomSketchPro 
-              width={800} 
+            <RoomSketchPro
+              width={800}
               height={600}
               key="step2-view"
               instanceId="step2-view"
