@@ -225,6 +225,8 @@ interface Canvas2DProps {
   airEntries: AirEntry[];
   lines: Line[];
   measurements: Measurement[];
+  isMultifloor?: boolean;
+  currentFloorName?: string;
   onLinesUpdate?: (lines: Line[]) => void;
   onAirEntriesUpdate?: (airEntries: AirEntry[]) => void;
   onMeasurementsUpdate?: (measurements: Measurement[]) => void;
@@ -237,6 +239,8 @@ export default function Canvas2D({
   airEntries = [],
   lines = [],
   measurements = [],
+  isMultifloor = false,
+  currentFloorName = "",
   onLinesUpdate,
   onAirEntriesUpdate,
   onMeasurementsUpdate,
@@ -865,7 +869,7 @@ export default function Canvas2D({
           });
         } else if (measurementInfo) {
           setHighlightState({
-                        lines: [],
+            lines: [],
             airEntry: null,
             measurement: {
               index: measurementInfo.index,
@@ -1891,6 +1895,7 @@ export default function Canvas2D({
           size="icon"
           onClick={handleZoomOut}
           disabled={zoom <= MIN_ZOOM}
+          className="h-8 w-8"
         >
           <Minus className="h-4 w-4" />
         </Button>
@@ -1912,6 +1917,7 @@ export default function Canvas2D({
           size="icon"
           onClick={handleZoomIn}
           disabled={zoom >= MAX_ZOOM}
+          className="h-8 w-8"
         >
           <Plus className="h-4 w-4" />
         </Button>
@@ -1920,6 +1926,7 @@ export default function Canvas2D({
           variant={panMode ? "default" : "outline"}
           size="icon"
           onClick={togglePanMode}
+          className="h-8 w-8"
         >
           <Move className="h-4 w-4" />
         </Button>
