@@ -37,7 +37,7 @@ import { PlusCircle, Play, Mail, FileEdit } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FurnitureMenu } from "@/components/sketch/FurnitureMenu";
 import { ToolbarToggle } from "@/components/sketch/ToolbarToggle";
-import { Toolbar3D } from "@/components/sketch/Toolbar3D";
+//import { Toolbar3D } from "@/components/sketch/Toolbar3D"; //Removed
 
 interface Point {
   x: number;
@@ -355,18 +355,18 @@ export default function WizardDesign() {
                           <span className="text-xs">Zoom</span>
                         </Button>
                       </div>
-                    </div>
 
-                    <div className="space-y-4 mt-4">
-                      <h3 className="font-semibold">Wall Transparency</h3>
-                      <div className="px-2">
-                        <Slider
-                          defaultValue={[80]}
-                          max={100}
-                          step={1}
-                          onValueChange={(value) => setWallTransparency(value[0] / 100)}
-                        />
-                        <div className="text-sm text-right mt-1">{wallTransparency * 100}%</div>
+                      <div className="space-y-4">
+                        <h3 className="font-semibold">Wall Transparency</h3>
+                        <div className="px-2">
+                          <Slider
+                            defaultValue={[80]}
+                            max={100}
+                            step={1}
+                            onValueChange={(value) => setWallTransparency(value[0] / 100)}
+                          />
+                          <div className="text-sm text-right mt-1">{Math.round(wallTransparency * 100)}%</div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -387,12 +387,7 @@ export default function WizardDesign() {
                   </div>
                 </div>
 
-                {/* 3D Toolbar */}
-                <Toolbar3D
-                  isActive={tab === "3d-preview"}
-                  wallTransparency={wallTransparency}
-                  onWallTransparencyChange={setWallTransparency}
-                />
+                {/* 3D Toolbar - moved to main menu */}
               </div>
 
               {/* Right side - View container */}
