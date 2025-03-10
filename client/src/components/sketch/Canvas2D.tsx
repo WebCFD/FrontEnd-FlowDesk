@@ -865,7 +865,7 @@ export default function Canvas2D({
           });
         } else if (measurementInfo) {
           setHighlightState({
-            lines: [],
+                        lines: [],
             airEntry: null,
             measurement: {
               index: measurementInfo.index,
@@ -1469,67 +1469,62 @@ export default function Canvas2D({
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
-      ctx.clearRect(0, 0, dimensions.width, dimensions.height);
-
+      // Clear canvas and set up coordinate system
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.save();
       ctx.translate(pan.x, pan.y);
       ctx.scale(zoom, zoom);
 
-      const visibleStartX = -pan.x / zoom;
-      const visibleEndX = (-pan.x + dimensions.width) / zoom;
-      const visibleStartY = -pan.y / zoom;
-      const visibleEndY = (-pan.y + dimensions.height) / zoom;
+      // Draw grid lines with consistent line width
+      ctx.beginPath();
+      ctx.strokeStyle = "#e5e7eb";
+      ctx.lineWidth = 1 / zoom; // Match wall line scaling
 
       const centerX = dimensions.width / 2;
       const centerY = dimensions.height / 2;
 
-      ctx.beginPath();
-      ctx.strokeStyle = "#64748b";
-      ctx.lineWidth = 1 / zoom;
+      // Calculate visible area based on current pan and zoom
+      const visibleStartX = -pan.x / zoom - gridSize;
+      const visibleEndX = (-pan.x + dimensions.width) / zoom + gridSize;
+      const visibleStartY = -pan.y / zoom - gridSize;
+      const visibleEndY = (-pan.y + dimensions.height) / zoom + gridSize;
 
-      const zoomAdjustedGridSize = Math.max(gridSize, Math.ceil(5 / zoom) * 4);
+      // Calculate grid starting points
+      const startXGrid = Math.floor((visibleStartX - centerX) / gridSize) * gridSize;
+      const endXGrid = Math.ceil((visibleEndX - centerX) / gridSize) * gridSize;
+      const startYGrid = Math.floor((visibleStartY - centerY) / gridSize) * gridSize;
+      const endYGrid = Math.ceil((visibleEndY - centerY) / gridSize) * gridSize;
 
-      const startXGrid =
-        Math.floor((visibleStartX - centerX) / zoomAdjustedGridSize) *
-        zoomAdjustedGridSize;
-      const endXGrid =
-        Math.ceil((visibleEndX - centerX) / zoomAdjustedGridSize) *
-        zoomAdjustedGridSize;
-
-      for (let x = startXGrid; x <= endXGrid; x += zoomAdjustedGridSize) {
-        ctx.moveTo(centerX + x, visibleStartY);
-        ctx.lineTo(centerX + x, visibleEndY);
+      // Draw vertical grid lines
+      for (let x = startXGrid; x <= endXGrid; x += gridSize) {
+        ctx.moveTo(centerX + x, centerY + startYGrid);
+        ctx.lineTo(centerX + x, centerY + endYGrid);
       }
 
-      const startYGrid =
-        Math.floor((visibleStartY - centerY) / zoomAdjustedGridSize) *
-        zoomAdjustedGridSize;
-      const endYGrid =
-        Math.ceil((visibleEndY - centerY) / zoomAdjustedGridSize) *
-        zoomAdjustedGridSize;
-
-      for (let y = startYGrid; y <= endYGrid; y += zoomAdjustedGridSize) {
-        ctx.moveTo(visibleStartX, centerY + y);
-        ctx.lineTo(visibleEndX, centerY + y);
+      // Draw horizontal grid lines
+      for (let y = startYGrid; y <= endYGrid; y += gridSize) {
+        ctx.moveTo(centerX + startXGrid, centerY + y);
+        ctx.lineTo(centerX + endXGrid, centerY + y);
       }
-
       ctx.stroke();
 
+      // Draw coordinate system
       const coordSystem = createCoordinateSystem();
       coordSystem.forEach((line, index) => {
         ctx.beginPath();
         ctx.strokeStyle = index < 3 ? "#ef4444" : "#22c55e";
-        ctx.lineWidth = 2 / zoom;
+        ctx.lineWidth = 2 / zoom; // Match wall line width
         ctx.moveTo(line.start.x, line.start.y);
         ctx.lineTo(line.end.x, line.end.y);
         ctx.stroke();
       });
 
+      // Draw wall lines
       lines.forEach((line) => {
         ctx.strokeStyle = highlightState.lines.includes(line)
           ? getHighlightColor()
           : "#000000";
-        ctx.lineWidth = 3 / zoom;
+        ctx.lineWidth = 2 / zoom; // Keep consistent wall line width
         ctx.beginPath();
         ctx.moveTo(line.start.x, line.start.y);
         ctx.lineTo(line.end.x, line.end.y);
@@ -1567,45 +1562,44 @@ export default function Canvas2D({
         const drawnPoints = new Set<string>();
 
         lines.forEach((line) => {
-          [
-            { point: line.start, isStart: true },
-            { point: line.end, isStart: false },
-          ].forEach(({ point, isStart }) => {
-            const key = `${Math.round(point.x)},${Math.round(point.y)}`;
-            if (!drawnPoints.has(key)) {
-              drawnPoints.add(key);
+          [{ point: line.start, isStart: true }, { point: line.end, isStart: false }].forEach(
+            ({ point, isStart }) => {
+              const key = `${Math.round(point.x)},${Math.round(point.y)}`;
+              if (!drawnPoints.has(key)) {
+                drawnPoints.add(key);
 
-              const isHovered =
-                hoveredEndpoint?.point &&
-                arePointsNearlyEqual(hoveredEndpoint.point, point);
+                const isHovered =
+                  hoveredEndpoint?.point &&
+                  arePointsNearlyEqual(hoveredEndpoint.point, point);
 
-              ctx.beginPath();
-              ctx.arc(
-                point.x,
-                point.y,
-                isHovered ? (POINT_RADIUS * 1.5) / zoom : POINT_RADIUS / zoom,
-                0,
-                Math.PI * 2,
-              );
-
-              if (isHovered) {
-                ctx.fillStyle = "#fbbf24"; // Amber color for hover
-                // Add tooltip
-                ctx.font = `${12 / zoom}px Arial`;
-                ctx.fillStyle = "#000000";
-                ctx.textAlign = "center";
-                ctx.fillText(
-                  "Right-click to drag",
+                ctx.beginPath();
+                ctx.arc(
                   point.x,
-                  point.y - 15 / zoom,
+                  point.y,
+                  isHovered ? (POINT_RADIUS * 1.5) / zoom : POINT_RADIUS / zoom,
+                  0,
+                  Math.PI * 2,
                 );
-              } else {
-                ctx.fillStyle = "#3b82f6"; // Blue color
-              }
 
-              ctx.fill();
-            }
-          });
+                if (isHovered) {
+                  ctx.fillStyle = "#fbbf24"; // Amber color for hover
+                  // Add tooltip
+                  ctx.font = `${12 / zoom}px Arial`;
+                  ctx.fillStyle = "#000000";
+                  ctx.textAlign = "center";
+                  ctx.fillText(
+                    "Right-click to drag",
+                    point.x,
+                    point.y - 15 / zoom,
+                  );
+                } else {
+                  ctx.fillStyle = "#3b82f6"; // Blue color
+                }
+
+                ctx.fill();
+              }
+            },
+          );
         });
       };
 
