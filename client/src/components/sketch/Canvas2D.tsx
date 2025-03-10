@@ -925,9 +925,11 @@ export default function Canvas2D({
       return;
     }
 
+    const point = getCanvasPoint(e);
+    setHoverPoint(point);
+
     // Handle measurement preview
     if (currentTool === "measure" && isMeasuring) {
-      const point = getCanvasPoint(e);
       setMeasureEnd(point);
       return;
     }
@@ -1019,27 +1021,28 @@ export default function Canvas2D({
         setIsMeasuring(true);
         setMeasureStart(point);
         setMeasureEnd(point);
-        return;
       } else {
         // Complete measurement
         if (measureStart && measureEnd) {
+          const distance = Math.sqrt(
+            Math.pow(measureEnd.x - measureStart.x, 2) +
+              Math.pow(measureEnd.y - measureStart.y, 2),
+          );
+
           const newMeasurement = {
             start: measureStart,
             end: measureEnd,
-            distance: pixelsToCm(
-              Math.sqrt(
-                Math.pow(measureEnd.x - measureStart.x, 2) +
-                Math.pow(measureEnd.y - measureStart.y, 2)
-              )
-            )
+            distance: pixelsToCm(distance),
           };
+
           onMeasurementsUpdate?.([...measurements, newMeasurement]);
         }
+        // Reset measurement state
         setIsMeasuring(false);
         setMeasureStart(null);
         setMeasureEnd(null);
-        return;
       }
+      return;
     }
 
     // For left-click (button 0)
@@ -1051,6 +1054,7 @@ export default function Canvas2D({
       }
 
       // Handle measurement tool
+
 
       if (currentTool === "wall") {
         const nearestPoint = findNearestEndpoint(point);
@@ -1684,9 +1688,9 @@ export default function Canvas2D({
           pixelsToCm(
             Math.sqrt(
               Math.pow(measureEnd.x - measureStart.x, 2) +
-              Math.pow(measureEnd.y - measureStart.y, 2)
-            )
-          )
+                Math.pow(measureEnd.y - measureStart.y, 2),
+            ),
+          ),
         );
         const midX = (measureStart.x + measureEnd.x) / 2;
         const midY = (measureStart.y + measureEnd.y) / 2;
