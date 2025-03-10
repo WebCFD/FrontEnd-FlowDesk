@@ -73,7 +73,7 @@ export default function WizardDesign() {
   const [tab, setTab] = useState<"2d-editor" | "3d-preview">("2d-editor");
   const [showStartSimulationPrompt, setShowStartSimulationPrompt] = useState(false);
   const [wallTransparency, setWallTransparency] = useState(0.8);
-  const [ceilingHeight, setCeilingHeight] = useState(300); // Default 300cm
+  const [ceilingHeight, setCeilingHeight] = useState(220); // Default 220cm
   const [isMultifloor, setIsMultifloor] = useState(false);
   const [selectedFloor, setSelectedFloor] = useState("ground");
   const [loadFromFloor, setLoadFromFloor] = useState("ground");
@@ -386,12 +386,12 @@ export default function WizardDesign() {
                       <Input
                         type="number"
                         value={ceilingHeight}
-                        min={200}
+                        min={20}
                         max={500}
                         step={10}
                         onChange={(e) => {
                           const value = parseInt(e.target.value);
-                          if (!isNaN(value) && value >= 200 && value <= 500) {
+                          if (!isNaN(value) && value >= 20 && value <= 500) {
                             setCeilingHeight(value);
                           }
                         }}
