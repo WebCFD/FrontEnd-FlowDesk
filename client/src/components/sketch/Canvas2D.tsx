@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { Point, Line, AirEntry } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -1338,8 +1338,7 @@ export default function Canvas2D({
   };
 
 
-  // Clean up the click handler
-  const handleClick = (e: MouseEvent) => {
+  const handleClick = useCallback((e: MouseEvent) => {
     const point = getCanvasPoint(e);
     console.log('Click detected:', { point, currentAirEntry, currentTool });
 
@@ -1369,12 +1368,13 @@ export default function Canvas2D({
         }
       }
     }
-  };
+  }, [currentAirEntry, onLineSelect, getCanvasPoint, findLinesNearPoint, calculatePositionAlongWall]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    // Add event listeners
     canvas.addEventListener("click", handleClick);
     canvas.addEventListener("mousedown", handleMouseDown);
     canvas.addEventListener("mousemove", throttleMouseMove);
@@ -1392,6 +1392,7 @@ export default function Canvas2D({
 
     // Cleanup
     return () => {
+      // Remove event listeners
       canvas.removeEventListener("click", handleClick);
       canvas.removeEventListener("mousedown", handleMouseDown);
       canvas.removeEventListener("mousemove", throttleMouseMove);
@@ -1400,28 +1401,20 @@ export default function Canvas2D({
       canvas.removeEventListener("wheel", handleRegularWheel);
       canvas.removeEventListener("dblclick", handleDoubleClick);
       canvas.removeEventListener("contextmenu", handleContextMenu);
+
+      // Cancel animation frame
       cancelAnimationFrame(animationFrameId);
     };
   }, [
-    cursorPoint,
-    isDrawing,
-    currentLine,
-    isPanning,
-    lines,
-    gridSize,
-    airEntries,
-    currentAirEntry,
-    highlightState,
-    hoveredEndpoint,
-    hoveredAirEntry,
-    currentTool,
-    measureStart,
-    measureEnd,
-    isMeasuring,
-    measurements,
-    isMultifloor,
-    onLineSelect,
-    handleClick
+    handleClick,
+    handleMouseDown,
+    throttleMouseMove,
+    handleMouseUp,
+    handleMouseLeave,
+    handleRegularWheel,
+    handleDoubleClick,
+    handleContextMenu,
+    draw
   ]);
 
   const drawCrosshair = (ctx: CanvasRenderingContext2D, point: Point) => {
@@ -1841,7 +1834,7 @@ export default function Canvas2D({
 
   const handleDoubleClick = (e: MouseEvent) => {
     const clickPoint = getCanvasPoint(e);
-    const airEntryInfo = findAirEntryAtLocation(clickPoint);
+    constairEntryInfo = findAirEntryAtLocation(clickPoint);
 
     if (airEntryInfo) {
       setEditingAirEntry({
