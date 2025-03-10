@@ -252,27 +252,21 @@ export default function WizardDesign() {
     distanceToFloor?: number;
   }) => {
     if (selectedLine && clickedPoint && currentAirEntry) {
-      console.log('Creating new air entry with:', {
-        currentFloor,
-        dimensions,
-        selectedLine,
-        clickPoint: clickedPoint,
-        type: currentAirEntry
-      });
+      const normal = calculateNormal(selectedLine);
+      console.log(`Creating new ${currentAirEntry} air entry:`);
+      console.log(`Position: (${clickedPoint.x}, ${clickedPoint.y})`);
+      console.log(`Dimensions: width=${dimensions.width}cm, height=${dimensions.height}cm`);
+      console.log(`Wall normal: (${normal.x.toFixed(3)}, ${normal.y.toFixed(3)})`);
 
-      const newAirEntry = {
+      const newAirEntry: AirEntry = {
         type: currentAirEntry,
         position: clickedPoint,
         dimensions,
         line: selectedLine
       };
 
-      // Update air entries in the current floor's state
-      const updatedAirEntries = [...airEntries, newAirEntry];
-      console.log('Updating air entries:', updatedAirEntries);
-      setAirEntries(updatedAirEntries);
-
-      // Reset selection state
+      const newAirEntries = [...airEntries, newAirEntry];
+      setAirEntries(newAirEntries);
       setSelectedLine(null);
       setClickedPoint(null);
       setCurrentAirEntry(null);
@@ -282,12 +276,6 @@ export default function WizardDesign() {
 
   const handleLineSelect = (line: Line, clickPoint: Point) => {
     if (currentAirEntry) {
-      console.log('Line selected for air entry:', {
-        line,
-        clickPoint,
-        currentAirEntry,
-        currentFloor
-      });
       setSelectedLine(line);
       setClickedPoint(clickPoint);
       setIsAirEntryDialogOpen(true);
@@ -507,39 +495,7 @@ export default function WizardDesign() {
             </div>
 
             {/* Right side - Canvas */}
-            <div className="flex-1 border rounded-lg overflow-hidden bg-white">
-              {tab === "2d-editor" ? (
-                <Canvas2D
-                  gridSize={gridSize}
-                  currentTool={currentTool}
-                  currentAirEntry={currentAirEntry}
-                  airEntries={airEntries}
-                  measurements={measurements}
-                  lines={lines}
-                  floorText={formatFloorText(currentFloor)}
-                  isMultifloor={isMultifloor}
-                  onLinesUpdate={(newLines) => {
-                    setLines(newLines);
-                    const hasClosedContour = newLines.length > 0 &&
-                      newLines.some(line =>
-                        isInClosedContour(line.start, newLines) ||
-                        isInClosedContour(line.end, newLines)
-                      );
-                    setHasClosedContour(hasClosedContour);
-                  }}
-                  onAirEntriesUpdate={setAirEntries}
-                  onMeasurementsUpdate={setMeasurements}
-                  onLineSelect={handleLineSelect}
-                />
-              ) : (
-                <Canvas3D
-                  floors={floors}
-                  currentFloor={currentFloor}
-                  ceilingHeight={ceilingHeight}
-                  floorDeckThickness={floorDeckThickness}
-                />
-              )}
-            </div>
+            {renderCanvasSection()}
           </div>
         </CardContent>
       </Card>
@@ -887,7 +843,7 @@ export default function WizardDesign() {
                   max={150}
                   step={5}
                   onChange={(e) => {
-                    const value= parseInt(e.target.value);
+                    const value = parseInt(e.target.value);
                     if (!isNaN(value) && value >= 5 && value <= 150) {
                       setFloorDeckThickness(value);
                     }
@@ -927,14 +883,13 @@ export default function WizardDesign() {
           }}
           onAirEntriesUpdate={setAirEntries}
           onLineSelect={handleLineSelect}
-          onMeasurementsUpdate={setMeasurements}
         />
       ) : (
         <Canvas3D
           floors={floors}
           currentFloor={currentFloor}
           ceilingHeight={ceilingHeight}
-          floorDeckThickness={floorDeckThickness}
+          floorDeckThickness={floorDeckThickness} // Add the prop
         />
       )}
     </div>
