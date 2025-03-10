@@ -383,14 +383,21 @@ export default function WizardDesign() {
                   <div>
                     <Label>Ceiling Height (Vertical Extrusion)</Label>
                     <div className="flex items-center gap-2">
-                      <Slider
-                        defaultValue={[ceilingHeight]}
+                      <Input
+                        type="number"
+                        value={ceilingHeight}
                         min={200}
                         max={500}
                         step={10}
-                        onValueChange={(value) => setCeilingHeight(value[0])}
+                        onChange={(e) => {
+                          const value = parseInt(e.target.value);
+                          if (!isNaN(value) && value >= 200 && value <= 500) {
+                            setCeilingHeight(value);
+                          }
+                        }}
+                        className="w-24"
                       />
-                      <span className="min-w-[4rem] text-right">{ceilingHeight}cm</span>
+                      <span>cm</span>
                     </div>
                   </div>
 
