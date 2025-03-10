@@ -84,8 +84,86 @@ export default function WizardDesign() {
   const [loadFromFloor, setLoadFromFloor] = useState("ground");
   const [sandwich, setSandwich] = useState(false);
 
-  // Use the global room store
-  const { lines, airEntries, measurements, hasClosedContour, setLines, setAirEntries, setMeasurements, setHasClosedContour } = useRoomStore();
+  // Use the global room store with updated selectors
+  const {
+    floors,
+    currentFloor,
+    setCurrentFloor,
+    setLines,
+    setAirEntries,
+    setMeasurements,
+    setHasClosedContour,
+    addFloor,
+    removeFloor,
+    copyFloorAs
+  } = useRoomStore();
+
+  // Get current floor data
+  const currentFloorData = floors[currentFloor];
+  const { lines, airEntries, measurements, hasClosedContour } = currentFloorData;
+
+  // Handle loading floor template
+  const handleLoadTemplate = () => {
+    if (loadFromFloor === currentFloor) {
+      toast({
+        title: "Invalid Selection",
+        description: "Cannot load a floor as a template for itself",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    copyFloorAs(loadFromFloor, currentFloor);
+    toast({
+      title: "Floor Template Loaded",
+      description: `Successfully loaded ${formatFloorText(loadFromFloor)} as template for ${formatFloorText(currentFloor)}`,
+    });
+  };
+
+  // Handle floor selection change
+  const handleFloorChange = (floorName: string) => {
+    setCurrentFloor(floorName);
+    setSelectedFloor(floorName);
+  };
+
+  // Handle adding a new floor
+  const handleAddFloor = (floorName: string) => {
+    if (floors[floorName]) {
+      toast({
+        title: "Floor Already Exists",
+        description: `${formatFloorText(floorName)} already exists`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    addFloor(floorName);
+    setCurrentFloor(floorName);
+    setSelectedFloor(floorName);
+    toast({
+      title: "Floor Added",
+      description: `Successfully created ${formatFloorText(floorName)}`,
+    });
+  };
+
+  // Handle removing a floor
+  const handleRemoveFloor = (floorName: string) => {
+    if (floorName === 'ground') {
+      toast({
+        title: "Cannot Remove Ground Floor",
+        description: "The ground floor cannot be removed",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    removeFloor(floorName);
+    toast({
+      title: "Floor Removed",
+      description: `Successfully removed ${formatFloorText(floorName)}`,
+    });
+  };
+
 
   const steps = [
     { id: 1, name: "Upload" },
@@ -382,92 +460,7 @@ export default function WizardDesign() {
               </div>
 
               {/* Parameters Menu - Add before Files menu */}
-              <div className="border rounded-lg p-4">
-                <h3 className="font-semibold text-lg mb-4">Parameters</h3>
-                <div className="space-y-4">
-                  <div>
-                    <Label>Ceiling Height (Vertical Extrusion)</Label>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        type="number"
-                        value={ceilingHeight}
-                        min={20}
-                        max={500}
-                        step={10}
-                        onChange={(e) => {
-                          const value = parseInt(e.target.value);
-                          if (!isNaN(value) && value >= 20 && value <= 500) {
-                            setCeilingHeight(value);
-                          }
-                        }}
-                        className="w-24"
-                      />
-                      <span>cm</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="multifloor"
-                      checked={isMultifloor}
-                      onCheckedChange={(checked) => setIsMultifloor(checked as boolean)}
-                    />
-                    <Label htmlFor="multifloor">Multifloor</Label>
-                  </div>
-
-                  {isMultifloor && (
-                    <div className="space-y-4 pt-2">
-                      <div className="space-y-2">
-                        <Label>Floor</Label>
-                        <Select value={selectedFloor} onValueChange={setSelectedFloor}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select floor" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="ground">Ground Floor</SelectItem>
-                            <SelectItem value="first">First Floor</SelectItem>
-                            <SelectItem value="second">Second Floor</SelectItem>
-                            <SelectItem value="third">Third Floor</SelectItem>
-                            <SelectItem value="fourth">Fourth Floor</SelectItem>
-                            <SelectItem value="fifth">Fifth Floor</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>Load from Floor</Label>
-                        <div className="flex gap-2">
-                          <Select value={loadFromFloor} onValueChange={setLoadFromFloor}>
-                            <SelectTrigger className="flex-1">
-                              <SelectValue placeholder="Select floor to load from" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="ground">Ground Floor</SelectItem>
-                              <SelectItem value="first">First Floor</SelectItem>
-                              <SelectItem value="second">Second Floor</SelectItem>
-                              <SelectItem value="third">Third Floor</SelectItem>
-                              <SelectItem value="fourth">Fourth Floor</SelectItem>
-                              <SelectItem value="fifth">Fifth Floor</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <Button variant="outline" size="sm">
-                            Load
-                          </Button>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="sandwich"
-                          checked={sandwich}
-                          onCheckedChange={(checked) => setSandwich(checked as boolean)}
-                        />
-                        <Label htmlFor="sandwich">Sandwich</Label>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
+              {renderParametersMenu()}
 
               {/* Files - always active */}
               <div className="border rounded-lg p-4">
@@ -486,37 +479,7 @@ export default function WizardDesign() {
             </div>
 
             {/* Right side - Canvas */}
-            <div className="flex-1 border rounded-lg overflow-hidden bg-white">
-              {tab === "2d-editor" ? (
-                <Canvas2D
-                  gridSize={gridSize}
-                  currentTool={currentTool}
-                  currentAirEntry={currentAirEntry}
-                  onLineSelect={handleLineSelect}
-                  airEntries={airEntries}
-                  measurements={measurements}
-                  onMeasurementsUpdate={setMeasurements}
-                  lines={lines}
-                  floorText={formatFloorText(selectedFloor)}
-                  isMultifloor={isMultifloor}
-                  onLinesUpdate={(newLines) => {
-                    setLines(newLines);
-                    const hasClosedContour = newLines.length > 0 &&
-                      newLines.some(line =>
-                        isInClosedContour(line.start, newLines) ||
-                        isInClosedContour(line.end, newLines)
-                      );
-                    setHasClosedContour(hasClosedContour);
-                  }}
-                  onAirEntriesUpdate={setAirEntries}
-                />
-              ) : (
-                <Canvas3D
-                  lines={lines}
-                  airEntries={airEntries}
-                />
-              )}
-            </div>
+            {renderCanvasSection()}
           </div>
         </CardContent>
       </Card>
@@ -764,17 +727,140 @@ export default function WizardDesign() {
     if (step > 1) setStep(step - 1);
   };
 
+  const renderParametersMenu = () => (
+    <div className="border rounded-lg p-4">
+      <h3 className="font-semibold text-lg mb-4">Parameters</h3>
+      <div className="space-y-4">
+        <div>
+          <Label>Ceiling Height (Vertical Extrusion)</Label>
+          <div className="flex items-center gap-2">
+            <Input
+              type="number"
+              value={ceilingHeight}
+              min={20}
+              max={500}
+              step={10}
+              onChange={(e) => {
+                const value = parseInt(e.target.value);
+                if (!isNaN(value) && value >= 20 && value <= 500) {
+                  setCeilingHeight(value);
+                }
+              }}
+              className="w-24"
+            />
+            <span>cm</span>
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="multifloor"
+            checked={isMultifloor}
+            onCheckedChange={(checked) => setIsMultifloor(checked as boolean)}
+          />
+          <Label htmlFor="multifloor">Multifloor</Label>
+        </div>
+
+        {isMultifloor && (
+          <div className="space-y-4 pt-2">
+            <div className="space-y-2">
+              <Label>Current Floor</Label>
+              <Select value={currentFloor} onValueChange={handleFloorChange}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select floor" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.keys(floors).map((floorName) => (
+                    <SelectItem key={floorName} value={floorName}>
+                      {formatFloorText(floorName)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Load from Floor</Label>
+              <div className="flex gap-2">
+                <Select value={loadFromFloor} onValueChange={setLoadFromFloor}>
+                  <SelectTrigger className="flex-1">
+                    <SelectValue placeholder="Select floor to load from" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.keys(floors).map((floorName) => (
+                      <SelectItem key={floorName} value={floorName}>
+                        {formatFloorText(floorName)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleLoadTemplate}
+                >
+                  Load
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="sandwich"
+                checked={sandwich}
+                onCheckedChange={(checked) => setSandwich(checked as boolean)}
+              />
+              <Label htmlFor="sandwich">Sandwich</Label>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderCanvasSection = () => (
+    <div className="flex-1 border rounded-lg overflow-hidden bg-white">
+      {tab === "2d-editor" ? (
+        <Canvas2D
+          gridSize={gridSize}
+          currentTool={currentTool}
+          currentAirEntry={currentAirEntry}
+          airEntries={airEntries}
+          measurements={measurements}
+          onMeasurementsUpdate={setMeasurements}
+          lines={lines}
+          floorText={formatFloorText(currentFloor)}
+          isMultifloor={isMultifloor}
+          onLinesUpdate={(newLines) => {
+            setLines(newLines);
+            const hasClosedContour = newLines.length > 0 &&
+              newLines.some(line =>
+                isInClosedContour(line.start, newLines) ||
+                isInClosedContour(line.end, newLines)
+              );
+            setHasClosedContour(hasClosedContour);
+          }}
+          onAirEntriesUpdate={setAirEntries}
+          onLineSelect={handleLineSelect}
+        />
+      ) : (
+        <Canvas3D
+          lines={lines}
+          airEntries={airEntries}
+        />
+      )}
+    </div>
+  );
+
   return (
     <DashboardLayout>
       <div className="container mx-auto py-6 space-y-6">
         {renderStepIndicator()}
-
         <div className="min-h-[690px]">
           {step === 1 && renderStep1()}
           {step === 2 && renderStep2()}
           {step === 3 && renderStep3()}
         </div>
-
         <div className="flex justify-end gap-2 pt-6 mt-6 border-t">
           {step > 1 && (
             <Button onClick={handleBack} variant="outline">
