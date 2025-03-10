@@ -507,7 +507,39 @@ export default function WizardDesign() {
             </div>
 
             {/* Right side - Canvas */}
-            {renderCanvasSection()}
+            <div className="flex-1 border rounded-lg overflow-hidden bg-white">
+              {tab === "2d-editor" ? (
+                <Canvas2D
+                  gridSize={gridSize}
+                  currentTool={currentTool}
+                  currentAirEntry={currentAirEntry}
+                  airEntries={airEntries}
+                  measurements={measurements}
+                  lines={lines}
+                  floorText={formatFloorText(currentFloor)}
+                  isMultifloor={isMultifloor}
+                  onLinesUpdate={(newLines) => {
+                    setLines(newLines);
+                    const hasClosedContour = newLines.length > 0 &&
+                      newLines.some(line =>
+                        isInClosedContour(line.start, newLines) ||
+                        isInClosedContour(line.end, newLines)
+                      );
+                    setHasClosedContour(hasClosedContour);
+                  }}
+                  onAirEntriesUpdate={setAirEntries}
+                  onMeasurementsUpdate={setMeasurements}
+                  onLineSelect={handleLineSelect}
+                />
+              ) : (
+                <Canvas3D
+                  floors={floors}
+                  currentFloor={currentFloor}
+                  ceilingHeight={ceilingHeight}
+                  floorDeckThickness={floorDeckThickness}
+                />
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -855,7 +887,7 @@ export default function WizardDesign() {
                   max={150}
                   step={5}
                   onChange={(e) => {
-                    const value = parseInt(e.target.value);
+                    const value= parseInt(e.target.value);
                     if (!isNaN(value) && value >= 5 && value <= 150) {
                       setFloorDeckThickness(value);
                     }
@@ -881,7 +913,8 @@ export default function WizardDesign() {
           airEntries={airEntries}
           measurements={measurements}
           onMeasurementsUpdate={setMeasurements}
-          lines={lines}          floorText={formatFloorText(currentFloor)}
+          lines={lines}
+          floorText={formatFloorText(currentFloor)}
           isMultifloor={isMultifloor}
           onLinesUpdate={(newLines) => {
             setLines(newLines);
