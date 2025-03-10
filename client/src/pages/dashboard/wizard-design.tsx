@@ -333,7 +333,7 @@ export default function WizardDesign() {
             <div className="flex-1 border rounded-lg overflow-hidden bg-white h-[690px] flex items-center justify-center">
               {tab === "2d-editor" ? (
                 <div className="w-full h-full flex items-center justify-center bg-gray-50"> {/* Full container with padding */}
-                  <div className="w-[800px] h-[690px]"> {/* Fixed dimensions container */}
+                  <div className="w-[1200px] h-[690px]"> {/* Increased width to fill more horizontal space */}
                     <Canvas2D
                       gridSize={gridSize}
                       currentTool={currentTool}
@@ -358,7 +358,7 @@ export default function WizardDesign() {
                 </div>
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-gray-50"> {/* Same full container for 3D */}
-                  <div className="w-[800px] h-[690px]"> {/* Same fixed dimensions for 3D view */}
+                  <div className="w-[1200px] h-[690px]"> {/* Same increased width for 3D view */}
                     <Canvas3D
                       lines={lines}
                       airEntries={airEntries}
