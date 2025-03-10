@@ -227,10 +227,11 @@ interface Canvas2DProps {
   lines: Line[];
   measurements: Measurement[];
   floorText: string;
-  isMultifloor: boolean; // Add new prop
+  isMultifloor: boolean;
   onLinesUpdate?: (lines: Line[]) => void;
   onAirEntriesUpdate?: (airEntries: AirEntry[]) => void;
   onMeasurementsUpdate?: (measurements: Measurement[]) => void;
+  onLineSelect?: (line: Line, clickPoint: Point) => void; // Add this prop
 }
 
 export default function Canvas2D({
@@ -241,10 +242,11 @@ export default function Canvas2D({
   lines = [],
   measurements = [],
   floorText,
-  isMultifloor, // Add new prop
+  isMultifloor,
   onLinesUpdate,
   onAirEntriesUpdate,
   onMeasurementsUpdate,
+  onLineSelect, // Add this prop
 }: Canvas2DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -859,8 +861,7 @@ export default function Canvas2D({
       setHoveredAirEntry(airEntryInfo);
 
       if (currentTool === "eraser") {
-        const airEntryInfo = findAirEntryAtLocation(point);
-        const measurementInfo = findMeasurementAtPoint(point, measurements);
+        const airEntryInfo = findAirEntryAtLocation(point);        const measurementInfo = findMeasurementAtPoint(point, measurements);
 
         if (airEntryInfo) {
           setHighlightState({
@@ -1757,7 +1758,8 @@ export default function Canvas2D({
     isMeasuring,
     measurements,
     onMeasurementsUpdate,
-    isMultifloor, // Add isMultifloor to useEffect dependencies
+    isMultifloor,
+    onLineSelect, // Add onLineSelect to useEffect dependencies
   ]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1850,7 +1852,7 @@ export default function Canvas2D({
     // 1. Check for panning mode (either button-activated or right-click)
     if (panMode || isPanning) return "move";
 
-    // 2. Check for specific tools and return custom SVG cursors matching Lucide icons
+    // 2.Check for specific tools and return custom SVG cursors matching Lucide icons
     if (currentTool === "eraser") {
       // Eraser icon matching the LucideEraser component
       return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000000\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L15 19\"/><path d=\"M22 21H7\"/><path d=\"m5 11 9 9\"/></svg>') 5 15, auto";
