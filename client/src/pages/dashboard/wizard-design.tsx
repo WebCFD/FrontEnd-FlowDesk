@@ -93,7 +93,7 @@ export default function WizardDesign() {
   const [isMultifloor, setIsMultifloor] = useState(false);
   const [selectedFloor, setSelectedFloor] = useState("ground");
   const [loadFromFloor, setLoadFromFloor] = useState("ground");
-  const [floorDeckThickness, setFloorDeckThickness] = useState(20); // Default 20cm
+  const [floorDeckThickness, setFloorDeckThickness] = useState(35); // Default 35cm
 
   // Use the global room store with updated selectors
   const {
@@ -774,11 +774,11 @@ export default function WizardDesign() {
               type="number"
               value={floorDeckThickness}
               min={5}
-              max={100}
+              max={150}
               step={5}
               onChange={(e) => {
                 const value = parseInt(e.target.value);
-                if (!isNaN(value) && value >= 5 && value <= 100) {
+                if (!isNaN(value) && value >= 5 && value <= 150) {
                   setFloorDeckThickness(value);
                 }
               }}
@@ -873,7 +873,7 @@ export default function WizardDesign() {
           isMultifloor={isMultifloor}
           onLinesUpdate={(newLines) => {
             setLines(newLines);
-            const hasClosedContour = newLines.length> 0 &&
+                        const hasClosedContour = newLines.length > 0 &&
               newLines.some(line =>
                 isInClosedContour(line.start, newLines) ||
                 isInClosedContour(line.end, newLines)
