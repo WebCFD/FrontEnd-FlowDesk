@@ -27,7 +27,6 @@ interface AirEntry {
 interface Canvas3DProps {
   lines: Line[];
   airEntries?: AirEntry[];
-  height?: number;
 }
 
 const ROOM_HEIGHT = 210; // Room height in cm
@@ -107,7 +106,6 @@ const calculateNormal = (line: Line): Point => {
 export default function Canvas3D({
   lines,
   airEntries = [],
-  height = 600,
 }: Canvas3DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -126,7 +124,7 @@ export default function Canvas3D({
     // Initialize camera with perspective matching 2D view
     const camera = new THREE.PerspectiveCamera(
       45,
-      containerRef.current.clientWidth / height,
+      containerRef.current.clientWidth / containerRef.current.clientHeight,
       1,
       10000,
     );
@@ -136,7 +134,7 @@ export default function Canvas3D({
 
     // Initialize renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(containerRef.current.clientWidth, height);
+    renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
     containerRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
@@ -150,6 +148,21 @@ export default function Canvas3D({
     controls.staticMoving = true;
     controls.dynamicDampingFactor = 0.3;
     controlsRef.current = controls;
+
+    // Add resize handler
+    const handleResize = () => {
+      if (!containerRef.current || !cameraRef.current || !rendererRef.current) return;
+
+      const width = containerRef.current.clientWidth;
+      const height = containerRef.current.clientHeight;
+
+      cameraRef.current.aspect = width / height;
+      cameraRef.current.updateProjectionMatrix();
+      rendererRef.current.setSize(width, height);
+    };
+
+    const resizeObserver = new ResizeObserver(handleResize);
+    resizeObserver.observe(containerRef.current);
 
     // Add ambient light
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
@@ -222,12 +235,13 @@ export default function Canvas3D({
 
     // Cleanup
     return () => {
+      resizeObserver.disconnect();
       if (containerRef.current) {
         containerRef.current.removeChild(renderer.domElement);
       }
       renderer.dispose();
     };
-  }, [lines, height]);
+  }, []);
 
   useEffect(() => {
     if (!sceneRef.current) return;
@@ -531,5 +545,5 @@ export default function Canvas3D({
     });
   }, [lines, airEntries]);
 
-  return <div ref={containerRef} style={{ height }} />;
+  return <div ref={containerRef} className="w-full h-full" />;
 }

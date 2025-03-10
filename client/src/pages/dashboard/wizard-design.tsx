@@ -330,9 +330,9 @@ export default function WizardDesign() {
             </div>
 
             {/* Right side - View container */}
-            <div className="flex-1 border rounded-lg overflow-hidden bg-white h-[690px] flex items-center justify-center">
+            <div className="flex-1 border rounded-lg overflow-hidden bg-white flex items-center justify-center relative">
               {tab === "2d-editor" ? (
-                <div className="w-[800px] h-[690px]"> {/* Fixed dimensions container */}
+                <div className="w-full h-full"> {/* Responsive container */}
                   <Canvas2D
                     gridSize={gridSize}
                     currentTool={currentTool}
@@ -355,11 +355,10 @@ export default function WizardDesign() {
                   />
                 </div>
               ) : (
-                <div className="w-[800px] h-[690px]"> {/* Same fixed dimensions for 3D view */}
+                <div className="w-full h-full"> {/* Responsive container */}
                   <Canvas3D
                     lines={lines}
                     airEntries={airEntries}
-                    height={690}
                   />
                 </div>
               )}
