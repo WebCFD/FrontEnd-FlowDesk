@@ -1834,7 +1834,7 @@ export default function Canvas2D({
 
   const handleDoubleClick = (e: MouseEvent) => {
     const clickPoint = getCanvasPoint(e);
-    constairEntryInfo = findAirEntryAtLocation(clickPoint);
+    const airEntryInfo = findAirEntryAtLocation(clickPoint);
 
     if (airEntryInfo) {
       setEditingAirEntry({
