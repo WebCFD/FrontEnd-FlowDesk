@@ -252,11 +252,13 @@ export default function WizardDesign() {
           />
 
           <div className="flex gap-6">
-            <div className={cn(
-              "w-48 space-y-6",
-              tab === "2d-editor" ? "opacity-100" : "opacity-50 pointer-events-none"
-            )}>
-              <div className="border rounded-lg p-4">
+            {/* Left side menus */}
+            <div className="w-48 space-y-6">
+              {/* 2D Menu - grayed out in 3D view */}
+              <div className={cn(
+                "border rounded-lg p-4",
+                tab === "3d-preview" ? "opacity-50 pointer-events-none" : "opacity-100"
+              )}>
                 <h3 className="font-semibold text-lg mb-4">2D Menu</h3>
                 <div className="space-y-4">
                   <div className="grid grid-cols-3 gap-2">
@@ -332,7 +334,11 @@ export default function WizardDesign() {
                 </div>
               </div>
 
-              <div className="border rounded-lg p-4">
+              {/* 3D Tools - grayed out in 2D view */}
+              <div className={cn(
+                "border rounded-lg p-4",
+                tab === "2d-editor" ? "opacity-50 pointer-events-none" : "opacity-100"
+              )}>
                 <h3 className="font-semibold text-lg mb-4">3D Tools</h3>
                 <div className="space-y-4">
                   <div className="grid grid-cols-3 gap-2">
@@ -365,6 +371,7 @@ export default function WizardDesign() {
                 </div>
               </div>
 
+              {/* Files - always active */}
               <div className="border rounded-lg p-4">
                 <h3 className="font-semibold text-lg mb-4">Files</h3>
                 <div className="space-y-2">
@@ -380,6 +387,7 @@ export default function WizardDesign() {
               </div>
             </div>
 
+            {/* Right side - Canvas */}
             <div className="flex-1 border rounded-lg overflow-hidden bg-white">
               {tab === "2d-editor" ? (
                 <Canvas2D
@@ -561,7 +569,7 @@ export default function WizardDesign() {
     const arePointsEqual = (p1: Point, p2: Point): boolean => {
       const dx = p1.x - p2.x;
       const dy = p1.y - p2.y;
-      return Math.sqrt(dx * dx + dy * dy) < 5; 
+      return Math.sqrt(dx * dx + dy * dy) < 5;
     };
 
     const connectedLines = lines.filter(line =>
@@ -615,7 +623,7 @@ export default function WizardDesign() {
   const arePointsClose = (p1: Point, p2: Point): boolean => {
     const dx = p1.x - p2.x;
     const dy = p1.y - p2.y;
-    return Math.sqrt(dx * dx + dy * dy) < 15; 
+    return Math.sqrt(dx * dx + dy * dy) < 15;
   };
 
   const handleStartSimulation = () => {
