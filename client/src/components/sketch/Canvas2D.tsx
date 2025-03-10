@@ -929,6 +929,7 @@ export default function Canvas2D({
     if (currentTool === "measure" && isMeasuring) {
       const point = getCanvasPoint(e);
       setMeasureEnd(point);
+      return;
     }
 
     if (isDraggingAirEntry && draggedAirEntry.index !== -1) {
@@ -1008,33 +1009,37 @@ export default function Canvas2D({
   };
 
   const handleMouseDown = (e: MouseEvent) => {
-    const clickPoint = getCanvasPoint(e);
+    if (e.button !== 0) return; // Only handle left clicks
 
-    // For right-click (button 2)
-    if (e.button === 2) {
-      e.preventDefault();
+    const point = getCanvasPoint(e);
 
-      // First check if clicking on an element that needs special handling
-      const airEntryInfo = findAirEntryAtLocation(clickPoint);
-      if (airEntryInfo) {
-        setIsDraggingAirEntry(true);
-        setDraggedAirEntry({
-          index: airEntryInfo.index,
-          entry: airEntryInfo.entry,
-          startPoint: clickPoint,
-        });
+    if (currentTool === "measure") {
+      if (!isMeasuring) {
+        // Start measurement
+        setIsMeasuring(true);
+        setMeasureStart(point);
+        setMeasureEnd(point);
+        return;
+      } else {
+        // Complete measurement
+        if (measureStart && measureEnd) {
+          const newMeasurement = {
+            start: measureStart,
+            end: measureEnd,
+            distance: pixelsToCm(
+              Math.sqrt(
+                Math.pow(measureEnd.x - measureStart.x, 2) +
+                Math.pow(measureEnd.y - measureStart.y, 2)
+              )
+            )
+          };
+          onMeasurementsUpdate?.([...measurements, newMeasurement]);
+        }
+        setIsMeasuring(false);
+        setMeasureStart(null);
+        setMeasureEnd(null);
         return;
       }
-      const pointInfo = findPointAtLocation(clickPoint);
-      if (pointInfo) {
-        setIsDraggingEndpoint(true);
-        setDraggedPoint(pointInfo);
-        return;
-      }
-
-      // If not clicking on any element, allow panning (always for right-click)
-      handlePanStart(e);
-      return;
     }
 
     // For left-click (button 0)
@@ -1046,39 +1051,10 @@ export default function Canvas2D({
       }
 
       // Handle measurement tool
-      if (currentTool === "measure") {
-        if (!measureStart) {
-          setMeasureStart(clickPoint);
-          setIsMeasuring(true);
-        } else {
-          setMeasureEnd(clickPoint);
-          setIsMeasuring(false);
-
-          // Calculate distance and add the measurement
-          const dx = clickPoint.x - measureStart.x;
-          const dy = clickPoint.y - measureStart.y;
-          const distanceInPixels = Math.sqrt(dx * dx + dy * dy);
-          const distanceInCm = Math.round(pixelsToCm(distanceInPixels));
-
-          const newMeasurement = {
-            start: measureStart,
-            end: clickPoint,
-            distance: distanceInCm,
-          };
-
-          const updatedMeasurements = [...measurements, newMeasurement];
-          onMeasurementsUpdate?.(updatedMeasurements);
-
-          // Reset measurement state for next measurement
-          setMeasureStart(null);
-          setMeasureEnd(null);
-        }
-        return;
-      }
 
       if (currentTool === "wall") {
-        const nearestPoint = findNearestEndpoint(clickPoint);
-        const startPoint = nearestPoint || snapToGrid(clickPoint);
+        const nearestPoint = findNearestEndpoint(point);
+        const startPoint = nearestPoint || snapToGrid(point);
         const newLineId = Math.random().toString(36).substring(2, 9);
         setCurrentLine({
           id: newLineId,
@@ -1088,9 +1064,9 @@ export default function Canvas2D({
         setIsDrawing(true);
         setCursorPoint(startPoint);
       } else if (currentTool === "eraser") {
-        const airEntryInfo = findAirEntryAtLocation(clickPoint);
+        const airEntryInfo = findAirEntryAtLocation(point);
         const measurementInfo = findMeasurementAtPoint(
-          clickPoint,
+          point,
           measurements,
         );
 
@@ -1105,7 +1081,7 @@ export default function Canvas2D({
           );
           onMeasurementsUpdate?.(newMeasurements);
         } else {
-          const nearbyLines = findLinesNearPoint(clickPoint);
+          const nearbyLines = findLinesNearPoint(point);
           if (nearbyLines.length > 0) {
             const newLines = lines.filter(
               (line) =>
@@ -1121,10 +1097,10 @@ export default function Canvas2D({
         setHighlightState({ lines: [], airEntry: null, measurement: null });
         return;
       } else if (currentAirEntry) {
-        const selectedLines = findLinesNearPoint(clickPoint);
+        const selectedLines = findLinesNearPoint(point);
         if (selectedLines.length > 0) {
           const selectedLine = selectedLines[0];
-          const exactPoint = getPointOnLine(selectedLine, clickPoint);
+          const exactPoint = getPointOnLine(selectedLine, point);
 
           // Instead of creating the air entry immediately, store the details and show dialog
           setNewAirEntryDetails({
@@ -1682,6 +1658,46 @@ export default function Canvas2D({
       };
 
       drawMeasurements(ctx);
+
+      // Draw measurement preview
+      if (isMeasuring && measureStart && measureEnd) {
+        ctx.save();
+        ctx.strokeStyle = "#4b5563"; // Gray color
+        ctx.lineWidth = 2 / zoom;
+        ctx.setLineDash([5 / zoom, 5 / zoom]);
+
+        // Draw the measurement line
+        ctx.beginPath();
+        ctx.moveTo(measureStart.x, measureStart.y);
+        ctx.lineTo(measureEnd.x, measureEnd.y);
+        ctx.stroke();
+
+        // Draw points at start and end
+        ctx.fillStyle = "#4b5563";
+        ctx.beginPath();
+        ctx.arc(measureStart.x, measureStart.y, POINT_RADIUS / zoom, 0, Math.PI * 2);
+        ctx.arc(measureEnd.x, measureEnd.y, POINT_RADIUS / zoom, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Draw distance label
+        const distance = Math.round(
+          pixelsToCm(
+            Math.sqrt(
+              Math.pow(measureEnd.x - measureStart.x, 2) +
+              Math.pow(measureEnd.y - measureStart.y, 2)
+            )
+          )
+        );
+        const midX = (measureStart.x + measureEnd.x) / 2;
+        const midY = (measureStart.y + measureEnd.y) / 2;
+
+        ctx.font = `${14 / zoom}px Arial`;
+        ctx.fillStyle = "#000000";
+        ctx.textAlign = "center";
+        ctx.fillText(`${distance} cm`, midX, midY - 10 / zoom);
+
+        ctx.restore();
+      }
 
       // Add wall measurements after drawing lines
       lines.forEach((line) => {
