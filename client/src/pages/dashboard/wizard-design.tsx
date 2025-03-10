@@ -355,11 +355,13 @@ export default function WizardDesign() {
                   />
                 </div>
               ) : (
-                <Canvas3D
-                  lines={lines}
-                  airEntries={airEntries}
-                  height={600}
-                />
+                <div className="w-[800px] h-[600px]"> {/* Same fixed dimensions for 3D view */}
+                  <Canvas3D
+                    lines={lines}
+                    airEntries={airEntries}
+                    height={600}
+                  />
+                </div>
               )}
             </div>
           </div>
