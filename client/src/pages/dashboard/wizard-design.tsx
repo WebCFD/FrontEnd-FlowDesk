@@ -237,7 +237,10 @@ export default function WizardDesign() {
 
           <div className={tab === "2d-editor" ? "block" : "hidden"}>
             <div className="flex gap-6">
-              <div className="w-48 space-y-6">
+              <div className={cn(
+                "w-48 space-y-6",
+                tab === "3d-preview" ? "opacity-50 pointer-events-none" : ""
+              )}>
                 <div className="space-y-4">
                   <h3 className="font-semibold">Tools</h3>
                   <div className="grid grid-cols-3 gap-2">
@@ -245,6 +248,7 @@ export default function WizardDesign() {
                       variant={currentTool === 'wall' ? 'default' : 'outline'}
                       className="w-full h-16 flex flex-col items-center justify-center gap-1"
                       onClick={() => handleToolSelect('wall')}
+                      disabled={tab !== "2d-editor"}
                     >
                       <div className="w-6 h-6 bg-primary/20 rounded-sm" />
                       <span className="text-xs">Wall Line</span>
@@ -253,6 +257,7 @@ export default function WizardDesign() {
                       variant={currentTool === 'eraser' ? 'default' : 'outline'}
                       className="w-full h-16 flex flex-col items-center justify-center gap-1"
                       onClick={() => handleToolSelect('eraser')}
+                      disabled={tab !== "2d-editor"}
                     >
                       <Eraser className="w-6 h-6" />
                       <span className="text-xs">Eraser</span>
@@ -261,6 +266,7 @@ export default function WizardDesign() {
                       variant={currentTool === 'measure' ? 'default' : 'outline'}
                       className="w-full h-16 flex flex-col items-center justify-center gap-1"
                       onClick={() => handleToolSelect('measure')}
+                      disabled={tab !== "2d-editor"}
                     >
                       <Ruler className="w-6 h-6" />
                       <span className="text-xs">Measure</span>
@@ -289,6 +295,7 @@ export default function WizardDesign() {
                       variant="outline"
                       className={getAirEntryStyles('window')}
                       onClick={() => handleAirEntrySelect('window')}
+                      disabled={tab !== "2d-editor"}
                     >
                       <div className="w-6 h-6 border-2 border-blue-500 grid grid-cols-2" />
                       <span className="text-xs mt-1">Window</span>
@@ -297,6 +304,7 @@ export default function WizardDesign() {
                       variant="outline"
                       className={getAirEntryStyles('door')}
                       onClick={() => handleAirEntrySelect('door')}
+                      disabled={tab !== "2d-editor"}
                     >
                       <div className="w-6 h-6 border-2 border-amber-500" />
                       <span className="text-xs mt-1">Door</span>
@@ -305,6 +313,7 @@ export default function WizardDesign() {
                       variant="outline"
                       className={getAirEntryStyles('vent')}
                       onClick={() => handleAirEntrySelect('vent')}
+                      disabled={tab !== "2d-editor"}
                     >
                       <div className="w-6 h-6 border-2 border-green-500 grid grid-cols-2 grid-rows-2" />
                       <span className="text-xs mt-1">Vent-Grid</span>
@@ -313,11 +322,11 @@ export default function WizardDesign() {
                 </div>
 
                 <div className="space-y-2">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start" disabled={tab !== "2d-editor"}>
                     <Save className="mr-2 h-4 w-4" />
                     Save Design
                   </Button>
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start" disabled={tab !== "2d-editor"}>
                     <Upload className="mr-2 h-4 w-4" />
                     Load Design
                   </Button>
@@ -350,13 +359,56 @@ export default function WizardDesign() {
           </div>
 
           <div className={tab === "3d-preview" ? "block" : "hidden"}>
-            <div className="h-[600px] border rounded-lg overflow-hidden">
-              <Canvas3D
-                lines={lines}
-                airEntries={airEntries}
-                height={600}
-                instanceId="step1-preview"
-              />
+            <div className="flex gap-6">
+              <div className={cn(
+                "w-48 space-y-6",
+                tab === "2d-editor" ? "opacity-50 pointer-events-none" : ""
+              )}>
+                <div className="space-y-4">
+                  <h3 className="font-semibold">3D Tools</h3>
+                  <div className="grid grid-cols-3 gap-2">
+                    <Button
+                      variant="outline"
+                      className="w-full h-16 flex flex-col items-center justify-center gap-1"
+                      disabled={tab !== "3d-preview"}
+                    >
+                      <div className="w-6 h-6 bg-primary/20 rounded-sm" />
+                      <span className="text-xs">Orbit</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full h-16 flex flex-col items-center justify-center gap-1"
+                      disabled={tab !== "3d-preview"}
+                    >
+                      <div className="w-6 h-6 bg-primary/20 rounded-sm" />
+                      <span className="text-xs">Pan</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full h-16 flex flex-col items-center justify-center gap-1"
+                      disabled={tab !== "3d-preview"}
+                    >
+                      <div className="w-6 h-6 bg-primary/20 rounded-sm" />
+                      <span className="text-xs">Zoom</span>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex-1 border rounded-lg overflow-hidden bg-white">
+                <RoomSketchPro
+                  width={800}
+                  height={600}
+                  instanceId="main-3d-view"
+                  lines={lines}
+                  airEntries={airEntries}
+                  wallTransparency={wallTransparency}
+                  onWallTransparencyChange={(value) => {
+                    console.log('Wall transparency changing to:', value);
+                    setWallTransparency(value);
+                  }}
+                />
+              </div>
             </div>
           </div>
         </CardContent>
@@ -379,7 +431,6 @@ export default function WizardDesign() {
     return (
       <div className="space-y-6">
         <div className="flex gap-6">
-          {/* Left side - Furniture Menu */}
           <FurnitureMenu
             onDragStart={(item) => {
               console.log('Started dragging:', item.name);
@@ -391,7 +442,6 @@ export default function WizardDesign() {
             }}
           />
 
-          {/* Right side - 3D View */}
           <div className="flex-1 h-[600px] border rounded-lg overflow-hidden bg-white">
             <RoomSketchPro
               width={800}
@@ -409,7 +459,6 @@ export default function WizardDesign() {
           </div>
         </div>
 
-        {/* Parameters Card */}
         <Card>
           <CardHeader>
             <CardTitle>Simulation Parameters</CardTitle>
@@ -511,19 +560,16 @@ export default function WizardDesign() {
   );
 
   const isInClosedContour = (point: Point, lines: Line[]): boolean => {
-    // Helper function to check if two points are effectively the same
     const arePointsEqual = (p1: Point, p2: Point): boolean => {
       const dx = p1.x - p2.x;
       const dy = p1.y - p2.y;
-      return Math.sqrt(dx * dx + dy * dy) < 5; // Smaller threshold for more precise detection
+      return Math.sqrt(dx * dx + dy * dy) < 5;
     };
 
-    // Find all lines connected to this point
     const connectedLines = lines.filter(line =>
       arePointsEqual(line.start, point) || arePointsEqual(line.end, point)
     );
 
-    // For each connected line
     for (const startLine of connectedLines) {
       const visited = new Set<string>();
       const pointKey = (p: Point) => `${Math.round(p.x)},${Math.round(p.y)}`;
@@ -536,23 +582,19 @@ export default function WizardDesign() {
         const { point: currentPoint, path } = stack.pop()!;
         const key = pointKey(currentPoint);
 
-        // If we found a path back to the start point and used at least 3 lines
         if (path.length >= 2 && arePointsEqual(currentPoint, point)) {
           console.log('Found closed contour:', path);
           return true;
         }
 
-        // Skip if we've been here before
         if (visited.has(key)) continue;
         visited.add(key);
 
-        // Find all lines connected to current point except the one we came from
         const nextLines = lines.filter(line =>
           !path.includes(line) &&
           (arePointsEqual(line.start, currentPoint) || arePointsEqual(line.end, currentPoint))
         );
 
-        // Add all possible next points to stack
         for (const nextLine of nextLines) {
           const nextPoint = arePointsEqual(nextLine.start, currentPoint) ? nextLine.end : nextLine.start;
           stack.push({
@@ -575,7 +617,7 @@ export default function WizardDesign() {
   const arePointsClose = (p1: Point, p2: Point): boolean => {
     const dx = p1.x - p2.x;
     const dy = p1.y - p2.y;
-    return Math.sqrt(dx * dx + dy * dy) < 15; // Snap distance
+    return Math.sqrt(dx * dx + dy * dy) < 15;
   };
 
   const handleStartSimulation = () => {
