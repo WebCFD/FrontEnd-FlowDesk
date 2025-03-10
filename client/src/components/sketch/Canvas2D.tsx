@@ -1370,6 +1370,60 @@ export default function Canvas2D({
     }
   }, [currentAirEntry, onLineSelect, getCanvasPoint, findLinesNearPoint, calculatePositionAlongWall]);
 
+  const handleDoubleClick = useCallback((e: MouseEvent) => {
+    const clickPoint = getCanvasPoint(e);
+    const airEntryInfo = findAirEntryAtLocation(clickPoint);
+
+    if (airEntryInfo) {
+      setEditingAirEntry({
+        index: airEntryInfo.index,
+        entry: airEntryInfo.entry,
+      });
+    }
+  }, [getCanvasPoint, findAirEntryAtLocation, setEditingAirEntry]);
+
+  const handleZoomInputKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.currentTarget.blur();
+    }
+  }, []);
+
+  const handleAirEntryEdit = useCallback((dimensions: {
+    width: number;
+    height: number;
+    distanceToFloor?: number;
+  }) => {
+    if (!editingAirEntry) return;
+
+    const updatedAirEntries = [...airEntries];
+    updatedAirEntries[editingAirEntry.index] = {
+      ...editingAirEntry.entry,
+      dimensions,
+    };
+
+    onAirEntriesUpdate?.(updatedAirEntries);
+    setEditingAirEntry(null);
+  }, [editingAirEntry, airEntries, onAirEntriesUpdate]);
+
+  const handleNewAirEntryConfirm = useCallback((dimensions: {
+    width: number;
+    height: number;
+    distanceToFloor?: number;
+  }) => {
+    if (!newAirEntryDetails) return;
+
+    const newAirEntry: AirEntry = {
+      type: newAirEntryDetails.type,
+      position: newAirEntryDetails.position,
+      dimensions,
+      line: newAirEntryDetails.line,
+      lineId: newAirEntryDetails.line.id,
+    };
+
+    onAirEntriesUpdate?.([...airEntries, newAirEntry]);
+    setNewAirEntryDetails(null);
+  }, [newAirEntryDetails, airEntries, onAirEntriesUpdate]);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -1767,7 +1821,7 @@ export default function Canvas2D({
     }
 
     if (hoverPoint && !isDrawing && !isPanning) {
-      ctx.font = `${12 / zoom}px sans-serif`;
+      ctx.font = `${12 / zoom}pxsans-serif";
       drawCoordinateLabel(ctx, hoverPoint, "#718096");
       drawCrosshair(ctx, hoverPoint);
     }
@@ -1821,18 +1875,18 @@ export default function Canvas2D({
     handleZoomChange(newZoom);
   };
 
-  const handleZoomInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleZoomInputKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.currentTarget.blur();
     }
-  };
+  }, []);
 
   const fineDragSnap = (point: Point): Point => {
     // Simply return the original point without snapping
     return point;
   };
 
-  const handleDoubleClick = (e: MouseEvent) => {
+  const handleDoubleClick = useCallback((e: MouseEvent) => {
     const clickPoint = getCanvasPoint(e);
     const airEntryInfo = findAirEntryAtLocation(clickPoint);
 
@@ -1842,9 +1896,9 @@ export default function Canvas2D({
         entry: airEntryInfo.entry,
       });
     }
-  };
+  }, [getCanvasPoint, findAirEntryAtLocation, setEditingAirEntry]);
 
-  const handleAirEntryEdit = (dimensions: {
+  const handleAirEntryEdit = useCallback((dimensions: {
     width: number;
     height: number;
     distanceToFloor?: number;
@@ -1859,9 +1913,9 @@ export default function Canvas2D({
 
     onAirEntriesUpdate?.(updatedAirEntries);
     setEditingAirEntry(null);
-  };
+  }, [editingAirEntry, airEntries, onAirEntriesUpdate]);
 
-  const handleNewAirEntryConfirm = (dimensions: {
+  const handleNewAirEntryConfirm = useCallback((dimensions: {
     width: number;
     height: number;
     distanceToFloor?: number;
@@ -1878,7 +1932,7 @@ export default function Canvas2D({
 
     onAirEntriesUpdate?.([...airEntries, newAirEntry]);
     setNewAirEntryDetails(null);
-  };
+  }, [newAirEntryDetails, airEntries, onAirEntriesUpdate]);
 
   const handleContextMenu = (e: Event) => {
     console.log("Context menu prevented");
