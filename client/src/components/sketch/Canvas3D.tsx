@@ -208,8 +208,9 @@ export default function Canvas3D({
 
     // Create air entries (windows, doors, vents)
     floorData.airEntries.forEach((entry) => {
-      const width = entry.dimensions.width * PIXELS_TO_CM;
-      const height = entry.dimensions.height * PIXELS_TO_CM;
+      // Use dimensions directly as they are already in cm
+      const width = entry.dimensions.width;
+      const height = entry.dimensions.height;
       const zPosition = baseHeight + (
         entry.type === "door"
           ? height / 2
