@@ -873,9 +873,9 @@ export default function WizardDesign() {
         />
       ) : (
         <Canvas3D
-          lines={lines}
-          airEntries={airEntries}
-          ceilingHeight={ceilingHeight} // Pass the ceiling height to Canvas3D
+          floors={floors}
+          currentFloor={currentFloor}
+          ceilingHeight={ceilingHeight}
         />
       )}    </div>
   );
