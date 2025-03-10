@@ -260,9 +260,9 @@ export default function WizardDesign() {
                 tab === "2d-editor" ? "opacity-100" : "opacity-50 pointer-events-none"
               )}>
                 <div className="w-48 space-y-6">
-                  <div className="pb-4 border-b border-border">
-                    <h3 className="font-semibold text-lg">2D Tools</h3>
-                    <div className="space-y-4 mt-4">
+                  <div className="border rounded-lg p-4">
+                    <h3 className="font-semibold text-lg mb-4">2D Tools</h3>
+                    <div className="space-y-4">
                       <div className="grid grid-cols-3 gap-2">
                         <Button
                           variant={currentTool === 'wall' ? 'default' : 'outline'}
@@ -337,9 +337,9 @@ export default function WizardDesign() {
                   </div>
 
                   {/* 3D Tools Section */}
-                  <div className="pt-2 border-t border-border">
-                    <h3 className="font-semibold text-lg">3D Tools</h3>
-                    <div className="space-y-2 mt-4">
+                  <div className="border rounded-lg p-4">
+                    <h3 className="font-semibold text-lg mb-4">3D Tools</h3>
+                    <div className="space-y-2">
                       <Button variant="outline" className="w-full justify-start">
                         <Save className="mr-2 h-4 w-4" />
                         Save Design
