@@ -332,41 +332,35 @@ export default function WizardDesign() {
             {/* Right side - View container */}
             <div className="flex-1 border rounded-lg overflow-hidden bg-white h-[690px] flex items-center justify-center">
               {tab === "2d-editor" ? (
-                <div className="w-full h-full flex items-center justify-center bg-gray-50"> {/* Full container for centering */}
-                  <div className="w-[1200px] h-[690px]"> {/* Increased width to fill more horizontal space */}
-                    <Canvas2D
-                      gridSize={gridSize}
-                      currentTool={currentTool}
-                      currentAirEntry={currentAirEntry}
-                      onLineSelect={handleLineSelect}
-                      airEntries={airEntries}
-                      measurements={measurements}
-                      onMeasurementsUpdate={setMeasurements}
-                      lines={lines}
-                      onLinesUpdate={(newLines) => {
-                        setLines(newLines);
-                        const hasClosedContour = newLines.length > 0 &&
-                          newLines.some(line =>
-                            isInClosedContour(line.start, newLines) ||
-                            isInClosedContour(line.end, newLines)
-                          );
-                        setHasClosedContour(hasClosedContour);
-                      }}
-                      onAirEntriesUpdate={setAirEntries}
-                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                    />
-                  </div>
+                <div className="w-[800px] h-[690px]"> {/* Fixed dimensions container */}
+                  <Canvas2D
+                    gridSize={gridSize}
+                    currentTool={currentTool}
+                    currentAirEntry={currentAirEntry}
+                    onLineSelect={handleLineSelect}
+                    airEntries={airEntries}
+                    measurements={measurements}
+                    onMeasurementsUpdate={setMeasurements}
+                    lines={lines}
+                    onLinesUpdate={(newLines) => {
+                      setLines(newLines);
+                      const hasClosedContour = newLines.length > 0 &&
+                        newLines.some(line =>
+                          isInClosedContour(line.start, newLines) ||
+                          isInClosedContour(line.end, newLines)
+                        );
+                      setHasClosedContour(hasClosedContour);
+                    }}
+                    onAirEntriesUpdate={setAirEntries}
+                  />
                 </div>
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gray-50"> {/* Same full container for 3D */}
-                  <div className="w-[1200px] h-[690px]"> {/* Same increased width for 3D view */}
-                    <Canvas3D
-                      lines={lines}
-                      airEntries={airEntries}
-                      height={690}
-                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                    />
-                  </div>
+                <div className="w-[800px] h-[690px]"> {/* Same fixed dimensions for 3D view */}
+                  <Canvas3D
+                    lines={lines}
+                    airEntries={airEntries}
+                    height={690}
+                  />
                 </div>
               )}
             </div>
