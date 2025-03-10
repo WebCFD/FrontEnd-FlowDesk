@@ -1806,9 +1806,9 @@ export default function Canvas2D({
     if (!editingAirEntry) return;
 
     const updatedAirEntries = [...airEntries];
-    updatedAirEntries[editingAirEntry.index] = {
+    updatedAirEntries[index] = {
       ...editingAirEntry.entry,
-      dimensions,
+      dimensions: dimensions, // Store original cm values
     };
 
     onAirEntriesUpdate?.(updatedAirEntries);
@@ -1820,12 +1820,24 @@ export default function Canvas2D({
     height: number;
     distanceToFloor?: number;
   }) => {
-    if (!newAirEntryDetails) return;
+    if (!newAirEntryDetails || !currentAirEntry) return;
+
+    // Convert dimensions from cm to pixels
+    const pixelDimensions = {
+      width: dimensions.width / PIXELS_TO_CM,
+      height: dimensions.height / PIXELS_TO_CM,
+      distanceToFloor: dimensions.distanceToFloor
+        ? dimensions.distanceToFloor / PIXELS_TO_CM
+        : undefined,
+    };
 
     const newAirEntry: AirEntry = {
-      type: newAirEntryDetails.type,
-      position: newAirEntryDetails.position,
-      dimensions,
+      type: currentAirEntry,
+      position: calculatePositionAlongWall(
+        newAirEntryDetails.line,
+        newAirEntryDetails.position,
+      ),
+      dimensions: dimensions, // Store original cm values
       line: newAirEntryDetails.line,
       lineId: newAirEntryDetails.line.id,
     };
