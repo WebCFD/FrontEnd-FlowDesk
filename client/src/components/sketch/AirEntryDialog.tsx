@@ -36,8 +36,7 @@ const windowDefaults = {
 
 const doorDefaults = {
   width: 75,
-  height: 190,
-  distanceToFloor: undefined
+  height: 190
 };
 
 const ventDefaults = {
