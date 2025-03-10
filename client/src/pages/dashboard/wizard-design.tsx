@@ -37,7 +37,7 @@ import { PlusCircle, Play, Mail, FileEdit } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FurnitureMenu } from "@/components/sketch/FurnitureMenu";
 import { ToolbarToggle } from "@/components/sketch/ToolbarToggle";
-import { Checkbox } from "@/components/ui/checkbox";
+// import { Checkbox } from "@/components/ui/checkbox"; //Removed
 
 interface Point {
   x: number;
@@ -93,7 +93,7 @@ export default function WizardDesign() {
   const [isMultifloor, setIsMultifloor] = useState(false);
   const [selectedFloor, setSelectedFloor] = useState("ground");
   const [loadFromFloor, setLoadFromFloor] = useState("ground");
-  const [sandwich, setSandwich] = useState(false);
+  const [floorDeckThickness, setFloorDeckThickness] = useState(20); // Default 20cm
 
   // Use the global room store with updated selectors
   const {
@@ -767,6 +767,27 @@ export default function WizardDesign() {
           </div>
         </div>
 
+        <div>
+          <Label>Floor Deck Thickness</Label>
+          <div className="flex items-center gap-2">
+            <Input
+              type="number"
+              value={floorDeckThickness}
+              min={5}
+              max={100}
+              step={5}
+              onChange={(e) => {
+                const value = parseInt(e.target.value);
+                if (!isNaN(value) && value >= 5 && value <= 100) {
+                  setFloorDeckThickness(value);
+                }
+              }}
+              className="w-24"
+            />
+            <span>cm</span>
+          </div>
+        </div>
+
         <div className="flex items-center space-x-2">
           <Checkbox
             id="multifloor"
@@ -831,15 +852,6 @@ export default function WizardDesign() {
                 </Button>
               </div>
             </div>
-
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="sandwich"
-                checked={sandwich}
-                onCheckedChange={(checked) => setSandwich(checked as boolean)}
-              />
-              <Label htmlFor="sandwich">Sandwich</Label>
-            </div>
           </div>
         )}
       </div>
@@ -861,7 +873,7 @@ export default function WizardDesign() {
           isMultifloor={isMultifloor}
           onLinesUpdate={(newLines) => {
             setLines(newLines);
-            const hasClosedContour = newLines.length > 0 &&
+            const hasClosedContour = newLines.length> 0 &&
               newLines.some(line =>
                 isInClosedContour(line.start, newLines) ||
                 isInClosedContour(line.end, newLines)
