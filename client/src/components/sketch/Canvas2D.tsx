@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Point, Line, AirEntry } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -1304,6 +1304,32 @@ export default function Canvas2D({
     return null;
   };
 
+  const handleClick = (e: MouseEvent) => {
+    const point = getCanvasPoint(e);
+    console.log('Click detected:', { point, currentAirEntry });
+
+    // If we have an air entry tool selected
+    if (currentAirEntry) {
+      console.log('Air entry tool active:', currentAirEntry);
+      // Find any nearby lines
+      const nearbyLines = findLinesNearPoint(point);
+      console.log('Nearby lines:', nearbyLines);
+
+      if (nearbyLines.length > 0) {
+        // Get the closest line
+        const closestLine = nearbyLines[0];
+        // Get position along the wall
+        const wallPosition = calculatePositionAlongWall(closestLine, point);
+        console.log('Wall position calculated:', wallPosition);
+        // Call the onLineSelect callback
+        if (onLineSelect) {
+          console.log('Calling onLineSelect');
+          onLineSelect(closestLine, wallPosition);
+        }
+      }
+    }
+  };
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -1795,7 +1821,7 @@ export default function Canvas2D({
 
       if (currentTool === "measure") {
         // Ruler icon matching the Lucide Ruler component
-        return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%2300000\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 00 1 0 3.4l-2.6-2.6a2.41 2.41 0 0 1 3.4 0ZZ\"/><path d=\"m14.5 12.5 2-2\"/><path d=\"m11.5 9.5 2-2\"/><path d=\"m8.5 6.5 2-2\"/><path d=\"m17.5 15.5 2-2\"/></svg>') 5 15, auto";
+        return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%2300000\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z\"/><path d=\"m14.5 12.5 2-2\"/><path d=\"m11.5 9.5 2-2\"/><path d=\"m8.5 6.5 2-2\"/><path d=\"m17.5 15.5 2-2\"/></svg>') 5 15, auto";
       }
 
       // 3. Check for Air Entry element placement modes
@@ -1829,27 +1855,12 @@ export default function Canvas2D({
     canvas.addEventListener("wheel", handleRegularWheel);
     canvas.addEventListener("dblclick", handleDoubleClick);
     canvas.addEventListener("contextmenu", handleContextMenu);
-
-    // Add air entry click handler
-    const handleAirEntryClick = (e: MouseEvent) => {
-      if (!currentAirEntry) return;
-
-      const point = getCanvasPoint(e);
-      const nearbyLines = findLinesNearPoint(point);
-
-      if (nearbyLines.length > 0) {
-        const closestLine = nearbyLines[0];
-        const wallPosition = calculatePositionAlongWall(closestLine, point);
-        onLineSelect?.(closestLine, wallPosition);
-      }
-    };
-
-    canvas.addEventListener("click", handleAirEntryClick);
+    canvas.addEventListener("click", handleClick);
 
     // Start animation loop
-    const animationFrameId = requestAnimationFrame(function animate() {
+    let animationFrameId = requestAnimationFrame(function animate() {
       draw();
-      requestAnimationFrame(animate);
+      animationFrameId = requestAnimationFrame(animate);
     });
 
     // Cleanup
@@ -1860,7 +1871,7 @@ export default function Canvas2D({
       canvas.removeEventListener("wheel", handleRegularWheel);
       canvas.removeEventListener("dblclick", handleDoubleClick);
       canvas.removeEventListener("contextmenu", handleContextMenu);
-      canvas.removeEventListener("click", handleAirEntryClick);
+      canvas.removeEventListener("click", handleClick);
       cancelAnimationFrame(animationFrameId);
     };
   }, [
@@ -1890,11 +1901,8 @@ export default function Canvas2D({
         ref={canvasRef}
         width={dimensions.width}
         height={dimensions.height}
-        style={{
-          cursor: getCursor(),
-          width: "100%",
-          height: "100%",
-        }}
+        className="w-full h-full"
+        style={{ cursor: getCursor() }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -1906,7 +1914,7 @@ export default function Canvas2D({
           isOpen={true}
           onClose={() => setEditingAirEntry(null)}
           onConfirm={handleAirEntryEdit}
-          initialDimensions={editingAirEntry.entry.dimensions}
+          dimensions={editingAirEntry.entry.dimensions}
         />
       )}
       {floorText && (
