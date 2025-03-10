@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Minus, Plus, Move, Eraser, Ruler } from "lucide-react";
 import AirEntryDialog from "./AirEntryDialog";
+import { cn } from "@/lib/utils";
 
 interface Measurement {
   start: Point;
@@ -253,6 +254,7 @@ export default function Canvas2D({
   const [panMode, setPanMode] = useState(false);
   const [cursorPoint, setCursorPoint] = useState<Point | null>(null);
   const [zoomInput, setZoomInput] = useState("100");
+  const [floorText, setFloorText] = useState("Second floor");
   const [hoveredGridPoint, setHoveredGridPoint] = useState<Point | null>(null);
   const [hoverPoint, setHoverPoint] = useState<Point | null>(null);
   const [isDraggingEndpoint, setIsDraggingEndpoint] = useState(false);
@@ -865,7 +867,7 @@ export default function Canvas2D({
           });
         } else if (measurementInfo) {
           setHighlightState({
-                        lines: [],
+            lines: [],
             airEntry: null,
             measurement: {
               index: measurementInfo.index,
@@ -1020,7 +1022,6 @@ export default function Canvas2D({
         });
         return;
       }
-
       const pointInfo = findPointAtLocation(clickPoint);
       if (pointInfo) {
         setIsDraggingEndpoint(true);
@@ -1793,7 +1794,7 @@ export default function Canvas2D({
     }
   };
 
-  const handleEditingAirEntryConfirm = (dimensions: {
+  const handleAirEntryEdit = (dimensions: {
     width: number;
     height: number;
     distanceToFloor?: number;
@@ -1884,8 +1885,18 @@ export default function Canvas2D({
         height={dimensions.height}
         className={`w-full h-full`}
         style={{ cursor: getCursor() }}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onContextMenu={(e) => e.preventDefault()}
       />
       <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-white/80 p-2 rounded-lg shadow-sm">
+        <Input
+          value={floorText}
+          onChange={(e) => setFloorText(e.target.value)}
+          className="w-32 h-8 text-center text-sm"
+        />
+        <div className="w-px h-6 bg-border mx-2" />
         <Button
           variant="outline"
           size="icon"
@@ -1924,24 +1935,13 @@ export default function Canvas2D({
           <Move className="h-4 w-4" />
         </Button>
       </div>
-
       {editingAirEntry && (
         <AirEntryDialog
           type={editingAirEntry.entry.type}
           isOpen={true}
           onClose={() => setEditingAirEntry(null)}
-          onConfirm={handleEditingAirEntryConfirm}
-          isEditing={true}
-          initialValues={editingAirEntry.entry.dimensions}
-        />
-      )}
-      {newAirEntryDetails && (
-        <AirEntryDialog
-          type={newAirEntryDetails.type}
-          isOpen={true}
-          onClose={() => setNewAirEntryDetails(null)}
-          onConfirm={handleNewAirEntryConfirm}
-          isEditing={false}
+          onConfirm={(dimensions) => handleAirEntryEdit(dimensions)}
+          initialDimensions={editingAirEntry.entry.dimensions}
         />
       )}
     </div>
