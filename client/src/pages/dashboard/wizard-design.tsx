@@ -62,6 +62,17 @@ const formatFloorText = (floor: string): string => {
   return `${capitalizedFloor} Floor`;
 };
 
+const getNextFloorName = (currentFloor: string): string => {
+  const floorMap: Record<string, string> = {
+    'ground': 'first',
+    'first': 'second',
+    'second': 'third',
+    'third': 'fourth',
+    'fourth': 'fifth'
+  };
+  return floorMap[currentFloor] || 'ground';
+};
+
 export default function WizardDesign() {
   const [, setLocation] = useLocation();
   const { user, setReturnTo } = useAuth();
@@ -122,6 +133,10 @@ export default function WizardDesign() {
 
   // Handle floor selection change
   const handleFloorChange = (floorName: string) => {
+    if (!floors[floorName]) {
+      // Initialize the new floor with an empty state
+      addFloor(floorName);
+    }
     setCurrentFloor(floorName);
     setSelectedFloor(floorName);
   };
@@ -770,11 +785,24 @@ export default function WizardDesign() {
                   <SelectValue placeholder="Select floor" />
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.keys(floors).map((floorName) => (
-                    <SelectItem key={floorName} value={floorName}>
-                      {formatFloorText(floorName)}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="ground">{formatFloorText('ground')}</SelectItem>
+                  {floors.ground.hasClosedContour && (
+                    <>
+                      <SelectItem value="first">{formatFloorText('first')}</SelectItem>
+                      {floors.first?.hasClosedContour && (
+                        <SelectItem value="second">{formatFloorText('second')}</SelectItem>
+                      )}
+                      {floors.second?.hasClosedContour && (
+                        <SelectItem value="third">{formatFloorText('third')}</SelectItem>
+                      )}
+                      {floors.third?.hasClosedContour && (
+                        <SelectItem value="fourth">{formatFloorText('fourth')}</SelectItem>
+                      )}
+                      {floors.fourth?.hasClosedContour && (
+                        <SelectItem value="fifth">{formatFloorText('fifth')}</SelectItem>
+                      )}
+                    </>
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -787,15 +815,15 @@ export default function WizardDesign() {
                     <SelectValue placeholder="Select floor to load from" />
                   </SelectTrigger>
                   <SelectContent>
-                    {Object.keys(floors).map((floorName) => (
+                    {Object.entries(floors).map(([floorName, floor]) => (
                       <SelectItem key={floorName} value={floorName}>
                         {formatFloorText(floorName)}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={handleLoadTemplate}
                 >
