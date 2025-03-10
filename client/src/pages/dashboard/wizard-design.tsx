@@ -57,6 +57,11 @@ const calculateNormal = (line: Line | null): { x: number; y: number } => {
   return { x: -dy / mag, y: dx / mag };
 };
 
+const formatFloorText = (floor: string): string => {
+  const capitalizedFloor = floor.charAt(0).toUpperCase() + floor.slice(1);
+  return `${capitalizedFloor} Floor`;
+};
+
 export default function WizardDesign() {
   const [, setLocation] = useLocation();
   const { user, setReturnTo } = useAuth();
@@ -492,6 +497,7 @@ export default function WizardDesign() {
                   measurements={measurements}
                   onMeasurementsUpdate={setMeasurements}
                   lines={lines}
+                  floorText={formatFloorText(selectedFloor)}
                   onLinesUpdate={(newLines) => {
                     setLines(newLines);
                     const hasClosedContour = newLines.length > 0 &&

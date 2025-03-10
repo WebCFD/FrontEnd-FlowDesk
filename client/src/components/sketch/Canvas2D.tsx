@@ -226,6 +226,7 @@ interface Canvas2DProps {
   airEntries: AirEntry[];
   lines: Line[];
   measurements: Measurement[];
+  floorText: string; // Add new prop
   onLinesUpdate?: (lines: Line[]) => void;
   onAirEntriesUpdate?: (airEntries: AirEntry[]) => void;
   onMeasurementsUpdate?: (measurements: Measurement[]) => void;
@@ -238,6 +239,7 @@ export default function Canvas2D({
   airEntries = [],
   lines = [],
   measurements = [],
+  floorText,
   onLinesUpdate,
   onAirEntriesUpdate,
   onMeasurementsUpdate,
@@ -254,7 +256,6 @@ export default function Canvas2D({
   const [panMode, setPanMode] = useState(false);
   const [cursorPoint, setCursorPoint] = useState<Point | null>(null);
   const [zoomInput, setZoomInput] = useState("100");
-  const [floorText, setFloorText] = useState("Second floor");
   const [hoveredGridPoint, setHoveredGridPoint] = useState<Point | null>(null);
   const [hoverPoint, setHoverPoint] = useState<Point | null>(null);
   const [isDraggingEndpoint, setIsDraggingEndpoint] = useState(false);
@@ -1848,7 +1849,7 @@ export default function Canvas2D({
 
     // 2. Check for specific tools and return custom SVG cursors matching Lucide icons
     if (currentTool === "eraser") {
-      // Eraser icon matching the Lucide Eraser component
+      // Eraser icon matching the LucideEraser component
       return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000000\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L15 19\"/><path d=\"M22 21H7\"/><path d=\"m5 11 9 9\"/></svg>') 5 15, auto";
     }
 
@@ -1878,7 +1879,7 @@ export default function Canvas2D({
   };
 
   return (
-    <div ref={containerRef} className="relative w-full h-full">
+    <div className="relative w-full h-full bg-background">
       <canvas
         ref={canvasRef}
         width={dimensions.width}
@@ -1893,8 +1894,8 @@ export default function Canvas2D({
       <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-white/80 p-2 rounded-lg shadow-sm">
         <Input
           value={floorText}
-          onChange={(e) => setFloorText(e.target.value)}
-          className="w-32 h-8 text-center text-sm"
+          readOnly
+          className="w-32 h-8 text-center text-sm bg-muted cursor-default"
         />
         <div className="w-px h-6 bg-border mx-2" />
         <Button
