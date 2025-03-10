@@ -698,6 +698,19 @@ export default function Canvas2D({
     );
     ctx.stroke();
 
+    // Add a circle at the center point
+    ctx.beginPath();
+    ctx.arc(
+      entry.position.x,
+      entry.position.y,
+      POINT_RADIUS / zoom, // Use the same radius as connection points
+      0,
+      Math.PI * 2,
+    );
+    // Fill the circle with the same color
+    ctx.fillStyle = color;
+    ctx.fill();
+
     // Add a "double-click to edit" tooltip when hovered
     if (isHovered) {
       ctx.font = `${12 / zoom}px Arial`;
@@ -1070,7 +1083,10 @@ export default function Canvas2D({
         setCursorPoint(startPoint);
       } else if (currentTool === "eraser") {
         const airEntryInfo = findAirEntryAtLocation(clickPoint);
-        const measurementInfo = findMeasurementAtPoint(clickPoint, measurements);
+        const measurementInfo = findMeasurementAtPoint(
+          clickPoint,
+          measurements,
+        );
 
         if (airEntryInfo) {
           const newAirEntries = airEntries.filter(
@@ -1273,7 +1289,9 @@ export default function Canvas2D({
         measurement.start,
         measurement.end,
       );
-      if (distance < HOVER_DISTANCE) {
+      // Use a slightly larger detection distance to match other erasable elements
+      // and account for zoom level
+      if (distance < HOVER_DISTANCE / zoom) {
         return { index: i, measurement };
       }
     }
@@ -1304,6 +1322,7 @@ export default function Canvas2D({
       ctx: CanvasRenderingContext2D,
       start: Point,
       end: Point,
+      isHighlighted: boolean = false,
     ) => {
       const dx = end.x - start.x;
       const dy = end.y - start.y;
@@ -1312,7 +1331,10 @@ export default function Canvas2D({
 
       // Draw arrow line
       ctx.save();
-      ctx.strokeStyle = "rgba(75, 85, 99, 0.6)"; // Light gray with some transparency
+      // Use red highlight color when highlighted with eraser
+      ctx.strokeStyle = isHighlighted
+        ? "rgba(239, 68, 68, 0.6)" // Red color for deletion highlight
+        : "rgba(75, 85, 99, 0.6)"; // Normal light gray with transparency
       ctx.lineWidth = 2 / zoom;
       ctx.setLineDash([5, 5]); // Dashed line
 
@@ -1404,7 +1426,10 @@ export default function Canvas2D({
       ctx.restore();
     };
 
-    const drawWallMeasurements = (ctx: CanvasRenderingContext2D, line: Line) => {
+    const drawWallMeasurements = (
+      ctx: CanvasRenderingContext2D,
+      line: Line,
+    ) => {
       const dx = line.end.x - line.start.x;
       const dy = line.end.y - line.start.y;
       const length = Math.sqrt(dx * dx + dy * dy);
@@ -1417,15 +1442,15 @@ export default function Canvas2D({
       // Offset the label slightly above the line
       const offset = 15 / zoom;
       const angle = Math.atan2(dy, dx);
-      const labelX = midX - (offset * Math.sin(angle));
-      const labelY = midY + (offset * Math.cos(angle));
+      const labelX = midX - offset * Math.sin(angle);
+      const labelY = midY + offset * Math.cos(angle);
 
       // Draw the measurement
       ctx.save();
       ctx.font = `${12 / zoom}px Arial`;
-      ctx.fillStyle = '#6b7280'; // Gray color
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
+      ctx.fillStyle = "#6b7280"; // Gray color
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
 
       // Rotate the text to align with the wall
       ctx.translate(labelX, labelY);
@@ -1540,44 +1565,45 @@ export default function Canvas2D({
         const drawnPoints = new Set<string>();
 
         lines.forEach((line) => {
-          [{ point: line.start, isStart: true }, { point: line.end, isStart: false }].forEach(
-            ({ point, isStart }) => {
-              const key = `${Math.round(point.x)},${Math.round(point.y)}`;
-              if (!drawnPoints.has(key)) {
-                drawnPoints.add(key);
+          [
+            { point: line.start, isStart: true },
+            { point: line.end, isStart: false },
+          ].forEach(({ point, isStart }) => {
+            const key = `${Math.round(point.x)},${Math.round(point.y)}`;
+            if (!drawnPoints.has(key)) {
+              drawnPoints.add(key);
 
-                const isHovered =
-                  hoveredEndpoint?.point &&
-                  arePointsNearlyEqual(hoveredEndpoint.point, point);
+              const isHovered =
+                hoveredEndpoint?.point &&
+                arePointsNearlyEqual(hoveredEndpoint.point, point);
 
-                ctx.beginPath();
-                ctx.arc(
+              ctx.beginPath();
+              ctx.arc(
+                point.x,
+                point.y,
+                isHovered ? (POINT_RADIUS * 1.5) / zoom : POINT_RADIUS / zoom,
+                0,
+                Math.PI * 2,
+              );
+
+              if (isHovered) {
+                ctx.fillStyle = "#fbbf24"; // Amber color for hover
+                // Add tooltip
+                ctx.font = `${12 / zoom}px Arial`;
+                ctx.fillStyle = "#000000";
+                ctx.textAlign = "center";
+                ctx.fillText(
+                  "Right-click to drag",
                   point.x,
-                  point.y,
-                  isHovered ? (POINT_RADIUS * 1.5) / zoom : POINT_RADIUS / zoom,
-                  0,
-                  Math.PI * 2,
+                  point.y - 15 / zoom,
                 );
-
-                if (isHovered) {
-                  ctx.fillStyle = "#fbbf24"; // Amber color for hover
-                  // Add tooltip
-                  ctx.font = `${12 / zoom}px Arial`;
-                  ctx.fillStyle = "#000000";
-                  ctx.textAlign = "center";
-                  ctx.fillText(
-                    "Right-click to drag",
-                    point.x,
-                    point.y - 15 / zoom,
-                  );
-                } else {
-                  ctx.fillStyle = "#3b82f6"; // Blue color
-                }
-
-                ctx.fill();
+              } else {
+                ctx.fillStyle = "#3b82f6"; // Blue color
               }
-            },
-          );
+
+              ctx.fill();
+            }
+          });
         });
       };
 
@@ -1646,14 +1672,15 @@ export default function Canvas2D({
         // Draw all saved measurements
         measurements.forEach((measurement, index) => {
           const isHighlighted = highlightState.measurement?.index === index;
-          ctx.save();
-          if (isHighlighted) {
-            ctx.strokeStyle = "rgba(239, 68, 68, 0.6)"; // Red color for deletion highlight
-          }
-          drawMeasurement(ctx, measurement.start, measurement.end);
-          ctx.restore();
+          drawMeasurement(
+            ctx,
+            measurement.start,
+            measurement.end,
+            isHighlighted,
+          );
         });
       };
+
       drawMeasurements(ctx);
 
       // Add wall measurements after drawing lines
@@ -1811,18 +1838,47 @@ export default function Canvas2D({
     e.preventDefault();
   };
 
-  const [currentToolState, setCurrentToolState] = useState<"wall" | "eraser" | "measure" | null>(null);
+  const [currentToolState, setCurrentToolState] = useState<
+    "wall" | "eraser" | "measure" | null
+  >(null);
   const setCurrentTool = (tool: "wall" | "eraser" | "measure" | null) => {
     setCurrentToolState(tool);
   };
 
   const getCursor = (): string => {
-    if (panMode) return "move";
-    if (currentTool === "measure" && isMeasuring) return "crosshair";
-    if (currentTool === "eraser") return "pointer";
+    // 1. Check for panning mode (either button-activated or right-click)
+    if (panMode || isPanning) return "move";
+
+    // 2. Check for specific tools and return custom SVG cursors matching Lucide icons
+    if (currentTool === "eraser") {
+      // Eraser icon matching the Lucide Eraser component
+      return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000000\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L15 19\"/><path d=\"M22 21H7\"/><path d=\"m5 11 9 9\"/></svg>') 5 15, auto";
+    }
+
+    if (currentTool === "measure") {
+      // Ruler icon matching the Lucide Ruler component
+      return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000000\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z\"/><path d=\"m14.5 12.5 2-2\"/><path d=\"m11.5 9.5 2-2\"/><path d=\"m8.5 6.5 2-2\"/><path d=\"m17.5 15.5 2-2\"/></svg>') 5 15, auto";
+    }
+
+    // 3. Check for Air Entry element placement modes
+    if (currentAirEntry === "window") {
+      // Blue rectangle cursor for window placement
+      return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%233b82f6\" stroke-width=\"2\"><rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"2\"/></svg>') 8 8, crosshair";
+    }
+
+    if (currentAirEntry === "door") {
+      // Brown rectangle cursor for door placement
+      return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23b45309\" stroke-width=\"2\"><rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"2\"/></svg>') 8 8, crosshair";
+    }
+
+    if (currentAirEntry === "vent") {
+      // Green rectangle cursor for vent placement
+      return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%2322c55e\" stroke-width=\"2\"><rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"2\"/></svg>') 8 8, crosshair";
+    }
+
+    // 4. Default cursor when no special mode is active
     return "default";
   };
-
 
   return (
     <div ref={containerRef} className="relative w-full h-full">
@@ -1865,7 +1921,7 @@ export default function Canvas2D({
         </Button>
         <div className="w-px h-6 bg-border mx-2" />
         <Button
-          variant={panMode ? "default" :"outline"}
+          variant={panMode ? "default" : "outline"}
           size="icon"
           onClick={togglePanMode}
         >
