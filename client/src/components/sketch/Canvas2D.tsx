@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Point, Line, AirEntry } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -771,8 +771,8 @@ export default function Canvas2D({
         // Create checkerboard pattern
         if ((relativeX + relativeY) % 2 === 0) {
           points.push({
-            x: centerX + x * zoom,
-            y: centerY + y * zoom,
+            x: centerX + x,
+            y: centerY + y,
           });
         }
       }
@@ -781,10 +781,41 @@ export default function Canvas2D({
     return points;
   };
 
-  const visibleGridPoints = useMemo(
-    () => getVisibleGridPoints(),
-    [dimensions, pan, zoom, gridSize],
-  );
+  const visibleGridPoints = useMemo(() => {
+    const points: Point[] = [];
+    const centerX = dimensions.width / 2;
+    const centerY = dimensions.height / 2;
+
+    // Calculate visible area based on current pan and zoom
+    const visibleStartX = -pan.x / zoom - gridSize;
+    const visibleEndX = (-pan.x + dimensions.width) / zoom + gridSize;
+    const visibleStartY = -pan.y / zoom - gridSize;
+    const visibleEndY = (-pan.y + dimensions.height) / zoom + gridSize;
+
+    // Get grid coordinates using regular gridSize
+    const startXGrid = Math.floor((visibleStartX - centerX) / gridSize) * gridSize;
+    const endXGrid = Math.ceil((visibleEndX - centerX) / gridSize) * gridSize;
+    const startYGrid = Math.floor((visibleStartY - centerY) / gridSize) * gridSize;
+    const endYGrid = Math.ceil((visibleEndY - centerY) / gridSize) * gridSize;
+
+    // Generate grid points
+    for (let x = startXGrid; x <= endXGrid; x += gridSize) {
+      for (let y = startYGrid; y <= endYGrid; y += gridSize) {
+        const relativeX = Math.round(x / gridSize);
+        const relativeY = Math.round(y / gridSize);
+
+        // Create checkerboard pattern
+        if ((relativeX + relativeY) % 2 === 0) {
+          points.push({
+            x: centerX + x,
+            y: centerY + y,
+          });
+        }
+      }
+    }
+
+    return points;
+  }, [dimensions, pan, zoom, gridSize]);
 
   const findNearestGridPoint = (point: Point): Point | null => {
     let nearest: Point | null = null;
@@ -815,10 +846,12 @@ export default function Canvas2D({
       { point: line.end, line, isStart: false },
     ]);
 
-    const groupedPoints: Record<
-      string,
-      { point: Point; lines: Line[]; isStart: boolean[] }
-    > = {};
+    // Around line 848, fix the Record type definition
+    const groupedPoints: Record<string, {
+      point: Point;
+      lines: Line[];
+      isStart: boolean[];
+    }> = {};
 
     endpoints.forEach(({ point, line, isStart }) => {
       const key = `${Math.round(point.x)},${Math.round(point.y)}`;
@@ -1304,13 +1337,17 @@ export default function Canvas2D({
     return null;
   };
 
+
+  // Clean up the click handler
   const handleClick = (e: MouseEvent) => {
     const point = getCanvasPoint(e);
-    console.log('Click detected:', { point, currentAirEntry });
+    console.log('Click detected:', { point, currentAirEntry, currentTool });
 
-    // If we have an air entry tool selected
+    // Only handle clicks when we have an air entry tool selected
     if (currentAirEntry) {
+      e.preventDefault(); // Prevent other handlers from interfering
       console.log('Air entry tool active:', currentAirEntry);
+
       // Find any nearby lines
       const nearbyLines = findLinesNearPoint(point);
       console.log('Nearby lines:', nearbyLines);
@@ -1321,9 +1358,13 @@ export default function Canvas2D({
         // Get position along the wall
         const wallPosition = calculatePositionAlongWall(closestLine, point);
         console.log('Wall position calculated:', wallPosition);
+
         // Call the onLineSelect callback
         if (onLineSelect) {
-          console.log('Calling onLineSelect');
+          console.log('Calling onLineSelect with:', {
+            line: closestLine,
+            position: wallPosition
+          });
           onLineSelect(closestLine, wallPosition);
         }
       }
@@ -1334,528 +1375,14 @@ export default function Canvas2D({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const drawCrosshair = (ctx: CanvasRenderingContext2D, point: Point) => {
-      const size = 10 / zoom;
-
-      ctx.beginPath();
-      ctx.strokeStyle = "#718096";
-      ctx.lineWidth = 1 / zoom;
-
-      ctx.moveTo(point.x - size, point.y);
-      ctx.lineTo(point.x + size, point.y);
-
-      ctx.moveTo(point.x, point.y - size);
-      ctx.lineTo(point.x, point.y + size);
-
-      ctx.stroke();
-    };
-
-    const drawMeasurement = (
-      ctx: CanvasRenderingContext2D,
-      start: Point,
-      end: Point,
-      isHighlighted: boolean = false,
-    ) => {
-      const dx = end.x - start.x;
-      const dy = end.y - start.y;
-      const distanceInPixels = Math.sqrt(dx * dx + dy * dy);
-      const distanceInCm = Math.round(pixelsToCm(distanceInPixels));
-
-      // Draw arrow line
-      ctx.save();
-      // Use red highlight color when highlighted with eraser
-      ctx.strokeStyle = isHighlighted
-        ? "rgba(239, 68, 68, 0.6)" // Red color for deletion highlight
-        : "rgba(75, 85, 99, 0.6)"; // Normal light gray with transparency
-      ctx.lineWidth = 2 / zoom;
-      ctx.setLineDash([5, 5]); // Dashed line
-
-      // Draw main line
-      ctx.beginPath();
-      ctx.moveTo(start.x, start.y);
-      ctx.lineTo(end.x, end.y);
-      ctx.stroke();
-
-      // Reset dash settings for arrows
-      ctx.setLineDash([]);
-
-      // Calculate arrow parameters
-      const angle = Math.atan2(dy, dx);
-      const arrowLength = 15 / zoom;
-      const arrowHeadLength = 10 / zoom;
-      const arrowWidth = 6 / zoom;
-
-      // Draw start arrow (pointing outward)
-      ctx.beginPath();
-      // Arrow shaft
-      ctx.moveTo(start.x, start.y);
-      ctx.lineTo(
-        start.x + arrowLength * Math.cos(angle),
-        start.y + arrowLength * Math.sin(angle),
-      );
-      // Arrow head
-      ctx.moveTo(start.x, start.y);
-      ctx.lineTo(
-        start.x +
-          arrowHeadLength * Math.cos(angle) +
-          arrowWidth * Math.sin(angle),
-        start.y +
-          arrowHeadLength * Math.sin(angle) -
-          arrowWidth * Math.cos(angle),
-      );
-      ctx.moveTo(start.x, start.y);
-      ctx.lineTo(
-        start.x +
-          arrowHeadLength * Math.cos(angle) -
-          arrowWidth * Math.sin(angle),
-        start.y +
-          arrowHeadLength * Math.sin(angle) +
-          arrowWidth * Math.cos(angle),
-      );
-      ctx.stroke();
-
-      // Draw end arrow (pointing outward)
-      ctx.beginPath();
-      // Arrow shaft
-      ctx.moveTo(end.x, end.y);
-      ctx.lineTo(
-        end.x - arrowLength * Math.cos(angle),
-        end.y - arrowLength * Math.sin(angle),
-      );
-      // Arrow head
-      ctx.moveTo(end.x, end.y);
-      ctx.lineTo(
-        end.x -
-          arrowHeadLength * Math.cos(angle) +
-          arrowWidth * Math.sin(angle),
-        end.y -
-          arrowHeadLength * Math.sin(angle) -
-          arrowWidth * Math.cos(angle),
-      );
-      ctx.moveTo(end.x, end.y);
-      ctx.lineTo(
-        end.x -
-          arrowHeadLength * Math.cos(angle) -
-          arrowWidth * Math.sin(angle),
-        end.y -
-          arrowHeadLength * Math.sin(angle) +
-          arrowWidth * Math.cos(angle),
-      );
-      ctx.stroke();
-
-      // Draw measurement label
-      const midPoint = {
-        x: (start.x + end.x) / 2,
-        y: (start.y + end.y) / 2,
-      };
-
-      ctx.font = `${14 / zoom}px Arial`;
-      ctx.fillStyle = "rgba(75, 85, 99, 0.8)";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "bottom";
-      ctx.fillText(`${distanceInCm} cm`, midPoint.x, midPoint.y - 5 / zoom);
-
-      ctx.restore();
-    };
-
-    const drawWallMeasurements = (
-      ctx: CanvasRenderingContext2D,
-      line: Line,
-    ) => {
-      const dx = line.end.x - line.start.x;
-      const dy = line.end.y - line.start.y;
-      const length = Math.sqrt(dx * dx + dy * dy);
-      const lengthInCm = Math.round(pixelsToCm(length));
-
-      // Calculate midpoint of the line
-      const midX = (line.start.x + line.end.x) / 2;
-      const midY = (line.start.y + line.end.y) / 2;
-
-      // Offset the label slightly above the line
-      const offset = 15 / zoom;
-      const angle = Math.atan2(dy, dx);
-      const labelX = midX - offset * Math.sin(angle);
-      const labelY = midY + offset * Math.cos(angle);
-
-      // Draw the measurement
-      ctx.save();
-      ctx.font = `${12 / zoom}px Arial`;
-      ctx.fillStyle = "#6b7280"; // Gray color
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-
-      // Rotate the text to align with the wall
-      ctx.translate(labelX, labelY);
-      if (dx < 0) {
-        ctx.rotate(angle + Math.PI);
-      } else {
-        ctx.rotate(angle);
-      }
-      ctx.fillText(`${lengthInCm} cm`, 0, 0);
-      ctx.restore();
-    };
-
-    const draw = () => {
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-
-      // Clear canvas and set up coordinate system
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.save();
-      ctx.translate(pan.x, pan.y);
-      ctx.scale(zoom, zoom);
-
-      // Draw grid lines with consistent line width
-      ctx.beginPath();
-      ctx.strokeStyle = "#e5e7eb";
-      ctx.lineWidth = 1 / zoom; // Match wall line scaling
-
-      const centerX = dimensions.width / 2;
-      const centerY = dimensions.height / 2;
-
-      // Calculate visible area based on current pan and zoom
-      const visibleStartX = -pan.x / zoom - gridSize;
-      const visibleEndX = (-pan.x + dimensions.width) / zoom + gridSize;
-      const visibleStartY = -pan.y / zoom - gridSize;
-      const visibleEndY = (-pan.y + dimensions.height) / zoom + gridSize;
-
-      // Calculate grid starting points
-      const startXGrid = Math.floor((visibleStartX - centerX) / gridSize) * gridSize;
-      const endXGrid = Math.ceil((visibleEndX - centerX) / gridSize) * gridSize;
-      const startYGrid = Math.floor((visibleStartY - centerY) / gridSize) * gridSize;
-      const endYGrid = Math.ceil((visibleEndY - centerY) / gridSize) * gridSize;
-
-      // Draw vertical grid lines
-      for (let x = startXGrid; x <= endXGrid; x += gridSize) {
-        ctx.moveTo(centerX + x, centerY + startYGrid);
-        ctx.lineTo(centerX + x, centerY + endYGrid);
-      }
-
-      // Draw horizontal grid lines
-      for (let y = startYGrid; y <= endYGrid; y += gridSize) {
-        ctx.moveTo(centerX + startXGrid, centerY + y);
-        ctx.lineTo(centerX + endXGrid, centerY + y);
-      }
-      ctx.stroke();
-
-      // Draw coordinate system
-      const coordSystem = createCoordinateSystem();
-      coordSystem.forEach((line, index) => {
-        ctx.beginPath();
-        ctx.strokeStyle = index < 3 ? "#ef4444" : "#22c55e";
-        ctx.lineWidth = 2 / zoom; // Match wall line width
-        ctx.moveTo(line.start.x, line.start.y);
-        ctx.lineTo(line.end.x, line.end.y);
-        ctx.stroke();
-      });
-
-      // Draw wall lines
-      lines.forEach((line) => {
-        ctx.strokeStyle = highlightState.lines.includes(line)
-          ? getHighlightColor()
-          : "#000000";
-        ctx.lineWidth = 2 / zoom; // Keep consistent wall line width
-        ctx.beginPath();
-        ctx.moveTo(line.start.x, line.start.y);
-        ctx.lineTo(line.end.x, line.end.y);
-        ctx.stroke();
-      });
-
-      ctx.font = `${12 / zoom}px sans-serif`;
-      ctx.fillStyle = "#64748b";
-      lines.forEach((line) => {
-        const midX = (line.start.x + line.end.x) / 2;
-        const midY = (line.start.y + line.end.y) / 2;
-        const length = Math.round(getLineLength(line));
-        drawWallMeasurements(ctx, line);
-      });
-
-      if (currentLine) {
-        ctx.beginPath();
-        ctx.strokeStyle = "#00000";
-        ctx.lineWidth = 2 / zoom;
-        ctx.moveTo(currentLine.start.x, currentLine.start.y);
-        ctx.lineTo(currentLine.end.x, currentLine.end.y);
-        ctx.stroke();
-
-        const length = Math.round(getLineLength(currentLine));
-        const midX = (currentLine.start.x + currentLine.end.x) / 2;
-        const midY = (currentLine.start.y + currentLine.end.y) / 2;
-        drawWallMeasurements(ctx, currentLine);
-      }
-
-      airEntries.forEach((entry, index) => {
-        drawAirEntry(ctx, entry, index);
-      });
-
-      const drawEndpoints = () => {
-        const drawnPoints = new Set<string>();
-
-        lines.forEach((line) => {
-          [{ point: line.start, isStart: true }, { point: line.end, isStart: false }].forEach(
-            ({ point, isStart }) => {
-              const key = `${Math.round(point.x)},${Math.round(point.y)}`;
-              if (!drawnPoints.has(key)) {
-                drawnPoints.add(key);
-
-                const isHovered =
-                  hoveredEndpoint?.point &&
-                  arePointsNearlyEqual(hoveredEndpoint.point, point);
-
-                ctx.beginPath();
-                ctx.arc(
-                  point.x,
-                  point.y,
-                  isHovered ? (POINT_RADIUS * 1.5) / zoom : POINT_RADIUS / zoom,
-                  0,
-                  Math.PI * 2,
-                );
-
-                if (isHovered) {
-                  ctx.fillStyle = "#fbbf24"; // Amber color for hover
-                  // Add tooltip
-                  ctx.font = `${12 / zoom}px Arial`;
-                  ctx.fillStyle = "#000000";
-                  ctx.textAlign = "center";
-                  ctx.fillText(
-                    "Right-click to drag",
-                    point.x,
-                    point.y - 15 / zoom,
-                  );
-                } else {
-                  ctx.fillStyle = "#3b82f6"; // Blue color
-                }
-
-                ctx.fill();
-              }
-            },
-          );
-        });
-      };
-
-      drawEndpoints();
-
-      const endpoints = [
-        ...new Set(lines.flatMap((line) => [line.start, line.end])),
-      ];
-      const endpointColorMap: Record<string, Point[]> = {
-        "#fb923c": [],
-        "#3b82f6": [],
-        "#22c55e": [],
-      };
-
-      endpoints.forEach((point) => {
-        const connections = findConnectedLines(point).length;
-        let color = "#fb923c";
-
-        if (connections > 1) {
-          if (isInClosedContour(point, lines)) {
-            color = "#22c55e";
-          } else {
-            color = "#3b82f6";
-          }
-        }
-
-        if (color in endpointColorMap) {
-          endpointColorMap[color].push(point);
-        }
-      });
-
-      Object.entries(endpointColorMap).forEach(([color, points]) => {
-        ctx.fillStyle = color;
-        ctx.beginPath();
-
-        points.forEach((point) => {
-          ctx.moveTo(point.x, point.y);
-          ctx.arc(point.x, point.y, POINT_RADIUS / zoom, 0, 2 * Math.PI);
-        });
-
-        ctx.fill();
-
-        ctx.font = `${12 / zoom}px sans-serif`;
-        points.forEach((point) => {
-          drawCoordinateLabel(ctx, point, color);
-        });
-      });
-
-      if (cursorPoint && isDrawing) {
-        ctx.font = `${12 / zoom}px sans-serif`;
-        drawCoordinateLabel(ctx, cursorPoint, "#fb923c");
-      }
-
-      if (hoverPoint && !isDrawing && !isPanning) {
-        ctx.font = `${12 / zoom}px sans-serif`;
-        drawCoordinateLabel(ctx, hoverPoint, "#718096");
-        drawCrosshair(ctx, hoverPoint);
-      }
-
-      const drawMeasurements = (ctx: CanvasRenderingContext2D) => {
-        // Draw current measurement if in measure mode
-        if (currentTool === "measure" && measureStart && measureEnd) {
-          drawMeasurement(ctx, measureStart, measureEnd);
-        }
-
-        // Draw all saved measurements
-        measurements.forEach((measurement, index) => {
-          const isHighlighted = highlightState.measurement?.index === index;
-          drawMeasurement(
-            ctx,
-            measurement.start,
-            measurement.end,
-            isHighlighted,
-          );
-        });
-      };
-
-      drawMeasurements(ctx);
-
-      // Add wall measurements after drawing lines
-      lines.forEach((line) => {
-        drawWallMeasurements(ctx, line);
-      });
-
-      ctx.restore();
-    };
-
-    const animate = () => {
-      draw();
-      requestAnimationFrame(animate);
-    };
-
-
-    const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value.replace(/[^0-9]/g, "");
-      setZoomInput(value);
-    };
-
-    const handleZoomInputBlur = () => {
-      let newZoom = parseInt(zoomInput) / 100;
-      if (isNaN(newZoom)) {
-        newZoom = zoom;
-      } else {
-        newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newZoom));
-      }
-      handleZoomChange(newZoom);
-    };
-
-    const handleZoomInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === "Enter") {
-        e.currentTarget.blur();
-      }
-    };
-
-    const fineDragSnap = (point: Point): Point => {
-      // Simply return the original point without snapping
-      return point;
-    };
-
-    const handleDoubleClick = (e: MouseEvent) => {
-      const clickPoint = getCanvasPoint(e);
-      const airEntryInfo = findAirEntryAtLocation(clickPoint);
-
-      if (airEntryInfo) {
-        setEditingAirEntry({
-          index: airEntryInfo.index,
-          entry: airEntryInfo.entry,
-        });
-      }
-    };
-
-    const handleAirEntryEdit = (dimensions: {
-      width: number;
-      height: number;
-      distanceToFloor?: number;
-    }) => {
-      if (!editingAirEntry) return;
-
-      const updatedAirEntries = [...airEntries];
-      updatedAirEntries[editingAirEntry.index] = {
-        ...editingAirEntry.entry,
-        dimensions,
-      };
-
-      onAirEntriesUpdate?.(updatedAirEntries);
-      setEditingAirEntry(null);
-    };
-
-    const handleNewAirEntryConfirm = (dimensions: {
-      width: number;
-      height: number;
-      distanceToFloor?: number;
-    }) => {
-      if (!newAirEntryDetails) return;
-
-      const newAirEntry: AirEntry = {
-        type: newAirEntryDetails.type,
-        position: newAirEntryDetails.position,
-        dimensions,
-        line: newAirEntryDetails.line,
-        lineId: newAirEntryDetails.line.id,
-      };
-
-      onAirEntriesUpdate?.([...airEntries, newAirEntry]);
-      setNewAirEntryDetails(null);
-    };
-
-    const handleContextMenu = (e: Event) => {
-      console.log("Context menu prevented");
-      e.preventDefault();
-    };
-
-    const [currentToolState, setCurrentToolState] = useState<
-      "wall" | "eraser" | "measure" | null
-    >(null);
-    const setCurrentTool = (tool: "wall" | "eraser" | "measure" | null) => {
-      setCurrentToolState(tool);
-    };
-
-    const getCursor = (): string => {
-      // 1. Check for panning mode (either button-activated or right-click)
-      if (panMode || isPanning) return "move";
-
-      // 2.Check for specific tools and return custom SVG cursors matching Lucide icons
-      if (currentTool === "eraser") {
-        // Eraser icon matching the LucideEraser component
-        return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000000\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L15 19\"/><path d=\"M22 21H7\"/><path d=\"m5 11 9 9\"/></svg>') 5 15, auto";
-      }
-
-      if (currentTool ==="measure") {
-        // Ruler icon matching the Lucide Ruler component
-        return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%2300000\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z\"/><path d=\"m14.5 12.5 2-2\"/><path d=\"m11.5 9.5 2-2\"/><path d=\"m8.5 6.5 2-2\"/><path d=\"m17.5 15.5 2-2\"/></svg>') 5 15, auto";
-      }
-
-      // 3. Check for Air Entry element placement modes
-      if (currentAirEntry === "window") {
-        // Blue rectangle cursor for window placement
-        return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%233b82f6\" stroke-width=\"2\"><rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"2\"/></svg>') 8 8, crosshair";
-      }
-
-      if (currentAirEntry === "door") {
-        // Brown rectangle cursor for door placement
-        return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23b45309\" stroke-width=\"2\"><rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"2\"/></svg>') 8 8, crosshair";
-      }
-
-      if (currentAirEntry === "vent") {
-        // Green rectangle cursor for vent placement
-        return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%2322c55e\" stroke-width=\"2\"><rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"2\"/></svg>') 8 8, crosshair";
-      }
-
-      // 4. Default cursor when no special mode is active
-      return "default";
-    };
-
-    const onMeasurementsUpdate = (measurements: Measurement[]) => {
-      //Update the measurements state.
-    };
-
-    // Add canvas event listeners
+    canvas.addEventListener("click", handleClick);
     canvas.addEventListener("mousedown", handleMouseDown);
     canvas.addEventListener("mousemove", throttleMouseMove);
     canvas.addEventListener("mouseup", handleMouseUp);
+    canvas.addEventListener("mouseleave", handleMouseLeave);
     canvas.addEventListener("wheel", handleRegularWheel);
     canvas.addEventListener("dblclick", handleDoubleClick);
     canvas.addEventListener("contextmenu", handleContextMenu);
-    canvas.addEventListener("click", handleClick);
 
     // Start animation loop
     let animationFrameId = requestAnimationFrame(function animate() {
@@ -1865,13 +1392,14 @@ export default function Canvas2D({
 
     // Cleanup
     return () => {
+      canvas.removeEventListener("click", handleClick);
       canvas.removeEventListener("mousedown", handleMouseDown);
       canvas.removeEventListener("mousemove", throttleMouseMove);
       canvas.removeEventListener("mouseup", handleMouseUp);
+      canvas.removeEventListener("mouseleave", handleMouseLeave);
       canvas.removeEventListener("wheel", handleRegularWheel);
       canvas.removeEventListener("dblclick", handleDoubleClick);
       canvas.removeEventListener("contextmenu", handleContextMenu);
-      canvas.removeEventListener("click", handleClick);
       cancelAnimationFrame(animationFrameId);
     };
   }, [
@@ -1893,7 +1421,524 @@ export default function Canvas2D({
     measurements,
     isMultifloor,
     onLineSelect,
+    handleClick
   ]);
+
+  const drawCrosshair = (ctx: CanvasRenderingContext2D, point: Point) => {
+    const size = 10 / zoom;
+
+    ctx.beginPath();
+    ctx.strokeStyle = "#718096";
+    ctx.lineWidth = 1 / zoom;
+
+    ctx.moveTo(point.x - size, point.y);
+    ctx.lineTo(point.x + size, point.y);
+
+    ctx.moveTo(point.x, point.y - size);
+    ctx.lineTo(point.x, point.y + size);
+
+    ctx.stroke();
+  };
+
+  const drawMeasurement = (
+    ctx: CanvasRenderingContext2D,
+    start: Point,
+    end: Point,
+    isHighlighted: boolean = false,
+  ) => {
+    const dx = end.x - start.x;
+    const dy = end.y - start.y;
+    const distanceInPixels = Math.sqrt(dx * dx + dy * dy);
+    const distanceInCm = Math.round(pixelsToCm(distanceInPixels));
+
+    // Draw arrow line
+    ctx.save();
+    // Use red highlight color when highlighted with eraser
+    ctx.strokeStyle = isHighlighted
+      ? "rgba(239, 68, 68, 0.6)" // Red color for deletion highlight
+      : "rgba(75, 85, 99, 0.6)"; // Normal light gray with transparency
+    ctx.lineWidth = 2 / zoom;
+    ctx.setLineDash([5, 5]); // Dashed line
+
+    // Draw main line
+    ctx.beginPath();
+    ctx.moveTo(start.x, start.y);
+    ctx.lineTo(end.x, end.y);
+    ctx.stroke();
+
+    // Reset dash settings for arrows
+    ctx.setLineDash([]);
+
+    // Calculate arrow parameters
+    const angle = Math.atan2(dy, dx);
+    const arrowLength = 15 / zoom;
+    const arrowHeadLength = 10 / zoom;
+    const arrowWidth = 6 / zoom;
+
+    // Draw start arrow (pointing outward)
+    ctx.beginPath();
+    // Arrow shaft
+    ctx.moveTo(start.x, start.y);
+    ctx.lineTo(
+      start.x + arrowLength * Math.cos(angle),
+      start.y + arrowLength * Math.sin(angle),
+    );
+    // Arrow head
+    ctx.moveTo(start.x, start.y);
+    ctx.lineTo(
+      start.x +
+        arrowHeadLength * Math.cos(angle) +
+        arrowWidth * Math.sin(angle),
+      start.y +
+        arrowHeadLength * Math.sin(angle) -
+        arrowWidth * Math.cos(angle),
+    );
+    ctx.moveTo(start.x, start.y);
+    ctx.lineTo(
+      start.x +
+        arrowHeadLength * Math.cos(angle) -
+        arrowWidth * Math.sin(angle),
+      start.y +
+        arrowHeadLength * Math.sin(angle) +
+        arrowWidth * Math.cos(angle),
+    );
+    ctx.stroke();
+
+    // Draw end arrow (pointing outward)
+    ctx.beginPath();
+    // Arrow shaft
+    ctx.moveTo(end.x, end.y);
+    ctx.lineTo(
+      end.x - arrowLength * Math.cos(angle),
+      end.y - arrowLength * Math.sin(angle),
+    );
+    // Arrow head
+    ctx.moveTo(end.x, end.y);
+    ctx.lineTo(
+      end.x -
+        arrowHeadLength * Math.cos(angle) +
+        arrowWidth * Math.sin(angle),
+      end.y -
+        arrowHeadLength * Math.sin(angle) -
+        arrowWidth * Math.cos(angle),
+    );
+    ctx.moveTo(end.x, end.y);
+    ctx.lineTo(
+      end.x -
+        arrowHeadLength * Math.cos(angle) -
+        arrowWidth * Math.sin(angle),
+      end.y -
+        arrowHeadLength * Math.sin(angle) +
+        arrowWidth * Math.cos(angle),
+    );
+    ctx.stroke();
+
+    // Draw measurement label
+    const midPoint = {
+      x: (start.x + end.x) / 2,
+      y: (start.y + end.y) / 2,
+    };
+
+    ctx.font = `${14 / zoom}px Arial`;
+    ctx.fillStyle = "rgba(75, 85, 99, 0.8)";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "bottom";
+    ctx.fillText(`${distanceInCm} cm`, midPoint.x, midPoint.y - 5 / zoom);
+
+    ctx.restore();
+  };
+
+  const drawWallMeasurements = (
+    ctx: CanvasRenderingContext2D,
+    line: Line,
+  ) => {
+    const dx = line.end.x - line.start.x;
+    const dy = line.end.y - line.start.y;
+    const length = Math.sqrt(dx * dx + dy * dy);
+    const lengthInCm = Math.round(pixelsToCm(length));
+
+    // Calculate midpoint of the line
+    const midX = (line.start.x + line.end.x) / 2;
+    const midY = (line.start.y + line.end.y) / 2;
+
+    // Offset the label slightly above the line
+    const offset = 15 / zoom;
+    const angle = Math.atan2(dy, dx);
+    const labelX = midX - offset * Math.sin(angle);
+    const labelY = midY + offset * Math.cos(angle);
+
+    // Draw the measurement
+    ctx.save();
+    ctx.font = `${12 / zoom}px Arial`;
+    ctx.fillStyle = "#6b7280"; // Gray color
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    // Rotate the text to align with the wall
+    ctx.translate(labelX, labelY);
+    if (dx < 0) {
+      ctx.rotate(angle + Math.PI);
+    } else {
+      ctx.rotate(angle);
+    }
+    ctx.fillText(`${lengthInCm} cm`, 0, 0);
+    ctx.restore();
+  };
+
+  const draw = () => {
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // Clear canvas and set up coordinate system
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    ctx.translate(pan.x, pan.y);
+    ctx.scale(zoom, zoom);
+
+    // Draw grid lines with consistent line width
+    ctx.beginPath();
+    ctx.strokeStyle = "#e5e7eb";
+    ctx.lineWidth = 1 / zoom; // Match wall line scaling
+
+    const centerX = dimensions.width / 2;
+    const centerY = dimensions.height / 2;
+
+    // Calculate visible area based on current pan and zoom
+    const visibleStartX = -pan.x / zoom - gridSize;
+    const visibleEndX = (-pan.x + dimensions.width) / zoom + gridSize;
+    const visibleStartY = -pan.y / zoom - gridSize;
+    const visibleEndY = (-pan.y + dimensions.height) / zoom + gridSize;
+
+    // Calculate grid starting points
+    const startXGrid = Math.floor((visibleStartX - centerX) / gridSize) * gridSize;
+    const endXGrid = Math.ceil((visibleEndX - centerX) / gridSize) * gridSize;
+    const startYGrid = Math.floor((visibleStartY - centerY) / gridSize) * gridSize;
+    const endYGrid = Math.ceil((visibleEndY - centerY) / gridSize) * gridSize;
+
+    // Draw vertical grid lines
+    for (let x = startXGrid; x <= endXGrid; x += gridSize) {
+      ctx.moveTo(centerX + x, centerY + startYGrid);
+      ctx.lineTo(centerX + x, centerY + endYGrid);
+    }
+
+    // Draw horizontal grid lines
+    for (let y = startYGrid; y <= endYGrid; y += gridSize) {
+      ctx.moveTo(centerX + startXGrid, centerY + y);
+      ctx.lineTo(centerX + endXGrid, centerY + y);
+    }
+    ctx.stroke();
+
+    // Draw coordinate system
+    const coordSystem = createCoordinateSystem();
+    coordSystem.forEach((line, index) => {
+      ctx.beginPath();
+      ctx.strokeStyle = index < 3 ? "#ef4444" : "#22c55e";
+      ctx.lineWidth = 2 / zoom; // Match wall line width
+      ctx.moveTo(line.start.x, line.start.y);
+      ctx.lineTo(line.end.x, line.end.y);
+      ctx.stroke();
+    });
+
+    // Draw wall lines
+    lines.forEach((line) => {
+      ctx.strokeStyle = highlightState.lines.includes(line)
+        ? getHighlightColor()
+        : "#000000";
+      ctx.lineWidth = 2 / zoom; // Keep consistent wall line width
+      ctx.beginPath();
+      ctx.moveTo(line.start.x, line.start.y);
+      ctx.lineTo(line.end.x, line.end.y);
+      ctx.stroke();
+    });
+
+    ctx.font = `${12 / zoom}px sans-serif`;
+    ctx.fillStyle = "#64748b";
+    lines.forEach((line) => {
+      const midX = (line.start.x + line.end.x) / 2;
+      const midY = (line.start.y + line.end.y) / 2;
+      const length = Math.round(getLineLength(line));
+      drawWallMeasurements(ctx, line);
+    });
+
+    if (currentLine) {
+      ctx.beginPath();
+      ctx.strokeStyle = "#00000";
+      ctx.lineWidth = 2 / zoom;
+      ctx.moveTo(currentLine.start.x, currentLine.start.y);
+      ctx.lineTo(currentLine.end.x, currentLine.end.y);
+      ctx.stroke();
+
+      const length = Math.round(getLineLength(currentLine));
+      const midX = (currentLine.start.x + currentLine.end.x) / 2;
+      const midY = (currentLine.start.y + currentLine.end.y) / 2;
+      drawWallMeasurements(ctx, currentLine);
+    }
+
+    airEntries.forEach((entry, index) => {
+      drawAirEntry(ctx, entry, index);
+    });
+
+    const drawEndpoints = () => {
+      const drawnPoints = new Set<string>();
+
+      lines.forEach((line) => {
+        [{ point: line.start, isStart: true }, { point: line.end, isStart: false }].forEach(
+          ({ point, isStart }) => {
+            const key = `${Math.round(point.x)},${Math.round(point.y)}`;
+            if (!drawnPoints.has(key)) {
+              drawnPoints.add(key);
+
+              const isHovered =
+                hoveredEndpoint?.point &&
+                arePointsNearlyEqual(hoveredEndpoint.point, point);
+
+              ctx.beginPath();
+              ctx.arc(
+                point.x,
+                point.y,
+                isHovered ? (POINT_RADIUS * 1.5) / zoom : POINT_RADIUS / zoom,
+                0,
+                Math.PI * 2,
+              );
+
+              if (isHovered) {
+                ctx.fillStyle = "#fbbf24"; // Amber color for hover
+                // Add tooltip
+                ctx.font = `${12 / zoom}px Arial`;
+                ctx.fillStyle = "#000000";
+                ctx.textAlign = "center";
+                ctx.fillText(
+                  "Right-click to drag",
+                  point.x,
+                  point.y - 15 / zoom,
+                );
+              } else {
+                ctx.fillStyle = "#3b82f6"; // Blue color
+              }
+
+              ctx.fill();
+            }
+          },
+        );
+      });
+    };
+
+    drawEndpoints();
+
+    const endpoints = [
+      ...new Set(lines.flatMap((line) => [line.start, line.end])),
+    ];
+    const endpointColorMap: Record<string, Point[]> = {
+      "#fb923c": [],
+      "#3b82f6": [],
+      "#22c55e": [],
+    };
+
+    endpoints.forEach((point) => {
+      const connections = findConnectedLines(point).length;
+      let color = "#fb923c";
+
+      if (connections > 1) {
+        if (isInClosedContour(point, lines)) {
+          color = "#22c55e";
+        } else {
+          color = "#3b82f6";
+        }
+      }
+
+      if (color in endpointColorMap) {
+        endpointColorMap[color].push(point);
+      }
+    });
+
+    Object.entries(endpointColorMap).forEach(([color, points]) => {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+
+      points.forEach((point) => {
+        ctx.moveTo(point.x, point.y);
+        ctx.arc(point.x, point.y, POINT_RADIUS / zoom, 0, 2 * Math.PI);
+      });
+
+      ctx.fill();
+
+      ctx.font = `${12 / zoom}px sans-serif`;
+      points.forEach((point) => {
+        drawCoordinateLabel(ctx, point, color);
+      });
+    });
+
+    if (cursorPoint && isDrawing) {
+      ctx.font = `${12 / zoom}px sans-serif`;
+      drawCoordinateLabel(ctx, cursorPoint, "#fb923c");
+    }
+
+    if (hoverPoint && !isDrawing && !isPanning) {
+      ctx.font = `${12 / zoom}px sans-serif`;
+      drawCoordinateLabel(ctx, hoverPoint, "#718096");
+      drawCrosshair(ctx, hoverPoint);
+    }
+
+    const drawMeasurements = (ctx: CanvasRenderingContext2D) => {
+      // Draw current measurement if in measure mode
+      if (currentTool === "measure" && measureStart && measureEnd) {
+        drawMeasurement(ctx, measureStart, measureEnd);
+      }
+
+      // Draw all saved measurements
+      measurements.forEach((measurement, index) => {
+        const isHighlighted = highlightState.measurement?.index === index;
+        drawMeasurement(
+          ctx,
+          measurement.start,
+          measurement.end,
+          isHighlighted,
+        );
+      });
+    };
+
+    drawMeasurements(ctx);
+
+    // Add wall measurements after drawing lines
+    lines.forEach((line) => {
+      drawWallMeasurements(ctx, line);
+    });
+
+    ctx.restore();
+  };
+
+  const animate = () => {
+    draw();
+    requestAnimationFrame(animate);
+  };
+
+
+  const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/[^0-9]/g, "");
+    setZoomInput(value);
+  };
+
+  const handleZoomInputBlur = () => {
+    let newZoom = parseInt(zoomInput) / 100;
+    if (isNaN(newZoom)) {
+      newZoom = zoom;
+    } else {
+      newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newZoom));
+    }
+    handleZoomChange(newZoom);
+  };
+
+  const handleZoomInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.currentTarget.blur();
+    }
+  };
+
+  const fineDragSnap = (point: Point): Point => {
+    // Simply return the original point without snapping
+    return point;
+  };
+
+  const handleDoubleClick = (e: MouseEvent) => {
+    const clickPoint = getCanvasPoint(e);
+    const airEntryInfo = findAirEntryAtLocation(clickPoint);
+
+    if (airEntryInfo) {
+      setEditingAirEntry({
+        index: airEntryInfo.index,
+        entry: airEntryInfo.entry,
+      });
+    }
+  };
+
+  const handleAirEntryEdit = (dimensions: {
+    width: number;
+    height: number;
+    distanceToFloor?: number;
+  }) => {
+    if (!editingAirEntry) return;
+
+    const updatedAirEntries = [...airEntries];
+    updatedAirEntries[editingAirEntry.index] = {
+      ...editingAirEntry.entry,
+      dimensions,
+    };
+
+    onAirEntriesUpdate?.(updatedAirEntries);
+    setEditingAirEntry(null);
+  };
+
+  const handleNewAirEntryConfirm = (dimensions: {
+    width: number;
+    height: number;
+    distanceToFloor?: number;
+  }) => {
+    if (!newAirEntryDetails) return;
+
+    const newAirEntry: AirEntry = {
+      type: newAirEntryDetails.type,
+      position: newAirEntryDetails.position,
+      dimensions,
+      line: newAirEntryDetails.line,
+      lineId: newAirEntryDetails.line.id,
+    };
+
+    onAirEntriesUpdate?.([...airEntries, newAirEntry]);
+    setNewAirEntryDetails(null);
+  };
+
+  const handleContextMenu = (e: Event) => {
+    console.log("Context menu prevented");
+    e.preventDefault();
+  };
+
+  const [currentToolState, setCurrentToolState] = useState<
+    "wall" | "eraser" | "measure" | null
+  >(null);
+  const setCurrentTool = (tool: "wall" | "eraser" | "measure" | null) => {
+    setCurrentToolState(tool);
+  };
+
+  const getCursor = (): string => {
+    // 1. Check for panning mode (either button-activated or right-click)
+    if (panMode || isPanning) return "move";
+
+    // 2.Check for specific tools and return custom SVG cursors matching Lucide icons
+    if (currentTool === "eraser") {
+      // Eraser icon matching the LucideEraser component
+      return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000000\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L15 19\"/><path d=\"M22 21H7\"/><path d=\"m5 11 9 9\"/></svg>') 5 15, auto";
+    }
+
+    if (currentTool === "measure") {
+      // Ruler icon matching the Lucide Ruler component
+      return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%2300000\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z\"/><path d=\"m14.5 12.5 2-2\"/><path d=\"m11.5 9.5 2-2\"/><path d=\"m8.5 6.5 2-2\"/><path d=\"m17.5 15.5 2-2\"/></svg>') 5 15, auto";
+    }
+
+    // 3. Check for Air Entry element placement modes
+    if (currentAirEntry === "window") {
+      // Blue rectangle cursor for window placement
+      return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%233b82f6\" stroke-width=\"2\"><rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"2\"/></svg>') 8 8, crosshair";
+    }
+
+    if (currentAirEntry === "door") {
+      // Brown rectangle cursor for door placement
+      return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23b45309\" stroke-width=\"2\"><rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"2\"/></svg>') 8 8, crosshair";
+    }
+
+    if (currentAirEntry === "vent") {
+      // Green rectangle cursor for vent placement
+      return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%2322c55e\" stroke-width=\"2\"><rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"2\"/></svg>') 8 8, crosshair";
+    }
+
+    // 4. Default cursor when no special mode is active
+    return "default";
+  };
+
+  const onMeasurementsUpdate = (measurements: Measurement[]) => {
+    //Update the measurements state.
+  };
+
+  // Add canvas event listeners
 
   return (
     <div className="relative w-full h-full bg-background">
@@ -1903,9 +1948,11 @@ export default function Canvas2D({
         height={dimensions.height}
         className="w-full h-full"
         style={{ cursor: getCursor() }}
+        onClick={handleClick}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
         onContextMenu={(e) => e.preventDefault()}
       />
       {editingAirEntry && (
@@ -1915,6 +1962,15 @@ export default function Canvas2D({
           onClose={() => setEditingAirEntry(null)}
           onConfirm={handleAirEntryEdit}
           initialDimensions={editingAirEntry.entry.dimensions}
+        />
+      )}
+      {newAirEntryDetails && (
+        <AirEntryDialog
+          type={newAirEntryDetails.type}
+          isOpen={true}
+          onClose={() => setNewAirEntryDetails(null)}
+          onConfirm={handleNewAirEntryConfirm}
+          initialDimensions={{ width: 100, height: 200 }}
         />
       )}
       {floorText && (
