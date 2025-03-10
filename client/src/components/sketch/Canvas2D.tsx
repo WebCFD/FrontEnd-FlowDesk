@@ -228,8 +228,6 @@ interface Canvas2DProps {
   onLinesUpdate?: (lines: Line[]) => void;
   onAirEntriesUpdate?: (airEntries: AirEntry[]) => void;
   onMeasurementsUpdate?: (measurements: Measurement[]) => void;
-  isMultifloor?: boolean;
-  currentFloorName?: string;
 }
 
 export default function Canvas2D({
@@ -242,8 +240,6 @@ export default function Canvas2D({
   onLinesUpdate,
   onAirEntriesUpdate,
   onMeasurementsUpdate,
-  isMultifloor = false,
-  currentFloorName = ""
 }: Canvas2DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -862,14 +858,14 @@ export default function Canvas2D({
         const measurementInfo = findMeasurementAtPoint(point, measurements);
 
         if (airEntryInfo) {
-                    setHighlightState({
+          setHighlightState({
             lines: [],
             airEntry: { index: airEntryInfo.index, entry: airEntryInfo.entry },
             measurement: null,
           });
         } else if (measurementInfo) {
           setHighlightState({
-            lines: [],
+                        lines: [],
             airEntry: null,
             measurement: {
               index: measurementInfo.index,
@@ -1308,9 +1304,6 @@ export default function Canvas2D({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    canvas.width = dimensions.width;
-    canvas.height = dimensions.height;
-
     const drawCrosshair = (ctx: CanvasRenderingContext2D, point: Point) => {
       const size = 10 / zoom;
 
@@ -1472,87 +1465,55 @@ export default function Canvas2D({
       ctx.restore();
     };
 
-    const drawLine = (
-      ctx: CanvasRenderingContext2D,
-      line: Line,
-      color: string,
-    ) => {
-      ctx.beginPath();
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1 / zoom;
-      ctx.moveTo(line.start.x, line.start.y);
-      ctx.lineTo(line.end.x, line.end.y);
-      ctx.stroke();
-    };
-
-    const drawFloorName = (ctx: CanvasRenderingContext2D) => {
-      if (!isMultifloor || !currentFloorName) return;
-
-      // Save the current context state
-      ctx.save();
-
-      // Calculate position (top right corner, with padding)
-      const padding = 20;
-      const rectWidth = 200;
-      const rectHeight = 40;
-      const x = dimensions.width - rectWidth - padding;
-      const y = padding;
-
-      // Draw background rectangle
-      ctx.fillStyle = "rgba(34, 197, 94, 0.2)"; // Light green background
-      ctx.fillRect(x, y, rectWidth, rectHeight);
-
-      // Draw border
-      ctx.strokeStyle = "#22c55e"; // Solid green border
-      ctx.lineWidth = 2;
-      ctx.strokeRect(x, y, rectWidth, rectHeight);
-
-      // Draw text
-      ctx.font = "bold 16px Arial";
-      ctx.fillStyle = "#22c55e"; // Green text
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(
-        currentFloorName,
-        x + rectWidth / 2,
-        y + rectHeight / 2
-      );
-
-      // Restore the context state
-      ctx.restore();
-    };
-
     const draw = () => {
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
-      // Clear the canvas
+      // Clear canvas and set up coordinate system
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Save the initial state
       ctx.save();
-
-      // Apply zoom and pan transformations
       ctx.translate(pan.x, pan.y);
       ctx.scale(zoom, zoom);
 
-      // Draw grid
-      const gridLines = createGridLines();
-      gridLines.forEach((line) => {
-        ctx.beginPath();
-        ctx.strokeStyle = "#e5e7eb";
-        ctx.lineWidth = 1 / zoom;
-        ctx.moveTo(line.start.x, line.start.y);
-        ctx.lineTo(line.end.x, line.end.y);
-        ctx.stroke();
-      });
+      // Draw grid lines with consistent line width
+      ctx.beginPath();
+      ctx.strokeStyle = "#e5e7eb";
+      ctx.lineWidth = 1 / zoom; // Match wall line scaling
+
+      const centerX = dimensions.width / 2;
+      const centerY = dimensions.height / 2;
+
+      // Calculate visible area based on current pan and zoom
+      const visibleStartX = -pan.x / zoom - gridSize;
+      const visibleEndX = (-pan.x + dimensions.width) / zoom + gridSize;
+      const visibleStartY = -pan.y / zoom - gridSize;
+      const visibleEndY = (-pan.y + dimensions.height) / zoom + gridSize;
+
+      // Calculate grid starting points
+      const startXGrid = Math.floor((visibleStartX - centerX) / gridSize) * gridSize;
+      const endXGrid = Math.ceil((visibleEndX - centerX) / gridSize) * gridSize;
+      const startYGrid = Math.floor((visibleStartY - centerY) / gridSize) * gridSize;
+      const endYGrid = Math.ceil((visibleEndY - centerY) / gridSize) * gridSize;
+
+      // Draw vertical grid lines
+      for (let x = startXGrid; x <= endXGrid; x += gridSize) {
+        ctx.moveTo(centerX + x, centerY + startYGrid);
+        ctx.lineTo(centerX + x, centerY + endYGrid);
+      }
+
+      // Draw horizontal grid lines
+      for (let y = startYGrid; y <= endYGrid; y += gridSize) {
+        ctx.moveTo(centerX + startXGrid, centerY + y);
+        ctx.lineTo(centerX + endXGrid, centerY + y);
+      }
+      ctx.stroke();
 
       // Draw coordinate system
-      const coordLines = createCoordinateSystem();
-      coordLines.forEach((line) => {
+      const coordSystem = createCoordinateSystem();
+      coordSystem.forEach((line, index) => {
         ctx.beginPath();
-        ctx.strokeStyle = "#9ca3af";
-        ctx.lineWidth = 1 / zoom;
+        ctx.strokeStyle = index < 3 ? "#ef4444" : "#22c55e";
+        ctx.lineWidth = 2 / zoom; // Match wall line width
         ctx.moveTo(line.start.x, line.start.y);
         ctx.lineTo(line.end.x, line.end.y);
         ctx.stroke();
@@ -1723,17 +1684,8 @@ export default function Canvas2D({
         drawWallMeasurements(ctx, line);
       });
 
-      // Draw the floor name when multifloor is active
-      drawFloorName(ctx);
-
       ctx.restore();
     };
-
-    const render = () => {
-      draw();
-    };
-
-    render();
 
     canvas.addEventListener("mousedown", handleMouseDown);
     canvas.addEventListener("mousemove", handleMouseMove);
@@ -1744,6 +1696,20 @@ export default function Canvas2D({
     canvas.addEventListener("contextmenu", handleContextMenu);
     canvas.addEventListener("dblclick", handleDoubleClick);
 
+    let lastRenderTime = 0;
+    let animationFrameId: number;
+
+    const render = (timestamp: number) => {
+      const elapsed = timestamp - lastRenderTime;
+      if (elapsed > 1000 / 60) {
+        draw();
+        lastRenderTime = timestamp;
+      }
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    animationFrameId = requestAnimationFrame(render);
+
     return () => {
       canvas.removeEventListener("mousedown", handleMouseDown);
       canvas.removeEventListener("mousemove", handleMouseMove);
@@ -1753,34 +1719,40 @@ export default function Canvas2D({
       canvas.removeEventListener("wheel", handleRegularWheel);
       canvas.removeEventListener("contextmenu", handleContextMenu);
       canvas.removeEventListener("dblclick", handleDoubleClick);
+
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
     };
   }, [
     dimensions,
-    zoom,
-    pan,
     lines,
     currentLine,
     isDrawing,
-    gridSize,
-    airEntries,
-    currentTool,
+    zoom,
+    pan,
+    isPanning,
+    panMode,
+    cursorPoint,
     currentAirEntry,
-    highlightState,
-    hoverPoint,
+    airEntries,
+    onLinesUpdate,
     hoveredGridPoint,
-    hoveredEndpoint,
-    hoveredAirEntry,
+    hoverPoint,
     isDraggingEndpoint,
     draggedPoint,
     isDraggingAirEntry,
     draggedAirEntry,
-    isMeasuring,
+    onAirEntriesUpdate,
+    highlightState,
+    editingAirEntry,
+    hoveredAirEntry,
+    hoveredEndpoint,
     measureStart,
     measureEnd,
+    isMeasuring,
     measurements,
     onMeasurementsUpdate,
-    isMultifloor,
-    currentFloorName,
   ]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
