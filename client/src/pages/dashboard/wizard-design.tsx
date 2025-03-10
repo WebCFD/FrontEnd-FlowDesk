@@ -330,9 +330,9 @@ export default function WizardDesign() {
             </div>
 
             {/* Right side - View container */}
-            <div className="flex-1 border rounded-lg overflow-hidden bg-white h-[600px] flex items-center justify-center">
+            <div className="flex-1 border rounded-lg overflow-hidden bg-white h-[690px] flex items-center justify-center">
               {tab === "2d-editor" ? (
-                <div className="w-[800px] h-[600px]"> {/* Fixed dimensions container */}
+                <div className="w-[800px] h-[690px]"> {/* Fixed dimensions container */}
                   <Canvas2D
                     gridSize={gridSize}
                     currentTool={currentTool}
@@ -355,11 +355,11 @@ export default function WizardDesign() {
                   />
                 </div>
               ) : (
-                <div className="w-[800px] h-[600px]"> {/* Same fixed dimensions for 3D view */}
+                <div className="w-[800px] h-[690px]"> {/* Same fixed dimensions for 3D view */}
                   <Canvas3D
                     lines={lines}
                     airEntries={airEntries}
-                    height={600}
+                    height={690}
                   />
                 </div>
               )}
@@ -397,10 +397,10 @@ export default function WizardDesign() {
           />
 
           {/* Right side - 3D View */}
-          <div className="flex-1 h-[600px] border rounded-lg overflow-hidden bg-white">
+          <div className="flex-1 h-[690px] border rounded-lg overflow-hidden bg-white">
             <RoomSketchPro
               width={800}
-              height={600}
+              height={690}
               key="step2-view"
               instanceId="step2-view"
               lines={lines}
@@ -626,7 +626,7 @@ export default function WizardDesign() {
       <div className="container mx-auto py-6 space-y-6">
         {renderStepIndicator()}
 
-        <div className="min-h-[600px]">
+        <div className="min-h-[690px]">
           {step === 1 && renderStep1()}
           {step === 2 && renderStep2()}
           {step === 3 && renderStep3()}
