@@ -768,27 +768,6 @@ export default function WizardDesign() {
           </div>
         </div>
 
-        <div>
-          <Label>Floor Deck Thickness</Label>
-          <div className="flex items-center gap-2">
-            <Input
-              type="number"
-              value={floorDeckThickness}
-              min={5}
-              max={150}
-              step={5}
-              onChange={(e) => {
-                const value = parseInt(e.target.value);
-                if (!isNaN(value) && value >= 5 && value <= 150) {
-                  setFloorDeckThickness(value);
-                }
-              }}
-              className="w-24"
-            />
-            <span>cm</span>
-          </div>
-        </div>
-
         <div className="flex items-center space-x-2">
           <Checkbox
             id="multifloor"
@@ -853,6 +832,27 @@ export default function WizardDesign() {
                 </Button>
               </div>
             </div>
+
+            <div className="space-y-2">
+              <Label>Floor Deck Thickness</Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="number"
+                  value={floorDeckThickness}
+                  min={5}
+                  max={150}
+                  step={5}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value);
+                    if (!isNaN(value) && value >= 5 && value <= 150) {
+                      setFloorDeckThickness(value);
+                    }
+                  }}
+                  className="w-24"
+                />
+                <span>cm</span>
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -874,7 +874,7 @@ export default function WizardDesign() {
           isMultifloor={isMultifloor}
           onLinesUpdate={(newLines) => {
             setLines(newLines);
-            const hasClosedContour = newLines.length > 0 &&
+            const hasClosedContour =newLines.length > 0 &&
               newLines.some(line =>
                 isInClosedContour(line.start, newLines) ||
                 isInClosedContour(line.end, newLines)
