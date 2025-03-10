@@ -228,6 +228,8 @@ interface Canvas2DProps {
   onLinesUpdate?: (lines: Line[]) => void;
   onAirEntriesUpdate?: (airEntries: AirEntry[]) => void;
   onMeasurementsUpdate?: (measurements: Measurement[]) => void;
+  isMultifloor?: boolean;
+  currentFloorName?: string;
 }
 
 export default function Canvas2D({
@@ -240,6 +242,8 @@ export default function Canvas2D({
   onLinesUpdate,
   onAirEntriesUpdate,
   onMeasurementsUpdate,
+  isMultifloor = false,
+  currentFloorName = ""
 }: Canvas2DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -865,7 +869,7 @@ export default function Canvas2D({
           });
         } else if (measurementInfo) {
           setHighlightState({
-                        lines: [],
+            lines: [],
             airEntry: null,
             measurement: {
               index: measurementInfo.index,
@@ -1465,6 +1469,37 @@ export default function Canvas2D({
       ctx.restore();
     };
 
+    const drawLine = (
+      ctx: CanvasRenderingContext2D,
+      line: Line,
+      color: string,
+    ) => {
+      ctx.beginPath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1 / zoom;
+      ctx.moveTo(line.start.x, line.start.y);
+      ctx.lineTo(line.end.x, line.end.y);
+      ctx.stroke();
+    };
+
+    const drawFloorName = (ctx: CanvasRenderingContext2D) => {
+      if (!isMultifloor || !currentFloorName) return;
+
+      const centerX = dimensions.width / 2;
+      const centerY = dimensions.height / 2;
+
+      // Set text properties
+      ctx.save();
+      ctx.font = `${24 / zoom}px Arial`;
+      ctx.fillStyle = "#22c55e"; // Green color matching the rectangle
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      // Draw the floor name
+      ctx.fillText(currentFloorName, centerX, centerY - 200);
+      ctx.restore();
+    };
+
     const draw = () => {
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
@@ -1684,8 +1719,17 @@ export default function Canvas2D({
         drawWallMeasurements(ctx, line);
       });
 
+      // Draw the floor name when multifloor is active
+      drawFloorName(ctx);
+
       ctx.restore();
     };
+
+    const render = () => {
+      draw();
+    };
+
+    render();
 
     canvas.addEventListener("mousedown", handleMouseDown);
     canvas.addEventListener("mousemove", handleMouseMove);
@@ -1696,20 +1740,6 @@ export default function Canvas2D({
     canvas.addEventListener("contextmenu", handleContextMenu);
     canvas.addEventListener("dblclick", handleDoubleClick);
 
-    let lastRenderTime = 0;
-    let animationFrameId: number;
-
-    const render = (timestamp: number) => {
-      const elapsed = timestamp - lastRenderTime;
-      if (elapsed > 1000 / 60) {
-        draw();
-        lastRenderTime = timestamp;
-      }
-      animationFrameId = requestAnimationFrame(render);
-    };
-
-    animationFrameId = requestAnimationFrame(render);
-
     return () => {
       canvas.removeEventListener("mousedown", handleMouseDown);
       canvas.removeEventListener("mousemove", handleMouseMove);
@@ -1719,10 +1749,6 @@ export default function Canvas2D({
       canvas.removeEventListener("wheel", handleRegularWheel);
       canvas.removeEventListener("contextmenu", handleContextMenu);
       canvas.removeEventListener("dblclick", handleDoubleClick);
-
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-      }
     };
   }, [
     dimensions,
@@ -1753,6 +1779,8 @@ export default function Canvas2D({
     isMeasuring,
     measurements,
     onMeasurementsUpdate,
+    isMultifloor,
+    currentFloorName,
   ]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
