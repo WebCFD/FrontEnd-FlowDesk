@@ -1021,22 +1021,21 @@ export default function Canvas2D({
         setIsMeasuring(true);
         setMeasureStart(point);
         setMeasureEnd(point);
-      } else {
-        // Complete measurement
-        if (measureStart && measureEnd) {
-          const distance = Math.sqrt(
-            Math.pow(measureEnd.x - measureStart.x, 2) +
-              Math.pow(measureEnd.y - measureStart.y, 2),
-          );
+      } else if (measureStart && measureEnd) {
+        // Complete measurement only on second click
+        const distance = Math.sqrt(
+          Math.pow(measureEnd.x - measureStart.x, 2) +
+            Math.pow(measureEnd.y - measureStart.y, 2),
+        );
 
-          const newMeasurement = {
-            start: measureStart,
-            end: measureEnd,
-            distance: pixelsToCm(distance),
-          };
+        const newMeasurement = {
+          start: measureStart,
+          end: measureEnd,
+          distance: pixelsToCm(distance),
+        };
 
-          onMeasurementsUpdate?.([...measurements, newMeasurement]);
-        }
+        onMeasurementsUpdate?.([...measurements, newMeasurement]);
+
         // Reset measurement state
         setIsMeasuring(false);
         setMeasureStart(null);
