@@ -16,7 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
-import { Save, Upload, Eraser, ArrowRight, ArrowLeft, Ruler } from "lucide-react";
+import { Save, Upload, Eraser, ArrowRight, ArrowLeft, Ruler, Camera, RotateCw, ZoomIn } from "lucide-react";
 import Canvas2D from "@/components/sketch/Canvas2D";
 import { RoomSketchPro } from "@/components/sketch/RoomSketchPro";
 import { cn } from "@/lib/utils";
@@ -260,8 +260,9 @@ export default function WizardDesign() {
                 tab === "2d-editor" ? "opacity-100" : "opacity-50 pointer-events-none"
               )}>
                 <div className="w-48 space-y-6">
+                  {/* 2D Menu */}
                   <div className="border rounded-lg p-4">
-                    <h3 className="font-semibold text-lg mb-4">2D Tools</h3>
+                    <h3 className="font-semibold text-lg mb-4">2D Menu</h3>
                     <div className="space-y-4">
                       <div className="grid grid-cols-3 gap-2">
                         <Button
@@ -336,9 +337,30 @@ export default function WizardDesign() {
                     </div>
                   </div>
 
-                  {/* 3D Tools Section */}
+                  {/* 3D Menu */}
                   <div className="border rounded-lg p-4">
-                    <h3 className="font-semibold text-lg mb-4">3D Tools</h3>
+                    <h3 className="font-semibold text-lg mb-4">3D Menu</h3>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-3 gap-2">
+                        <Button variant="outline" className="w-full h-16 flex flex-col items-center justify-center gap-1">
+                          <Camera className="w-6 h-6" />
+                          <span className="text-xs">Camera</span>
+                        </Button>
+                        <Button variant="outline" className="w-full h-16 flex flex-col items-center justify-center gap-1">
+                          <RotateCw className="w-6 h-6" />
+                          <span className="text-xs">Rotate</span>
+                        </Button>
+                        <Button variant="outline" className="w-full h-16 flex flex-col items-center justify-center gap-1">
+                          <ZoomIn className="w-6 h-6" />
+                          <span className="text-xs">Zoom</span>
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Files Menu */}
+                  <div className="border rounded-lg p-4">
+                    <h3 className="font-semibold text-lg mb-4">Files</h3>
                     <div className="space-y-2">
                       <Button variant="outline" className="w-full justify-start">
                         <Save className="mr-2 h-4 w-4" />
