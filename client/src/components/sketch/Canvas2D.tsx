@@ -846,17 +846,6 @@ export default function Canvas2D({
     const point = getCanvasPoint(e);
     setHoverPoint(point);
 
-    // Handle measurement preview first
-    if (currentTool === "measure" && isMeasuring && measureStart) {
-      console.log("Measurement preview update:", {
-        measureStart,
-        currentPoint: point,
-        isMeasuring,
-      });
-      setMeasureEnd(point);
-      return;
-    }
-
     if (!isDrawing && !isPanning) {
       const nearestGridPoint = findNearestGridPoint(point);
       setHoveredGridPoint(nearestGridPoint);
@@ -940,12 +929,7 @@ export default function Canvas2D({
     setHoverPoint(point);
 
     // Handle measurement preview
-    if (currentTool === "measure" && isMeasuring && measureStart) {
-      console.log("Mouse move during measurement:", {
-        isMeasuring,
-        measureStart,
-        currentPoint: point
-      });
+    if (currentTool === "measure" && isMeasuring) {
       setMeasureEnd(point);
       return;
     }
@@ -1031,38 +1015,27 @@ export default function Canvas2D({
 
     const point = getCanvasPoint(e);
 
-    // Handle measurement tool independently
     if (currentTool === "measure") {
-      console.log("Mouse down in measure tool:", {
-        isMeasuring,
-        measureStart,
-        measureEnd,
-        point
-      });
-
       if (!isMeasuring) {
-        // First click - start measurement
-        console.log("Starting new measurement");
+        // Start measurement
         setIsMeasuring(true);
         setMeasureStart(point);
         setMeasureEnd(point);
-      } else {
-        // Second click - complete measurement
-        console.log("Completing measurement");
-        if (measureStart && measureEnd) {
-          const distance = Math.sqrt(
-            Math.pow(measureEnd.x - measureStart.x, 2) +
-            Math.pow(measureEnd.y - measureStart.y, 2)
-          );
+      } else if (measureStart && measureEnd) {
+        // Complete measurement only on second click
+        const distance = Math.sqrt(
+          Math.pow(measureEnd.x - measureStart.x, 2) +
+            Math.pow(measureEnd.y - measureStart.y, 2),
+        );
 
-          const newMeasurement = {
-            start: measureStart,
-            end: measureEnd,
-            distance: pixelsToCm(distance)
-          };
+        const newMeasurement = {
+          start: measureStart,
+          end: measureEnd,
+          distance: pixelsToCm(distance),
+        };
 
-          onMeasurementsUpdate?.([...measurements, newMeasurement]);
-        }
+        onMeasurementsUpdate?.([...measurements, newMeasurement]);
+
         // Reset measurement state
         setIsMeasuring(false);
         setMeasureStart(null);
@@ -1071,68 +1044,75 @@ export default function Canvas2D({
       return;
     }
 
-    // Handle pan mode
-    if (panMode) {
-      handlePanStart(e);
-      return;
-    }
+    // For left-click (button 0)
+    if (e.button === 0) {
+      // If pan mode is active, use left-click for panning
+      if (panMode) {
+        handlePanStart(e);
+        return;
+      }
 
-    // Handle wall tool
-    if (currentTool === "wall") {
-      const nearestPoint = findNearestEndpoint(point);
-      const startPoint = nearestPoint || snapToGrid(point);
-      const newLineId = Math.random().toString(36).substring(2, 9);
-      setCurrentLine({
-        id: newLineId,
-        start: startPoint,
-        end: startPoint,
-      });
-      setIsDrawing(true);
-      setCursorPoint(startPoint);
-      return;
-    }
+      // Handle measurement tool
 
-    // Handle eraser tool
-    if (currentTool === "eraser") {
-      const airEntryInfo = findAirEntryAtLocation(point);
-      const measurementInfo = findMeasurementAtPoint(point, measurements);
 
-      if (airEntryInfo) {
-        const newAirEntries = airEntries.filter((_, i) => i !== airEntryInfo.index);
-        onAirEntriesUpdate?.(newAirEntries);
-      } else if (measurementInfo) {
-        const newMeasurements = measurements.filter(
-          (_, i) => i !== measurementInfo.index,
+      if (currentTool === "wall") {
+        const nearestPoint = findNearestEndpoint(point);
+        const startPoint = nearestPoint || snapToGrid(point);
+        const newLineId = Math.random().toString(36).substring(2, 9);
+        setCurrentLine({
+          id: newLineId,
+          start: startPoint,
+          end: startPoint,
+        });
+        setIsDrawing(true);
+        setCursorPoint(startPoint);
+      } else if (currentTool === "eraser") {
+        const airEntryInfo = findAirEntryAtLocation(point);
+        const measurementInfo = findMeasurementAtPoint(
+          point,
+          measurements,
         );
-        onMeasurementsUpdate?.(newMeasurements);
-      } else {
-        const nearbyLines = findLinesNearPoint(point);
-        if (nearbyLines.length > 0) {
-          const newLines = lines.filter(
-            (line) => !nearbyLines.some((nearby) => nearby.id === line.id),
+
+        if (airEntryInfo) {
+          const newAirEntries = airEntries.filter(
+            (_, i) => i !== airEntryInfo.index,
           );
-          onLinesUpdate?.(newLines);
-          updateAirEntriesWithWalls(newLines, lines);
+          onAirEntriesUpdate?.(newAirEntries);
+        } else if (measurementInfo) {
+          const newMeasurements = measurements.filter(
+            (_, i) => i !== measurementInfo.index,
+          );
+          onMeasurementsUpdate?.(newMeasurements);
+        } else {
+          const nearbyLines = findLinesNearPoint(point);
+          if (nearbyLines.length > 0) {
+            const newLines = lines.filter(
+              (line) =>
+                !nearbyLines.some(
+                  (nearbyLine) =>
+                    arePointsNearlyEqual(line.start, nearbyLine.start) &&
+                    arePointsNearlyEqual(line.end, nearbyLine.end),
+                ),
+            );
+            onLinesUpdate?.(newLines);
+          }
+        }
+        setHighlightState({ lines: [], airEntry: null, measurement: null });
+        return;
+      } else if (currentAirEntry) {
+        const selectedLines = findLinesNearPoint(point);
+        if (selectedLines.length > 0) {
+          const selectedLine = selectedLines[0];
+          const exactPoint = getPointOnLine(selectedLine, point);
+
+          // Instead of creating the air entry immediately, store the details and show dialog
+          setNewAirEntryDetails({
+            type: currentAirEntry,
+            position: exactPoint,
+            line: selectedLine,
+          });
         }
       }
-      setHighlightState({ lines: [], airEntry: null, measurement: null });
-      return;
-    }
-
-    // Handle air entry tool
-    if (currentAirEntry) {
-      const selectedLines = findLinesNearPoint(point);
-      if (selectedLines.length > 0) {
-        const selectedLine = selectedLines[0];
-        const exactPoint = getPointOnLine(selectedLine, point);
-
-        setNewAirEntryDetails({
-          type: currentAirEntry,
-          position: exactPoint,
-          line: selectedLine,
-        });
-      }
-      return;
     }
   };
 
@@ -1169,7 +1149,7 @@ export default function Canvas2D({
     if (currentTool === "wall" && isDrawing && currentLine) {
       if (
         currentLine.start.x !== currentLine.end.x ||
-        currentLine.start.y !== currentLine.end.y,
+        currentLine.start.y !== currentLine.end.y
       ) {
         const newLines = [...lines, currentLine];
         onLinesUpdate?.(newLines);
@@ -1277,7 +1257,7 @@ export default function Canvas2D({
 
     if (
       JSON.stringify(newAirEntries) !== JSON.stringify(airEntries) &&
-      onAirEntriesUpdate,
+      onAirEntriesUpdate
     ) {
       onAirEntriesUpdate(newAirEntries);
     }
@@ -1684,11 +1664,6 @@ export default function Canvas2D({
 
       // Draw measurement preview
       if (isMeasuring && measureStart && measureEnd) {
-        console.log("Drawing measurement preview:", {
-          start: measureStart,
-          end: measureEnd
-        });
-
         ctx.save();
         ctx.strokeStyle = "#4b5563"; // Gray color
         ctx.lineWidth = 2 / zoom;
@@ -1712,253 +1687,10 @@ export default function Canvas2D({
           pixelsToCm(
             Math.sqrt(
               Math.pow(measureEnd.x - measureStart.x, 2) +
-              Math.pow(measureEnd.y - measureStart.y, 2)
-            )
-          )
+                Math.pow(measureEnd.y - measureStart.y, 2),
+            ),
+          ),
         );
-
-        const midX = (measureStart.x + measureEnd.x) / 2;
-        const midY = (measureStart.y + measureEnd.y) / 2;
-
-        ctx.font = `${14 / zoom}px Arial`;
-        ctx.fillStyle = "#000000";
-        ctx.textAlign = "center";
-        ctx.fillText(`${distance} cm`, midX, midY - 10 / zoom);
-
-        ctx.restore();
-      }
-
-      // Add wall measurements after drawing lines
-      lines.forEach((line) => {
-        drawWallMeasurements(ctx, line);
-      });
-
-      ctx.restore();
-    };
-
-    const draw = (ctx: CanvasRenderingContext2D) => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.save();
-      ctx.translate(pan.x, pan.y);
-      ctx.scale(zoom, zoom);
-
-      // Draw grid lines
-      const gridLines = createGridLines();
-      gridLines.forEach((line) => {
-        ctx.beginPath();
-        ctx.strokeStyle = "#e5e7eb";
-        ctx.lineWidth = 1 / zoom;
-        ctx.moveTo(line.start.x, line.start.y);
-        ctx.lineTo(line.end.x, line.end.y);
-        ctx.stroke();
-      });
-
-      // Draw coordinate system
-      const coordSystem = createCoordinateSystem();
-      coordSystem.forEach((line, index) => {
-        ctx.beginPath();
-        ctx.strokeStyle = index < 3 ? "#ef4444" : "#22c55e";
-        ctx.lineWidth = 2 / zoom;
-        ctx.moveTo(line.start.x, line.start.y);
-        ctx.lineTo(line.end.x, line.end.y);
-        ctx.stroke();
-      });
-
-      // Draw wall lines
-      lines.forEach((line) => {
-        ctx.strokeStyle = highlightState.lines.includes(line)
-          ? getHighlightColor()
-          : "#000000";
-        ctx.lineWidth = 2 / zoom;
-        ctx.beginPath();
-        ctx.moveTo(line.start.x, line.start.y);
-        ctx.lineTo(line.end.x, line.end.y);
-        ctx.stroke();
-      });
-
-      ctx.font = `${12 / zoom}px sans-serif`;
-      ctx.fillStyle = "#64748b";
-      lines.forEach((line) => {
-        const midX = (line.start.x + line.end.x) / 2;
-        const midY = (line.start.y + line.end.y) / 2;
-        const length = Math.round(getLineLength(line));
-        drawWallMeasurements(ctx, line);
-      });
-
-      if (currentLine) {
-        ctx.beginPath();
-        ctx.strokeStyle = "#00000";
-        ctx.lineWidth = 2 / zoom;
-        ctx.moveTo(currentLine.start.x, currentLine.start.y);
-        ctx.lineTo(currentLine.end.x, currentLine.end.y);
-        ctx.stroke();
-
-        const length = Math.round(getLineLength(currentLine));
-        const midX = (currentLine.start.x + currentLine.end.x) / 2;
-        const midY = (currentLine.start.y + currentLine.end.y) / 2;
-        drawWallMeasurements(ctx, currentLine);
-      }
-
-      airEntries.forEach((entry, index) => {
-        drawAirEntry(ctx, entry, index);
-      });
-
-      const drawEndpoints = () => {
-        const drawnPoints = new Set<string>();
-
-        lines.forEach((line) => {
-          [{ point: line.start, isStart: true }, { point: line.end, isStart: false }].forEach(
-            ({ point, isStart }) => {
-              const key = `${Math.round(point.x)},${Math.round(point.y)}`;
-              if (!drawnPoints.has(key)) {
-                drawnPoints.add(key);
-
-                const isHovered =
-                  hoveredEndpoint?.point &&
-                  arePointsNearlyEqual(hoveredEndpoint.point, point);
-
-                ctx.beginPath();
-                ctx.arc(
-                  point.x,
-                  point.y,
-                  isHovered ? (POINT_RADIUS * 1.5) / zoom : POINT_RADIUS / zoom,
-                  0,
-                  Math.PI * 2,
-                );
-
-                if (isHovered) {
-                  ctx.fillStyle = "#fbbf24"; // Amber color for hover
-                  // Add tooltip
-                  ctx.font = `${12 / zoom}px Arial`;
-                  ctx.fillStyle = "#000000";
-                  ctx.textAlign = "center";
-                  ctx.fillText(
-                    "Right-click to drag",
-                    point.x,
-                    point.y - 15 / zoom,
-                  );
-                } else {
-                  ctx.fillStyle = "#3b82f6"; // Blue color
-                }
-
-                ctx.fill();
-              }
-            },
-          );
-        });
-      };
-
-      drawEndpoints();
-
-      const endpoints = [
-        ...new Set(lines.flatMap((line) => [line.start, line.end])),
-      ];
-      const endpointColorMap: Record<string, Point[]> = {
-        "#fb923c": [],
-        "#3b82f6": [],
-        "#22c55e": [],
-      };
-
-      endpoints.forEach((point) => {
-        const connections = findConnectedLines(point).length;
-        let color = "#fb923c";
-
-        if (connections > 1) {
-          if (isInClosedContour(point, lines)) {
-            color = "#22c55e";
-          } else {
-            color = "#3b82f6";
-          }
-        }
-
-        if (color in endpointColorMap) {
-          endpointColorMap[color].push(point);
-        }
-      });
-
-      Object.entries(endpointColorMap).forEach(([color, points]) => {
-        ctx.fillStyle = color;
-        ctx.beginPath();
-
-        points.forEach((point) => {
-          ctx.moveTo(point.x, point.y);
-          ctx.arc(point.x, point.y, POINT_RADIUS / zoom, 0, 2 * Math.PI);
-        });
-
-        ctx.fill();
-
-        ctx.font = `${12 / zoom}px sans-serif`;
-        points.forEach((point) => {
-          drawCoordinateLabel(ctx, point, color);
-        });
-      });
-
-      if (cursorPoint && isDrawing) {
-        ctx.font = `${12 / zoom}px sans-serif`;
-        drawCoordinateLabel(ctx, cursorPoint, "#fb923c");
-      }
-
-      if (hoverPoint && !isDrawing && !isPanning) {
-        ctx.font = `${12 / zoom}px sans-serif`;
-        drawCoordinateLabel(ctx, hoverPoint, "#718096");
-        drawCrosshair(ctx, hoverPoint);
-      }
-
-      const drawMeasurements = (ctx: CanvasRenderingContext2D) => {
-        // Draw current measurement if in measure mode
-        if (currentTool === "measure" && measureStart && measureEnd) {
-          drawMeasurement(ctx, measureStart, measureEnd);
-        }
-
-        // Draw all saved measurements
-        measurements.forEach((measurement, index) => {
-          const isHighlighted = highlightState.measurement?.index === index;
-          drawMeasurement(
-            ctx,
-            measurement.start,
-            measurement.end,
-            isHighlighted,
-          );
-        });
-      };
-
-      drawMeasurements(ctx);
-
-      // Draw measurement preview
-      if (isMeasuring && measureStart && measureEnd) {
-        console.log("Drawing measurement preview:", {
-          start: measureStart,
-          end: measureEnd
-        });
-
-        ctx.save();
-        ctx.strokeStyle = "#4b5563"; // Gray color
-        ctx.lineWidth = 2 / zoom;
-        ctx.setLineDash([5 / zoom, 5 / zoom]);
-
-        // Draw the measurement line
-        ctx.beginPath();
-        ctx.moveTo(measureStart.x, measureStart.y);
-        ctx.lineTo(measureEnd.x, measureEnd.y);
-        ctx.stroke();
-
-        // Draw points at start and end
-        ctx.fillStyle = "#4b5563";
-        ctx.beginPath();
-        ctx.arc(measureStart.x, measureStart.y, POINT_RADIUS / zoom, 0, Math.PI * 2);
-        ctx.arc(measureEnd.x, measureEnd.y, POINT_RADIUS / zoom, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Draw distance label
-        const distance = Math.round(
-          pixelsToCm(
-            Math.sqrt(
-              Math.pow(measureEnd.x - measureStart.x, 2) +
-              Math.pow(measureEnd.y - measureStart.y, 2)
-            )
-          )
-        );
-
         const midX = (measureStart.x + measureEnd.x) / 2;
         const midY = (measureStart.y + measureEnd.y) / 2;
 
