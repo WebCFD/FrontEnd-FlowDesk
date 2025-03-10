@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 import AirEntryDialog from "@/components/sketch/AirEntryDialog";
 import Canvas3D from "@/components/sketch/Canvas3D";
 import { useRoomStore } from "@/lib/store/room-store";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,7 +38,7 @@ import { PlusCircle, Play, Mail, FileEdit } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FurnitureMenu } from "@/components/sketch/FurnitureMenu";
 import { ToolbarToggle } from "@/components/sketch/ToolbarToggle";
-// import { Checkbox } from "@/components/ui/checkbox"; //Removed
+
 
 interface Point {
   x: number;
@@ -873,7 +874,7 @@ export default function WizardDesign() {
           isMultifloor={isMultifloor}
           onLinesUpdate={(newLines) => {
             setLines(newLines);
-                        const hasClosedContour = newLines.length > 0 &&
+            const hasClosedContour = newLines.length > 0 &&
               newLines.some(line =>
                 isInClosedContour(line.start, newLines) ||
                 isInClosedContour(line.end, newLines)
@@ -889,7 +890,8 @@ export default function WizardDesign() {
           currentFloor={currentFloor}
           ceilingHeight={ceilingHeight}
         />
-      )}    </div>
+      )}
+    </div>
   );
 
   return (
