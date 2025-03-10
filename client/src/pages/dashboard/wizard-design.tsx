@@ -37,7 +37,7 @@ import { PlusCircle, Play, Mail, FileEdit } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FurnitureMenu } from "@/components/sketch/FurnitureMenu";
 import { ToolbarToggle } from "@/components/sketch/ToolbarToggle";
-//import { Toolbar3D } from "@/components/sketch/Toolbar3D"; //Removed
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface Point {
   x: number;
@@ -73,6 +73,11 @@ export default function WizardDesign() {
   const [tab, setTab] = useState<"2d-editor" | "3d-preview">("2d-editor");
   const [showStartSimulationPrompt, setShowStartSimulationPrompt] = useState(false);
   const [wallTransparency, setWallTransparency] = useState(0.8);
+  const [ceilingHeight, setCeilingHeight] = useState(300); // Default 300cm
+  const [isMultifloor, setIsMultifloor] = useState(false);
+  const [selectedFloor, setSelectedFloor] = useState("ground");
+  const [loadFromFloor, setLoadFromFloor] = useState("ground");
+  const [sandwich, setSandwich] = useState(false);
 
   // Use the global room store
   const { lines, airEntries, measurements, hasClosedContour, setLines, setAirEntries, setMeasurements, setHasClosedContour } = useRoomStore();
@@ -368,6 +373,87 @@ export default function WizardDesign() {
                       <div className="text-sm text-right mt-1">{Math.round(wallTransparency * 100)}%</div>
                     </div>
                   </div>
+                </div>
+              </div>
+
+              {/* Parameters Menu - Add before Files menu */}
+              <div className="border rounded-lg p-4">
+                <h3 className="font-semibold text-lg mb-4">Parameters</h3>
+                <div className="space-y-4">
+                  <div>
+                    <Label>Ceiling Height (Vertical Extrusion)</Label>
+                    <div className="flex items-center gap-2">
+                      <Slider
+                        defaultValue={[ceilingHeight]}
+                        min={200}
+                        max={500}
+                        step={10}
+                        onValueChange={(value) => setCeilingHeight(value[0])}
+                      />
+                      <span className="min-w-[4rem] text-right">{ceilingHeight}cm</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="multifloor"
+                      checked={isMultifloor}
+                      onCheckedChange={(checked) => setIsMultifloor(checked as boolean)}
+                    />
+                    <Label htmlFor="multifloor">Multifloor</Label>
+                  </div>
+
+                  {isMultifloor && (
+                    <div className="space-y-4 pt-2">
+                      <div className="space-y-2">
+                        <Label>Floor</Label>
+                        <Select value={selectedFloor} onValueChange={setSelectedFloor}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select floor" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="ground">Ground Floor</SelectItem>
+                            <SelectItem value="first">First Floor</SelectItem>
+                            <SelectItem value="second">Second Floor</SelectItem>
+                            <SelectItem value="third">Third Floor</SelectItem>
+                            <SelectItem value="fourth">Fourth Floor</SelectItem>
+                            <SelectItem value="fifth">Fifth Floor</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Load from Floor</Label>
+                        <div className="flex gap-2">
+                          <Select value={loadFromFloor} onValueChange={setLoadFromFloor}>
+                            <SelectTrigger className="flex-1">
+                              <SelectValue placeholder="Select floor to load from" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="ground">Ground Floor</SelectItem>
+                              <SelectItem value="first">First Floor</SelectItem>
+                              <SelectItem value="second">Second Floor</SelectItem>
+                              <SelectItem value="third">Third Floor</SelectItem>
+                              <SelectItem value="fourth">Fourth Floor</SelectItem>
+                              <SelectItem value="fifth">Fifth Floor</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <Button variant="outline" size="sm">
+                            Load
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="sandwich"
+                          checked={sandwich}
+                          onCheckedChange={(checked) => setSandwich(checked as boolean)}
+                        />
+                        <Label htmlFor="sandwich">Sandwich</Label>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
