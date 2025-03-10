@@ -289,12 +289,12 @@ export default function Canvas3D({
       // Add coordinate label
       const coordText = `(${Math.round(position.x)}, ${Math.round(position.y)}, ${Math.round(zPosition)})`;
       const labelSprite = makeTextSprite(coordText, {
-        fontsize: 24,
+        fontsize: 28,
         fontface: "Arial",
-        textColor: { r: 0, g: 0, b: 0, a: 1.0 },
+        textColor: { r: 128, g: 128, b: 128, a: 1.0 }, // Medium gray color
         backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 } // Transparent background
       });
-      labelSprite.position.set(position.x, position.y, zPosition + 30); // Position above the air entry
+      labelSprite.position.set(position.x, position.y, zPosition + 15); // Position closer to the yellow point
       objects.push(labelSprite);
     });
 
