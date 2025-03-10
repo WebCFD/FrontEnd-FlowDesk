@@ -389,14 +389,17 @@ export default function Canvas3D({
     };
   }, []);
 
-  // Update scene when floors data changes
   useEffect(() => {
     if (!sceneRef.current) return;
 
     // Clear previous geometry (except lights and helpers)
     const toRemove: THREE.Object3D[] = [];
     sceneRef.current.traverse((object) => {
-      if (object instanceof THREE.Mesh) {
+      if (
+        object instanceof THREE.Mesh ||
+        object instanceof THREE.Sprite ||
+        object instanceof THREE.ArrowHelper
+      ) {
         toRemove.push(object);
       }
     });
