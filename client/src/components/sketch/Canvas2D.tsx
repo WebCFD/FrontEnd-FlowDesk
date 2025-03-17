@@ -873,7 +873,8 @@ export default function Canvas2D({
 
     if (currentTool === "wall" && isDrawing && currentLine) {
       const nearestPoint = findNearestEndpoint(point);
-      const endPoint = nearestPoint || snapToGrid(point);      setCurrentLine((prev) => (prev ? { ...prev, end: endPoint } : null));
+      const endPoint = nearestPoint || snapToGrid(point);
+      setCurrentLine((prev) => (prev ? { ...prev, end: endPoint } : null));
       setCursorPoint(endPoint);
     }
   };
@@ -894,8 +895,11 @@ export default function Canvas2D({
     });
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
-    // Check for panning first
+  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+    const point = getCanvasPoint(e.nativeEvent);
+
+    // Handle panning
     if (isPanning && lastPanPoint) {
       const dx = e.clientX - lastPanPoint.x;
       const dy = e.clientY - lastPanPoint.y;
@@ -903,9 +907,6 @@ export default function Canvas2D({
       setLastPanPoint({ x: e.clientX, y: e.clientY });
       return;
     }
-
-    const point = getCanvasPoint(e);
-    setHoverPoint(point);
 
     // Handle measurement preview
     if (currentTool === "measure" && isMeasuring) {
@@ -954,7 +955,7 @@ export default function Canvas2D({
 
     // Rest of the mouse move handler...
     if (isDraggingAirEntry && draggedAirEntry.index !== -1) {
-      const point = getCanvasPoint(e);
+      const point = getCanvasPoint(e.nativeEvent);
       console.log(
         "Mouse move with drag state:",
         isDraggingAirEntry,
@@ -978,27 +979,24 @@ export default function Canvas2D({
       return;
     }
 
-    throttleMouseMove(e);
+    throttleMouseMove(e.nativeEvent);
   };
 
-  const handleMouseDown = (e: MouseEvent) => {
-    const point = getCanvasPoint(e);
-
-    if (panMode || e.button === 2) {
-      e.preventDefault();
-      setIsPanning(true);
-      setLastPanPoint({ x: e.clientX, y: e.clientY });
-      return;
-    }
+  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    e.preventDefault(); // Prevent default browser behavior
+    const point = getCanvasPoint(e.nativeEvent);
 
     if (e.button === 2) { // Right click
+      setIsPanning(true);
+      setLastPanPoint({ x: e.clientX, y: e.clientY });
+
+      // Check for endpoint dragging
       const pointInfo = findPointAtLocation(point);
       if (pointInfo) {
         setIsDraggingEndpoint(true);
         setDraggedPoint(pointInfo);
-        e.preventDefault(); // Prevent context menu
-        return;
       }
+      return;
     }
 
     // Rest of handleMouseDown remains unchanged for left-click functionality
@@ -1074,11 +1072,17 @@ export default function Canvas2D({
     }
   };
 
-  const handleMouseUp = (e: MouseEvent) => {
-    // First check if we're panning and need to stop
+  const handleMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+
     if (isPanning) {
-      handlePanEnd();
-      return;
+      setIsPanning(false);
+      setLastPanPoint(null);
+    }
+
+    if (isDraggingEndpoint) {
+      setIsDraggingEndpoint(false);
+      setDraggedPoint({ point: { x: 0, y: 0 }, lines: [], isStart: [] });
     }
 
     // Clean up measurement when switching tools
@@ -1098,11 +1102,6 @@ export default function Canvas2D({
       return;
     }
 
-    if (isDraggingEndpoint) {
-      setIsDraggingEndpoint(false);
-      setDraggedPoint({ point: { x: 0, y: 0 }, lines: [], isStart: [] });
-      return;
-    }
 
     if (currentTool === "wall" && isDrawing && currentLine) {
       const minLength = 5;
@@ -1241,6 +1240,11 @@ export default function Canvas2D({
       }
     }
     return null;
+  };
+
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
   };
 
   useEffect(() => {
@@ -1756,9 +1760,9 @@ export default function Canvas2D({
       setNewAirEntryDetails(null);
     };
 
-    const handleContextMenu = (e: Event) => {
-      console.log("Context menu prevented");
+    const handleContextMenu = (e: React.MouseEvent) => {
       e.preventDefault();
+      e.stopPropagation();
     };
 
     const [currentToolState, setCurrentToolState] = useState<
@@ -1780,7 +1784,7 @@ export default function Canvas2D({
 
       if (currentTool === "measure") {
         // Ruler icon matching the Lucide Ruler component
-        return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%2300000\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-linejoin=\"round\"><path d=\"M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z\"/><path d=\"m14.5 12.5 2-2\"/><path d=\"m11.5 9.5 2-2\"/><path d=\"m8.5 6.5 2-2\"/><path d=\"m17.5 15.5 2-2\"/></svg>') 5 15, auto";
+        return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%2300000\" stroke-width=\"2` stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-linejoin=\"round\"><path d=\"M21.3 15.3a2.4 2.4 0 0 10 3.4l-2.6 2.6a2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z\"/><path d=\"m14.5 12.5 2-2\"/><path d=\"m11.5 9.5 2-2\"/><path d=\"m8.5 6.5 2-2\"/><path d=\"m17.5 15.5 2-2\"/></svg>') 5 15, auto";
       }
 
       // 3. Check for Air Entry element placement modes
@@ -1806,24 +1810,22 @@ export default function Canvas2D({
     return (
       <div
         ref={containerRef}
-        className="relative w-full h-full overflow-hidden bg-background"
+        className="relative w-full h-full bg-background"
         onContextMenu={handleContextMenu}
       >
         <canvas
           ref={canvasRef}
           width={dimensions.width}
           height={dimensions.height}
+          className="w-full h-full"
+          style={{ cursor: getCursor() }}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseLeave}
           onWheel={handleZoomWheel}
+          onContextMenu={handleContextMenu}
           onDoubleClick={handleDoubleClick}
-          className={cn(
-            "absolute top-0 left-0 w-full h-full",
-            panMode && "cursor-move"
-          )}
-          style={{ cursor: getCursor() }}
         />
         <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-white/80 p-2 rounded-lg shadow-sm">
           {isMultifloor && (
