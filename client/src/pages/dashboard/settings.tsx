@@ -123,6 +123,19 @@ export default function Settings() {
             </div>
           </CardContent>
         </Card>
+
+        {/* New 2D Sketcher Settings Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle>2D Sketcher Settings</CardTitle>
+            <CardDescription>
+              Configure your 2D sketching environment
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Content will be added here in future updates */}
+          </CardContent>
+        </Card>
       </div>
     </DashboardLayout>
   );
