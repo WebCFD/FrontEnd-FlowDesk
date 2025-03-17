@@ -21,8 +21,8 @@ interface HighlightState {
 let isProcessingMouseMove = false;
 let lastMouseMoveEvent: MouseEvent | null = null;
 
-const POINT_RADIUS = 4;
-const SNAP_DISTANCE = 15;
+const POINT_RADIUS = 3;
+const SNAP_DISTANCE = 1;
 const PIXELS_TO_CM = 25 / 20;
 const MIN_ZOOM = 0.25;
 const MAX_ZOOM = 4;

@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
+import { Slider } from "@/components/ui/slider";
 
 interface Theme {
   primary: string;
@@ -21,6 +22,7 @@ export default function Settings() {
     appearance: 'system',
     radius: 0.5
   });
+  const [snapDistance, setSnapDistance] = useState(5); // Default value
 
   const variants = [
     { value: 'professional', label: 'Professional' },
@@ -39,6 +41,14 @@ export default function Settings() {
     toast({
       title: "Theme updated",
       description: "Your dashboard theme has been updated successfully."
+    });
+  };
+
+  const handleSnapDistanceChange = (value: number[]) => {
+    setSnapDistance(value[0]);
+    toast({
+      title: "Drawing Resolution updated",
+      description: "Your sketching resolution has been updated successfully."
     });
   };
 
@@ -133,7 +143,26 @@ export default function Settings() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Content will be added here in future updates */}
+            <div className="space-y-4">
+              <div>
+                <Label>Drawing Resolution</Label>
+                <div className="flex items-center gap-4 mt-2">
+                  <div className="flex-1">
+                    <Slider
+                      value={[snapDistance]}
+                      onValueChange={handleSnapDistanceChange}
+                      min={0.2}
+                      max={10}
+                      step={0.4}
+                      className="w-full"
+                    />
+                  </div>
+                  <span className="text-sm text-muted-foreground w-12 text-right">
+                    {snapDistance.toFixed(1)}
+                  </span>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
