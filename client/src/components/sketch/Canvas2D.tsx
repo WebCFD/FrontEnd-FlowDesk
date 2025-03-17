@@ -6,7 +6,6 @@ import { Minus, Plus, Move, Eraser, Ruler } from "lucide-react";
 import AirEntryDialog from "./AirEntryDialog";
 import { cn } from "@/lib/utils";
 import { useSketchStore } from "@/lib/stores/sketch-store";
-import crypto from 'crypto';
 
 interface Measurement {
   start: Point;
@@ -267,6 +266,7 @@ export default function Canvas2D({
     lines: Line[];
     isStart: boolean[];
   }>({ point: { x: 0, y: 0 }, lines: [], isStart: [] });
+
   const [isDraggingAirEntry, setIsDraggingAirEntry] = useState(false);
   const [draggedAirEntry, setDraggedAirEntry] = useState<{
     index: number;
@@ -287,9 +287,6 @@ export default function Canvas2D({
     position: Point;
     line: Line;
   } | null>(null);
-  const [measureStart, setMeasureStart] = useState<Point | null>(null);
-  const [measureEnd, setMeasureEnd] = useState<Point | null>(null);
-  const [isMeasuring, setIsMeasuring] = useState(false);
   const [hoveredEndpoint, setHoveredEndpoint] = useState<{
     point: Point;
     lines: Line[];
@@ -299,6 +296,9 @@ export default function Canvas2D({
     index: number;
     entry: AirEntry;
   } | null>(null);
+  const [measureStart, setMeasureStart] = useState<Point | null>(null);
+  const [measureEnd, setMeasureEnd] = useState<Point | null>(null);
+  const [isMeasuring, setIsMeasuring] = useState(false);
   const { snapDistance } = useSketchStore();
 
   const createCoordinateSystem = (): Line[] => {
@@ -854,7 +854,8 @@ export default function Canvas2D({
             },
           });
         } else {
-          const nearbyLines = findLinesNearPoint(point);          setHighlightState({
+          const nearbyLines = findLinesNearPoint(point);
+          setHighlightState({
             lines: nearbyLines,
             airEntry: null,
             measurement: null,
@@ -862,8 +863,7 @@ export default function Canvas2D({
         }
       } else if (currentAirEntry) {
         setHighlightState({
-          lines: findLinesNearPoint(point),
-          airEntry: null,
+          lines: findLinesNearPoint(point),          airEntry: null,
           measurement: null,
         });
       }
@@ -893,18 +893,15 @@ export default function Canvas2D({
     });
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    e.preventDefault();
-    const point = getCanvasPoint(e.nativeEvent);
-
-    // Handle panning
-    if (isPanning && lastPanPoint) {
-      const dx = e.clientX - lastPanPoint.x;
-      const dy = e.clientY - lastPanPoint.y;
-      setPan((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
-      setLastPanPoint({ x: e.clientX, y: e.clientY });
+  const handleMouseMove = (e: MouseEvent) => {
+    // Check for panning first
+    if (isPanning) {
+      handlePanMove(e);
       return;
     }
+
+    const point = getCanvasPoint(e);
+    setHoverPoint(point);
 
     // Handle measurement preview
     if (currentTool === "measure" && isMeasuring) {
@@ -912,48 +909,8 @@ export default function Canvas2D({
       return;
     }
 
-    // Handle endpoint dragging
-    if (isDraggingEndpoint && draggedPoint.lines.length > 0) {
-      const targetPoint = snapToGrid(point);
-      const oldLines = [...lines];
-      const newLines = [...lines];
-      let linesUpdated = false;
-
-      draggedPoint.lines.forEach((line, index) => {
-        const lineIndex = newLines.findIndex((l) => l.id === line.id);
-        if (lineIndex >= 0) {
-          newLines[lineIndex] = {
-            ...newLines[lineIndex],
-            ...(draggedPoint.isStart[index]
-              ? { start: targetPoint }
-              : { end: targetPoint }),
-          };
-          linesUpdated = true;
-        }
-      });
-
-      if (linesUpdated) {
-        onLinesUpdate?.(newLines);
-        updateAirEntriesWithWalls(newLines, oldLines);
-        setDraggedPoint({
-          point: targetPoint,
-          lines: draggedPoint.lines,
-          isStart: draggedPoint.isStart,
-        });
-      }
-      return;
-    }
-
-    if (currentTool === "wall" && isDrawing && currentLine) {
-      const nearestPoint = findNearestEndpoint(point);
-      const endPoint = nearestPoint || snapToGrid(point);
-      setCurrentLine((prev) => (prev ? { ...prev, end: endPoint } : null));
-      setCursorPoint(endPoint);
-    }
-
-    // Rest of the mouse move handler...
     if (isDraggingAirEntry && draggedAirEntry.index !== -1) {
-      const point = getCanvasPoint(e.nativeEvent);
+      const point = getCanvasPoint(e);
       console.log(
         "Mouse move with drag state:",
         isDraggingAirEntry,
@@ -977,43 +934,84 @@ export default function Canvas2D({
       return;
     }
 
-    throttleMouseMove(e.nativeEvent);
-  };
+    if (isDraggingEndpoint) {
+      const point = getCanvasPoint(e);
+      const targetPoint = fineDragSnap(point);
 
-  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    e.preventDefault(); // Prevent default browser behavior
-    const point = getCanvasPoint(e.nativeEvent);
+      if (draggedPoint.lines.length > 0) {
+        const oldLines = [...lines];
+        const newLines = [...lines];
+        let linesUpdated = false;
 
-    if (e.button === 2) { // Right click
-      setIsPanning(true);
-      setLastPanPoint({ x: e.clientX, y: e.clientY });
+        draggedPoint.lines.forEach((line, index) => {
+          const lineIndex = newLines.findIndex((l) => l.id === line.id);
 
-      // Check for endpoint dragging
-      const pointInfo = findPointAtLocation(point);
-      if (pointInfo) {
-        setIsDraggingEndpoint(true);
-        setDraggedPoint(pointInfo);
+          if (lineIndex >= 0) {
+            newLines[lineIndex] = {
+              ...newLines[lineIndex],
+              ...(draggedPoint.isStart[index]
+                ? { start: targetPoint }
+                : { end: targetPoint }),
+            };
+            linesUpdated = true;
+          }
+        });
+
+        if (linesUpdated) {
+          onLinesUpdate?.(newLines);
+          updateAirEntriesWithWalls(newLines, oldLines);
+
+          const updatedLines: Line[] = [];
+          const updatedIsStart: boolean[] = [];
+
+          draggedPoint.lines.forEach((line, index) => {
+            const newLine = newLines.find((l) => l.id === line.id);
+            if (newLine) {
+              updatedLines.push(newLine);
+              updatedIsStart.push(draggedPoint.isStart[index]);
+            }
+          });
+
+          setDraggedPoint({
+            point: targetPoint,
+            lines: updatedLines,
+            isStart: updatedIsStart,
+          });
+        }
+        return;
       }
-      return;
     }
 
-    // Rest of handleMouseDown remains unchanged for left-click functionality
+    throttleMouseMove(e);
+  };
+
+  const handleMouseDown = (e: MouseEvent) => {
+    if (e.button !== 0) return; // Only handle left clicks
+
+    const point = getCanvasPoint(e);
+
     if (currentTool === "measure") {
       if (!isMeasuring) {
+        // Start measurement
         setIsMeasuring(true);
         setMeasureStart(point);
         setMeasureEnd(point);
       } else if (measureStart && measureEnd) {
-        const distance = getLineLength({
+        // Complete measurement only on second click
+        const distance = Math.sqrt(
+          Math.pow(measureEnd.x - measureStart.x, 2) +
+            Math.pow(measureEnd.y - measureStart.y, 2),
+        );
+
+        const newMeasurement = {
           start: measureStart,
           end: measureEnd,
-        });
-        const newMeasurement: Measurement = {
-          start: measureStart,
-          end: measureEnd,
-          distance,
+          distance: pixelsToCm(distance),
         };
+
         onMeasurementsUpdate?.([...measurements, newMeasurement]);
+
+        // Reset measurement state
         setIsMeasuring(false);
         setMeasureStart(null);
         setMeasureEnd(null);
@@ -1021,66 +1019,83 @@ export default function Canvas2D({
       return;
     }
 
-    if (currentTool === "wall") {
-      const nearestPoint = findNearestEndpoint(point);
-      const startPoint = nearestPoint || snapToGrid(point);
-      setCurrentLine({
-        id: crypto.randomUUID(),
-        start: startPoint,
-        end: startPoint,
-      });
-      setIsDrawing(true);
-      setCursorPoint(startPoint);
-    } else if (currentTool === "eraser") {
-      const airEntryInfo = findAirEntryAtLocation(point);
-      const measurementInfo = findMeasurementAtPoint(point, measurements);
-
-      if (airEntryInfo) {
-        const newAirEntries = airEntries.filter((_, i) => i !== airEntryInfo.index);
-        onAirEntriesUpdate?.(newAirEntries);
-      } else if (measurementInfo) {
-        const newMeasurements = measurements.filter((_, i) => i !== measurementInfo.index);
-        onMeasurementsUpdate?.(newMeasurements);
-      } else {
-        const nearbyLines = findLinesNearPoint(point);
-        if (nearbyLines.length > 0) {
-          const newLines = lines.filter(
-            (line) =>
-              !nearbyLines.some(
-                (nearbyLine) =>
-                  arePointsNearlyEqual(line.start, nearbyLine.start) &&
-                  arePointsNearlyEqual(line.end, nearbyLine.end)
-              )
-          );
-          onLinesUpdate?.(newLines);
-        }
+    // For left-click (button 0)
+    if (e.button === 0) {
+      // If pan mode is active, use left-click for panning
+      if (panMode) {
+        handlePanStart(e);
+        return;
       }
-      setHighlightState({ lines: [], airEntry: null, measurement: null });
-    } else if (currentAirEntry) {
-      const selectedLines = findLinesNearPoint(point);
-      if (selectedLines.length > 0) {
-        const selectedLine = selectedLines[0];
-        const exactPoint = getPointOnLine(selectedLine, point);
-        setNewAirEntryDetails({
-          type: currentAirEntry,
-          position: exactPoint,
-          line: selectedLine,
+
+      // Handle measurement tool
+
+
+      if (currentTool === "wall") {
+        const nearestPoint = findNearestEndpoint(point);
+        const startPoint = nearestPoint || snapToGrid(point);
+        const newLineId = Math.random().toString(36).substring(2, 9);
+        setCurrentLine({
+          id: newLineId,
+          start: startPoint,
+          end: startPoint,
         });
+        setIsDrawing(true);
+        setCursorPoint(startPoint);
+      } else if (currentTool === "eraser") {
+        const airEntryInfo = findAirEntryAtLocation(point);
+        const measurementInfo = findMeasurementAtPoint(
+          point,
+          measurements,
+        );
+
+        if (airEntryInfo) {
+          const newAirEntries = airEntries.filter(
+            (_, i) => i !== airEntryInfo.index,
+          );
+          onAirEntriesUpdate?.(newAirEntries);
+        } else if (measurementInfo) {
+          const newMeasurements = measurements.filter(
+            (_, i) => i !== measurementInfo.index,
+          );
+          onMeasurementsUpdate?.(newMeasurements);
+        } else {
+          const nearbyLines = findLinesNearPoint(point);
+          if (nearbyLines.length > 0) {
+            const newLines = lines.filter(
+              (line) =>
+                !nearbyLines.some(
+                  (nearbyLine) =>
+                    arePointsNearlyEqual(line.start, nearbyLine.start) &&
+                    arePointsNearlyEqual(line.end, nearbyLine.end),
+                ),
+            );
+            onLinesUpdate?.(newLines);
+          }
+        }
+        setHighlightState({ lines: [], airEntry: null, measurement: null });
+        return;
+      } else if (currentAirEntry) {
+        const selectedLines = findLinesNearPoint(point);
+        if (selectedLines.length > 0) {
+          const selectedLine = selectedLines[0];
+          const exactPoint = getPointOnLine(selectedLine, point);
+
+          // Instead of creating the air entry immediately, store the details and show dialog
+          setNewAirEntryDetails({
+            type: currentAirEntry,
+            position: exactPoint,
+            line: selectedLine,
+          });
+        }
       }
     }
   };
 
-  const handleMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    e.preventDefault();
-
+  const handleMouseUp = (e: MouseEvent) => {
+    // First check if we're panning and need to stop
     if (isPanning) {
-      setIsPanning(false);
-      setLastPanPoint(null);
-    }
-
-    if (isDraggingEndpoint) {
-      setIsDraggingEndpoint(false);
-      setDraggedPoint({ point: { x: 0, y: 0 }, lines: [], isStart: [] });
+      handlePanEnd();
+      return;
     }
 
     // Clean up measurement when switching tools
@@ -1100,19 +1115,22 @@ export default function Canvas2D({
       return;
     }
 
+    if (isDraggingEndpoint) {
+      setIsDraggingEndpoint(false);
+      setDraggedPoint({ point: { x: 0, y: 0 }, lines: [], isStart: [] });
+      return;
+    }
 
     if (currentTool === "wall" && isDrawing && currentLine) {
-      const minLength = 5;
-      const dx = currentLine.end.x - currentLine.start.x;
-      const dy = currentLine.end.y - currentLine.start.y;
-      const length = Math.sqrt(dx * dx + dy * dy);
-
-      if (length >= minLength) {
-        onLinesUpdate?.([...lines, currentLine]);
+      if (
+        currentLine.start.x !== currentLine.end.x ||
+        currentLine.start.y !== currentLine.end.y
+      ) {
+        const newLines = [...lines, currentLine];
+        onLinesUpdate?.(newLines);
       }
-
-      setIsDrawing(false);
       setCurrentLine(null);
+      setIsDrawing(false);
       setCursorPoint(null);
     }
   };
@@ -1238,11 +1256,6 @@ export default function Canvas2D({
       }
     }
     return null;
-  };
-
-  const handleContextMenu = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
   };
 
   useEffect(() => {
@@ -1672,228 +1685,43 @@ export default function Canvas2D({
       ctx.restore();
     };
 
-    const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value.replace(/[^0-9]/g, "");
-      setZoomInput(value);
-    };
+    canvas.addEventListener("mousedown", handleMouseDown);
+    canvas.addEventListener("mousemove", handleMouseMove);
+    canvas.addEventListener("mouseup", handleMouseUp);
+    canvas.addEventListener("mouseleave", handleMouseLeave);
+    canvas.addEventListener("wheel", handleZoomWheel, { passive: false });
+    canvas.addEventListener("wheel", handleRegularWheel, { passive: true });
+    canvas.addEventListener("contextmenu", handleContextMenu);
+    canvas.addEventListener("dblclick", handleDoubleClick);
 
-    const handleZoomInputBlur = () => {
-      let newZoom = parseInt(zoomInput) / 100;
-      if (isNaN(newZoom)) {
-        newZoom = zoom;
-      } else {
-        newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newZoom));
+    let lastRenderTime = 0;
+    let animationFrameId: number;
+
+    const render = (timestamp: number) => {
+      const elapsed = timestamp - lastRenderTime;
+      if (elapsed > 1000 / 60) {
+        draw();
+        lastRenderTime = timestamp;
       }
-      handleZoomChange(newZoom);
+      animationFrameId = requestAnimationFrame(render);
     };
 
-    const handleZoomInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === "Enter") {
-        e.currentTarget.blur();
+    animationFrameId = requestAnimationFrame(render);
+
+    return () => {
+      canvas.removeEventListener("mousedown", handleMouseDown);
+      canvas.removeEventListener("mousemove", handleMouseMove);
+      canvas.removeEventListener("mouseup", handleMouseUp);
+      canvas.removeEventListener("mouseleave", handleMouseLeave);
+      canvas.removeEventListener("wheel", handleZoomWheel);
+      canvas.removeEventListener("wheel", handleRegularWheel);
+      canvas.removeEventListener("contextmenu", handleContextMenu);
+      canvas.removeEventListener("dblclick", handleDoubleClick);
+
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
       }
     };
-
-    const fineDragSnap = (point: Point): Point => {
-      // Simply return the original point without snapping
-      return point;
-    };
-
-    const handleDoubleClick = (e: MouseEvent) => {
-      const clickPoint = getCanvasPoint(e);
-      const airEntryInfo = findAirEntryAtLocation(clickPoint);
-
-      if (airEntryInfo) {
-        setEditingAirEntry({
-          index: airEntryInfo.index,
-          entry: airEntryInfo.entry,
-        });
-      }
-    };
-
-    const handleAirEntryEdit = (index: number, dimensions: {
-      width: number;
-      height: number;
-      distanceToFloor?: number;
-    }) => {
-      if (!editingAirEntry) return;
-
-      const updatedAirEntries = [...airEntries];
-      updatedAirEntries[index] = {
-        ...editingAirEntry.entry,
-        dimensions: dimensions, // Store original cm values
-      };
-
-      onAirEntriesUpdate?.(updatedAirEntries);
-      setEditingAirEntry(null);
-    };
-
-    const handleNewAirEntryConfirm = (dimensions: {
-      width: number;
-      height: number;
-      distanceToFloor?: number;
-    }) => {
-      if (!newAirEntryDetails || !currentAirEntry) return;
-
-      // Convert dimensions from cm to pixels
-      const pixelDimensions = {
-        width: dimensions.width / PIXELS_TO_CM,
-        height: dimensions.height / PIXELS_TO_CM,
-        distanceToFloor: dimensions.distanceToFloor
-          ? dimensions.distanceToFloor / PIXELS_TO_CM
-          : undefined,
-      };
-
-      const newAirEntry: AirEntry = {
-        type: currentAirEntry,
-        position: calculatePositionAlongWall(
-          newAirEntryDetails.line,
-          newAirEntryDetails.position,
-        ),
-        dimensions: dimensions, // Store original cm values
-        line: newAirEntryDetails.line,
-        lineId: newAirEntryDetails.line.id,
-      };
-
-      onAirEntriesUpdate?.([...airEntries, newAirEntry]);
-      setNewAirEntryDetails(null);
-    };
-
-    const handleContextMenu = (e: React.MouseEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-    };
-
-    const [currentToolState, setCurrentToolState] = useState<
-      "wall" | "eraser" | "measure" | null
-    >(null);
-    const setCurrentTool = (tool: "wall" | "eraser" | "measure" | null) => {
-      setCurrentToolState(tool);
-    };
-
-    const getCursor = (): string => {
-      // 1. Check for panning mode (either button-activated or right-click)
-      if (panMode || isPanning) return "move";
-
-      // 2. Check for specific tools and return custom SVG cursors matching Lucide icons
-      if (currentTool === "eraser") {
-        // Eraser icon matching the LucideEraser component
-        return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000000\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L15 19\"/><path d=\"M22 21H7\"/><path d=\"m5 11 9 9\"/></svg>') 5 15, auto";
-      }
-
-      if (currentTool === "measure") {
-        // Ruler icon matching the Lucide Ruler component
-        return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%2300000\" stroke-width=\"2` stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-linejoin=\"round\"><path d=\"M21.3 15.3a2.4 2.4 0 0 10 3.4l-2.6 2.6a2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z\"/><path d=\"m14.5 12.5 2-2\"/><path d=\"m11.5 9.5 2-2\"/><path d=\"m8.5 6.5 2-2\"/><path d=\"m17.5 15.5 2-2\"/></svg>') 5 15, auto";
-      }
-
-      // 3. Check for Air Entry element placement modes
-      if (currentAirEntry === "window") {
-        // Blue rectangle cursor for window placement
-        return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%233b82f6\" stroke-width=\"2\"><rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"2\"/></svg>') 8 8, crosshair";
-      }
-
-      if (currentAirEntry === "door") {
-        // Brown rectangle cursor for door placement
-        return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23b45309\" stroke-width=\"2\"><rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"2\"/></svg>') 8 8, crosshair";
-      }
-
-      if (currentAirEntry === "vent") {
-        // Green rectangle cursor for vent placement
-        return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%2322c55e\" stroke-width=\"2\"><rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"2\"/></svg>') 8 8, crosshair";
-      }
-
-      // 4. Default cursor when no special mode is active
-      return "default";
-    };
-
-    return (
-      <div
-        ref={containerRef}
-        className="relative w-full h-full bg-background"
-        onContextMenu={handleContextMenu}
-      >
-        <canvas
-          ref={canvasRef}
-          width={dimensions.width}
-          height={dimensions.height}
-          className="w-full h-full"
-          style={{ cursor: getCursor() }}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseLeave}
-          onWheel={handleZoomWheel}
-          onContextMenu={handleContextMenu}
-          onDoubleClick={handleDoubleClick}
-        />
-        <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-white/80 p-2 rounded-lg shadow-sm">
-          {isMultifloor && (
-            <Input
-              value={floorText}
-              readOnly
-              className="w-32 h-8 text-center text-sm bg-muted cursor-default"
-            />
-          )}
-          <div className="w-px h-6 bg-border mx-2" />
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handleZoomOut}
-            disabled={zoom <= MIN_ZOOM}
-          >
-            <Minus className="h-4 w-4" />
-          </Button>
-          <div className="flex items-center">
-            <Input
-              type="number"
-              value={zoomInput}
-              onChange={handleZoomInputChange}
-              onBlur={handleZoomInputBlur}
-              onKeyDown={handleZoomInputKeyDown}
-              className="w-16 h-8 text-center text-sm"
-              min={MIN_ZOOM * 100}
-              max={MAX_ZOOM * 100}
-            />
-            <span className="text-sm font-medium ml-1">%</span>
-          </div>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handleZoomIn}
-            disabled={zoom >= MAX_ZOOM}
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-          <div className="w-px h-6 bg-border mx-2" />
-          <Button
-            variant={panMode ? "default" : "outline"}
-            size="icon"
-            onClick={togglePanMode}
-          >
-            <Move className="h-4 w-4" />
-          </Button>
-        </div>
-        {editingAirEntry && (
-          <AirEntryDialog
-            type={editingAirEntry.entry.type}
-            isOpen={true}
-            onClose={() => setEditingAirEntry(null)}
-            onConfirm={(dimensions) =>
-              handleAirEntryEdit(editingAirEntry.index, dimensions)
-            }
-            initialDimensions={editingAirEntry.entry.dimensions}
-          />
-        )}
-        {/* Add new dialog for creating air entries */}
-        {newAirEntryDetails && (
-          <AirEntryDialog
-            type={newAirEntryDetails.type}
-            isOpen={true}
-            onClose={() => setNewAirEntryDetails(null)}
-            onConfirm={handleNewAirEntryConfirm}
-          />
-        )}
-      </div>
-    );
   }, [
     dimensions,
     lines,
@@ -1926,23 +1754,151 @@ export default function Canvas2D({
     isMultifloor,
   ]);
 
+  const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/[^0-9]/g, "");
+    setZoomInput(value);
+  };
+
+  const handleZoomInputBlur = () => {
+    let newZoom = parseInt(zoomInput) / 100;
+    if (isNaN(newZoom)) {
+      newZoom = zoom;
+    } else {
+      newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newZoom));
+    }
+    handleZoomChange(newZoom);
+  };
+
+  const handleZoomInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.currentTarget.blur();
+    }
+  };
+
+  const fineDragSnap = (point: Point): Point => {
+    // Simply return the original point without snapping
+    return point;
+  };
+
+  const handleDoubleClick = (e: MouseEvent) => {
+    const clickPoint = getCanvasPoint(e);
+    const airEntryInfo = findAirEntryAtLocation(clickPoint);
+
+    if (airEntryInfo) {
+      setEditingAirEntry({
+        index: airEntryInfo.index,
+        entry: airEntryInfo.entry,
+      });
+    }
+  };
+
+  const handleAirEntryEdit = (index: number, dimensions: {
+    width: number;
+    height: number;
+    distanceToFloor?: number;
+  }) => {
+    if (!editingAirEntry) return;
+
+    const updatedAirEntries = [...airEntries];
+    updatedAirEntries[index] = {
+      ...editingAirEntry.entry,
+      dimensions: dimensions, // Store original cm values
+    };
+
+    onAirEntriesUpdate?.(updatedAirEntries);
+    setEditingAirEntry(null);
+  };
+
+  const handleNewAirEntryConfirm = (dimensions: {
+    width: number;
+    height: number;
+    distanceToFloor?: number;
+  }) => {
+    if (!newAirEntryDetails || !currentAirEntry) return;
+
+    // Convert dimensions from cm to pixels
+    const pixelDimensions = {
+      width: dimensions.width / PIXELS_TO_CM,
+      height: dimensions.height / PIXELS_TO_CM,
+      distanceToFloor: dimensions.distanceToFloor
+        ? dimensions.distanceToFloor / PIXELS_TO_CM
+        : undefined,
+    };
+
+    const newAirEntry: AirEntry = {
+      type: currentAirEntry,
+      position: calculatePositionAlongWall(
+        newAirEntryDetails.line,
+        newAirEntryDetails.position,
+      ),
+      dimensions: dimensions, // Store original cm values
+      line: newAirEntryDetails.line,
+      lineId: newAirEntryDetails.line.id,
+    };
+
+    onAirEntriesUpdate?.([...airEntries, newAirEntry]);
+    setNewAirEntryDetails(null);
+  };
+
+  const handleContextMenu = (e: Event) => {
+    console.log("Context menu prevented");
+    e.preventDefault();
+  };
+
+  const [currentToolState, setCurrentToolState] = useState<
+    "wall" | "eraser" | "measure" | null
+  >(null);
+  const setCurrentTool = (tool: "wall" | "eraser" | "measure" | null) => {
+    setCurrentToolState(tool);
+  };
+
+  const getCursor = (): string => {
+    // 1. Check for panning mode (either button-activated or right-click)
+    if (panMode || isPanning) return "move";
+
+    // 2. Check for specific tools and return custom SVG cursors matching Lucide icons
+    if (currentTool === "eraser") {
+      // Eraser icon matching the LucideEraser component
+      return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000000\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L15 19\"/><path d=\"M22 21H7\"/><path d=\"m5 11 9 9\"/></svg>') 5 15, auto";
+    }
+
+    if (currentTool === "measure") {
+      // Ruler icon matching the Lucide Ruler component
+      return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%2300000\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z\"/><path d=\"m14.5 12.5 2-2\"/><path d=\"m11.5 9.5 2-2\"/><path d=\"m8.5 6.5 2-2\"/><path d=\"m17.5 15.5 2-2\"/></svg>') 5 15, auto";
+    }
+
+    // 3. Check for Air Entry element placement modes
+    if (currentAirEntry === "window") {
+      // Blue rectangle cursor for window placement
+      return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%233b82f6\" stroke-width=\"2\"><rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"2\"/></svg>') 8 8, crosshair";
+    }
+
+    if (currentAirEntry === "door") {
+      // Brown rectangle cursor for door placement
+      return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23b45309\" stroke-width=\"2\"><rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"2\"/></svg>') 8 8, crosshair";
+    }
+
+    if (currentAirEntry === "vent") {
+      // Green rectangle cursor for vent placement
+      return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%2322c55e\" stroke-width=\"2\"><rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"2\"/></svg>') 8 8, crosshair";
+    }
+
+    // 4. Default cursor when no special mode is active
+    return "default";
+  };
+
   return (
-    <div
-      ref={containerRef}
-      className="relative w-full h-full bg-background"
-      onContextMenu={handleContextMenu}
-    >
+    <div className="relative w-full h-full bg-background">
       <canvas
         ref={canvasRef}
         width={dimensions.width}
         height={dimensions.height}
-        className="w-full h-full"
+        className={`w-full h-full`}
         style={{ cursor: getCursor() }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseLeave}
-        onContextMenu={handleContextMenu}
+        onContextMenu={(e) => e.preventDefault()}
       />
       <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-white/80 p-2 rounded-lg shadow-sm">
         {isMultifloor && (
@@ -1963,12 +1919,14 @@ export default function Canvas2D({
         </Button>
         <div className="flex items-center">
           <Input
-            type="text"
+            type="number"
             value={zoomInput}
             onChange={handleZoomInputChange}
             onBlur={handleZoomInputBlur}
             onKeyDown={handleZoomInputKeyDown}
             className="w-16 h-8 text-center text-sm"
+            min={MIN_ZOOM * 100}
+            max={MAX_ZOOM * 100}
           />
           <span className="text-sm font-medium ml-1">%</span>
         </div>
@@ -1989,25 +1947,24 @@ export default function Canvas2D({
           <Move className="h-4 w-4" />
         </Button>
       </div>
-        {editingAirEntry && (
-          <AirEntryDialog
-            type={editingAirEntry.entry.type}
-            isOpen={true}
-            onClose={() => setEditingAirEntry(null)}
-            onConfirm={(dimensions) =>
-              handleAirEntryEdit(editingAirEntry.index, dimensions)
-            }
-            initialDimensions={editingAirEntry.entry.dimensions}
-          />
-        )}
-        {newAirEntryDetails && (
-          <AirEntryDialog
-            type={newAirEntryDetails.type}
-            isOpen={true}
-            onClose={() => setNewAirEntryDetails(null)}
-            onConfirm={handleNewAirEntryConfirm}
-          />
-        )}
+      {editingAirEntry && (
+        <AirEntryDialog
+          type={editingAirEntry.entry.type}
+          isOpen={true}
+          onClose={() => setEditingAirEntry(null)}
+          onConfirm={(dimensions) => handleAirEntryEdit(editingAirEntry.index, dimensions)}
+          initialDimensions={editingAirEntry.entry.dimensions}
+        />
+      )}
+      {/* Add new dialog for creating air entries */}
+      {newAirEntryDetails && (
+        <AirEntryDialog
+          type={newAirEntryDetails.type}
+          isOpen={true}
+          onClose={() => setNewAirEntryDetails(null)}
+          onConfirm={handleNewAirEntryConfirm}
+        />
+      )}
     </div>
   );
 }
