@@ -871,10 +871,9 @@ export default function Canvas2D({
       }
     }
 
-    if (currentTool=== "wall" && isDrawing && currentLine) {
+    if (currentTool === "wall" && isDrawing && currentLine) {
       const nearestPoint = findNearestEndpoint(point);
-      const endPoint = nearestPoint || snapToGrid(point);
-      setCurrentLine((prev) => (prev ? { ...prev, end: endPoint } : null));
+      const endPoint = nearestPoint || snapToGrid(point);      setCurrentLine((prev) => (prev ? { ...prev, end: endPoint } : null));
       setCursorPoint(endPoint);
     }
   };
@@ -983,14 +982,14 @@ export default function Canvas2D({
   };
 
   const handleMouseDown = (e: MouseEvent) => {
+    const point = getCanvasPoint(e);
+
     if (panMode || e.button === 2) {
       e.preventDefault();
       setIsPanning(true);
       setLastPanPoint({ x: e.clientX, y: e.clientY });
       return;
     }
-
-    const point = getCanvasPoint(e);
 
     if (e.button === 2) { // Right click
       const pointInfo = findPointAtLocation(point);
@@ -1002,6 +1001,7 @@ export default function Canvas2D({
       }
     }
 
+    // Rest of handleMouseDown remains unchanged for left-click functionality
     if (currentTool === "measure") {
       if (!isMeasuring) {
         setIsMeasuring(true);
@@ -1037,20 +1037,13 @@ export default function Canvas2D({
       setCursorPoint(startPoint);
     } else if (currentTool === "eraser") {
       const airEntryInfo = findAirEntryAtLocation(point);
-      const measurementInfo = findMeasurementAtPoint(
-        point,
-        measurements,
-      );
+      const measurementInfo = findMeasurementAtPoint(point, measurements);
 
       if (airEntryInfo) {
-        const newAirEntries = airEntries.filter(
-          (_, i) => i !== airEntryInfo.index,
-        );
+        const newAirEntries = airEntries.filter((_, i) => i !== airEntryInfo.index);
         onAirEntriesUpdate?.(newAirEntries);
       } else if (measurementInfo) {
-        const newMeasurements = measurements.filter(
-          (_, i) => i !== measurementInfo.index,
-        );
+        const newMeasurements = measurements.filter((_, i) => i !== measurementInfo.index);
         onMeasurementsUpdate?.(newMeasurements);
       } else {
         const nearbyLines = findLinesNearPoint(point);
@@ -1060,21 +1053,18 @@ export default function Canvas2D({
               !nearbyLines.some(
                 (nearbyLine) =>
                   arePointsNearlyEqual(line.start, nearbyLine.start) &&
-                  arePointsNearlyEqual(line.end, nearbyLine.end),
-              ),
+                  arePointsNearlyEqual(line.end, nearbyLine.end)
+              )
           );
           onLinesUpdate?.(newLines);
         }
       }
       setHighlightState({ lines: [], airEntry: null, measurement: null });
-      return;
     } else if (currentAirEntry) {
       const selectedLines = findLinesNearPoint(point);
       if (selectedLines.length > 0) {
         const selectedLine = selectedLines[0];
         const exactPoint = getPointOnLine(selectedLine, point);
-
-        // Instead of creating the air entry immediately, store the details and show dialog
         setNewAirEntryDetails({
           type: currentAirEntry,
           position: exactPoint,
