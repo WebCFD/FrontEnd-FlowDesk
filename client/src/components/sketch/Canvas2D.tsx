@@ -267,7 +267,6 @@ export default function Canvas2D({
     lines: Line[];
     isStart: boolean[];
   }>({ point: { x: 0, y: 0 }, lines: [], isStart: [] });
-
   const [isDraggingAirEntry, setIsDraggingAirEntry] = useState(false);
   const [draggedAirEntry, setDraggedAirEntry] = useState<{
     index: number;
@@ -288,6 +287,9 @@ export default function Canvas2D({
     position: Point;
     line: Line;
   } | null>(null);
+  const [measureStart, setMeasureStart] = useState<Point | null>(null);
+  const [measureEnd, setMeasureEnd] = useState<Point | null>(null);
+  const [isMeasuring, setIsMeasuring] = useState(false);
   const [hoveredEndpoint, setHoveredEndpoint] = useState<{
     point: Point;
     lines: Line[];
@@ -297,9 +299,6 @@ export default function Canvas2D({
     index: number;
     entry: AirEntry;
   } | null>(null);
-  const [measureStart, setMeasureStart] = useState<Point | null>(null);
-  const [measureEnd, setMeasureEnd] = useState<Point | null>(null);
-  const [isMeasuring, setIsMeasuring] = useState(false);
   const { snapDistance } = useSketchStore();
 
   const createCoordinateSystem = (): Line[] => {
@@ -855,8 +854,7 @@ export default function Canvas2D({
             },
           });
         } else {
-          const nearbyLines = findLinesNearPoint(point);
-          setHighlightState({
+          const nearbyLines = findLinesNearPoint(point);          setHighlightState({
             lines: nearbyLines,
             airEntry: null,
             measurement: null,
@@ -1896,5 +1894,120 @@ export default function Canvas2D({
         )}
       </div>
     );
-  });
+  }, [
+    dimensions,
+    lines,
+    currentLine,
+    isDrawing,
+    zoom,
+    pan,
+    isPanning,
+    panMode,
+    cursorPoint,
+    currentAirEntry,
+    airEntries,
+    onLinesUpdate,
+    hoveredGridPoint,
+    hoverPoint,
+    isDraggingEndpoint,
+    draggedPoint,
+    isDraggingAirEntry,
+    draggedAirEntry,
+    onAirEntriesUpdate,
+    highlightState,
+    editingAirEntry,
+    hoveredAirEntry,
+    hoveredEndpoint,
+    measureStart,
+    measureEnd,
+    isMeasuring,
+    measurements,
+    onMeasurementsUpdate,
+    isMultifloor,
+  ]);
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative w-full h-full bg-background"
+      onContextMenu={handleContextMenu}
+    >
+      <canvas
+        ref={canvasRef}
+        width={dimensions.width}
+        height={dimensions.height}
+        className="w-full h-full"
+        style={{ cursor: getCursor() }}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+        onContextMenu={handleContextMenu}
+      />
+      <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-white/80 p-2 rounded-lg shadow-sm">
+        {isMultifloor && (
+          <Input
+            value={floorText}
+            readOnly
+            className="w-32 h-8 text-center text-sm bg-muted cursor-default"
+          />
+        )}
+        <div className="w-px h-6 bg-border mx-2" />
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={handleZoomOut}
+          disabled={zoom <= MIN_ZOOM}
+        >
+          <Minus className="h-4 w-4" />
+        </Button>
+        <div className="flex items-center">
+          <Input
+            type="text"
+            value={zoomInput}
+            onChange={handleZoomInputChange}
+            onBlur={handleZoomInputBlur}
+            onKeyDown={handleZoomInputKeyDown}
+            className="w-16 h-8 text-center text-sm"
+          />
+          <span className="text-sm font-medium ml-1">%</span>
+        </div>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={handleZoomIn}
+          disabled={zoom >= MAX_ZOOM}
+        >
+          <Plus className="h-4 w-4" />
+        </Button>
+        <div className="w-px h-6 bg-border mx-2" />
+        <Button
+          variant={panMode ? "default" : "outline"}
+          size="icon"
+          onClick={togglePanMode}
+        >
+          <Move className="h-4 w-4" />
+        </Button>
+      </div>
+        {editingAirEntry && (
+          <AirEntryDialog
+            type={editingAirEntry.entry.type}
+            isOpen={true}
+            onClose={() => setEditingAirEntry(null)}
+            onConfirm={(dimensions) =>
+              handleAirEntryEdit(editingAirEntry.index, dimensions)
+            }
+            initialDimensions={editingAirEntry.entry.dimensions}
+          />
+        )}
+        {newAirEntryDetails && (
+          <AirEntryDialog
+            type={newAirEntryDetails.type}
+            isOpen={true}
+            onClose={() => setNewAirEntryDetails(null)}
+            onConfirm={handleNewAirEntryConfirm}
+          />
+        )}
+    </div>
+  );
 }
