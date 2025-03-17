@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Minus, Plus, Move, Eraser, Ruler } from "lucide-react";
 import AirEntryDialog from "./AirEntryDialog";
 import { cn } from "@/lib/utils";
+import { useSketchStore } from "@/lib/stores/sketch-store";
 
 interface Measurement {
   start: Point;
@@ -22,7 +23,6 @@ let isProcessingMouseMove = false;
 let lastMouseMoveEvent: MouseEvent | null = null;
 
 const POINT_RADIUS = 3;
-const SNAP_DISTANCE = 10;
 const PIXELS_TO_CM = 25 / 20;
 const MIN_ZOOM = 0.25;
 const MAX_ZOOM = 4;
@@ -62,10 +62,10 @@ const arePointsNearlyEqual = (p1: Point, p2: Point): boolean => {
   return Math.sqrt(dx * dx + dy * dy) < 1;
 };
 
-const arePointsClose = (p1: Point, p2: Point): boolean => {
+const arePointsClose = (p1: Point, p2: Point, snapDistance: number): boolean => {
   const dx = p1.x - p2.x;
   const dy = p1.y - p2.y;
-  return Math.sqrt(dx * dx + dy * dy) < SNAP_DISTANCE;
+  return Math.sqrt(dx * dx + dy * dy) < snapDistance;
 };
 
 // Line calculation utilities
@@ -227,7 +227,7 @@ interface Canvas2DProps {
   lines: Line[];
   measurements: Measurement[];
   floorText: string;
-  isMultifloor: boolean; // Add new prop
+  isMultifloor: boolean;
   onLinesUpdate?: (lines: Line[]) => void;
   onAirEntriesUpdate?: (airEntries: AirEntry[]) => void;
   onMeasurementsUpdate?: (measurements: Measurement[]) => void;
@@ -241,7 +241,7 @@ export default function Canvas2D({
   lines = [],
   measurements = [],
   floorText,
-  isMultifloor, // Add new prop
+  isMultifloor,
   onLinesUpdate,
   onAirEntriesUpdate,
   onMeasurementsUpdate,
@@ -299,6 +299,7 @@ export default function Canvas2D({
   const [measureStart, setMeasureStart] = useState<Point | null>(null);
   const [measureEnd, setMeasureEnd] = useState<Point | null>(null);
   const [isMeasuring, setIsMeasuring] = useState(false);
+  const { snapDistance } = useSketchStore();
 
   const createCoordinateSystem = (): Line[] => {
     const centerX = dimensions.width / 2;
@@ -477,7 +478,7 @@ export default function Canvas2D({
 
   const findNearestEndpoint = (point: Point): Point | null => {
     let nearest: Point | null = null;
-    let minDistance = SNAP_DISTANCE;
+    let minDistance = snapDistance;
 
     lines.forEach((line) => {
       [line.start, line.end].forEach((endpoint) => {
@@ -497,7 +498,8 @@ export default function Canvas2D({
   const findConnectedLines = (point: Point): Line[] => {
     return lines.filter(
       (line) =>
-        arePointsClose(line.start, point) || arePointsClose(line.end, point),
+        arePointsClose(line.start, point, snapDistance) ||
+        arePointsClose(line.end, point, snapDistance),
     );
   };
 
@@ -573,34 +575,8 @@ export default function Canvas2D({
     const nearbyLines: Line[] = [];
 
     lines.forEach((line) => {
-      const A = point.x - line.start.x;
-      const B = point.y - line.start.y;
-      const C = line.end.x - line.start.x;
-      const D = line.end.y - line.start.y;
-
-      const dot = A * C + B * D;
-      const lenSq = C * C + D * D;
-      let param = -1;
-      if (lenSq !== 0) param = dot / lenSq;
-
-      let xx, yy;
-
-      if (param < 0) {
-        xx = line.start.x;
-        yy = line.start.y;
-      } else if (param > 1) {
-        xx = line.end.x;
-        yy = line.end.y;
-      } else {
-        xx = line.start.x + param * C;
-        yy = line.start.y + param * D;
-      }
-
-      const dx = point.x - xx;
-      const dy = point.y - yy;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-
-      if (distance < SNAP_DISTANCE) {
+      const distance = distanceToLineSegment(point, line.start, line.end);
+      if (distance < snapDistance) {
         nearbyLines.push(line);
       }
     });
@@ -887,8 +863,7 @@ export default function Canvas2D({
         }
       } else if (currentAirEntry) {
         setHighlightState({
-          lines: findLinesNearPoint(point),
-          airEntry: null,
+          lines: findLinesNearPoint(point),          airEntry: null,
           measurement: null,
         });
       }
@@ -1776,7 +1751,7 @@ export default function Canvas2D({
     isMeasuring,
     measurements,
     onMeasurementsUpdate,
-    isMultifloor, // Add isMultifloor to useEffect dependencies
+    isMultifloor,
   ]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1882,7 +1857,8 @@ export default function Canvas2D({
     if (panMode || isPanning) return "move";
 
     // 2. Check for specific tools and return custom SVG cursors matching Lucide icons
-    if (currentTool === "eraser") {      // Eraser icon matching the LucideEraser component
+    if (currentTool === "eraser") {
+      // Eraser icon matching the LucideEraser component
       return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000000\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L15 19\"/><path d=\"M22 21H7\"/><path d=\"m5 11 9 9\"/></svg>') 5 15, auto";
     }
 
