@@ -6,6 +6,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { Slider } from "@/components/ui/slider";
+import { useSketchStore } from "@/lib/stores/sketch-store";
 
 interface Theme {
   primary: string;
@@ -22,7 +23,8 @@ export default function Settings() {
     appearance: 'system',
     radius: 0.5
   });
-  const [snapDistance, setSnapDistance] = useState(5); // Default value
+
+  const { snapDistance, setSnapDistance } = useSketchStore();
 
   const variants = [
     { value: 'professional', label: 'Professional' },
