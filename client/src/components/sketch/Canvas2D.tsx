@@ -876,9 +876,9 @@ export default function Canvas2D({
           measurement: null,
         });
       }
-}
+    }
 
-    if (currentTool === "wall" && isDrawing && currentLine) {
+    if (currentTool === "wall" && isDrawing&& currentLine) {
       const nearestPoint = findNearestEndpoint(point);
       const endPoint = nearestPoint || snapToGrid(point);
       setCurrentLine((prev) => (prev ? { ...prev, end: endPoint } : null));
@@ -1829,8 +1829,8 @@ export default function Canvas2D({
       canvas.removeEventListener("mouseup", handleMouseUp);
       canvas.removeEventListener("mouseleave", handleMouseLeave);
       canvas.removeEventListener("wheel", handleZoomWheel);
-      canvasremoveEventListener("wheel", handleRegularWheel);
-      canvas.removeEventListener("contextmenu", handleContextMenu);
+      canvas.removeEventListener("wheel", handleRegularWheel);
+      canvas.removeEventListener("contextmenu",handleContextMenu);
       canvas.removeEventListener("dblclick", handleDoubleClick);
 
       if (animationFrameId) {
@@ -1867,6 +1867,14 @@ export default function Canvas2D({
     measurements,
     onMeasurementsUpdate,
     isMultifloor,
+    handleMouseDown,
+    handleMouseMove,
+    handleMouseUp,
+    handleMouseLeave,
+    handleZoomWheel,
+    handleRegularWheel,
+    handleContextMenu,
+    handleDoubleClick,
   ]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -2010,17 +2018,17 @@ export default function Canvas2D({
     if (!canvas) return;
 
     // Set cursor based on current tool and state
-    if (isPanning || panMode) {
-      canvas.style.cursor = 'grab';
-    } else if (currentTool === "measure") {
-      canvas.style.cursor = 'crosshair';  // Use crosshair for measurement tool
-    } else if (currentTool === "eraser") {
-      canvas.style.cursor = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"><path d="M19 19H5L19 5V19Z"/></svg>') 12 12, auto`;
-    } else if (currentTool === "wall") {
-      canvas.style.cursor = 'pointer';
-    } else {
-      canvas.style.cursor = 'default';
-    }
+    const cursorStyle = isPanning || panMode
+      ? 'grab'
+      : currentTool === "measure"
+      ? 'crosshair'
+      : currentTool === "eraser"
+      ? `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"><path d="M19 19H5L19 5V19Z"/></svg>') 12 12, auto`
+      : currentTool === "wall"
+      ? 'pointer'
+      : 'default';
+
+    canvas.style.cursor = cursorStyle;
   }, [currentTool, isPanning, panMode]);
 
   return (
