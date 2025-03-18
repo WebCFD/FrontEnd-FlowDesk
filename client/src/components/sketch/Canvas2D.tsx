@@ -409,12 +409,10 @@ export default function Canvas2D({
   };
 
   const handleZoomWheel = (e: WheelEvent) => {
-    if (e.ctrlKey || e.metaKey) {
-      e.preventDefault();
-      const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
-      const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom + delta));
-      handleZoomChange(newZoom);
-    }
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
+    const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom + delta));
+    handleZoomChange(newZoom);
   };
 
   const handleRegularWheel = (e: WheelEvent) => {};
@@ -995,107 +993,78 @@ export default function Canvas2D({
   };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (e.button !== 0) return; // Only handle left clicks
+    // Right-click handling
+    if (e.button === 2) {
+      e.preventDefault();
+      const point = getCanvasPoint(e);
+      const pointInfo = findPointAtLocation(point);
 
-    const point = getCanvasPoint(e);
-
-    if (currentTool === "measure") {
-      if (!isMeasuring) {
-        // Start measurement
-        setIsMeasuring(true);
-        setMeasureStart(point);
-        setMeasureEnd(point);
-      } else if (measureStart && measureEnd) {
-        // Complete measurement only on second click
-        const distance = Math.sqrt(
-          Math.pow(measureEnd.x - measureStart.x, 2) +
-            Math.pow(measureEnd.y - measureStart.y, 2),
-        );
-
-        const newMeasurement = {
-          start: measureStart,
-          end: measureEnd,
-          distance: pixelsToCm(distance),
-        };
-
-        onMeasurementsUpdate?.([...measurements, newMeasurement]);
-
-        // Reset measurement state
-        setIsMeasuring(false);
-        setMeasureStart(null);
-        setMeasureEnd(null);
-      }
-      return;
-    }
-
-    // For left-click (button 0)
-    if (e.button === 0) {
-      // If pan mode is active, use left-click for panning
-      if (panMode) {
-        handlePanStart(e);
+      if (pointInfo) {
+        setIsDraggingEndpoint(true);
+        setDraggedPoint(pointInfo);
+        return;
+      } else {
+        // If not on a point, start panning
+        setIsPanning(true);
+        setLastPanPoint({ x: e.clientX, y: e.clientY });
         return;
       }
+    }
 
-      // Handle measurement tool
+    // Left-click handling continues as before
+    const point = getCanvasPoint(e);
 
+    if (currentTool === "wall") {
+      const nearestPoint = findNearestEndpoint(point);
+      const startPoint = nearestPoint || snapToGrid(point);
 
-      if (currentTool === "wall") {
-        const nearestPoint = findNearestEndpoint(point);
-        const startPoint = nearestPoint || snapToGrid(point);
-        const newLineId = Math.random().toString(36).substring(2, 9);
-        setCurrentLine({
-          id: newLineId,
-          start: startPoint,
-          end: startPoint,
-        });
-        setIsDrawing(true);
-        setCursorPoint(startPoint);
-      } else if (currentTool === "eraser") {
-        const airEntryInfo = findAirEntryAtLocation(point);
-        const measurementInfo = findMeasurementAtPoint(
-          point,
-          measurements,
-        );
-
-        if (airEntryInfo) {
-          const newAirEntries = airEntries.filter(
-            (_, i) => i !== airEntryInfo.index,
-          );
-          onAirEntriesUpdate?.(newAirEntries);
-        } else if (measurementInfo) {
+      setIsDrawing(true);
+      setCurrentLine({
+        id: `line-${Date.now()}`,
+        start: startPoint,
+        end: startPoint,
+      });
+      setCursorPoint(startPoint);
+    } else if (currentTool === "eraser") {
+      const airEntryInfo = findAirEntryAtLocation(point);
+      if (airEntryInfo) {
+        const newAirEntries = airEntries.filter((_, i) => i !== airEntryInfo.index);
+        if (onAirEntriesUpdate) {
+          onAirEntriesUpdate(newAirEntries);
+        }
+      } else {
+        const measurementInfo = findMeasurementAtPoint(point, measurements);
+        if (measurementInfo) {
           const newMeasurements = measurements.filter(
-            (_, i) => i !== measurementInfo.index,
+            (_, i) => i !== measurementInfo.index
           );
-          onMeasurementsUpdate?.(newMeasurements);
+          if (onMeasurementsUpdate) {
+            onMeasurementsUpdate(newMeasurements);
+          }
         } else {
           const nearbyLines = findLinesNearPoint(point);
           if (nearbyLines.length > 0) {
             const newLines = lines.filter(
-              (line) =>
-                !nearbyLines.some(
-                  (nearbyLine) =>
-                    arePointsNearlyEqual(line.start, nearbyLine.start) &&
-                    arePointsNearlyEqual(line.end, nearbyLine.end),
-                ),
+              (line) => !nearbyLines.some((l) => l.id === line.id)
             );
-            onLinesUpdate?.(newLines);
+            if (onLinesUpdate) {
+              onLinesUpdate(newLines);
+            }
           }
         }
-        setHighlightState({ lines: [], airEntry: null, measurement: null });
-        return;
-      } else if (currentAirEntry) {
-        const selectedLines = findLinesNearPoint(point);
-        if (selectedLines.length > 0) {
-          const selectedLine = selectedLines[0];
-          const exactPoint = getPointOnLine(selectedLine, point);
-
-          // Instead of creating the air entry immediately, store the details and show dialog
-          setNewAirEntryDetails({
-            type: currentAirEntry,
-            position: exactPoint,
-            line: selectedLine,
-          });
-        }
+      }
+    } else if (currentTool === "measure") {
+      setIsMeasuring(true);
+      setMeasureStart(point);
+      setMeasureEnd(point);
+    } else if (currentAirEntry) {
+      const nearbyLines = findLinesNearPoint(point);
+      if (nearbyLines.length > 0) {
+        setNewAirEntryDetails({
+          type: currentAirEntry,
+          position: calculatePositionAlongWall(nearbyLines[0], point),
+          line: nearbyLines[0],
+        });
       }
     }
   };
@@ -1432,7 +1401,7 @@ export default function Canvas2D({
       ctx.restore();
     };
 
-    const draw = () => {
+    const drawCanvas = () => {
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
@@ -1812,24 +1781,24 @@ export default function Canvas2D({
     const handleContextMenu = (e: React.MouseEvent<HTMLCanvasElement>) => {
       e.preventDefault();
     };
+    let animationFrameId: number;
 
     canvas.addEventListener("mousedown", handleMouseDown);
     canvas.addEventListener("mousemove", handleMouseMove);
     canvas.addEventListener("mouseup", handleMouseUp);
     canvas.addEventListener("mouseleave", handleMouseLeave);
-    canvas.addEventListener("wheel", handleZoomWheel, { passive: false });
-    canvas.addEventListener("wheel", handleRegularWheel, { passive: true });
+    canvas.addEventListener("wheel", (e) => {
+      if (e.ctrlKey || e.metaKey) {
+        handleZoomWheel(e as WheelEvent);
+      } else {
+        handleRegularWheel(e as WheelEvent);
+      }
+    });
     canvas.addEventListener("contextmenu", handleContextMenu);
     canvas.addEventListener("dblclick", handleDoubleClick);
 
-    let lastRenderTime = 0;
-    let animationFrameId: number;
     const render = (timestamp: number) => {
-      const elapsed = timestamp - lastRenderTime;
-      if (elapsed > 1000 / 60) {
-        draw();
-        lastRenderTime = timestamp;
-      }
+      drawCanvas();
       animationFrameId = requestAnimationFrame(render);
     };
 
@@ -1840,8 +1809,6 @@ export default function Canvas2D({
       canvas.removeEventListener("mousemove", handleMouseMove);
       canvas.removeEventListener("mouseup", handleMouseUp);
       canvas.removeEventListener("mouseleave", handleMouseLeave);
-      canvas.removeEventListener("wheel", handleZoomWheel);
-      canvas.removeEventListener("wheel", handleRegularWheel);
       canvas.removeEventListener("contextmenu", handleContextMenu);
       canvas.removeEventListener("dblclick", handleDoubleClick);
 
@@ -1851,9 +1818,9 @@ export default function Canvas2D({
     };
   }, [
     dimensions,
+    gridSize,
     lines,
     currentLine,
-    isDrawing,
     zoom,
     pan,
     isPanning,
@@ -1870,37 +1837,50 @@ export default function Canvas2D({
     draggedAirEntry,
     onAirEntriesUpdate,
     highlightState,
-    editingAirEntry,
-    hoveredAirEntry,
-    hoveredEndpoint,
-    measureStart,
-    measureEnd,
-    isMeasuring,
+    snapDistance,
     measurements,
     onMeasurementsUpdate,
-    isMultifloor,
+    isMeasuring,
+    measureStart,
+    measureEnd,
+    handleZoomWheel,
+    handleRegularWheel,
+    handlePanStart,
+    handlePanMove,
+    handlePanEnd,
+    getCanvasPoint,
+    handleMouseMove,
+    handleMouseDown,
+    handleMouseUp,
+    handleMouseLeave,
+    findAirEntryAtLocation,
+    updateAirEntriesWithWalls,
+    findMeasurementAtPoint,
+    handleDoubleClick
   ]);
 
-  const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/[^0-9]/g, "");
-    setZoomInput(value);
-  };
+  // Add resize handling effect
+  useEffect(() => {
+    const handleResize = () => {
+      if (containerRef.current) {
+        const { width, height } = containerRef.current.getBoundingClientRect();
+        setDimensions({ width, height });
 
-  const handleZoomInputBlur = () => {
-    let newZoom = parseInt(zoomInput) / 100;
-    if (isNaN(newZoom)) {
-      newZoom = zoom;
-    } else {
-      newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newZoom));
-    }
-    handleZoomChange(newZoom);
-  };
+        if (canvasRef.current) {
+          canvasRef.current.width = width;
+          canvasRef.current.height = height;
+          drawCanvas(); // Redraw immediately after resize
+        }
+      }
+    };
 
-  const handleZoomInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.currentTarget.blur();
-    }
-  };
+    handleResize(); // Initialize on mount
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   const fineDragSnap = (point: Point): Point => {
     // Simply return the original point without snapping
@@ -2024,6 +2004,7 @@ export default function Canvas2D({
         if (canvasRef.current) {
           canvasRef.current.width = width;
           canvasRef.current.height = height;
+          drawCanvas(); // Redraw immediately after resize
         }
       }
     };
@@ -2036,11 +2017,349 @@ export default function Canvas2D({
     };
   }, []);
 
+  let animationFrameId: number;
+  const drawCanvas = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // Clear canvas and set up coordinate system
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    ctx.translate(pan.x, pan.y);
+    ctx.scale(zoom, zoom);
+
+    // Draw grid lines with consistent line width
+    ctx.beginPath();
+    ctx.strokeStyle = "#e5e7eb";
+    ctx.lineWidth = 1 / zoom; // Match wall line scaling
+
+    const centerX = dimensions.width / 2;
+    const centerY = dimensions.height / 2;
+
+    // Calculate visible area based on current pan and zoom
+    const visibleStartX = -pan.x / zoom - gridSize;
+    const visibleEndX = (-pan.x + dimensions.width) / zoom + gridSize;
+    const visibleStartY = -pan.y / zoom - gridSize;
+    const visibleEndY = (-pan.y + dimensions.height) / zoom + gridSize;
+
+    // Calculate grid starting points
+    const startXGrid = Math.floor((visibleStartX - centerX) / gridSize) * gridSize;
+    const endXGrid = Math.ceil((visibleEndX - centerX) / gridSize) * gridSize;
+    const startYGrid = Math.floor((visibleStartY - centerY) / gridSize) * gridSize;
+    const endYGrid = Math.ceil((visibleEndY - centerY) / gridSize) * gridSize;
+
+    // Draw vertical grid lines
+    for (let x = startXGrid; x <= endXGrid; x += gridSize) {
+      ctx.moveTo(centerX + x, centerY + startYGrid);
+      ctx.lineTo(centerX + x, centerY + endYGrid);
+    }
+
+    // Draw horizontal grid lines
+    for (let y = startYGrid; y <= endYGrid; y += gridSize) {
+      ctx.moveTo(centerX + startXGrid, centerY + y);
+      ctx.lineTo(centerX + endXGrid, centerY + y);
+    }
+    ctx.stroke();
+
+    // Draw coordinate system
+    const coordSystem = createCoordinateSystem();
+    coordSystem.forEach((line, index) => {
+      ctx.beginPath();
+      ctx.strokeStyle = index < 3 ? "#ef4444" : "#22c55e";
+      ctx.lineWidth = 2 / zoom; // Match wall line width
+      ctx.moveTo(line.start.x, line.start.y);
+      ctx.lineTo(line.end.x, line.end.y);
+      ctx.stroke();
+    });
+
+    // Draw wall lines
+    lines.forEach((line) => {
+      ctx.strokeStyle = highlightState.lines.includes(line)
+        ? getHighlightColor()
+        : "#000000";
+      ctx.lineWidth = 2 / zoom; // Keep consistent wall line width
+      ctx.beginPath();
+      ctx.moveTo(line.start.x, line.start.y);
+      ctx.lineTo(line.end.x, line.end.y);
+      ctx.stroke();
+    });
+
+    ctx.font = `${12 / zoom}px sans-serif`;
+    ctx.fillStyle = "#64748b";
+    lines.forEach((line) => {
+      const midX = (line.start.x + line.end.x) / 2;
+      const midY = (line.start.y + line.end.y) / 2;
+      const length = Math.round(getLineLength(line));
+      drawWallMeasurements(ctx, line);
+    });
+
+    if (currentLine) {
+      ctx.beginPath();
+      ctx.strokeStyle = "#00000";
+      ctx.lineWidth = 2 / zoom;
+      ctx.moveTo(currentLine.start.x, currentLine.start.y);
+      ctx.lineTo(currentLine.end.x, currentLine.end.y);
+      ctx.stroke();
+
+      const length = Math.round(getLineLength(currentLine));
+      const midX = (currentLine.start.x + currentLine.end.x) / 2;
+      const midY = (currentLine.start.y + currentLine.end.y) / 2;
+      drawWallMeasurements(ctx, currentLine);
+    }
+
+    airEntries.forEach((entry, index) => {
+      drawAirEntry(ctx, entry, index);
+    });
+
+    const drawEndpoints = () => {
+      const drawnPoints = new Set<string>();
+
+      lines.forEach((line) => {
+        [{ point: line.start, isStart: true }, { point: line.end, isStart: false }].forEach(
+          ({ point, isStart }) => {
+            const key = `${Math.round(point.x)},${Math.round(point.y)}`;
+            if (!drawnPoints.has(key)) {
+              drawnPoints.add(key);
+
+              const isHovered =
+                hoveredEndpoint?.point &&
+                arePointsNearlyEqual(hoveredEndpoint.point, point);
+
+              ctx.beginPath();
+              ctx.arc(
+                point.x,
+                point.y,
+                isHovered ? (POINT_RADIUS * 1.5) / zoom : POINT_RADIUS / zoom,
+                0,
+                Math.PI * 2,
+              );
+
+              if (isHovered) {
+                ctx.fillStyle = "#fbbf24"; // Amber color for hover
+                // Add tooltip
+                ctx.font = `${12 / zoom}px Arial`;
+                ctx.fillStyle = "#000000";
+                ctx.textAlign = "center";
+                ctx.fillText(
+                  "Right-click to drag",
+                  point.x,
+                  point.y - 15 / zoom,
+                );
+              } else {
+                ctx.fillStyle = "#3b82f6"; // Blue color
+              }
+
+              ctx.fill();
+            }
+          },
+        );
+      });
+    };
+
+    drawEndpoints();
+
+    const endpoints = [
+      ...new Set(lines.flatMap((line) => [line.start, line.end])),
+    ];
+    const endpointColorMap: Record<string, Point[]> = {
+      "#fb923c": [],
+      "#3b82f6": [],
+      "#22c55e": [],
+    };
+
+    endpoints.forEach((point) => {
+      const connections = findConnectedLines(point).length;
+      let color = "#fb923c";
+
+      if (connections > 1) {
+        if (isInClosedContour(point, lines)) {
+          color = "#22c55e";
+        } else {
+          color = "#3b82f6";
+        }
+      }
+
+      if (color in endpointColorMap) {
+        endpointColorMap[color].push(point);
+      }
+    });
+
+    Object.entries(endpointColorMap).forEach(([color, points]) => {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+
+      points.forEach((point) => {
+        ctx.moveTo(point.x, point.y);
+        ctx.arc(point.x, point.y, POINT_RADIUS / zoom, 0, 2 * Math.PI);
+      });
+
+      ctx.fill();
+
+      ctx.font = `${12 / zoom}px sans-serif`;
+      points.forEach((point) => {
+        drawCoordinateLabel(ctx, point, color);
+      });
+    });
+
+    if (cursorPoint && isDrawing) {
+      ctx.font = `${12 / zoom}px sans-serif`;
+      drawCoordinateLabel(ctx, cursorPoint, "#fb923c");
+    }
+
+    if (hoverPoint && !isDrawing && !isPanning) {
+      ctx.font = `${12 / zoom}px sans-serif`;
+      drawCoordinateLabel(ctx, hoverPoint, "#718096");
+      drawCrosshair(ctx, hoverPoint);
+    }
+
+    const drawMeasurements = (ctx: CanvasRenderingContext2D) => {
+      // Draw current measurement if in measure mode
+      if (currentTool === "measure" && measureStart && measureEnd) {
+        drawMeasurement(ctx, measureStart, measureEnd);
+      }
+
+      // Draw all saved measurements
+      measurements.forEach((measurement, index) => {
+        const isHighlighted = highlightState.measurement?.index === index;
+        drawMeasurement(
+          ctx,
+          measurement.start,
+          measurement.end,
+          isHighlighted,
+        );
+      });
+    };
+
+    drawMeasurements(ctx);
+
+    // Draw measurement preview
+    if (isMeasuring && measureStart && measureEnd) {
+      ctx.save();
+      ctx.strokeStyle = "#4b5563"; // Gray color
+      ctx.lineWidth = 2 / zoom;
+      ctx.setLineDash([5 / zoom, 5 / zoom]);
+
+      // Draw the measurement line
+      ctx.beginPath();
+      ctx.moveTo(measureStart.x, measureStart.y);
+      ctx.lineTo(measureEnd.x, measureEnd.y);
+      ctx.stroke();
+
+      // Draw points at start and end
+      ctx.fillStyle = "#4b5563";
+      ctx.beginPath();
+      ctx.arc(measureStart.x, measureStart.y, POINT_RADIUS / zoom, 0, Math.PI * 2);
+      ctx.arc(measureEnd.x, measureEnd.y, POINT_RADIUS / zoom, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Draw distance label
+      const distance = Math.round(
+        pixelsToCm(
+          Math.sqrt(
+            Math.pow(measureEnd.x - measureStart.x, 2) +
+              Math.pow(measureEnd.y - measureStart.y, 2),
+          ),
+        ),
+      );
+      const midX = (measureStart.x + measureEnd.x) / 2;
+      const midY = (measureStart.y + measureEnd.y) / 2;
+
+      ctx.font = `${14 / zoom}px Arial`;
+      ctx.fillStyle = "#000000";
+      ctx.textAlign = "center";
+      ctx.fillText(`${distance} cm`, midX, midY - 10 / zoom);
+
+      ctx.restore();
+    }
+
+    // Add wall measurements after drawing lines
+    lines.forEach((line) => {
+      drawWallMeasurements(ctx, line);
+    });
+
+    ctx.restore();
+  };
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const render = (timestamp: number) => {
+      drawCanvas();
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    animationFrameId = requestAnimationFrame(render);
+
+    return () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+    };
+  }, [
+    dimensions,
+    gridSize,
+    lines,
+    currentLine,
+    zoom,
+    pan,
+    isPanning,
+    panMode,
+    cursorPoint,
+    currentAirEntry,
+    airEntries,
+    onLinesUpdate,
+    hoveredGridPoint,
+    hoverPoint,
+    isDraggingEndpoint,
+    draggedPoint,
+    isDraggingAirEntry,
+    draggedAirEntry,
+    onAirEntriesUpdate,
+    highlightState,
+    snapDistance,
+    measurements,
+    onMeasurementsUpdate,
+    isMeasuring,
+    measureStart,
+    measureEnd
+  ]);
+
+  const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/[^0-9]/g, "");
+    setZoomInput(value);
+  };
+
+  const handleZoomInputBlur = () => {
+    let newZoom = parseInt(zoomInput) / 100;
+    if (isNaN(newZoom)) {
+      newZoom = zoom;
+    } else {
+      newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newZoom));
+    }
+    handleZoomChange(newZoom);
+  };
+
+  const handleZoomInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.currentTarget.blur();
+    }
+  };
+
+
   return (
     <div 
       ref={containerRef}
-      className={cn("relative w-full h-full overflow-hidden", className)}
-      onWheel={onWheel}
+      className={cn("relative w-full h-full bg-background overflow-hidden", className)}
+      onWheel={(e) => {
+        if (e.ctrlKey || e.metaKey) {
+          handleZoomWheel(e as unknown as WheelEvent);
+        } else {
+          handleRegularWheel(e as unknown as WheelEvent);
+        }
+      }}
     >
       <canvas
         ref={canvasRef}
