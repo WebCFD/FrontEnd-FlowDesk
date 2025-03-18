@@ -231,6 +231,8 @@ interface Canvas2DProps {
   onLinesUpdate?: (lines: Line[]) => void;
   onAirEntriesUpdate?: (airEntries: AirEntry[]) => void;
   onMeasurementsUpdate?: (measurements: Measurement[]) => void;
+  className?: string;
+  onWheel?: (e: any) => void;
 }
 
 export default function Canvas2D({
@@ -245,6 +247,8 @@ export default function Canvas2D({
   onLinesUpdate,
   onAirEntriesUpdate,
   onMeasurementsUpdate,
+  className,
+  onWheel,
 }: Canvas2DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -415,16 +419,20 @@ export default function Canvas2D({
 
   const handleRegularWheel = (e: WheelEvent) => {};
 
-  const handlePanStart = (e: MouseEvent) => {
+  const handlePanStart = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    // Prevent default context menu on right-click
+    if (e.button === 2) {
+      e.preventDefault();
+    }
+
     // Start panning for right-click OR when panMode is active
     if (panMode || e.button === 2) {
-      e.preventDefault();
       setIsPanning(true);
       setLastPanPoint({ x: e.clientX, y: e.clientY });
     }
   };
 
-  const handlePanMove = (e: MouseEvent) => {
+  const handlePanMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (isPanning && lastPanPoint) {
       const dx = e.clientX - lastPanPoint.x;
       const dy = e.clientY - lastPanPoint.y;
@@ -445,7 +453,7 @@ export default function Canvas2D({
     }
   };
 
-  const getCanvasPoint = (e: MouseEvent): Point => {
+  const getCanvasPoint = (e: React.MouseEvent<HTMLCanvasElement>): Point => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
 
@@ -818,7 +826,7 @@ export default function Canvas2D({
     return null;
   };
 
-  const processMouseMove = (e: MouseEvent) => {
+  const processMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const point = getCanvasPoint(e);
     setHoverPoint(point);
 
@@ -853,7 +861,7 @@ export default function Canvas2D({
               measurement: measurementInfo.measurement,
             },
           });
-        } else {
+        }else {
           const nearbyLines = findLinesNearPoint(point);
           setHighlightState({
             lines: nearbyLines,
@@ -863,7 +871,8 @@ export default function Canvas2D({
         }
       } else if (currentAirEntry) {
         setHighlightState({
-          lines: findLinesNearPoint(point),          airEntry: null,
+          lines: findLinesNearPoint(point),
+          airEntry: null,
           measurement: null,
         });
       }
@@ -877,7 +886,7 @@ export default function Canvas2D({
     }
   };
 
-  const throttleMouseMove = (e: MouseEvent) => {
+  const throttleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     lastMouseMoveEvent = e;
 
     if (isProcessingMouseMove) return;
@@ -893,7 +902,7 @@ export default function Canvas2D({
     });
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     // Check for panning first
     if (isPanning) {
       handlePanMove(e);
@@ -985,7 +994,7 @@ export default function Canvas2D({
     throttleMouseMove(e);
   };
 
-  const handleMouseDown = (e: MouseEvent) => {
+  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (e.button !== 0) return; // Only handle left clicks
 
     const point = getCanvasPoint(e);
@@ -1091,7 +1100,7 @@ export default function Canvas2D({
     }
   };
 
-  const handleMouseUp = (e: MouseEvent) => {
+  const handleMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
     // First check if we're panning and need to stop
     if (isPanning) {
       handlePanEnd();
@@ -1135,7 +1144,7 @@ export default function Canvas2D({
     }
   };
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (isDraggingAirEntry) {
       setIsDraggingAirEntry(false);
       setDraggedAirEntry({
@@ -1685,6 +1694,125 @@ export default function Canvas2D({
       ctx.restore();
     };
 
+    const handleZoomWheel = (e: WheelEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
+        const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom + delta));
+        handleZoomChange(newZoom);
+      }
+    };
+
+    const handleRegularWheel = (e: WheelEvent) => {};
+
+    const handlePanStart = (e: React.MouseEvent<HTMLCanvasElement>) => {
+      // Prevent default context menu on right-click
+      if (e.button === 2) {
+        e.preventDefault();
+      }
+
+      // Start panning for right-click OR when panMode is active
+      if (panMode || e.button === 2) {
+        setIsPanning(true);
+        setLastPanPoint({ x: e.clientX, y: e.clientY });
+      }
+    };
+
+    const handlePanMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+      if (isPanning && lastPanPoint) {
+        const dx = e.clientX - lastPanPoint.x;
+        const dy = e.clientY - lastPanPoint.y;
+        setPan((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
+        setLastPanPoint({ x: e.clientX, y: e.clientY });
+      }
+    };
+
+    const handlePanEnd = () => {
+      setIsPanning(false);
+      setLastPanPoint(null);
+    };
+
+    const getCanvasPoint = (e: React.MouseEvent<HTMLCanvasElement>): Point => {
+      const canvas = canvasRef.current;
+      if (!canvas) return { x: 0, y: 0 };
+
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+
+      return {
+        x: ((e.clientX - rect.left) * scaleX - pan.x) / zoom,
+        y: ((e.clientY - rect.top) * scaleY - pan.y) / zoom,
+      };
+    };
+
+    // Update mouseMove handler to use React synthetic event
+    const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+      // Check for panning first
+      if (isPanning) {
+        handlePanMove(e);
+        return;
+      }
+
+      const point = getCanvasPoint(e);
+      setHoverPoint(point);
+
+      // Rest of the mouse move handling logic...
+      if (!isDrawing && !isPanning) {
+        const nearestGridPoint = findNearestGridPoint(point);
+        setHoveredGridPoint(nearestGridPoint);
+
+        // Check for endpoint hover
+        const pointInfo = findPointAtLocation(point);
+        setHoveredEndpoint(pointInfo);
+
+        // Check for air entry hover
+        const airEntryInfo = findAirEntryAtLocation(point);
+        setHoveredAirEntry(airEntryInfo);
+
+        if (currentTool === "eraser") {
+          const airEntryInfo = findAirEntryAtLocation(point);
+          const measurementInfo = findMeasurementAtPoint(point, measurements);
+
+          if (airEntryInfo) {
+            setHighlightState({
+              lines: [],
+              airEntry: { index: airEntryInfo.index, entry: airEntryInfo.entry },
+              measurement: null,
+            });
+          } else if (measurementInfo) {
+            setHighlightState({
+              lines: [],
+              airEntry: null,
+              measurement: {
+                index: measurementInfo.index,
+                measurement: measurementInfo.measurement,
+              },
+            });
+          } else {
+            const nearbyLines = findLinesNearPoint(point);
+            setHighlightState({
+              lines: nearbyLines,
+              airEntry: null,
+              measurement: null,
+            });
+          }
+        }
+      }
+
+      if (currentTool === "wall" && isDrawing && currentLine) {
+        const nearestPoint = findNearestEndpoint(point);
+        const endPoint = nearestPoint || snapToGrid(point);
+        setCurrentLine((prev) => (prev ? { ...prev, end: endPoint } : null));
+        setCursorPoint(endPoint);
+      }
+    };
+
+    // Add context menu prevention
+    const handleContextMenu = (e: React.MouseEvent<HTMLCanvasElement>) => {
+      e.preventDefault();
+    };
+
     canvas.addEventListener("mousedown", handleMouseDown);
     canvas.addEventListener("mousemove", handleMouseMove);
     canvas.addEventListener("mouseup", handleMouseUp);
@@ -1840,7 +1968,7 @@ export default function Canvas2D({
     setNewAirEntryDetails(null);
   };
 
-  const handleContextMenu = (e: Event) => {
+  const handleContextMenu = (e: React.MouseEvent<HTMLCanvasElement>) => {
     console.log("Context menu prevented");
     e.preventDefault();
   };
@@ -1888,17 +2016,20 @@ export default function Canvas2D({
   };
 
   return (
-    <div className="relative w-full h-full bg-background">
+    <div 
+      ref={containerRef}
+      className={cn("relative w-full h-full overflow-hidden", className)}
+      onWheel={onWheel}
+    >
       <canvas
         ref={canvasRef}
-        width={dimensions.width}
-        height={dimensions.height}
-        className={`w-full h-full`}
-        style={{ cursor: getCursor() }}
+        className="absolute top-0 left-0"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
-        onContextMenu={(e) => e.preventDefault()}
+        onMouseLeave={handleMouseLeave}
+        onContextMenu={handleContextMenu}
+        style={{ cursor: getCursor() }}
       />
       <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-white/80 p-2 rounded-lg shadow-sm">
         {isMultifloor && (
