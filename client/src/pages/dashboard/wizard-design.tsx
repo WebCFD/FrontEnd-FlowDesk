@@ -229,9 +229,7 @@ export default function WizardDesign() {
     setTimeout(() => {
       console.log("Current tool after 100ms:", currentTool);
     }, 100);
-    useEffect(() => {
-      console.log("currentTool changed:", currentTool);
-    }, [currentTool]);
+
   };
 
   const handleAirEntrySelect = (entry: "vent" | "door" | "window") => {
