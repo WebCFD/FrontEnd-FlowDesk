@@ -62,7 +62,11 @@ const arePointsNearlyEqual = (p1: Point, p2: Point): boolean => {
   return Math.sqrt(dx * dx + dy * dy) < 1;
 };
 
-const arePointsClose = (p1: Point, p2: Point, snapDistance: number): boolean => {
+const arePointsClose = (
+  p1: Point,
+  p2: Point,
+  snapDistance: number,
+): boolean => {
   const dx = p1.x - p2.x;
   const dy = p1.y - p2.y;
   return Math.sqrt(dx * dx + dy * dy) < snapDistance;
@@ -352,9 +356,11 @@ export default function Canvas2D({
     const visibleEndY = (-pan.y + dimensions.height) / zoom + gridSize;
 
     // Get grid coordinates using gridSize
-    const startXGrid = Math.floor((visibleStartX - centerX) / gridSize) * gridSize;
+    const startXGrid =
+      Math.floor((visibleStartX - centerX) / gridSize) * gridSize;
     const endXGrid = Math.ceil((visibleEndX - centerX) / gridSize) * gridSize;
-    const startYGrid = Math.floor((visibleStartY - centerY) / gridSize) * gridSize;
+    const startYGrid =
+      Math.floor((visibleStartY - centerY) / gridSize) * gridSize;
     const endYGrid = Math.ceil((visibleEndY - centerY) / gridSize) * gridSize;
 
     // Draw vertical grid lines
@@ -733,9 +739,11 @@ export default function Canvas2D({
     const visibleEndY = (-pan.y + dimensions.height) / zoom + gridSize;
 
     // Get grid coordinates using regular gridSize
-    const startXGrid = Math.floor((visibleStartX - centerX) / gridSize) * gridSize;
+    const startXGrid =
+      Math.floor((visibleStartX - centerX) / gridSize) * gridSize;
     const endXGrid = Math.ceil((visibleEndX - centerX) / gridSize) * gridSize;
-    const startYGrid = Math.floor((visibleStartY - centerY) / gridSize) * gridSize;
+    const startYGrid =
+      Math.floor((visibleStartY - centerY) / gridSize) * gridSize;
     const endYGrid = Math.ceil((visibleEndY - centerY) / gridSize) * gridSize;
 
     // Generate grid points
@@ -863,7 +871,8 @@ export default function Canvas2D({
         }
       } else if (currentAirEntry) {
         setHighlightState({
-          lines: findLinesNearPoint(point),          airEntry: null,
+          lines: findLinesNearPoint(point),
+          airEntry: null,
           measurement: null,
         });
       }
@@ -894,20 +903,25 @@ export default function Canvas2D({
   };
 
   const handleMouseMove = (e: MouseEvent) => {
+    const point = getCanvasPoint(e);
+
+    // Prioritize measurement preview updates
+    // At the beginning of handleMouseMove
+    if (currentTool === "measure" && isMeasuring && measureStart) {
+      console.log("Updating measurement preview");
+      const nearestPoint = findNearestEndpoint(point);
+      const snappedPoint = nearestPoint || snapToGrid(point);
+      setMeasureEnd(snappedPoint);
+      // Don't return here - let the drawing code run
+    }
+
     // Check for panning first
     if (isPanning) {
       handlePanMove(e);
       return;
     }
 
-    const point = getCanvasPoint(e);
     setHoverPoint(point);
-
-    // Handle measurement preview
-    if (currentTool === "measure" && isMeasuring) {
-      setMeasureEnd(point);
-      return;
-    }
 
     if (isDraggingAirEntry && draggedAirEntry.index !== -1) {
       const point = getCanvasPoint(e);
@@ -986,30 +1000,71 @@ export default function Canvas2D({
   };
 
   const handleMouseDown = (e: MouseEvent) => {
-    if (e.button !== 0) return; // Only handle left clicks
-
     const point = getCanvasPoint(e);
+    // Handle different mouse buttons
+    if (e.button === 0) {
+      // Left-click handling (keep all the existing left-click code below)
+    } else if (e.button === 2) {
+      // Right-click
+      e.preventDefault();
+
+      // Check if clicking on an endpoint
+      const pointInfo = findPointAtLocation(point);
+      if (pointInfo) {
+        setIsDraggingEndpoint(true);
+        setDraggedPoint(pointInfo);
+        return;
+      }
+
+      // Check if clicking on an air entry
+      const airEntryInfo = findAirEntryAtLocation(point);
+      if (airEntryInfo) {
+        setIsDraggingAirEntry(true);
+        setDraggedAirEntry({
+          index: airEntryInfo.index,
+          entry: airEntryInfo.entry,
+          startPoint: point,
+        });
+        return;
+      }
+
+      // If not on a special element, start panning
+      handlePanStart(e);
+      return;
+    }
 
     if (currentTool === "measure") {
       if (!isMeasuring) {
-        // Start measurement
+        // First click - just set the start point
+        const nearestPoint = findNearestEndpoint(point);
+        const startPoint = nearestPoint || snapToGrid(point);
         setIsMeasuring(true);
-        setMeasureStart(point);
-        setMeasureEnd(point);
-      } else if (measureStart && measureEnd) {
-        // Complete measurement only on second click
-        const distance = Math.sqrt(
-          Math.pow(measureEnd.x - measureStart.x, 2) +
-            Math.pow(measureEnd.y - measureStart.y, 2),
-        );
+        setMeasureStart(startPoint);
+        // Initialize measureEnd to the same point so drawing functions have something to work with
+        setMeasureEnd(startPoint);
+        console.log("First measurement click - start point set");
+      } else {
+        // Second click - complete the measurement
+        const nearestPoint = findNearestEndpoint(point);
+        const endPoint = nearestPoint || snapToGrid(point);
 
-        const newMeasurement = {
-          start: measureStart,
-          end: measureEnd,
-          distance: pixelsToCm(distance),
-        };
+        console.log("Second measurement click - completing measurement");
 
-        onMeasurementsUpdate?.([...measurements, newMeasurement]);
+        // Only create measurement if points are different enough
+        const dx = endPoint.x - measureStart!.x;
+        const dy = endPoint.y - measureStart!.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance > 5) {
+          // Small threshold to prevent accidental tiny measurements
+          const newMeasurement = {
+            start: measureStart!,
+            end: endPoint,
+            distance: pixelsToCm(distance),
+          };
+
+          onMeasurementsUpdate?.([...measurements, newMeasurement]);
+        }
 
         // Reset measurement state
         setIsMeasuring(false);
@@ -1029,7 +1084,6 @@ export default function Canvas2D({
 
       // Handle measurement tool
 
-
       if (currentTool === "wall") {
         const nearestPoint = findNearestEndpoint(point);
         const startPoint = nearestPoint || snapToGrid(point);
@@ -1043,10 +1097,7 @@ export default function Canvas2D({
         setCursorPoint(startPoint);
       } else if (currentTool === "eraser") {
         const airEntryInfo = findAirEntryAtLocation(point);
-        const measurementInfo = findMeasurementAtPoint(
-          point,
-          measurements,
-        );
+        const measurementInfo = findMeasurementAtPoint(point, measurements);
 
         if (airEntryInfo) {
           const newAirEntries = airEntries.filter(
@@ -1448,9 +1499,11 @@ export default function Canvas2D({
       const visibleEndY = (-pan.y + dimensions.height) / zoom + gridSize;
 
       // Calculate grid starting points
-      const startXGrid = Math.floor((visibleStartX - centerX) / gridSize) * gridSize;
+      const startXGrid =
+        Math.floor((visibleStartX - centerX) / gridSize) * gridSize;
       const endXGrid = Math.ceil((visibleEndX - centerX) / gridSize) * gridSize;
-      const startYGrid = Math.floor((visibleStartY - centerY) / gridSize) * gridSize;
+      const startYGrid =
+        Math.floor((visibleStartY - centerY) / gridSize) * gridSize;
       const endYGrid = Math.ceil((visibleEndY - centerY) / gridSize) * gridSize;
 
       // Draw vertical grid lines
@@ -1520,44 +1573,45 @@ export default function Canvas2D({
         const drawnPoints = new Set<string>();
 
         lines.forEach((line) => {
-          [{ point: line.start, isStart: true }, { point: line.end, isStart: false }].forEach(
-            ({ point, isStart }) => {
-              const key = `${Math.round(point.x)},${Math.round(point.y)}`;
-              if (!drawnPoints.has(key)) {
-                drawnPoints.add(key);
+          [
+            { point: line.start, isStart: true },
+            { point: line.end, isStart: false },
+          ].forEach(({ point, isStart }) => {
+            const key = `${Math.round(point.x)},${Math.round(point.y)}`;
+            if (!drawnPoints.has(key)) {
+              drawnPoints.add(key);
 
-                const isHovered =
-                  hoveredEndpoint?.point &&
-                  arePointsNearlyEqual(hoveredEndpoint.point, point);
+              const isHovered =
+                hoveredEndpoint?.point &&
+                arePointsNearlyEqual(hoveredEndpoint.point, point);
 
-                ctx.beginPath();
-                ctx.arc(
+              ctx.beginPath();
+              ctx.arc(
+                point.x,
+                point.y,
+                isHovered ? (POINT_RADIUS * 1.5) / zoom : POINT_RADIUS / zoom,
+                0,
+                Math.PI * 2,
+              );
+
+              if (isHovered) {
+                ctx.fillStyle = "#fbbf24"; // Amber color for hover
+                // Add tooltip
+                ctx.font = `${12 / zoom}px Arial`;
+                ctx.fillStyle = "#000000";
+                ctx.textAlign = "center";
+                ctx.fillText(
+                  "Right-click to drag",
                   point.x,
-                  point.y,
-                  isHovered ? (POINT_RADIUS * 1.5) / zoom : POINT_RADIUS / zoom,
-                  0,
-                  Math.PI * 2,
+                  point.y - 15 / zoom,
                 );
-
-                if (isHovered) {
-                  ctx.fillStyle = "#fbbf24"; // Amber color for hover
-                  // Add tooltip
-                  ctx.font = `${12 / zoom}px Arial`;
-                  ctx.fillStyle = "#000000";
-                  ctx.textAlign = "center";
-                  ctx.fillText(
-                    "Right-click to drag",
-                    point.x,
-                    point.y - 15 / zoom,
-                  );
-                } else {
-                  ctx.fillStyle = "#3b82f6"; // Blue color
-                }
-
-                ctx.fill();
+              } else {
+                ctx.fillStyle = "#3b82f6"; // Blue color
               }
-            },
-          );
+
+              ctx.fill();
+            }
+          });
         });
       };
 
@@ -1653,8 +1707,20 @@ export default function Canvas2D({
         // Draw points at start and end
         ctx.fillStyle = "#4b5563";
         ctx.beginPath();
-        ctx.arc(measureStart.x, measureStart.y, POINT_RADIUS / zoom, 0, Math.PI * 2);
-        ctx.arc(measureEnd.x, measureEnd.y, POINT_RADIUS / zoom, 0, Math.PI * 2);
+        ctx.arc(
+          measureStart.x,
+          measureStart.y,
+          POINT_RADIUS / zoom,
+          0,
+          Math.PI * 2,
+        );
+        ctx.arc(
+          measureEnd.x,
+          measureEnd.y,
+          POINT_RADIUS / zoom,
+          0,
+          Math.PI * 2,
+        );
         ctx.fill();
 
         // Draw distance label
@@ -1792,11 +1858,14 @@ export default function Canvas2D({
     }
   };
 
-  const handleAirEntryEdit = (index: number, dimensions: {
-    width: number;
-    height: number;
-    distanceToFloor?: number;
-  }) => {
+  const handleAirEntryEdit = (
+    index: number,
+    dimensions: {
+      width: number;
+      height: number;
+      distanceToFloor?: number;
+    },
+  ) => {
     if (!editingAirEntry) return;
 
     const updatedAirEntries = [...airEntries];
@@ -1859,28 +1928,28 @@ export default function Canvas2D({
     // 2. Check for specific tools and return custom SVG cursors matching Lucide icons
     if (currentTool === "eraser") {
       // Eraser icon matching the LucideEraser component
-      return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23000000\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L15 19\"/><path d=\"M22 21H7\"/><path d=\"m5 11 9 9\"/></svg>') 5 15, auto";
+      return 'url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%23000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L15 19"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>\') 5 15, auto';
     }
 
     if (currentTool === "measure") {
       // Ruler icon matching the Lucide Ruler component
-      return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%2300000\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z\"/><path d=\"m14.5 12.5 2-2\"/><path d=\"m11.5 9.5 2-2\"/><path d=\"m8.5 6.5 2-2\"/><path d=\"m17.5 15.5 2-2\"/></svg>') 5 15, auto";
+      return 'url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%2300000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/></svg>\') 5 15, auto';
     }
 
     // 3. Check for Air Entry element placement modes
     if (currentAirEntry === "window") {
       // Blue rectangle cursor for window placement
-      return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%233b82f6\" stroke-width=\"2\"><rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"2\"/></svg>') 8 8, crosshair";
+      return 'url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%233b82f6" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>\') 8 8, crosshair';
     }
 
     if (currentAirEntry === "door") {
       // Brown rectangle cursor for door placement
-      return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23b45309\" stroke-width=\"2\"><rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"2\"/></svg>') 8 8, crosshair";
+      return 'url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23b45309" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>\') 8 8, crosshair';
     }
 
     if (currentAirEntry === "vent") {
       // Green rectangle cursor for vent placement
-      return "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%2322c55e\" stroke-width=\"2\"><rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"2\"/></svg>') 8 8, crosshair";
+      return 'url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2322c55e" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>\') 8 8, crosshair';
     }
 
     // 4. Default cursor when no special mode is active
@@ -1952,7 +2021,9 @@ export default function Canvas2D({
           type={editingAirEntry.entry.type}
           isOpen={true}
           onClose={() => setEditingAirEntry(null)}
-          onConfirm={(dimensions) => handleAirEntryEdit(editingAirEntry.index, dimensions)}
+          onConfirm={(dimensions) =>
+            handleAirEntryEdit(editingAirEntry.index, dimensions)
+          }
           initialDimensions={editingAirEntry.entry.dimensions}
         />
       )}
