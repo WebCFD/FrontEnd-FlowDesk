@@ -861,7 +861,7 @@ export default function Canvas2D({
               measurement: measurementInfo.measurement,
             },
           });
-        }else {
+        } else {
           const nearbyLines = findLinesNearPoint(point);
           setHighlightState({
             lines: nearbyLines,
@@ -1824,7 +1824,6 @@ export default function Canvas2D({
 
     let lastRenderTime = 0;
     let animationFrameId: number;
-
     const render = (timestamp: number) => {
       const elapsed = timestamp - lastRenderTime;
       if (elapsed > 1000 / 60) {
@@ -2015,6 +2014,28 @@ export default function Canvas2D({
     return "default";
   };
 
+  // Add resize handling effect
+  useEffect(() => {
+    const handleResize = () => {
+      if (containerRef.current) {
+        const { width, height } = containerRef.current.getBoundingClientRect();
+        setDimensions({ width, height });
+
+        if (canvasRef.current) {
+          canvasRef.current.width = width;
+          canvasRef.current.height = height;
+        }
+      }
+    };
+
+    handleResize(); // Initialize on mount
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   return (
     <div 
       ref={containerRef}
@@ -2023,7 +2044,9 @@ export default function Canvas2D({
     >
       <canvas
         ref={canvasRef}
-        className="absolute top-0 left-0"
+        width={dimensions.width}
+        height={dimensions.height}
+        className="absolute top-0 left-0 w-full h-full"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
