@@ -235,6 +235,18 @@ interface Canvas2DProps {
   onWheel?: (e: any) => void;
 }
 
+const handleDoubleClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const point = getCanvasPoint(e);
+  const airEntryInfo = findAirEntryAtLocation(point);
+
+  if (airEntryInfo) {
+    setEditingAirEntry({
+      index: airEntryInfo.index,
+      entry: airEntryInfo.entry,
+    });
+  }
+};
+
 export default function Canvas2D({
   gridSize,
   currentTool,
@@ -2371,6 +2383,7 @@ export default function Canvas2D({
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseLeave}
         onContextMenu={handleContextMenu}
+        onDoubleClick={handleDoubleClick}
         style={{ cursor: getCursor() }}
       />
       <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-white/80 p-2 rounded-lg shadow-sm">
