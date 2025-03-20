@@ -1279,7 +1279,7 @@ export default function Canvas2D({
   };
 
   const updateAirEntriesWithWalls = (newLines: Line[], oldLines: Line[]) => {
-    console.log("Updating air entries with walls");
+    //console.log("Updating air entries with walls");
 
     if (airEntries.length === 0) return;
 
