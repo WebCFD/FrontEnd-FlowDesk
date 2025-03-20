@@ -11,6 +11,7 @@ interface Measurement {
   start: Point;
   end: Point;
   distance: number;
+  isPreview?: boolean;
 }
 
 interface HighlightState {
@@ -271,6 +272,8 @@ export default function Canvas2D({
     isStart: boolean[];
   }>({ point: { x: 0, y: 0 }, lines: [], isStart: [] });
 
+  // ADD THIS new state
+  const [previewMeasurement, setPreviewMeasurement] = useState<Measurement | null>(null);
   const [isDraggingAirEntry, setIsDraggingAirEntry] = useState(false);
   const [draggedAirEntry, setDraggedAirEntry] = useState<{
     index: number;
@@ -907,12 +910,28 @@ export default function Canvas2D({
 
     // Prioritize measurement preview updates
     // At the beginning of handleMouseMove
+    // Find this section near the beginning of handleMouseMove
     if (currentTool === "measure" && isMeasuring && measureStart) {
       console.log("Updating measurement preview");
       const nearestPoint = findNearestEndpoint(point);
       const snappedPoint = nearestPoint || snapToGrid(point);
       setMeasureEnd(snappedPoint);
-      // Don't return here - let the drawing code run
+
+      // Calculate distance
+      const dx = snappedPoint.x - measureStart.x;
+      const dy = snappedPoint.y - measureStart.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      // Only update preview if it's a meaningful measurement
+      if (distance > 5) {
+        // Update the preview measurement state instead of the measurements array
+        setPreviewMeasurement({
+          start: measureStart,
+          end: snappedPoint,
+          distance: pixelsToCm(distance),
+          isPreview: true
+        });
+      }
     }
 
     // Check for panning first
@@ -1033,15 +1052,22 @@ export default function Canvas2D({
       return;
     }
 
+    // NEW CODE TO ADD:
     if (currentTool === "measure") {
+      e.stopPropagation();
+
       if (!isMeasuring) {
         // First click - just set the start point
         const nearestPoint = findNearestEndpoint(point);
         const startPoint = nearestPoint || snapToGrid(point);
         setIsMeasuring(true);
         setMeasureStart(startPoint);
-        // Initialize measureEnd to the same point so drawing functions have something to work with
         setMeasureEnd(startPoint);
+
+        // Remove any preview measurements that might be in the array
+        const filteredMeasurements = measurements.filter(m => !m.isPreview);
+        onMeasurementsUpdate?.(filteredMeasurements);
+
         console.log("First measurement click - start point set");
       } else {
         // Second click - complete the measurement
@@ -1056,20 +1082,23 @@ export default function Canvas2D({
         const distance = Math.sqrt(dx * dx + dy * dy);
 
         if (distance > 5) {
-          // Small threshold to prevent accidental tiny measurements
+          // Create a permanent measurement
           const newMeasurement = {
             start: measureStart!,
             end: endPoint,
             distance: pixelsToCm(distance),
+            isPreview: false
           };
 
+          // Add the new measurement to the permanent measurements
           onMeasurementsUpdate?.([...measurements, newMeasurement]);
         }
 
-        // Reset measurement state
+        // Reset measurement state and clear preview
         setIsMeasuring(false);
         setMeasureStart(null);
         setMeasureEnd(null);
+        setPreviewMeasurement(null);
       }
       return;
     }
@@ -1218,7 +1247,7 @@ export default function Canvas2D({
   const findAirEntryAtLocation = (
     clickPoint: Point,
   ): { index: number; entry: AirEntry } | null => {
-    console.log("Checking for AirEntry at point:", clickPoint);
+    //console.log("Checking for AirEntry at point:", clickPoint);
 
     for (let i = 0; i < airEntries.length; i++) {
       const entry = airEntries[i];
@@ -1245,7 +1274,7 @@ export default function Canvas2D({
       }
     }
 
-    console.log("No AirEntry found at point");
+   // console.log("No AirEntry found at point");
     return null;
   };
 
@@ -1334,6 +1363,7 @@ export default function Canvas2D({
       start: Point,
       end: Point,
       isHighlighted: boolean = false,
+      isPreview: boolean = false
     ) => {
       const dx = end.x - start.x;
       const dy = end.y - start.y;
@@ -1342,10 +1372,14 @@ export default function Canvas2D({
 
       // Draw arrow line
       ctx.save();
-      // Use red highlight color when highlighted with eraser
-      ctx.strokeStyle = isHighlighted
-        ? "rgba(239, 68, 68, 0.6)" // Red color for deletion highlight
-        : "rgba(75, 85, 99, 0.6)"; // Normal light gray with transparency
+      // Determine stroke style based on state
+      if (isHighlighted) {
+        ctx.strokeStyle = "rgba(239, 68, 68, 0.6)"; // Red for deletion highlight
+      } else if (isPreview) {
+        ctx.strokeStyle = "rgba(0, 0, 0, 0.6)"; // Black for preview
+      } else {
+        ctx.strokeStyle = "rgba(75, 85, 99, 0.6)"; // Gray for completed measurement
+      }
       ctx.lineWidth = 2 / zoom;
       ctx.setLineDash([5, 5]); // Dashed line
 
@@ -1672,12 +1706,7 @@ export default function Canvas2D({
       }
 
       const drawMeasurements = (ctx: CanvasRenderingContext2D) => {
-        // Draw current measurement if in measure mode
-        if (currentTool === "measure" && measureStart && measureEnd) {
-          drawMeasurement(ctx, measureStart, measureEnd);
-        }
-
-        // Draw all saved measurements
+        // Draw all permanent measurements
         measurements.forEach((measurement, index) => {
           const isHighlighted = highlightState.measurement?.index === index;
           drawMeasurement(
@@ -1685,14 +1714,26 @@ export default function Canvas2D({
             measurement.start,
             measurement.end,
             isHighlighted,
+            false
           );
         });
+
+        // Draw the preview measurement separately
+        if (previewMeasurement) {
+          drawMeasurement(
+            ctx,
+            previewMeasurement.start,
+            previewMeasurement.end,
+            false,
+            true
+          );
+        }
       };
 
       drawMeasurements(ctx);
 
       // Draw measurement preview
-      if (isMeasuring && measureStart && measureEnd) {
+     /* if (isMeasuring && measureStart && measureEnd) {
         ctx.save();
         ctx.strokeStyle = "#4b5563"; // Gray color
         ctx.lineWidth = 2 / zoom;
@@ -1741,7 +1782,7 @@ export default function Canvas2D({
         ctx.fillText(`${distance} cm`, midX, midY - 10 / zoom);
 
         ctx.restore();
-      }
+      }*/
 
       // Add wall measurements after drawing lines
       lines.forEach((line) => {
@@ -1818,6 +1859,7 @@ export default function Canvas2D({
     measurements,
     onMeasurementsUpdate,
     isMultifloor,
+    previewMeasurement,
   ]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1933,7 +1975,11 @@ export default function Canvas2D({
 
     if (currentTool === "measure") {
       // Ruler icon matching the Lucide Ruler component
-      return 'url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%2300000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/></svg>\') 5 15, auto';
+      return 'url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%23000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/></svg>\') 5 15, auto';
+
+
+
+      
     }
 
     // 3. Check for Air Entry element placement modes
