@@ -1,13 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import DashboardLayout from "@/components/layout/dashboard-layout";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,17 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
-import {
-  Save,
-  Upload,
-  Eraser,
-  ArrowRight,
-  ArrowLeft,
-  Ruler,
-  Camera,
-  RotateCw,
-  ZoomIn,
-} from "lucide-react";
+import { Save, Upload, Eraser, ArrowRight, ArrowLeft, Ruler, Camera, RotateCw, ZoomIn } from "lucide-react";
 import Canvas2D from "@/components/sketch/Canvas2D";
 import { RoomSketchPro } from "@/components/sketch/RoomSketchPro";
 import { cn } from "@/lib/utils";
@@ -51,14 +35,10 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { PlusCircle, Play, Mail, FileEdit } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FurnitureMenu } from "@/components/sketch/FurnitureMenu";
 import { ToolbarToggle } from "@/components/sketch/ToolbarToggle";
+
 
 interface Point {
   x: number;
@@ -85,13 +65,13 @@ const formatFloorText = (floor: string): string => {
 
 const getNextFloorName = (currentFloor: string): string => {
   const floorMap: Record<string, string> = {
-    ground: "first",
-    first: "second",
-    second: "third",
-    third: "fourth",
-    fourth: "fifth",
+    'ground': 'first',
+    'first': 'second',
+    'second': 'third',
+    'third': 'fourth',
+    'fourth': 'fifth'
   };
-  return floorMap[currentFloor] || "ground";
+  return floorMap[currentFloor] || 'ground';
 };
 
 export default function WizardDesign() {
@@ -101,19 +81,14 @@ export default function WizardDesign() {
   const [simulationName, setSimulationName] = useState("");
   const [simulationType, setSimulationType] = useState("comfort");
   const [gridSize, setGridSize] = useState(20);
-  const [currentTool, setCurrentTool] = useState<
-    "wall" | "eraser" | "measure" | null
-  >("wall");
-  const [currentAirEntry, setCurrentAirEntry] = useState<
-    "vent" | "door" | "window" | null
-  >(null);
+  const [currentTool, setCurrentTool] = useState<'wall' | 'eraser' | 'measure' | null>('wall');
+  const [currentAirEntry, setCurrentAirEntry] = useState<'vent' | 'door' | 'window' | null>(null);
   const { toast } = useToast();
   const [isAirEntryDialogOpen, setIsAirEntryDialogOpen] = useState(false);
   const [selectedLine, setSelectedLine] = useState<Line | null>(null);
   const [clickedPoint, setClickedPoint] = useState<Point | null>(null);
   const [tab, setTab] = useState<"2d-editor" | "3d-preview">("2d-editor");
-  const [showStartSimulationPrompt, setShowStartSimulationPrompt] =
-    useState(false);
+  const [showStartSimulationPrompt, setShowStartSimulationPrompt] = useState(false);
   const [wallTransparency, setWallTransparency] = useState(0.8);
   const [ceilingHeight, setCeilingHeight] = useState(220); // Default 220cm
   const [isMultifloor, setIsMultifloor] = useState(false);
@@ -132,13 +107,12 @@ export default function WizardDesign() {
     setHasClosedContour,
     addFloor,
     removeFloor,
-    copyFloorAs,
+    copyFloorAs
   } = useRoomStore();
 
   // Get current floor data
   const currentFloorData = floors[currentFloor];
-  const { lines, airEntries, measurements, hasClosedContour } =
-    currentFloorData;
+  const { lines, airEntries, measurements, hasClosedContour } = currentFloorData;
 
   // Handle loading floor template
   const handleLoadTemplate = () => {
@@ -190,7 +164,7 @@ export default function WizardDesign() {
 
   // Handle removing a floor
   const handleRemoveFloor = (floorName: string) => {
-    if (floorName === "ground") {
+    if (floorName === 'ground') {
       toast({
         title: "Cannot Remove Ground Floor",
         description: "The ground floor cannot be removed",
@@ -206,10 +180,11 @@ export default function WizardDesign() {
     });
   };
 
+
   const steps = [
     { id: 1, name: "Upload" },
     { id: 2, name: "Setup" },
-    { id: 3, name: "Order" },
+    { id: 3, name: "Order" }
   ];
 
   const handleGridSizeChange = (value: number[]) => {
@@ -220,19 +195,12 @@ export default function WizardDesign() {
     return pixels * (25 / 20);
   };
 
-  const handleToolSelect = (tool: "wall" | "eraser" | "measure") => {
-    console.log("Tool selected:", tool);
+  const handleToolSelect = (tool: 'wall' | 'eraser' | 'measure') => {
     setCurrentTool(tool);
     setCurrentAirEntry(null);
-
-    // Add a timeout to check if the state persists
-    setTimeout(() => {
-      console.log("Current tool after 100ms:", currentTool);
-    }, 100);
-
   };
 
-  const handleAirEntrySelect = (entry: "vent" | "door" | "window") => {
+  const handleAirEntrySelect = (entry: 'vent' | 'door' | 'window') => {
     if (currentAirEntry === entry) {
       setCurrentAirEntry(null);
     } else {
@@ -241,27 +209,26 @@ export default function WizardDesign() {
     }
   };
 
-  const getAirEntryStyles = (type: "vent" | "door" | "window") => {
-    const baseStyles =
-      "h-16 p-2 flex flex-col items-center justify-center transition-all duration-200 shadow-sm";
+  const getAirEntryStyles = (type: 'vent' | 'door' | 'window') => {
+    const baseStyles = "h-16 p-2 flex flex-col items-center justify-center transition-all duration-200 shadow-sm";
     const activeStyles = "scale-95 shadow-inner";
 
     const colorStyles = {
       window: "hover:bg-blue-100 text-blue-700",
       door: "hover:bg-amber-100 text-amber-700",
-      vent: "hover:bg-green-100 text-green-700",
+      vent: "hover:bg-green-100 text-green-700"
     };
 
     const activeColorStyles = {
       window: "bg-blue-100",
       door: "bg-amber-100",
-      vent: "bg-green-100",
+      vent: "bg-green-100"
     };
 
     const borderStyles = {
       window: "border-blue-500",
       door: "border-amber-500",
-      vent: "border-green-500",
+      vent: "border-green-500"
     };
 
     return cn(
@@ -271,7 +238,7 @@ export default function WizardDesign() {
       currentAirEntry === type ? activeColorStyles[type] : "",
       currentAirEntry === type ? borderStyles[type] : "",
       "border-2",
-      borderStyles[type],
+      borderStyles[type]
     );
   };
 
@@ -288,18 +255,14 @@ export default function WizardDesign() {
       const normal = calculateNormal(selectedLine);
       console.log(`Creating new ${currentAirEntry} air entry:`);
       console.log(`Position: (${clickedPoint.x}, ${clickedPoint.y})`);
-      console.log(
-        `Dimensions: width=${dimensions.width}cm, height=${dimensions.height}cm`,
-      );
-      console.log(
-        `Wall normal: (${normal.x.toFixed(3)}, ${normal.y.toFixed(3)})`,
-      );
+      console.log(`Dimensions: width=${dimensions.width}cm, height=${dimensions.height}cm`);
+      console.log(`Wall normal: (${normal.x.toFixed(3)}, ${normal.y.toFixed(3)})`);
 
       const newAirEntry: AirEntry = {
         type: currentAirEntry,
         position: clickedPoint,
         dimensions,
-        line: selectedLine,
+        line: selectedLine
       };
 
       const newAirEntries = [...airEntries, newAirEntry];
@@ -334,9 +297,7 @@ export default function WizardDesign() {
               className="flex items-center cursor-pointer relative z-10 bg-muted/10 px-3"
               onClick={() => setStep(s.id)}
             >
-              <div
-                className={`text-sm ${step === s.id ? "text-primary font-medium" : "text-muted-foreground"}`}
-              >
+              <div className={`text-sm ${step === s.id ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
                 Step {s.id} | {s.name}
               </div>
             </div>
@@ -361,17 +322,16 @@ export default function WizardDesign() {
 
         <div>
           <Label htmlFor="simulation-type">Simulation type</Label>
-          <Select value={simulationType} onValueChange={setSimulationType}>
+          <Select
+            value={simulationType}
+            onValueChange={setSimulationType}
+          >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select simulation type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="comfort">
-                Comfort Simulation (steady run)
-              </SelectItem>
-              <SelectItem value="renovation">
-                Air Renovation Convection Simulation (transient run)
-              </SelectItem>
+              <SelectItem value="comfort">Comfort Simulation (steady run)</SelectItem>
+              <SelectItem value="renovation">Air Renovation Convection Simulation (transient run)</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -385,8 +345,7 @@ export default function WizardDesign() {
               if (value === "3d-preview" && !hasClosedContour) {
                 toast({
                   title: "Invalid Room Layout",
-                  description:
-                    "Please create a closed room contour before viewing in 3D",
+                  description: "Please create a closed room contour before viewing in 3D",
                   variant: "destructive",
                 });
                 return;
@@ -400,39 +359,33 @@ export default function WizardDesign() {
             {/* Left side menus */}
             <div className="w-48 space-y-6">
               {/* 2D Menu - grayed out in 3D view */}
-              <div
-                className={cn(
-                  "border rounded-lg p-4",
-                  tab === "3d-preview"
-                    ? "opacity-50 pointer-events-none"
-                    : "opacity-100",
-                )}
-              >
+              <div className={cn(
+                "border rounded-lg p-4",
+                tab === "3d-preview" ? "opacity-50 pointer-events-none" : "opacity-100"
+              )}>
                 <h3 className="font-semibold text-lg mb-4">2D Menu</h3>
                 <div className="space-y-4">
                   <div className="grid grid-cols-3 gap-2">
                     <Button
-                      variant={currentTool === "wall" ? "default" : "outline"}
+                      variant={currentTool === 'wall' ? 'default' : 'outline'}
                       className="w-full h-16 flex flex-col items-center justify-center gap-1"
-                      onClick={() => handleToolSelect("wall")}
+                      onClick={() => handleToolSelect('wall')}
                     >
                       <div className="w-6 h-6 bg-primary/20 rounded-sm" />
                       <span className="text-xs">Wall Line</span>
                     </Button>
                     <Button
-                      variant={currentTool === "eraser" ? "default" : "outline"}
+                      variant={currentTool === 'eraser' ? 'default' : 'outline'}
                       className="w-full h-16 flex flex-col items-center justify-center gap-1"
-                      onClick={() => handleToolSelect("eraser")}
+                      onClick={() => handleToolSelect('eraser')}
                     >
                       <Eraser className="w-6 h-6" />
                       <span className="text-xs">Eraser</span>
                     </Button>
                     <Button
-                      variant={
-                        currentTool === "measure" ? "default" : "outline"
-                      }
+                      variant={currentTool === 'measure' ? 'default' : 'outline'}
                       className="w-full h-16 flex flex-col items-center justify-center gap-1"
-                      onClick={() => handleToolSelect("measure")}
+                      onClick={() => handleToolSelect('measure')}
                     >
                       <Ruler className="w-6 h-6" />
                       <span className="text-xs">Measure</span>
@@ -450,9 +403,7 @@ export default function WizardDesign() {
                       step={1}
                       onValueChange={handleGridSizeChange}
                     />
-                    <div className="text-sm text-right mt-1">
-                      {gridSizeToCm(gridSize).toFixed(1)}cm/cell
-                    </div>
+                    <div className="text-sm text-right mt-1">{gridSizeToCm(gridSize).toFixed(1)}cm/cell</div>
                   </div>
                 </div>
 
@@ -461,24 +412,24 @@ export default function WizardDesign() {
                   <div className="grid grid-cols-3 gap-2">
                     <Button
                       variant="outline"
-                      className={getAirEntryStyles("window")}
-                      onClick={() => handleAirEntrySelect("window")}
+                      className={getAirEntryStyles('window')}
+                      onClick={() => handleAirEntrySelect('window')}
                     >
                       <div className="w-6 h-6 border-2 border-blue-500 grid grid-cols-2" />
                       <span className="text-xs mt-1">Window</span>
                     </Button>
                     <Button
                       variant="outline"
-                      className={getAirEntryStyles("door")}
-                      onClick={() => handleAirEntrySelect("door")}
+                      className={getAirEntryStyles('door')}
+                      onClick={() => handleAirEntrySelect('door')}
                     >
                       <div className="w-6 h-6 border-2 border-amber-500" />
                       <span className="text-xs mt-1">Door</span>
                     </Button>
                     <Button
                       variant="outline"
-                      className={getAirEntryStyles("vent")}
-                      onClick={() => handleAirEntrySelect("vent")}
+                      className={getAirEntryStyles('vent')}
+                      onClick={() => handleAirEntrySelect('vent')}
                     >
                       <div className="w-6 h-6 border-2 border-green-500 grid grid-cols-2 grid-rows-2" />
                       <span className="text-xs mt-1">Vent-Grid</span>
@@ -488,35 +439,22 @@ export default function WizardDesign() {
               </div>
 
               {/* 3D Tools - grayed out in 2D view */}
-              <div
-                className={cn(
-                  "border rounded-lg p-4",
-                  tab === "2d-editor"
-                    ? "opacity-50 pointer-events-none"
-                    : "opacity-100",
-                )}
-              >
+              <div className={cn(
+                "border rounded-lg p-4",
+                tab === "2d-editor" ? "opacity-50 pointer-events-none" : "opacity-100"
+              )}>
                 <h3 className="font-semibold text-lg mb-4">3D Tools</h3>
                 <div className="space-y-4">
                   <div className="grid grid-cols-3 gap-2">
-                    <Button
-                      variant="outline"
-                      className="w-full h-16 flex flex-col items-center justify-center gap-1"
-                    >
+                    <Button variant="outline" className="w-full h-16 flex flex-col items-center justify-center gap-1">
                       <Camera className="w-6 h-6" />
                       <span className="text-xs">Camera</span>
                     </Button>
-                    <Button
-                      variant="outline"
-                      className="w-full h-16 flex flex-col items-center justify-center gap-1"
-                    >
+                    <Button variant="outline" className="w-full h-16 flex flex-col items-center justify-center gap-1">
                       <RotateCw className="w-6 h-6" />
                       <span className="text-xs">Rotate</span>
                     </Button>
-                    <Button
-                      variant="outline"
-                      className="w-full h-16 flex flex-col items-center justify-center gap-1"
-                    >
+                    <Button variant="outline" className="w-full h-16 flex flex-col items-center justify-center gap-1">
                       <ZoomIn className="w-6 h-6" />
                       <span className="text-xs">Zoom</span>
                     </Button>
@@ -529,13 +467,9 @@ export default function WizardDesign() {
                         defaultValue={[80]}
                         max={100}
                         step={1}
-                        onValueChange={(value) =>
-                          setWallTransparency(value[0] / 100)
-                        }
+                        onValueChange={(value) => setWallTransparency(value[0] / 100)}
                       />
-                      <div className="text-sm text-right mt-1">
-                        {Math.round(wallTransparency * 100)}%
-                      </div>
+                      <div className="text-sm text-right mt-1">{Math.round(wallTransparency * 100)}%</div>
                     </div>
                   </div>
                 </div>
@@ -566,7 +500,7 @@ export default function WizardDesign() {
         </CardContent>
       </Card>
       <AirEntryDialog
-        type={currentAirEntry || "window"}
+        type={currentAirEntry || 'window'}
         isOpen={isAirEntryDialogOpen}
         onClose={() => {
           setIsAirEntryDialogOpen(false);
@@ -578,17 +512,17 @@ export default function WizardDesign() {
   );
 
   const renderStep2 = () => {
-    console.log("Rendering Step 2 content");
+    console.log('Rendering Step 2 content');
     return (
       <div className="space-y-6">
         <div className="flex gap-6">
           <FurnitureMenu
             onDragStart={(item) => {
-              console.log("Started dragging:", item.name);
+              console.log('Started dragging:', item.name);
             }}
             wallTransparency={wallTransparency}
             onWallTransparencyChange={(value) => {
-              console.log("Wizard: Wall transparency changing to:", value);
+              console.log('Wizard: Wall transparency changing to:', value);
               setWallTransparency(value);
             }}
           />
@@ -603,7 +537,7 @@ export default function WizardDesign() {
               airEntries={airEntries}
               wallTransparency={wallTransparency}
               onWallTransparencyChange={(value) => {
-                console.log("Wizard: Wall transparency changing to:", value);
+                console.log('Wizard: Wall transparency changing to:', value);
                 setWallTransparency(value);
               }}
             />
@@ -613,9 +547,7 @@ export default function WizardDesign() {
         <Card>
           <CardHeader>
             <CardTitle>Simulation Parameters</CardTitle>
-            <CardDescription>
-              Configure the physical parameters for your simulation
-            </CardDescription>
+            <CardDescription>Configure the physical parameters for your simulation</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-4">
@@ -644,9 +576,7 @@ export default function WizardDesign() {
       <Card>
         <CardHeader>
           <CardTitle>Choose Your Simulation Package</CardTitle>
-          <CardDescription>
-            Select the package that best fits your needs
-          </CardDescription>
+          <CardDescription>Select the package that best fits your needs</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <Card>
@@ -694,23 +624,17 @@ export default function WizardDesign() {
         </CardContent>
       </Card>
 
-      <AlertDialog
-        open={showStartSimulationPrompt}
-        onOpenChange={setShowStartSimulationPrompt}
-      >
+      <AlertDialog open={showStartSimulationPrompt} onOpenChange={setShowStartSimulationPrompt}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Start New Simulation?</AlertDialogTitle>
             <AlertDialogDescription>
-              You have an existing room in the WizardDesign. Starting a new
-              simulation will clear your current design. Are you sure you want
-              to continue?
+              You have an existing room in the WizardDesign. Starting a new simulation will clear your current design.
+              Are you sure you want to continue?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleReturnToWizard}>
-              Return to WizardDesign
-            </AlertDialogCancel>
+            <AlertDialogCancel onClick={handleReturnToWizard}>Return to WizardDesign</AlertDialogCancel>
             <AlertDialogAction onClick={handleConfirmNewSimulation}>
               New Design
             </AlertDialogAction>
@@ -727,49 +651,40 @@ export default function WizardDesign() {
       return Math.sqrt(dx * dx + dy * dy) < 5;
     };
 
-    const connectedLines = lines.filter(
-      (line) =>
-        arePointsEqual(line.start, point) || arePointsEqual(line.end, point),
+    const connectedLines = lines.filter(line =>
+      arePointsEqual(line.start, point) || arePointsEqual(line.end, point)
     );
 
     for (const startLine of connectedLines) {
       const visited = new Set<string>();
       const pointKey = (p: Point) => `${Math.round(p.x)},${Math.round(p.y)}`;
-      const stack: { point: Point; path: Line[] }[] = [
-        {
-          point: arePointsEqual(startLine.start, point)
-            ? startLine.end
-            : startLine.start,
-          path: [startLine],
-        },
-      ];
+      const stack: { point: Point; path: Line[] }[] = [{
+        point: arePointsEqual(startLine.start, point) ? startLine.end : startLine.start,
+        path: [startLine]
+      }];
 
       while (stack.length > 0) {
         const { point: currentPoint, path } = stack.pop()!;
         const key = pointKey(currentPoint);
 
         if (path.length >= 2 && arePointsEqual(currentPoint, point)) {
-          console.log("Found closed contour:", path);
+          console.log('Found closed contour:', path);
           return true;
         }
 
         if (visited.has(key)) continue;
         visited.add(key);
 
-        const nextLines = lines.filter(
-          (line) =>
-            !path.includes(line) &&
-            (arePointsEqual(line.start, currentPoint) ||
-              arePointsEqual(line.end, currentPoint)),
+        const nextLines = lines.filter(line =>
+          !path.includes(line) &&
+          (arePointsEqual(line.start, currentPoint) || arePointsEqual(line.end, currentPoint))
         );
 
         for (const nextLine of nextLines) {
-          const nextPoint = arePointsEqual(nextLine.start, currentPoint)
-            ? nextLine.end
-            : nextLine.start;
+          const nextPoint = arePointsEqual(nextLine.start, currentPoint) ? nextLine.end : nextLine.start;
           stack.push({
             point: nextPoint,
-            path: [...path, nextLine],
+            path: [...path, nextLine]
           });
         }
       }
@@ -779,9 +694,8 @@ export default function WizardDesign() {
   };
 
   const findConnectedLines = (point: Point, lines: Line[]): Line[] => {
-    return lines.filter(
-      (line) =>
-        arePointsClose(line.start, point) || arePointsClose(line.end, point),
+    return lines.filter(line =>
+      arePointsClose(line.start, point) || arePointsClose(line.end, point)
     );
   };
 
@@ -817,12 +731,13 @@ export default function WizardDesign() {
     setHasClosedContour(false);
     setSimulationName("");
     setGridSize(20);
-    setCurrentTool("wall");
+    setCurrentTool('wall');
     setCurrentAirEntry(null);
     setSelectedLine(null);
     setClickedPoint(null);
     setTab("2d-editor");
   };
+
 
   const handleBack = () => {
     if (step > 1) setStep(step - 1);
@@ -871,33 +786,21 @@ export default function WizardDesign() {
                   <SelectValue placeholder="Select floor" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ground">
-                    {formatFloorText("ground")}
-                  </SelectItem>
+                  <SelectItem value="ground">{formatFloorText('ground')}</SelectItem>
                   {floors.ground.hasClosedContour && (
                     <>
-                      <SelectItem value="first">
-                        {formatFloorText("first")}
-                      </SelectItem>
+                      <SelectItem value="first">{formatFloorText('first')}</SelectItem>
                       {floors.first?.hasClosedContour && (
-                        <SelectItem value="second">
-                          {formatFloorText("second")}
-                        </SelectItem>
+                        <SelectItem value="second">{formatFloorText('second')}</SelectItem>
                       )}
                       {floors.second?.hasClosedContour && (
-                        <SelectItem value="third">
-                          {formatFloorText("third")}
-                        </SelectItem>
+                        <SelectItem value="third">{formatFloorText('third')}</SelectItem>
                       )}
                       {floors.third?.hasClosedContour && (
-                        <SelectItem value="fourth">
-                          {formatFloorText("fourth")}
-                        </SelectItem>
+                        <SelectItem value="fourth">{formatFloorText('fourth')}</SelectItem>
                       )}
                       {floors.fourth?.hasClosedContour && (
-                        <SelectItem value="fifth">
-                          {formatFloorText("fifth")}
-                        </SelectItem>
+                        <SelectItem value="fifth">{formatFloorText('fifth')}</SelectItem>
                       )}
                     </>
                   )}
@@ -971,12 +874,10 @@ export default function WizardDesign() {
           isMultifloor={isMultifloor}
           onLinesUpdate={(newLines) => {
             setLines(newLines);
-            const hasClosedContour =
-              newLines.length > 0 &&
-              newLines.some(
-                (line) =>
-                  isInClosedContour(line.start, newLines) ||
-                  isInClosedContour(line.end, newLines),
+            const hasClosedContour = newLines.length > 0 &&
+              newLines.some(line =>
+                isInClosedContour(line.start, newLines) ||
+                isInClosedContour(line.end, newLines)
               );
             setHasClosedContour(hasClosedContour);
           }}
@@ -1016,7 +917,9 @@ export default function WizardDesign() {
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           ) : (
-            <Button onClick={handleStartSimulation}>Start Simulation</Button>
+            <Button onClick={handleStartSimulation}>
+              Start Simulation
+            </Button>
           )}
         </div>
       </div>
