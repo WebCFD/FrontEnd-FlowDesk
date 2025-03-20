@@ -878,7 +878,7 @@ export default function Canvas2D({
       }
     }
 
-    if (currentTool === "wall" && isDrawing&& currentLine) {
+    if (currentTool === "wall" && isDrawing && currentLine) {
       const nearestPoint = findNearestEndpoint(point);
       const endPoint = nearestPoint || snapToGrid(point);
       setCurrentLine((prev) => (prev ? { ...prev, end: endPoint } : null));
@@ -1083,7 +1083,6 @@ export default function Canvas2D({
       }
 
       // Handle measurement tool
-
 
       if (currentTool === "wall") {
         const nearestPoint = findNearestEndpoint(point);
@@ -1290,21 +1289,24 @@ export default function Canvas2D({
     }
   };
 
-  const findMeasurementAtPoint = (point: Point, measurements: Measurement[]): { index: number; measurement: Measurement } | null => {
+  const findMeasurementAtPoint = (
+    point: Point,
+    measurements: Measurement[],
+  ): { index: number; measurement: Measurement } | null => {
     for (let i = 0; i < measurements.length; i++) {
       const measurement = measurements[i];
-      const distance = distanceToLineSegment(point, measurement.start, measurement.end);
-      if (distance < HOVER_DISTANCE) {
+      const distance = distanceToLineSegment(
+        point,
+        measurement.start,
+        measurement.end,
+      );
+      // Use a slightly larger detection distance to match other erasable elements
+      // and account for zoom level
+      if (distance < HOVER_DISTANCE / zoom) {
         return { index: i, measurement };
       }
     }
     return null;
-  };
-
-  const calculateDistance = (start: Point, end: Point): number => {
-    const dx = end.x - start.x;
-    const dy = end.y - start.y;
-    return Math.sqrt(dx * dx + dy * dy);
   };
 
   useEffect(() => {
@@ -1749,57 +1751,6 @@ export default function Canvas2D({
       ctx.restore();
     };
 
-    const drawMeasurements = (ctx: CanvasRenderingContext2D) => {
-      ctx.save();
-
-      // Draw active measurement
-      if (isMeasuring && measureStart && measureEnd) {
-        const distance = calculateDistance(measureStart, measureEnd) * PIXELS_TO_CM;
-
-        ctx.beginPath();
-        ctx.moveTo(measureStart.x, measureStart.y);
-        ctx.lineTo(measureEnd.x, measureEnd.y);
-        ctx.strokeStyle = '#2563eb'; // blue-600
-        ctx.lineWidth = 2 / zoom;
-        ctx.stroke();
-
-        // Draw measurement text
-        const midPoint = {
-          x: (measureStart.x + measureEnd.x) / 2,
-          y: (measureStart.y + measureEnd.y) / 2
-        };
-
-        ctx.font = `${14 / zoom}px Arial`;
-        ctx.fillStyle = '#2563eb';
-        ctx.textAlign = 'center';
-        ctx.fillText(`${distance.toFixed(1)} cm`, midPoint.x, midPoint.y - 10 / zoom);
-      }
-
-      // Draw existing measurements
-      measurements.forEach((measurement, index) => {
-        const isHighlighted = highlightState.measurement?.index === index;
-
-        ctx.beginPath();
-        ctx.moveTo(measurement.start.x, measurement.start.y);
-        ctx.lineTo(measurement.end.x, measurement.end.y);
-        ctx.strokeStyle = isHighlighted ? '#ef4444' : '#2563eb';
-        ctx.lineWidth = 2 / zoom;
-        ctx.stroke();
-
-        const midPoint = {
-          x: (measurement.start.x + measurement.end.x) / 2,
-          y: (measurement.start.y + measurement.end.y) / 2
-        };
-
-        ctx.font = `${14 / zoom}px Arial`;
-        ctx.fillStyle = isHighlighted ? '#ef4444' : '#2563eb';
-        ctx.textAlign = 'center';
-        ctx.fillText(`${measurement.distance.toFixed(1)} cm`, midPoint.x, midPoint.y - 10 / zoom);
-      });
-
-      ctx.restore();
-    };
-
     canvas.addEventListener("mousedown", handleMouseDown);
     canvas.addEventListener("mousemove", handleMouseMove);
     canvas.addEventListener("mouseup", handleMouseUp);
@@ -1830,7 +1781,7 @@ export default function Canvas2D({
       canvas.removeEventListener("mouseleave", handleMouseLeave);
       canvas.removeEventListener("wheel", handleZoomWheel);
       canvas.removeEventListener("wheel", handleRegularWheel);
-      canvas.removeEventListener("contextmenu",handleContextMenu);
+      canvas.removeEventListener("contextmenu", handleContextMenu);
       canvas.removeEventListener("dblclick", handleDoubleClick);
 
       if (animationFrameId) {
@@ -1867,14 +1818,6 @@ export default function Canvas2D({
     measurements,
     onMeasurementsUpdate,
     isMultifloor,
-    handleMouseDown,
-    handleMouseMove,
-    handleMouseUp,
-    handleMouseLeave,
-    handleZoomWheel,
-    handleRegularWheel,
-    handleContextMenu,
-    handleDoubleClick,
   ]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -2012,24 +1955,6 @@ export default function Canvas2D({
     // 4. Default cursor when no special mode is active
     return "default";
   };
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    // Set cursor based on current tool and state
-    const cursorStyle = isPanning || panMode
-      ? 'grab'
-      : currentTool === "measure"
-      ? 'crosshair'
-      : currentTool === "eraser"
-      ? `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"><path d="M19 19H5L19 5V19Z"/></svg>') 12 12, auto`
-      : currentTool === "wall"
-      ? 'pointer'
-      : 'default';
-
-    canvas.style.cursor = cursorStyle;
-  }, [currentTool, isPanning, panMode]);
 
   return (
     <div className="relative w-full h-full bg-background">
