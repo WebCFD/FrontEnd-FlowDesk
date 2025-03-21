@@ -337,8 +337,8 @@ export default function WizardDesign() {
         </div>
       </div>
 
-      <Card className="mt-6">
-        <CardContent className="p-6">
+      <Card className="mt-4">
+        <CardContent className="p-4">
           <ToolbarToggle
             mode={tab}
             onModeChange={(value: "2d-editor" | "3d-preview") => {
@@ -355,9 +355,9 @@ export default function WizardDesign() {
             hasClosedContour={hasClosedContour}
           />
 
-          <div className="flex gap-6">
+          <div className="flex gap-4">
             {/* Left side menus */}
-            <div className="w-48 space-y-6">
+            <div className="w-72 space-y-6">
               {/* 2D Menu - grayed out in 3D view */}
               <div className={cn(
                 "border rounded-lg p-4",
@@ -860,7 +860,7 @@ export default function WizardDesign() {
   );
 
   const renderCanvasSection = () => (
-    <div className="flex-1 border rounded-lg overflow-hidden bg-white">
+    <div className="flex-1 border rounded-lg overflow-hidden bg-white min-w-[600px]">
       {tab === "2d-editor" ? (
         <Canvas2D
           gridSize={gridSize}
@@ -897,7 +897,7 @@ export default function WizardDesign() {
 
   return (
     <DashboardLayout>
-      <div className="container mx-auto py-6 space-y-6">
+      <div className="container mx-auto py-4 px-3 space-y-4">
         {renderStepIndicator()}
         <div className="min-h-[690px]">
           {step === 1 && renderStep1()}
