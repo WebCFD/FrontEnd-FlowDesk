@@ -273,7 +273,8 @@ export default function Canvas2D({
   }>({ point: { x: 0, y: 0 }, lines: [], isStart: [] });
 
   // ADD THIS new state
-  const [previewMeasurement, setPreviewMeasurement] = useState<Measurement | null>(null);
+  const [previewMeasurement, setPreviewMeasurement] =
+    useState<Measurement | null>(null);
   const [isDraggingAirEntry, setIsDraggingAirEntry] = useState(false);
   const [draggedAirEntry, setDraggedAirEntry] = useState<{
     index: number;
@@ -929,7 +930,7 @@ export default function Canvas2D({
           start: measureStart,
           end: snappedPoint,
           distance: pixelsToCm(distance),
-          isPreview: true
+          isPreview: true,
         });
       }
     }
@@ -969,7 +970,8 @@ export default function Canvas2D({
 
     if (isDraggingEndpoint) {
       const point = getCanvasPoint(e);
-      const targetPoint = fineDragSnap(point);
+      const nearestPoint = findNearestEndpoint(point);
+      const targetPoint = nearestPoint || point; // Use nearest point if available, otherwise use original point
 
       if (draggedPoint.lines.length > 0) {
         const oldLines = [...lines];
@@ -1065,7 +1067,7 @@ export default function Canvas2D({
         setMeasureEnd(startPoint);
 
         // Remove any preview measurements that might be in the array
-        const filteredMeasurements = measurements.filter(m => !m.isPreview);
+        const filteredMeasurements = measurements.filter((m) => !m.isPreview);
         onMeasurementsUpdate?.(filteredMeasurements);
 
         console.log("First measurement click - start point set");
@@ -1087,7 +1089,7 @@ export default function Canvas2D({
             start: measureStart!,
             end: endPoint,
             distance: pixelsToCm(distance),
-            isPreview: false
+            isPreview: false,
           };
 
           // Add the new measurement to the permanent measurements
@@ -1274,7 +1276,7 @@ export default function Canvas2D({
       }
     }
 
-   // console.log("No AirEntry found at point");
+    // console.log("No AirEntry found at point");
     return null;
   };
 
@@ -1363,7 +1365,7 @@ export default function Canvas2D({
       start: Point,
       end: Point,
       isHighlighted: boolean = false,
-      isPreview: boolean = false
+      isPreview: boolean = false,
     ) => {
       const dx = end.x - start.x;
       const dy = end.y - start.y;
@@ -1714,7 +1716,7 @@ export default function Canvas2D({
             measurement.start,
             measurement.end,
             isHighlighted,
-            false
+            false,
           );
         });
 
@@ -1725,7 +1727,7 @@ export default function Canvas2D({
             previewMeasurement.start,
             previewMeasurement.end,
             false,
-            true
+            true,
           );
         }
       };
@@ -1733,7 +1735,7 @@ export default function Canvas2D({
       drawMeasurements(ctx);
 
       // Draw measurement preview
-     /* if (isMeasuring && measureStart && measureEnd) {
+      /* if (isMeasuring && measureStart && measureEnd) {
         ctx.save();
         ctx.strokeStyle = "#4b5563"; // Gray color
         ctx.lineWidth = 2 / zoom;
@@ -1976,10 +1978,6 @@ export default function Canvas2D({
     if (currentTool === "measure") {
       // Ruler icon matching the Lucide Ruler component
       return 'url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%23000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/></svg>\') 5 15, auto';
-
-
-
-      
     }
 
     // 3. Check for Air Entry element placement modes
