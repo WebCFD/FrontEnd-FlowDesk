@@ -16,7 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
-import { Save, Upload, Eraser, ArrowRight, ArrowLeft, Ruler, Camera, RotateCw, ZoomIn } from "lucide-react";
+import { Save, Upload, Eraser, ArrowRight, ArrowLeft, Ruler, Camera, RotateCw, ZoomIn, ArrowUpDown, Layers } from "lucide-react";
 import Canvas2D from "@/components/sketch/Canvas2D";
 import { RoomSketchPro } from "@/components/sketch/RoomSketchPro";
 import { cn } from "@/lib/utils";
@@ -396,7 +396,7 @@ export default function WizardDesign() {
                       onClick={() => handleToolSelect('stairs')}
                       disabled={!isMultifloor}
                     >
-                      <Stairs className="w-6 h-6" />
+                      <Layers className="w-6 h-6" />
                       <span className="text-xs">Stairs</span>
                     </Button>
                   </div>
