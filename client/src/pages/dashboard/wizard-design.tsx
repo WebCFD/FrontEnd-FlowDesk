@@ -81,7 +81,7 @@ export default function WizardDesign() {
   const [simulationName, setSimulationName] = useState("");
   const [simulationType, setSimulationType] = useState("comfort");
   const [gridSize, setGridSize] = useState(20);
-  const [currentTool, setCurrentTool] = useState<'wall' | 'eraser' | 'measure' | null>('wall');
+  const [currentTool, setCurrentTool] = useState<'wall' | 'eraser' | 'measure' | 'stairs' | null>('wall');
   const [currentAirEntry, setCurrentAirEntry] = useState<'vent' | 'door' | 'window' | null>(null);
   const { toast } = useToast();
   const [isAirEntryDialogOpen, setIsAirEntryDialogOpen] = useState(false);
@@ -859,9 +859,12 @@ export default function WizardDesign() {
                 variant="outline" 
                 className="w-full"
                 onClick={() => {
+                  setCurrentTool('stairs');
+                  setCurrentAirEntry(null);
+                  setTab("2d-editor");
                   toast({
-                    title: "Stair Design",
-                    description: "Stair design functionality will be implemented in a future update.",
+                    title: "Stair Design Tool Activated",
+                    description: "Click on the canvas to place points and create a stair polygon. Close the shape by clicking near the first point.",
                   });
                 }}
               >
