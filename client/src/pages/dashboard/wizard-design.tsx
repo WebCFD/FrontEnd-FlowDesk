@@ -22,7 +22,7 @@ import { RoomSketchPro } from "@/components/sketch/RoomSketchPro";
 import { cn } from "@/lib/utils";
 import AirEntryDialog from "@/components/sketch/AirEntryDialog";
 import Canvas3D from "@/components/sketch/Canvas3D";
-import { useRoomStore } from "@/lib/store/room-store";
+import { useRoomStore, type AirEntry, type Line, type Point } from "@/lib/store/room-store";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   AlertDialog,
@@ -104,6 +104,7 @@ export default function WizardDesign() {
     setLines,
     setAirEntries,
     setMeasurements,
+    setStairPolygons,
     setHasClosedContour,
     addFloor,
     removeFloor,
@@ -112,7 +113,7 @@ export default function WizardDesign() {
 
   // Get current floor data
   const currentFloorData = floors[currentFloor];
-  const { lines, airEntries, measurements, hasClosedContour } = currentFloorData;
+  const { lines, airEntries, measurements, hasClosedContour, stairPolygons } = currentFloorData;
 
   // Handle loading floor template
   const handleLoadTemplate = () => {
@@ -887,7 +888,9 @@ export default function WizardDesign() {
           currentAirEntry={currentAirEntry}
           airEntries={airEntries}
           measurements={measurements}
+          stairPolygons={stairPolygons}
           onMeasurementsUpdate={setMeasurements}
+          onStairPolygonsUpdate={setStairPolygons}
           lines={lines}
           floorText={formatFloorText(currentFloor)}
           isMultifloor={isMultifloor}
