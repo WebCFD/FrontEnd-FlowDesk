@@ -22,7 +22,7 @@ import { RoomSketchPro } from "@/components/sketch/RoomSketchPro";
 import { cn } from "@/lib/utils";
 import AirEntryDialog from "@/components/sketch/AirEntryDialog";
 import Canvas3D from "@/components/sketch/Canvas3D";
-import { useRoomStore, type AirEntry, type Line, type Point } from "@/lib/store/room-store";
+import { useRoomStore } from "@/lib/store/room-store";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   AlertDialog,
@@ -48,6 +48,25 @@ interface Point {
 interface Line {
   start: Point;
   end: Point;
+}
+
+interface AirEntry {
+  type: 'window' | 'door' | 'vent';
+  position: Point;
+  dimensions: {
+    width: number;
+    height: number;
+    distanceToFloor?: number;
+  };
+  line: Line;
+}
+
+interface StairPolygon {
+  id: string;
+  points: Point[];
+  floor: string;
+  direction?: 'up' | 'down';
+  connectsTo?: string;
 }
 
 const calculateNormal = (line: Line | null): { x: number; y: number } => {
@@ -196,7 +215,7 @@ export default function WizardDesign() {
     return pixels * (25 / 20);
   };
 
-  const handleToolSelect = (tool: 'wall' | 'eraser' | 'measure') => {
+  const handleToolSelect = (tool: 'wall' | 'eraser' | 'measure' | 'stairs') => {
     setCurrentTool(tool);
     setCurrentAirEntry(null);
   };
@@ -468,7 +487,7 @@ export default function WizardDesign() {
                         defaultValue={[80]}
                         max={100}
                         step={1}
-                        onValueChange={(value) => setWallTransparency(value[0] / 100)}
+                        onValueChange={(value: number[]) => setWallTransparency(value[0] / 100)}
                       />
                       <div className="text-sm text-right mt-1">{Math.round(wallTransparency * 100)}%</div>
                     </div>
@@ -729,6 +748,7 @@ export default function WizardDesign() {
     setLines([]);
     setAirEntries([]);
     setMeasurements([]);
+    setStairPolygons([]);
     setHasClosedContour(false);
     setSimulationName("");
     setGridSize(20);
