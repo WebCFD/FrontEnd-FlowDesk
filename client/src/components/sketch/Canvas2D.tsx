@@ -18,6 +18,7 @@ interface HighlightState {
   lines: Line[];
   airEntry: { index: number; entry: AirEntry } | null;
   measurement: { index: number; measurement: Measurement } | null;
+  stairPolygon: { index: number; polygon: StairPolygon } | null; // Add this line
 }
 
 let isProcessingMouseMove = false;
@@ -299,6 +300,7 @@ export default function Canvas2D({
     lines: [],
     airEntry: null,
     measurement: null,
+    stairPolygon: null  // Add this line
   });
   const [editingAirEntry, setEditingAirEntry] = useState<{
     index: number;
@@ -850,10 +852,28 @@ export default function Canvas2D({
     return null;
   };
 
+
+
+  const throttleMouseMove = (e: MouseEvent) => {
+    lastMouseMoveEvent = e;
+
+    if (isProcessingMouseMove) return;
+
+    isProcessingMouseMove = true;
+
+    requestAnimationFrame(() => {
+      if (lastMouseMoveEvent) {
+        processMouseMove(lastMouseMoveEvent);
+      }
+      isProcessingMouseMove = false;
+      lastMouseMoveEvent = null;
+    });
+  };
+
   const processMouseMove = (e: MouseEvent) => {
     const point = getCanvasPoint(e);
     setHoverPoint(point);
-    
+
     // Handle mouse move during stair drawing
     if (isDrawingStairs) {
       const nearestPoint = findNearestEndpoint(point);
@@ -877,12 +897,14 @@ export default function Canvas2D({
       if (currentTool === "eraser") {
         const airEntryInfo = findAirEntryAtLocation(point);
         const measurementInfo = findMeasurementAtPoint(point, measurements);
+        const stairPolygonInfo = findStairPolygonAtPoint(point, stairPolygons);
 
         if (airEntryInfo) {
           setHighlightState({
             lines: [],
             airEntry: { index: airEntryInfo.index, entry: airEntryInfo.entry },
             measurement: null,
+            stairPolygon: null
           });
         } else if (measurementInfo) {
           setHighlightState({
@@ -892,6 +914,17 @@ export default function Canvas2D({
               index: measurementInfo.index,
               measurement: measurementInfo.measurement,
             },
+            stairPolygon: null
+          });
+        } else if (stairPolygonInfo) {
+          setHighlightState({
+            lines: [],
+            airEntry: null,
+            measurement: null,
+            stairPolygon: { 
+              index: stairPolygonInfo.index, 
+              polygon: stairPolygonInfo.polygon 
+            }
           });
         } else {
           const nearbyLines = findLinesNearPoint(point);
@@ -899,6 +932,7 @@ export default function Canvas2D({
             lines: nearbyLines,
             airEntry: null,
             measurement: null,
+            stairPolygon: null
           });
         }
       } else if (currentAirEntry) {
@@ -906,6 +940,7 @@ export default function Canvas2D({
           lines: findLinesNearPoint(point),
           airEntry: null,
           measurement: null,
+          stairPolygon: null
         });
       }
     }
@@ -916,22 +951,6 @@ export default function Canvas2D({
       setCurrentLine((prev) => (prev ? { ...prev, end: endPoint } : null));
       setCursorPoint(endPoint);
     }
-  };
-
-  const throttleMouseMove = (e: MouseEvent) => {
-    lastMouseMoveEvent = e;
-
-    if (isProcessingMouseMove) return;
-
-    isProcessingMouseMove = true;
-
-    requestAnimationFrame(() => {
-      if (lastMouseMoveEvent) {
-        processMouseMove(lastMouseMoveEvent);
-      }
-      isProcessingMouseMove = false;
-      lastMouseMoveEvent = null;
-    });
   };
 
   const handleMouseMove = (e: MouseEvent) => {
@@ -1176,6 +1195,8 @@ export default function Canvas2D({
       } else if (currentTool === "eraser") {
         const airEntryInfo = findAirEntryAtLocation(point);
         const measurementInfo = findMeasurementAtPoint(point, measurements);
+        const stairPolygonInfo = findStairPolygonAtPoint(point, stairPolygons); // Add this line
+
 
         if (airEntryInfo) {
           const newAirEntries = airEntries.filter(
@@ -1187,6 +1208,12 @@ export default function Canvas2D({
             (_, i) => i !== measurementInfo.index,
           );
           onMeasurementsUpdate?.(newMeasurements);
+        } else if (stairPolygonInfo) { // Add this branch
+          // Erase the stair polygon
+          const newStairPolygons = stairPolygons.filter(
+            (_, i) => i !== stairPolygonInfo.index
+          );
+          onStairPolygonsUpdate?.(newStairPolygons);
         } else {
           const nearbyLines = findLinesNearPoint(point);
           if (nearbyLines.length > 0) {
@@ -1201,7 +1228,7 @@ export default function Canvas2D({
             onLinesUpdate?.(newLines);
           }
         }
-        setHighlightState({ lines: [], airEntry: null, measurement: null });
+        setHighlightState({ lines: [], airEntry: null, measurement: null, stairPolygon: null});
         return;
       } else if (currentAirEntry) {
         const selectedLines = findLinesNearPoint(point);
@@ -1307,7 +1334,12 @@ export default function Canvas2D({
     }
 
     handlePanEnd();
-    setHighlightState({ lines: [], airEntry: null, measurement: null });
+    setHighlightState({ 
+      lines: [], 
+      airEntry: null, 
+      measurement: null,
+      stairPolygon: null 
+    });
     setHoveredGridPoint(null);
     setHoverPoint(null);
     setHoveredAirEntry(null);
@@ -1420,20 +1452,86 @@ export default function Canvas2D({
     }
     return null;
   };
+
+
+  // MODIFICATION 3: Add the following function after findMeasurementAtPoint - around line 893
+  const findStairPolygonAtPoint = (
+    point: Point,
+    polygons: StairPolygon[]
+  ): { index: number; polygon: StairPolygon } | null => {
+    // First check if point is inside any polygon
+    for (let i = 0; i < polygons.length; i++) {
+      const polygon = polygons[i];
+
+      // Check if point is inside the polygon using ray casting algorithm
+      if (isPointInPolygon(point, polygon.points)) {
+        return { index: i, polygon };
+      }
+
+      // If not inside, check if the point is close to any polygon edge
+      for (let j = 0; j < polygon.points.length; j++) {
+        const start = polygon.points[j];
+        const end = polygon.points[(j + 1) % polygon.points.length]; // Connect last point to first
+
+        const distance = distanceToLineSegment(point, start, end);
+        if (distance < HOVER_DISTANCE / zoom) {
+          return { index: i, polygon };
+        }
+      }
+
+      // Also check if point is close to any polygon vertex
+      for (const vertexPoint of polygon.points) {
+        const dx = point.x - vertexPoint.x;
+        const dy = point.y - vertexPoint.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < POINT_RADIUS * 2 / zoom) {
+          return { index: i, polygon };
+        }
+      }
+    }
+
+    return null;
+  };
+
+  // MODIFICATION 4: Add helper function to check if a point is inside a polygon
+  const isPointInPolygon = (point: Point, polygon: Point[]): boolean => {
+    // Ray casting algorithm
+    let inside = false;
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+      const xi = polygon[i].x, yi = polygon[i].y;
+      const xj = polygon[j].x, yj = polygon[j].y;
+
+      const intersect = ((yi > point.y) !== (yj > point.y))
+          && (point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi);
+      if (intersect) inside = !inside;
+    }
+
+    return inside;
+  };
   
   // Function to draw stair polygons
+  // MODIFICATION 5: Update the drawStairPolygon function to add isHighlighted parameter - around line 897
   const drawStairPolygon = (
     ctx: CanvasRenderingContext2D,
     points: Point[],
     isPreview: boolean = false,
-    direction: 'up' | 'down' = 'up'
+    direction: 'up' | 'down' = 'up',
+    isHighlighted: boolean = false // Add this parameter
   ) => {
     if (points.length < 2) return;
-    
+
     // Set styles for stair polygon
     ctx.save();
-    
-    if (isPreview) {
+
+    // MODIFICATION 6: Add highlight styling
+    if (isHighlighted) {
+      // Highlighted for deletion styling - red
+      ctx.strokeStyle = 'rgba(239, 68, 68, 0.8)'; // Red color
+      ctx.fillStyle = 'rgba(239, 68, 68, 0.3)';
+      ctx.lineWidth = 3 / zoom;
+      ctx.setLineDash([]);
+    } else if (isPreview) {
       // Preview styling - semi-transparent purple with dashed lines
       ctx.strokeStyle = 'rgba(124, 58, 237, 0.8)'; // Violet color
       ctx.fillStyle = 'rgba(124, 58, 237, 0.2)';
@@ -1447,6 +1545,8 @@ export default function Canvas2D({
       ctx.lineWidth = 2 / zoom;
       ctx.setLineDash([]);
     }
+
+    // Rest of the function remains the same...
     
     // Draw the polygon
     ctx.beginPath();
@@ -1471,7 +1571,7 @@ export default function Canvas2D({
         (acc, point) => ({ x: acc.x + point.x / points.length, y: acc.y + point.y / points.length }),
         { x: 0, y: 0 }
       );
-      
+      /*
       // Draw direction arrow
       const arrowSize = 15 / zoom;
       ctx.beginPath();
@@ -1491,13 +1591,13 @@ export default function Canvas2D({
       
       ctx.closePath();
       ctx.fill();
-      
+      */
       // Add "STAIR" label
       ctx.fillStyle = '#000';
       ctx.font = `${12 / zoom}px Arial`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('STAIR', center.x, center.y + (direction === 'up' ? arrowSize + 5 / zoom : -arrowSize - 5 / zoom));
+      ctx.fillText('STAIR', center.x, center.y);
     }
     
     // Draw points/vertices
@@ -1916,8 +2016,15 @@ export default function Canvas2D({
       
       // Draw all existing stair polygons
       if (stairPolygons && stairPolygons.length > 0) {
-        stairPolygons.forEach(stair => {
-          drawStairPolygon(ctx, stair.points, false, stair.direction || 'up');
+        stairPolygons.forEach((stair, index) => {
+          const isHighlighted = highlightState.stairPolygon?.index === index;
+          drawStairPolygon(
+            ctx, 
+            stair.points, 
+            false, 
+            stair.direction || 'up',
+            isHighlighted
+          );
         });
       }
       
