@@ -28,10 +28,19 @@ interface Measurement {
   distance: number;
 }
 
+interface StairPolygon {
+  id: string;
+  points: Point[];
+  floor: string; // The floor this stair belongs to
+  direction?: 'up' | 'down'; // Direction of the stairs
+  connectsTo?: string; // The floor this stair connects to
+}
+
 interface FloorData {
   lines: Line[];
   airEntries: AirEntry[];
   measurements: Measurement[];
+  stairPolygons: StairPolygon[]; // Add stairs to floor data
   hasClosedContour: boolean;
   name: string;
   templateSource?: string; // Name of the floor this was copied from
@@ -46,6 +55,9 @@ interface RoomState {
   setLines: (lines: Line[]) => void;
   setAirEntries: (entries: AirEntry[]) => void;
   setMeasurements: (measurements: Measurement[]) => void;
+  setStairPolygons: (polygons: StairPolygon[]) => void;
+  addStairPolygon: (polygon: StairPolygon) => void;
+  removeStairPolygon: (id: string) => void;
   setHasClosedContour: (hasContour: boolean) => void;
   // Floor management
   addFloor: (name: string, template?: string) => void;
@@ -63,6 +75,7 @@ export const useRoomStore = create<RoomState>()(
             lines: [],
             airEntries: [],
             measurements: [],
+            stairPolygons: [], // Add empty stair polygons array
             hasClosedContour: false,
             name: 'Ground Floor'
           }
@@ -121,6 +134,7 @@ export const useRoomStore = create<RoomState>()(
                 lines: [],
                 airEntries: [],
                 measurements: [],
+                stairPolygons: [], // Include empty stairPolygons array
                 hasClosedContour: false,
                 name
               };
@@ -152,12 +166,53 @@ export const useRoomStore = create<RoomState>()(
           }
         })),
 
+        // Stair polygon methods
+        setStairPolygons: (stairPolygons) => set((state) => ({
+          floors: {
+            ...state.floors,
+            [state.currentFloor]: {
+              ...state.floors[state.currentFloor],
+              stairPolygons
+            }
+          }
+        })),
+
+        addStairPolygon: (polygon) => set((state) => {
+          // Get current floor's stair polygons
+          const currentStairPolygons = state.floors[state.currentFloor].stairPolygons || [];
+          
+          return {
+            floors: {
+              ...state.floors,
+              [state.currentFloor]: {
+                ...state.floors[state.currentFloor],
+                stairPolygons: [...currentStairPolygons, polygon]
+              }
+            }
+          };
+        }),
+
+        removeStairPolygon: (id) => set((state) => {
+          const currentStairPolygons = state.floors[state.currentFloor].stairPolygons || [];
+          
+          return {
+            floors: {
+              ...state.floors,
+              [state.currentFloor]: {
+                ...state.floors[state.currentFloor],
+                stairPolygons: currentStairPolygons.filter((poly) => poly.id !== id)
+              }
+            }
+          };
+        }),
+
         reset: () => set({
           floors: {
             ground: {
               lines: [],
               airEntries: [],
               measurements: [],
+              stairPolygons: [],
               hasClosedContour: false,
               name: 'Ground Floor'
             }

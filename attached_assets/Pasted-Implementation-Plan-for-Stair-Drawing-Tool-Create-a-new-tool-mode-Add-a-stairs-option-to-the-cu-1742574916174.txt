@@ -1,0 +1,68 @@
+Implementation Plan for Stair Drawing Tool
+
+Create a new tool mode:
+
+Add a 'stairs' option to the currentTool state alongside 'wall', 'eraser', and 'measure'
+Update the corresponding type definitions
+
+
+Data Structure:
+
+Focus only on a polygon created through sequential point clicks
+Add a new state to store stair polygons:
+
+typescriptCopiainterface StairPolygon {
+  id: string;
+  points: Point[];
+  floor: string; // Uses current floor from dropdown
+}
+
+Add this to the room store alongside lines, airEntries, and measurements
+
+
+Drawing Process:
+
+Leverage the existing wall drawing logic but modify it to collect multiple points
+Each click adds a new point to the polygon
+Display a preview of the shape as it's being built
+Allow the user to close the shape by clicking near the starting point
+Fill the polygon with a distinct pattern indicating it's a staircase
+
+
+UI Integration:
+
+Use the existing "Stair Design" button in the Parameters section under multifloor
+When clicked, set the current tool to 'stairs' mode
+Create the stairs in the currently selected floor from the dropdown menu
+No need for a new UI element as the button already exists
+
+
+Visual Representation:
+
+Design a distinct visual style for the stair polygon:
+
+Use a different color from walls (perhaps a dark orange or brown)
+Apply a diagonal line pattern fill
+Add a subtle border
+
+
+Make the polygon semi-transparent to see the grid underneath
+
+
+Canvas2D Modifications:
+
+Extend the Canvas2D component to handle the stair drawing mode:
+
+Add state to track points in the current polygon
+Add logic to handle mouse events for polygon creation
+Add rendering logic for both in-progress and completed stair polygons
+
+
+Adapt the existing mouse handlers to support multi-point collection
+Add a mechanism to detect when the polygon is closed
+Update the rendering logic to properly display stair polygons
+
+
+
+This approach fully integrates with your existing system, using the established UI elements and building on the familiar wall-drawing interaction pattern while adding the specific functionality needed for multi-point polygons.
+Would you like me to implement the code changes for this plan?
