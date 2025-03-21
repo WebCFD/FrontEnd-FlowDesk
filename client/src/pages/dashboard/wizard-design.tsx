@@ -853,6 +853,22 @@ export default function WizardDesign() {
                 <span>cm</span>
               </div>
             </div>
+
+            <div className="pt-4">
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => {
+                  toast({
+                    title: "Stair Design",
+                    description: "Stair design functionality will be implemented in a future update.",
+                  });
+                }}
+              >
+                <FileEdit className="mr-2 h-4 w-4" />
+                Stair Design
+              </Button>
+            </div>
           </div>
         )}
       </div>
