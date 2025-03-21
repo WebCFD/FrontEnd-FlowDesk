@@ -1913,6 +1913,39 @@ export default function Canvas2D({
       };
 
       drawMeasurements(ctx);
+      
+      // Draw all existing stair polygons
+      if (stairPolygons && stairPolygons.length > 0) {
+        stairPolygons.forEach(stair => {
+          drawStairPolygon(ctx, stair.points, false, stair.direction || 'up');
+        });
+      }
+      
+      // Draw the stair polygon being created, if any
+      if (isDrawingStairs && currentStairPoints.length > 0) {
+        // Create a temporary array with current points plus preview point
+        const previewPoints = [...currentStairPoints];
+        if (previewStairPoint) {
+          previewPoints.push(previewStairPoint);
+        }
+        
+        // Draw the preview stair polygon
+        drawStairPolygon(ctx, previewPoints, true);
+        
+        // Show tooltip if actively drawing stairs
+        if (previewStairPoint) {
+          ctx.save();
+          ctx.font = `${12 / zoom}px Arial`;
+          ctx.fillStyle = "#000000";
+          ctx.textAlign = "center";
+          ctx.fillText(
+            "Click to add point, right-click to complete",
+            previewStairPoint.x,
+            previewStairPoint.y - 20 / zoom
+          );
+          ctx.restore();
+        }
+      }
 
       // Draw measurement preview
       /* if (isMeasuring && measureStart && measureEnd) {
@@ -2042,6 +2075,13 @@ export default function Canvas2D({
     onMeasurementsUpdate,
     isMultifloor,
     previewMeasurement,
+    // Add stair-related dependencies
+    stairPolygons,
+    isDrawingStairs,
+    currentStairPoints,
+    previewStairPoint,
+    onStairPolygonsUpdate,
+    floorText
   ]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -2158,6 +2198,11 @@ export default function Canvas2D({
     if (currentTool === "measure") {
       // Ruler icon matching the Lucide Ruler component
       return 'url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%23000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/></svg>\') 5 15, auto';
+    }
+    
+    if (currentTool === "stairs") {
+      // Stairs icon cursor for stairs tool
+      return 'url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%237c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18h18"/><path d="M3 18a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2"/><path d="M5 16v-2a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/><path d="M9 12V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v10"/></svg>\') 0 18, auto';
     }
 
     // 3. Check for Air Entry element placement modes
