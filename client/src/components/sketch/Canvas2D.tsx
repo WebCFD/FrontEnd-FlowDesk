@@ -226,7 +226,7 @@ const getPointAtRelativePosition = (line: Line, relativePos: number): Point => {
 
 interface Canvas2DProps {
   gridSize: number;
-  currentTool: "wall" | "eraser" | "measure" | null;
+  currentTool: "wall" | "eraser" | "measure" | "stairs" | null;
   currentAirEntry: "window" | "door" | "vent" | null;
   airEntries: AirEntry[];
   lines: Line[];
