@@ -853,6 +853,14 @@ export default function Canvas2D({
   const processMouseMove = (e: MouseEvent) => {
     const point = getCanvasPoint(e);
     setHoverPoint(point);
+    
+    // Handle mouse move during stair drawing
+    if (isDrawingStairs) {
+      const nearestPoint = findNearestEndpoint(point);
+      const snappedPoint = nearestPoint || snapToGrid(point);
+      setPreviewStairPoint(snappedPoint);
+      return;
+    }
 
     if (!isDrawing && !isPanning) {
       const nearestGridPoint = findNearestGridPoint(point);
@@ -1044,7 +1052,26 @@ export default function Canvas2D({
     const point = getCanvasPoint(e);
     // Handle different mouse buttons
     if (e.button === 0) {
-      // Left-click handling (keep all the existing left-click code below)
+      // Left-click handling
+      
+      // Handle the stairs tool mode
+      if (currentTool === "stairs") {
+        e.preventDefault();
+        const nearestPoint = findNearestEndpoint(point);
+        const snappedPoint = nearestPoint || snapToGrid(point);
+        
+        if (!isDrawingStairs) {
+          // Starting a new stair polygon
+          setIsDrawingStairs(true);
+          setCurrentStairPoints([snappedPoint]);
+          setPreviewStairPoint(snappedPoint);
+        } else {
+          // Continue adding points to the existing stair polygon
+          setCurrentStairPoints(prev => [...prev, snappedPoint]);
+        }
+        return;
+      }
+      
     } else if (e.button === 2) {
       // Right-click
       e.preventDefault();
@@ -1199,6 +1226,33 @@ export default function Canvas2D({
       handlePanEnd();
       return;
     }
+    
+    // Handle right-click when drawing stairs to complete the polygon
+    if (isDrawingStairs && e.button === 2) {
+      e.preventDefault();
+      
+      // Only create a stair polygon if we have at least 3 points
+      if (currentStairPoints.length >= 3) {
+        // Create a new stair polygon
+        const newStairPolygon: StairPolygon = {
+          id: Math.random().toString(36).substring(2, 9),
+          points: [...currentStairPoints],
+          floor: floorText,
+          direction: 'up', // Default direction, can be customized later
+        };
+        
+        // Add the new stair polygon
+        if (onStairPolygonsUpdate) {
+          onStairPolygonsUpdate([...(stairPolygons || []), newStairPolygon]);
+        }
+      }
+      
+      // Reset stair drawing state
+      setIsDrawingStairs(false);
+      setCurrentStairPoints([]);
+      setPreviewStairPoint(null);
+      return;
+    }
 
     // Clean up measurement when switching tools
     if (currentTool !== "measure") {
@@ -1263,6 +1317,13 @@ export default function Canvas2D({
       setCurrentLine(null);
       setIsDrawing(false);
       setCursorPoint(null);
+    }
+    
+    // Reset stairs drawing if we leave the canvas
+    if (isDrawingStairs) {
+      setIsDrawingStairs(false);
+      setCurrentStairPoints([]);
+      setPreviewStairPoint(null);
     }
   };
 
@@ -1358,6 +1419,105 @@ export default function Canvas2D({
       }
     }
     return null;
+  };
+  
+  // Function to draw stair polygons
+  const drawStairPolygon = (
+    ctx: CanvasRenderingContext2D,
+    points: Point[],
+    isPreview: boolean = false,
+    direction: 'up' | 'down' = 'up'
+  ) => {
+    if (points.length < 2) return;
+    
+    // Set styles for stair polygon
+    ctx.save();
+    
+    if (isPreview) {
+      // Preview styling - semi-transparent purple with dashed lines
+      ctx.strokeStyle = 'rgba(124, 58, 237, 0.8)'; // Violet color
+      ctx.fillStyle = 'rgba(124, 58, 237, 0.2)';
+      ctx.lineWidth = 2 / zoom;
+      ctx.setLineDash([5 / zoom, 5 / zoom]);
+    } else {
+      // Completed stair styling - solid
+      const color = direction === 'up' ? '#7c3aed' : '#8b5cf6'; // Different shades for up/down
+      ctx.strokeStyle = color;
+      ctx.fillStyle = `${color}33`; // Add transparency
+      ctx.lineWidth = 2 / zoom;
+      ctx.setLineDash([]);
+    }
+    
+    // Draw the polygon
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    
+    for (let i = 1; i < points.length; i++) {
+      ctx.lineTo(points[i].x, points[i].y);
+    }
+    
+    // Close the polygon if we're not in preview or if we have 3+ points
+    if (!isPreview || points.length >= 3) {
+      ctx.closePath();
+    }
+    
+    ctx.fill();
+    ctx.stroke();
+    
+    // Add direction indicator (arrow) in the center if not a preview
+    if (!isPreview && points.length >= 3) {
+      // Calculate center point
+      const center = points.reduce(
+        (acc, point) => ({ x: acc.x + point.x / points.length, y: acc.y + point.y / points.length }),
+        { x: 0, y: 0 }
+      );
+      
+      // Draw direction arrow
+      const arrowSize = 15 / zoom;
+      ctx.beginPath();
+      ctx.fillStyle = direction === 'up' ? '#7c3aed' : '#8b5cf6';
+      
+      if (direction === 'up') {
+        // Up arrow
+        ctx.moveTo(center.x, center.y - arrowSize);
+        ctx.lineTo(center.x - arrowSize / 2, center.y);
+        ctx.lineTo(center.x + arrowSize / 2, center.y);
+      } else {
+        // Down arrow
+        ctx.moveTo(center.x, center.y + arrowSize);
+        ctx.lineTo(center.x - arrowSize / 2, center.y);
+        ctx.lineTo(center.x + arrowSize / 2, center.y);
+      }
+      
+      ctx.closePath();
+      ctx.fill();
+      
+      // Add "STAIR" label
+      ctx.fillStyle = '#000';
+      ctx.font = `${12 / zoom}px Arial`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('STAIR', center.x, center.y + (direction === 'up' ? arrowSize + 5 / zoom : -arrowSize - 5 / zoom));
+    }
+    
+    // Draw points/vertices
+    points.forEach((point, index) => {
+      ctx.beginPath();
+      ctx.fillStyle = isPreview ? 'rgba(124, 58, 237, 0.8)' : '#7c3aed';
+      ctx.arc(point.x, point.y, POINT_RADIUS / zoom, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Number the points for clarity
+      if (!isPreview) {
+        ctx.fillStyle = '#fff';
+        ctx.font = `${10 / zoom}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`${index + 1}`, point.x, point.y);
+      }
+    });
+    
+    ctx.restore();
   };
 
   useEffect(() => {
