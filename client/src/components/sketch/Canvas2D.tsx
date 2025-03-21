@@ -224,18 +224,29 @@ const getPointAtRelativePosition = (line: Line, relativePos: number): Point => {
   };
 };
 
+interface StairPolygon {
+  id: string;
+  points: Point[];
+  floor: string;
+  direction?: 'up' | 'down';
+  connectsTo?: string;
+}
+
 interface Canvas2DProps {
   gridSize: number;
-  currentTool: "wall" | "eraser" | "measure" | null;
+  currentTool: "wall" | "eraser" | "measure" | "stairs" | null;
   currentAirEntry: "window" | "door" | "vent" | null;
   airEntries: AirEntry[];
   lines: Line[];
   measurements: Measurement[];
+  stairPolygons?: StairPolygon[];
   floorText: string;
   isMultifloor: boolean;
   onLinesUpdate?: (lines: Line[]) => void;
   onAirEntriesUpdate?: (airEntries: AirEntry[]) => void;
   onMeasurementsUpdate?: (measurements: Measurement[]) => void;
+  onStairPolygonsUpdate?: (stairPolygons: StairPolygon[]) => void;
+  onLineSelect?: (line: Line, clickPoint: Point) => void;
 }
 
 export default function Canvas2D({
@@ -245,11 +256,14 @@ export default function Canvas2D({
   airEntries = [],
   lines = [],
   measurements = [],
+  stairPolygons = [],
   floorText,
   isMultifloor,
   onLinesUpdate,
   onAirEntriesUpdate,
   onMeasurementsUpdate,
+  onStairPolygonsUpdate,
+  onLineSelect,
 }: Canvas2DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -307,6 +321,12 @@ export default function Canvas2D({
   const [measureStart, setMeasureStart] = useState<Point | null>(null);
   const [measureEnd, setMeasureEnd] = useState<Point | null>(null);
   const [isMeasuring, setIsMeasuring] = useState(false);
+  
+  // Stair polygon drawing states
+  const [currentStairPoints, setCurrentStairPoints] = useState<Point[]>([]);
+  const [isDrawingStairs, setIsDrawingStairs] = useState(false);
+  const [previewStairPoint, setPreviewStairPoint] = useState<Point | null>(null);
+  
   const { snapDistance } = useSketchStore();
 
   const createCoordinateSystem = (): Line[] => {
