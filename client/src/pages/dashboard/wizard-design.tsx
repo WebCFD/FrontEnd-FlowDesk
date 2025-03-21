@@ -385,7 +385,7 @@ export default function WizardDesign() {
               )}>
                 <h3 className="font-semibold text-lg mb-4">2D Menu</h3>
                 <div className="space-y-4">
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-4 gap-2">
                     <Button
                       variant={currentTool === 'wall' ? 'default' : 'outline'}
                       className="w-full h-16 flex flex-col items-center justify-center gap-1"
@@ -409,6 +409,22 @@ export default function WizardDesign() {
                     >
                       <Ruler className="w-6 h-6" />
                       <span className="text-xs">Measure</span>
+                    </Button>
+                    <Button
+                      variant={currentTool === 'stairs' ? 'default' : 'outline'}
+                      className="w-full h-16 flex flex-col items-center justify-center gap-1"
+                      onClick={() => {
+                        handleToolSelect('stairs');
+                        toast({
+                          title: "Stairs Tool Activated",
+                          description: "Click to place points and right-click to complete the stair polygon.",
+                        });
+                      }}
+                      disabled={!isMultifloor}
+                      title={!isMultifloor ? "Enable multifloor to use stairs" : "Draw stairs between floors"}
+                    >
+                      <Stairs className="w-6 h-6" />
+                      <span className="text-xs">Stairs</span>
                     </Button>
                   </div>
                 </div>
