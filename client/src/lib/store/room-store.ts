@@ -155,16 +155,32 @@ export const useRoomStore = create<RoomState>()(
           };
         }),
 
-        copyFloorAs: (sourceName, targetName) => set((state) => ({
-          floors: {
-            ...state.floors,
-            [targetName]: {
-              ...state.floors[sourceName],
-              name: targetName,
-              templateSource: sourceName
+        // Modified copyFloorAs function for room-store.js
+        copyFloorAs: (sourceName, targetName, options = {}) => set((state) => {
+          const sourceData = state.floors[sourceName];
+
+          // Create the new floor data
+          const newFloorData = {
+            ...sourceData,
+            name: targetName,
+            templateSource: sourceName,
+            lines: [...sourceData.lines],
+            airEntries: [...sourceData.airEntries],
+            measurements: [...sourceData.measurements],
+            hasClosedContour: sourceData.hasClosedContour,
+            // Handle stairs with special logic
+            stairPolygons: options && options.preserveStairs 
+              ? options.stairPolygons || [] 
+              : [...(sourceData.stairPolygons || [])]
+          };
+
+          return {
+            floors: {
+              ...state.floors,
+              [targetName]: newFloorData
             }
-          }
-        })),
+          };
+        }),
 
         // Stair polygon methods
         setStairPolygons: (stairPolygons) => set((state) => ({
