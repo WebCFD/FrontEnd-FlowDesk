@@ -356,17 +356,26 @@ export default function Canvas2D({
 
   const { snapDistance } = useSketchStore();
 
+  const getCoordinateSystemParams = () => {
+    return {
+      centerX: dimensions.width / 2,
+      centerY: dimensions.height / 2,
+      arrowLength: 150
+    };
+  };
+  
   const createCoordinateSystem = (): Line[] => {
-    const centerX = dimensions.width / 2;
-    const centerY = dimensions.height / 2;
-    const arrowLength = 150;
+    const { centerX, centerY, arrowLength } = getCoordinateSystemParams();
+
 
     return [
+      // X axis (horizontal)
       {
         id: "coord-x",
-        start: { x: centerX - arrowLength, y: centerY },
+        start: { x: centerX, y: centerY },
         end: { x: centerX + arrowLength, y: centerY },
       },
+      // X axis arrow head
       {
         id: "coord-2",
         start: { x: centerX + arrowLength, y: centerY },
@@ -377,11 +386,13 @@ export default function Canvas2D({
         start: { x: centerX + arrowLength, y: centerY },
         end: { x: centerX + arrowLength - 10, y: centerY + 5 },
       },
+      // Y axis (vertical)
       {
         id: "coord-y",
-        start: { x: centerX, y: centerY + arrowLength },
+        start: { x: centerX, y: centerY },
         end: { x: centerX, y: centerY - arrowLength },
       },
+      // Y axis arrow head
       {
         id: "coord-5",
         start: { x: centerX, y: centerY - arrowLength },
@@ -393,10 +404,13 @@ export default function Canvas2D({
         end: { x: centerX + 5, y: centerY - arrowLength + 10 },
       },
     ];
-  };
+    };
+
+
 
   const createGridLines = (): Line[] => {
     const gridLines: Line[] = [];
+    
     const centerX = dimensions.width / 2;
     const centerY = dimensions.height / 2;
 
@@ -536,11 +550,24 @@ export default function Canvas2D({
   // Find this function in the code (around line 325)
   // Update findNearestEndpoint to track snap source (replace the previous implementation)
   const findNearestEndpoint = (
-    point: Point,
-  ): { point: Point | null; source: "endpoint" | "stair" | null } => {
+    point: Point
+  ): { point: Point | null; source: "endpoint" | "stair" | "origin" | null } => {
     let nearest: Point | null = null;
     let minDistance = snapDistance;
-    let source: "endpoint" | "stair" | null = null;
+    let source: "endpoint" | "stair" | "origin" | null = null;
+
+    // Add origin (0,0) as a potential snap point
+    const originPoint = { x: dimensions.width / 2, y: dimensions.height / 2 };
+    const distToOrigin = Math.sqrt(
+      Math.pow(point.x - originPoint.x, 2) + 
+      Math.pow(point.y - originPoint.y, 2)
+    );
+
+    if (distToOrigin < minDistance) {
+      minDistance = distToOrigin;
+      nearest = originPoint;
+      source = "origin";
+    }
 
     // Check wall line endpoints
     lines.forEach((line) => {
@@ -928,7 +955,20 @@ export default function Canvas2D({
       setSnapSource(nearestPoint ? source : "grid");
       return;
     }
-
+    // NEW CODE: Pre-drawing snapping for wall tool
+    // When wall tool is active but not drawing yet, show snap indicators 
+    if (!isDrawing && !isPanning && currentTool === "wall") {
+      const { point: nearestPoint, source } = findNearestEndpoint(point);
+      if (nearestPoint) {
+        // Set cursor point for showing snap indicator before drawing starts
+        setCursorPoint(nearestPoint);
+        setSnapSource(source); // Store the source for visual indication
+      } else {
+        // If not near a snap point, use grid snap and reset snap source
+        setCursorPoint(snapToGrid(point));
+        setSnapSource("grid");
+      }
+    }
     if (!isDrawing && !isPanning) {
       const nearestGridPoint = findNearestGridPoint(point);
       setHoveredGridPoint(nearestGridPoint);
@@ -1120,6 +1160,30 @@ export default function Canvas2D({
     const point = getCanvasPoint(e);
     // Handle different mouse buttons
     if (e.button === 0) {
+
+      // Handle the wall tool
+      if (currentTool === "wall") {
+        // If we already have a cursorPoint with snap info, use that
+        // otherwise find the nearest endpoint
+        let startPoint;
+        if (cursorPoint && snapSource) {
+          startPoint = cursorPoint; // Use the already snapped point
+        } else {
+          const { point: nearestPoint } = findNearestEndpoint(point);
+          startPoint = nearestPoint || snapToGrid(point);
+        }
+
+        const newLineId = Math.random().toString(36).substring(2, 9);
+        setCurrentLine({
+          id: newLineId,
+          start: startPoint,
+          end: startPoint,
+        });
+        setIsDrawing(true);
+        setCursorPoint(startPoint);
+      }
+
+  
       // Left-click handling
 
       // Handle the stairs tool mode
@@ -1895,15 +1959,17 @@ export default function Canvas2D({
       ctx.strokeStyle = "#e5e7eb";
       ctx.lineWidth = 1 / zoom; // Match wall line scaling
 
-      const centerX = dimensions.width / 2;
-      const centerY = dimensions.height / 2;
+      //const centerX = dimensions.width / 2;
+      //const centerY = dimensions.height / 2;
 
       // Calculate visible area based on current pan and zoom
       const visibleStartX = -pan.x / zoom - gridSize;
       const visibleEndX = (-pan.x + dimensions.width) / zoom + gridSize;
       const visibleStartY = -pan.y / zoom - gridSize;
       const visibleEndY = (-pan.y + dimensions.height) / zoom + gridSize;
-
+      
+      // Draw coordinate system
+      const { centerX, centerY, arrowLength } = getCoordinateSystemParams();
       // Calculate grid starting points
       const startXGrid =
         Math.floor((visibleStartX - centerX) / gridSize) * gridSize;
@@ -1925,8 +1991,10 @@ export default function Canvas2D({
       }
       ctx.stroke();
 
-      // Draw coordinate system
+
+
       const coordSystem = createCoordinateSystem();
+      
       coordSystem.forEach((line, index) => {
         ctx.beginPath();
         ctx.strokeStyle = index < 3 ? "#ef4444" : "#22c55e";
@@ -1936,6 +2004,26 @@ export default function Canvas2D({
         ctx.stroke();
       });
 
+      ctx.font = `${14 / zoom}px Arial`;
+      ctx.fillStyle = "#ef4444"; // Red for X-axis
+      ctx.textAlign = "left";
+      ctx.textBaseline = "top";
+      ctx.fillText("X", centerX + arrowLength + 5, centerY + 5);
+
+      ctx.fillStyle = "#22c55e"; // Green for Y-axis
+      ctx.textAlign = "left";
+      ctx.textBaseline = "top";
+      ctx.fillText("Y", centerX + 5, centerY - arrowLength - 15);
+
+      // Draw origin point
+      ctx.beginPath();
+      ctx.fillStyle = "#000000";
+      ctx.arc(centerX, centerY, 3 / zoom, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#000000";
+      ctx.textAlign = "right";
+      ctx.textBaseline = "bottom";
+      ctx.fillText("(0,0)", centerX - 5, centerY - 5);
       // Draw wall lines
       lines.forEach((line) => {
         ctx.strokeStyle = highlightState.lines.includes(line)
@@ -1975,9 +2063,33 @@ export default function Canvas2D({
         drawAirEntry(ctx, entry, index);
       });
 
+
       const drawEndpoints = () => {
         const drawnPoints = new Set<string>();
+        const originPoint = { x: dimensions.width / 2, y: dimensions.height / 2 };
 
+        // Check if the origin is a snap target
+        const isOriginSnapTarget = isDrawing && 
+                                 currentTool === "wall" && 
+                                 currentLine && 
+                                 snapSource === "origin" &&
+                                 arePointsNearlyEqual(currentLine.end, originPoint);
+
+        // Draw origin snap point if it's a snap target during drawing
+        if (isOriginSnapTarget) {
+          ctx.beginPath();
+          ctx.fillStyle = "#ef4444"; // Red for snapping
+          ctx.arc(originPoint.x, originPoint.y, (POINT_RADIUS * 1.8) / zoom, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Add "SNAP" text above the origin point
+          ctx.font = `${10 / zoom}px Arial`;
+          ctx.fillStyle = "#ef4444";
+          ctx.textAlign = "center";
+          ctx.fillText("SNAP (0,0)", originPoint.x, originPoint.y - 12 / zoom);
+        }
+
+        // Continue with drawing other endpoints as before...
         lines.forEach((line) => {
           [
             { point: line.start, isStart: true },
@@ -1987,13 +2099,11 @@ export default function Canvas2D({
             if (!drawnPoints.has(key)) {
               drawnPoints.add(key);
 
-              // Determine if this endpoint is a snap target during wall drawing
-              const isSnapTarget =
-                isDrawing &&
-                currentTool === "wall" &&
-                currentLine &&
-                snapSource === "endpoint" &&
-                arePointsNearlyEqual(currentLine.end, point);
+              const isSnapTarget = isDrawing && 
+                                 currentTool === "wall" && 
+                                 currentLine && 
+                                 snapSource === "endpoint" &&
+                                 arePointsNearlyEqual(currentLine.end, point);
 
               const isHovered =
                 hoveredEndpoint?.point &&
@@ -2003,14 +2113,11 @@ export default function Canvas2D({
               ctx.arc(
                 point.x,
                 point.y,
-                isHovered || isSnapTarget
-                  ? (POINT_RADIUS * 1.5) / zoom
-                  : POINT_RADIUS / zoom,
+                (isHovered || isSnapTarget) ? (POINT_RADIUS * 1.5) / zoom : POINT_RADIUS / zoom,
                 0,
                 Math.PI * 2,
               );
 
-              // Change color if it's a snap target during drawing
               if (isSnapTarget) {
                 ctx.fillStyle = "#ef4444"; // Red for snapping
                 // Add "SNAP" text above the point
@@ -2084,10 +2191,47 @@ export default function Canvas2D({
         });
       });
 
-      if (cursorPoint && isDrawing) {
+      if (cursorPoint) {
         ctx.font = `${12 / zoom}px sans-serif`;
-        drawCoordinateLabel(ctx, cursorPoint, "#fb923c");
+
+        // Special handling for the origin point pre-drawing snap
+        const originPoint = { x: dimensions.width / 2, y: dimensions.height / 2 };
+
+        if (currentTool === "wall" && !isDrawing && 
+            snapSource === "origin" && 
+            arePointsNearlyEqual(cursorPoint, originPoint)) {
+
+          // Draw special origin snap indicator
+          ctx.beginPath();
+          ctx.fillStyle = "#ef4444"; // Red for snapping
+          ctx.arc(originPoint.x, originPoint.y, (POINT_RADIUS * 1.8) / zoom, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Add "SNAP (0,0)" text for pre-drawing
+          ctx.font = `${10 / zoom}px Arial`;
+          ctx.fillStyle = "#ef4444";
+          ctx.textAlign = "center";
+          ctx.fillText("SNAP (0,0)", originPoint.x, originPoint.y - 12 / zoom);
+
+          // Also draw the regular coordinate label
+          drawCoordinateLabel(ctx, cursorPoint, "#ef4444");
+        } 
+        // Special handling for endpoint pre-drawing snap
+        else if (currentTool === "wall" && !isDrawing && snapSource === "endpoint") {
+          // Show endpoint snap indicator
+          drawCoordinateLabel(ctx, cursorPoint, "#ef4444");
+        }
+        // Special handling for stair point pre-drawing snap
+        else if (currentTool === "wall" && !isDrawing && snapSource === "stair") {
+          // Show stair point snap indicator
+          drawCoordinateLabel(ctx, cursorPoint, "#ef4444");
+        }
+        // Regular drawing indicator
+        else if (isDrawing) {
+          drawCoordinateLabel(ctx, cursorPoint, "#fb923c");
+        }
       }
+
 
       if (hoverPoint && !isDrawing && !isPanning) {
         ctx.font = `${12 / zoom}px sans-serif`;
