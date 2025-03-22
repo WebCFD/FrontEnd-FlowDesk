@@ -61,6 +61,8 @@ import {
 import { FurnitureMenu } from "@/components/sketch/FurnitureMenu";
 import { ToolbarToggle } from "@/components/sketch/ToolbarToggle";
 
+
+
 interface Point {
   x: number;
   y: number;
@@ -90,6 +92,74 @@ interface StairPolygon {
   connectsTo?: string;
 }
 
+interface FloorLoadDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  sourceFloor: string;
+  targetFloor: string;
+  hasContent: boolean;
+  hasStairs: boolean;
+}
+
+const FloorLoadDialog: React.FC<FloorLoadDialogProps> = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  sourceFloor,
+  targetFloor,
+  hasContent,
+  hasStairs
+}) => {
+  // Format floor names for display
+  const sourceFloorText = formatFloorText(sourceFloor);
+  const targetFloorText = formatFloorText(targetFloor);
+
+  return (
+    <AlertDialog open={isOpen} onOpenChange={onClose}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>
+            {hasContent ? "Overwrite Floor Layout?" : "Load Floor Template"}
+          </AlertDialogTitle>
+          <AlertDialogDescription className="space-y-4">
+            <p>
+              {hasContent 
+                ? `Loading ${sourceFloorText} as a template will overwrite your current ${targetFloorText} layout. This action cannot be undone.`
+                : `This will copy the layout from ${sourceFloorText} to ${targetFloorText}.`
+              }
+            </p>
+
+            {hasStairs && (
+              <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-md">
+                <h4 className="text-amber-800 font-medium">Stair Connection Information</h4>
+                <p className="text-amber-700 text-sm mt-1">
+                  Stairs connecting {sourceFloorText} to {targetFloorText} will be imported and displayed as non-editable elements.
+                  Imported stairs can only be removed from their source floor.
+                </p>
+              </div>
+            )}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={onClose}>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm}>
+            {hasContent ? "Overwrite" : "Load Template"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+};
+
+
+
+
+
+
+
+
+
 const calculateNormal = (line: Line | null): { x: number; y: number } => {
   if (!line) return { x: 0, y: 0 };
   const dx = line.end.x - line.start.x;
@@ -113,6 +183,27 @@ const getNextFloorName = (currentFloor: string): string => {
   };
   return floorMap[currentFloor] || "ground";
 };
+
+const getConnectedFloorName = (floorName: string, direction: 'up' | 'down' = 'up'): string => {
+  const floorOrder = ['ground', 'first', 'second', 'third', 'fourth', 'fifth'];
+  const currentIndex = floorOrder.indexOf(floorName);
+
+  if (currentIndex === -1) return floorName; // Invalid floor name
+
+  if (direction === 'up' && currentIndex < floorOrder.length - 1) {
+    return floorOrder[currentIndex + 1];
+  } else if (direction === 'down' && currentIndex > 0) {
+    return floorOrder[currentIndex - 1];
+  }
+
+  return floorName; // No valid connected floor
+};
+
+
+
+
+
+
 
 export default function WizardDesign() {
   const [, setLocation] = useLocation();
@@ -162,6 +253,7 @@ export default function WizardDesign() {
     currentFloorData;
 
   // Handle loading floor template
+
   const handleLoadTemplate = () => {
     if (loadFromFloor === currentFloor) {
       toast({
@@ -172,7 +264,101 @@ export default function WizardDesign() {
       return;
     }
 
-    copyFloorAs(loadFromFloor, currentFloor);
+    // Check if target floor has content
+    const hasContent = floors[currentFloor]?.lines.length > 0 || 
+                       floors[currentFloor]?.airEntries.length > 0;
+
+    // Check if source floor has stairs that connect to target floor
+    const hasStairs = floors[loadFromFloor]?.stairPolygons?.some(stair => {
+      const connectsToTargetFloor = 
+        (stair.direction === "up" && getConnectedFloorName(loadFromFloor, "up") === currentFloor) ||
+        (stair.direction === "down" && getConnectedFloorName(loadFromFloor, "down") === currentFloor);
+
+      return connectsToTargetFloor;
+    }) || false;
+
+    // Open confirmation dialog
+    setIsFloorLoadDialogOpen(true);
+  };
+    
+  const [isFloorLoadDialogOpen, setIsFloorLoadDialogOpen] = useState(false);
+
+    
+  // Add this function after handleLoadTemplate
+  const performFloorLoad = () => {
+    // Close the dialog
+    setIsFloorLoadDialogOpen(false);
+
+    // Begin by looking at the source floor data
+    const sourceFloorData = floors[loadFromFloor];
+    const targetFloorData = floors[currentFloor] || { 
+      lines: [], 
+      airEntries: [], 
+      measurements: [], 
+      stairPolygons: [],
+      hasClosedContour: false 
+    };
+
+    // Handle normal floor elements - copy as usual
+    const newLines = [...sourceFloorData.lines];
+    const newAirEntries = [...sourceFloorData.airEntries];
+    const newMeasurements = [...sourceFloorData.measurements];
+
+    // Special handling for stairs
+    let newStairPolygons = [];
+
+    // Process existing stairs in the target floor
+    if (targetFloorData.stairPolygons && targetFloorData.stairPolygons.length > 0) {
+      // Keep stairs that are owned by the current floor (not imported)
+      const ownedStairs = targetFloorData.stairPolygons.filter(
+        stair => !stair.isImported
+      );
+      newStairPolygons = [...ownedStairs];
+    }
+
+    // Process stairs from source floor
+    if (sourceFloorData.stairPolygons && sourceFloorData.stairPolygons.length > 0) {
+      sourceFloorData.stairPolygons.forEach(stair => {
+        // Determine if this stair connects to our target floor
+        const connectsToTargetFloor = 
+          (stair.direction === "up" && getConnectedFloorName(loadFromFloor, "up") === currentFloor) ||
+          (stair.direction === "down" && getConnectedFloorName(loadFromFloor, "down") === currentFloor);
+
+        // If this stair connects to our target floor, create a corresponding stair
+        if (connectsToTargetFloor) {
+          // Create a new stair for the target floor, inverting the direction
+          const newDirection = stair.direction === "up" ? "down" : "up";
+
+          // Check if this stair already exists in the target floor
+          const existingStairIndex = newStairPolygons.findIndex(
+            s => s.connectsTo === stair.id || s.id === stair.connectsTo
+          );
+
+          if (existingStairIndex === -1) {
+            // Create a new corresponding stair
+            const newStair = {
+              ...stair,
+              id: `imported-${stair.id}`, // Create a new ID for the imported stair
+              floor: currentFloor, // Set floor to current floor
+              direction: newDirection, // Invert direction
+              connectsTo: stair.id, // Link to the original stair
+              sourceFloor: loadFromFloor, // Track where this came from
+              isImported: true // Mark as imported
+            };
+
+            newStairPolygons.push(newStair);
+          }
+        }
+      });
+    }
+
+    // Set new data for the current floor
+    setLines(newLines);
+    setAirEntries(newAirEntries);
+    setMeasurements(newMeasurements);
+    setStairPolygons(newStairPolygons);
+    setHasClosedContour(sourceFloorData.hasClosedContour);
+
     toast({
       title: "Floor Template Loaded",
       description: `Successfully loaded ${formatFloorText(loadFromFloor)} as template for ${formatFloorText(currentFloor)}`,
@@ -967,8 +1153,17 @@ export default function WizardDesign() {
     </div>
   );
 
-  const renderCanvasSection = () => (
+  const renderCanvasSection = () => {
+    // Add these debug statements
+    if (tab === "3d-preview") {
+      console.log("Rendering 3D view with floors data:", floors);
+      console.log(`Current floor '${currentFloor}' stair polygons:`, 
+        floors[currentFloor]?.stairPolygons || []);
+    }
+
+    return (
     <div className="flex-1 border rounded-lg overflow-hidden bg-white min-w-[600px]">
+      
       {tab === "2d-editor" ? (
         <Canvas2D
           gridSize={gridSize}
@@ -1006,6 +1201,16 @@ export default function WizardDesign() {
       )}
     </div>
   );
+    };
+
+
+
+
+
+
+
+
+
 
   return (
     <DashboardLayout>
@@ -1033,6 +1238,28 @@ export default function WizardDesign() {
           )}
         </div>
       </div>
+
+
+
+
+      <FloorLoadDialog
+        isOpen={isFloorLoadDialogOpen}
+        onClose={() => setIsFloorLoadDialogOpen(false)}
+        onConfirm={performFloorLoad}
+        sourceFloor={loadFromFloor}
+        targetFloor={currentFloor}
+        hasContent={floors[currentFloor]?.lines.length > 0 || 
+                    floors[currentFloor]?.airEntries.length > 0}
+        hasStairs={floors[loadFromFloor]?.stairPolygons?.some(stair => {
+          const connectsToTargetFloor = 
+            (stair.direction === "up" && getConnectedFloorName(loadFromFloor, "up") === currentFloor) ||
+            (stair.direction === "down" && getConnectedFloorName(loadFromFloor, "down") === currentFloor);
+
+          return connectsToTargetFloor;
+        }) || false}
+      />
+
+
     </DashboardLayout>
   );
 }

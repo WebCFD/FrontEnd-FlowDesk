@@ -51,6 +51,24 @@ const calculateNormal = (line: Line): Point => {
   };
 };
 
+// Add this helper function near the beginning of Canvas2D, similar to the one in Canvas3D
+const getConnectedFloorName = (
+  floorName: string,
+  direction: "up" | "down" = "up",
+): string => {
+  const floorOrder = ["ground", "first", "second", "third", "fourth", "fifth"];
+  const currentIndex = floorOrder.indexOf(floorName);
+
+  if (currentIndex === -1) return floorName; // Invalid floor name
+
+  if (direction === "up" && currentIndex < floorOrder.length - 1) {
+    return floorOrder[currentIndex + 1];
+  } else if (direction === "down" && currentIndex > 0) {
+    return floorOrder[currentIndex - 1];
+  }
+
+  return floorName; // No valid connected floor
+};
 // Point comparison utilities
 const arePointsEqual = (p1: Point, p2: Point): boolean => {
   const dx = p1.x - p2.x;
@@ -229,8 +247,10 @@ interface StairPolygon {
   id: string;
   points: Point[];
   floor: string;
-  direction?: 'up' | 'down';
+  direction?: "up" | "down";
   connectsTo?: string;
+  sourceFloor?: string; // Add this property to track where the stair was originally defined
+  isImported?: boolean; // Flag to identify if this stair was imported from another floor
 }
 
 interface Canvas2DProps {
@@ -300,7 +320,7 @@ export default function Canvas2D({
     lines: [],
     airEntry: null,
     measurement: null,
-    stairPolygon: null  // Add this line
+    stairPolygon: null, // Add this line
   });
   const [editingAirEntry, setEditingAirEntry] = useState<{
     index: number;
@@ -323,12 +343,17 @@ export default function Canvas2D({
   const [measureStart, setMeasureStart] = useState<Point | null>(null);
   const [measureEnd, setMeasureEnd] = useState<Point | null>(null);
   const [isMeasuring, setIsMeasuring] = useState(false);
-  
+
   // Stair polygon drawing states
   const [currentStairPoints, setCurrentStairPoints] = useState<Point[]>([]);
   const [isDrawingStairs, setIsDrawingStairs] = useState(false);
-  const [previewStairPoint, setPreviewStairPoint] = useState<Point | null>(null);
-  
+  const [previewStairPoint, setPreviewStairPoint] = useState<Point | null>(
+    null,
+  );
+  const [snapSource, setSnapSource] = useState<
+    "grid" | "endpoint" | "stair" | null
+  >(null);
+
   const { snapDistance } = useSketchStore();
 
   const createCoordinateSystem = (): Line[] => {
@@ -508,10 +533,16 @@ export default function Canvas2D({
     };
   };
 
-  const findNearestEndpoint = (point: Point): Point | null => {
+  // Find this function in the code (around line 325)
+  // Update findNearestEndpoint to track snap source (replace the previous implementation)
+  const findNearestEndpoint = (
+    point: Point,
+  ): { point: Point | null; source: "endpoint" | "stair" | null } => {
     let nearest: Point | null = null;
     let minDistance = snapDistance;
+    let source: "endpoint" | "stair" | null = null;
 
+    // Check wall line endpoints
     lines.forEach((line) => {
       [line.start, line.end].forEach((endpoint) => {
         const dx = point.x - endpoint.x;
@@ -520,11 +551,28 @@ export default function Canvas2D({
         if (distance < minDistance) {
           minDistance = distance;
           nearest = endpoint;
+          source = "endpoint";
         }
       });
     });
 
-    return nearest;
+    // Check stair polygon vertices
+    if (stairPolygons && stairPolygons.length > 0) {
+      stairPolygons.forEach((stair) => {
+        stair.points.forEach((stairPoint) => {
+          const dx = point.x - stairPoint.x;
+          const dy = point.y - stairPoint.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          if (distance < minDistance) {
+            minDistance = distance;
+            nearest = stairPoint;
+            source = "stair";
+          }
+        });
+      });
+    }
+
+    return { point: nearest, source };
   };
 
   const findConnectedLines = (point: Point): Line[] => {
@@ -852,8 +900,6 @@ export default function Canvas2D({
     return null;
   };
 
-
-
   const throttleMouseMove = (e: MouseEvent) => {
     lastMouseMoveEvent = e;
 
@@ -876,9 +922,10 @@ export default function Canvas2D({
 
     // Handle mouse move during stair drawing
     if (isDrawingStairs) {
-      const nearestPoint = findNearestEndpoint(point);
+      const { point: nearestPoint, source } = findNearestEndpoint(point);
       const snappedPoint = nearestPoint || snapToGrid(point);
       setPreviewStairPoint(snappedPoint);
+      setSnapSource(nearestPoint ? source : "grid");
       return;
     }
 
@@ -904,7 +951,7 @@ export default function Canvas2D({
             lines: [],
             airEntry: { index: airEntryInfo.index, entry: airEntryInfo.entry },
             measurement: null,
-            stairPolygon: null
+            stairPolygon: null,
           });
         } else if (measurementInfo) {
           setHighlightState({
@@ -914,17 +961,17 @@ export default function Canvas2D({
               index: measurementInfo.index,
               measurement: measurementInfo.measurement,
             },
-            stairPolygon: null
+            stairPolygon: null,
           });
         } else if (stairPolygonInfo) {
           setHighlightState({
             lines: [],
             airEntry: null,
             measurement: null,
-            stairPolygon: { 
-              index: stairPolygonInfo.index, 
-              polygon: stairPolygonInfo.polygon 
-            }
+            stairPolygon: {
+              index: stairPolygonInfo.index,
+              polygon: stairPolygonInfo.polygon,
+            },
           });
         } else {
           const nearbyLines = findLinesNearPoint(point);
@@ -932,7 +979,7 @@ export default function Canvas2D({
             lines: nearbyLines,
             airEntry: null,
             measurement: null,
-            stairPolygon: null
+            stairPolygon: null,
           });
         }
       } else if (currentAirEntry) {
@@ -940,16 +987,18 @@ export default function Canvas2D({
           lines: findLinesNearPoint(point),
           airEntry: null,
           measurement: null,
-          stairPolygon: null
+          stairPolygon: null,
         });
       }
     }
 
     if (currentTool === "wall" && isDrawing && currentLine) {
-      const nearestPoint = findNearestEndpoint(point);
+      const { point: nearestPoint, source } = findNearestEndpoint(point);
       const endPoint = nearestPoint || snapToGrid(point);
       setCurrentLine((prev) => (prev ? { ...prev, end: endPoint } : null));
       setCursorPoint(endPoint);
+      // If snapping to a point, set the snap source for visual feedback
+      setSnapSource(nearestPoint ? source : "grid");
     }
   };
 
@@ -961,7 +1010,7 @@ export default function Canvas2D({
     // Find this section near the beginning of handleMouseMove
     if (currentTool === "measure" && isMeasuring && measureStart) {
       console.log("Updating measurement preview");
-      const nearestPoint = findNearestEndpoint(point);
+      const { point: nearestPoint } = findNearestEndpoint(point);
       const snappedPoint = nearestPoint || snapToGrid(point);
       setMeasureEnd(snappedPoint);
 
@@ -1072,25 +1121,26 @@ export default function Canvas2D({
     // Handle different mouse buttons
     if (e.button === 0) {
       // Left-click handling
-      
+
       // Handle the stairs tool mode
       if (currentTool === "stairs") {
         e.preventDefault();
-        const nearestPoint = findNearestEndpoint(point);
+        const { point: nearestPoint, source } = findNearestEndpoint(point);
         const snappedPoint = nearestPoint || snapToGrid(point);
-        
+
         if (!isDrawingStairs) {
           // Starting a new stair polygon
           setIsDrawingStairs(true);
           setCurrentStairPoints([snappedPoint]);
           setPreviewStairPoint(snappedPoint);
+          // Set snap source
+          setSnapSource(nearestPoint ? source : "grid");
         } else {
           // Continue adding points to the existing stair polygon
-          setCurrentStairPoints(prev => [...prev, snappedPoint]);
+          setCurrentStairPoints((prev) => [...prev, snappedPoint]);
         }
         return;
       }
-      
     } else if (e.button === 2) {
       // Right-click
       e.preventDefault();
@@ -1126,20 +1176,16 @@ export default function Canvas2D({
 
       if (!isMeasuring) {
         // First click - just set the start point
-        const nearestPoint = findNearestEndpoint(point);
+        const { point: nearestPoint } = findNearestEndpoint(point);
         const startPoint = nearestPoint || snapToGrid(point);
         setIsMeasuring(true);
         setMeasureStart(startPoint);
         setMeasureEnd(startPoint);
 
-        // Remove any preview measurements that might be in the array
-        const filteredMeasurements = measurements.filter((m) => !m.isPreview);
-        onMeasurementsUpdate?.(filteredMeasurements);
-
-        console.log("First measurement click - start point set");
+        // Rest of code remains the same...
       } else {
         // Second click - complete the measurement
-        const nearestPoint = findNearestEndpoint(point);
+        const { point: nearestPoint } = findNearestEndpoint(point);
         const endPoint = nearestPoint || snapToGrid(point);
 
         console.log("Second measurement click - completing measurement");
@@ -1182,7 +1228,7 @@ export default function Canvas2D({
       // Handle measurement tool
 
       if (currentTool === "wall") {
-        const nearestPoint = findNearestEndpoint(point);
+        const { point: nearestPoint } = findNearestEndpoint(point);
         const startPoint = nearestPoint || snapToGrid(point);
         const newLineId = Math.random().toString(36).substring(2, 9);
         setCurrentLine({
@@ -1197,7 +1243,6 @@ export default function Canvas2D({
         const measurementInfo = findMeasurementAtPoint(point, measurements);
         const stairPolygonInfo = findStairPolygonAtPoint(point, stairPolygons); // Add this line
 
-
         if (airEntryInfo) {
           const newAirEntries = airEntries.filter(
             (_, i) => i !== airEntryInfo.index,
@@ -1208,10 +1253,11 @@ export default function Canvas2D({
             (_, i) => i !== measurementInfo.index,
           );
           onMeasurementsUpdate?.(newMeasurements);
-        } else if (stairPolygonInfo) { // Add this branch
+        } else if (stairPolygonInfo) {
+          // Add this branch
           // Erase the stair polygon
           const newStairPolygons = stairPolygons.filter(
-            (_, i) => i !== stairPolygonInfo.index
+            (_, i) => i !== stairPolygonInfo.index,
           );
           onStairPolygonsUpdate?.(newStairPolygons);
         } else {
@@ -1228,7 +1274,12 @@ export default function Canvas2D({
             onLinesUpdate?.(newLines);
           }
         }
-        setHighlightState({ lines: [], airEntry: null, measurement: null, stairPolygon: null});
+        setHighlightState({
+          lines: [],
+          airEntry: null,
+          measurement: null,
+          stairPolygon: null,
+        });
         return;
       } else if (currentAirEntry) {
         const selectedLines = findLinesNearPoint(point);
@@ -1253,11 +1304,11 @@ export default function Canvas2D({
       handlePanEnd();
       return;
     }
-    
+
     // Handle right-click when drawing stairs to complete the polygon
     if (isDrawingStairs && e.button === 2) {
       e.preventDefault();
-      
+
       // Only create a stair polygon if we have at least 3 points
       if (currentStairPoints.length >= 3) {
         // Create a new stair polygon
@@ -1265,15 +1316,15 @@ export default function Canvas2D({
           id: Math.random().toString(36).substring(2, 9),
           points: [...currentStairPoints],
           floor: floorText,
-          direction: 'up', // Default direction, can be customized later
+          direction: "up", // Default direction, can be customized later
         };
-        
+
         // Add the new stair polygon
         if (onStairPolygonsUpdate) {
           onStairPolygonsUpdate([...(stairPolygons || []), newStairPolygon]);
         }
       }
-      
+
       // Reset stair drawing state
       setIsDrawingStairs(false);
       setCurrentStairPoints([]);
@@ -1334,11 +1385,11 @@ export default function Canvas2D({
     }
 
     handlePanEnd();
-    setHighlightState({ 
-      lines: [], 
-      airEntry: null, 
+    setHighlightState({
+      lines: [],
+      airEntry: null,
       measurement: null,
-      stairPolygon: null 
+      stairPolygon: null,
     });
     setHoveredGridPoint(null);
     setHoverPoint(null);
@@ -1350,7 +1401,7 @@ export default function Canvas2D({
       setIsDrawing(false);
       setCursorPoint(null);
     }
-    
+
     // Reset stairs drawing if we leave the canvas
     if (isDrawingStairs) {
       setIsDrawingStairs(false);
@@ -1453,40 +1504,45 @@ export default function Canvas2D({
     return null;
   };
 
-
-  // MODIFICATION 3: Add the following function after findMeasurementAtPoint - around line 893
   const findStairPolygonAtPoint = (
     point: Point,
-    polygons: StairPolygon[]
+    polygons: StairPolygon[],
   ): { index: number; polygon: StairPolygon } | null => {
-    // First check if point is inside any polygon
-    for (let i = 0; i < polygons.length; i++) {
-      const polygon = polygons[i];
+    // First filter out imported stairs when using eraser tool
+    const editablePolygons =
+      currentTool === "eraser"
+        ? polygons.filter((p) => !p.isImported)
+        : polygons;
 
-      // Check if point is inside the polygon using ray casting algorithm
+    // Now check only in editable polygons
+    for (let i = 0; i < editablePolygons.length; i++) {
+      const polygon = editablePolygons[i];
+      const originalIndex = polygons.findIndex((p) => p.id === polygon.id);
+
+      // Check if point is inside the polygon
       if (isPointInPolygon(point, polygon.points)) {
-        return { index: i, polygon };
+        return { index: originalIndex, polygon };
       }
 
-      // If not inside, check if the point is close to any polygon edge
+      // Check if the point is close to any polygon edge
       for (let j = 0; j < polygon.points.length; j++) {
         const start = polygon.points[j];
-        const end = polygon.points[(j + 1) % polygon.points.length]; // Connect last point to first
+        const end = polygon.points[(j + 1) % polygon.points.length];
 
         const distance = distanceToLineSegment(point, start, end);
         if (distance < HOVER_DISTANCE / zoom) {
-          return { index: i, polygon };
+          return { index: originalIndex, polygon };
         }
       }
 
-      // Also check if point is close to any polygon vertex
+      // Check if point is close to any polygon vertex
       for (const vertexPoint of polygon.points) {
         const dx = point.x - vertexPoint.x;
         const dy = point.y - vertexPoint.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
-        if (distance < POINT_RADIUS * 2 / zoom) {
-          return { index: i, polygon };
+        if (distance < (POINT_RADIUS * 2) / zoom) {
+          return { index: originalIndex, polygon };
         }
       }
     }
@@ -1499,124 +1555,158 @@ export default function Canvas2D({
     // Ray casting algorithm
     let inside = false;
     for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-      const xi = polygon[i].x, yi = polygon[i].y;
-      const xj = polygon[j].x, yj = polygon[j].y;
+      const xi = polygon[i].x,
+        yi = polygon[i].y;
+      const xj = polygon[j].x,
+        yj = polygon[j].y;
 
-      const intersect = ((yi > point.y) !== (yj > point.y))
-          && (point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi);
+      const intersect =
+        yi > point.y !== yj > point.y &&
+        point.x < ((xj - xi) * (point.y - yi)) / (yj - yi) + xi;
       if (intersect) inside = !inside;
     }
 
     return inside;
   };
-  
+
   // Function to draw stair polygons
-  // MODIFICATION 5: Update the drawStairPolygon function to add isHighlighted parameter - around line 897
+
   const drawStairPolygon = (
     ctx: CanvasRenderingContext2D,
     points: Point[],
     isPreview: boolean = false,
-    direction: 'up' | 'down' = 'up',
-    isHighlighted: boolean = false // Add this parameter
+    direction: "up" | "down" = "up",
+    isHighlighted: boolean = false,
+    isImported: boolean = false,
+    isSnapTarget: boolean = false, // Add this parameter
   ) => {
     if (points.length < 2) return;
 
     // Set styles for stair polygon
     ctx.save();
 
-    // MODIFICATION 6: Add highlight styling
+    // Determine the appropriate styling
     if (isHighlighted) {
-      // Highlighted for deletion styling - red
-      ctx.strokeStyle = 'rgba(239, 68, 68, 0.8)'; // Red color
-      ctx.fillStyle = 'rgba(239, 68, 68, 0.3)';
+      // Highlighted for deletion styling
+      ctx.strokeStyle = "rgba(239, 68, 68, 0.8)"; // Red color
+      ctx.fillStyle = "rgba(239, 68, 68, 0.3)";
       ctx.lineWidth = 3 / zoom;
       ctx.setLineDash([]);
+    } else if (isImported) {
+      // Imported stairs styling - dark red/burgundy color
+      ctx.strokeStyle = "rgba(153, 27, 27, 0.8)"; // Dark red color
+      ctx.fillStyle = "rgba(153, 27, 27, 0.3)";
+      ctx.lineWidth = 2 / zoom;
+      ctx.setLineDash([5 / zoom, 3 / zoom]); // Use dashed lines for imported stairs
     } else if (isPreview) {
-      // Preview styling - semi-transparent purple with dashed lines
-      ctx.strokeStyle = 'rgba(124, 58, 237, 0.8)'; // Violet color
-      ctx.fillStyle = 'rgba(124, 58, 237, 0.2)';
+      // Preview styling
+      ctx.strokeStyle = "rgba(124, 58, 237, 0.8)"; // Violet color
+      ctx.fillStyle = "rgba(124, 58, 237, 0.2)";
       ctx.lineWidth = 2 / zoom;
       ctx.setLineDash([5 / zoom, 5 / zoom]);
     } else {
       // Completed stair styling - solid
-      const color = direction === 'up' ? '#7c3aed' : '#8b5cf6'; // Different shades for up/down
+      const color = direction === "up" ? "#7c3aed" : "#8b5cf6"; // Different shades for up/down
       ctx.strokeStyle = color;
       ctx.fillStyle = `${color}33`; // Add transparency
       ctx.lineWidth = 2 / zoom;
       ctx.setLineDash([]);
     }
 
-    // Rest of the function remains the same...
-    
     // Draw the polygon
     ctx.beginPath();
     ctx.moveTo(points[0].x, points[0].y);
-    
+
     for (let i = 1; i < points.length; i++) {
       ctx.lineTo(points[i].x, points[i].y);
     }
-    
+
     // Close the polygon if we're not in preview or if we have 3+ points
     if (!isPreview || points.length >= 3) {
       ctx.closePath();
     }
-    
+
     ctx.fill();
     ctx.stroke();
-    
-    // Add direction indicator (arrow) in the center if not a preview
+
+    // Add stair label and direction indicators
     if (!isPreview && points.length >= 3) {
       // Calculate center point
       const center = points.reduce(
-        (acc, point) => ({ x: acc.x + point.x / points.length, y: acc.y + point.y / points.length }),
-        { x: 0, y: 0 }
+        (acc, point) => ({
+          x: acc.x + point.x / points.length,
+          y: acc.y + point.y / points.length,
+        }),
+        { x: 0, y: 0 },
       );
-      /*
-      // Draw direction arrow
-      const arrowSize = 15 / zoom;
-      ctx.beginPath();
-      ctx.fillStyle = direction === 'up' ? '#7c3aed' : '#8b5cf6';
-      
-      if (direction === 'up') {
-        // Up arrow
-        ctx.moveTo(center.x, center.y - arrowSize);
-        ctx.lineTo(center.x - arrowSize / 2, center.y);
-        ctx.lineTo(center.x + arrowSize / 2, center.y);
-      } else {
-        // Down arrow
-        ctx.moveTo(center.x, center.y + arrowSize);
-        ctx.lineTo(center.x - arrowSize / 2, center.y);
-        ctx.lineTo(center.x + arrowSize / 2, center.y);
-      }
-      
-      ctx.closePath();
-      ctx.fill();
-      */
+
       // Add "STAIR" label
-      ctx.fillStyle = '#000';
+      ctx.fillStyle = isImported ? "#991b1b" : "#000"; // Different text color for imported stairs
       ctx.font = `${12 / zoom}px Arial`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('STAIR', center.x, center.y);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      // Show different text based on imported status
+      const label = isImported ? "IMPORTED STAIR" : "STAIR";
+      ctx.fillText(label, center.x, center.y);
+
+      // Add direction indicator text below the main label
+      ctx.fillStyle = isImported ? "#991b1b" : "#000";
+      ctx.font = `${10 / zoom}px Arial`;
+      ctx.fillText(
+        direction === "up" ? "(UP)" : "(DOWN)",
+        center.x,
+        center.y + 14 / zoom,
+      );
+
+      // If imported, add a "non-editable" indicator
+      if (isImported) {
+        ctx.fillText("(Non-editable)", center.x, center.y + 28 / zoom);
+      }
     }
-    
-    // Draw points/vertices
+
+    // Draw points/vertices with different styles for imported stairs
     points.forEach((point, index) => {
+      const isSnapPoint =
+        isSnapTarget &&
+        snapSource === "stair" &&
+        previewStairPoint &&
+        arePointsNearlyEqual(point, previewStairPoint);
+
       ctx.beginPath();
-      ctx.fillStyle = isPreview ? 'rgba(124, 58, 237, 0.8)' : '#7c3aed';
-      ctx.arc(point.x, point.y, POINT_RADIUS / zoom, 0, Math.PI * 2);
+      ctx.fillStyle = isSnapPoint
+        ? "#ef4444" // Red for snap target points
+        : isImported
+          ? "#991b1b"
+          : isPreview
+            ? "rgba(124, 58, 237, 0.8)"
+            : "#7c3aed";
+
+      // Make snap points slightly larger
+      const pointRadius = isSnapPoint
+        ? (POINT_RADIUS * 1.5) / zoom
+        : POINT_RADIUS / zoom;
+      ctx.arc(point.x, point.y, pointRadius, 0, Math.PI * 2);
       ctx.fill();
-      
-      // Number the points for clarity
-      if (!isPreview) {
-        ctx.fillStyle = '#fff';
+
+      // Add a "snap" indicator when snapping to a stair point
+      if (isSnapPoint) {
+        ctx.fillStyle = "#ef4444";
         ctx.font = `${10 / zoom}px Arial`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
+        ctx.textAlign = "center";
+        ctx.fillText("SNAP", point.x, point.y - 12 / zoom);
+      }
+
+      // Number the points for clarity (not for imported stairs)
+      if (!isPreview && !isImported) {
+        ctx.fillStyle = "#fff";
+        ctx.font = `${10 / zoom}px Arial`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
         ctx.fillText(`${index + 1}`, point.x, point.y);
       }
     });
-    
+
     ctx.restore();
   };
 
@@ -1897,6 +1987,14 @@ export default function Canvas2D({
             if (!drawnPoints.has(key)) {
               drawnPoints.add(key);
 
+              // Determine if this endpoint is a snap target during wall drawing
+              const isSnapTarget =
+                isDrawing &&
+                currentTool === "wall" &&
+                currentLine &&
+                snapSource === "endpoint" &&
+                arePointsNearlyEqual(currentLine.end, point);
+
               const isHovered =
                 hoveredEndpoint?.point &&
                 arePointsNearlyEqual(hoveredEndpoint.point, point);
@@ -1905,12 +2003,22 @@ export default function Canvas2D({
               ctx.arc(
                 point.x,
                 point.y,
-                isHovered ? (POINT_RADIUS * 1.5) / zoom : POINT_RADIUS / zoom,
+                isHovered || isSnapTarget
+                  ? (POINT_RADIUS * 1.5) / zoom
+                  : POINT_RADIUS / zoom,
                 0,
                 Math.PI * 2,
               );
 
-              if (isHovered) {
+              // Change color if it's a snap target during drawing
+              if (isSnapTarget) {
+                ctx.fillStyle = "#ef4444"; // Red for snapping
+                // Add "SNAP" text above the point
+                ctx.font = `${10 / zoom}px Arial`;
+                ctx.fillStyle = "#ef4444";
+                ctx.textAlign = "center";
+                ctx.fillText("SNAP", point.x, point.y - 12 / zoom);
+              } else if (isHovered) {
                 ctx.fillStyle = "#fbbf24"; // Amber color for hover
                 // Add tooltip
                 ctx.font = `${12 / zoom}px Arial`;
@@ -2013,21 +2121,27 @@ export default function Canvas2D({
       };
 
       drawMeasurements(ctx);
-      
+
+      // Draw all existing stair polygons
+      // Find where stair polygons are drawn in the draw function (around line 1800-1830)
       // Draw all existing stair polygons
       if (stairPolygons && stairPolygons.length > 0) {
         stairPolygons.forEach((stair, index) => {
           const isHighlighted = highlightState.stairPolygon?.index === index;
+          const isSnapTarget = isDrawingStairs && snapSource === "stair";
+
           drawStairPolygon(
-            ctx, 
-            stair.points, 
-            false, 
-            stair.direction || 'up',
-            isHighlighted
+            ctx,
+            stair.points,
+            false,
+            stair.direction || "up",
+            isHighlighted,
+            stair.isImported || false,
+            isSnapTarget,
           );
         });
       }
-      
+
       // Draw the stair polygon being created, if any
       if (isDrawingStairs && currentStairPoints.length > 0) {
         // Create a temporary array with current points plus preview point
@@ -2035,21 +2149,36 @@ export default function Canvas2D({
         if (previewStairPoint) {
           previewPoints.push(previewStairPoint);
         }
-        
+
         // Draw the preview stair polygon
         drawStairPolygon(ctx, previewPoints, true);
-        
+
         // Show tooltip if actively drawing stairs
         if (previewStairPoint) {
           ctx.save();
           ctx.font = `${12 / zoom}px Arial`;
           ctx.fillStyle = "#000000";
           ctx.textAlign = "center";
-          ctx.fillText(
-            "Click to add point, right-click to complete",
-            previewStairPoint.x,
-            previewStairPoint.y - 20 / zoom
-          );
+          // Add snap source info to tooltip
+          if (snapSource === "stair") {
+            ctx.fillText(
+              "Snapping to stair point! Click to add, right-click to complete",
+              previewStairPoint.x,
+              previewStairPoint.y - 20 / zoom,
+            );
+          } else if (snapSource === "endpoint") {
+            ctx.fillText(
+              "Snapping to wall endpoint! Click to add, right-click to complete",
+              previewStairPoint.x,
+              previewStairPoint.y - 20 / zoom,
+            );
+          } else {
+            ctx.fillText(
+              "Click to add point, right-click to complete",
+              previewStairPoint.x,
+              previewStairPoint.y - 20 / zoom,
+            );
+          }
           ctx.restore();
         }
       }
@@ -2188,7 +2317,8 @@ export default function Canvas2D({
     currentStairPoints,
     previewStairPoint,
     onStairPolygonsUpdate,
-    floorText
+    floorText,
+    snapSource,
   ]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -2293,6 +2423,11 @@ export default function Canvas2D({
   };
 
   const getCursor = (): string => {
+    // Add this condition near the beginning of the function
+    if (currentTool === "wall" && isDrawing && snapSource === "endpoint") {
+      return 'url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>\') 12 12, auto';
+    }
+
     // 1. Check for panning mode (either button-activated or right-click)
     if (panMode || isPanning) return "move";
 
@@ -2306,7 +2441,7 @@ export default function Canvas2D({
       // Ruler icon matching the Lucide Ruler component
       return 'url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%23000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/></svg>\') 5 15, auto';
     }
-    
+
     if (currentTool === "stairs") {
       // Stairs icon cursor for stairs tool
       return 'url(\'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%237c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18h18"/><path d="M3 18a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2"/><path d="M5 16v-2a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/><path d="M9 12V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v10"/></svg>\') 0 18, auto';
