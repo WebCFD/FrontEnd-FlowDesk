@@ -61,8 +61,6 @@ import {
 import { FurnitureMenu } from "@/components/sketch/FurnitureMenu";
 import { ToolbarToggle } from "@/components/sketch/ToolbarToggle";
 
-
-
 interface Point {
   x: number;
   y: number;
@@ -109,7 +107,7 @@ const FloorLoadDialog: React.FC<FloorLoadDialogProps> = ({
   sourceFloor,
   targetFloor,
   hasContent,
-  hasStairs
+  hasStairs,
 }) => {
   // Format floor names for display
   const sourceFloorText = formatFloorText(sourceFloor);
@@ -124,18 +122,20 @@ const FloorLoadDialog: React.FC<FloorLoadDialogProps> = ({
           </AlertDialogTitle>
           <AlertDialogDescription className="space-y-4">
             <p>
-              {hasContent 
+              {hasContent
                 ? `Loading ${sourceFloorText} as a template will overwrite your current ${targetFloorText} layout. This action cannot be undone.`
-                : `This will copy the layout from ${sourceFloorText} to ${targetFloorText}.`
-              }
+                : `This will copy the layout from ${sourceFloorText} to ${targetFloorText}.`}
             </p>
 
             {hasStairs && (
               <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-md">
-                <h4 className="text-amber-800 font-medium">Stair Connection Information</h4>
+                <h4 className="text-amber-800 font-medium">
+                  Stair Connection Information
+                </h4>
                 <p className="text-amber-700 text-sm mt-1">
-                  Stairs connecting {sourceFloorText} to {targetFloorText} will be imported and displayed as non-editable elements.
-                  Imported stairs can only be removed from their source floor.
+                  Stairs connecting {sourceFloorText} to {targetFloorText} will
+                  be imported and displayed as non-editable elements. Imported
+                  stairs can only be removed from their source floor.
                 </p>
               </div>
             )}
@@ -151,14 +151,6 @@ const FloorLoadDialog: React.FC<FloorLoadDialogProps> = ({
     </AlertDialog>
   );
 };
-
-
-
-
-
-
-
-
 
 const calculateNormal = (line: Line | null): { x: number; y: number } => {
   if (!line) return { x: 0, y: 0 };
@@ -184,26 +176,23 @@ const getNextFloorName = (currentFloor: string): string => {
   return floorMap[currentFloor] || "ground";
 };
 
-const getConnectedFloorName = (floorName: string, direction: 'up' | 'down' = 'up'): string => {
-  const floorOrder = ['ground', 'first', 'second', 'third', 'fourth', 'fifth'];
+const getConnectedFloorName = (
+  floorName: string,
+  direction: "up" | "down" = "up",
+): string => {
+  const floorOrder = ["ground", "first", "second", "third", "fourth", "fifth"];
   const currentIndex = floorOrder.indexOf(floorName);
 
   if (currentIndex === -1) return floorName; // Invalid floor name
 
-  if (direction === 'up' && currentIndex < floorOrder.length - 1) {
+  if (direction === "up" && currentIndex < floorOrder.length - 1) {
     return floorOrder[currentIndex + 1];
-  } else if (direction === 'down' && currentIndex > 0) {
+  } else if (direction === "down" && currentIndex > 0) {
     return floorOrder[currentIndex - 1];
   }
 
   return floorName; // No valid connected floor
 };
-
-
-
-
-
-
 
 export default function WizardDesign() {
   const [, setLocation] = useLocation();
@@ -265,25 +254,28 @@ export default function WizardDesign() {
     }
 
     // Check if target floor has content
-    const hasContent = floors[currentFloor]?.lines.length > 0 || 
-                       floors[currentFloor]?.airEntries.length > 0;
+    const hasContent =
+      floors[currentFloor]?.lines.length > 0 ||
+      floors[currentFloor]?.airEntries.length > 0;
 
     // Check if source floor has stairs that connect to target floor
-    const hasStairs = floors[loadFromFloor]?.stairPolygons?.some(stair => {
-      const connectsToTargetFloor = 
-        (stair.direction === "up" && getConnectedFloorName(loadFromFloor, "up") === currentFloor) ||
-        (stair.direction === "down" && getConnectedFloorName(loadFromFloor, "down") === currentFloor);
+    const hasStairs =
+      floors[loadFromFloor]?.stairPolygons?.some((stair) => {
+        const connectsToTargetFloor =
+          (stair.direction === "up" &&
+            getConnectedFloorName(loadFromFloor, "up") === currentFloor) ||
+          (stair.direction === "down" &&
+            getConnectedFloorName(loadFromFloor, "down") === currentFloor);
 
-      return connectsToTargetFloor;
-    }) || false;
+        return connectsToTargetFloor;
+      }) || false;
 
     // Open confirmation dialog
     setIsFloorLoadDialogOpen(true);
   };
-    
+
   const [isFloorLoadDialogOpen, setIsFloorLoadDialogOpen] = useState(false);
 
-    
   // Add this function after handleLoadTemplate
   const performFloorLoad = () => {
     // Close the dialog
@@ -291,12 +283,12 @@ export default function WizardDesign() {
 
     // Begin by looking at the source floor data
     const sourceFloorData = floors[loadFromFloor];
-    const targetFloorData = floors[currentFloor] || { 
-      lines: [], 
-      airEntries: [], 
-      measurements: [], 
+    const targetFloorData = floors[currentFloor] || {
+      lines: [],
+      airEntries: [],
+      measurements: [],
       stairPolygons: [],
-      hasClosedContour: false 
+      hasClosedContour: false,
     };
 
     // Handle normal floor elements - copy as usual
@@ -308,21 +300,29 @@ export default function WizardDesign() {
     let newStairPolygons = [];
 
     // Process existing stairs in the target floor
-    if (targetFloorData.stairPolygons && targetFloorData.stairPolygons.length > 0) {
+    if (
+      targetFloorData.stairPolygons &&
+      targetFloorData.stairPolygons.length > 0
+    ) {
       // Keep stairs that are owned by the current floor (not imported)
       const ownedStairs = targetFloorData.stairPolygons.filter(
-        stair => !stair.isImported
+        (stair) => !stair.isImported,
       );
       newStairPolygons = [...ownedStairs];
     }
 
     // Process stairs from source floor
-    if (sourceFloorData.stairPolygons && sourceFloorData.stairPolygons.length > 0) {
-      sourceFloorData.stairPolygons.forEach(stair => {
+    if (
+      sourceFloorData.stairPolygons &&
+      sourceFloorData.stairPolygons.length > 0
+    ) {
+      sourceFloorData.stairPolygons.forEach((stair) => {
         // Determine if this stair connects to our target floor
-        const connectsToTargetFloor = 
-          (stair.direction === "up" && getConnectedFloorName(loadFromFloor, "up") === currentFloor) ||
-          (stair.direction === "down" && getConnectedFloorName(loadFromFloor, "down") === currentFloor);
+        const connectsToTargetFloor =
+          (stair.direction === "up" &&
+            getConnectedFloorName(loadFromFloor, "up") === currentFloor) ||
+          (stair.direction === "down" &&
+            getConnectedFloorName(loadFromFloor, "down") === currentFloor);
 
         // If this stair connects to our target floor, create a corresponding stair
         if (connectsToTargetFloor) {
@@ -331,7 +331,7 @@ export default function WizardDesign() {
 
           // Check if this stair already exists in the target floor
           const existingStairIndex = newStairPolygons.findIndex(
-            s => s.connectsTo === stair.id || s.id === stair.connectsTo
+            (s) => s.connectsTo === stair.id || s.id === stair.connectsTo,
           );
 
           if (existingStairIndex === -1) {
@@ -343,7 +343,7 @@ export default function WizardDesign() {
               direction: newDirection, // Invert direction
               connectsTo: stair.id, // Link to the original stair
               sourceFloor: loadFromFloor, // Track where this came from
-              isImported: true // Mark as imported
+              isImported: true, // Mark as imported
             };
 
             newStairPolygons.push(newStair);
@@ -689,22 +689,35 @@ export default function WizardDesign() {
 
               {/* 3D Tools - grayed out in 2D view */}
 
-              <div className={cn(
-                "border rounded-lg p-4",
-                tab === "2d-editor" ? "opacity-50 pointer-events-none" : "opacity-100"
-              )}>
+              <div
+                className={cn(
+                  "border rounded-lg p-4",
+                  tab === "2d-editor"
+                    ? "opacity-50 pointer-events-none"
+                    : "opacity-100",
+                )}
+              >
                 <h3 className="font-semibold text-lg mb-4">3D Tools</h3>
                 <div className="space-y-4">
                   <div className="grid grid-cols-3 gap-2">
-                    <Button variant="outline" className="w-full h-16 flex flex-col items-center justify-center gap-1">
+                    <Button
+                      variant="outline"
+                      className="w-full h-16 flex flex-col items-center justify-center gap-1"
+                    >
                       <Camera className="w-6 h-6" />
                       <span className="text-xs">Camera</span>
                     </Button>
-                    <Button variant="outline" className="w-full h-16 flex flex-col items-center justify-center gap-1">
+                    <Button
+                      variant="outline"
+                      className="w-full h-16 flex flex-col items-center justify-center gap-1"
+                    >
                       <RotateCw className="w-6 h-6" />
                       <span className="text-xs">Rotate</span>
                     </Button>
-                    <Button variant="outline" className="w-full h-16 flex flex-col items-center justify-center gap-1">
+                    <Button
+                      variant="outline"
+                      className="w-full h-16 flex flex-col items-center justify-center gap-1"
+                    >
                       <ZoomIn className="w-6 h-6" />
                       <span className="text-xs">Zoom</span>
                     </Button>
@@ -717,9 +730,13 @@ export default function WizardDesign() {
                         defaultValue={[80]}
                         max={100}
                         step={1}
-                        onValueChange={(value: number[]) => setWallTransparency(value[0] / 100)}
+                        onValueChange={(value: number[]) =>
+                          setWallTransparency(value[0] / 100)
+                        }
                       />
-                      <div className="text-sm text-right mt-1">{Math.round(wallTransparency * 100)}%</div>
+                      <div className="text-sm text-right mt-1">
+                        {Math.round(wallTransparency * 100)}%
+                      </div>
                     </div>
                   </div>
 
@@ -976,7 +993,7 @@ export default function WizardDesign() {
         const key = pointKey(currentPoint);
 
         if (path.length >= 2 && arePointsEqual(currentPoint, point)) {
-          console.log("Found closed contour:", path);
+          //  console.log("Found closed contour:", path);
           return true;
         }
 
@@ -1056,7 +1073,6 @@ export default function WizardDesign() {
     if (step > 1) setStep(step - 1);
   };
 
-
   const renderParametersMenu = () => (
     <div className="border rounded-lg p-4">
       <h3 className="font-semibold text-lg mb-4">Parameters</h3>
@@ -1079,21 +1095,33 @@ export default function WizardDesign() {
                   <SelectValue placeholder="Select floor" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ground">{formatFloorText('ground')}</SelectItem>
+                  <SelectItem value="ground">
+                    {formatFloorText("ground")}
+                  </SelectItem>
                   {floors.ground.hasClosedContour && (
                     <>
-                      <SelectItem value="first">{formatFloorText('first')}</SelectItem>
+                      <SelectItem value="first">
+                        {formatFloorText("first")}
+                      </SelectItem>
                       {floors.first?.hasClosedContour && (
-                        <SelectItem value="second">{formatFloorText('second')}</SelectItem>
+                        <SelectItem value="second">
+                          {formatFloorText("second")}
+                        </SelectItem>
                       )}
                       {floors.second?.hasClosedContour && (
-                        <SelectItem value="third">{formatFloorText('third')}</SelectItem>
+                        <SelectItem value="third">
+                          {formatFloorText("third")}
+                        </SelectItem>
                       )}
                       {floors.third?.hasClosedContour && (
-                        <SelectItem value="fourth">{formatFloorText('fourth')}</SelectItem>
+                        <SelectItem value="fourth">
+                          {formatFloorText("fourth")}
+                        </SelectItem>
                       )}
                       {floors.fourth?.hasClosedContour && (
-                        <SelectItem value="fifth">{formatFloorText('fifth')}</SelectItem>
+                        <SelectItem value="fifth">
+                          {formatFloorText("fifth")}
+                        </SelectItem>
                       )}
                     </>
                   )}
@@ -1127,19 +1155,21 @@ export default function WizardDesign() {
             </div>
 
             <div className="pt-4">
-              <Button 
-                variant={currentTool === 'stairs' ? "default" : "outline"}
+              <Button
+                variant={currentTool === "stairs" ? "default" : "outline"}
                 className={cn(
                   "w-full",
-                  currentTool === 'stairs' && "bg-violet-500 hover:bg-violet-600 text-white border-violet-600"
+                  currentTool === "stairs" &&
+                    "bg-violet-500 hover:bg-violet-600 text-white border-violet-600",
                 )}
                 onClick={() => {
-                  setCurrentTool('stairs');
+                  setCurrentTool("stairs");
                   setCurrentAirEntry(null);
                   setTab("2d-editor");
                   toast({
                     title: "Stair Design Tool Activated",
-                    description: "Click on the canvas to place points and create a stair polygon. Close the shape by clicking near the first point.",
+                    description:
+                      "Click on the canvas to place points and create a stair polygon. Close the shape by clicking near the first point.",
                   });
                 }}
               >
@@ -1157,60 +1187,52 @@ export default function WizardDesign() {
     // Add these debug statements
     if (tab === "3d-preview") {
       console.log("Rendering 3D view with floors data:", floors);
-      console.log(`Current floor '${currentFloor}' stair polygons:`, 
-        floors[currentFloor]?.stairPolygons || []);
+      console.log(
+        `Current floor '${currentFloor}' stair polygons:`,
+        floors[currentFloor]?.stairPolygons || [],
+      );
     }
 
     return (
-    <div className="flex-1 border rounded-lg overflow-hidden bg-white min-w-[600px]">
-      
-      {tab === "2d-editor" ? (
-        <Canvas2D
-          gridSize={gridSize}
-          currentTool={currentTool}
-          currentAirEntry={currentAirEntry}
-          airEntries={airEntries}
-          measurements={measurements}
-          stairPolygons={stairPolygons}
-          onMeasurementsUpdate={setMeasurements}
-          onStairPolygonsUpdate={setStairPolygons}
-          lines={lines}
-          floorText={formatFloorText(currentFloor)}
-          isMultifloor={isMultifloor}
-          onLinesUpdate={(newLines) => {
-            setLines(newLines);
-            const hasClosedContour =
-              newLines.length > 0 &&
-              newLines.some(
-                (line) =>
-                  isInClosedContour(line.start, newLines) ||
-                  isInClosedContour(line.end, newLines),
-              );
-            setHasClosedContour(hasClosedContour);
-          }}
-          onAirEntriesUpdate={setAirEntries}
-          onLineSelect={handleLineSelect}
-        />
-      ) : (
-        <Canvas3D
-          floors={floors}
-          currentFloor={currentFloor}
-          ceilingHeight={ceilingHeight}
-          floorDeckThickness={floorDeckThickness} // Add the prop
-        />
-      )}
-    </div>
-  );
-    };
-
-
-
-
-
-
-
-
-
+      <div className="flex-1 border rounded-lg overflow-hidden bg-white min-w-[600px]">
+        {tab === "2d-editor" ? (
+          <Canvas2D
+            gridSize={gridSize}
+            currentTool={currentTool}
+            currentAirEntry={currentAirEntry}
+            airEntries={airEntries}
+            measurements={measurements}
+            stairPolygons={stairPolygons}
+            onMeasurementsUpdate={setMeasurements}
+            onStairPolygonsUpdate={setStairPolygons}
+            lines={lines}
+            floorText={formatFloorText(currentFloor)}
+            isMultifloor={isMultifloor}
+            onLinesUpdate={(newLines) => {
+              setLines(newLines);
+              const hasClosedContour =
+                newLines.length > 0 &&
+                newLines.some(
+                  (line) =>
+                    isInClosedContour(line.start, newLines) ||
+                    isInClosedContour(line.end, newLines),
+                );
+              setHasClosedContour(hasClosedContour);
+            }}
+            onAirEntriesUpdate={setAirEntries}
+            onLineSelect={handleLineSelect}
+          />
+        ) : (
+          <Canvas3D
+            floors={floors}
+            currentFloor={currentFloor}
+            ceilingHeight={ceilingHeight}
+            floorDeckThickness={floorDeckThickness} // Add the prop
+          />
+        )}
+      </div>
+    );
+  };
 
   return (
     <DashboardLayout>
@@ -1239,27 +1261,28 @@ export default function WizardDesign() {
         </div>
       </div>
 
-
-
-
       <FloorLoadDialog
         isOpen={isFloorLoadDialogOpen}
         onClose={() => setIsFloorLoadDialogOpen(false)}
         onConfirm={performFloorLoad}
         sourceFloor={loadFromFloor}
         targetFloor={currentFloor}
-        hasContent={floors[currentFloor]?.lines.length > 0 || 
-                    floors[currentFloor]?.airEntries.length > 0}
-        hasStairs={floors[loadFromFloor]?.stairPolygons?.some(stair => {
-          const connectsToTargetFloor = 
-            (stair.direction === "up" && getConnectedFloorName(loadFromFloor, "up") === currentFloor) ||
-            (stair.direction === "down" && getConnectedFloorName(loadFromFloor, "down") === currentFloor);
+        hasContent={
+          floors[currentFloor]?.lines.length > 0 ||
+          floors[currentFloor]?.airEntries.length > 0
+        }
+        hasStairs={
+          floors[loadFromFloor]?.stairPolygons?.some((stair) => {
+            const connectsToTargetFloor =
+              (stair.direction === "up" &&
+                getConnectedFloorName(loadFromFloor, "up") === currentFloor) ||
+              (stair.direction === "down" &&
+                getConnectedFloorName(loadFromFloor, "down") === currentFloor);
 
-          return connectsToTargetFloor;
-        }) || false}
+            return connectsToTargetFloor;
+          }) || false
+        }
       />
-
-
     </DashboardLayout>
   );
 }

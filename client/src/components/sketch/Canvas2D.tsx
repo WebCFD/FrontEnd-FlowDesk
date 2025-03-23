@@ -1,4 +1,10 @@
-import { useState, useEffect, useRef, useMemo, MouseEvent as ReactMouseEvent } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  MouseEvent as ReactMouseEvent,
+} from "react";
 import { Point, Line, AirEntry, StairPolygon, Measurement } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +33,12 @@ const GRID_RANGE = 2000;
 const GRID_POINT_RADIUS = 1;
 const HOVER_DISTANCE = 10;
 
+// Add this debug log function
+const debugLog = (message: string, data?: any) => {
+  const timestamp = new Date().toISOString().substr(11, 12);
+  console.log(`[${timestamp}] CANVAS-DEBUG: ${message}`, data || "");
+};
+
 const cmToPixels = (cm: number): number => {
   return cm / PIXELS_TO_CM;
 };
@@ -34,8 +46,6 @@ const cmToPixels = (cm: number): number => {
 const pixelsToCm = (pixels: number): number => {
   return pixels * PIXELS_TO_CM;
 };
-
-
 
 const calculateNormal = (line: Line): Point => {
   const dx = line.end.x - line.start.x;
@@ -46,7 +56,6 @@ const calculateNormal = (line: Line): Point => {
     y: dy / length,
   };
 };
-
 
 // Add this helper function near the beginning of Canvas2D, similar to the one in Canvas3D
 const getConnectedFloorName = (
@@ -231,8 +240,6 @@ const getRelativePositionOnLine = (point: Point, line: Line): number => {
   return Math.max(0, Math.min(1, dot));
 };
 
-
-
 const getPointAtRelativePosition = (line: Line, relativePos: number): Point => {
   const t = Math.max(0, Math.min(1, relativePos));
 
@@ -296,7 +303,6 @@ export default function Canvas2D({
     isStart: boolean[];
   }>({ point: { x: 0, y: 0 }, lines: [], isStart: [] });
 
-
   // Add these state variables to the Canvas2D component
   const [editingPoint, setEditingPoint] = useState<{
     point: Point;
@@ -306,13 +312,12 @@ export default function Canvas2D({
     stairPolygonIndex?: number;
     pointIndex?: number;
   } | null>(null);
-  
+
   // Add the ignoreNextClick state here, with the other state variables
   const [ignoreNextClick, setIgnoreNextClick] = useState<boolean>(false);
+  const [ignoreStairToolClick, setIgnoreStairToolClick] =
+    useState<boolean>(false);
 
-
-
-  
   // ADD THIS new state
   const [previewMeasurement, setPreviewMeasurement] =
     useState<Measurement | null>(null);
@@ -349,6 +354,7 @@ export default function Canvas2D({
   const [measureStart, setMeasureStart] = useState<Point | null>(null);
   const [measureEnd, setMeasureEnd] = useState<Point | null>(null);
   const [isMeasuring, setIsMeasuring] = useState(false);
+  const [ignoreMeasureToolClick, setIgnoreMeasureToolClick] = useState(false);
 
   // Stair polygon drawing states
   const [currentStairPoints, setCurrentStairPoints] = useState<Point[]>([]);
@@ -366,13 +372,12 @@ export default function Canvas2D({
     return {
       centerX: dimensions.width / 2,
       centerY: dimensions.height / 2,
-      arrowLength: 150
+      arrowLength: 150,
     };
   };
-  
+
   const createCoordinateSystem = (): Line[] => {
     const { centerX, centerY, arrowLength } = getCoordinateSystemParams();
-
 
     return [
       // X axis (horizontal)
@@ -410,13 +415,11 @@ export default function Canvas2D({
         end: { x: centerX + 5, y: centerY - arrowLength + 10 },
       },
     ];
-    };
-
-
+  };
 
   const createGridLines = (): Line[] => {
     const gridLines: Line[] = [];
-    
+
     const centerX = dimensions.width / 2;
     const centerY = dimensions.height / 2;
 
@@ -551,20 +554,16 @@ export default function Canvas2D({
       x: centerX + snappedX,
       y: centerY + snappedY,
     };
-
-
-
-
-
-
-    
   };
 
   // Find this function in the code (around line 325)
   // Update findNearestEndpoint to track snap source (replace the previous implementation)
   const findNearestEndpoint = (
-    point: Point
-  ): { point: Point | null; source: "endpoint" | "stair" | "origin" | null } => {
+    point: Point,
+  ): {
+    point: Point | null;
+    source: "endpoint" | "stair" | "origin" | null;
+  } => {
     let nearest: Point | null = null;
     let minDistance = snapDistance;
     let source: "endpoint" | "stair" | "origin" | null = null;
@@ -572,8 +571,8 @@ export default function Canvas2D({
     // Add origin (0,0) as a potential snap point
     const originPoint = { x: dimensions.width / 2, y: dimensions.height / 2 };
     const distToOrigin = Math.sqrt(
-      Math.pow(point.x - originPoint.x, 2) + 
-      Math.pow(point.y - originPoint.y, 2)
+      Math.pow(point.x - originPoint.x, 2) +
+        Math.pow(point.y - originPoint.y, 2),
     );
 
     if (distToOrigin < minDistance) {
@@ -1051,13 +1050,14 @@ export default function Canvas2D({
       const { point: nearestPoint, source } = findNearestEndpoint(point);
       const endPoint = nearestPoint || snapToGrid(point);
       // Fix the incorrect type annotation
-      setCurrentLine((prev: Line | null) => (prev ? { ...prev, end: endPoint } : null));
+      setCurrentLine((prev: Line | null) =>
+        prev ? { ...prev, end: endPoint } : null,
+      );
       setCursorPoint(endPoint);
       // If snapping to a point, set the snap source for visual feedback
       setSnapSource(nearestPoint ? source : "grid");
     }
   };
-
 
   const handleMouseMove = (e: MouseEvent) => {
     const point = getCanvasPoint(e);
@@ -1164,9 +1164,9 @@ export default function Canvas2D({
           // Extract the actual Point data if targetPoint contains extra properties
           const extractedPoint: Point = {
             x: targetPoint.x,
-            y: targetPoint.y
+            y: targetPoint.y,
           };
-          
+
           setDraggedPoint({
             point: extractedPoint,
             lines: updatedLines,
@@ -1180,14 +1180,23 @@ export default function Canvas2D({
     throttleMouseMove(e);
   };
 
-  const handleMouseDown = (e: ReactMouseEvent<HTMLCanvasElement, MouseEvent>) => {
-
+  const handleMouseDown = (
+    e: ReactMouseEvent<HTMLCanvasElement, MouseEvent>,
+  ) => {
     // Check if we should ignore this click (set by double-click handler)
     if (ignoreNextClick) {
+      debugLog("Ignoring click due to ignoreNextClick flag");
       setIgnoreNextClick(false);
       return;
     }
-    const nativeEvent = e.nativeEvent; 
+
+    debugLog(
+      `Mouse down event - button: ${e.button}, currentTool: ${currentTool}`,
+    );
+    debugLog(
+      `State flags - ignoreStairToolClick: ${ignoreStairToolClick}, isDrawingStairs: ${isDrawingStairs}`,
+    );
+    const nativeEvent = e.nativeEvent;
     const point = getCanvasPoint(nativeEvent);
 
     // Handle different mouse buttons
@@ -1219,7 +1228,22 @@ export default function Canvas2D({
 
       // Handle the stairs tool mode
       if (currentTool === "stairs") {
+        debugLog(`Stairs tool click detected at (${point.x}, ${point.y})`);
+        debugLog(
+          `ignoreStairToolClick: ${ignoreStairToolClick}, ignoreNextClick: ${ignoreNextClick}`,
+        );
+
+        if (ignoreStairToolClick) {
+          debugLog(
+            "Ignoring stair tool click due to ignoreStairToolClick flag",
+          );
+          return;
+        }
+
         e.preventDefault();
+        debugLog(
+          `Starting/continuing stair drawing (isDrawingStairs: ${isDrawingStairs})`,
+        );
 
         const { point: nearestPoint, source } = findNearestEndpoint(point);
         const snappedPoint = nearestPoint || snapToGrid(point);
@@ -1239,33 +1263,37 @@ export default function Canvas2D({
       }
 
       // Handle measurement tool
-      if (currentTool === "measure") {
+      // Handle measurement tool
+      if (currentTool === "measure" && !ignoreMeasureToolClick) {
         e.stopPropagation();
 
+        debugLog(`Measure tool click detected at (${point.x}, ${point.y})`);
+        debugLog(`ignoreMeasureToolClick: ${ignoreMeasureToolClick}, isMeasuring: ${isMeasuring}`);
+
+        // Get the nearest endpoint or snap to grid
+        const { point: nearestPoint } = findNearestEndpoint(point);
+        const snappedPoint = nearestPoint || snapToGrid(point);
+
         if (!isMeasuring) {
-          // First click - just set the start point
-          const { point: nearestPoint } = findNearestEndpoint(point);
-          const startPoint = nearestPoint || snapToGrid(point);
+          // First click - set the start point
+          debugLog(`Starting measurement`);
           setIsMeasuring(true);
-          setMeasureStart(startPoint);
-          setMeasureEnd(startPoint);
+          setMeasureStart(snappedPoint);
+          setMeasureEnd(snappedPoint);
         } else {
           // Second click - complete the measurement
-          const { point: nearestPoint } = findNearestEndpoint(point);
-          const endPoint = nearestPoint || snapToGrid(point);
-
-          console.log("Second measurement click - completing measurement");
+          debugLog(`Completing measurement`);
 
           // Only create measurement if points are different enough
-          const dx = endPoint.x - measureStart!.x;
-          const dy = endPoint.y - measureStart!.y;
+          const dx = snappedPoint.x - measureStart!.x;
+          const dy = snappedPoint.y - measureStart!.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
 
           if (distance > 5) {
             // Create a permanent measurement
             const newMeasurement = {
               start: measureStart!,
-              end: endPoint,
+              end: snappedPoint,
               distance: pixelsToCm(distance),
               isPreview: false,
             };
@@ -1280,12 +1308,11 @@ export default function Canvas2D({
           setMeasureEnd(null);
           setPreviewMeasurement(null);
         }
+
         return;
       }
-
       // If pan mode is active, use left-click for panning
       if (panMode) {
-
         handlePanStart(nativeEvent);
         return;
       }
@@ -1759,14 +1786,16 @@ export default function Canvas2D({
         arePointsNearlyEqual(point, previewStairPoint);
 
       // Check if this point is being hovered over
-      const isHovered = !isPreview && 
-                       !isImported && 
-                       hoverPoint &&
-                       !isDrawing &&
-                       Math.sqrt(
-                         Math.pow(point.x - hoverPoint.x, 2) + 
-                         Math.pow(point.y - hoverPoint.y, 2)
-                       ) < (POINT_RADIUS * 2) / zoom;
+      const isHovered =
+        !isPreview &&
+        !isImported &&
+        hoverPoint &&
+        !isDrawing &&
+        Math.sqrt(
+          Math.pow(point.x - hoverPoint.x, 2) +
+            Math.pow(point.y - hoverPoint.y, 2),
+        ) <
+          (POINT_RADIUS * 2) / zoom;
 
       ctx.beginPath();
       // Set fill color based on state
@@ -1781,9 +1810,10 @@ export default function Canvas2D({
               : "#7c3aed";
 
       // Make hovered points slightly larger
-      const pointRadius = (isSnapPoint || isHovered)
-        ? (POINT_RADIUS * 1.5) / zoom
-        : POINT_RADIUS / zoom;
+      const pointRadius =
+        isSnapPoint || isHovered
+          ? (POINT_RADIUS * 1.5) / zoom
+          : POINT_RADIUS / zoom;
       ctx.arc(point.x, point.y, pointRadius, 0, Math.PI * 2);
       ctx.fill();
 
@@ -1820,13 +1850,6 @@ export default function Canvas2D({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-
-
-
-
-
-
-    
     const drawCrosshair = (ctx: CanvasRenderingContext2D, point: Point) => {
       const size = 10 / zoom;
 
@@ -2016,7 +2039,7 @@ export default function Canvas2D({
       const visibleEndX = (-pan.x + dimensions.width) / zoom + gridSize;
       const visibleStartY = -pan.y / zoom - gridSize;
       const visibleEndY = (-pan.y + dimensions.height) / zoom + gridSize;
-      
+
       // Draw coordinate system
       const { centerX, centerY, arrowLength } = getCoordinateSystemParams();
       // Calculate grid starting points
@@ -2040,10 +2063,8 @@ export default function Canvas2D({
       }
       ctx.stroke();
 
-
-
       const coordSystem = createCoordinateSystem();
-      
+
       coordSystem.forEach((line, index) => {
         ctx.beginPath();
         ctx.strokeStyle = index < 3 ? "#ef4444" : "#22c55e";
@@ -2114,20 +2135,30 @@ export default function Canvas2D({
 
       const drawEndpoints = () => {
         const drawnPoints = new Set<string>();
-        const originPoint = { x: dimensions.width / 2, y: dimensions.height / 2 };
+        const originPoint = {
+          x: dimensions.width / 2,
+          y: dimensions.height / 2,
+        };
 
         // Check if the origin is a snap target
-        const isOriginSnapTarget = isDrawing && 
-                                 currentTool === "wall" && 
-                                 currentLine && 
-                                 snapSource === "origin" &&
-                                 arePointsNearlyEqual(currentLine.end, originPoint);
+        const isOriginSnapTarget =
+          isDrawing &&
+          currentTool === "wall" &&
+          currentLine &&
+          snapSource === "origin" &&
+          arePointsNearlyEqual(currentLine.end, originPoint);
 
         // Draw origin snap point if it's a snap target during drawing
         if (isOriginSnapTarget) {
           ctx.beginPath();
           ctx.fillStyle = "#ef4444"; // Red for snapping
-          ctx.arc(originPoint.x, originPoint.y, (POINT_RADIUS * 1.8) / zoom, 0, Math.PI * 2);
+          ctx.arc(
+            originPoint.x,
+            originPoint.y,
+            (POINT_RADIUS * 1.8) / zoom,
+            0,
+            Math.PI * 2,
+          );
           ctx.fill();
 
           // Add "SNAP" text above the origin point
@@ -2147,11 +2178,12 @@ export default function Canvas2D({
             if (!drawnPoints.has(key)) {
               drawnPoints.add(key);
 
-              const isSnapTarget = isDrawing && 
-                                 currentTool === "wall" && 
-                                 currentLine && 
-                                 snapSource === "endpoint" &&
-                                 arePointsNearlyEqual(currentLine.end, point);
+              const isSnapTarget =
+                isDrawing &&
+                currentTool === "wall" &&
+                currentLine &&
+                snapSource === "endpoint" &&
+                arePointsNearlyEqual(currentLine.end, point);
 
               const isHovered =
                 hoveredEndpoint?.point &&
@@ -2161,7 +2193,9 @@ export default function Canvas2D({
               ctx.arc(
                 point.x,
                 point.y,
-                (isHovered || isSnapTarget) ? (POINT_RADIUS * 1.5) / zoom : POINT_RADIUS / zoom,
+                isHovered || isSnapTarget
+                  ? (POINT_RADIUS * 1.5) / zoom
+                  : POINT_RADIUS / zoom,
                 0,
                 Math.PI * 2,
               );
@@ -2194,7 +2228,6 @@ export default function Canvas2D({
           });
         });
       };
-
 
       drawEndpoints();
 
@@ -2245,16 +2278,27 @@ export default function Canvas2D({
         ctx.font = `${12 / zoom}px sans-serif`;
 
         // Special handling for the origin point pre-drawing snap
-        const originPoint = { x: dimensions.width / 2, y: dimensions.height / 2 };
+        const originPoint = {
+          x: dimensions.width / 2,
+          y: dimensions.height / 2,
+        };
 
-        if (currentTool === "wall" && !isDrawing && 
-            snapSource === "origin" && 
-            arePointsNearlyEqual(cursorPoint, originPoint)) {
-
+        if (
+          currentTool === "wall" &&
+          !isDrawing &&
+          snapSource === "origin" &&
+          arePointsNearlyEqual(cursorPoint, originPoint)
+        ) {
           // Draw special origin snap indicator
           ctx.beginPath();
           ctx.fillStyle = "#ef4444"; // Red for snapping
-          ctx.arc(originPoint.x, originPoint.y, (POINT_RADIUS * 1.8) / zoom, 0, Math.PI * 2);
+          ctx.arc(
+            originPoint.x,
+            originPoint.y,
+            (POINT_RADIUS * 1.8) / zoom,
+            0,
+            Math.PI * 2,
+          );
           ctx.fill();
 
           // Add "SNAP (0,0)" text for pre-drawing
@@ -2265,14 +2309,22 @@ export default function Canvas2D({
 
           // Also draw the regular coordinate label
           drawCoordinateLabel(ctx, cursorPoint, "#ef4444");
-        } 
+        }
         // Special handling for endpoint pre-drawing snap
-        else if (currentTool === "wall" && !isDrawing && snapSource === "endpoint") {
+        else if (
+          currentTool === "wall" &&
+          !isDrawing &&
+          snapSource === "endpoint"
+        ) {
           // Show endpoint snap indicator
           drawCoordinateLabel(ctx, cursorPoint, "#ef4444");
         }
         // Special handling for stair point pre-drawing snap
-        else if (currentTool === "wall" && !isDrawing && snapSource === "stair") {
+        else if (
+          currentTool === "wall" &&
+          !isDrawing &&
+          snapSource === "stair"
+        ) {
           // Show stair point snap indicator
           drawCoordinateLabel(ctx, cursorPoint, "#ef4444");
         }
@@ -2281,7 +2333,6 @@ export default function Canvas2D({
           drawCoordinateLabel(ctx, cursorPoint, "#fb923c");
         }
       }
-
 
       if (hoverPoint && !isDrawing && !isPanning) {
         ctx.font = `${12 / zoom}px sans-serif`;
@@ -2513,6 +2564,8 @@ export default function Canvas2D({
     floorText,
     snapSource,
     ignoreNextClick,
+    ignoreStairToolClick,
+    ignoreMeasureToolClick,
   ]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -2543,6 +2596,11 @@ export default function Canvas2D({
 
   // Add this handler function inside the Canvas2D component
   const handleDoubleClick = (e: MouseEvent) => {
+    debugLog("Double-click detected");
+    debugLog(
+      `Current tool: ${currentTool}, isDrawingStairs: ${isDrawingStairs}`,
+    );
+
     // Set flag to ignore the next click (which is part of the double-click sequence)
     setIgnoreNextClick(true);
     // Convert to MouseEvent if needed
@@ -2562,31 +2620,112 @@ export default function Canvas2D({
     // Then check for endpoint double-click
     const pointInfo = findPointAtLocation(clickPoint);
     if (pointInfo) {
+      debugLog(
+        `Double-click detected on wall endpoint at (${pointInfo.point.x}, ${pointInfo.point.y})`,
+      );
+
+      // If stair tool is active, set flag to prevent new stair creation
+      // Handle tool-specific actions for double-click
+      if (currentTool === "stairs") {
+        debugLog("Setting ignoreStairToolClick flag to true for wall endpoint");
+        setIgnoreStairToolClick(true);
+
+        // Also cancel any active stair drawing
+        if (isDrawingStairs) {
+          debugLog("Canceling active stair drawing");
+          setIsDrawingStairs(false);
+          setCurrentStairPoints([]);
+          setPreviewStairPoint(null);
+        }
+
+        // Reset the flag after a short delay
+        setTimeout(() => {
+          debugLog("Resetting ignoreStairToolClick flag to false");
+          setIgnoreStairToolClick(false);
+        }, 500);
+      } else if (currentTool === "measure") {
+        debugLog("Handling double-click while measure tool is active");
+
+        // Set the ignore flag to prevent new measurement actions
+        setIgnoreMeasureToolClick(true);
+        debugLog("Setting ignoreMeasureToolClick flag to true");
+
+        // Cancel any active measuring immediately
+        if (isMeasuring) {
+          debugLog("Canceling active measurement");
+          setIsMeasuring(false);
+          setMeasureStart(null);
+          setMeasureEnd(null);
+          setPreviewMeasurement(null);
+        }
+
+        // Reset the flag after a delay
+        setTimeout(() => {
+          setIgnoreMeasureToolClick(false);
+          debugLog("Measurement ignore period ended");
+        }, 500);
+      }
+
       // Found a wall endpoint
       setEditingPoint({
         point: pointInfo.point,
         lines: pointInfo.lines,
         isStart: pointInfo.isStart,
-        isStairPoint: false
+        isStairPoint: false,
       });
       return;
     }
 
     // Check for stair polygon vertex double-click
     if (stairPolygons && stairPolygons.length > 0) {
-      for (let polygonIndex = 0; polygonIndex < stairPolygons.length; polygonIndex++) {
+      for (
+        let polygonIndex = 0;
+        polygonIndex < stairPolygons.length;
+        polygonIndex++
+      ) {
         const polygon = stairPolygons[polygonIndex];
 
         // Skip imported stair polygons as they shouldn't be editable
         if (polygon.isImported) continue;
 
-        for (let pointIndex = 0; pointIndex < polygon.points.length; pointIndex++) {
+        for (
+          let pointIndex = 0;
+          pointIndex < polygon.points.length;
+          pointIndex++
+        ) {
           const point = polygon.points[pointIndex];
           const dx = clickPoint.x - point.x;
           const dy = clickPoint.y - point.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
 
           if (distance < (POINT_RADIUS * 2) / zoom) {
+            debugLog(
+              `Double-click detected on stair point at (${point.x}, ${point.y})`,
+            );
+            debugLog(
+              `Current tool: ${currentTool}, drawing stairs: ${isDrawingStairs}`,
+            );
+
+            // If stair tool is active, set flag to prevent new stair creation
+            if (currentTool === "stairs") {
+              debugLog("Setting ignoreStairToolClick flag to true");
+              setIgnoreStairToolClick(true);
+
+              // Also cancel any active stair drawing
+              if (isDrawingStairs) {
+                debugLog("Canceling active stair drawing");
+                setIsDrawingStairs(false);
+                setCurrentStairPoints([]);
+                setPreviewStairPoint(null);
+              }
+
+              // Reset the flag after a short delay
+              setTimeout(() => {
+                debugLog("Resetting ignoreStairToolClick flag to false");
+                setIgnoreStairToolClick(false);
+              }, 500);
+            }
+
             // Found a stair polygon vertex
             setEditingPoint({
               point: point,
@@ -2594,7 +2733,7 @@ export default function Canvas2D({
               isStart: [],
               isStairPoint: true,
               stairPolygonIndex: polygonIndex,
-              pointIndex: pointIndex
+              pointIndex: pointIndex,
             });
             return;
           }
@@ -2603,18 +2742,19 @@ export default function Canvas2D({
     }
   };
 
-
-
-  const handleReactMouseMove = (e: ReactMouseEvent<HTMLCanvasElement, MouseEvent>) => {
+  const handleReactMouseMove = (
+    e: ReactMouseEvent<HTMLCanvasElement, MouseEvent>,
+  ) => {
     // Pass the native DOM event to your existing handler
     handleMouseMove(e.nativeEvent);
   };
 
-  const handleReactMouseUp = (e: ReactMouseEvent<HTMLCanvasElement, MouseEvent>) => {
+  const handleReactMouseUp = (
+    e: ReactMouseEvent<HTMLCanvasElement, MouseEvent>,
+  ) => {
     handleMouseUp(e.nativeEvent);
   };
 
-  
   const handleDOMMouseMove = (e: MouseEvent) => {
     handleMouseMove(e);
   };
@@ -2635,8 +2775,6 @@ export default function Canvas2D({
     handleContextMenu(e);
   };
 
-
-  
   // Add this function inside the Canvas2D component to convert from cm to pixels
   const cmToCanvasCoordinates = (cmX: number, cmY: number): Point => {
     const centerX = dimensions.width / 2;
@@ -2653,11 +2791,16 @@ export default function Canvas2D({
     if (!editingPoint) return;
 
     // Convert the user input (in cm) to canvas coordinates
-    const newPoint = cmToCanvasCoordinates(relativeCoordinates.x, relativeCoordinates.y);
+    const newPoint = cmToCanvasCoordinates(
+      relativeCoordinates.x,
+      relativeCoordinates.y,
+    );
 
-    if (editingPoint.isStairPoint && 
-        typeof editingPoint.stairPolygonIndex === 'number' && 
-        typeof editingPoint.pointIndex === 'number') {
+    if (
+      editingPoint.isStairPoint &&
+      typeof editingPoint.stairPolygonIndex === "number" &&
+      typeof editingPoint.pointIndex === "number"
+    ) {
       // Update stair polygon vertex
       const newStairPolygons = [...stairPolygons];
       const polygon = newStairPolygons[editingPoint.stairPolygonIndex];
@@ -2669,7 +2812,7 @@ export default function Canvas2D({
       // Update the polygon with the new points
       newStairPolygons[editingPoint.stairPolygonIndex] = {
         ...polygon,
-        points: newPoints
+        points: newPoints,
       };
 
       // Update the state
@@ -2707,7 +2850,6 @@ export default function Canvas2D({
     // Reset the ignore flag to be safe
     setIgnoreNextClick(false);
   };
-
 
   const handleAirEntryEdit = (
     index: number,
@@ -2818,11 +2960,6 @@ export default function Canvas2D({
   };
 
   return (
-
-
-
-
-    
     <div className="relative w-full h-full bg-background">
       <canvas
         ref={canvasRef}
