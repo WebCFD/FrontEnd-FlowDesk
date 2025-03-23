@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, MouseEvent as ReactMouseEvent } from "react";
 import { Point, Line, AirEntry } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +6,7 @@ import { Minus, Plus, Move, Eraser, Ruler } from "lucide-react";
 import AirEntryDialog from "./AirEntryDialog";
 import { cn } from "@/lib/utils";
 import { useSketchStore } from "@/lib/stores/sketch-store";
+import CoordinateEditorDialog from "./CoordinateEditorDialog";
 
 interface Measurement {
   start: Point;
@@ -41,6 +42,8 @@ const pixelsToCm = (pixels: number): number => {
   return pixels * PIXELS_TO_CM;
 };
 
+
+
 const calculateNormal = (line: Line): Point => {
   const dx = line.end.x - line.start.x;
   const dy = line.end.y - line.start.y;
@@ -50,6 +53,7 @@ const calculateNormal = (line: Line): Point => {
     y: dy / length,
   };
 };
+
 
 // Add this helper function near the beginning of Canvas2D, similar to the one in Canvas3D
 const getConnectedFloorName = (
@@ -234,6 +238,8 @@ const getRelativePositionOnLine = (point: Point, line: Line): number => {
   return Math.max(0, Math.min(1, dot));
 };
 
+
+
 const getPointAtRelativePosition = (line: Line, relativePos: number): Point => {
   const t = Math.max(0, Math.min(1, relativePos));
 
@@ -307,6 +313,23 @@ export default function Canvas2D({
     isStart: boolean[];
   }>({ point: { x: 0, y: 0 }, lines: [], isStart: [] });
 
+
+  // Add these state variables to the Canvas2D component
+  const [editingPoint, setEditingPoint] = useState<{
+    point: Point;
+    lines: Line[];
+    isStart: boolean[];
+    isStairPoint?: boolean;
+    stairPolygonIndex?: number;
+    pointIndex?: number;
+  } | null>(null);
+  
+  // Add the ignoreNextClick state here, with the other state variables
+  const [ignoreNextClick, setIgnoreNextClick] = useState<boolean>(false);
+
+
+
+  
   // ADD THIS new state
   const [previewMeasurement, setPreviewMeasurement] =
     useState<Measurement | null>(null);
@@ -351,7 +374,7 @@ export default function Canvas2D({
     null,
   );
   const [snapSource, setSnapSource] = useState<
-    "grid" | "endpoint" | "stair" | null
+    "grid" | "endpoint" | "stair" | "origin" | null
   >(null);
 
   const { snapDistance } = useSketchStore();
@@ -545,6 +568,13 @@ export default function Canvas2D({
       x: centerX + snappedX,
       y: centerY + snappedY,
     };
+
+
+
+
+
+
+    
   };
 
   // Find this function in the code (around line 325)
@@ -943,6 +973,7 @@ export default function Canvas2D({
     });
   };
 
+  // Fix 2: Fix the processMouseMove function with correct type for currentLine
   const processMouseMove = (e: MouseEvent) => {
     const point = getCanvasPoint(e);
     setHoverPoint(point);
@@ -955,8 +986,8 @@ export default function Canvas2D({
       setSnapSource(nearestPoint ? source : "grid");
       return;
     }
-    // NEW CODE: Pre-drawing snapping for wall tool
-    // When wall tool is active but not drawing yet, show snap indicators 
+
+    // Pre-drawing snapping for wall tool
     if (!isDrawing && !isPanning && currentTool === "wall") {
       const { point: nearestPoint, source } = findNearestEndpoint(point);
       if (nearestPoint) {
@@ -969,6 +1000,7 @@ export default function Canvas2D({
         setSnapSource("grid");
       }
     }
+
     if (!isDrawing && !isPanning) {
       const nearestGridPoint = findNearestGridPoint(point);
       setHoveredGridPoint(nearestGridPoint);
@@ -1035,12 +1067,14 @@ export default function Canvas2D({
     if (currentTool === "wall" && isDrawing && currentLine) {
       const { point: nearestPoint, source } = findNearestEndpoint(point);
       const endPoint = nearestPoint || snapToGrid(point);
-      setCurrentLine((prev) => (prev ? { ...prev, end: endPoint } : null));
+      // Fix the incorrect type annotation
+      setCurrentLine((prev: Line | null) => (prev ? { ...prev, end: endPoint } : null));
       setCursorPoint(endPoint);
       // If snapping to a point, set the snap source for visual feedback
       setSnapSource(nearestPoint ? source : "grid");
     }
   };
+
 
   const handleMouseMove = (e: MouseEvent) => {
     const point = getCanvasPoint(e);
@@ -1156,10 +1190,19 @@ export default function Canvas2D({
     throttleMouseMove(e);
   };
 
-  const handleMouseDown = (e: MouseEvent) => {
-    const point = getCanvasPoint(e);
+  const handleMouseDown = (e: ReactMouseEvent<HTMLCanvasElement, MouseEvent>) => {
+
+    // Check if we should ignore this click (set by double-click handler)
+    if (ignoreNextClick) {
+      setIgnoreNextClick(false);
+      return;
+    }
+    const nativeEvent = e.nativeEvent; 
+    const point = getCanvasPoint(nativeEvent);
+
     // Handle different mouse buttons
     if (e.button === 0) {
+      // Left-click handling
 
       // Handle the wall tool
       if (currentTool === "wall") {
@@ -1181,14 +1224,13 @@ export default function Canvas2D({
         });
         setIsDrawing(true);
         setCursorPoint(startPoint);
+        return;
       }
-
-  
-      // Left-click handling
 
       // Handle the stairs tool mode
       if (currentTool === "stairs") {
         e.preventDefault();
+
         const { point: nearestPoint, source } = findNearestEndpoint(point);
         const snappedPoint = nearestPoint || snapToGrid(point);
 
@@ -1202,6 +1244,120 @@ export default function Canvas2D({
         } else {
           // Continue adding points to the existing stair polygon
           setCurrentStairPoints((prev) => [...prev, snappedPoint]);
+        }
+        return;
+      }
+
+      // Handle measurement tool
+      if (currentTool === "measure") {
+        e.stopPropagation();
+
+        if (!isMeasuring) {
+          // First click - just set the start point
+          const { point: nearestPoint } = findNearestEndpoint(point);
+          const startPoint = nearestPoint || snapToGrid(point);
+          setIsMeasuring(true);
+          setMeasureStart(startPoint);
+          setMeasureEnd(startPoint);
+        } else {
+          // Second click - complete the measurement
+          const { point: nearestPoint } = findNearestEndpoint(point);
+          const endPoint = nearestPoint || snapToGrid(point);
+
+          console.log("Second measurement click - completing measurement");
+
+          // Only create measurement if points are different enough
+          const dx = endPoint.x - measureStart!.x;
+          const dy = endPoint.y - measureStart!.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance > 5) {
+            // Create a permanent measurement
+            const newMeasurement = {
+              start: measureStart!,
+              end: endPoint,
+              distance: pixelsToCm(distance),
+              isPreview: false,
+            };
+
+            // Add the new measurement to the permanent measurements
+            onMeasurementsUpdate?.([...measurements, newMeasurement]);
+          }
+
+          // Reset measurement state and clear preview
+          setIsMeasuring(false);
+          setMeasureStart(null);
+          setMeasureEnd(null);
+          setPreviewMeasurement(null);
+        }
+        return;
+      }
+
+      // If pan mode is active, use left-click for panning
+      if (panMode) {
+
+        handlePanStart(nativeEvent);
+        return;
+      }
+
+      // Handle eraser tool
+      if (currentTool === "eraser") {
+        const airEntryInfo = findAirEntryAtLocation(point);
+        const measurementInfo = findMeasurementAtPoint(point, measurements);
+        const stairPolygonInfo = findStairPolygonAtPoint(point, stairPolygons);
+
+        if (airEntryInfo) {
+          const newAirEntries = airEntries.filter(
+            (_, i) => i !== airEntryInfo.index,
+          );
+          onAirEntriesUpdate?.(newAirEntries);
+        } else if (measurementInfo) {
+          const newMeasurements = measurements.filter(
+            (_, i) => i !== measurementInfo.index,
+          );
+          onMeasurementsUpdate?.(newMeasurements);
+        } else if (stairPolygonInfo) {
+          // Erase the stair polygon
+          const newStairPolygons = stairPolygons.filter(
+            (_, i) => i !== stairPolygonInfo.index,
+          );
+          onStairPolygonsUpdate?.(newStairPolygons);
+        } else {
+          const nearbyLines = findLinesNearPoint(point);
+          if (nearbyLines.length > 0) {
+            const newLines = lines.filter(
+              (line) =>
+                !nearbyLines.some(
+                  (nearbyLine) =>
+                    arePointsNearlyEqual(line.start, nearbyLine.start) &&
+                    arePointsNearlyEqual(line.end, nearbyLine.end),
+                ),
+            );
+            onLinesUpdate?.(newLines);
+          }
+        }
+        setHighlightState({
+          lines: [],
+          airEntry: null,
+          measurement: null,
+          stairPolygon: null,
+        });
+        return;
+      }
+
+      // Handle air entry placement
+      if (currentAirEntry) {
+        const selectedLines = findLinesNearPoint(point);
+        if (selectedLines.length > 0) {
+          const selectedLine = selectedLines[0];
+          const exactPoint = getPointOnLine(selectedLine, point);
+
+          // Instead of creating the air entry immediately, store the details and show dialog
+          setNewAirEntryDetails({
+            type: currentAirEntry,
+            position: exactPoint,
+            line: selectedLine,
+          });
         }
         return;
       }
@@ -1230,135 +1386,9 @@ export default function Canvas2D({
       }
 
       // If not on a special element, start panning
-      handlePanStart(e);
+
+      handlePanStart(nativeEvent);
       return;
-    }
-
-    // NEW CODE TO ADD:
-    if (currentTool === "measure") {
-      e.stopPropagation();
-
-      if (!isMeasuring) {
-        // First click - just set the start point
-        const { point: nearestPoint } = findNearestEndpoint(point);
-        const startPoint = nearestPoint || snapToGrid(point);
-        setIsMeasuring(true);
-        setMeasureStart(startPoint);
-        setMeasureEnd(startPoint);
-
-        // Rest of code remains the same...
-      } else {
-        // Second click - complete the measurement
-        const { point: nearestPoint } = findNearestEndpoint(point);
-        const endPoint = nearestPoint || snapToGrid(point);
-
-        console.log("Second measurement click - completing measurement");
-
-        // Only create measurement if points are different enough
-        const dx = endPoint.x - measureStart!.x;
-        const dy = endPoint.y - measureStart!.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-
-        if (distance > 5) {
-          // Create a permanent measurement
-          const newMeasurement = {
-            start: measureStart!,
-            end: endPoint,
-            distance: pixelsToCm(distance),
-            isPreview: false,
-          };
-
-          // Add the new measurement to the permanent measurements
-          onMeasurementsUpdate?.([...measurements, newMeasurement]);
-        }
-
-        // Reset measurement state and clear preview
-        setIsMeasuring(false);
-        setMeasureStart(null);
-        setMeasureEnd(null);
-        setPreviewMeasurement(null);
-      }
-      return;
-    }
-
-    // For left-click (button 0)
-    if (e.button === 0) {
-      // If pan mode is active, use left-click for panning
-      if (panMode) {
-        handlePanStart(e);
-        return;
-      }
-
-      // Handle measurement tool
-
-      if (currentTool === "wall") {
-        const { point: nearestPoint } = findNearestEndpoint(point);
-        const startPoint = nearestPoint || snapToGrid(point);
-        const newLineId = Math.random().toString(36).substring(2, 9);
-        setCurrentLine({
-          id: newLineId,
-          start: startPoint,
-          end: startPoint,
-        });
-        setIsDrawing(true);
-        setCursorPoint(startPoint);
-      } else if (currentTool === "eraser") {
-        const airEntryInfo = findAirEntryAtLocation(point);
-        const measurementInfo = findMeasurementAtPoint(point, measurements);
-        const stairPolygonInfo = findStairPolygonAtPoint(point, stairPolygons); // Add this line
-
-        if (airEntryInfo) {
-          const newAirEntries = airEntries.filter(
-            (_, i) => i !== airEntryInfo.index,
-          );
-          onAirEntriesUpdate?.(newAirEntries);
-        } else if (measurementInfo) {
-          const newMeasurements = measurements.filter(
-            (_, i) => i !== measurementInfo.index,
-          );
-          onMeasurementsUpdate?.(newMeasurements);
-        } else if (stairPolygonInfo) {
-          // Add this branch
-          // Erase the stair polygon
-          const newStairPolygons = stairPolygons.filter(
-            (_, i) => i !== stairPolygonInfo.index,
-          );
-          onStairPolygonsUpdate?.(newStairPolygons);
-        } else {
-          const nearbyLines = findLinesNearPoint(point);
-          if (nearbyLines.length > 0) {
-            const newLines = lines.filter(
-              (line) =>
-                !nearbyLines.some(
-                  (nearbyLine) =>
-                    arePointsNearlyEqual(line.start, nearbyLine.start) &&
-                    arePointsNearlyEqual(line.end, nearbyLine.end),
-                ),
-            );
-            onLinesUpdate?.(newLines);
-          }
-        }
-        setHighlightState({
-          lines: [],
-          airEntry: null,
-          measurement: null,
-          stairPolygon: null,
-        });
-        return;
-      } else if (currentAirEntry) {
-        const selectedLines = findLinesNearPoint(point);
-        if (selectedLines.length > 0) {
-          const selectedLine = selectedLines[0];
-          const exactPoint = getPointOnLine(selectedLine, point);
-
-          // Instead of creating the air entry immediately, store the details and show dialog
-          setNewAirEntryDetails({
-            type: currentAirEntry,
-            position: exactPoint,
-            line: selectedLine,
-          });
-        }
-      }
     }
   };
 
@@ -1730,6 +1760,7 @@ export default function Canvas2D({
     }
 
     // Draw points/vertices with different styles for imported stairs
+    // Inside the drawStairPolygon function, modify the points drawing loop:
     points.forEach((point, index) => {
       const isSnapPoint =
         isSnapTarget &&
@@ -1737,17 +1768,30 @@ export default function Canvas2D({
         previewStairPoint &&
         arePointsNearlyEqual(point, previewStairPoint);
 
+      // Check if this point is being hovered over
+      const isHovered = !isPreview && 
+                       !isImported && 
+                       hoverPoint &&
+                       !isDrawing &&
+                       Math.sqrt(
+                         Math.pow(point.x - hoverPoint.x, 2) + 
+                         Math.pow(point.y - hoverPoint.y, 2)
+                       ) < (POINT_RADIUS * 2) / zoom;
+
       ctx.beginPath();
+      // Set fill color based on state
       ctx.fillStyle = isSnapPoint
         ? "#ef4444" // Red for snap target points
-        : isImported
-          ? "#991b1b"
-          : isPreview
-            ? "rgba(124, 58, 237, 0.8)"
-            : "#7c3aed";
+        : isHovered
+          ? "#fbbf24" // Amber for hover
+          : isImported
+            ? "#991b1b"
+            : isPreview
+              ? "rgba(124, 58, 237, 0.8)"
+              : "#7c3aed";
 
-      // Make snap points slightly larger
-      const pointRadius = isSnapPoint
+      // Make hovered points slightly larger
+      const pointRadius = (isSnapPoint || isHovered)
         ? (POINT_RADIUS * 1.5) / zoom
         : POINT_RADIUS / zoom;
       ctx.arc(point.x, point.y, pointRadius, 0, Math.PI * 2);
@@ -1759,6 +1803,14 @@ export default function Canvas2D({
         ctx.font = `${10 / zoom}px Arial`;
         ctx.textAlign = "center";
         ctx.fillText("SNAP", point.x, point.y - 12 / zoom);
+      }
+
+      // Add a "double-click to edit" tooltip when hovering over a stair point
+      if (isHovered) {
+        ctx.fillStyle = "#000000";
+        ctx.font = `${10 / zoom}px Arial`;
+        ctx.textAlign = "center";
+        ctx.fillText("Double-click to edit", point.x, point.y - 12 / zoom);
       }
 
       // Number the points for clarity (not for imported stairs)
@@ -1778,6 +1830,13 @@ export default function Canvas2D({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+
+
+
+
+
+
+    
     const drawCrosshair = (ctx: CanvasRenderingContext2D, point: Point) => {
       const size = 10 / zoom;
 
@@ -2063,7 +2122,6 @@ export default function Canvas2D({
         drawAirEntry(ctx, entry, index);
       });
 
-
       const drawEndpoints = () => {
         const drawnPoints = new Set<string>();
         const originPoint = { x: dimensions.width / 2, y: dimensions.height / 2 };
@@ -2127,12 +2185,13 @@ export default function Canvas2D({
                 ctx.fillText("SNAP", point.x, point.y - 12 / zoom);
               } else if (isHovered) {
                 ctx.fillStyle = "#fbbf24"; // Amber color for hover
-                // Add tooltip
+                // Update tooltip to include double-click information
                 ctx.font = `${12 / zoom}px Arial`;
                 ctx.fillStyle = "#000000";
                 ctx.textAlign = "center";
+                // Add "double-click" instruction in tooltip
                 ctx.fillText(
-                  "Right-click to drag",
+                  "Right-click to drag, Double-click to edit",
                   point.x,
                   point.y - 15 / zoom,
                 );
@@ -2145,6 +2204,7 @@ export default function Canvas2D({
           });
         });
       };
+
 
       drawEndpoints();
 
@@ -2387,14 +2447,14 @@ export default function Canvas2D({
       ctx.restore();
     };
 
-    canvas.addEventListener("mousedown", handleMouseDown);
-    canvas.addEventListener("mousemove", handleMouseMove);
-    canvas.addEventListener("mouseup", handleMouseUp);
-    canvas.addEventListener("mouseleave", handleMouseLeave);
+    // Should be updated to:
+    canvas.addEventListener("mousemove", handleDOMMouseMove);
+    canvas.addEventListener("mouseup", handleDOMMouseUp);
+    canvas.addEventListener("mouseleave", handleDOMMouseLeave);
     canvas.addEventListener("wheel", handleZoomWheel, { passive: false });
     canvas.addEventListener("wheel", handleRegularWheel, { passive: true });
-    canvas.addEventListener("contextmenu", handleContextMenu);
-    canvas.addEventListener("dblclick", handleDoubleClick);
+    canvas.addEventListener("contextmenu", handleDOMContextMenu);
+    canvas.addEventListener("dblclick", handleDOMDoubleClick);
 
     let lastRenderTime = 0;
     let animationFrameId: number;
@@ -2411,14 +2471,13 @@ export default function Canvas2D({
     animationFrameId = requestAnimationFrame(render);
 
     return () => {
-      canvas.removeEventListener("mousedown", handleMouseDown);
-      canvas.removeEventListener("mousemove", handleMouseMove);
-      canvas.removeEventListener("mouseup", handleMouseUp);
-      canvas.removeEventListener("mouseleave", handleMouseLeave);
+      canvas.removeEventListener("mousemove", handleDOMMouseMove);
+      canvas.removeEventListener("mouseup", handleDOMMouseUp);
+      canvas.removeEventListener("mouseleave", handleDOMMouseLeave);
       canvas.removeEventListener("wheel", handleZoomWheel);
       canvas.removeEventListener("wheel", handleRegularWheel);
-      canvas.removeEventListener("contextmenu", handleContextMenu);
-      canvas.removeEventListener("dblclick", handleDoubleClick);
+      canvas.removeEventListener("contextmenu", handleDOMContextMenu);
+      canvas.removeEventListener("dblclick", handleDOMDoubleClick);
 
       if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
@@ -2463,6 +2522,7 @@ export default function Canvas2D({
     onStairPolygonsUpdate,
     floorText,
     snapSource,
+    ignoreNextClick,
   ]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -2491,17 +2551,173 @@ export default function Canvas2D({
     return point;
   };
 
+  // Add this handler function inside the Canvas2D component
   const handleDoubleClick = (e: MouseEvent) => {
-    const clickPoint = getCanvasPoint(e);
-    const airEntryInfo = findAirEntryAtLocation(clickPoint);
+    // Set flag to ignore the next click (which is part of the double-click sequence)
+    setIgnoreNextClick(true);
+    // Convert to MouseEvent if needed
+    const mouseEvent = e as MouseEvent;
+    const clickPoint = getCanvasPoint(mouseEvent);
 
+    // First check for air entries (existing functionality)
+    const airEntryInfo = findAirEntryAtLocation(clickPoint);
     if (airEntryInfo) {
       setEditingAirEntry({
         index: airEntryInfo.index,
         entry: airEntryInfo.entry,
       });
+      return;
+    }
+
+    // Then check for endpoint double-click
+    const pointInfo = findPointAtLocation(clickPoint);
+    if (pointInfo) {
+      // Found a wall endpoint
+      setEditingPoint({
+        point: pointInfo.point,
+        lines: pointInfo.lines,
+        isStart: pointInfo.isStart,
+        isStairPoint: false
+      });
+      return;
+    }
+
+    // Check for stair polygon vertex double-click
+    if (stairPolygons && stairPolygons.length > 0) {
+      for (let polygonIndex = 0; polygonIndex < stairPolygons.length; polygonIndex++) {
+        const polygon = stairPolygons[polygonIndex];
+
+        // Skip imported stair polygons as they shouldn't be editable
+        if (polygon.isImported) continue;
+
+        for (let pointIndex = 0; pointIndex < polygon.points.length; pointIndex++) {
+          const point = polygon.points[pointIndex];
+          const dx = clickPoint.x - point.x;
+          const dy = clickPoint.y - point.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < (POINT_RADIUS * 2) / zoom) {
+            // Found a stair polygon vertex
+            setEditingPoint({
+              point: point,
+              lines: [],
+              isStart: [],
+              isStairPoint: true,
+              stairPolygonIndex: polygonIndex,
+              pointIndex: pointIndex
+            });
+            return;
+          }
+        }
+      }
     }
   };
+
+
+
+  const handleReactMouseMove = (e: ReactMouseEvent<HTMLCanvasElement, MouseEvent>) => {
+    // Pass the native DOM event to your existing handler
+    handleMouseMove(e.nativeEvent);
+  };
+
+  const handleReactMouseUp = (e: ReactMouseEvent<HTMLCanvasElement, MouseEvent>) => {
+    handleMouseUp(e.nativeEvent);
+  };
+
+  
+  const handleDOMMouseMove = (e: MouseEvent) => {
+    handleMouseMove(e);
+  };
+
+  const handleDOMMouseUp = (e: MouseEvent) => {
+    handleMouseUp(e);
+  };
+
+  const handleDOMMouseLeave = (e: MouseEvent) => {
+    handleMouseLeave();
+  };
+
+  const handleDOMDoubleClick = (e: MouseEvent) => {
+    handleDoubleClick(e);
+  };
+
+  const handleDOMContextMenu = (e: Event) => {
+    handleContextMenu(e);
+  };
+
+
+  
+  // Add this function inside the Canvas2D component to convert from cm to pixels
+  const cmToCanvasCoordinates = (cmX: number, cmY: number): Point => {
+    const centerX = dimensions.width / 2;
+    const centerY = dimensions.height / 2;
+
+    return {
+      x: centerX + cmToPixels(cmX),
+      y: centerY - cmToPixels(cmY), // Y is inverted in canvas
+    };
+  };
+
+  // Add this handler function inside the Canvas2D component
+  const handleCoordinateEdit = (relativeCoordinates: Point) => {
+    if (!editingPoint) return;
+
+    // Convert the user input (in cm) to canvas coordinates
+    const newPoint = cmToCanvasCoordinates(relativeCoordinates.x, relativeCoordinates.y);
+
+    if (editingPoint.isStairPoint && 
+        typeof editingPoint.stairPolygonIndex === 'number' && 
+        typeof editingPoint.pointIndex === 'number') {
+      // Update stair polygon vertex
+      const newStairPolygons = [...stairPolygons];
+      const polygon = newStairPolygons[editingPoint.stairPolygonIndex];
+
+      // Create a new points array with the updated point
+      const newPoints = [...polygon.points];
+      newPoints[editingPoint.pointIndex] = newPoint;
+
+      // Update the polygon with the new points
+      newStairPolygons[editingPoint.stairPolygonIndex] = {
+        ...polygon,
+        points: newPoints
+      };
+
+      // Update the state
+      onStairPolygonsUpdate?.(newStairPolygons);
+    } else {
+      // Update wall endpoint
+      if (editingPoint.lines.length > 0) {
+        const oldLines = [...lines];
+        const newLines = [...lines];
+        let linesUpdated = false;
+
+        editingPoint.lines.forEach((line, index) => {
+          const lineIndex = newLines.findIndex((l) => l.id === line.id);
+
+          if (lineIndex >= 0) {
+            newLines[lineIndex] = {
+              ...newLines[lineIndex],
+              ...(editingPoint.isStart[index]
+                ? { start: newPoint }
+                : { end: newPoint }),
+            };
+            linesUpdated = true;
+          }
+        });
+
+        if (linesUpdated) {
+          onLinesUpdate?.(newLines);
+          updateAirEntriesWithWalls(newLines, oldLines);
+        }
+      }
+    }
+
+    // Close the editor
+    setEditingPoint(null);
+    // Reset the ignore flag to be safe
+    setIgnoreNextClick(false);
+  };
+
 
   const handleAirEntryEdit = (
     index: number,
@@ -2612,6 +2828,11 @@ export default function Canvas2D({
   };
 
   return (
+
+
+
+
+    
     <div className="relative w-full h-full bg-background">
       <canvas
         ref={canvasRef}
@@ -2620,8 +2841,8 @@ export default function Canvas2D({
         className={`w-full h-full`}
         style={{ cursor: getCursor() }}
         onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
+        onMouseMove={handleReactMouseMove}
+        onMouseUp={handleReactMouseUp}
         onContextMenu={(e) => e.preventDefault()}
       />
       <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-white/80 p-2 rounded-lg shadow-sm">
@@ -2689,6 +2910,16 @@ export default function Canvas2D({
           isOpen={true}
           onClose={() => setNewAirEntryDetails(null)}
           onConfirm={handleNewAirEntryConfirm}
+        />
+      )}
+
+      {editingPoint && (
+        <CoordinateEditorDialog
+          isOpen={!!editingPoint}
+          onClose={() => setEditingPoint(null)}
+          onConfirm={handleCoordinateEdit}
+          initialCoordinates={editingPoint.point}
+          relativeCoordinates={getRelativeCoordinates(editingPoint.point)}
         />
       )}
     </div>
