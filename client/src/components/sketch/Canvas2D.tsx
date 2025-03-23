@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo, MouseEvent as ReactMouseEvent } from "react";
-import { Point, Line, AirEntry } from "@/types";
+import { Point, Line, AirEntry, StairPolygon, Measurement } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Minus, Plus, Move, Eraser, Ruler } from "lucide-react";
@@ -8,18 +8,11 @@ import { cn } from "@/lib/utils";
 import { useSketchStore } from "@/lib/stores/sketch-store";
 import CoordinateEditorDialog from "./CoordinateEditorDialog";
 
-interface Measurement {
-  start: Point;
-  end: Point;
-  distance: number;
-  isPreview?: boolean;
-}
-
 interface HighlightState {
   lines: Line[];
   airEntry: { index: number; entry: AirEntry } | null;
   measurement: { index: number; measurement: Measurement } | null;
-  stairPolygon: { index: number; polygon: StairPolygon } | null; // Add this line
+  stairPolygon: { index: number; polygon: StairPolygon } | null;
 }
 
 let isProcessingMouseMove = false;
@@ -248,16 +241,6 @@ const getPointAtRelativePosition = (line: Line, relativePos: number): Point => {
     y: line.start.y + (line.end.y - line.start.y) * t,
   };
 };
-
-interface StairPolygon {
-  id: string;
-  points: Point[];
-  floor: string;
-  direction?: "up" | "down";
-  connectsTo?: string;
-  sourceFloor?: string; // Add this property to track where the stair was originally defined
-  isImported?: boolean; // Flag to identify if this stair was imported from another floor
-}
 
 interface Canvas2DProps {
   gridSize: number;
