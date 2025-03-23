@@ -1124,7 +1124,7 @@ export default function Canvas2D({
     if (isDraggingEndpoint) {
       const point = getCanvasPoint(e);
       const nearestPoint = findNearestEndpoint(point);
-      const targetPoint = nearestPoint || point; // Use nearest point if available, otherwise use original point
+      const targetPoint: Point = nearestPoint || point; // Use nearest point if available, otherwise use original point
 
       if (draggedPoint.lines.length > 0) {
         const oldLines = [...lines];
@@ -2883,7 +2883,7 @@ export default function Canvas2D({
           onConfirm={(dimensions) =>
             handleAirEntryEdit(editingAirEntry.index, dimensions)
           }
-          initialDimensions={editingAirEntry.entry.dimensions}
+          initialValues={editingAirEntry.entry.dimensions}
         />
       )}
       {/* Add new dialog for creating air entries */}
