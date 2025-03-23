@@ -1123,8 +1123,9 @@ export default function Canvas2D({
 
     if (isDraggingEndpoint) {
       const point = getCanvasPoint(e);
-      const nearestPoint = findNearestEndpoint(point);
-      const targetPoint: Point = nearestPoint || point; // Use nearest point if available, otherwise use original point
+      const nearestEndpointResult = findNearestEndpoint(point);
+      // Extract the actual point data or use the original point
+      const targetPoint: Point = nearestEndpointResult.point || point;
 
       if (draggedPoint.lines.length > 0) {
         const oldLines = [...lines];
@@ -1160,8 +1161,14 @@ export default function Canvas2D({
             }
           });
 
+          // Extract the actual Point data if targetPoint contains extra properties
+          const extractedPoint: Point = {
+            x: targetPoint.x,
+            y: targetPoint.y
+          };
+          
           setDraggedPoint({
-            point: targetPoint,
+            point: extractedPoint,
             lines: updatedLines,
             isStart: updatedIsStart,
           });
