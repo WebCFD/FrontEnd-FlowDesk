@@ -519,6 +519,64 @@ export default function WizardDesign() {
     }
   };
 
+
+  // Add this function:
+  const handleUpdateAirEntryFrom3D = (
+    floorName: string,
+    index: number, 
+    updatedEntry: AirEntry
+  ) => {
+    // Create a copy of the floors data
+    console.log(`Updating air entry in floor ${floorName}, index ${index}`);
+
+    // Use the store's setAirEntries function when updating the current floor
+    if (floorName === currentFloor) {
+      const updatedAirEntries = [...airEntries];
+      updatedAirEntries[index] = updatedEntry;
+      setAirEntries(updatedAirEntries);
+
+      toast({
+        title: "Air Entry Updated",
+        description: `Updated ${updatedEntry.type} in ${formatFloorText(floorName)}`,
+      });
+      return;
+    }
+
+    // For other floors, create a deep copy of the floors object
+    const updatedFloors = { ...floors };
+
+    // Check if the floor and its air entries exist
+    if (updatedFloors[floorName]?.airEntries) {
+      // Create a copy of the air entries array
+      const floorAirEntries = [...updatedFloors[floorName].airEntries];
+
+      // Update the specific air entry
+      floorAirEntries[index] = updatedEntry;
+
+      // Create a copy of the floor data with the updated air entries
+      updatedFloors[floorName] = {
+        ...updatedFloors[floorName],
+        airEntries: floorAirEntries
+      };
+
+      // Update the room store with each floor's updated data
+      Object.entries(updatedFloors).forEach(([floor, data]) => {
+        if (floor !== currentFloor) {
+          // For non-current floors, use store methods to update
+          useRoomStore.getState().updateFloor(floor, data);
+        }
+      });
+
+      toast({
+        title: "Air Entry Updated",
+        description: `Updated ${updatedEntry.type} in ${formatFloorText(floorName)}`,
+      });
+    }
+  };
+
+
+
+  
   const renderStepIndicator = () => (
     <div className="w-full">
       <div className="relative h-16 bg-muted/10 border rounded-lg">
@@ -1223,12 +1281,13 @@ export default function WizardDesign() {
             onLineSelect={handleLineSelect}
           />
         ) : (
-          <Canvas3D
-            floors={floors}
-            currentFloor={currentFloor}
-            ceilingHeight={ceilingHeight}
-            floorDeckThickness={floorDeckThickness} // Add the prop
-          />
+        <Canvas3D
+          floors={floors}
+          currentFloor={currentFloor}
+          ceilingHeight={ceilingHeight}
+          floorDeckThickness={floorDeckThickness}
+          onUpdateAirEntry={handleUpdateAirEntryFrom3D} // Add this line
+        />
         )}
       </div>
     );

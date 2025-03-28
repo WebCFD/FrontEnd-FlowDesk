@@ -1,7 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { TrackballControls } from "three/addons/controls/TrackballControls.js";
 import { makeTextSprite } from "@/lib/three-utils";
+import AirEntryDialog from "./AirEntryDialog";
 
 interface Point {
   x: number;
@@ -47,6 +48,7 @@ interface Canvas3DProps {
   currentFloor: string;
   ceilingHeight?: number;
   floorDeckThickness?: number;
+  onUpdateAirEntry?: (floorName: string, index: number, entry: AirEntry) => void;
 }
 
 const PIXELS_TO_CM = 25 / 20;
@@ -136,12 +138,19 @@ export default function Canvas3D({
   currentFloor,
   ceilingHeight = 210,
   floorDeckThickness = 35,
+  onUpdateAirEntry, // Add this
 }: Canvas3DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<TrackballControls | null>(null);
+  // State for editing air entries
+  const [editingAirEntry, setEditingAirEntry] = useState<{
+    index: number;
+    entry: AirEntry;
+  } | null>(null);
+  const [ignoreNextClick, setIgnoreNextClick] = useState<boolean>(false);
 
   // Calculate base height for each floor
   const getFloorBaseHeight = (floorName: string): number => {
@@ -164,6 +173,27 @@ export default function Canvas3D({
       }
     }
     return baseHeight;
+  };
+
+  // Handler for updating air entries
+  const handleAirEntryEdit = (
+    index: number,
+    dimensions: {
+      width: number;
+      height: number;
+      distanceToFloor?: number;
+    }
+  ) => {
+    if (!editingAirEntry || !onUpdateAirEntry) return;
+
+    const updatedEntry = {
+      ...editingAirEntry.entry,
+      dimensions: dimensions,
+    };
+
+    // Call the parent component's handler
+    onUpdateAirEntry(currentFloor, index, updatedEntry);
+    setEditingAirEntry(null);
   };
 
   // New function to create stair mesh
@@ -478,6 +508,18 @@ export default function Canvas3D({
       const position = transform2DTo3D(entry.position);
       mesh.position.set(position.x, position.y, zPosition);
 
+      // Add userData for raycasting identification
+      mesh.userData = {
+        type: entry.type,
+        position: entry.position,
+        dimensions: entry.dimensions,
+        line: entry.line,
+        index: objects.length
+      };
+
+
+    
+
       // Calculate proper orientation
       const wallDirection = new THREE.Vector3()
         .subVectors(
@@ -628,6 +670,10 @@ export default function Canvas3D({
     };
     animate();
 
+
+
+
+    
     // Handle resize
     const handleResize = () => {
       if (!containerRef.current || !camera || !renderer) return;
@@ -639,11 +685,72 @@ export default function Canvas3D({
     };
 
     window.addEventListener("resize", handleResize);
+    // Add double-click handler for air entry editing
+    const handleDoubleClick = (event: MouseEvent) => {
+      // Set flag to ignore the next click (which is part of the double-click)
+      setIgnoreNextClick(true);
 
+      // Get mouse position for raycasting
+      const canvas = containerRef.current;
+      if (!canvas || !cameraRef.current || !sceneRef.current) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      const mouseY = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+      // Set up raycaster
+      const raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera({ x: mouseX, y: mouseY }, cameraRef.current);
+
+      // Find all meshes in the scene that represent air entries
+      const airEntryMeshes: THREE.Mesh[] = [];
+      sceneRef.current.traverse((object) => {
+        if (object instanceof THREE.Mesh && 
+            object.userData && 
+            object.userData.type && 
+            ['window', 'door', 'vent'].includes(object.userData.type)) {
+          airEntryMeshes.push(object as THREE.Mesh);
+        }
+      });
+
+      // Check for intersections with air entry meshes
+      const intersects = raycaster.intersectObjects(airEntryMeshes, false);
+
+      if (intersects.length > 0) {
+        const mesh = intersects[0].object as THREE.Mesh;
+        const airEntryData = mesh.userData;
+
+        // Find the index of this air entry in the floors data
+        let foundIndex = -1;
+        const floorData = floors[currentFloor];
+
+        if (floorData && floorData.airEntries) {
+          foundIndex = floorData.airEntries.findIndex(entry => 
+            entry.position.x === airEntryData.position.x && 
+            entry.position.y === airEntryData.position.y
+          );
+
+          if (foundIndex !== -1) {
+            setEditingAirEntry({
+              index: foundIndex,
+              entry: floorData.airEntries[foundIndex]
+            });
+          }
+        }
+      }
+    };
+
+    // Add the double-click event listener
+    const canvas = renderer.domElement;
+    canvas.addEventListener('dblclick', handleDoubleClick);
+
+    
     return () => {
       window.removeEventListener("resize", handleResize);
       controls.dispose();
       renderer.dispose();
+      // Add this line to remove the double-click handler
+      renderer.domElement.removeEventListener('dblclick', handleDoubleClick);
       if (containerRef.current) {
         containerRef.current.removeChild(renderer.domElement);
       }
@@ -692,5 +799,23 @@ export default function Canvas3D({
     });
   }, [floors, currentFloor, ceilingHeight, floorDeckThickness]);
 
-  return <div ref={containerRef} className="w-full h-full" />;
+  return (
+    <>
+      <div ref={containerRef} className="w-full h-full" />
+
+      {/* Dialog for editing air entries */}
+      {editingAirEntry && (
+        <AirEntryDialog
+          type={editingAirEntry.entry.type}
+          isOpen={true}
+          onClose={() => setEditingAirEntry(null)}
+          onConfirm={(dimensions) =>
+            handleAirEntryEdit(editingAirEntry.index, dimensions)
+          }
+          initialValues={editingAirEntry.entry.dimensions}
+          isEditing={true}
+        />
+      )}
+    </>
+  );
 }
