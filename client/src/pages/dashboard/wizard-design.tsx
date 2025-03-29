@@ -785,7 +785,7 @@ export default function WizardDesign() {
                     <h3 className="font-semibold">Wall Transparency</h3>
                     <div className="px-2">
                       <Slider
-                        defaultValue={[80]}
+                        defaultValue={[20]}
                         max={100}
                         step={1}
                         onValueChange={(value: number[]) =>
