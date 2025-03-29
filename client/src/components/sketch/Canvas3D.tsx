@@ -246,18 +246,13 @@ const highlightSelectedAirEntry = (
   const material = airEntry.material as THREE.MeshPhongMaterial;
 
   if (isSelected) {
-    // Highlight by increasing opacity and adding an outline effect
-    material.opacity = isDragging ? 0.9 : 0.8;
+    // Highlight by adding an outline effect but maintain 70% base opacity or slightly higher when dragging
+    material.opacity = isDragging ? 0.85 : 0.7;
     material.emissive.set(0xffff00); // Yellow emissive glow
     material.emissiveIntensity = isDragging ? 0.5 : 0.3;
   } else {
-    // Reset to default appearance
-    // Get original opacity based on type
-    const type = airEntry.userData.type;
-    const defaultOpacity =
-      type === "window" ? 0.6 : type === "door" ? 0.6 : 0.6;
-
-    material.opacity = defaultOpacity;
+    // Reset to fixed 70% opacity for all air entries
+    material.opacity = 0.7;
     material.emissive.set(0x000000); // No emissive glow
     material.emissiveIntensity = 0;
   }
@@ -742,7 +737,7 @@ export default function Canvas3D({
               : entry.type === "door"
                 ? 0xb45309
                 : 0x22c55e,
-          opacity: isCurrentFloor ? 0.6 : 0.4,
+          opacity: 0.7, // Fixed opacity at 70% regardless of current floor
           transparent: true,
           side: THREE.DoubleSide,
         });
