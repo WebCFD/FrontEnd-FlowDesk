@@ -1630,6 +1630,10 @@ export default function Canvas3D({
         // Reset all drag-related state
         setIsDragging(false);
         setInitialMousePosition(null);
+        
+        // Reset the selected element state to clear the highlight
+        setSelectedAirEntry(null);
+        setSelectedAxis(null);
 
         // Reset the drag state ref
         dragStateRef.current = {
@@ -1663,6 +1667,54 @@ export default function Canvas3D({
         isDragging: dragStateRef.current.isDragging
       });
       e.preventDefault();
+    });
+
+    // Handle left-click for clearing selection
+    canvas.addEventListener("click", (e) => {
+      // Skip if part of a double-click
+      if (ignoreNextClick) {
+        setIgnoreNextClick(false);
+        return;
+      }
+
+      // If we have a dragging operation going on, don't clear selection
+      if (dragStateRef.current.isDragging) {
+        return;
+      }
+
+      // Check if we clicked on an air entry
+      if (!cameraRef.current || !sceneRef.current) return;
+      
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      const mouseY = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      
+      const raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera(new THREE.Vector2(mouseX, mouseY), cameraRef.current);
+      
+      // Find all air entry meshes
+      const airEntryMeshes: THREE.Mesh[] = [];
+      sceneRef.current.traverse((object) => {
+        if (
+          object instanceof THREE.Mesh &&
+          object.userData &&
+          object.userData.type &&
+          ["window", "door", "vent"].includes(object.userData.type)
+        ) {
+          airEntryMeshes.push(object as THREE.Mesh);
+        }
+      });
+      
+      // If we didn't click on an air entry, clear the selection
+      const intersects = raycaster.intersectObjects(airEntryMeshes, false);
+      if (intersects.length === 0) {
+        // Clear selection if we're not clicking on an air entry
+        if (selectedAirEntry) {
+          console.log("Clearing selection - clicked outside of air entry");
+          setSelectedAirEntry(null);
+          setSelectedAxis(null);
+        }
+      }
     });
 
     canvas.addEventListener("mousedown", (e) => {
@@ -1766,6 +1818,15 @@ export default function Canvas3D({
           "mousedown",
           handleRightMouseDown,
         );
+        renderer.domElement.removeEventListener("click", (e) => {
+          // Click handler for clearing selection
+          if (ignoreNextClick) {
+            setIgnoreNextClick(false);
+            return;
+          }
+          
+          // Clear selection logic
+        });
         renderer.domElement.removeEventListener("dblclick", handleDoubleClick);
 
         // Dispose renderer
