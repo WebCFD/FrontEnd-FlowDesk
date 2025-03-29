@@ -387,6 +387,7 @@ export default function Canvas3D({
   const [activeMeasurementLine, setActiveMeasurementLine] = useState<THREE.Line | null>(null);
   const [activeMeasurementLabel, setActiveMeasurementLabel] = useState<THREE.Sprite | null>(null);
 
+  const isMeasureModeRef = useRef(false);
   const dragStateRef = useRef({
     isDragging: false,
     selectedAxis: null as "x" | "z" | null,
@@ -397,7 +398,11 @@ export default function Canvas3D({
     entryIndex: -1
   });
 
-
+  // Add this ref to track measurement state
+  const measurementStateRef = useRef({
+    inProgress: false,
+    startPoint: null as THREE.Vector3 | null
+  });
 
   
   // Calculate base height for each floor
@@ -1076,49 +1081,95 @@ export default function Canvas3D({
     
     // Helper function to cast ray and find intersection point
     const getRaycastPoint = (mouseCoords: THREE.Vector2): THREE.Vector3 | null => {
-      if (!cameraRef.current || !sceneRef.current) return null;
-      
+      if (!cameraRef.current || !sceneRef.current) {
+        console.log("getRaycastPoint: Camera or scene is null");
+        return null;
+      }
+
       const raycaster = new THREE.Raycaster();
       raycaster.setFromCamera(mouseCoords, cameraRef.current);
-      
+
+      // Log all objects in the scene for raycasting
+      let objectCount = 0;
+      sceneRef.current.traverse((object) => {
+        if (object.visible && (object instanceof THREE.Mesh || object instanceof THREE.Line)) {
+          objectCount++;
+        }
+      });
+      console.log(`getRaycastPoint: ${objectCount} objects available for raycasting`);
+
       // Intersect with all objects in the scene
       const intersects = raycaster.intersectObjects(sceneRef.current.children, true);
-      
-      // Return the first intersection point or null if none found
+
+      console.log(`getRaycastPoint: Found ${intersects.length} intersections`);
       if (intersects.length > 0) {
+        console.log(`getRaycastPoint: First intersection at point:`, intersects[0].point);
+        console.log(`getRaycastPoint: Object type:`, intersects[0].object.type);
+        if (intersects[0].object.userData) {
+          console.log(`getRaycastPoint: Object userData:`, intersects[0].object.userData);
+        }
         return intersects[0].point;
       }
-      
+
+      console.log("getRaycastPoint: No intersections found");
       return null;
     };
     
-    // Handle left mouse button down for measurements
-    const handleLeftMouseDown = (event: MouseEvent) => {
-      // Only process left mouse button (button code 0) when in measure mode
-      if (event.button !== 0 || !isMeasuring) return;
-      
-      // Prevent default to avoid camera movement during measurements
+    // Renamed function to handle right clicks for measurements
+
+
+    const handleMeasurementMouseDown = (event: MouseEvent) => {
+      // Add detailed logging about current state
+      console.log("==== MEASUREMENT DEBUG ====");
+      console.log("Measurement mode active (ref):", isMeasureModeRef.current);
+      console.log("Current measurementStateRef:", measurementStateRef.current);
+      console.log("Mouse button:", event.button);
+
+      // Only process right mouse button (button code 2) when in measure mode (using ref)
+      if (event.button !== 2 || !isMeasureModeRef.current) return;
+
+      // Prevent default to avoid context menu during measurements
       event.preventDefault();
       event.stopPropagation();
-      
+
       // Get mouse coordinates for raycasting
       const mouseCoords = getMouseCoordinates(event);
-      
+
       // Get the intersection point in 3D space
       const intersectionPoint = getRaycastPoint(mouseCoords);
-      
+
       if (intersectionPoint) {
-        if (!measureStartPoint) {
+        console.log("Got intersection point:", intersectionPoint);
+
+        if (!measurementStateRef.current.inProgress) {
           // First click - set start point
+          console.log("FIRST CLICK - Setting start point");
+          measurementStateRef.current.startPoint = intersectionPoint.clone();
+          measurementStateRef.current.inProgress = true;
+
+          // Still update React state for UI rendering
           setMeasureStartPoint(intersectionPoint);
+
+          console.log("Measurement start point set:", measurementStateRef.current.startPoint);
         } else {
-          // Second click - set end point and add the measurement
-          setMeasureEndPoint(intersectionPoint);
-          addMeasurement(measureStartPoint, intersectionPoint);
-          
-          // Reset for next measurement
-          setMeasureStartPoint(null);
-          setMeasureEndPoint(null);
+          // Second click - complete the measurement
+          console.log("SECOND CLICK - Completing measurement");
+          console.log("Start point:", measurementStateRef.current.startPoint);
+          console.log("End point:", intersectionPoint);
+
+          if (measurementStateRef.current.startPoint) {
+            // Create the measurement using points from the ref
+            addMeasurement(measurementStateRef.current.startPoint, intersectionPoint);
+            console.log("Measurement completed");
+
+            // Reset measurement state
+            measurementStateRef.current.inProgress = false;
+            measurementStateRef.current.startPoint = null;
+
+            // Update React state as well (for UI consistency)
+            setMeasureStartPoint(null);
+            setMeasureEndPoint(null);
+          }
         }
       }
     };
@@ -1127,14 +1178,27 @@ export default function Canvas3D({
       // Prevent the default context menu
       event.preventDefault();
 
-      // In measure mode, right-click cancels current measurement
-      if (isMeasuring && measureStartPoint) {
-        cleanupActiveMeasurement();
-        setMeasureStartPoint(null);
-        setMeasureEndPoint(null);
+      // Use the ref for reliable measure mode status
+      console.log("RIGHT MOUSE DOWN - Checking measure mode:", {
+        isMeasureModeRef: isMeasureModeRef.current,
+        isMeasureMode: isMeasureMode
+      });
+
+      // Use the ref to determine if we're in measure mode
+      if (isMeasureModeRef.current) {
+        console.log("DIVERTING TO MEASUREMENT HANDLER");
+        handleMeasurementMouseDown(event);
         return;
       }
-      
+
+      console.log("Right mouse down detected"); // This should NOT print in measure mode
+
+      // If we're in measure mode, handle measurement instead of regular operations
+      if (isMeasuring) {
+        handleMeasurementMouseDown(event);
+        return;
+      }
+
       // Only process right mouse button (button code 2) for normal operations
       if (event.button !== 2) return;
 
@@ -1651,11 +1715,8 @@ export default function Canvas3D({
 
     canvas.addEventListener("mousedown", (e) => {
       console.log("Canvas mousedown detected, button:", e.button);
-      if (e.button === 0 && isMeasuring) {
-        // Left mouse button in measure mode
-        handleLeftMouseDown(e);
-      } else if (e.button === 2) {
-        // Right mouse button for context operations
+      if (e.button === 2) {
+        // Right mouse button for both measurements and context operations
         handleRightMouseDown(e);
       }
     });
@@ -2030,12 +2091,16 @@ export default function Canvas3D({
         sceneRef.current.remove(activeMeasurementLine);
         setActiveMeasurementLine(null);
       }
-      
+
       if (activeMeasurementLabel) {
         sceneRef.current.remove(activeMeasurementLabel);
         setActiveMeasurementLabel(null);
       }
-      
+
+      // Also reset the measurement state ref
+      measurementStateRef.current.inProgress = false;
+      measurementStateRef.current.startPoint = null;
+
       // Trigger a render to update the scene
       needsRenderRef.current = true;
     }
@@ -2067,25 +2132,40 @@ export default function Canvas3D({
   
   // Effect to handle measure mode changes
   useEffect(() => {
+    console.log("isMeasureMode prop changed:", isMeasureMode);
+    console.log("Setting isMeasuring state to:", isMeasureMode);
+
+    // Update both state and ref
     setIsMeasuring(isMeasureMode);
-    
+    isMeasureModeRef.current = isMeasureMode;
+
+    // Also set the ref state to match
+    measurementStateRef.current.inProgress = false;
+    measurementStateRef.current.startPoint = null;
+
+    // Add visual indication of measure mode
+    if (containerRef.current) {
+      if (isMeasureMode) {
+        containerRef.current.style.cursor = 'crosshair';
+        containerRef.current.title = 'Right-click to set measurement points, ESC to cancel';
+        console.log("Set cursor to crosshair - measure mode active");
+      } else {
+        containerRef.current.style.cursor = 'auto';
+        containerRef.current.title = '';
+        console.log("Set cursor to auto - measure mode inactive");
+      }
+    }
+
     // Clear any active measurements when exiting measure mode
     if (!isMeasureMode) {
       cleanupActiveMeasurement();
       setMeasureStartPoint(null);
       setMeasureEndPoint(null);
       
-      // Optionally clear all measurements when exiting measure mode
-      // Uncomment to enable this behavior
-      /*
-      if (measurements.length > 0 && sceneRef.current) {
-        measurements.forEach(measure => {
-          if (measure.line) sceneRef.current?.remove(measure.line);
-          if (measure.label) sceneRef.current?.remove(measure.label);
-        });
-        setMeasurements([]);
-      }
-      */
+
+      // Reset measurement ref state
+      measurementStateRef.current.inProgress = false;
+      measurementStateRef.current.startPoint = null;
     }
   }, [isMeasureMode]);
   
