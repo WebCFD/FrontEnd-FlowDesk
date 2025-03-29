@@ -1859,14 +1859,21 @@ export default function Canvas3D({
   // Effect to update wall transparency when the prop changes
   useEffect(() => {
     if (sceneRef.current) {
-      // Update the opacity of all wall materials in the scene
+      // Update the opacity of only wall materials in the scene, not air entries
       sceneRef.current.traverse((object) => {
         if (object instanceof THREE.Mesh && 
             object.material instanceof THREE.MeshPhongMaterial &&
             object.material.transparent) {
-          // This is likely a wall material that needs updating
-          object.material.opacity = wallTransparency;
-          object.material.needsUpdate = true;
+          
+          // Only update walls, not air entries (windows, doors, vents)
+          const isAirEntry = object.userData?.type && 
+                            ["window", "door", "vent"].includes(object.userData.type);
+          
+          if (!isAirEntry) {
+            // This is a wall material that needs updating
+            object.material.opacity = wallTransparency;
+            object.material.needsUpdate = true;
+          }
         }
       });
       // Trigger a re-render
