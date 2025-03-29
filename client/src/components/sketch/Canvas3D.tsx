@@ -403,6 +403,8 @@ export default function Canvas3D({
     inProgress: false,
     startPoint: null as THREE.Vector3 | null
   });
+  // Add this ref to track if we're hovering over an air entry or axis
+  const isHoveringActionableRef = useRef(false);
 
   
   // Calculate base height for each floor
@@ -931,11 +933,12 @@ export default function Canvas3D({
     controls.staticMoving = true;
     controls.dynamicDampingFactor = 0.2;
 
-    // Configure mouse buttons - don't use right button for controls
+
+    // Configure mouse buttons - enable right button for panning by default
     controls.mouseButtons = {
       LEFT: THREE.MOUSE.ROTATE,
       MIDDLE: THREE.MOUSE.DOLLY, // THREE.MOUSE.DOLLY instead of ZOOM for TrackballControls
-      RIGHT: null // Don't use right mouse for controls, we'll handle it ourselves
+      RIGHT: THREE.MOUSE.PAN // Enable right mouse for panning by default
     };
     // Add mechanism to disable controls during dragging
     controls.enabled = true;
@@ -973,6 +976,16 @@ export default function Canvas3D({
 
       const animate = () => {
         requestAnimationFrame(animate);
+        // Debug TrackballControls state in animation loop
+        if (controlsRef.current && controlsRef.current._state !== undefined) {
+          // Only log when state changes to avoid console spam
+          if (controlsRef.current._state === 2) { // RIGHT mouse button state
+            console.log("Animation loop: TrackballControls thinks right button is down", {
+              _state: controlsRef.current._state,
+              isDragging: dragStateRef.current.isDragging
+            });
+          }
+        }
 
         // Handle dragging with the ref-based approach
         const dragState = dragStateRef.current;
@@ -1178,36 +1191,11 @@ export default function Canvas3D({
       // Prevent the default context menu
       event.preventDefault();
 
-      // Use the ref for reliable measure mode status
-      console.log("RIGHT MOUSE DOWN - Checking measure mode:", {
-        isMeasureModeRef: isMeasureModeRef.current,
-        isMeasureMode: isMeasureMode
-      });
-
-      // Use the ref to determine if we're in measure mode
-      if (isMeasureModeRef.current) {
-        console.log("DIVERTING TO MEASUREMENT HANDLER");
-        handleMeasurementMouseDown(event);
-        return;
-      }
-
-      console.log("Right mouse down detected"); // This should NOT print in measure mode
-
-      // If we're in measure mode, handle measurement instead of regular operations
-      if (isMeasuring) {
-        handleMeasurementMouseDown(event);
-        return;
-      }
-
-      // Only process right mouse button (button code 2) for normal operations
-      if (event.button !== 2) return;
-
       // Get mouse position for raycasting
-      const canvas = containerRef.current;
-      if (!canvas || !cameraRef.current || !sceneRef.current) return;
-      
+      if (!containerRef.current || !cameraRef.current || !sceneRef.current) return;
+
       const mouseCoords = getMouseCoordinates(event);
-      
+
       // Set up raycaster
       const raycaster = new THREE.Raycaster();
       raycaster.setFromCamera(mouseCoords, cameraRef.current);
@@ -1216,37 +1204,7 @@ export default function Canvas3D({
       const airEntryMeshes: THREE.Mesh[] = [];
       const axesHelpers: THREE.Object3D[] = [];
 
-      // Debug logging for raycasting
-      console.log("Right mouse down detected");
-
-      console.log("Starting scene traversal for raycasting targets");
-      let meshCount = 0;
-      let arrowCount = 0;
-      let otherObjectCount = 0;
-
       sceneRef.current.traverse((object) => {
-        meshCount++;
-
-        // Log object type and info
-        if (object instanceof THREE.Mesh) {
-          console.log(
-            `Found mesh: ${object.uuid.substring(0, 8)}`,
-            `userData:`,
-            object.userData,
-            `type:`,
-            object.userData?.type || "none",
-          );
-        } else if (object instanceof THREE.ArrowHelper) {
-          console.log(
-            `Found ArrowHelper: ${object.uuid.substring(0, 8)}`,
-            `userData:`,
-            object.userData,
-          );
-          arrowCount++;
-        } else {
-          otherObjectCount++;
-        }
-
         // Collect air entry meshes
         if (
           object instanceof THREE.Mesh &&
@@ -1254,11 +1212,10 @@ export default function Canvas3D({
           object.userData.type &&
           ["window", "door", "vent"].includes(object.userData.type)
         ) {
-          console.log("✅ Adding to airEntryMeshes");
           airEntryMeshes.push(object as THREE.Mesh);
         }
 
-        // Collect axis objects (either ArrowHelper or custom Mesh)
+        // Collect axis objects
         if (
           (object instanceof THREE.ArrowHelper ||
             (object instanceof THREE.Mesh &&
@@ -1266,25 +1223,34 @@ export default function Canvas3D({
           (object.userData?.direction === "x" ||
             object.userData?.direction === "z")
         ) {
-          console.log("✅ Adding to axesHelpers");
           axesHelpers.push(object);
         }
       });
 
-      console.log(
-        `Scene traversal complete - found: ${meshCount} meshes, ${arrowCount} arrows, ${otherObjectCount} other objects`,
-      );
-      console.log(
-        "After traversal - Air entry meshes found:",
-        airEntryMeshes.length,
-      );
-      console.log("After traversal - Axis helpers found:", axesHelpers.length);
-
-      // First check for intersections with axes
-      console.log('Testing intersection with', axesHelpers.length, 'axes');
+      // Check for direct intersections with air entries or axes
       const axesIntersects = raycaster.intersectObjects(axesHelpers, false);
-      console.log('Axes intersections found:', axesIntersects.length);
+      const airEntryIntersects = raycaster.intersectObjects(airEntryMeshes, false);
 
+      const isClickingActionable = axesIntersects.length > 0 || airEntryIntersects.length > 0;
+      console.log("Right-click detected, clicking actionable:", isClickingActionable, 
+                  "axes hits:", axesIntersects.length, "air entries hits:", airEntryIntersects.length);
+
+      if (!isClickingActionable) {
+        // Not clicking on an air entry or axis, let TrackballControls handle it
+        console.log("Not clicking actionable, allowing TrackballControls to handle");
+        return;
+      }
+
+      console.log("Clicking on air entry or axis, handling air entry interaction");
+
+      // Use the ref to determine if we're in measure mode
+      if (isMeasureModeRef.current) {
+        console.log("DIVERTING TO MEASUREMENT HANDLER");
+        handleMeasurementMouseDown(event);
+        return;
+      }
+
+      // Handle axis clicks first
       if (axesIntersects.length > 0) {
         const axisObject = axesIntersects[0].object;
         console.log('Axis clicked:', axisObject.userData);
@@ -1293,142 +1259,133 @@ export default function Canvas3D({
         const axisDirection = axisObject.userData?.direction;
 
         if (axisDirection === 'x' || axisDirection === 'z') {
-                  // Find the parent air entry for this axis
-                  let closestAirEntry: THREE.Mesh | null = null;
-                  let closestDistance = Infinity;
+          // Find the parent air entry for this axis
+          let closestAirEntry: THREE.Mesh | null = null;
+          let closestDistance = Infinity;
 
-                  // Find the closest air entry to this axis
-                  airEntryMeshes.forEach((mesh) => {
-                    const distance = mesh.position.distanceTo(axisObject.position);
-                    if (distance < closestDistance) {
-                      closestDistance = distance;
-                      closestAirEntry = mesh;
-                    }
-                  });
+          // Find the closest air entry to this axis
+          airEntryMeshes.forEach((mesh) => {
+            const distance = mesh.position.distanceTo(axisObject.position);
+            if (distance < closestDistance) {
+              closestDistance = distance;
+              closestAirEntry = mesh;
+            }
+          });
 
-                  // Ensure we found a close enough air entry
-                  if (!closestAirEntry || closestDistance > 60) {
-                    console.error("No air entry found near this axis, distance:", closestDistance);
-                    return;
-                  }
+          // Ensure we found a close enough air entry
+          if (!closestAirEntry || closestDistance > 60) {
+            console.error("No air entry found near this axis, distance:", closestDistance);
+            return;
+          }
 
-                  console.log("Found closest air entry at distance:", closestDistance);
+          console.log("Found closest air entry at distance:", closestDistance);
 
-                  // Set the axis for movement in the React state (for UI highlighting)
-                  setSelectedAxis(axisDirection as "x" | "z");
+          // Set the axis for movement in the React state (for UI highlighting)
+          setSelectedAxis(axisDirection as "x" | "z");
 
-                  // Store which air entry we're manipulating
-                  const airEntryData = (closestAirEntry as THREE.Mesh).userData;
+          // Store which air entry we're manipulating
+          const airEntryData = (closestAirEntry as THREE.Mesh).userData;
 
-                  // Add type safety check
-                  if (!airEntryData || !airEntryData.position) {
-                    console.error("Missing position data in air entry");
-                    return;
-                  }
+          // Add type safety check
+          if (!airEntryData || !airEntryData.position) {
+            console.error("Missing position data in air entry");
+            return;
+          }
 
-                  const floorData = floors[currentFloor];
+          const floorData = floors[currentFloor];
 
-                  if (floorData && floorData.airEntries) {
-                    // First try to use the entryIndex from userData if available
-                    let index = -1;
+          if (floorData && floorData.airEntries) {
+            // First try to use the entryIndex from userData if available
+            let index = -1;
 
-                    if (airEntryData.entryIndex !== undefined) {
-                      // Use the stored index if it's valid
-                      if (airEntryData.entryIndex >= 0 && airEntryData.entryIndex < floorData.airEntries.length) {
-                        const storedEntry = floorData.airEntries[airEntryData.entryIndex];
-                        // Double-check by position
-                        if (storedEntry.position.x === airEntryData.position.x && 
-                            storedEntry.position.y === airEntryData.position.y) {
-                          index = airEntryData.entryIndex;
-                          console.log("Using stored entry index:", index);
-                        }
-                      }
-                    }
+            if (airEntryData.entryIndex !== undefined) {
+              // Use the stored index if it's valid
+              if (airEntryData.entryIndex >= 0 && airEntryData.entryIndex < floorData.airEntries.length) {
+                const storedEntry = floorData.airEntries[airEntryData.entryIndex];
+                // Double-check by position
+                if (storedEntry.position.x === airEntryData.position.x && 
+                    storedEntry.position.y === airEntryData.position.y) {
+                  index = airEntryData.entryIndex;
+                  console.log("Using stored entry index:", index);
+                }
+              }
+            }
 
-                    // Fall back to position-based search if needed
-                    if (index === -1) {
-                      index = floorData.airEntries.findIndex(
-                        (entry) =>
-                          entry.position.x === airEntryData.position.x &&
-                          entry.position.y === airEntryData.position.y,
-                      );
-                      console.log("Found entry index by position search:", index);
-                    }
+            // Fall back to position-based search if needed
+            if (index === -1) {
+              index = floorData.airEntries.findIndex(
+                (entry) =>
+                  entry.position.x === airEntryData.position.x &&
+                  entry.position.y === airEntryData.position.y,
+              );
+              console.log("Found entry index by position search:", index);
+            }
 
-                    if (index !== -1) {
-                  // Update React state for UI
-                  setSelectedAirEntry({
-                    index: index,
-                    entry: floorData.airEntries[index],
-                    object: closestAirEntry,
-                  });
+            if (index !== -1) {
+              // Update React state for UI
+              setSelectedAirEntry({
+                index: index,
+                entry: floorData.airEntries[index],
+                object: closestAirEntry,
+              });
 
-                  // Update React state for UI
-                  setDragStartPosition(
-                    new THREE.Vector3(
-                      (closestAirEntry as THREE.Mesh).position.x,
-                      (closestAirEntry as THREE.Mesh).position.y,
-                      (closestAirEntry as THREE.Mesh).position.z,
-                    ),
-                  );
+              // Update React state for UI
+              setDragStartPosition(
+                new THREE.Vector3(
+                  (closestAirEntry as THREE.Mesh).position.x,
+                  (closestAirEntry as THREE.Mesh).position.y,
+                  (closestAirEntry as THREE.Mesh).position.z,
+                ),
+              );
 
-                  // Update React state for UI
-                  setInitialMousePosition({
-                    x: event.clientX,
-                    y: event.clientY,
-                  });
+              // Update React state for UI
+              setInitialMousePosition({
+                x: event.clientX,
+                y: event.clientY,
+              });
 
-                  // Start dragging - update React state for UI
-                  setIsDragging(true);
+              // Start dragging - update React state for UI
+              setIsDragging(true);
 
-                  // IMPORTANT: Update the ref for actual dragging logic
-                  dragStateRef.current = {
-                    isDragging: true,
-                    selectedAxis: axisDirection as "x" | "z",
-                    startPosition: new THREE.Vector3(
-                      (closestAirEntry as THREE.Mesh).position.x,
-                      (closestAirEntry as THREE.Mesh).position.y,
-                      (closestAirEntry as THREE.Mesh).position.z
-                    ),
-                    initialMousePosition: {
-                      x: event.clientX,
-                      y: event.clientY
-                    },
-                    currentMousePosition: {
-                      x: event.clientX,
-                      y: event.clientY
-                    },
-                    selectedObject: closestAirEntry,
-                    entryIndex: index
-                  };
+              // IMPORTANT: Update the ref for actual dragging logic
+              dragStateRef.current = {
+                isDragging: true,
+                selectedAxis: axisDirection as "x" | "z",
+                startPosition: new THREE.Vector3(
+                  (closestAirEntry as THREE.Mesh).position.x,
+                  (closestAirEntry as THREE.Mesh).position.y,
+                  (closestAirEntry as THREE.Mesh).position.z
+                ),
+                initialMousePosition: {
+                  x: event.clientX,
+                  y: event.clientY
+                },
+                currentMousePosition: {
+                  x: event.clientX,
+                  y: event.clientY
+                },
+                selectedObject: closestAirEntry,
+                entryIndex: index
+              };
 
-                  // Immediately disable controls when dragging starts
-                  if (controlsRef.current) {
-                    controlsRef.current.enabled = false;
-                  }
+              // Immediately disable controls when dragging starts
+              if (controlsRef.current) {
+                controlsRef.current.enabled = false;
+              }
 
               console.log("Started dragging with axis:", axisDirection);
-              console.log("Started dragging", { axis: axisDirection });
+              console.log("Started dragging", { 
+                axis: axisDirection,
+                isDragging: dragStateRef.current.isDragging
+              });
             }
-            }
-            }
-            } else {
-            // Check for intersections with air entry meshes if no axis was clicked
-            console.log(
-            "Testing intersection with",
-            airEntryMeshes.length,
-            "air entries",
-            );
-            const meshIntersects = raycaster.intersectObjects(
-            airEntryMeshes,
-            false,
-            );
+          }
+        }
+      } else if (airEntryIntersects.length > 0) {
+        // Check for intersections with air entry meshes if no axis was clicked
+        console.log("Air entry clicked directly");
 
-        
-      console.log("Mesh intersections found:", meshIntersects.length);
-
-      if (meshIntersects.length > 0) {
-        const mesh = meshIntersects[0].object as THREE.Mesh;
+        const mesh = airEntryIntersects[0].object as THREE.Mesh;
         const airEntryData = mesh.userData;
 
         // Just select the air entry but don't start dragging
@@ -1452,13 +1409,7 @@ export default function Canvas3D({
             setSelectedAxis(null);
           }
         }
-      } else {
-        console.log("Mesh intersections:", meshIntersects.length);
-        // Clicked on empty space, clear selection
-        setSelectedAirEntry(null);
-        setSelectedAxis(null);
       }
-    }
     };
 
     const handleMouseMove = (event: MouseEvent) => {
@@ -1509,7 +1460,14 @@ export default function Canvas3D({
         // Only do hover detection if we're not dragging
         const canvas = containerRef.current;
         if (!canvas || !cameraRef.current || !sceneRef.current) return;
+        // Reset hovering state at the start of each move
+        isHoveringActionableRef.current = false;
 
+        console.log("hover state:", {
+          isHovering: isHoveringActionableRef.current,
+          hoveredArrow: hoveredArrow ? true : false
+        });
+        
         const rect = canvas.getBoundingClientRect();
         const mouseX = ((event.clientX - rect.left) / rect.width) * 2 - 1;
         const mouseY = -((event.clientY - rect.top) / rect.height) * 2 + 1;
@@ -1556,7 +1514,8 @@ export default function Canvas3D({
                 object: dummyArrow, 
                 type: axisDirection as "x" | "y" | "z" 
               });
-
+              // Mark that we're hovering over an actionable element
+              isHoveringActionableRef.current = true;
               // Change cursor style
               canvas.style.cursor = "pointer";
               return;
@@ -1586,7 +1545,8 @@ export default function Canvas3D({
 
             // Set hovered arrow
             setHoveredArrow({ object: arrowObject, type: arrowType });
-
+            // Mark that we're hovering over an actionable element
+            isHoveringActionableRef.current = true;
             // Change cursor style
             canvas.style.cursor = "pointer";
             return;
@@ -1601,35 +1561,22 @@ export default function Canvas3D({
       }
     };
 
-      const handleMouseUp = (event: MouseEvent) => {
-        // Only process right mouse button releases when we're dragging
-        if (event.button !== 2) {
-          return;  // Don't reset dragging for non-right clicks
-        }
+    const handleMouseUp = (event: MouseEvent) => {
+      // Only process right mouse button releases
+      if (event.button !== 2) {
+        return;
+      }
 
-        console.log("Mouse up detected", { 
-          button: event.button, 
-          refIsDragging: dragStateRef.current.isDragging,
-          refAxis: dragStateRef.current.selectedAxis
-        });
+      console.log("Mouse up detected", { 
+        button: event.button, 
+        refIsDragging: dragStateRef.current.isDragging,
+        refAxis: dragStateRef.current.selectedAxis
+      });
 
-        // Check if we were dragging from the ref
-        if (!dragStateRef.current.isDragging || 
-            !dragStateRef.current.selectedObject || 
-            !dragStateRef.current.selectedAxis) {
-          // Clean up just in case
-          setIsDragging(false);
-          dragStateRef.current.isDragging = false;
-
-          // Re-enable controls
-          if (controlsRef.current) {
-            controlsRef.current.enabled = true;
-          }
-          return;
-        }
-
-        // Finalize the position change using ref values
-        if (dragStateRef.current.selectedObject && onUpdateAirEntry) {
+      // Check if we were dragging
+      if (dragStateRef.current.isDragging && dragStateRef.current.selectedObject) {
+        // If we were dragging, handle the position update
+        if (onUpdateAirEntry) {
           // Get the current floor data
           const floorData = floors[currentFloor];
           const entryIndex = dragStateRef.current.entryIndex;
@@ -1680,11 +1627,11 @@ export default function Canvas3D({
           }
         }
 
-        // Reset the React state for UI
+        // Reset all drag-related state
         setIsDragging(false);
         setInitialMousePosition(null);
 
-        // Reset the drag state ref completely
+        // Reset the drag state ref
         dragStateRef.current = {
           isDragging: false,
           selectedAxis: null,
@@ -1694,29 +1641,40 @@ export default function Canvas3D({
           selectedObject: null,
           entryIndex: -1
         };
+      }
 
-        // Re-enable controls now that we're done dragging
-        if (controlsRef.current) {
-          controlsRef.current.enabled = true;
-        }
+      // Always re-enable controls, but without any complex state manipulation
+      if (controlsRef.current) {
+        controlsRef.current.enabled = true;
+      }
 
-
-    console.log("Dragging stopped, states reset");
+      console.log("Dragging stopped, states reset");
     };
 
     // Now add the event listeners
     console.log("Setting up event listeners on canvas:", canvas);
 
-    // Clear and specific event binding
     canvas.addEventListener("contextmenu", (e) => {
-      console.log("Context menu prevented");
+      console.log("Context menu prevented", {
+        controls: controlsRef.current ? {
+          enabled: controlsRef.current.enabled,
+          _state: controlsRef.current._state
+        } : null,
+        isDragging: dragStateRef.current.isDragging
+      });
       e.preventDefault();
     });
 
     canvas.addEventListener("mousedown", (e) => {
-      console.log("Canvas mousedown detected, button:", e.button);
+      console.log("Canvas mousedown detected, button:", e.button, {
+        controls: controlsRef.current ? {
+          enabled: controlsRef.current.enabled,
+          _state: controlsRef.current._state
+        } : null
+      });
       if (e.button === 2) {
-        // Right mouse button for both measurements and context operations
+        // Always call our handler, which will determine if we need to intercept
+        // or let TrackballControls handle it
         handleRightMouseDown(e);
       }
     });
@@ -2000,9 +1958,50 @@ export default function Canvas3D({
         hasSelectedEntry: !!selectedAirEntry
       });
 
-      // Disable controls during dragging
-      if (controlsRef.current) {
-        controlsRef.current.enabled = !isDragging;
+      // If we were dragging, recreate the controls to ensure a clean state
+      if (dragStateRef.current.isDragging) {
+        if (controlsRef.current) {
+          console.log("Disposing and recreating TrackballControls after drag");
+
+          // Remember the current camera position and target
+          const cameraPos = cameraRef.current ? cameraRef.current.position.clone() : null;
+          const controlsTarget = controlsRef.current.target.clone();
+
+          // Dispose the old controls
+          controlsRef.current.dispose();
+
+          // Create new controls
+          if (cameraRef.current && rendererRef.current) {
+            const newControls = new TrackballControls(cameraRef.current, rendererRef.current.domElement);
+            newControls.rotateSpeed = 2.0;
+            newControls.zoomSpeed = 1.2;
+            newControls.panSpeed = 0.8;
+            newControls.noZoom = false;
+            newControls.noPan = false;
+            newControls.staticMoving = true;
+            newControls.dynamicDampingFactor = 0.2;
+
+            // Configure mouse buttons
+            newControls.mouseButtons = {
+              LEFT: THREE.MOUSE.ROTATE,
+              MIDDLE: THREE.MOUSE.DOLLY,
+              RIGHT: THREE.MOUSE.PAN
+            };
+
+            // Restore camera target
+            newControls.target.copy(controlsTarget);
+
+            // Replace the old controls
+            controlsRef.current = newControls;
+
+            console.log("New TrackballControls created with clean state");
+          }
+        }
+      } else {
+        // For normal cases, just ensure controls are enabled
+        if (controlsRef.current) {
+          controlsRef.current.enabled = true;
+        }
       }
     }
   }, [selectedAirEntry, selectedAxis, isDragging]);
