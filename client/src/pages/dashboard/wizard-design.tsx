@@ -214,7 +214,7 @@ export default function WizardDesign() {
   const [tab, setTab] = useState<"2d-editor" | "3d-preview">("2d-editor");
   const [showStartSimulationPrompt, setShowStartSimulationPrompt] =
     useState(false);
-  const [wallTransparency, setWallTransparency] = useState(0.8);
+  const [wallTransparency, setWallTransparency] = useState(0.2);
   const [ceilingHeight, setCeilingHeight] = useState(220); // Default 220cm
   const [isMultifloor, setIsMultifloor] = useState(false);
   const [selectedFloor, setSelectedFloor] = useState("ground");
