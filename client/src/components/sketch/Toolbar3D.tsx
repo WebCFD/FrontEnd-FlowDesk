@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Camera, RotateCw, ZoomIn } from "lucide-react";
+import { Camera, RotateCw, Ruler } from "lucide-react";
 
 interface Toolbar3DProps {
   isActive: boolean;
@@ -41,8 +41,8 @@ export function Toolbar3D({
             variant="outline"
             className="w-full h-16 flex flex-col items-center justify-center gap-1"
           >
-            <ZoomIn className="w-6 h-6" />
-            <span className="text-xs">Zoom</span>
+            <Ruler className="w-6 h-6" />
+            <span className="text-xs">Measure</span>
           </Button>
         </div>
       </div>
