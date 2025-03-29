@@ -39,6 +39,7 @@ import { RoomSketchPro } from "@/components/sketch/RoomSketchPro";
 import { cn } from "@/lib/utils";
 import AirEntryDialog from "@/components/sketch/AirEntryDialog";
 import Canvas3D from "@/components/sketch/Canvas3D";
+import { Toolbar3D } from "@/components/sketch/Toolbar3D";
 import { useRoomStore } from "@/lib/store/room-store";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -220,6 +221,7 @@ export default function WizardDesign() {
   const [selectedFloor, setSelectedFloor] = useState("ground");
   const [loadFromFloor, setLoadFromFloor] = useState("ground");
   const [floorDeckThickness, setFloorDeckThickness] = useState(35); // Default 35cm
+  const [isMeasureMode, setIsMeasureMode] = useState(false);
 
   // Use the global room store with updated selectors
   const {
@@ -521,6 +523,17 @@ export default function WizardDesign() {
 
 
   // Add this function:
+  // Toggle 3D measurement mode
+  const handleToggleMeasureMode = () => {
+    setIsMeasureMode(!isMeasureMode);
+    toast({
+      title: isMeasureMode ? "Measurement Mode Disabled" : "Measurement Mode Enabled",
+      description: isMeasureMode 
+        ? "Exited measurement mode" 
+        : "Click to place start point, click again for end point",
+    });
+  };
+
   const handleUpdateAirEntryFrom3D = (
     floorName: string,
     index: number, 
@@ -773,8 +786,9 @@ export default function WizardDesign() {
                       <span className="text-xs">Rotate</span>
                     </Button>
                     <Button
-                      variant="outline"
+                      variant={isMeasureMode ? "default" : "outline"}
                       className="w-full h-16 flex flex-col items-center justify-center gap-1"
+                      onClick={handleToggleMeasureMode}
                     >
                       <Ruler className="w-6 h-6" />
                       <span className="text-xs">Measure</span>
@@ -1281,14 +1295,27 @@ export default function WizardDesign() {
             onLineSelect={handleLineSelect}
           />
         ) : (
-        <Canvas3D
-          floors={floors}
-          currentFloor={currentFloor}
-          ceilingHeight={ceilingHeight}
-          floorDeckThickness={floorDeckThickness}
-          wallTransparency={wallTransparency}
-          onUpdateAirEntry={handleUpdateAirEntryFrom3D}
-        />
+          <div className="relative">
+            {/* Add floating toolbar in 3D view */}
+            <div className="absolute right-4 top-4 z-10">
+              <Toolbar3D 
+                isActive={true}
+                wallTransparency={wallTransparency}
+                onWallTransparencyChange={(value) => setWallTransparency(value)}
+                isMeasureMode={isMeasureMode}
+                onToggleMeasureMode={handleToggleMeasureMode}
+              />
+            </div>
+            <Canvas3D
+              floors={floors}
+              currentFloor={currentFloor}
+              ceilingHeight={ceilingHeight}
+              floorDeckThickness={floorDeckThickness}
+              wallTransparency={wallTransparency}
+              isMeasureMode={isMeasureMode}
+              onUpdateAirEntry={handleUpdateAirEntryFrom3D}
+            />
+          </div>
         )}
       </div>
     );
