@@ -1254,7 +1254,7 @@ export default function Canvas3D({
                   setSelectedAxis(axisDirection as "x" | "z");
 
                   // Store which air entry we're manipulating
-                  const airEntryData = closestAirEntry.userData;
+                  const airEntryData = (closestAirEntry as THREE.Mesh).userData;
 
                   // Add type safety check
                   if (!airEntryData || !airEntryData.position) {
@@ -1302,9 +1302,9 @@ export default function Canvas3D({
                   // Update React state for UI
                   setDragStartPosition(
                     new THREE.Vector3(
-                      closestAirEntry.position.x,
-                      closestAirEntry.position.y,
-                      closestAirEntry.position.z,
+                      (closestAirEntry as THREE.Mesh).position.x,
+                      (closestAirEntry as THREE.Mesh).position.y,
+                      (closestAirEntry as THREE.Mesh).position.z,
                     ),
                   );
 
@@ -1322,9 +1322,9 @@ export default function Canvas3D({
                     isDragging: true,
                     selectedAxis: axisDirection as "x" | "z",
                     startPosition: new THREE.Vector3(
-                      closestAirEntry.position.x,
-                      closestAirEntry.position.y,
-                      closestAirEntry.position.z
+                      (closestAirEntry as THREE.Mesh).position.x,
+                      (closestAirEntry as THREE.Mesh).position.y,
+                      (closestAirEntry as THREE.Mesh).position.z
                     ),
                     initialMousePosition: {
                       x: event.clientX,

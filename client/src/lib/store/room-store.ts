@@ -34,6 +34,7 @@ interface StairPolygon {
   floor: string; // The floor this stair belongs to
   direction?: 'up' | 'down'; // Direction of the stairs
   connectsTo?: string; // The floor this stair connects to
+  isImported?: boolean; // Whether this stair was imported from another floor
 }
 
 interface FloorData {
@@ -63,6 +64,7 @@ interface RoomState {
   addFloor: (name: string, template?: string) => void;
   removeFloor: (name: string) => void;
   copyFloorAs: (sourceName: string, targetName: string) => void;
+  updateFloor: (floorName: string, floorData: FloorData) => void;
   reset: () => void;
 }
 
@@ -156,7 +158,7 @@ export const useRoomStore = create<RoomState>()(
         }),
 
         // Modified copyFloorAs function for room-store.js
-        copyFloorAs: (sourceName, targetName, options = {}) => set((state) => {
+        copyFloorAs: (sourceName, targetName) => set((state) => {
           const sourceData = state.floors[sourceName];
 
           // Create the new floor data
@@ -169,9 +171,7 @@ export const useRoomStore = create<RoomState>()(
             measurements: [...sourceData.measurements],
             hasClosedContour: sourceData.hasClosedContour,
             // Handle stairs with special logic
-            stairPolygons: options && options.preserveStairs 
-              ? options.stairPolygons || [] 
-              : [...(sourceData.stairPolygons || [])]
+            stairPolygons: [...(sourceData.stairPolygons || [])]
           };
 
           return {
@@ -222,6 +222,13 @@ export const useRoomStore = create<RoomState>()(
           };
         }),
 
+        updateFloor: (floorName, floorData) => set((state) => ({
+          floors: {
+            ...state.floors,
+            [floorName]: floorData
+          }
+        })),
+        
         reset: () => set({
           floors: {
             ground: {
