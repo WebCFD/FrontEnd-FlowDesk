@@ -959,10 +959,20 @@ export default function Canvas3D({
     gridHelper.rotation.x = -Math.PI / 2;
     gridHelper.material.opacity = 0.2;
     gridHelper.material.transparent = true;
+    // Mark this as a permanent object that should never be removed during scene updates
+    gridHelper.userData = { 
+      isGrid: true,
+      isPermanent: true
+    };
     scene.add(gridHelper);
 
     // Add coordinate axes
     const axesHelper = new THREE.AxesHelper(200);
+    // Mark as permanent so it doesn't get removed during scene updates
+    axesHelper.userData = {
+      isAxesHelper: true,
+      isPermanent: true
+    };
     scene.add(axesHelper);
 
     // Find the animation loop in the initial scene setup useEffect
@@ -1635,42 +1645,18 @@ export default function Canvas3D({
             // Call the update callback
             onUpdateAirEntry(currentFloor, entryIndex, updatedEntry);
             
-            // Force scene rebuild to update the 3D representation
-            if (sceneRef.current) {
-              console.log("Forcing scene rebuild after air entry update");
-              
-              // Clear previous geometry (except lights and helpers)
-              const toRemove: THREE.Object3D[] = [];
-              sceneRef.current.traverse((object) => {
-                if (
-                  object instanceof THREE.Mesh ||
-                  object instanceof THREE.Sprite ||
-                  object instanceof THREE.ArrowHelper ||
-                  object instanceof THREE.Line
-                ) {
-                  toRemove.push(object);
-                }
-              });
-              
-              toRemove.forEach((object) => sceneRef.current?.remove(object));
-              
-              // Recreate the scene objects
-              Object.entries(floors).forEach(([floorName, floorData]) => {
-                if (floorData.hasClosedContour || floorName === currentFloor) {
-                  const baseHeight = getFloorBaseHeight(floorName);
-                  const objects = createFloorObjects(
-                    floorData,
-                    baseHeight,
-                    floorName === currentFloor,
-                  );
-                  objects.forEach((obj) => sceneRef.current?.add(obj));
-                }
-              });
-              
-              // Force a render after rebuilding
-              if (rendererRef.current && cameraRef.current) {
-                rendererRef.current.render(sceneRef.current, cameraRef.current);
-              }
+            // Instead of completely rebuilding the scene, just update the air entry's position
+            console.log("Air entry position updated:", {
+              floorName: currentFloor,
+              entryIndex,
+              newPosition: updatedEntry.position
+            });
+            
+            // The real scene update will happen in the next render cycle due to floors state change
+            // Force a render to ensure we see the update immediately
+            if (rendererRef.current && sceneRef.current && cameraRef.current) {
+              needsRenderRef.current = true;
+              rendererRef.current.render(sceneRef.current, cameraRef.current);
             }
           }
         }
@@ -1910,17 +1896,21 @@ export default function Canvas3D({
 
     if (!sceneRef.current) return;
 
-    // Clear previous geometry (except lights and helpers)
+    // Clear previous geometry (except lights, helpers, and permanent objects)
     const toRemove: THREE.Object3D[] = [];
     sceneRef.current.traverse((object) => {
       if (
-        object instanceof THREE.Mesh ||
-        object instanceof THREE.Sprite ||
-        object instanceof THREE.ArrowHelper
+        (object instanceof THREE.Mesh ||
+         object instanceof THREE.Sprite ||
+         object instanceof THREE.ArrowHelper ||
+         object instanceof THREE.Line) &&
+        // Don't remove objects marked as permanent
+        (!object.userData?.isPermanent)
       ) {
         toRemove.push(object);
       }
     });
+    console.log(`Removing ${toRemove.length} objects during scene rebuild, preserving permanent objects`);
     toRemove.forEach((object) => sceneRef.current?.remove(object));
 
     // Create and add objects for each floor
