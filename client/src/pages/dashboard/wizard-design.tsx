@@ -1286,7 +1286,8 @@ export default function WizardDesign() {
           currentFloor={currentFloor}
           ceilingHeight={ceilingHeight}
           floorDeckThickness={floorDeckThickness}
-          onUpdateAirEntry={handleUpdateAirEntryFrom3D} // Add this line
+          wallTransparency={wallTransparency}
+          onUpdateAirEntry={handleUpdateAirEntryFrom3D}
         />
         )}
       </div>
