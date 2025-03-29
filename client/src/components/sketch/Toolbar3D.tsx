@@ -8,12 +8,16 @@ interface Toolbar3DProps {
   isActive: boolean;
   wallTransparency: number;
   onWallTransparencyChange: (value: number) => void;
+  isMeasureMode: boolean;
+  onToggleMeasureMode: () => void;
 }
 
 export function Toolbar3D({
   isActive,
   wallTransparency,
   onWallTransparencyChange,
+  isMeasureMode,
+  onToggleMeasureMode,
 }: Toolbar3DProps) {
   return (
     <div className={cn(
@@ -38,8 +42,12 @@ export function Toolbar3D({
             <span className="text-xs">Rotate</span>
           </Button>
           <Button
-            variant="outline"
-            className="w-full h-16 flex flex-col items-center justify-center gap-1"
+            variant={isMeasureMode ? "default" : "outline"}
+            className={cn(
+              "w-full h-16 flex flex-col items-center justify-center gap-1",
+              isMeasureMode && "bg-violet-500 hover:bg-violet-600 text-white border-violet-600"
+            )}
+            onClick={onToggleMeasureMode}
           >
             <Ruler className="w-6 h-6" />
             <span className="text-xs">Measure</span>

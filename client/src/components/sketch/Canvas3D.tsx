@@ -43,12 +43,22 @@ interface FloorData {
   stairPolygons?: StairPolygon[]; // Add stair polygons to floor data
 }
 
+// Define 3D Measurement interface
+interface Measurement3D {
+  startPoint: THREE.Vector3;
+  endPoint: THREE.Vector3;
+  distance: number;
+  line?: THREE.Line;
+  label?: THREE.Sprite;
+}
+
 interface Canvas3DProps {
   floors: Record<string, FloorData>;
   currentFloor: string;
   ceilingHeight?: number;
   floorDeckThickness?: number;
   wallTransparency: number;
+  isMeasureMode?: boolean;
   onUpdateAirEntry?: (
     floorName: string,
     index: number,
@@ -327,6 +337,7 @@ export default function Canvas3D({
   ceilingHeight = 210,
   floorDeckThickness = 35,
   wallTransparency = 0.7,
+  isMeasureMode = false,
   onUpdateAirEntry,
 }: Canvas3DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -367,6 +378,14 @@ export default function Canvas3D({
     object: THREE.ArrowHelper;
     type: "x" | "y" | "z";
   } | null>(null);
+    
+  // Measurement state variables
+  const [isMeasuring, setIsMeasuring] = useState(false);
+  const [measureStartPoint, setMeasureStartPoint] = useState<THREE.Vector3 | null>(null);
+  const [measureEndPoint, setMeasureEndPoint] = useState<THREE.Vector3 | null>(null);
+  const [measurements, setMeasurements] = useState<Measurement3D[]>([]);
+  const [activeMeasurementLine, setActiveMeasurementLine] = useState<THREE.Line | null>(null);
+  const [activeMeasurementLabel, setActiveMeasurementLabel] = useState<THREE.Sprite | null>(null);
 
   const dragStateRef = useRef({
     isDragging: false,
@@ -1044,27 +1063,90 @@ export default function Canvas3D({
     window.addEventListener("resize", handleResize);
 
     // Handle right mouse button down
+    // Helper function to get mouse coordinates for raycasting
+    const getMouseCoordinates = (event: MouseEvent): THREE.Vector2 => {
+      const canvas = containerRef.current;
+      if (!canvas) return new THREE.Vector2(0, 0);
+      
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      const mouseY = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      return new THREE.Vector2(mouseX, mouseY);
+    };
+    
+    // Helper function to cast ray and find intersection point
+    const getRaycastPoint = (mouseCoords: THREE.Vector2): THREE.Vector3 | null => {
+      if (!cameraRef.current || !sceneRef.current) return null;
+      
+      const raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera(mouseCoords, cameraRef.current);
+      
+      // Intersect with all objects in the scene
+      const intersects = raycaster.intersectObjects(sceneRef.current.children, true);
+      
+      // Return the first intersection point or null if none found
+      if (intersects.length > 0) {
+        return intersects[0].point;
+      }
+      
+      return null;
+    };
+    
+    // Handle left mouse button down for measurements
+    const handleLeftMouseDown = (event: MouseEvent) => {
+      // Only process left mouse button (button code 0) when in measure mode
+      if (event.button !== 0 || !isMeasuring) return;
+      
+      // Prevent default to avoid camera movement during measurements
+      event.preventDefault();
+      event.stopPropagation();
+      
+      // Get mouse coordinates for raycasting
+      const mouseCoords = getMouseCoordinates(event);
+      
+      // Get the intersection point in 3D space
+      const intersectionPoint = getRaycastPoint(mouseCoords);
+      
+      if (intersectionPoint) {
+        if (!measureStartPoint) {
+          // First click - set start point
+          setMeasureStartPoint(intersectionPoint);
+        } else {
+          // Second click - set end point and add the measurement
+          setMeasureEndPoint(intersectionPoint);
+          addMeasurement(measureStartPoint, intersectionPoint);
+          
+          // Reset for next measurement
+          setMeasureStartPoint(null);
+          setMeasureEndPoint(null);
+        }
+      }
+    };
+    
     const handleRightMouseDown = (event: MouseEvent) => {
       // Prevent the default context menu
       event.preventDefault();
 
-      // Only process right mouse button (button code 2)
+      // In measure mode, right-click cancels current measurement
+      if (isMeasuring && measureStartPoint) {
+        cleanupActiveMeasurement();
+        setMeasureStartPoint(null);
+        setMeasureEndPoint(null);
+        return;
+      }
+      
+      // Only process right mouse button (button code 2) for normal operations
       if (event.button !== 2) return;
 
       // Get mouse position for raycasting
       const canvas = containerRef.current;
       if (!canvas || !cameraRef.current || !sceneRef.current) return;
-
-      const rect = canvas.getBoundingClientRect();
-      const mouseX = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-      const mouseY = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-
+      
+      const mouseCoords = getMouseCoordinates(event);
+      
       // Set up raycaster
       const raycaster = new THREE.Raycaster();
-      raycaster.setFromCamera(
-        new THREE.Vector2(mouseX, mouseY),
-        cameraRef.current,
-      );
+      raycaster.setFromCamera(mouseCoords, cameraRef.current);
 
       // Find all meshes in the scene that represent air entries or their axes
       const airEntryMeshes: THREE.Mesh[] = [];
@@ -1316,7 +1398,22 @@ export default function Canvas3D({
     };
 
     const handleMouseMove = (event: MouseEvent) => {
-      // Simply update the current mouse position in the ref for the animation loop to use
+      // Handle measurement preview if in measuring mode and we have a start point
+      if (isMeasuring && measureStartPoint) {
+        const mouseCoords = getMouseCoordinates(event);
+        const intersectionPoint = getRaycastPoint(mouseCoords);
+        
+        if (intersectionPoint) {
+          // Update the temporary measurement line
+          updateActiveMeasurement(measureStartPoint, intersectionPoint);
+        }
+        
+        // Always force a render during measurement
+        needsRenderRef.current = true;
+        return;
+      }
+      
+      // Regular drag logic
       if (dragStateRef.current.isDragging) {
         // Store the current mouse position
         dragStateRef.current.currentMousePosition = {
@@ -1554,7 +1651,13 @@ export default function Canvas3D({
 
     canvas.addEventListener("mousedown", (e) => {
       console.log("Canvas mousedown detected, button:", e.button);
-      handleRightMouseDown(e);
+      if (e.button === 0 && isMeasuring) {
+        // Left mouse button in measure mode
+        handleLeftMouseDown(e);
+      } else if (e.button === 2) {
+        // Right mouse button for context operations
+        handleRightMouseDown(e);
+      }
     });
 
     // Use document instead of window for more reliable event capture
@@ -1852,6 +1955,157 @@ export default function Canvas3D({
   }, [editingAirEntry]);
 
   // Effect to update wall transparency when the prop changes
+  // Measurement utility functions
+  
+  // Create a measurement line between two points
+  const createMeasurementLine = (start: THREE.Vector3, end: THREE.Vector3): THREE.Line => {
+    const geometry = new THREE.BufferGeometry().setFromPoints([start, end]);
+    const material = new THREE.LineBasicMaterial({ 
+      color: 0xff0000, // Red color for measurement lines
+      linewidth: 2,
+      depthTest: false, // Ensure line is visible through other objects
+    });
+    return new THREE.Line(geometry, material);
+  };
+  
+  // Calculate the distance between two 3D points
+  const calculateDistance = (start: THREE.Vector3, end: THREE.Vector3): number => {
+    return start.distanceTo(end);
+  };
+  
+  // Create a measurement label with distance info
+  const createMeasurementLabel = (start: THREE.Vector3, end: THREE.Vector3, distance: number): THREE.Sprite => {
+    // Position the label at the midpoint of the line
+    const midpoint = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
+    
+    // Format the distance with 2 decimal places and add unit (cm)
+    const formattedDistance = `${distance.toFixed(2)} cm`;
+    
+    // Create text sprite with white background for visibility
+    const label = makeTextSprite(formattedDistance, {
+      fontsize: 22,
+      fontface: "Arial",
+      textColor: { r: 255, g: 0, b: 0, a: 1.0 }, // Red text
+      backgroundColor: { r: 255, g: 255, b: 255, a: 0.8 }, // White background with 80% opacity
+      borderColor: { r: 255, g: 0, b: 0, a: 1.0 }, // Red border
+      borderThickness: 2,
+      padding: 6
+    });
+    
+    label.position.copy(midpoint);
+    return label;
+  };
+  
+  // Add a completed measurement to the scene and state
+  const addMeasurement = (start: THREE.Vector3, end: THREE.Vector3) => {
+    if (!sceneRef.current) return;
+    
+    const distance = calculateDistance(start, end);
+    const line = createMeasurementLine(start, end);
+    const label = createMeasurementLabel(start, end, distance);
+    
+    // Add both to the scene
+    sceneRef.current.add(line);
+    sceneRef.current.add(label);
+    
+    // Store the measurement in state
+    const newMeasurement: Measurement3D = {
+      startPoint: start.clone(),
+      endPoint: end.clone(),
+      distance,
+      line,
+      label
+    };
+    
+    setMeasurements([...measurements, newMeasurement]);
+    
+    // Trigger a render
+    needsRenderRef.current = true;
+  };
+  
+  // Clean up active measurement (when canceling or completing a measurement)
+  const cleanupActiveMeasurement = () => {
+    if (sceneRef.current) {
+      if (activeMeasurementLine) {
+        sceneRef.current.remove(activeMeasurementLine);
+        setActiveMeasurementLine(null);
+      }
+      
+      if (activeMeasurementLabel) {
+        sceneRef.current.remove(activeMeasurementLabel);
+        setActiveMeasurementLabel(null);
+      }
+      
+      // Trigger a render to update the scene
+      needsRenderRef.current = true;
+    }
+  };
+  
+  // Update active measurement line while dragging
+  const updateActiveMeasurement = (start: THREE.Vector3, end: THREE.Vector3) => {
+    if (!sceneRef.current) return;
+    
+    // Clean up existing temporary measurement
+    cleanupActiveMeasurement();
+    
+    // Create new temporary measurement
+    const line = createMeasurementLine(start, end);
+    const distance = calculateDistance(start, end);
+    const label = createMeasurementLabel(start, end, distance);
+    
+    // Add to scene
+    sceneRef.current.add(line);
+    sceneRef.current.add(label);
+    
+    // Update state
+    setActiveMeasurementLine(line);
+    setActiveMeasurementLabel(label);
+    
+    // Trigger a render
+    needsRenderRef.current = true;
+  };
+  
+  // Effect to handle measure mode changes
+  useEffect(() => {
+    setIsMeasuring(isMeasureMode);
+    
+    // Clear any active measurements when exiting measure mode
+    if (!isMeasureMode) {
+      cleanupActiveMeasurement();
+      setMeasureStartPoint(null);
+      setMeasureEndPoint(null);
+      
+      // Optionally clear all measurements when exiting measure mode
+      // Uncomment to enable this behavior
+      /*
+      if (measurements.length > 0 && sceneRef.current) {
+        measurements.forEach(measure => {
+          if (measure.line) sceneRef.current?.remove(measure.line);
+          if (measure.label) sceneRef.current?.remove(measure.label);
+        });
+        setMeasurements([]);
+      }
+      */
+    }
+  }, [isMeasureMode]);
+  
+  // Effect to clean up measurements when changing floors
+  useEffect(() => {
+    // Clean up any active measurement
+    cleanupActiveMeasurement();
+    setMeasureStartPoint(null);
+    setMeasureEndPoint(null);
+    
+    // Clean up all existing measurements as they're specific to a floor
+    if (measurements.length > 0 && sceneRef.current) {
+      measurements.forEach(measure => {
+        if (measure.line) sceneRef.current?.remove(measure.line);
+        if (measure.label) sceneRef.current?.remove(measure.label);
+      });
+      setMeasurements([]);
+    }
+  }, [currentFloor]);
+  
   useEffect(() => {
     if (sceneRef.current) {
       // Update the opacity of only wall materials in the scene, not air entries
