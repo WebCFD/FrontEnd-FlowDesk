@@ -89,6 +89,7 @@ interface StairPolygon {
   floor: string;
   direction?: "up" | "down";
   connectsTo?: string;
+  isImported?: boolean;
 }
 
 interface FloorLoadDialogProps {
@@ -299,7 +300,7 @@ export default function WizardDesign() {
     const newMeasurements = [...sourceFloorData.measurements];
 
     // Special handling for stairs
-    let newStairPolygons = [];
+    let newStairPolygons: StairPolygon[] = [];
 
     // Process existing stairs in the target floor
     if (
@@ -338,13 +339,12 @@ export default function WizardDesign() {
 
           if (existingStairIndex === -1) {
             // Create a new corresponding stair
-            const newStair = {
-              ...stair,
+            const newStair: StairPolygon = {
               id: `imported-${stair.id}`, // Create a new ID for the imported stair
+              points: [...stair.points], // Copy points
               floor: currentFloor, // Set floor to current floor
-              direction: newDirection, // Invert direction
+              direction: newDirection as "up" | "down", // Invert direction with proper typing
               connectsTo: stair.id, // Link to the original stair
-              sourceFloor: loadFromFloor, // Track where this came from
               isImported: true, // Mark as imported
             };
 
@@ -1295,27 +1295,15 @@ export default function WizardDesign() {
             onLineSelect={handleLineSelect}
           />
         ) : (
-          <div className="relative">
-            {/* Add floating toolbar in 3D view */}
-            <div className="absolute right-4 top-4 z-10">
-              <Toolbar3D 
-                isActive={true}
-                wallTransparency={wallTransparency}
-                onWallTransparencyChange={(value) => setWallTransparency(value)}
-                isMeasureMode={isMeasureMode}
-                onToggleMeasureMode={handleToggleMeasureMode}
-              />
-            </div>
-            <Canvas3D
-              floors={floors}
-              currentFloor={currentFloor}
-              ceilingHeight={ceilingHeight}
-              floorDeckThickness={floorDeckThickness}
-              wallTransparency={wallTransparency}
-              isMeasureMode={isMeasureMode}
-              onUpdateAirEntry={handleUpdateAirEntryFrom3D}
-            />
-          </div>
+          <Canvas3D
+            floors={floors}
+            currentFloor={currentFloor}
+            ceilingHeight={ceilingHeight}
+            floorDeckThickness={floorDeckThickness}
+            wallTransparency={wallTransparency}
+            isMeasureMode={isMeasureMode}
+            onUpdateAirEntry={handleUpdateAirEntryFrom3D}
+          />
         )}
       </div>
     );
