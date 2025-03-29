@@ -977,12 +977,12 @@ export default function Canvas3D({
       const animate = () => {
         requestAnimationFrame(animate);
         // Debug TrackballControls state in animation loop
-        if (controlsRef.current && controlsRef.current._state !== undefined) {
-          // Only log when state changes to avoid console spam
-          if (controlsRef.current._state === 2) { // RIGHT mouse button state
-            console.log("Animation loop: TrackballControls thinks right button is down", {
-              _state: controlsRef.current._state,
-              isDragging: dragStateRef.current.isDragging
+        if (controlsRef.current) {
+          // Since _state is not accessible, we use the isDragging state instead
+          if (dragStateRef.current.isDragging) {
+            console.log("Animation loop: Currently dragging air entry", {
+              isDragging: dragStateRef.current.isDragging,
+              axis: dragStateRef.current.selectedAxis
             });
           }
         }
@@ -1259,26 +1259,36 @@ export default function Canvas3D({
         const axisDirection = axisObject.userData?.direction;
 
         if (axisDirection === 'x' || axisDirection === 'z') {
-          // Find the parent air entry for this axis
+          // Check if we have a parent entry index stored in the axis userData
+          const parentEntryIndex = axisObject.userData?.parentEntryIndex;
           let closestAirEntry: THREE.Mesh | null = null;
-          let closestDistance = Infinity;
+          
+          if (parentEntryIndex !== undefined && parentEntryIndex >= 0 && 
+              parentEntryIndex < airEntryMeshes.length) {
+            // Use the parent entry index directly if available
+            closestAirEntry = airEntryMeshes[parentEntryIndex];
+            console.log("Found air entry using parentEntryIndex:", parentEntryIndex);
+          } else {
+            // Fall back to distance-based lookup if no parent index
+            let closestDistance = Infinity;
+            
+            // Find the closest air entry to this axis
+            airEntryMeshes.forEach((mesh) => {
+              const distance = mesh.position.distanceTo(axisObject.position);
+              if (distance < closestDistance) {
+                closestDistance = distance;
+                closestAirEntry = mesh;
+              }
+            });
 
-          // Find the closest air entry to this axis
-          airEntryMeshes.forEach((mesh) => {
-            const distance = mesh.position.distanceTo(axisObject.position);
-            if (distance < closestDistance) {
-              closestDistance = distance;
-              closestAirEntry = mesh;
+            // Ensure we found a close enough air entry
+            if (!closestAirEntry || closestDistance > 60) {
+              console.error("No air entry found near this axis, distance:", closestDistance);
+              return;
             }
-          });
-
-          // Ensure we found a close enough air entry
-          if (!closestAirEntry || closestDistance > 60) {
-            console.error("No air entry found near this axis, distance:", closestDistance);
-            return;
+            
+            console.log("Found closest air entry at distance:", closestDistance);
           }
-
-          console.log("Found closest air entry at distance:", closestDistance);
 
           // Set the axis for movement in the React state (for UI highlighting)
           setSelectedAxis(axisDirection as "x" | "z");
@@ -1624,6 +1634,44 @@ export default function Canvas3D({
 
             // Call the update callback
             onUpdateAirEntry(currentFloor, entryIndex, updatedEntry);
+            
+            // Force scene rebuild to update the 3D representation
+            if (sceneRef.current) {
+              console.log("Forcing scene rebuild after air entry update");
+              
+              // Clear previous geometry (except lights and helpers)
+              const toRemove: THREE.Object3D[] = [];
+              sceneRef.current.traverse((object) => {
+                if (
+                  object instanceof THREE.Mesh ||
+                  object instanceof THREE.Sprite ||
+                  object instanceof THREE.ArrowHelper ||
+                  object instanceof THREE.Line
+                ) {
+                  toRemove.push(object);
+                }
+              });
+              
+              toRemove.forEach((object) => sceneRef.current?.remove(object));
+              
+              // Recreate the scene objects
+              Object.entries(floors).forEach(([floorName, floorData]) => {
+                if (floorData.hasClosedContour || floorName === currentFloor) {
+                  const baseHeight = getFloorBaseHeight(floorName);
+                  const objects = createFloorObjects(
+                    floorData,
+                    baseHeight,
+                    floorName === currentFloor,
+                  );
+                  objects.forEach((obj) => sceneRef.current?.add(obj));
+                }
+              });
+              
+              // Force a render after rebuilding
+              if (rendererRef.current && cameraRef.current) {
+                rendererRef.current.render(sceneRef.current, cameraRef.current);
+              }
+            }
           }
         }
 
@@ -1661,8 +1709,8 @@ export default function Canvas3D({
     canvas.addEventListener("contextmenu", (e) => {
       console.log("Context menu prevented", {
         controls: controlsRef.current ? {
-          enabled: controlsRef.current.enabled,
-          _state: controlsRef.current._state
+          enabled: controlsRef.current.enabled
+          // Removing _state property access since it doesn't exist on TrackballControls
         } : null,
         isDragging: dragStateRef.current.isDragging
       });
@@ -1720,8 +1768,8 @@ export default function Canvas3D({
     canvas.addEventListener("mousedown", (e) => {
       console.log("Canvas mousedown detected, button:", e.button, {
         controls: controlsRef.current ? {
-          enabled: controlsRef.current.enabled,
-          _state: controlsRef.current._state
+          enabled: controlsRef.current.enabled
+          // Removing _state property access since it doesn't exist on TrackballControls
         } : null
       });
       if (e.button === 2) {
