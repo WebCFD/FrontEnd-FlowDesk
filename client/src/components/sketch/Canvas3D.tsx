@@ -399,6 +399,32 @@ const highlightSelectedAirEntry = (
   });
 };
 
+// Function to reset highlight on any mesh
+const resetAirEntryHighlight = (mesh: THREE.Mesh | null) => {
+  if (!mesh) return;
+  
+  try {
+    const material = mesh.material as THREE.MeshPhongMaterial;
+    if (!material) return;
+    
+    console.log("[HIGHLIGHT_RESET] Resetting highlight on mesh:", mesh.id);
+    
+    // Reset to default state
+    material.opacity = 0.7;
+    material.emissive.set(0x000000); // No emissive glow
+    material.emissiveIntensity = 0;
+    
+    // Log the reset
+    console.log("[HIGHLIGHT_RESET] Highlight reset complete on mesh:", {
+      id: mesh.id,
+      type: mesh.userData?.type,
+      newEmissive: '#' + material.emissive.getHex().toString(16)
+    });
+  } catch (err) {
+    console.error("[HIGHLIGHT_RESET] Error resetting highlight:", err);
+  }
+};
+
 // Utility function to find connected points and create a perimeter
 const createRoomPerimeter = (lines: Line[]): Point[] => {
   if (lines.length === 0) return [];
@@ -2043,6 +2069,41 @@ export default function Canvas3D({
       if (controlsRef.current) {
         controlsRef.current.enabled = true;
       }
+      
+      // If we weren't dragging but there was a right-click operation, 
+      // we might need to reset the selection highlight
+      if (dragStateRef.current && !dragStateRef.current.isDragging) {
+        if (dragStateRef.current.selectedObject) {
+          // Reset the emissive highlight if this was just a click without drag
+          console.log("[CLICK_WITHOUT_DRAG] Resetting highlight on selected object:", 
+            dragStateRef.current.selectedObject.id);
+          
+          resetAirEntryHighlight(dragStateRef.current.selectedObject);
+          
+          // Clear the selection in the state
+          if (selectedAirEntry) {
+            setSelectedAirEntry(null);
+          }
+          
+          // Reset the drag state reference completely
+          dragStateRef.current = {
+            isDragging: false,
+            selectedAxis: null,
+            startPosition: null,
+            initialMousePosition: null,
+            currentMousePosition: null,
+            selectedObject: null,
+            entryIndex: -1,
+            lastDraggedObjectId: null
+          };
+          
+          // Ensure the scene is re-rendered to show the highlight change
+          needsRenderRef.current = true;
+          if (rendererRef.current && sceneRef.current && cameraRef.current) {
+            rendererRef.current.render(sceneRef.current, cameraRef.current);
+          }
+        }
+      }
 
       // Log detailed state information at end of drag
       console.log("[DRAG_COMPLETE] Dragging stopped, final state:", {
@@ -2127,11 +2188,30 @@ export default function Canvas3D({
         // Clear selection if we're not clicking on an air entry
         if (selectedAirEntry) {
           console.log("Clearing selection - clicked outside of air entry");
+          
+          // Reset the highlight on the currently selected air entry
+          if (selectedAirEntry.object) {
+            console.log("Resetting highlight on deselected air entry:", selectedAirEntry.object.id);
+            resetAirEntryHighlight(selectedAirEntry.object);
+          }
+          
+          // Clear the selection state
           setSelectedAirEntry(null);
+          
+          // Also reset any highlighted objects in the drag state ref
+          if (dragStateRef.current.selectedObject) {
+            resetAirEntryHighlight(dragStateRef.current.selectedObject);
+            console.log("Resetting highlight on drag state object:", dragStateRef.current.selectedObject.id);
+          }
+          
           // Clear selected axis info from ref instead of using React state
           dragStateRef.current.selectedAxis = null;
+          
           // Trigger UI update
           setDragStateUpdate(prev => prev + 1);
+          
+          // Force a render to ensure the highlight changes are visible
+          needsRenderRef.current = true;
         }
       }
     });
