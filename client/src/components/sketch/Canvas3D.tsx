@@ -258,6 +258,7 @@ const highlightSelectedAirEntry = (
     selectedObject: THREE.Mesh | null;
     currentMousePosition: {x: number, y: number} | null;
     entryIndex: number;
+    lastDraggedObjectId: string | null;
   }>
 ) => {
   if (!airEntry) return;
@@ -400,14 +401,28 @@ export default function Canvas3D({
   const isMeasureModeRef = useRef(false);
   // Add a state variable for triggering UI updates when dragStateRef changes
   const [dragStateUpdate, setDragStateUpdate] = useState(0);
-  const dragStateRef = useRef({
+  // Define our drag state interface for better type safety
+  interface DragState {
+    isDragging: boolean;
+    selectedAxis: "x" | "z" | null;
+    startPosition: THREE.Vector3 | null;
+    initialMousePosition: {x: number, y: number} | null;
+    selectedObject: THREE.Mesh | null;
+    currentMousePosition: {x: number, y: number} | null;
+    entryIndex: number;
+    lastDraggedObjectId: string | null; // Track the last dragged object ID to prevent selection issues
+  }
+
+  // Create the ref with the new type
+  const dragStateRef = useRef<DragState>({
     isDragging: false,
-    selectedAxis: null as "x" | "z" | null,
-    startPosition: null as THREE.Vector3 | null,
-    initialMousePosition: null as {x: number, y: number} | null,
-    selectedObject: null as THREE.Mesh | null,
-    currentMousePosition: null as {x: number, y: number} | null,
-    entryIndex: -1
+    selectedAxis: null,
+    startPosition: null,
+    initialMousePosition: null,
+    selectedObject: null,
+    currentMousePosition: null,
+    entryIndex: -1,
+    lastDraggedObjectId: null
   });
 
   // Add this ref to track measurement state
@@ -1380,7 +1395,8 @@ export default function Canvas3D({
                   y: event.clientY
                 },
                 selectedObject: closestAirEntry,
-                entryIndex: index
+                entryIndex: index,
+                lastDraggedObjectId: null
               };
 
               // Immediately disable controls when dragging starts
@@ -1645,7 +1661,7 @@ export default function Canvas3D({
               object3DPosition: newPosition3D
             });
 
-            // Call the update callback
+            // Call the update callback - but store the updated entry for verification
             onUpdateAirEntry(currentFloor, entryIndex, updatedEntry);
             
             // Instead of completely rebuilding the scene, just update the air entry's position
@@ -1664,6 +1680,9 @@ export default function Canvas3D({
           }
         }
 
+        // Store which object was just dragged to prevent selection issues
+        const lastDraggedObjectId = dragStateRef.current.selectedObject?.id?.toString() || null;
+        
         // Reset the drag state ref first
         dragStateRef.current = {
           isDragging: false,
@@ -1672,14 +1691,20 @@ export default function Canvas3D({
           initialMousePosition: null,
           currentMousePosition: null,
           selectedObject: null,
-          entryIndex: -1
+          entryIndex: -1,
+          lastDraggedObjectId // Store the last dragged object ID to prevent selection issues
         };
         
         // Trigger UI update through the update counter
         setDragStateUpdate(prev => prev + 1);
         
-        // We still need to clear selection state since it's used for UI highlighting
-        setSelectedAirEntry(null);
+        // Keep the selection active to allow for consecutive drags
+        // This is a key change - don't reset selection unnecessarily
+        if (!event.shiftKey && !event.ctrlKey && !event.metaKey) {
+          // Only clear selection if no modifier keys are pressed
+          // This allows for more intuitive dragging behavior
+          setSelectedAirEntry(null);
+        }
       }
 
       // Always re-enable controls, but without any complex state manipulation
@@ -2001,7 +2026,8 @@ export default function Canvas3D({
               initialMousePosition: null,
               currentMousePosition: null,
               selectedObject: null,
-              entryIndex: -1
+              entryIndex: -1,
+              lastDraggedObjectId: null
             };
           }
         } else {
@@ -2017,7 +2043,8 @@ export default function Canvas3D({
             initialMousePosition: null,
             currentMousePosition: null,
             selectedObject: null,
-            entryIndex: -1
+            entryIndex: -1,
+            lastDraggedObjectId: null
           };
         }
       } else {
@@ -2033,7 +2060,8 @@ export default function Canvas3D({
           initialMousePosition: null,
           currentMousePosition: null,
           selectedObject: null,
-          entryIndex: -1
+          entryIndex: -1,
+          lastDraggedObjectId: null
         };
       }
     } else {
