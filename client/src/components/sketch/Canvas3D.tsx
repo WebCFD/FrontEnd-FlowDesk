@@ -86,6 +86,11 @@ const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
   );
 };
 
+// Generate a unique ID for an air entry
+const getAirEntryId = (floorName: string, entry: AirEntry, index: number): string => {
+  return `${floorName}-${entry.type}-${index}-${entry.position.x.toFixed(2)},${entry.position.y.toFixed(2)}`;
+};
+
 // Add these utility functions after the existing transform2DTo3D function or other utility functions
 
 // Utility function to highlight the selected axis
@@ -286,7 +291,11 @@ const createRoomPerimeter = (lines: Line[]): Point[] => {
   const perimeter: Point[] = [];
   const visited = new Set<string>();
   const pointToString = (p: Point) => `${p.x},${p.y}`;
+  
 
+
+  // Remove any duplicate getAirEntryId definition in createRoomPerimeter function
+  
   // Create a map of points to their connected lines
   const connections = new Map<string, Point[]>();
   lines.forEach((line) => {
@@ -357,6 +366,12 @@ export default function Canvas3D({
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<TrackballControls | null>(null);
   const needsRenderRef = useRef<boolean>(true);
+  
+  // Object mapping system for selective updates
+  // This maps unique identifiers to their Three.js objects
+  const objectMapRef = useRef<Map<string, THREE.Mesh>>(new Map());
+  // Previous floors data for diffing
+  const prevFloorsRef = useRef<Record<string, FloorData> | null>(null);
   // State for editing air entries
   const [editingAirEntry, setEditingAirEntry] = useState<{
     index: number;
@@ -773,6 +788,9 @@ export default function Canvas3D({
       );
       floorData.airEntries.forEach((entry, index) => {
         console.log(`Creating air entry ${index} of type ${entry.type}`);
+        // Generate a unique ID for this air entry
+        const entryId = getAirEntryId(floorData.name, entry, index);
+        
         // Use dimensions directly as they are already in cm
         const width = entry.dimensions.width;
         const height = entry.dimensions.height;
@@ -781,23 +799,48 @@ export default function Canvas3D({
           (entry.type === "door"
             ? height / 2
             : entry.dimensions.distanceToFloor || 0);
-
-        const geometry = new THREE.PlaneGeometry(width, height);
-        const material = new THREE.MeshPhongMaterial({
-          color:
-            entry.type === "window"
-              ? 0x3b82f6
-              : entry.type === "door"
-                ? 0xb45309
-                : 0x22c55e,
-          opacity: 0.7, // Fixed opacity at 70% regardless of current floor
-          transparent: true,
-          side: THREE.DoubleSide,
-        });
-
-        const mesh = new THREE.Mesh(geometry, material);
-        const position = transform2DTo3D(entry.position);
-        mesh.position.set(position.x, position.y, zPosition);
+            
+        let mesh: THREE.Mesh;
+        
+        // Check if we already have this object in our map
+        if (objectMapRef.current.has(entryId)) {
+          // Retrieve existing mesh
+          mesh = objectMapRef.current.get(entryId)!;
+          
+          // Update position
+          const position = transform2DTo3D(entry.position);
+          mesh.position.set(position.x, position.y, zPosition);
+          
+          // Update dimensions if they've changed
+          if (mesh.geometry instanceof THREE.PlaneGeometry && 
+              (mesh.geometry.parameters.width !== width || 
+               mesh.geometry.parameters.height !== height)) {
+            // Replace geometry if dimensions changed
+            mesh.geometry.dispose();
+            mesh.geometry = new THREE.PlaneGeometry(width, height);
+          }
+        } else {
+          // Create new mesh
+          const geometry = new THREE.PlaneGeometry(width, height);
+          const material = new THREE.MeshPhongMaterial({
+            color:
+              entry.type === "window"
+                ? 0x3b82f6
+                : entry.type === "door"
+                  ? 0xb45309
+                  : 0x22c55e,
+            opacity: 0.7, // Fixed opacity at 70% regardless of current floor
+            transparent: true,
+            side: THREE.DoubleSide,
+          });
+  
+          mesh = new THREE.Mesh(geometry, material);
+          const position3D = transform2DTo3D(entry.position);
+          mesh.position.set(position3D.x, position3D.y, zPosition);
+          
+          // Store in our object map
+          objectMapRef.current.set(entryId, mesh);
+        }
 
         // Add userData for raycasting identification - include the actual entry index for easy mapping
         mesh.userData = {
@@ -834,12 +877,12 @@ export default function Canvas3D({
       const markerGeometry = new THREE.SphereGeometry(5, 16, 16);
       const markerMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
       const marker = new THREE.Mesh(markerGeometry, markerMaterial);
-      marker.position.set(position.x, position.y, zPosition);
+      marker.position.set(position3D.x, position3D.y, zPosition);
       objects.push(marker);
 
       // Add coordinate system axes
       const axisLength = 50; // Length of the coordinate axes
-      console.log(`Creating custom axis arrows for entry at position ${position.x}, ${position.y}, ${zPosition}`);
+      console.log(`Creating custom axis arrows for entry at position ${position3D.x}, ${position3D.y}, ${zPosition}`);
 
       // Create custom axis meshes that are better for intersection detection
       // X axis - Red (Right)
@@ -849,8 +892,8 @@ export default function Canvas3D({
       const xAxisMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.8 });
       const xAxis = new THREE.Mesh(xAxisGeometry, xAxisMaterial);
       xAxis.position.set(
-        position.x + axisLength/2 * right.x, 
-        position.y + axisLength/2 * right.y, 
+        position3D.x + axisLength/2 * right.x, 
+        position3D.y + axisLength/2 * right.y, 
         zPosition
       );
       xAxis.userData = { 
@@ -865,8 +908,8 @@ export default function Canvas3D({
       const yAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.6 });
       const yAxis = new THREE.Mesh(yAxisGeometry, yAxisMaterial);
       yAxis.position.set(
-        position.x + axisLength/2 * forward.x, 
-        position.y + axisLength/2 * forward.y, 
+        position3D.x + axisLength/2 * forward.x, 
+        position3D.y + axisLength/2 * forward.y, 
         zPosition
       );
       yAxis.userData = { 
@@ -880,8 +923,8 @@ export default function Canvas3D({
       const zAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff, transparent: true, opacity: 0.8 });
       const zAxis = new THREE.Mesh(zAxisGeometry, zAxisMaterial);
       zAxis.position.set(
-        position.x, 
-        position.y, 
+        position3D.x, 
+        position3D.y, 
         zPosition + axisLength/2
       );
       zAxis.userData = { 
@@ -894,14 +937,14 @@ export default function Canvas3D({
       objects.push(xAxis, yAxis, zAxis);
 
       // Add coordinate label
-      const coordText = `(${Math.round(position.x)}, ${Math.round(position.y)}, ${Math.round(zPosition)}) cm`;
+      const coordText = `(${Math.round(position3D.x)}, ${Math.round(position3D.y)}, ${Math.round(zPosition)}) cm`;
       const labelSprite = makeTextSprite(coordText, {
         fontsize: 28,
         fontface: "Arial",
         textColor: { r: 160, g: 160, b: 160, a: 1.0 },
         backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 },
       });
-      labelSprite.position.set(position.x, position.y, zPosition + 15);
+      labelSprite.position.set(position3D.x, position3D.y, zPosition + 15);
       objects.push(labelSprite);
     });
 
