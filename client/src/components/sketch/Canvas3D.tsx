@@ -357,8 +357,23 @@ const highlightSelectedAirEntry = (
 ) => {
   if (!airEntry) return;
 
+  // Get initial material state for logging
   const material = airEntry.material as THREE.MeshPhongMaterial;
+  const prevColor = material.color.getHex();
+  const prevEmissive = material.emissive.getHex();
+  const prevOpacity = material.opacity;
   const isDragging = dragStateRef.current.isDragging;
+
+  // Log the current object state before changes
+  console.log(`[HIGHLIGHT] AirEntry highlight state before change:`, {
+    id: airEntry.id,
+    userData: airEntry.userData,
+    isSelected,
+    isDragging,
+    prevColor: '#' + prevColor.toString(16),
+    prevEmissive: '#' + prevEmissive.toString(16),
+    prevOpacity
+  });
 
   if (isSelected) {
     // Highlight by adding an outline effect but maintain 70% base opacity or slightly higher when dragging
@@ -371,6 +386,17 @@ const highlightSelectedAirEntry = (
     material.emissive.set(0x000000); // No emissive glow
     material.emissiveIntensity = 0;
   }
+
+  // Log the new state after changes
+  console.log(`[HIGHLIGHT] AirEntry highlight state after change:`, {
+    id: airEntry.id,
+    isSelected,
+    isDragging,
+    newColor: '#' + material.color.getHex().toString(16),
+    newEmissive: '#' + material.emissive.getHex().toString(16), 
+    newOpacity: material.opacity,
+    emissiveIntensity: material.emissiveIntensity
+  });
 };
 
 // Utility function to find connected points and create a perimeter
@@ -1373,6 +1399,21 @@ export default function Canvas3D({
     const handleRightMouseDown = (event: MouseEvent) => {
       // Prevent the default context menu
       event.preventDefault();
+      
+      console.log("[RIGHT_MOUSE_DOWN] Starting right-click interaction", {
+        clientX: event.clientX,
+        clientY: event.clientY,
+        selectedAirEntry: selectedAirEntry ? {
+          index: selectedAirEntry.index,
+          position: selectedAirEntry.entry.position,
+          objectId: selectedAirEntry.object?.id
+        } : null,
+        dragStateRef: {
+          isDragging: dragStateRef.current.isDragging,
+          selectedAxis: dragStateRef.current.selectedAxis,
+          objectId: dragStateRef.current.selectedObject?.id
+        }
+      });
 
       // Get mouse position for raycasting
       if (!containerRef.current || !cameraRef.current || !sceneRef.current) return;
@@ -1515,6 +1556,18 @@ export default function Canvas3D({
             }
 
             if (index !== -1) {
+              // Log the selection for debugging
+              console.log("[SELECTION] Setting selectedAirEntry in axis click handler", {
+                index,
+                entryData: floorData.airEntries[index],
+                objectId: closestAirEntry.id,
+                objectMaterial: closestAirEntry.material ? {
+                  color: (closestAirEntry.material as THREE.MeshPhongMaterial).color.getHex().toString(16),
+                  emissive: (closestAirEntry.material as THREE.MeshPhongMaterial).emissive.getHex().toString(16),
+                  opacity: (closestAirEntry.material as THREE.MeshPhongMaterial).opacity
+                } : null
+              });
+              
               // Update React state for UI
               setSelectedAirEntry({
                 index: index,
@@ -1764,10 +1817,25 @@ export default function Canvas3D({
         return;
       }
 
-      console.log("Mouse up detected", { 
+      console.log("[MOUSE_UP] Mouse up detected", { 
         button: event.button, 
         refIsDragging: dragStateRef.current.isDragging,
-        refAxis: dragStateRef.current.selectedAxis
+        refAxis: dragStateRef.current.selectedAxis,
+        selectedObject: dragStateRef.current.selectedObject ? {
+          id: dragStateRef.current.selectedObject.id,
+          type: dragStateRef.current.selectedObject.userData?.type,
+          position: dragStateRef.current.selectedObject.position.clone(),
+          material: dragStateRef.current.selectedObject.material ? {
+            color: (dragStateRef.current.selectedObject.material as THREE.MeshPhongMaterial).color.getHex().toString(16),
+            emissive: (dragStateRef.current.selectedObject.material as THREE.MeshPhongMaterial).emissive.getHex().toString(16),
+            opacity: (dragStateRef.current.selectedObject.material as THREE.MeshPhongMaterial).opacity
+          } : null
+        } : null,
+        selectedAirEntry: selectedAirEntry ? {
+          index: selectedAirEntry.index,
+          objectId: selectedAirEntry.object?.id,
+          position: selectedAirEntry.entry.position
+        } : null
       });
 
       // Check if we were dragging
@@ -1890,7 +1958,31 @@ export default function Canvas3D({
         controlsRef.current.enabled = true;
       }
 
-      console.log("Dragging stopped, states reset");
+      // Log detailed state information at end of drag
+      console.log("[DRAG_COMPLETE] Dragging stopped, final state:", {
+        isDragging: dragStateRef.current.isDragging,
+        selectedAxis: dragStateRef.current.selectedAxis,
+        selectedObject: dragStateRef.current.selectedObject ? {
+          id: dragStateRef.current.selectedObject.id,
+          userData: dragStateRef.current.selectedObject.userData,
+          material: dragStateRef.current.selectedObject.material ? {
+            color: (dragStateRef.current.selectedObject.material as THREE.MeshPhongMaterial).color.getHex().toString(16),
+            emissive: (dragStateRef.current.selectedObject.material as THREE.MeshPhongMaterial).emissive.getHex().toString(16),
+            opacity: (dragStateRef.current.selectedObject.material as THREE.MeshPhongMaterial).opacity,
+            emissiveIntensity: (dragStateRef.current.selectedObject.material as THREE.MeshPhongMaterial).emissiveIntensity
+          } : null
+        } : null,
+        selectedAirEntry: selectedAirEntry ? {
+          index: selectedAirEntry.index,
+          entry: selectedAirEntry.entry.position,
+          object: selectedAirEntry.object ? 
+            selectedAirEntry.object.id : null
+        } : null,
+        entryIndex: dragStateRef.current.entryIndex,
+        lastDraggedObjectId: dragStateRef.current.lastDraggedObjectId,
+        mapSize: objectMapRef.current.size,
+        mapKeys: Array.from(objectMapRef.current.keys())
+      });
     };
 
     // Now add the event listeners
@@ -1959,12 +2051,32 @@ export default function Canvas3D({
     });
 
     canvas.addEventListener("mousedown", (e) => {
-      console.log("Canvas mousedown detected, button:", e.button, {
+      console.log("[MOUSEDOWN] Canvas mousedown detected", { 
+        button: e.button,
+        clientX: e.clientX,
+        clientY: e.clientY,
         controls: controlsRef.current ? {
           enabled: controlsRef.current.enabled
-          // Removing _state property access since it doesn't exist on TrackballControls
-        } : null
+        } : null,
+        selectedAirEntry: selectedAirEntry ? {
+          index: selectedAirEntry.index,
+          type: selectedAirEntry.entry.type,
+          position: selectedAirEntry.entry.position,
+          object: selectedAirEntry.object ? {
+            id: selectedAirEntry.object.id,
+            material: selectedAirEntry.object.material ? {
+              color: (selectedAirEntry.object.material as THREE.MeshPhongMaterial).color.getHex().toString(16),
+              emissive: (selectedAirEntry.object.material as THREE.MeshPhongMaterial).emissive.getHex().toString(16)
+            } : null
+          } : null
+        } : null,
+        dragState: {
+          isDragging: dragStateRef.current.isDragging,
+          selectedAxis: dragStateRef.current.selectedAxis,
+          objectId: dragStateRef.current.selectedObject?.id
+        }
       });
+      
       if (e.button === 2) {
         // Always call our handler, which will determine if we need to intercept
         // or let TrackballControls handle it
