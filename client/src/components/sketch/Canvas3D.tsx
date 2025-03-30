@@ -1547,12 +1547,56 @@ export default function Canvas3D({
 
             // Fall back to position-based search if needed
             if (index === -1) {
+              // First try exact match (which is unlikely to work after dragging)
               index = floorData.airEntries.findIndex(
                 (entry) =>
                   entry.position.x === airEntryData.position.x &&
                   entry.position.y === airEntryData.position.y,
               );
-              console.log("Found entry index by position search:", index);
+              
+              // If exact match fails, try finding by proximity (a more reliable approach after dragging)
+              if (index === -1) {
+                // Convert the 3D position to 2D for comparison
+                const mesh3DPosition = new THREE.Vector3(
+                  closestAirEntry.position.x,
+                  closestAirEntry.position.y,
+                  closestAirEntry.position.z
+                );
+                
+                // Use the 3D object's actual position to find the closest air entry
+                const dimensions = { width: 800, height: 600 };
+                const centerX = dimensions.width / 2;
+                const centerY = dimensions.height / 2;
+                
+                // Convert 3D position back to 2D coordinates
+                const meshX = mesh3DPosition.x / PIXELS_TO_CM + centerX;
+                const meshY = centerY - mesh3DPosition.y / PIXELS_TO_CM;
+                
+                console.log("Looking for entry near position:", { x: meshX, y: meshY });
+                
+                // Find the closest air entry by position
+                let minDistance = Number.MAX_VALUE;
+                let closestIndex = -1;
+                
+                floorData.airEntries.forEach((entry, i) => {
+                  const dx = entry.position.x - meshX;
+                  const dy = entry.position.y - meshY;
+                  const distance = Math.sqrt(dx * dx + dy * dy);
+                  
+                  // Use a reasonable threshold (50 pixels)
+                  if (distance < minDistance && distance < 50) {
+                    minDistance = distance;
+                    closestIndex = i;
+                  }
+                });
+                
+                if (closestIndex !== -1) {
+                  index = closestIndex;
+                  console.log("Found closest entry by proximity search:", index, "distance:", minDistance.toFixed(2));
+                }
+              } else {
+                console.log("Found entry index by exact position search:", index);
+              }
             }
 
             if (index !== -1) {
@@ -1622,11 +1666,53 @@ export default function Canvas3D({
         const floorData = floors[currentFloor];
 
         if (floorData && floorData.airEntries) {
-          const index = floorData.airEntries.findIndex(
+          // First try exact match (but this is likely to fail after object has been moved)
+          let index = floorData.airEntries.findIndex(
             (entry) =>
               entry.position.x === airEntryData.position.x &&
               entry.position.y === airEntryData.position.y,
           );
+          
+          // If exact match fails, try finding by proximity
+          if (index === -1) {
+            console.log("Exact position match failed, trying proximity search");
+            
+            // Get the 3D mesh position
+            const mesh3DPosition = mesh.position;
+            
+            // Convert 3D position back to 2D coordinates
+            const dimensions = { width: 800, height: 600 };
+            const centerX = dimensions.width / 2;
+            const centerY = dimensions.height / 2;
+            
+            const meshX = mesh3DPosition.x / PIXELS_TO_CM + centerX;
+            const meshY = centerY - mesh3DPosition.y / PIXELS_TO_CM;
+            
+            console.log("Looking for entry near position:", { x: meshX, y: meshY });
+            
+            // Find the closest air entry by position
+            let minDistance = Number.MAX_VALUE;
+            let closestIndex = -1;
+            
+            floorData.airEntries.forEach((entry, i) => {
+              const dx = entry.position.x - meshX;
+              const dy = entry.position.y - meshY;
+              const distance = Math.sqrt(dx * dx + dy * dy);
+              
+              // Use a reasonable threshold (50 pixels)
+              if (distance < minDistance && distance < 50) {
+                minDistance = distance;
+                closestIndex = i;
+              }
+            });
+            
+            if (closestIndex !== -1) {
+              index = closestIndex;
+              console.log("Found closest entry by proximity search:", index, "distance:", minDistance.toFixed(2));
+            }
+          } else {
+            console.log("Found entry by exact position match:", index);
+          }
 
           if (index !== -1) {
             setSelectedAirEntry({
