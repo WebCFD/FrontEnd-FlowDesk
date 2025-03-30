@@ -87,8 +87,97 @@ const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
 };
 
 // Generate a unique ID for an air entry
+// Modified to create a stable ID by removing the position coordinate from the ID
+// This ensures objects can be found in the map even after their position changes
 const getAirEntryId = (floorName: string, entry: AirEntry, index: number): string => {
-  return `${floorName}-${entry.type}-${index}-${entry.position.x.toFixed(2)},${entry.position.y.toFixed(2)}`;
+  // Use only the floor name, type, and index for a stable reference
+  // Coordinates change during dragging, so we don't want them in the ID
+  return `${floorName}-${entry.type}-${index}`;
+};
+
+// Function to verify object map consistency and clean up stale entries
+const verifyObjectMap = (map: Map<string, THREE.Mesh>, scene: THREE.Scene, floorName: string, floors: Record<string, FloorData>, cleanup: boolean = false): void => {
+  console.log(`===== OBJECT MAP VERIFICATION (${floorName}) =====`);
+  console.log(`Map size: ${map.size}`);
+  
+  // Count what should be in the map
+  const floorData = floors[floorName];
+  const expectedEntries = floorData?.airEntries?.length || 0;
+  console.log(`Expected entries for ${floorName}: ${expectedEntries}`);
+  
+  // Count objects in the scene
+  let airEntryMeshesInScene = 0;
+  const airEntryMeshes: THREE.Mesh[] = [];
+  scene.traverse((object) => {
+    if (
+      object instanceof THREE.Mesh &&
+      object.userData &&
+      object.userData.type &&
+      ["window", "door", "vent"].includes(object.userData.type)
+    ) {
+      airEntryMeshesInScene++;
+      airEntryMeshes.push(object);
+    }
+  });
+  console.log(`Air entry meshes in scene: ${airEntryMeshesInScene}`);
+  
+  // Check keys in map
+  const keys = Array.from(map.keys());
+  console.log("Map keys:", keys);
+  
+  // Verify each entry
+  let foundInScene = 0;
+  let notFoundInScene = 0;
+  const staleEntries: string[] = [];
+  
+  map.forEach((mesh, id) => {
+    let found = false;
+    scene.traverse((object) => {
+      if (object === mesh) {
+        found = true;
+      }
+    });
+    
+    if (found) {
+      foundInScene++;
+    } else {
+      notFoundInScene++;
+      console.warn(`Mesh for ID ${id} exists in map but not in scene!`);
+      staleEntries.push(id);
+    }
+  });
+  
+  // Clean up stale entries if requested
+  if (cleanup && staleEntries.length > 0) {
+    console.log(`Cleaning up ${staleEntries.length} stale entries from object map...`);
+    staleEntries.forEach(id => {
+      map.delete(id);
+    });
+    console.log(`Map size after cleanup: ${map.size}`);
+  }
+  
+  // Clean up any entries that aren't using our standard ID format
+  if (cleanup) {
+    const validPrefixes = Object.keys(floors).map(name => `${name}-window-` || `${name}-door-` || `${name}-vent-`);
+    const invalidEntries: string[] = [];
+    
+    map.forEach((_, id) => {
+      // Our standard format is "floorname-type-index"
+      const parts = id.split('-');
+      // Check if this entry has a non-standard format
+      if (parts.length !== 3) {
+        invalidEntries.push(id);
+      }
+    });
+    
+    if (invalidEntries.length > 0) {
+      console.log(`Removing ${invalidEntries.length} entries with non-standard IDs`);
+      invalidEntries.forEach(id => map.delete(id));
+    }
+  }
+  
+  console.log(`Meshes found in scene: ${foundInScene}, not found: ${notFoundInScene}`);
+  console.log("===== END VERIFICATION =====");
 };
 
 // Add these utility functions after the existing transform2DTo3D function or other utility functions
@@ -806,9 +895,14 @@ export default function Canvas3D({
         let mesh: THREE.Mesh;
         
         // Check if we already have this object in our map
+        console.log("Object ID lookup:", entryId, "Found in map:", objectMapRef.current.has(entryId));
+        console.log("Map size before update:", objectMapRef.current.size);
+        
         if (objectMapRef.current.has(entryId)) {
           // Retrieve existing mesh
           mesh = objectMapRef.current.get(entryId)!;
+          // Just log the reuse without trying to access material properties
+          console.log("Reusing existing mesh for", entryId);
           
           // Update position
           // Use the position3D that was already defined at the top of the forEach loop
@@ -841,8 +935,11 @@ export default function Canvas3D({
           // Use the position3D that was already defined at the top of the forEach loop
           mesh.position.set(position3D.x, position3D.y, zPosition);
           
+          console.log("Creating new mesh for", entryId, "Material color:", material.color.getHex().toString(16));
+          
           // Store in our object map
           objectMapRef.current.set(entryId, mesh);
+          console.log("Map size after adding new entry:", objectMapRef.current.size);
         }
 
         // Add userData for raycasting identification - include the actual entry index for easy mapping
@@ -1511,6 +1608,18 @@ export default function Canvas3D({
       
       // Regular drag logic
       if (dragStateRef.current.isDragging) {
+        // Debug info for mousemove during drag
+        console.log("Mouse move during drag:", {
+          mousePos: {x: event.clientX, y: event.clientY},
+          selectedObject: dragStateRef.current.selectedObject ? {
+            uuid: dragStateRef.current.selectedObject.uuid,
+            id: dragStateRef.current.selectedObject.id,
+            position: dragStateRef.current.selectedObject.position.toArray(),
+          } : null,
+          selectedAxis: dragStateRef.current.selectedAxis,
+          entryIndex: dragStateRef.current.entryIndex
+        });
+        
         // Store the current mouse position
         dragStateRef.current.currentMousePosition = {
           x: event.clientX,
@@ -1704,10 +1813,21 @@ export default function Canvas3D({
               }
             }
 
+            // Log comprehensive map info before update 
+            const oldEntryId = getAirEntryId(currentFloor, currentEntry, entryIndex);
+            const newEntryId = getAirEntryId(currentFloor, updatedEntry, entryIndex);
+            
             console.log("Finalizing position update:", {
               from: currentEntry.position,
               to: updatedEntry.position,
-              object3DPosition: newPosition3D
+              object3DPosition: newPosition3D,
+              currentMapSize: objectMapRef.current.size,
+              oldEntryId,
+              newEntryId,
+              oldEntryInMap: objectMapRef.current.has(oldEntryId),
+              newEntryInMap: objectMapRef.current.has(newEntryId),
+              mapEntries: Array.from(objectMapRef.current.keys()),
+              meshUuid: dragStateRef.current.selectedObject?.uuid
             });
 
             // Call the update callback - but store the updated entry for verification
@@ -1717,8 +1837,16 @@ export default function Canvas3D({
             console.log("Air entry position updated:", {
               floorName: currentFloor,
               entryIndex,
-              newPosition: updatedEntry.position
+              newPosition: updatedEntry.position,
+              entryId: getAirEntryId(currentFloor, updatedEntry, entryIndex),
+              foundInMap: objectMapRef.current.has(getAirEntryId(currentFloor, updatedEntry, entryIndex))
             });
+            
+            // Check object map consistency after drag operation and clean up stale entries
+            if (sceneRef.current) {
+              console.log("--- Verifying object map after drag operation ---");
+              verifyObjectMap(objectMapRef.current, sceneRef.current, currentFloor, floors, true);
+            }
             
             // The real scene update will happen in the next render cycle due to floors state change
             // Force a render to ensure we see the update immediately
@@ -2004,6 +2132,11 @@ export default function Canvas3D({
         objects.forEach((obj) => sceneRef.current?.add(obj));
       }
     });
+    
+    // Verify object map consistency after rebuilding the scene and clean up stale entries
+    if (sceneRef.current) {
+      verifyObjectMap(objectMapRef.current, sceneRef.current, currentFloor, floors, true);
+    }
 
     // After rebuilding the scene, we need to restore or reset selection state
     if (selectedAirEntry) {
