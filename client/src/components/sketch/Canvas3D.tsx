@@ -1683,15 +1683,19 @@ export default function Canvas3D({
         // Store which object was just dragged to prevent selection issues
         const lastDraggedObjectId = dragStateRef.current.selectedObject?.id?.toString() || null;
         
-        // Reset the drag state ref first
+        // Keep a reference to the object that was being dragged
+        const draggedObject = dragStateRef.current.selectedObject;
+        const draggedEntryIndex = dragStateRef.current.entryIndex;
+        
+        // Reset the drag state ref EXCEPT we save the selected object
         dragStateRef.current = {
           isDragging: false,
           selectedAxis: null,
           startPosition: null,
           initialMousePosition: null,
           currentMousePosition: null,
-          selectedObject: null,
-          entryIndex: -1,
+          selectedObject: draggedObject, // Keep this reference
+          entryIndex: draggedEntryIndex, // Keep this reference
           lastDraggedObjectId // Store the last dragged object ID to prevent selection issues
         };
         
@@ -1699,12 +1703,9 @@ export default function Canvas3D({
         setDragStateUpdate(prev => prev + 1);
         
         // Keep the selection active to allow for consecutive drags
-        // This is a key change - don't reset selection unnecessarily
-        if (!event.shiftKey && !event.ctrlKey && !event.metaKey) {
-          // Only clear selection if no modifier keys are pressed
-          // This allows for more intuitive dragging behavior
-          setSelectedAirEntry(null);
-        }
+        // By not clearing selectedAirEntry, we maintain the selection state
+        // Don't reset selection at all after a successful drag operation
+        // This allows for immediate consecutive dragging
       }
 
       // Always re-enable controls, but without any complex state manipulation
@@ -2077,7 +2078,8 @@ export default function Canvas3D({
         initialMousePosition: null,
         currentMousePosition: null,
         selectedObject: null,
-        entryIndex: -1
+        entryIndex: -1,
+        lastDraggedObjectId: null
       };
     }
   }, [floors, currentFloor, ceilingHeight, floorDeckThickness]);
@@ -2153,7 +2155,8 @@ export default function Canvas3D({
         initialMousePosition: null,
         currentMousePosition: null,
         selectedObject: null,
-        entryIndex: -1
+        entryIndex: -1,
+        lastDraggedObjectId: null
       };
       // Update to trigger UI refresh
       setDragStateUpdate(prev => prev + 1);
