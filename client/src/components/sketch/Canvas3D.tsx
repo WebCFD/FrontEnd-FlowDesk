@@ -246,14 +246,24 @@ const highlightHoveredArrow = (
 };
 
 // Utility function to highlight the selected air entry
+// Modified to read isDragging from the drag state ref
 const highlightSelectedAirEntry = (
   airEntry: THREE.Mesh | null,
   isSelected: boolean,
-  isDragging: boolean,
+  dragStateRef: React.MutableRefObject<{
+    isDragging: boolean;
+    selectedAxis: "x" | "z" | null;
+    startPosition: THREE.Vector3 | null;
+    initialMousePosition: {x: number, y: number} | null;
+    selectedObject: THREE.Mesh | null;
+    currentMousePosition: {x: number, y: number} | null;
+    entryIndex: number;
+  }>
 ) => {
   if (!airEntry) return;
 
   const material = airEntry.material as THREE.MeshPhongMaterial;
+  const isDragging = dragStateRef.current.isDragging;
 
   if (isSelected) {
     // Highlight by adding an outline effect but maintain 70% base opacity or slightly higher when dragging
@@ -388,6 +398,8 @@ export default function Canvas3D({
   const [activeMeasurementLabel, setActiveMeasurementLabel] = useState<THREE.Sprite | null>(null);
 
   const isMeasureModeRef = useRef(false);
+  // Add a state variable for triggering UI updates when dragStateRef changes
+  const [dragStateUpdate, setDragStateUpdate] = useState(0);
   const dragStateRef = useRef({
     isDragging: false,
     selectedAxis: null as "x" | "z" | null,
@@ -1030,13 +1042,13 @@ export default function Canvas3D({
         controlsRef.current.update();
         needsRenderRef.current = true; // Controls moving requires a render
       }
-      // Apply visual feedback if selection state changed
+      // Apply visual feedback if selection state changed or during drag operations
       if (selectedAirEntry?.object && sceneRef.current) {
-        highlightSelectedAirEntry(selectedAirEntry.object, true, isDragging);
+        highlightSelectedAirEntry(selectedAirEntry.object, true, dragStateRef);
         highlightSelectedAxis(
           sceneRef.current,
-          selectedAirEntry.object,
-          selectedAxis,
+          selectedAirEntry.object, 
+          dragStateRef.current.selectedAxis // Use the axis from ref instead of React state
         );
         needsRenderRef.current = true; // Selection state changed, needs a render
       }
@@ -1047,7 +1059,7 @@ export default function Canvas3D({
           sceneRef.current,
           hoveredArrow,
           selectedAirEntry,
-          selectedAxis,
+          dragStateRef.current.selectedAxis, // Use axis from ref instead of React state
         );
         if (hoveredArrow) {
           needsRenderRef.current = true;
@@ -1300,8 +1312,8 @@ export default function Canvas3D({
             console.log("Found closest air entry at distance:", closestDistance);
           }
 
-          // Set the axis for movement in the React state (for UI highlighting)
-          setSelectedAxis(axisDirection as "x" | "z");
+          // No need to use React state for axis direction anymore, we'll use the ref
+          // and trigger updates through dragStateUpdate
 
           // Store which air entry we're manipulating
           const airEntryData = (closestAirEntry as THREE.Mesh).userData;
@@ -1349,25 +1361,8 @@ export default function Canvas3D({
                 object: closestAirEntry,
               });
 
-              // Update React state for UI
-              setDragStartPosition(
-                new THREE.Vector3(
-                  (closestAirEntry as THREE.Mesh).position.x,
-                  (closestAirEntry as THREE.Mesh).position.y,
-                  (closestAirEntry as THREE.Mesh).position.z,
-                ),
-              );
-
-              // Update React state for UI
-              setInitialMousePosition({
-                x: event.clientX,
-                y: event.clientY,
-              });
-
-              // Start dragging - update React state for UI
-              setIsDragging(true);
-
-              // IMPORTANT: Update the ref for actual dragging logic
+              // We only need to update the ref for actual dragging logic
+              // Move everything into dragStateRef for less state split
               dragStateRef.current = {
                 isDragging: true,
                 selectedAxis: axisDirection as "x" | "z",
@@ -1426,7 +1421,8 @@ export default function Canvas3D({
             });
 
             // We're selecting but not yet dragging
-            setSelectedAxis(null);
+            // Clear selectedAxis in dragStateRef
+            dragStateRef.current.selectedAxis = null;
           }
         }
       }
@@ -1458,6 +1454,13 @@ export default function Canvas3D({
 
         // Make sure we need to render
         needsRenderRef.current = true;
+
+        // Trigger UI update via counter only periodically to avoid excessive rerenders
+        // Use a throttling approach with a mod operation on frameCount
+        const frameCount = rendererRef.current?.info.render.frame || 0;
+        if (frameCount % 5 === 0) { // Update UI every 5 frames
+          setDragStateUpdate(prev => prev + 1);
+        }
 
         // No position updates here - let the animation loop handle it
         console.log("Mouse move during drag", {
@@ -1661,15 +1664,7 @@ export default function Canvas3D({
           }
         }
 
-        // Reset all drag-related state
-        setIsDragging(false);
-        setInitialMousePosition(null);
-        
-        // Reset the selected element state to clear the highlight
-        setSelectedAirEntry(null);
-        setSelectedAxis(null);
-
-        // Reset the drag state ref
+        // Reset the drag state ref first
         dragStateRef.current = {
           isDragging: false,
           selectedAxis: null,
@@ -1679,6 +1674,12 @@ export default function Canvas3D({
           selectedObject: null,
           entryIndex: -1
         };
+        
+        // Trigger UI update through the update counter
+        setDragStateUpdate(prev => prev + 1);
+        
+        // We still need to clear selection state since it's used for UI highlighting
+        setSelectedAirEntry(null);
       }
 
       // Always re-enable controls, but without any complex state manipulation
@@ -1746,7 +1747,10 @@ export default function Canvas3D({
         if (selectedAirEntry) {
           console.log("Clearing selection - clicked outside of air entry");
           setSelectedAirEntry(null);
-          setSelectedAxis(null);
+          // Clear selected axis info from ref instead of using React state
+          dragStateRef.current.selectedAxis = null;
+          // Trigger UI update
+          setDragStateUpdate(prev => prev + 1);
         }
       }
     });
@@ -1974,20 +1978,21 @@ export default function Canvas3D({
             });
 
             // Apply visual feedback
-            highlightSelectedAirEntry(newMeshObject, true, isDragging);
+            highlightSelectedAirEntry(newMeshObject, true, dragStateRef);
 
-            if (sceneRef.current && selectedAxis) {
+            if (sceneRef.current && dragStateRef.current.selectedAxis) {
               highlightSelectedAxis(
                 sceneRef.current,
                 newMeshObject,
-                selectedAxis,
+                dragStateRef.current.selectedAxis,
               );
             }
           } else {
             // If we couldn't find the matching object, reset selection
             console.log("Could not find matching mesh for selected air entry, resetting selection");
             setSelectedAirEntry(null);
-            setSelectedAxis(null);
+            // No need for setSelectedAxis, directly update ref
+            dragStateRef.current.selectedAxis = null;
             setIsDragging(false);
             dragStateRef.current = {
               isDragging: false,
@@ -2002,7 +2007,8 @@ export default function Canvas3D({
         } else {
           // Entry no longer exists, reset selection
           setSelectedAirEntry(null);
-          setSelectedAxis(null);
+          // Update through ref instead of React state
+          dragStateRef.current.selectedAxis = null;
           setIsDragging(false);
           dragStateRef.current = {
             isDragging: false,
@@ -2017,7 +2023,8 @@ export default function Canvas3D({
       } else {
         // Current floor data not found, reset selection
         setSelectedAirEntry(null);
-        setSelectedAxis(null);
+        // Update through ref instead of React state
+        dragStateRef.current.selectedAxis = null;
         setIsDragging(false);
         dragStateRef.current = {
           isDragging: false,
@@ -2031,7 +2038,7 @@ export default function Canvas3D({
       }
     } else {
       // No previous selection, make sure states are reset
-      setSelectedAxis(null);
+      // We don't need setSelectedAxis anymore, directly update ref
       setIsDragging(false);
       setInitialMousePosition(null);
       setDragStartPosition(null);
@@ -2048,17 +2055,19 @@ export default function Canvas3D({
   }, [floors, currentFloor, ceilingHeight, floorDeckThickness]);
 
   useEffect(() => {
-    // Mark that rendering is needed when selection or dragging state changes
+    // Mark that rendering is needed when selection or drag state changes
     if (needsRenderRef.current !== undefined) {
       needsRenderRef.current = true;
+      
+      const dragState = dragStateRef.current;
       console.log("State changed - marking for render", { 
-        isDragging, 
-        selectedAxis,
+        isDragging: dragState.isDragging, 
+        selectedAxis: dragState.selectedAxis,
         hasSelectedEntry: !!selectedAirEntry
       });
 
       // If we were dragging, recreate the controls to ensure a clean state
-      if (dragStateRef.current.isDragging) {
+      if (dragState.isDragging) {
         if (controlsRef.current) {
           console.log("Disposing and recreating TrackballControls after drag");
 
@@ -2103,13 +2112,23 @@ export default function Canvas3D({
         }
       }
     }
-  }, [selectedAirEntry, selectedAxis, isDragging]);
+  }, [selectedAirEntry, dragStateUpdate]);
 
   useEffect(() => {
     // If dialog opens, cancel any dragging operation
     if (editingAirEntry) {
-      setIsDragging(false);
-      setSelectedAxis(null);
+      // Reset drag state in ref instead of using React state
+      dragStateRef.current = {
+        isDragging: false,
+        selectedAxis: null,
+        startPosition: null,
+        initialMousePosition: null,
+        currentMousePosition: null,
+        selectedObject: null,
+        entryIndex: -1
+      };
+      // Update to trigger UI refresh
+      setDragStateUpdate(prev => prev + 1);
     }
   }, [editingAirEntry]);
 
