@@ -799,6 +799,9 @@ export default function Canvas3D({
           (entry.type === "door"
             ? height / 2
             : entry.dimensions.distanceToFloor || 0);
+        
+        // Define position3D once for all uses
+        let position3D = transform2DTo3D(entry.position);
             
         let mesh: THREE.Mesh;
         
@@ -808,8 +811,8 @@ export default function Canvas3D({
           mesh = objectMapRef.current.get(entryId)!;
           
           // Update position
-          const position = transform2DTo3D(entry.position);
-          mesh.position.set(position.x, position.y, zPosition);
+          // Use the position3D that was already defined at the top of the forEach loop
+          mesh.position.set(position3D.x, position3D.y, zPosition);
           
           // Update dimensions if they've changed
           if (mesh.geometry instanceof THREE.PlaneGeometry && 
@@ -835,7 +838,7 @@ export default function Canvas3D({
           });
   
           mesh = new THREE.Mesh(geometry, material);
-          const position3D = transform2DTo3D(entry.position);
+          // Use the position3D that was already defined at the top of the forEach loop
           mesh.position.set(position3D.x, position3D.y, zPosition);
           
           // Store in our object map
@@ -873,6 +876,9 @@ export default function Canvas3D({
 
       objects.push(mesh);
 
+      // position3D is already defined at the top of the forEach loop
+      // so we'll use that for all markers and axes
+      
       // Add yellow sphere marker
       const markerGeometry = new THREE.SphereGeometry(5, 16, 16);
       const markerMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
