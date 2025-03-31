@@ -811,6 +811,16 @@ export default function Canvas3D({
       // Add coordinate system axes
       const axisLength = 50; // Length of the coordinate axes
       console.log(`Creating custom axis arrows for entry at position ${position.x}, ${position.y}, ${zPosition}`);
+      
+      // Store the entry's index in airEntries array for direct reference
+      const parentMeshIndex = objects.length - 1;
+      console.log("AXIS CREATION:", {
+        entryType: entry.type,
+        entryPosition: entry.position,
+        entryIndex: index,
+        parentMeshIndex: parentMeshIndex,
+        totalObjects: objects.length
+      });
 
       // Create custom axis meshes that are better for intersection detection
       // X axis - Red (Right)
@@ -827,7 +837,8 @@ export default function Canvas3D({
       xAxis.userData = { 
         type: 'axis', 
         direction: 'x',
-        parentEntryIndex: objects.length - 1 // Reference to the parent mesh
+        parentEntryIndex: parentMeshIndex, // Reference to the parent mesh
+        actualEntryIndex: index // Store the actual entry index from the floor data
       };
 
       // Y axis - Green (Forward/Normal) - optional, mainly for visualization
@@ -1363,12 +1374,45 @@ export default function Canvas3D({
 
                     // Fall back to position-based search if needed
                     if (index === -1) {
+                      console.log("POSITION SEARCH - Looking for:", {
+                        airEntryType: airEntryData.type,
+                        airEntryDataPos: airEntryData.position,
+                        availableEntries: floorData.airEntries.map((entry, idx) => ({
+                          index: idx,
+                          position: entry.position,
+                          type: entry.type
+                        }))
+                      });
+                      
+                      // Log each entry's position to check for near matches
+                      floorData.airEntries.forEach((entry, idx) => {
+                        const xDiff = Math.abs(entry.position.x - airEntryData.position.x);
+                        const yDiff = Math.abs(entry.position.y - airEntryData.position.y);
+                        console.log(`Entry ${idx} position diff: x=${xDiff}, y=${yDiff}`, {
+                          entry: entry.position,
+                          toMatch: airEntryData.position,
+                          exactMatch: entry.position.x === airEntryData.position.x && entry.position.y === airEntryData.position.y,
+                          closeMatch: xDiff < 1 && yDiff < 1
+                        });
+                      });
+                      
+                      // Try exact match first
                       index = floorData.airEntries.findIndex(
                         (entry) =>
                           entry.position.x === airEntryData.position.x &&
                           entry.position.y === airEntryData.position.y,
                       );
-                      console.log("Found entry index by position search:", index);
+                      console.log("Found entry index by exact position search:", index);
+                      
+                      // If exact match fails, try approximate match
+                      if (index === -1) {
+                        index = floorData.airEntries.findIndex(
+                          (entry) =>
+                            Math.abs(entry.position.x - airEntryData.position.x) < 1 &&
+                            Math.abs(entry.position.y - airEntryData.position.y) < 1
+                        );
+                        console.log("Found entry index by approximate position search:", index);
+                      }
                     }
 
                     if (index !== -1) {
