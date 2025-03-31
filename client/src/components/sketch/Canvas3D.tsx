@@ -424,7 +424,16 @@ export default function Canvas3D({
     inProgress: false,
     startPoint: null as THREE.Vector3 | null
   });
-
+  
+  // Create a custom panning system completely independent of TrackballControls
+  // This will give us full control over right-click panning behavior
+  const customPanRef = useRef({
+    isPanning: false,
+    startPoint: null as {x: number, y: number} | null,
+    startCameraPosition: null as THREE.Vector3 | null,
+    startCameraTarget: null as THREE.Vector3 | null,
+    panSpeed: 2.0 // Adjust this to control pan sensitivity
+  });
   
   // Calculate base height for each floor
   const getFloorBaseHeight = (floorName: string): number => {
@@ -1089,6 +1098,19 @@ export default function Canvas3D({
         const frameCount = ++animationCountRef.current;
         const shouldLogControlsState = frameCount % 100 === 0;
         
+        // Check if canvas DOM element is properly attached
+        if (shouldLogControlsState && containerRef.current) {
+          console.log("🎮 CONTROLS DOM ELEMENT:", {
+            hasElement: !!containerRef.current,
+            tagName: containerRef.current.tagName,
+            id: containerRef.current.id,
+            hasMouseUp: !!containerRef.current.onmouseup,
+            hasMouseDown: !!containerRef.current.onmousedown,
+            hasMouseMove: !!containerRef.current.onmousemove,
+            hasListeners: false // Unable to directly access listeners through standard APIs
+          });
+        }
+        
         // DEBUG: Regularly check TrackballControls state to see if it's stuck
         if (shouldLogControlsState && controlsRef.current) {
           const controls = controlsRef.current as any;
@@ -1113,6 +1135,17 @@ export default function Canvas3D({
           }
         }
 
+        // Log custom panning state (only periodically to avoid console spam)
+        if (shouldLogControlsState && customPanRef.current.isPanning) {
+          console.log("🖐️ CUSTOM PANNING ACTIVE:", {
+            frame: frameCount,
+            startPoint: customPanRef.current.startPoint,
+            hasStartCameraPosition: !!customPanRef.current.startCameraPosition,
+            hasStartCameraTarget: !!customPanRef.current.startCameraTarget,
+            controlsEnabled: controlsRef.current?.enabled || false
+          });
+        }
+        
         // Handle dragging with the ref-based approach
         const dragState = dragStateRef.current;
         if (dragState.isDragging && dragState.selectedObject && dragState.startPosition && 
@@ -1224,23 +1257,28 @@ export default function Canvas3D({
       }
         // Render the scene if needed
         if (
-          needsRenderRef.current &&
+          (needsRenderRef.current || customPanRef.current.isPanning) &&
           rendererRef.current &&
           sceneRef.current &&
           cameraRef.current
         ) {
-          // Always render during drag operations for smooth feedback
+          // Always render during drag operations or custom panning for smooth feedback
           const isDraggingNow = dragStateRef.current.isDragging;
+          const isCustomPanningNow = customPanRef.current.isPanning;
 
           if (isDraggingNow) {
             console.log("Rendering during drag operation");
           }
+          
+          if (isCustomPanningNow && frameCount % 30 === 0) {
+            console.log("Rendering during custom panning");
+          }
 
           rendererRef.current.render(sceneRef.current, cameraRef.current);
 
-          // Only reset the needs render flag if we're not dragging
-          // During dragging we want to render every frame
-          if (!isDraggingNow) {
+          // Only reset the needs render flag if we're not in an active operation
+          // During active operations we want to render every frame
+          if (!isDraggingNow && !isCustomPanningNow) {
             needsRenderRef.current = false;
           }
         }
@@ -1372,6 +1410,24 @@ export default function Canvas3D({
       
       // Set right mouse button state to pressed
       rightMouseButtonPressedRef.current = true;
+      
+      // Initialize our custom panning system
+      if (!dragStateRef.current.isDragging) {
+        const mouseX = event.clientX;
+        const mouseY = event.clientY;
+        
+        // Store start point and camera positions
+        customPanRef.current.isPanning = true;
+        customPanRef.current.startPoint = { x: mouseX, y: mouseY };
+        
+        if (camera && controls) {
+          customPanRef.current.startCameraPosition = camera.position.clone();
+          customPanRef.current.startCameraTarget = controls.target.clone();
+          
+          // Disable TrackballControls while we're custom panning
+          controls.enabled = false;
+        }
+      }
 
       // Use the ref for reliable measure mode status
       console.log("🖱️ RIGHT MOUSE DOWN - Button Info:", {
@@ -1379,6 +1435,7 @@ export default function Canvas3D({
         buttons: event.buttons,      // Current buttons being pressed (bitmask)
         which: event.which,          // Legacy property showing which button
         ctrlKey: event.ctrlKey,
+        customPanning: customPanRef.current.isPanning,
         altKey: event.altKey,
         timestamp: Date.now(),
         isMeasureModeRef: isMeasureModeRef.current,
@@ -1789,6 +1846,56 @@ export default function Canvas3D({
     };
 
     const handleMouseMove = (event: MouseEvent) => {
+      // Handle custom panning if active
+      if (customPanRef.current.isPanning && 
+          customPanRef.current.startPoint && 
+          customPanRef.current.startCameraPosition &&
+          customPanRef.current.startCameraTarget &&
+          camera && controls) {
+          
+        // Calculate movement delta
+        const deltaX = event.clientX - customPanRef.current.startPoint.x;
+        const deltaY = event.clientY - customPanRef.current.startPoint.y;
+        
+        // Convert screen coordinates to world space movement
+        // This math simulates what TrackballControls would do but in a more controlled way
+        const vector = new THREE.Vector3();
+        const camPos = customPanRef.current.startCameraPosition.clone();
+        const camTarget = customPanRef.current.startCameraTarget.clone();
+        
+        // Get view vector (direction camera is looking)
+        const viewVector = new THREE.Vector3().subVectors(camTarget, camPos).normalize();
+        
+        // Get right vector (perpendicular to view and up vectors)
+        const rightVector = new THREE.Vector3().crossVectors(viewVector, camera.up).normalize();
+        
+        // Get a vector in the camera's viewing plane that points "up" relative to the view
+        const upVector = new THREE.Vector3().crossVectors(rightVector, viewVector).normalize();
+        
+        // Scale movement by camera distance to target for natural feel
+        const distance = camPos.distanceTo(camTarget);
+        const scaleFactor = (distance / 500) * customPanRef.current.panSpeed;
+        
+        // Apply movement
+        vector.copy(rightVector).multiplyScalar(-deltaX * scaleFactor);
+        vector.add(upVector.multiplyScalar(deltaY * scaleFactor));
+        
+        // Move both camera and target by the same amount to maintain view direction
+        camera.position.copy(camPos).add(vector);
+        controls.target.copy(camTarget).add(vector);
+        
+        // Force controls to update
+        controls.update();
+        
+        // Log the custom panning state
+        console.log("🖐️ CUSTOM PANNING:", {
+          startPoint: customPanRef.current.startPoint,
+          currentPoint: { x: event.clientX, y: event.clientY },
+          deltaX, deltaY,
+          distance, scaleFactor
+        });
+      }
+      
       // DIAGNOSIS SECTION - Log much more detailed info for right-click issues
       // Capture detailed state whenever mousemove happens
       console.log("🔍 MOUSE MOVE STATE:", {
@@ -1798,6 +1905,7 @@ export default function Canvas3D({
         // Our internal tracking
         rightButtonPressedRef: rightMouseButtonPressedRef.current,
         isDraggingRef: dragStateRef.current.isDragging,
+        customPanning: customPanRef.current.isPanning,
         // TrackballControls state if available
         controlsState: controlsRef.current ? {
           _state: (controlsRef.current as any)._state,
@@ -2023,6 +2131,22 @@ export default function Canvas3D({
     };
 
       const handleMouseUp = (event: MouseEvent) => {
+        // Handle custom panning first - end any active panning operation
+        if (customPanRef.current.isPanning) {
+          console.log("🖐️ ENDING CUSTOM PAN");
+          
+          // Reset our custom panning state
+          customPanRef.current.isPanning = false;
+          customPanRef.current.startPoint = null;
+          customPanRef.current.startCameraPosition = null;
+          customPanRef.current.startCameraTarget = null;
+          
+          // Re-enable TrackballControls
+          if (controls) {
+            controls.enabled = true;
+          }
+        }
+        
         // CRITICAL TRACKING: Log all mouse up events
         console.log("🖱️ MOUSE UP EVENT:", { 
           timestamp: Date.now(),
@@ -2032,6 +2156,7 @@ export default function Canvas3D({
           altKey: event.altKey,
           target: event.target ? (event.target as any).tagName : "unknown",
           isDragging: dragStateRef.current.isDragging,
+          customPanning: customPanRef.current.isPanning,
           rightButtonPressed: rightMouseButtonPressedRef.current,
           controlsState: controlsRef.current ? 
             {
