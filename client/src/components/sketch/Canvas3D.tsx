@@ -388,6 +388,15 @@ export default function Canvas3D({
   const [activeMeasurementLabel, setActiveMeasurementLabel] = useState<THREE.Sprite | null>(null);
 
   const isMeasureModeRef = useRef(false);
+  
+  // Store the positions of air entries that have been updated via dragging
+  // This is used to ensure they keep their positions when the scene is rebuilt
+  // Format: { floorName: { entryIndex: { x, y } } }
+  const updatedAirEntryPositionsRef = useRef<{
+    [floorName: string]: {
+      [entryIndex: number]: { x: number, y: number }
+    }
+  }>({});
   const dragStateRef = useRef({
     isDragging: false,
     selectedAxis: null as "x" | "z" | null,
@@ -660,6 +669,10 @@ export default function Canvas3D({
   ) => {
     const objects: THREE.Object3D[] = [];
     const perimeterPoints = createRoomPerimeter(floorData.lines);
+    
+    // Check if we have stored updated positions for this floor
+    const floorName = floorData.name.toLowerCase().replace(/\s+/g, '');
+    const updatedPositions = updatedAirEntryPositionsRef.current[floorName] || {};
 
     // Create floor and ceiling surfaces
     if (perimeterPoints.length > 2) {
@@ -766,17 +779,28 @@ export default function Canvas3D({
           side: THREE.DoubleSide,
         });
 
+        // Check if we have a stored position for this entry
+        const updatedPosition = updatedPositions[index];
+        
+        // Create a working copy of the entry position
+        let entryPosition = { ...entry.position };
+        
+        // If we have a stored position from previous dragging, use it
+        if (updatedPosition) {
+          console.log(`Using stored position for entry ${index}:`, updatedPosition);
+          entryPosition = updatedPosition;
+        }
+        
         const mesh = new THREE.Mesh(geometry, material);
-        const position = transform2DTo3D(entry.position);
+        const position = transform2DTo3D(entryPosition);
         mesh.position.set(position.x, position.y, zPosition);
 
         // Add userData for raycasting identification - include the actual entry index for easy mapping
-        // Create deep clones of the data to avoid reference issues
         mesh.userData = {
           type: entry.type,
-          position: JSON.parse(JSON.stringify(entry.position)),
-          dimensions: JSON.parse(JSON.stringify(entry.dimensions)),
-          line: JSON.parse(JSON.stringify(entry.line)),
+          position: entryPosition, // Use the potentially updated position
+          dimensions: entry.dimensions,
+          line: entry.line,
           index: objects.length,
           entryIndex: index  // Add the actual index in the airEntries array
         };
@@ -1880,90 +1904,26 @@ export default function Canvas3D({
               }))
             });
             
-            // Create a deep copy of the updated entry for parent component
-            const deepCopiedEntry = JSON.parse(JSON.stringify(updatedEntry));
+            // Call the update callback
+            onUpdateAirEntry(currentFloor, entryIndex, updatedEntry);
             
-            // Call the update callback with the deep copied entry
-            onUpdateAirEntry(currentFloor, entryIndex, deepCopiedEntry);
+            // IMPORTANT: Keep track of the updated entries to prevent them from resetting
+            // We store a mapping of entryIndex -> position to check against when scene rebuilds
+            if (!updatedAirEntryPositionsRef.current[currentFloor]) {
+              updatedAirEntryPositionsRef.current[currentFloor] = {};
+            }
             
-            // IMPORTANT: The parent component may have updated the state
-            // We need to wait for the next render cycle to get the latest floor data
-            // Using setTimeout to defer this check until after the React state update
-            setTimeout(() => {
-              // Get the latest floor data after the parent component has processed the update
-              const latestFloorData = floors[currentFloor];
-              
-              if (latestFloorData && latestFloorData.airEntries) {
-                console.log("LATEST FLOOR DATA CHECK AFTER UPDATE:", {
-                  activeEntryIndex: entryIndex,
-                  allEntriesAfterParentUpdate: latestFloorData.airEntries.map((entry, idx) => ({
-                    index: idx,
-                    type: entry.type,
-                    position: entry.position,
-                    isActive: idx === entryIndex
-                  }))
-                });
-                
-                // Now we need to synchronize ALL air entry meshes with the latest floor data
-                // This ensures that no matter which air entry is dragged next, they all have correct positions
-                if (scene) {
-                  // First collect all air entry meshes and their associated data
-                  const airEntryMeshes: Array<{
-                    mesh: THREE.Mesh;
-                    entryIndex: number;
-                    currentPosition: Point;
-                  }> = [];
-                  
-                  scene.traverse((object) => {
-                    if (
-                      object instanceof THREE.Mesh &&
-                      object.userData &&
-                      object.userData.type &&
-                      ["window", "door", "vent"].includes(object.userData.type) &&
-                      typeof object.userData.entryIndex === 'number'
-                    ) {
-                      airEntryMeshes.push({
-                        mesh: object,
-                        entryIndex: object.userData.entryIndex,
-                        currentPosition: object.userData.position
-                      });
-                    }
-                  });
-                  
-                  console.log("Found air entry meshes to sync:", airEntryMeshes.length);
-                  
-                  // Now update all meshes based on the latest floor data
-                  airEntryMeshes.forEach(({ mesh, entryIndex }) => {
-                    // Check if this index is valid in the latest floor data
-                    if (entryIndex >= 0 && entryIndex < latestFloorData.airEntries.length) {
-                      // Get the latest position data from the floor data
-                      const latestPosition = latestFloorData.airEntries[entryIndex].position;
-                      
-                      // Update the 3D object's userData with the latest position
-                      // This ensures future searches will find the correct object
-                      mesh.userData.position = JSON.parse(JSON.stringify(latestPosition));
-                      
-                      // Also update the 3D position of the mesh
-                      const position3D = transform2DTo3D(latestPosition);
-                      const currentHeight = mesh.position.z; // Preserve height
-                      
-                      // Update the mesh position to match the floor data position
-                      // (but preserve the height which is set elsewhere)
-                      mesh.position.set(position3D.x, position3D.y, currentHeight);
-                      
-                      console.log(`Synced mesh for entry ${entryIndex}:`, {
-                        latestPosition,
-                        new3DPosition: { 
-                          x: position3D.x, 
-                          y: position3D.y, 
-                          z: currentHeight 
-                        }
-                      });
-                    }
-                  });
-                }
-              }
-            }, 0);
+            // Store the latest position for this entry index
+            updatedAirEntryPositionsRef.current[currentFloor][entryIndex] = {
+              x: updatedEntry.position.x,
+              y: updatedEntry.position.y
+            };
+            
+            console.log("STORING UPDATED POSITION:", {
+              floor: currentFloor,
+              entryIndex,
+              position: updatedAirEntryPositionsRef.current[currentFloor][entryIndex]
+            });
             
             // CRITICAL FIX: Update the userData with the new position
             // This ensures that future position searches can find this object
