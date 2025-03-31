@@ -2023,10 +2023,92 @@ export default function Canvas3D({
     };
 
       const handleMouseUp = (event: MouseEvent) => {
+        // CRITICAL TRACKING: Log all mouse up events
+        console.log("🖱️ MOUSE UP EVENT:", { 
+          timestamp: Date.now(),
+          button: event.button, 
+          buttons: event.buttons,
+          ctrlKey: event.ctrlKey,
+          altKey: event.altKey,
+          target: event.target ? (event.target as any).tagName : "unknown",
+          isDragging: dragStateRef.current.isDragging,
+          rightButtonPressed: rightMouseButtonPressedRef.current,
+          controlsState: controlsRef.current ? 
+            {
+              _state: (controlsRef.current as any)._state,
+              enabled: controlsRef.current.enabled
+            } : "controls not available"
+        });
+        
         // FIXED: Process mouse up for any button when we are dragging
         // But only for right-button (2) when not dragging
         if (!dragStateRef.current.isDragging && event.button !== 2) {
           return;  // Don't process non-right clicks when not dragging
+        }
+        
+        // CRITICAL FIX FOR PAN STICKING:
+        // When a drag operation completes, completely recreate the controls to ensure
+        // they start from a clean state without any stuck button or operation flags
+        if (dragStateRef.current.isDragging) {
+          console.log("🔧 DRAG OPERATION COMPLETED - Recreating controls to ensure clean state");
+          
+          // First, clean up and dispose the existing controls if there are any
+          if (controlsRef.current) {
+            try {
+              // Disable the current controls
+              controlsRef.current.enabled = false;
+              
+              // Try to remove any event listeners that might be active
+              controlsRef.current.dispose();
+              
+              console.log("✅ Existing controls disabled and disposed");
+            } catch (e) {
+              console.error("Error disposing controls:", e);
+            }
+            
+            // Create completely new controls with the same settings
+            // Delay slightly to ensure all events are processed
+            setTimeout(() => {
+              try {
+                if (cameraRef.current && containerRef.current) {
+                  // Create new TrackballControls with the same parameters
+                  const newControls = new TrackballControls(
+                    cameraRef.current,
+                    containerRef.current
+                  );
+                  
+                  // Copy settings from our defaults
+                  newControls.rotateSpeed = 1.0;
+                  newControls.zoomSpeed = 1.2;
+                  newControls.panSpeed = 0.8;
+                  newControls.noZoom = false;
+                  newControls.noPan = false;
+                  newControls.staticMoving = true;
+                  newControls.dynamicDampingFactor = 0.3;
+                  newControls.keys = [65, 83, 68]; // A, S, D
+                  
+                  // Configure mouse buttons
+                  newControls.mouseButtons = {
+                    LEFT: THREE.MOUSE.ROTATE,
+                    MIDDLE: THREE.MOUSE.ZOOM,
+                    RIGHT: THREE.MOUSE.PAN
+                  };
+                  
+                  // Replace the controls reference
+                  controlsRef.current = newControls;
+                  
+                  console.log("✅ New controls created and configured");
+                  
+                  // Force a render to apply the new controls
+                  needsRenderRef.current = true;
+                } else {
+                  console.error("Cannot recreate controls - camera or container missing");
+                }
+              } catch (e) {
+                console.error("Error recreating controls:", e);
+              }
+            }, 100); // Small delay to ensure cleanup is complete
+          }
         }
         
         // If this is a right mouse button up event, reset the flag
