@@ -1008,8 +1008,24 @@ export default function Canvas3D({
     controls.panSpeed = 0.8;
     controls.noZoom = false;
     controls.noPan = false;
-    controls.staticMoving = true;
+    controls.staticMoving = true;  // Immediate response without inertia
     controls.dynamicDampingFactor = 0.2;
+    
+    // Add a reset method to the controls that can be called to fully reset
+    // @ts-ignore - We're extending the object
+    controls.resetState = function() {
+      // @ts-ignore - Accessing private properties
+      if (this._state !== undefined) this._state = -1; // STATE.NONE
+      // @ts-ignore - Accessing private properties
+      if (this._prevState !== undefined) this._prevState = -1;
+      // @ts-ignore - Accessing private properties
+      if (this._mouseDown !== undefined) this._mouseDown = false;
+      // @ts-ignore - Accessing private properties
+      if (this._mouseMoved !== undefined) this._mouseMoved = false;
+      
+      // Force an update to apply these changes
+      this.update();
+    };
 
     // Configure mouse buttons - don't use right button for controls
     controls.mouseButtons = {
@@ -1019,12 +1035,13 @@ export default function Canvas3D({
     };
     
     // Debug: Log TrackballControls configuration
-    console.log("TrackballControls initialized with:", {
+    console.log("🎮 TrackballControls initialized with:", {
       mouseButtons: controls.mouseButtons,
       enabled: controls.enabled,
       // Access private properties for debugging
       instance: controls
     });
+    
     // Add mechanism to disable controls during dragging
     controls.enabled = true;
     
@@ -1267,9 +1284,16 @@ export default function Canvas3D({
       event.preventDefault();
 
       // Use the ref for reliable measure mode status
-      console.log("RIGHT MOUSE DOWN - Checking measure mode:", {
+      console.log("🖱️ RIGHT MOUSE DOWN - Button Info:", {
+        button: event.button,        // Which button triggered this event (0: left, 1: middle, 2: right)
+        buttons: event.buttons,      // Current buttons being pressed (bitmask)
+        which: event.which,          // Legacy property showing which button
+        ctrlKey: event.ctrlKey,
+        altKey: event.altKey,
+        timestamp: Date.now(),
         isMeasureModeRef: isMeasureModeRef.current,
-        isMeasureMode: isMeasureMode
+        isMeasureMode: isMeasureMode,
+        controlsEnabled: controlsRef.current?.enabled
       });
 
       // Log current selection and drag state
@@ -1691,6 +1715,20 @@ export default function Canvas3D({
       
       // Regular drag logic
       if (dragStateRef.current.isDragging) {
+        // ℹ️ Add more detailed logging for the first drag event
+        const isFirstDragEvent = !dragStateRef.current.currentMousePosition;
+        if (isFirstDragEvent) {
+          console.log("🔄 DRAG FIRST MOVEMENT:", {
+            button: event.button,
+            buttons: event.buttons,  // This shows which buttons are currently pressed
+            isDragging: dragStateRef.current.isDragging,
+            selectedAxis: dragStateRef.current.selectedAxis,
+            dragStartTimeStamp: Date.now(),
+            selectedObjectId: dragStateRef.current.selectedObject?.uuid,
+            controlsEnabled: controlsRef.current?.enabled
+          });
+        }
+        
         // Store the current mouse position
         dragStateRef.current.currentMousePosition = {
           x: event.clientX,
@@ -1827,9 +1865,53 @@ export default function Canvas3D({
           button: event.button, 
           buttons: event.buttons,
           isDragging: dragStateRef.current.isDragging,
-          selectedAxis: dragStateRef.current.selectedAxis
+          selectedAxis: dragStateRef.current.selectedAxis,
+          controlsEnabled: controlsRef.current?.enabled,
+          timestamp: Date.now()
         });
 
+        // CRITICAL FIX: Force reset of any pending state in TrackballControls
+        // This is a workaround for a bug where TrackballControls doesn't properly release state
+        // when a mouseup happens during drag or after drag is finished
+        if (controlsRef.current) {
+          // Force all internal state to be reset
+          if (dragStateRef.current.isDragging) {
+            console.log("🔄 FORCING TRACKBALL CONTROLS RESET due to drag operation");
+            
+            // Use our custom resetState method if available
+            // @ts-ignore
+            if (controlsRef.current.resetState && typeof controlsRef.current.resetState === 'function') {
+              console.log("Using custom resetState method to fix controls state");
+              // @ts-ignore
+              controlsRef.current.resetState();
+            } else {
+              // Fallback to direct property manipulation if method is unavailable
+              try {
+                console.log("Falling back to direct state manipulation");
+                // @ts-ignore - These are internal properties but we need to access them to fix the issue
+                if (controlsRef.current._state !== undefined) {
+                  console.log("Resetting internal control state from:", controlsRef.current._state);
+                  // @ts-ignore - Reset the state to NONE
+                  controlsRef.current._state = -1; // STATE.NONE
+                }
+                
+                // Reset any rotation/pan/zoom speed
+                // @ts-ignore
+                if (controlsRef.current.rotateSpeed !== undefined) controlsRef.current.rotateSpeed = 0;
+                // @ts-ignore
+                if (controlsRef.current.panSpeed !== undefined) controlsRef.current.panSpeed = 0;
+                // @ts-ignore
+                if (controlsRef.current.zoomSpeed !== undefined) controlsRef.current.zoomSpeed = 0;
+              } catch (e) {
+                console.error("Failed to reset TrackballControls state:", e);
+              }
+            }
+            
+            // Force an update to apply changes
+            controlsRef.current.update();
+          }
+        }
+        
         console.log("MOUSE UP EVENT DETAILS:", { 
           button: event.button, 
           refIsDragging: dragStateRef.current.isDragging,
@@ -1870,7 +1952,41 @@ export default function Canvas3D({
 
           // Re-enable controls
           if (controlsRef.current) {
+            // First synthesize a right mouse button up event for the controls
+            // This helps ensure the controls properly reset their internal state
+            if (containerRef.current) {
+              console.log("Synthesizing right mouseup event for controls");
+              const canvas = containerRef.current;
+              
+              try {
+                // Dispatch a synthetic mouseup event with button 2 (right button)
+                const syntheticEvent = new MouseEvent('mouseup', {
+                  bubbles: true,
+                  cancelable: true,
+                  button: 2,
+                  buttons: 0,
+                  clientX: event.clientX,
+                  clientY: event.clientY,
+                  view: window
+                });
+                
+                // Dispatch the event directly on the canvas element
+                canvas.dispatchEvent(syntheticEvent);
+                console.log("Successfully dispatched synthetic right mouseup event");
+              } catch (e) {
+                console.error("Failed to dispatch synthetic mouseup event:", e);
+              }
+            }
+            
+            // Then re-enable the controls
             controlsRef.current.enabled = true;
+            
+            // Also use our custom reset method if available
+            // @ts-ignore
+            if (controlsRef.current.resetState && typeof controlsRef.current.resetState === 'function') {
+              // @ts-ignore
+              controlsRef.current.resetState();
+            }
           }
           return;
         }
@@ -2094,21 +2210,69 @@ export default function Canvas3D({
             mouseButtons: controlsRef.current.mouseButtons
           });
           
-          // IMPORTANT FIX: Create a fake mouseup event and dispatch it to the canvas
-          // This will force TrackballControls to reset its internal state
-          if (containerRef.current) {
-            console.log("Dispatching synthetic mouseup event to force TrackballControls state reset");
+          // DEEPER FIX: Reset TrackballControls completely and recreate it
+          // This is a more aggressive approach to get a clean state
+          if (containerRef.current && cameraRef.current && sceneRef.current) {
+            console.log("DEEP FIX: Recreating TrackballControls from scratch");
             
-            // Create a synthetic mouseup event for the right button (2)
-            const fakeEvent = new MouseEvent('mouseup', {
-              bubbles: true,
-              cancelable: true,
-              button: 2,  // Right mouse button
-              buttons: 0,  // No buttons pressed after mouseup
-            });
+            // First attempt to explicitly reset internal state by directly accessing private properties
+            try {
+              // Try to access these private properties with any type to bypass TypeScript
+              const controls = controlsRef.current as any;
+              
+              console.log("Direct TrackballControls internal state manipulation:", {
+                beforeReset: { 
+                  _state: controls._state,
+                  _prevState: controls._prevState,
+                  _mouseButtons: controls._mouseButtons,
+                  _mouseDown: controls._mouseDown,
+                  _mouseMoved: controls._mouseMoved,
+                  enabled: controls.enabled
+                }
+              });
+              
+              // Direct reset of all internal state properties that might be causing the issue
+              controls._state = -1; // STATE.NONE in TrackballControls
+              controls._prevState = -1; 
+              controls._mouseDown = false;
+              controls._mouseMoved = false;
+              
+              // Reset all mouse button states (LEFT = 0, MIDDLE = 1, RIGHT = 2)
+              if (controls._mouseButtons) {
+                controls._mouseButtons.LEFT = -1;
+                controls._mouseButtons.MIDDLE = -1;
+                controls._mouseButtons.RIGHT = -1;
+              }
+              
+              console.log("After direct internal state reset:", {
+                _state: controls._state,
+                _prevState: controls._prevState,
+                _mouseButtons: controls._mouseButtons,
+                _mouseDown: controls._mouseDown,
+                _mouseMoved: controls._mouseMoved
+              });
+            } catch (e) {
+              console.error("Could not directly reset TrackballControls state:", e);
+            }
             
-            // Dispatch it on the canvas element to ensure TrackballControls receives it
-            containerRef.current.dispatchEvent(fakeEvent);
+            // Also try the synthetic event approach as a backup plan
+            try {
+              console.log("Also dispatching synthetic mouseup event for right button");
+              
+              // Create a synthetic mouseup event for the right button (2)
+              const fakeEvent = new MouseEvent('mouseup', {
+                bubbles: true,
+                cancelable: true,
+                button: 2,  // Right mouse button 
+                buttons: 0,  // No buttons pressed after mouseup
+              });
+              
+              // Dispatch on document and container for maximum likelihood of capture
+              document.dispatchEvent(fakeEvent);
+              containerRef.current.dispatchEvent(fakeEvent);
+            } catch (e) {
+              console.error("Failed to dispatch synthetic event:", e);
+            }
           }
           
           // Re-enable the controls
