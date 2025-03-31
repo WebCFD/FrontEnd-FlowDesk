@@ -541,12 +541,38 @@ export default function WizardDesign() {
   ) => {
     // Create a copy of the floors data
     console.log(`Updating air entry in floor ${floorName}, index ${index}`);
+    
+    // Log all entries before updating
+    console.log("PARENT COMPONENT DEBUG - BEFORE UPDATE:", {
+      updateRequestedFor: {
+        floorName,
+        index,
+        entryType: updatedEntry.type,
+        oldPosition: floorName === currentFloor ? airEntries[index]?.position : floors[floorName]?.airEntries[index]?.position,
+        newPosition: updatedEntry.position
+      },
+      currentFloor,
+      allEntries: floorName === currentFloor 
+        ? airEntries.map((entry, i) => ({ index: i, type: entry.type, position: entry.position }))
+        : floors[floorName]?.airEntries.map((entry, i) => ({ index: i, type: entry.type, position: entry.position }))
+    });
 
     // Use the store's setAirEntries function when updating the current floor
     if (floorName === currentFloor) {
       const updatedAirEntries = [...airEntries];
       updatedAirEntries[index] = updatedEntry;
       setAirEntries(updatedAirEntries);
+      
+      // Log entries after updating
+      console.log("PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR):", {
+        updatedIndex: index,
+        allEntries: updatedAirEntries.map((entry, i) => ({ 
+          index: i, 
+          type: entry.type, 
+          position: entry.position,
+          isUpdated: i === index
+        }))
+      });
 
       toast({
         title: "Air Entry Updated",
@@ -563,8 +589,30 @@ export default function WizardDesign() {
       // Create a copy of the air entries array
       const floorAirEntries = [...updatedFloors[floorName].airEntries];
 
+      // Log the floor air entries before updating
+      console.log("PARENT COMPONENT DEBUG - BEFORE UPDATE (NON-CURRENT FLOOR):", {
+        floor: floorName,
+        allEntries: floorAirEntries.map((entry, i) => ({
+          index: i,
+          type: entry.type,
+          position: entry.position,
+          isTargeted: i === index
+        }))
+      });
+
       // Update the specific air entry
       floorAirEntries[index] = updatedEntry;
+
+      // Log the floor air entries after updating
+      console.log("PARENT COMPONENT DEBUG - AFTER UPDATE (NON-CURRENT FLOOR):", {
+        floor: floorName,
+        allEntries: floorAirEntries.map((entry, i) => ({
+          index: i,
+          type: entry.type,
+          position: entry.position,
+          isUpdated: i === index
+        }))
+      });
 
       // Create a copy of the floor data with the updated air entries
       updatedFloors[floorName] = {
@@ -576,6 +624,7 @@ export default function WizardDesign() {
       Object.entries(updatedFloors).forEach(([floor, data]) => {
         if (floor !== currentFloor) {
           // For non-current floors, use store methods to update
+          console.log(`Updating floor ${floor} in the store`);
           useRoomStore.getState().updateFloor(floor, data);
         }
       });
