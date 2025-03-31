@@ -1184,6 +1184,22 @@ export default function Canvas3D({
         isMeasureMode: isMeasureMode
       });
 
+      // Log current selection and drag state
+      console.log("SELECTION STATE AT MOUSE DOWN:", {
+        selectedAirEntry: selectedAirEntry ? {
+          index: selectedAirEntry.index,
+          type: selectedAirEntry.entry.type,
+          position: selectedAirEntry.entry.position
+        } : null,
+        selectedAxis: selectedAxis,
+        isDragging: isDragging,
+        dragStateRef: {
+          isDragging: dragStateRef.current.isDragging,
+          selectedAxis: dragStateRef.current.selectedAxis,
+          entryIndex: dragStateRef.current.entryIndex
+        }
+      });
+
       // Use the ref to determine if we're in measure mode
       if (isMeasureModeRef.current) {
         console.log("DIVERTING TO MEASUREMENT HANDLER");
@@ -1409,6 +1425,22 @@ export default function Canvas3D({
 
               console.log("Started dragging with axis:", axisDirection);
               console.log("Started dragging", { axis: axisDirection });
+              
+              // Log detailed drag state at drag start
+              console.log("DRAG STATE INITIALIZED:", {
+                axis: dragStateRef.current.selectedAxis,
+                isDragging: dragStateRef.current.isDragging,
+                entryIndex: dragStateRef.current.entryIndex,
+                selectedObject: dragStateRef.current.selectedObject ? "exists" : "null",
+                reactState: {
+                  selectedAirEntry: selectedAirEntry ? {
+                    index: selectedAirEntry.index,
+                    type: selectedAirEntry.entry.type,
+                  } : null,
+                  selectedAxis,
+                  isDragging
+                }
+              });
             }
             }
             }
@@ -1492,7 +1524,10 @@ export default function Canvas3D({
         console.log("Mouse move during drag", {
           x: event.clientX,
           y: event.clientY,
-          axis: dragStateRef.current.selectedAxis
+          axis: dragStateRef.current.selectedAxis,
+          dragging: dragStateRef.current.isDragging,
+          reactIsDragging: isDragging,
+          selectedAxis: selectedAxis
         });
       }
 
@@ -1611,6 +1646,23 @@ export default function Canvas3D({
           button: event.button, 
           refIsDragging: dragStateRef.current.isDragging,
           refAxis: dragStateRef.current.selectedAxis
+        });
+        
+        // Log the full state before we reset anything
+        console.log("SELECTION STATE BEFORE RESET:", {
+          selectedAirEntry: selectedAirEntry ? {
+            index: selectedAirEntry.index,
+            type: selectedAirEntry.entry.type,
+            position: selectedAirEntry.entry.position
+          } : null,
+          selectedAxis,
+          isDragging,
+          dragStateRef: {
+            isDragging: dragStateRef.current.isDragging,
+            selectedAxis: dragStateRef.current.selectedAxis,
+            entryIndex: dragStateRef.current.entryIndex,
+            selectedObject: dragStateRef.current.selectedObject ? "exists" : "null"
+          }
         });
 
         // Check if we were dragging from the ref
