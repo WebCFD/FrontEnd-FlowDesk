@@ -672,7 +672,10 @@ export default function Canvas3D({
     
     // Check if we have stored updated positions for this floor
     const floorName = floorData.name.toLowerCase().replace(/\s+/g, '');
+    console.log(`[POSITION RETRIEVAL] Checking for positions with floor key: '${floorName}'`);
+    console.log(`[POSITION RETRIEVAL] All stored positions:`, JSON.stringify(updatedAirEntryPositionsRef.current));
     const updatedPositions = updatedAirEntryPositionsRef.current[floorName] || {};
+    console.log(`[POSITION RETRIEVAL] Retrieved positions for '${floorName}':`, JSON.stringify(updatedPositions));
 
     // Create floor and ceiling surfaces
     if (perimeterPoints.length > 2) {
@@ -1909,20 +1912,46 @@ export default function Canvas3D({
             
             // IMPORTANT: Keep track of the updated entries to prevent them from resetting
             // We store a mapping of entryIndex -> position to check against when scene rebuilds
-            if (!updatedAirEntryPositionsRef.current[currentFloor]) {
-              updatedAirEntryPositionsRef.current[currentFloor] = {};
+            console.log("DEBUG UPDATED POSITIONS REF BEFORE:", {
+              current: JSON.stringify(updatedAirEntryPositionsRef.current),
+              floorValue: currentFloor,
+              normalizedFloorValue: currentFloor.toLowerCase().replace(/\s+/g, ''),
+              floorType: typeof currentFloor,
+              floorExists: !!updatedAirEntryPositionsRef.current[currentFloor],
+              entryIndexValue: entryIndex,
+              entryIndexType: typeof entryIndex
+            });
+            
+            // Normalize the floor name in the same way as when we retrieve it
+            const normalizedFloorName = currentFloor.toLowerCase().replace(/\s+/g, '');
+            console.log(`Using normalized floor name for storage: '${normalizedFloorName}' (original: '${currentFloor}')`);
+            
+            if (!updatedAirEntryPositionsRef.current[normalizedFloorName]) {
+              updatedAirEntryPositionsRef.current[normalizedFloorName] = {};
+              console.log(`Created new entry for floor: ${normalizedFloorName} in updatedAirEntryPositionsRef`);
             }
             
             // Store the latest position for this entry index
+            updatedAirEntryPositionsRef.current[normalizedFloorName][entryIndex] = {
+              x: updatedEntry.position.x,
+              y: updatedEntry.position.y
+            };
+            
+            // Also store under the original key for backward compatibility
+            if (!updatedAirEntryPositionsRef.current[currentFloor]) {
+              updatedAirEntryPositionsRef.current[currentFloor] = {};
+            }
             updatedAirEntryPositionsRef.current[currentFloor][entryIndex] = {
               x: updatedEntry.position.x,
               y: updatedEntry.position.y
             };
             
             console.log("STORING UPDATED POSITION:", {
-              floor: currentFloor,
+              originalFloor: currentFloor,
+              normalizedFloor: normalizedFloorName,
               entryIndex,
-              position: updatedAirEntryPositionsRef.current[currentFloor][entryIndex]
+              position: updatedAirEntryPositionsRef.current[normalizedFloorName][entryIndex],
+              completeRef: JSON.stringify(updatedAirEntryPositionsRef.current)
             });
             
             // CRITICAL FIX: Update the userData with the new position
