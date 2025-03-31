@@ -1143,12 +1143,56 @@ export default function Canvas3D({
 
       // Only update controls and render when needed
       if (controlsRef.current) {
-        // Log control update events if right button is held
-        if (rightMouseButtonPressedRef.current) {
-          console.log("🖱️ RIGHT BUTTON HELD - Controls update", {
-            controlsEnabled: controlsRef.current.enabled,
-            isDragging: dragStateRef.current.isDragging
+        // Access internal properties for detailed debugging
+        const controls = controlsRef.current as any;
+        
+        // Log full controls state on every frame if right button is held or during animation
+        if (rightMouseButtonPressedRef.current || (controls && controls._state !== -1)) {
+          // This provides detailed diagnosis of what's happening during the issue
+          console.log("🔍 TRACKBALL DETAILED STATE:", {
+            frame: frameCount,
+            rightButtonHeld: rightMouseButtonPressedRef.current,
+            buttonsBitmask: controls._mouseButtons ? JSON.stringify(controls._mouseButtons) : "N/A",
+            panEnabled: controls.enablePan,
+            rotateEnabled: controls.enableRotate,
+            zoomEnabled: controls.enableZoom,
+            // Critical internal state
+            _state: controls._state, 
+            _prevState: controls._prevState,
+            _mouseDownPoint: controls._mouseDownPoint ? true : false,
+            _mouseMoved: controls._mouseMoved,
+            // Movement tracking
+            _movePrev: controls._movePrev ? `x:${controls._movePrev.x.toFixed(2)}, y:${controls._movePrev.y.toFixed(2)}` : "N/A",
+            _moveCurr: controls._moveCurr ? `x:${controls._moveCurr.x.toFixed(2)}, y:${controls._moveCurr.y.toFixed(2)}` : "N/A",
+            // Our app state
+            isDragging: dragStateRef.current.isDragging,
+            dragAxis: dragStateRef.current.selectedAxis,
+            // Pointer state
+            pointerLockElement: document.pointerLockElement ? true : false,
+            hasFocus: document.hasFocus(),
+            activeElement: document.activeElement ? document.activeElement.tagName : "none"
           });
+        }
+        
+        // Try to inspect the THREE.js controls event listeners
+        if (frameCount % 500 === 0) {
+          try {
+            // Get the domElement and its event listeners
+            const domElement = controls.domElement;
+            console.log("🎮 CONTROLS DOM ELEMENT:", {
+              hasElement: !!domElement,
+              tagName: domElement ? domElement.tagName : "N/A",
+              id: domElement ? domElement.id : "N/A",
+              // Try to access controls prototype methods
+              hasMouseUp: typeof controls.onMouseUp === 'function',
+              hasMouseDown: typeof controls.onMouseDown === 'function',
+              hasMouseMove: typeof controls.onMouseMove === 'function',
+              // Check if element has any listeners
+              hasListeners: domElement && domElement._listeners ? true : false
+            });
+          } catch (e) {
+            console.error("Error inspecting controls element:", e);
+          }
         }
         
         // Update the controls as normal
@@ -1745,18 +1789,72 @@ export default function Canvas3D({
     };
 
     const handleMouseMove = (event: MouseEvent) => {
-      // Check for right button state during move - will help debug when button is "stuck"
+      // DIAGNOSIS SECTION - Log much more detailed info for right-click issues
+      // Capture detailed state whenever mousemove happens
+      console.log("🔍 MOUSE MOVE STATE:", {
+        timestamp: Date.now(),
+        buttons: event.buttons,           // Bitmask of buttons currently pressed
+        rightButtonBit: !!(event.buttons & 2),  // Explicit check for right button
+        // Our internal tracking
+        rightButtonPressedRef: rightMouseButtonPressedRef.current,
+        isDraggingRef: dragStateRef.current.isDragging,
+        // TrackballControls state if available
+        controlsState: controlsRef.current ? {
+          _state: (controlsRef.current as any)._state,
+          enabled: controlsRef.current.enabled,
+          _prevState: (controlsRef.current as any)._prevState
+        } : "controls not available",
+        // Mouse coordinates
+        mouseX: event.clientX,
+        mouseY: event.clientY
+      });
+      
+      // CRITICAL FIX ATTEMPT: Check both physical button state AND our tracking
       if (event.buttons & 2) { // Bitwise check for right button (buttons is a bitmask)
         // If buttons indicates right is pressed, but our ref doesn't, update it
         if (!rightMouseButtonPressedRef.current) {
           console.log("🚨 RIGHT BUTTON DETECTED DURING MOUSEMOVE, BUT REF IS FALSE - correcting");
           rightMouseButtonPressedRef.current = true;
+          
+          // Also check if we need to force TrackballControls to recognize right button press
+          if (controlsRef.current) {
+            const controls = controlsRef.current as any;
+            console.log("⚙️ Current controls state:", controls._state);
+            
+            // If controls are not in pan state but should be, try to manually set state
+            if (controls._state !== 2) { // Assuming 2 is PAN state
+              console.log("⚙️ Attempting to manually set controls state to PAN");
+              try {
+                // Force the controls into PAN state
+                controls._state = 2;
+                controls._prevState = -1;
+                console.log("⚙️ Controls state manually set to PAN");
+              } catch (e) {
+                console.error("Failed to set controls state:", e);
+              }
+            }
+          }
         }
       } else {
         // If buttons indicates right is NOT pressed, but our ref says it is, fix it
         if (rightMouseButtonPressedRef.current) {
           console.log("🚨 RIGHT BUTTON NOT DETECTED DURING MOUSEMOVE, BUT REF IS TRUE - correcting");
           rightMouseButtonPressedRef.current = false;
+          
+          // Force TrackballControls to exit its state if we were panning
+          if (controlsRef.current) {
+            const controls = controlsRef.current as any;
+            if (controls._state === 2) { // If it's in PAN state
+              console.log("⚙️ Forcing controls out of PAN state");
+              try {
+                controls._state = -1; // Set to NONE state
+                controls._prevState = 2; // Remember we were in PAN
+                console.log("⚙️ Controls state manually reset to NONE");
+              } catch (e) {
+                console.error("Failed to reset controls state:", e);
+              }
+            }
+          }
         }
       }
       
@@ -1777,6 +1875,7 @@ export default function Canvas3D({
       
       // Regular drag logic
       if (dragStateRef.current.isDragging) {
+        // ENHANCED LOGGING - Add button state
         // ℹ️ Add more detailed logging for the first drag event
         const isFirstDragEvent = !dragStateRef.current.currentMousePosition;
         if (isFirstDragEvent) {
@@ -1787,7 +1886,11 @@ export default function Canvas3D({
             selectedAxis: dragStateRef.current.selectedAxis,
             dragStartTimeStamp: Date.now(),
             selectedObjectId: dragStateRef.current.selectedObject?.uuid,
-            controlsEnabled: controlsRef.current?.enabled
+            controlsEnabled: controlsRef.current?.enabled,
+            // Add TrackballControls state info
+            controlsState: controlsRef.current ? 
+              (controlsRef.current as any)._state : "N/A",
+            rightButtonPressed: rightMouseButtonPressedRef.current
           });
         }
         
@@ -1807,7 +1910,10 @@ export default function Canvas3D({
           axis: dragStateRef.current.selectedAxis,
           dragging: dragStateRef.current.isDragging,
           reactIsDragging: isDragging,
-          selectedAxis: selectedAxis
+          selectedAxis: selectedAxis,
+          // Add button state to diagnose conflicts
+          buttons: event.buttons,
+          rightButtonPressed: rightMouseButtonPressedRef.current
         });
       }
 
