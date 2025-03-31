@@ -43,6 +43,12 @@ interface FloorData {
   stairPolygons?: StairPolygon[]; // Add stair polygons to floor data
 }
 
+// Utility function to normalize floor names consistently across the application
+const normalizeFloorName = (floorName: string): string => {
+  // Convert to lowercase and remove spaces - ensure consistent keys for storage/retrieval
+  return floorName.toLowerCase().replace(/\s+/g, '');
+};
+
 // Define 3D Measurement interface
 interface Measurement3D {
   startPoint: THREE.Vector3;
@@ -670,12 +676,23 @@ export default function Canvas3D({
     const objects: THREE.Object3D[] = [];
     const perimeterPoints = createRoomPerimeter(floorData.lines);
     
-    // Check if we have stored updated positions for this floor
-    const floorName = floorData.name.toLowerCase().replace(/\s+/g, '');
-    console.log(`[POSITION RETRIEVAL] Checking for positions with floor key: '${floorName}'`);
+    // Check if we have stored updated positions for this floor - use the shared normalization function
+    const normalizedFloorName = normalizeFloorName(floorData.name);
+    console.log(`[POSITION RETRIEVAL] Checking for positions with floor key: '${normalizedFloorName}'`);
+    console.log(`[POSITION RETRIEVAL] Raw floor name: '${floorData.name}', Normalized to: '${normalizedFloorName}'`);
     console.log(`[POSITION RETRIEVAL] All stored positions:`, JSON.stringify(updatedAirEntryPositionsRef.current));
-    const updatedPositions = updatedAirEntryPositionsRef.current[floorName] || {};
-    console.log(`[POSITION RETRIEVAL] Retrieved positions for '${floorName}':`, JSON.stringify(updatedPositions));
+    
+    // Try both possible keys for maximum compatibility during transition
+    let updatedPositions = updatedAirEntryPositionsRef.current[normalizedFloorName] || {};
+    
+    // If nothing is found with the normalized name, try the original 'ground' key as fallback
+    // This handles the existing data during transition
+    if (Object.keys(updatedPositions).length === 0 && normalizedFloorName === 'groundfloor') {
+        console.log(`[POSITION RETRIEVAL] No positions found with '${normalizedFloorName}', trying 'ground' as fallback`);
+        updatedPositions = updatedAirEntryPositionsRef.current['ground'] || {};
+    }
+    
+    console.log(`[POSITION RETRIEVAL] Retrieved positions for '${normalizedFloorName}':`, JSON.stringify(updatedPositions));
 
     // Create floor and ceiling surfaces
     if (perimeterPoints.length > 2) {
@@ -790,8 +807,8 @@ export default function Canvas3D({
           updatedPositionValue: updatedPosition,
           entryOriginalPosition: entry.position,
           entryIndex: index,
-          floorName,
-          normalizedFloorName: floorName.toLowerCase().replace(/\s+/g, ''),
+          floorName: floorData.name,
+          normalizedFloorName: normalizedFloorName,
           allPositionsStoredForThisFloor: JSON.stringify(updatedPositions),
           allFloorEntries: floorData.airEntries.length
         });
@@ -1468,7 +1485,7 @@ export default function Canvas3D({
                         
                         if (parentMesh && parentMesh.userData) {
                           // Use the parent mesh's entryIndex
-                          const parentEntryIndex = parentMesh.userData.entryIndex;
+                          const parentEntryIndex = (parentMesh as THREE.Mesh).userData.entryIndex;
                           if (typeof parentEntryIndex === 'number' && 
                               parentEntryIndex >= 0 && 
                               parentEntryIndex < floorData.airEntries.length) {
@@ -1947,29 +1964,39 @@ export default function Canvas3D({
               entryIndexType: typeof entryIndex
             });
             
-            // Normalize the floor name in the same way as when we retrieve it
-            const normalizedFloorName = currentFloor.toLowerCase().replace(/\s+/g, '');
-            console.log(`Using normalized floor name for storage: '${normalizedFloorName}' (original: '${currentFloor}')`);
+            // Normalize the floor name using the shared function
+            const normalizedFloorName = normalizeFloorName(currentFloor);
+            console.log(`[POSITION STORAGE] Using normalized floor name for storage: '${normalizedFloorName}' (original: '${currentFloor}')`);
             
+            // Create storage location with normalized key if it doesn't exist
             if (!updatedAirEntryPositionsRef.current[normalizedFloorName]) {
               updatedAirEntryPositionsRef.current[normalizedFloorName] = {};
-              console.log(`Created new entry for floor: ${normalizedFloorName} in updatedAirEntryPositionsRef`);
+              console.log(`[POSITION STORAGE] Created new entry for floor: ${normalizedFloorName} in updatedAirEntryPositionsRef`);
             }
             
-            // Store the latest position for this entry index
+            // Store the latest position for this entry index under the normalized key (main storage)
             updatedAirEntryPositionsRef.current[normalizedFloorName][entryIndex] = {
               x: updatedEntry.position.x,
               y: updatedEntry.position.y
             };
             
-            // Also store under the original key for backward compatibility
-            if (!updatedAirEntryPositionsRef.current[currentFloor]) {
-              updatedAirEntryPositionsRef.current[currentFloor] = {};
+            // For backward compatibility with existing code, also store under 'ground' key 
+            // if this is the ground floor (transitional approach)
+            if (normalizedFloorName === 'groundfloor') {
+              if (!updatedAirEntryPositionsRef.current['ground']) {
+                updatedAirEntryPositionsRef.current['ground'] = {};
+              }
+              console.log(`[POSITION STORAGE] Also storing under legacy 'ground' key for compatibility`);
+              updatedAirEntryPositionsRef.current['ground'][entryIndex] = {
+                x: updatedEntry.position.x,
+                y: updatedEntry.position.y
+              };
             }
-            updatedAirEntryPositionsRef.current[currentFloor][entryIndex] = {
-              x: updatedEntry.position.x,
-              y: updatedEntry.position.y
-            };
+            
+            console.log(`[POSITION STORAGE] Stored position for ${normalizedFloorName}[${entryIndex}]:`, {
+              position: updatedEntry.position,
+              allStoredPositions: JSON.stringify(updatedAirEntryPositionsRef.current)
+            });
             
             console.log("STORING UPDATED POSITION:", {
               originalFloor: currentFloor,
