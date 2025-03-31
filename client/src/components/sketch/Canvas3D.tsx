@@ -1017,6 +1017,14 @@ export default function Canvas3D({
       MIDDLE: THREE.MOUSE.DOLLY, // THREE.MOUSE.DOLLY instead of ZOOM for TrackballControls
       RIGHT: THREE.MOUSE.PAN // Enable right mouse panning in controls
     };
+    
+    // Debug: Log TrackballControls configuration
+    console.log("TrackballControls initialized with:", {
+      mouseButtons: controls.mouseButtons,
+      enabled: controls.enabled,
+      // Access private properties for debugging
+      instance: controls
+    });
     // Add mechanism to disable controls during dragging
     controls.enabled = true;
     
@@ -2072,19 +2080,36 @@ export default function Canvas3D({
 
         // Re-enable controls now that we're done dragging
         if (controlsRef.current) {
+          // Log the controls state before re-enabling
+          console.log("TRACKBALL CONTROLS STATE (BEFORE RE-ENABLE):", {
+            enabled: controlsRef.current.enabled,
+            mouseButtons: controlsRef.current.mouseButtons
+          });
+          
+          // IMPORTANT FIX: Create a fake mouseup event and dispatch it to the canvas
+          // This will force TrackballControls to reset its internal state
+          if (containerRef.current) {
+            console.log("Dispatching synthetic mouseup event to force TrackballControls state reset");
+            
+            // Create a synthetic mouseup event for the right button (2)
+            const fakeEvent = new MouseEvent('mouseup', {
+              bubbles: true,
+              cancelable: true,
+              button: 2,  // Right mouse button
+              buttons: 0,  // No buttons pressed after mouseup
+            });
+            
+            // Dispatch it on the canvas element to ensure TrackballControls receives it
+            containerRef.current.dispatchEvent(fakeEvent);
+          }
+          
+          // Re-enable the controls
           controlsRef.current.enabled = true;
           
-          // Log the controls state after re-enabling
-          console.log("TRACKBALL CONTROLS STATE (AFTER RE-ENABLE):", {
+          // Log the controls state after fixes and re-enabling
+          console.log("TRACKBALL CONTROLS STATE (AFTER RE-ENABLE AND RESET):", {
             enabled: controlsRef.current.enabled,
-            // @ts-ignore - Accessing private properties for debugging
-            state: controlsRef.current._state,
-            // @ts-ignore - Accessing private properties for debugging
-            prevState: controlsRef.current._prevState,
-            // @ts-ignore - Accessing private properties for debugging
-            mouseButtons: controlsRef.current.mouseButtons,
-            // @ts-ignore - Accessing private properties for debugging
-            _mouseDown: controlsRef.current._mouseDown
+            mouseButtons: controlsRef.current.mouseButtons
           });
         }
 
