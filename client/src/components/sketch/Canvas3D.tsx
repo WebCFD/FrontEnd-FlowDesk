@@ -1383,6 +1383,8 @@ export default function Canvas3D({
                       console.log("POSITION SEARCH - Looking for:", {
                         airEntryType: airEntryData.type,
                         airEntryDataPos: airEntryData.position,
+                        actualEntryIndex: axisObject.userData?.actualEntryIndex, // Try to use the actual entry index if stored
+                        parentEntryIndex: axisObject.userData?.parentEntryIndex,
                         availableEntries: floorData.airEntries.map((entry, idx) => ({
                           index: idx,
                           position: entry.position,
@@ -1390,34 +1392,81 @@ export default function Canvas3D({
                         }))
                       });
                       
-                      // Log each entry's position to check for near matches
-                      floorData.airEntries.forEach((entry, idx) => {
-                        const xDiff = Math.abs(entry.position.x - airEntryData.position.x);
-                        const yDiff = Math.abs(entry.position.y - airEntryData.position.y);
-                        console.log(`Entry ${idx} position diff: x=${xDiff}, y=${yDiff}`, {
-                          entry: entry.position,
-                          toMatch: airEntryData.position,
-                          exactMatch: entry.position.x === airEntryData.position.x && entry.position.y === airEntryData.position.y,
-                          closeMatch: xDiff < 1 && yDiff < 1
+                      // BETTER APPROACH 1: First try to use the actualEntryIndex from the axis userData if available
+                      // This is the most reliable way since it's explicitly set when creating the axis
+                      if (typeof axisObject.userData?.actualEntryIndex === 'number') {
+                        const entryIdx = axisObject.userData.actualEntryIndex;
+                        if (entryIdx >= 0 && entryIdx < floorData.airEntries.length) {
+                          // Verify it exists in the floorData
+                          index = entryIdx;
+                          console.log("Found air entry using actualEntryIndex:", index);
+                        }
+                      }
+                      
+                      // BETTER APPROACH 2: If actualEntryIndex fails, try using the parentEntryIndex to find the real parent mesh
+                      if (index === -1 && axisObject.userData?.parentEntryIndex !== undefined) {
+                        const parentMeshIndex = axisObject.userData.parentEntryIndex;
+                        console.log("Looking for parent mesh with index:", parentMeshIndex);
+                        
+                        // Find the parent mesh
+                        let parentMesh: THREE.Mesh | null = null;
+                        sceneRef.current?.traverse((object) => {
+                          if (object instanceof THREE.Mesh && 
+                              object.userData && 
+                              object.userData.type && 
+                              ["window", "door", "vent"].includes(object.userData.type) && 
+                              object.userData.index === parentMeshIndex) {
+                            parentMesh = object;
+                          }
                         });
-                      });
+                        
+                        if (parentMesh && parentMesh.userData) {
+                          // Use the parent mesh's entryIndex
+                          const parentEntryIndex = parentMesh.userData.entryIndex;
+                          if (typeof parentEntryIndex === 'number' && 
+                              parentEntryIndex >= 0 && 
+                              parentEntryIndex < floorData.airEntries.length) {
+                            index = parentEntryIndex;
+                            console.log("Found entry using parent mesh:", index);
+                          }
+                        }
+                      }
                       
-                      // Try exact match first
-                      index = floorData.airEntries.findIndex(
-                        (entry) =>
-                          entry.position.x === airEntryData.position.x &&
-                          entry.position.y === airEntryData.position.y,
-                      );
-                      console.log("Found entry index by exact position search:", index);
-                      
-                      // If exact match fails, try approximate match
+                      // FALLBACK APPROACH: Only if both direct methods fail, try position-based search
+                      // Log each entry's position to check for near matches
                       if (index === -1) {
+                        floorData.airEntries.forEach((entry, idx) => {
+                          const xDiff = Math.abs(entry.position.x - airEntryData.position.x);
+                          const yDiff = Math.abs(entry.position.y - airEntryData.position.y);
+                          console.log(`Entry ${idx} position diff: x=${xDiff}, y=${yDiff}`, {
+                            entry: entry.position,
+                            toMatch: airEntryData.position,
+                            exactMatch: entry.position.x === airEntryData.position.x && entry.position.y === airEntryData.position.y,
+                            closeMatch: xDiff < 1 && yDiff < 1
+                          });
+                        });
+                        
+                        // Try exact match first
                         index = floorData.airEntries.findIndex(
                           (entry) =>
-                            Math.abs(entry.position.x - airEntryData.position.x) < 1 &&
-                            Math.abs(entry.position.y - airEntryData.position.y) < 1
+                            entry.position.x === airEntryData.position.x &&
+                            entry.position.y === airEntryData.position.y,
                         );
-                        console.log("Found entry index by approximate position search:", index);
+                        console.log("Found entry index by exact position search:", index);
+                        
+                        // If exact match fails, try approximate match with a larger threshold
+                        if (index === -1) {
+                          // Increase the position tolerance to handle larger differences
+                          // This is much more forgiving than before (64 units in your case)
+                          const POSITION_TOLERANCE = 70; // Increased from 1 to handle large discrepancies
+                          
+                          index = floorData.airEntries.findIndex(
+                            (entry) =>
+                              Math.abs(entry.position.x - airEntryData.position.x) < POSITION_TOLERANCE &&
+                              Math.abs(entry.position.y - airEntryData.position.y) < POSITION_TOLERANCE
+                          );
+                          console.log("Found entry index by approximate position search (with higher tolerance):", index);
+                        }
                       }
                     }
 
@@ -1808,11 +1857,24 @@ export default function Canvas3D({
             if (dragStateRef.current.selectedObject) {
               console.log("Updating userData position:", {
                 from: dragStateRef.current.selectedObject.userData.position,
-                to: updatedEntry.position
+                to: updatedEntry.position,
+                floorDataAtIndex: floorData.airEntries[entryIndex].position
+              });
+              
+              // Make sure the floor data actually updated before we sync
+              // This helps identify any update timing issues
+              console.log("Position sync check:", {
+                updatedEntryPos: updatedEntry.position,
+                actualFloorDataPos: floorData.airEntries[entryIndex].position,
+                match: updatedEntry.position.x === floorData.airEntries[entryIndex].position.x &&
+                       updatedEntry.position.y === floorData.airEntries[entryIndex].position.y
               });
               
               // Update the userData position to match the floor data
               dragStateRef.current.selectedObject.userData.position = { ...updatedEntry.position };
+              
+              // Also update entryIndex to ensure it's correct for next time
+              dragStateRef.current.selectedObject.userData.entryIndex = entryIndex;
             }
           }
         }
@@ -1914,24 +1976,37 @@ export default function Canvas3D({
         if (floorData && floorData.airEntries) {
           console.log("Double-click position search:", {
             airEntryData: airEntryData,
-            entryPosition: airEntryData.position
+            entryPosition: airEntryData.position,
+            storedEntryIndex: airEntryData.entryIndex
           });
           
-          // Try exact match first
-          foundIndex = floorData.airEntries.findIndex(
-            (entry) =>
-              entry.position.x === airEntryData.position.x &&
-              entry.position.y === airEntryData.position.y,
-          );
+          // First try to use the stored entryIndex if available (most reliable)
+          if (typeof airEntryData.entryIndex === 'number') {
+            if (airEntryData.entryIndex >= 0 && airEntryData.entryIndex < floorData.airEntries.length) {
+              foundIndex = airEntryData.entryIndex;
+              console.log("Double-click found entry using stored entryIndex:", foundIndex);
+            }
+          }
           
-          // If exact match fails, try approximate match
+          // Fall back to position search if needed
           if (foundIndex === -1) {
+            // Try exact match first
             foundIndex = floorData.airEntries.findIndex(
               (entry) =>
-                Math.abs(entry.position.x - airEntryData.position.x) < 1 &&
-                Math.abs(entry.position.y - airEntryData.position.y) < 1
+                entry.position.x === airEntryData.position.x &&
+                entry.position.y === airEntryData.position.y,
             );
-            console.log("Double-click found entry by approximate position:", foundIndex);
+            
+            // If exact match fails, try approximate match with larger tolerance
+            if (foundIndex === -1) {
+              const POSITION_TOLERANCE = 70; // Match the value used in handleRightMouseDown
+              foundIndex = floorData.airEntries.findIndex(
+                (entry) =>
+                  Math.abs(entry.position.x - airEntryData.position.x) < POSITION_TOLERANCE &&
+                  Math.abs(entry.position.y - airEntryData.position.y) < POSITION_TOLERANCE
+              );
+              console.log("Double-click found entry by approximate position (with higher tolerance):", foundIndex);
+            }
           }
 
           if (foundIndex !== -1) {
