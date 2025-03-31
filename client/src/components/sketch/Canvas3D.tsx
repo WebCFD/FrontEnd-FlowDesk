@@ -412,6 +412,9 @@ export default function Canvas3D({
     currentMousePosition: null as {x: number, y: number} | null,
     entryIndex: -1
   });
+  
+  // Reference to track if right mouse button is currently being pressed
+  const rightMouseButtonPressedRef = useRef(false);
 
   // Add this ref to track measurement state
   const measurementStateRef = useRef({
@@ -1076,8 +1079,39 @@ export default function Canvas3D({
     // };
     // animate();
 
+      // Add debug counter to track animation frame iterations
+      const animationCountRef = useRef(0);
+      
       const animate = () => {
         requestAnimationFrame(animate);
+        
+        // Increment animation counter - log every 100 frames to avoid flooding console
+        const frameCount = ++animationCountRef.current;
+        const shouldLogControlsState = frameCount % 100 === 0;
+        
+        // DEBUG: Regularly check TrackballControls state to see if it's stuck
+        if (shouldLogControlsState && controlsRef.current) {
+          const controls = controlsRef.current as any;
+          
+          try {
+            console.log("🔄 ANIMATION FRAME CONTROLS STATE:", {
+              frame: frameCount,
+              enabled: controls.enabled,
+              // Internal state tracking
+              _state: controls._state !== undefined ? controls._state : 'N/A',
+              _prevState: controls._prevState !== undefined ? controls._prevState : 'N/A',
+              _mouseDown: controls._mouseDown !== undefined ? controls._mouseDown : 'N/A',
+              _mouseMoved: controls._mouseMoved !== undefined ? controls._mouseMoved : 'N/A',
+              // Check if right button is considered down in controls
+              rightButtonDown: controls._mouseButtons?.RIGHT !== undefined ? 
+                controls._mouseButtons.RIGHT === 2 : 'N/A',
+              // Check if user is actively dragging in our app state
+              dragActive: dragStateRef.current.isDragging
+            });
+          } catch (e) {
+            console.error("Could not access TrackballControls state:", e);
+          }
+        }
 
         // Handle dragging with the ref-based approach
         const dragState = dragStateRef.current;
@@ -1109,6 +1143,15 @@ export default function Canvas3D({
 
       // Only update controls and render when needed
       if (controlsRef.current) {
+        // Log control update events if right button is held
+        if (rightMouseButtonPressedRef.current) {
+          console.log("🖱️ RIGHT BUTTON HELD - Controls update", {
+            controlsEnabled: controlsRef.current.enabled,
+            isDragging: dragStateRef.current.isDragging
+          });
+        }
+        
+        // Update the controls as normal
         controlsRef.current.update();
         needsRenderRef.current = true; // Controls moving requires a render
       }
@@ -1282,6 +1325,9 @@ export default function Canvas3D({
     const handleRightMouseDown = (event: MouseEvent) => {
       // Prevent the default context menu
       event.preventDefault();
+      
+      // Set right mouse button state to pressed
+      rightMouseButtonPressedRef.current = true;
 
       // Use the ref for reliable measure mode status
       console.log("🖱️ RIGHT MOUSE DOWN - Button Info:", {
@@ -1293,7 +1339,8 @@ export default function Canvas3D({
         timestamp: Date.now(),
         isMeasureModeRef: isMeasureModeRef.current,
         isMeasureMode: isMeasureMode,
-        controlsEnabled: controlsRef.current?.enabled
+        controlsEnabled: controlsRef.current?.enabled,
+        rightButtonPressed: rightMouseButtonPressedRef.current
       });
 
       // Log current selection and drag state
@@ -1698,6 +1745,21 @@ export default function Canvas3D({
     };
 
     const handleMouseMove = (event: MouseEvent) => {
+      // Check for right button state during move - will help debug when button is "stuck"
+      if (event.buttons & 2) { // Bitwise check for right button (buttons is a bitmask)
+        // If buttons indicates right is pressed, but our ref doesn't, update it
+        if (!rightMouseButtonPressedRef.current) {
+          console.log("🚨 RIGHT BUTTON DETECTED DURING MOUSEMOVE, BUT REF IS FALSE - correcting");
+          rightMouseButtonPressedRef.current = true;
+        }
+      } else {
+        // If buttons indicates right is NOT pressed, but our ref says it is, fix it
+        if (rightMouseButtonPressedRef.current) {
+          console.log("🚨 RIGHT BUTTON NOT DETECTED DURING MOUSEMOVE, BUT REF IS TRUE - correcting");
+          rightMouseButtonPressedRef.current = false;
+        }
+      }
+      
       // Handle measurement preview if in measuring mode and we have a start point
       if (isMeasuring && measureStartPoint) {
         const mouseCoords = getMouseCoordinates(event);
@@ -1861,12 +1923,19 @@ export default function Canvas3D({
           return;  // Don't process non-right clicks when not dragging
         }
         
+        // If this is a right mouse button up event, reset the flag
+        if (event.button === 2) {
+          rightMouseButtonPressedRef.current = false;
+          console.log("🖱️ RIGHT MOUSE BUTTON RELEASED");
+        }
+        
         console.log("⚠️ HANDLING MOUSE UP:", { 
           button: event.button, 
           buttons: event.buttons,
           isDragging: dragStateRef.current.isDragging,
           selectedAxis: dragStateRef.current.selectedAxis,
           controlsEnabled: controlsRef.current?.enabled,
+          rightButtonPressed: rightMouseButtonPressedRef.current,
           timestamp: Date.now()
         });
 
