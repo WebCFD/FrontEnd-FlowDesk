@@ -415,6 +415,9 @@ export default function Canvas3D({
   
   // Reference to track if right mouse button is currently being pressed
   const rightMouseButtonPressedRef = useRef(false);
+  
+  // Counter to track animation frames for logging purposes
+  const animationCountRef = useRef(0);
 
   // Add this ref to track measurement state
   const measurementStateRef = useRef({
@@ -1079,9 +1082,6 @@ export default function Canvas3D({
     // };
     // animate();
 
-      // Add debug counter to track animation frame iterations
-      const animationCountRef = useRef(0);
-      
       const animate = () => {
         requestAnimationFrame(animate);
         
