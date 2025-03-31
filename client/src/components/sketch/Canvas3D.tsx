@@ -1015,7 +1015,7 @@ export default function Canvas3D({
     controls.mouseButtons = {
       LEFT: THREE.MOUSE.ROTATE,
       MIDDLE: THREE.MOUSE.DOLLY, // THREE.MOUSE.DOLLY instead of ZOOM for TrackballControls
-      RIGHT: null // Don't use right mouse for controls, we'll handle it ourselves
+      RIGHT: THREE.MOUSE.PAN // Enable right mouse panning in controls
     };
     // Add mechanism to disable controls during dragging
     controls.enabled = true;
@@ -1644,6 +1644,11 @@ export default function Canvas3D({
 
             // We're selecting but not yet dragging
             setSelectedAxis(null);
+            
+            // Make sure controls are enabled when just selecting without dragging
+            if (controlsRef.current) {
+              controlsRef.current.enabled = true;
+            }
           }
         }
       } else {
@@ -1651,6 +1656,11 @@ export default function Canvas3D({
         // Clicked on empty space, clear selection
         setSelectedAirEntry(null);
         setSelectedAxis(null);
+        
+        // Enable camera controls for panning with right-click
+        if (controlsRef.current) {
+          controlsRef.current.enabled = true;
+        }
       }
     }
     };
