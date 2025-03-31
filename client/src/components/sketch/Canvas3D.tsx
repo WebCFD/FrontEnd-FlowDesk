@@ -1683,6 +1683,9 @@ export default function Canvas3D({
         // Reset the React state for UI
         setIsDragging(false);
         setInitialMousePosition(null);
+        // Reset selection state after drag is complete
+        setSelectedAirEntry(null);
+        setSelectedAxis(null);
 
         // Reset the drag state ref completely
         dragStateRef.current = {
@@ -1700,8 +1703,7 @@ export default function Canvas3D({
           controlsRef.current.enabled = true;
         }
 
-
-    console.log("Dragging stopped, states reset");
+        console.log("Dragging stopped, selection and states reset");
     };
 
     // Now add the event listeners
