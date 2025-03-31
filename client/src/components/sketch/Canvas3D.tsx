@@ -1817,10 +1817,18 @@ export default function Canvas3D({
     };
 
       const handleMouseUp = (event: MouseEvent) => {
-        // Only process right mouse button releases when we're dragging
-        if (event.button !== 2) {
-          return;  // Don't reset dragging for non-right clicks
+        // FIXED: Process mouse up for any button when we are dragging
+        // But only for right-button (2) when not dragging
+        if (!dragStateRef.current.isDragging && event.button !== 2) {
+          return;  // Don't process non-right clicks when not dragging
         }
+        
+        console.log("⚠️ HANDLING MOUSE UP:", { 
+          button: event.button, 
+          buttons: event.buttons,
+          isDragging: dragStateRef.current.isDragging,
+          selectedAxis: dragStateRef.current.selectedAxis
+        });
 
         console.log("MOUSE UP EVENT DETAILS:", { 
           button: event.button, 
