@@ -1841,7 +1841,7 @@ export default function Canvas3D({
               object3DPosition: newPosition3D
             });
 
-            // Add detailed logging before callback
+            // Add detailed logging before callback with all entries
             console.log("CALLING onUpdateAirEntry with:", {
               floor: currentFloor,
               entryIndex,
@@ -1849,28 +1849,107 @@ export default function Canvas3D({
               objectUserData: dragStateRef.current.selectedObject.userData
             });
             
+            // Debug log to show all air entries in floor before update
+            console.log("MULTI-ENTRY DEBUG - ALL ENTRIES BEFORE UPDATE:", {
+              activeEntryIndex: entryIndex,
+              allEntries: floorData.airEntries.map((entry, idx) => ({
+                index: idx,
+                type: entry.type,
+                position: entry.position,
+                isActive: idx === entryIndex
+              }))
+            });
+            
+            // Find all 3D objects that are air entries and log their state
+            const airEntryObjects = scene.children.filter(
+              obj => obj.userData && obj.userData.type && ["window", "door", "vent"].includes(obj.userData.type)
+            );
+            
+            console.log("SCENE OBJECTS CHECK - AIR ENTRY 3D OBJECTS:", {
+              count: airEntryObjects.length,
+              objects: airEntryObjects.map(obj => ({
+                type: obj.userData.type,
+                position3D: {
+                  x: obj.position.x,
+                  y: obj.position.y,
+                  z: obj.position.z
+                },
+                userData: obj.userData,
+                isBeingUpdated: obj.userData.entryIndex === entryIndex
+              }))
+            });
+            
             // Call the update callback
             onUpdateAirEntry(currentFloor, entryIndex, updatedEntry);
+            
+            // IMPORTANT: The parent component may have updated the state
+            // We need to wait for the next render cycle to get the latest floor data
+            // Using setTimeout to defer this check until after the React state update
+            setTimeout(() => {
+              // Get the latest floor data after the parent component has processed the update
+              const latestFloorData = floors[currentFloor];
+              
+              if (latestFloorData && latestFloorData.airEntries) {
+                console.log("LATEST FLOOR DATA CHECK AFTER UPDATE:", {
+                  activeEntryIndex: entryIndex,
+                  allEntriesAfterParentUpdate: latestFloorData.airEntries.map((entry, idx) => ({
+                    index: idx,
+                    type: entry.type,
+                    position: entry.position,
+                    isActive: idx === entryIndex
+                  }))
+                });
+                
+                // Now we need to synchronize ALL air entry meshes with the latest floor data
+                // This ensures that no matter which air entry is dragged next, they all have correct positions
+                if (scene) {
+                  scene.traverse((object) => {
+                    if (
+                      object instanceof THREE.Mesh &&
+                      object.userData &&
+                      object.userData.type &&
+                      ["window", "door", "vent"].includes(object.userData.type) &&
+                      typeof object.userData.entryIndex === 'number'
+                    ) {
+                      // Get the entry index from the mesh userData
+                      const meshEntryIndex = object.userData.entryIndex;
+                      
+                      // Check if this index is valid in the latest floor data
+                      if (meshEntryIndex >= 0 && meshEntryIndex < latestFloorData.airEntries.length) {
+                        // Get the latest position data from the floor data
+                        const latestPosition = latestFloorData.airEntries[meshEntryIndex].position;
+                        
+                        // Compare positions - if different, update the userData
+                        const currentPosition = object.userData.position;
+                        if (
+                          !currentPosition ||
+                          currentPosition.x !== latestPosition.x ||
+                          currentPosition.y !== latestPosition.y
+                        ) {
+                          console.log(`SYNC: Updating mesh userData for entry ${meshEntryIndex}`, {
+                            from: currentPosition,
+                            to: latestPosition
+                          });
+                          
+                          // Update the userData with the latest position
+                          object.userData.position = { ...latestPosition };
+                        }
+                      }
+                    }
+                  });
+                }
+              }
+            }, 0);
             
             // CRITICAL FIX: Update the userData with the new position
             // This ensures that future position searches can find this object
             if (dragStateRef.current.selectedObject) {
-              console.log("Updating userData position:", {
+              console.log("Updating userData position for the dragged object:", {
                 from: dragStateRef.current.selectedObject.userData.position,
-                to: updatedEntry.position,
-                floorDataAtIndex: floorData.airEntries[entryIndex].position
+                to: updatedEntry.position
               });
               
-              // Make sure the floor data actually updated before we sync
-              // This helps identify any update timing issues
-              console.log("Position sync check:", {
-                updatedEntryPos: updatedEntry.position,
-                actualFloorDataPos: floorData.airEntries[entryIndex].position,
-                match: updatedEntry.position.x === floorData.airEntries[entryIndex].position.x &&
-                       updatedEntry.position.y === floorData.airEntries[entryIndex].position.y
-              });
-              
-              // Update the userData position to match the floor data
+              // Update the userData position immediately for the dragged object
               dragStateRef.current.selectedObject.userData.position = { ...updatedEntry.position };
               
               // Also update entryIndex to ensure it's correct for next time
@@ -2057,6 +2136,20 @@ export default function Canvas3D({
 
   useEffect(() => {
     console.log("Canvas3D received floors data:", floors);
+    
+    // Log detailed information about all air entries for debugging purposes
+    Object.entries(floors).forEach(([floorName, floorData]) => {
+      if (floorData.airEntries?.length) {
+        console.log(`DEBUG - FLOOR STATE: Floor ${floorName} has ${floorData.airEntries.length} air entries:`, 
+          floorData.airEntries.map((entry, idx) => ({
+            index: idx,
+            type: entry.type,
+            position: entry.position,
+            dimensions: entry.dimensions
+          }))
+        );
+      }
+    });
 
     // Don't reset selection state here - we'll handle it after rebuilding the scene
     // This prevents losing the selection when the scene is updated
