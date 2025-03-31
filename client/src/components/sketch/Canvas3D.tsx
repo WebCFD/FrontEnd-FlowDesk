@@ -771,11 +771,12 @@ export default function Canvas3D({
         mesh.position.set(position.x, position.y, zPosition);
 
         // Add userData for raycasting identification - include the actual entry index for easy mapping
+        // Create deep clones of the data to avoid reference issues
         mesh.userData = {
           type: entry.type,
-          position: entry.position,
-          dimensions: entry.dimensions,
-          line: entry.line,
+          position: JSON.parse(JSON.stringify(entry.position)),
+          dimensions: JSON.parse(JSON.stringify(entry.dimensions)),
+          line: JSON.parse(JSON.stringify(entry.line)),
           index: objects.length,
           entryIndex: index  // Add the actual index in the airEntries array
         };
@@ -1879,8 +1880,11 @@ export default function Canvas3D({
               }))
             });
             
-            // Call the update callback
-            onUpdateAirEntry(currentFloor, entryIndex, updatedEntry);
+            // Create a deep copy of the updated entry for parent component
+            const deepCopiedEntry = JSON.parse(JSON.stringify(updatedEntry));
+            
+            // Call the update callback with the deep copied entry
+            onUpdateAirEntry(currentFloor, entryIndex, deepCopiedEntry);
             
             // IMPORTANT: The parent component may have updated the state
             // We need to wait for the next render cycle to get the latest floor data
@@ -1903,6 +1907,13 @@ export default function Canvas3D({
                 // Now we need to synchronize ALL air entry meshes with the latest floor data
                 // This ensures that no matter which air entry is dragged next, they all have correct positions
                 if (scene) {
+                  // First collect all air entry meshes and their associated data
+                  const airEntryMeshes: Array<{
+                    mesh: THREE.Mesh;
+                    entryIndex: number;
+                    currentPosition: Point;
+                  }> = [];
+                  
                   scene.traverse((object) => {
                     if (
                       object instanceof THREE.Mesh &&
@@ -1911,30 +1922,43 @@ export default function Canvas3D({
                       ["window", "door", "vent"].includes(object.userData.type) &&
                       typeof object.userData.entryIndex === 'number'
                     ) {
-                      // Get the entry index from the mesh userData
-                      const meshEntryIndex = object.userData.entryIndex;
+                      airEntryMeshes.push({
+                        mesh: object,
+                        entryIndex: object.userData.entryIndex,
+                        currentPosition: object.userData.position
+                      });
+                    }
+                  });
+                  
+                  console.log("Found air entry meshes to sync:", airEntryMeshes.length);
+                  
+                  // Now update all meshes based on the latest floor data
+                  airEntryMeshes.forEach(({ mesh, entryIndex }) => {
+                    // Check if this index is valid in the latest floor data
+                    if (entryIndex >= 0 && entryIndex < latestFloorData.airEntries.length) {
+                      // Get the latest position data from the floor data
+                      const latestPosition = latestFloorData.airEntries[entryIndex].position;
                       
-                      // Check if this index is valid in the latest floor data
-                      if (meshEntryIndex >= 0 && meshEntryIndex < latestFloorData.airEntries.length) {
-                        // Get the latest position data from the floor data
-                        const latestPosition = latestFloorData.airEntries[meshEntryIndex].position;
-                        
-                        // Compare positions - if different, update the userData
-                        const currentPosition = object.userData.position;
-                        if (
-                          !currentPosition ||
-                          currentPosition.x !== latestPosition.x ||
-                          currentPosition.y !== latestPosition.y
-                        ) {
-                          console.log(`SYNC: Updating mesh userData for entry ${meshEntryIndex}`, {
-                            from: currentPosition,
-                            to: latestPosition
-                          });
-                          
-                          // Update the userData with the latest position
-                          object.userData.position = { ...latestPosition };
+                      // Update the 3D object's userData with the latest position
+                      // This ensures future searches will find the correct object
+                      mesh.userData.position = JSON.parse(JSON.stringify(latestPosition));
+                      
+                      // Also update the 3D position of the mesh
+                      const position3D = transform2DTo3D(latestPosition);
+                      const currentHeight = mesh.position.z; // Preserve height
+                      
+                      // Update the mesh position to match the floor data position
+                      // (but preserve the height which is set elsewhere)
+                      mesh.position.set(position3D.x, position3D.y, currentHeight);
+                      
+                      console.log(`Synced mesh for entry ${entryIndex}:`, {
+                        latestPosition,
+                        new3DPosition: { 
+                          x: position3D.x, 
+                          y: position3D.y, 
+                          z: currentHeight 
                         }
-                      }
+                      });
                     }
                   });
                 }
