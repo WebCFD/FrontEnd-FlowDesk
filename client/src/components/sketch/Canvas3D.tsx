@@ -779,6 +779,12 @@ export default function Canvas3D({
           index: objects.length,
           entryIndex: index  // Add the actual index in the airEntries array
         };
+        
+        console.log(`AIR ENTRY userData for mesh at index ${index}:`, {
+          meshPosition3D: { x: position.x, y: position.y, z: zPosition },
+          userData: mesh.userData,
+          originalEntry: entry
+        });
 
       // Calculate proper orientation
       const wallDirection = new THREE.Vector3()
@@ -1765,14 +1771,49 @@ export default function Canvas3D({
               }
             }
 
-            console.log("Finalizing position update:", {
+            console.log("POSITION TRANSFORMATION DEBUG:", {
+              transformVariables: {
+                PIXELS_TO_CM,
+                centerX,
+                centerY,
+                newPosition3DRaw: {
+                  x: newPosition3D.x,
+                  y: newPosition3D.y, 
+                  z: newPosition3D.z
+                },
+              },
+              calculations: {
+                newXCalc: `${newPosition3D.x} / ${PIXELS_TO_CM} + ${centerX} = ${newX}`,
+                newYCalc: `${centerY} - ${newPosition3D.y} / ${PIXELS_TO_CM} = ${newY}`
+              },
+              userData: dragStateRef.current.selectedObject.userData,
               from: currentEntry.position,
               to: updatedEntry.position,
               object3DPosition: newPosition3D
             });
 
+            // Add detailed logging before callback
+            console.log("CALLING onUpdateAirEntry with:", {
+              floor: currentFloor,
+              entryIndex,
+              updatedEntry,
+              objectUserData: dragStateRef.current.selectedObject.userData
+            });
+            
             // Call the update callback
             onUpdateAirEntry(currentFloor, entryIndex, updatedEntry);
+            
+            // CRITICAL FIX: Update the userData with the new position
+            // This ensures that future position searches can find this object
+            if (dragStateRef.current.selectedObject) {
+              console.log("Updating userData position:", {
+                from: dragStateRef.current.selectedObject.userData.position,
+                to: updatedEntry.position
+              });
+              
+              // Update the userData position to match the floor data
+              dragStateRef.current.selectedObject.userData.position = { ...updatedEntry.position };
+            }
           }
         }
 
@@ -1871,11 +1912,27 @@ export default function Canvas3D({
         const floorData = floors[currentFloor];
 
         if (floorData && floorData.airEntries) {
+          console.log("Double-click position search:", {
+            airEntryData: airEntryData,
+            entryPosition: airEntryData.position
+          });
+          
+          // Try exact match first
           foundIndex = floorData.airEntries.findIndex(
             (entry) =>
               entry.position.x === airEntryData.position.x &&
               entry.position.y === airEntryData.position.y,
           );
+          
+          // If exact match fails, try approximate match
+          if (foundIndex === -1) {
+            foundIndex = floorData.airEntries.findIndex(
+              (entry) =>
+                Math.abs(entry.position.x - airEntryData.position.x) < 1 &&
+                Math.abs(entry.position.y - airEntryData.position.y) < 1
+            );
+            console.log("Double-click found entry by approximate position:", foundIndex);
+          }
 
           if (foundIndex !== -1) {
             setEditingAirEntry({
