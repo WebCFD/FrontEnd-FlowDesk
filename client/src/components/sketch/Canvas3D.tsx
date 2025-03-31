@@ -784,14 +784,32 @@ export default function Canvas3D({
 
         // Check if we have a stored position for this entry
         const updatedPosition = updatedPositions[index];
+        console.log(`[POSITION LOADING] Checking for stored position for entry ${index}:`, {
+          updatedPositionsExists: !!updatedPositions,
+          haveUpdatedPosition: !!updatedPosition,
+          updatedPositionValue: updatedPosition,
+          entryOriginalPosition: entry.position,
+          entryIndex: index,
+          floorName,
+          normalizedFloorName: floorName.toLowerCase().replace(/\s+/g, ''),
+          allPositionsStoredForThisFloor: JSON.stringify(updatedPositions),
+          allFloorEntries: floorData.airEntries.length
+        });
         
         // Create a working copy of the entry position
         let entryPosition = { ...entry.position };
         
         // If we have a stored position from previous dragging, use it
         if (updatedPosition) {
-          console.log(`Using stored position for entry ${index}:`, updatedPosition);
+          console.log(`[POSITION LOADING] Using stored position for entry ${index}:`, {
+            from: entry.position,
+            to: updatedPosition,
+            diffX: updatedPosition.x - entry.position.x,
+            diffY: updatedPosition.y - entry.position.y
+          });
           entryPosition = updatedPosition;
+        } else {
+          console.log(`[POSITION LOADING] No stored position found for entry ${index}, using original position:`, entry.position);
         }
         
         const mesh = new THREE.Mesh(geometry, material);
@@ -1769,10 +1787,17 @@ export default function Canvas3D({
           return;  // Don't reset dragging for non-right clicks
         }
 
-        console.log("Mouse up detected", { 
+        console.log("MOUSE UP EVENT DETAILS:", { 
           button: event.button, 
           refIsDragging: dragStateRef.current.isDragging,
-          refAxis: dragStateRef.current.selectedAxis
+          refAxis: dragStateRef.current.selectedAxis,
+          selectedObjectExists: !!dragStateRef.current.selectedObject,
+          selectedObjectPosition: dragStateRef.current.selectedObject ? 
+            dragStateRef.current.selectedObject.position.clone() : null,
+          selectedObjectUserData: dragStateRef.current.selectedObject ? 
+            JSON.stringify(dragStateRef.current.selectedObject.userData) : null,
+          floorKey: currentFloor,
+          normalizedFloorKey: currentFloor.toLowerCase().replace(/\s+/g, '')
         });
         
         // Log the full state before we reset anything
