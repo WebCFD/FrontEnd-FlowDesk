@@ -412,28 +412,13 @@ export default function Canvas3D({
     currentMousePosition: null as {x: number, y: number} | null,
     entryIndex: -1
   });
-  
-  // Reference to track if right mouse button is currently being pressed
-  const rightMouseButtonPressedRef = useRef(false);
-  
-  // Counter to track animation frames for logging purposes
-  const animationCountRef = useRef(0);
 
   // Add this ref to track measurement state
   const measurementStateRef = useRef({
     inProgress: false,
     startPoint: null as THREE.Vector3 | null
   });
-  
-  // Create a custom panning system completely independent of TrackballControls
-  // This will give us full control over right-click panning behavior
-  const customPanRef = useRef({
-    isPanning: false,
-    startPoint: null as {x: number, y: number} | null,
-    startCameraPosition: null as THREE.Vector3 | null,
-    startCameraTarget: null as THREE.Vector3 | null,
-    panSpeed: 2.0 // Adjust this to control pan sensitivity
-  });
+
   
   // Calculate base height for each floor
   const getFloorBaseHeight = (floorName: string): number => {
@@ -1023,24 +1008,8 @@ export default function Canvas3D({
     controls.panSpeed = 0.8;
     controls.noZoom = false;
     controls.noPan = false;
-    controls.staticMoving = true;  // Immediate response without inertia
+    controls.staticMoving = true;
     controls.dynamicDampingFactor = 0.2;
-    
-    // Add a reset method to the controls that can be called to fully reset
-    // @ts-ignore - We're extending the object
-    controls.resetState = function() {
-      // @ts-ignore - Accessing private properties
-      if (this._state !== undefined) this._state = -1; // STATE.NONE
-      // @ts-ignore - Accessing private properties
-      if (this._prevState !== undefined) this._prevState = -1;
-      // @ts-ignore - Accessing private properties
-      if (this._mouseDown !== undefined) this._mouseDown = false;
-      // @ts-ignore - Accessing private properties
-      if (this._mouseMoved !== undefined) this._mouseMoved = false;
-      
-      // Force an update to apply these changes
-      this.update();
-    };
 
     // Configure mouse buttons - don't use right button for controls
     controls.mouseButtons = {
@@ -1048,15 +1017,6 @@ export default function Canvas3D({
       MIDDLE: THREE.MOUSE.DOLLY, // THREE.MOUSE.DOLLY instead of ZOOM for TrackballControls
       RIGHT: THREE.MOUSE.PAN // Enable right mouse panning in controls
     };
-    
-    // Debug: Log TrackballControls configuration
-    console.log("🎮 TrackballControls initialized with:", {
-      mouseButtons: controls.mouseButtons,
-      enabled: controls.enabled,
-      // Access private properties for debugging
-      instance: controls
-    });
-    
     // Add mechanism to disable controls during dragging
     controls.enabled = true;
     
@@ -1093,59 +1053,7 @@ export default function Canvas3D({
 
       const animate = () => {
         requestAnimationFrame(animate);
-        
-        // Increment animation counter - log every 100 frames to avoid flooding console
-        const frameCount = ++animationCountRef.current;
-        const shouldLogControlsState = frameCount % 100 === 0;
-        
-        // Check if canvas DOM element is properly attached
-        if (shouldLogControlsState && containerRef.current) {
-          console.log("🎮 CONTROLS DOM ELEMENT:", {
-            hasElement: !!containerRef.current,
-            tagName: containerRef.current.tagName,
-            id: containerRef.current.id,
-            hasMouseUp: !!containerRef.current.onmouseup,
-            hasMouseDown: !!containerRef.current.onmousedown,
-            hasMouseMove: !!containerRef.current.onmousemove,
-            hasListeners: false // Unable to directly access listeners through standard APIs
-          });
-        }
-        
-        // DEBUG: Regularly check TrackballControls state to see if it's stuck
-        if (shouldLogControlsState && controlsRef.current) {
-          const controls = controlsRef.current as any;
-          
-          try {
-            console.log("🔄 ANIMATION FRAME CONTROLS STATE:", {
-              frame: frameCount,
-              enabled: controls.enabled,
-              // Internal state tracking
-              _state: controls._state !== undefined ? controls._state : 'N/A',
-              _prevState: controls._prevState !== undefined ? controls._prevState : 'N/A',
-              _mouseDown: controls._mouseDown !== undefined ? controls._mouseDown : 'N/A',
-              _mouseMoved: controls._mouseMoved !== undefined ? controls._mouseMoved : 'N/A',
-              // Check if right button is considered down in controls
-              rightButtonDown: controls._mouseButtons?.RIGHT !== undefined ? 
-                controls._mouseButtons.RIGHT === 2 : 'N/A',
-              // Check if user is actively dragging in our app state
-              dragActive: dragStateRef.current.isDragging
-            });
-          } catch (e) {
-            console.error("Could not access TrackballControls state:", e);
-          }
-        }
 
-        // Log custom panning state (only periodically to avoid console spam)
-        if (shouldLogControlsState && customPanRef.current.isPanning) {
-          console.log("🖐️ CUSTOM PANNING ACTIVE:", {
-            frame: frameCount,
-            startPoint: customPanRef.current.startPoint,
-            hasStartCameraPosition: !!customPanRef.current.startCameraPosition,
-            hasStartCameraTarget: !!customPanRef.current.startCameraTarget,
-            controlsEnabled: controlsRef.current?.enabled || false
-          });
-        }
-        
         // Handle dragging with the ref-based approach
         const dragState = dragStateRef.current;
         if (dragState.isDragging && dragState.selectedObject && dragState.startPosition && 
@@ -1176,59 +1084,6 @@ export default function Canvas3D({
 
       // Only update controls and render when needed
       if (controlsRef.current) {
-        // Access internal properties for detailed debugging
-        const controls = controlsRef.current as any;
-        
-        // Log full controls state on every frame if right button is held or during animation
-        if (rightMouseButtonPressedRef.current || (controls && controls._state !== -1)) {
-          // This provides detailed diagnosis of what's happening during the issue
-          console.log("🔍 TRACKBALL DETAILED STATE:", {
-            frame: frameCount,
-            rightButtonHeld: rightMouseButtonPressedRef.current,
-            buttonsBitmask: controls._mouseButtons ? JSON.stringify(controls._mouseButtons) : "N/A",
-            panEnabled: controls.enablePan,
-            rotateEnabled: controls.enableRotate,
-            zoomEnabled: controls.enableZoom,
-            // Critical internal state
-            _state: controls._state, 
-            _prevState: controls._prevState,
-            _mouseDownPoint: controls._mouseDownPoint ? true : false,
-            _mouseMoved: controls._mouseMoved,
-            // Movement tracking
-            _movePrev: controls._movePrev ? `x:${controls._movePrev.x.toFixed(2)}, y:${controls._movePrev.y.toFixed(2)}` : "N/A",
-            _moveCurr: controls._moveCurr ? `x:${controls._moveCurr.x.toFixed(2)}, y:${controls._moveCurr.y.toFixed(2)}` : "N/A",
-            // Our app state
-            isDragging: dragStateRef.current.isDragging,
-            dragAxis: dragStateRef.current.selectedAxis,
-            // Pointer state
-            pointerLockElement: document.pointerLockElement ? true : false,
-            hasFocus: document.hasFocus(),
-            activeElement: document.activeElement ? document.activeElement.tagName : "none"
-          });
-        }
-        
-        // Try to inspect the THREE.js controls event listeners
-        if (frameCount % 500 === 0) {
-          try {
-            // Get the domElement and its event listeners
-            const domElement = controls.domElement;
-            console.log("🎮 CONTROLS DOM ELEMENT:", {
-              hasElement: !!domElement,
-              tagName: domElement ? domElement.tagName : "N/A",
-              id: domElement ? domElement.id : "N/A",
-              // Try to access controls prototype methods
-              hasMouseUp: typeof controls.onMouseUp === 'function',
-              hasMouseDown: typeof controls.onMouseDown === 'function',
-              hasMouseMove: typeof controls.onMouseMove === 'function',
-              // Check if element has any listeners
-              hasListeners: domElement && domElement._listeners ? true : false
-            });
-          } catch (e) {
-            console.error("Error inspecting controls element:", e);
-          }
-        }
-        
-        // Update the controls as normal
         controlsRef.current.update();
         needsRenderRef.current = true; // Controls moving requires a render
       }
@@ -1257,28 +1112,23 @@ export default function Canvas3D({
       }
         // Render the scene if needed
         if (
-          (needsRenderRef.current || customPanRef.current.isPanning) &&
+          needsRenderRef.current &&
           rendererRef.current &&
           sceneRef.current &&
           cameraRef.current
         ) {
-          // Always render during drag operations or custom panning for smooth feedback
+          // Always render during drag operations for smooth feedback
           const isDraggingNow = dragStateRef.current.isDragging;
-          const isCustomPanningNow = customPanRef.current.isPanning;
 
           if (isDraggingNow) {
             console.log("Rendering during drag operation");
           }
-          
-          if (isCustomPanningNow && frameCount % 30 === 0) {
-            console.log("Rendering during custom panning");
-          }
 
           rendererRef.current.render(sceneRef.current, cameraRef.current);
 
-          // Only reset the needs render flag if we're not in an active operation
-          // During active operations we want to render every frame
-          if (!isDraggingNow && !isCustomPanningNow) {
+          // Only reset the needs render flag if we're not dragging
+          // During dragging we want to render every frame
+          if (!isDraggingNow) {
             needsRenderRef.current = false;
           }
         }
@@ -1407,41 +1257,11 @@ export default function Canvas3D({
     const handleRightMouseDown = (event: MouseEvent) => {
       // Prevent the default context menu
       event.preventDefault();
-      
-      // Set right mouse button state to pressed
-      rightMouseButtonPressedRef.current = true;
-      
-      // Initialize our custom panning system
-      if (!dragStateRef.current.isDragging) {
-        const mouseX = event.clientX;
-        const mouseY = event.clientY;
-        
-        // Store start point and camera positions
-        customPanRef.current.isPanning = true;
-        customPanRef.current.startPoint = { x: mouseX, y: mouseY };
-        
-        if (camera && controls) {
-          customPanRef.current.startCameraPosition = camera.position.clone();
-          customPanRef.current.startCameraTarget = controls.target.clone();
-          
-          // Disable TrackballControls while we're custom panning
-          controls.enabled = false;
-        }
-      }
 
       // Use the ref for reliable measure mode status
-      console.log("🖱️ RIGHT MOUSE DOWN - Button Info:", {
-        button: event.button,        // Which button triggered this event (0: left, 1: middle, 2: right)
-        buttons: event.buttons,      // Current buttons being pressed (bitmask)
-        which: event.which,          // Legacy property showing which button
-        ctrlKey: event.ctrlKey,
-        customPanning: customPanRef.current.isPanning,
-        altKey: event.altKey,
-        timestamp: Date.now(),
+      console.log("RIGHT MOUSE DOWN - Checking measure mode:", {
         isMeasureModeRef: isMeasureModeRef.current,
-        isMeasureMode: isMeasureMode,
-        controlsEnabled: controlsRef.current?.enabled,
-        rightButtonPressed: rightMouseButtonPressedRef.current
+        isMeasureMode: isMeasureMode
       });
 
       // Log current selection and drag state
@@ -1846,126 +1666,6 @@ export default function Canvas3D({
     };
 
     const handleMouseMove = (event: MouseEvent) => {
-      // Handle custom panning if active
-      if (customPanRef.current.isPanning && 
-          customPanRef.current.startPoint && 
-          customPanRef.current.startCameraPosition &&
-          customPanRef.current.startCameraTarget &&
-          camera && controls) {
-          
-        // Calculate movement delta
-        const deltaX = event.clientX - customPanRef.current.startPoint.x;
-        const deltaY = event.clientY - customPanRef.current.startPoint.y;
-        
-        // Convert screen coordinates to world space movement
-        // This math simulates what TrackballControls would do but in a more controlled way
-        const vector = new THREE.Vector3();
-        const camPos = customPanRef.current.startCameraPosition.clone();
-        const camTarget = customPanRef.current.startCameraTarget.clone();
-        
-        // Get view vector (direction camera is looking)
-        const viewVector = new THREE.Vector3().subVectors(camTarget, camPos).normalize();
-        
-        // Get right vector (perpendicular to view and up vectors)
-        const rightVector = new THREE.Vector3().crossVectors(viewVector, camera.up).normalize();
-        
-        // Get a vector in the camera's viewing plane that points "up" relative to the view
-        const upVector = new THREE.Vector3().crossVectors(rightVector, viewVector).normalize();
-        
-        // Scale movement by camera distance to target for natural feel
-        const distance = camPos.distanceTo(camTarget);
-        const scaleFactor = (distance / 500) * customPanRef.current.panSpeed;
-        
-        // Apply movement
-        vector.copy(rightVector).multiplyScalar(-deltaX * scaleFactor);
-        vector.add(upVector.multiplyScalar(deltaY * scaleFactor));
-        
-        // Move both camera and target by the same amount to maintain view direction
-        camera.position.copy(camPos).add(vector);
-        controls.target.copy(camTarget).add(vector);
-        
-        // Force controls to update
-        controls.update();
-        
-        // Log the custom panning state
-        console.log("🖐️ CUSTOM PANNING:", {
-          startPoint: customPanRef.current.startPoint,
-          currentPoint: { x: event.clientX, y: event.clientY },
-          deltaX, deltaY,
-          distance, scaleFactor
-        });
-      }
-      
-      // DIAGNOSIS SECTION - Log much more detailed info for right-click issues
-      // Capture detailed state whenever mousemove happens
-      console.log("🔍 MOUSE MOVE STATE:", {
-        timestamp: Date.now(),
-        buttons: event.buttons,           // Bitmask of buttons currently pressed
-        rightButtonBit: !!(event.buttons & 2),  // Explicit check for right button
-        // Our internal tracking
-        rightButtonPressedRef: rightMouseButtonPressedRef.current,
-        isDraggingRef: dragStateRef.current.isDragging,
-        customPanning: customPanRef.current.isPanning,
-        // TrackballControls state if available
-        controlsState: controlsRef.current ? {
-          _state: (controlsRef.current as any)._state,
-          enabled: controlsRef.current.enabled,
-          _prevState: (controlsRef.current as any)._prevState
-        } : "controls not available",
-        // Mouse coordinates
-        mouseX: event.clientX,
-        mouseY: event.clientY
-      });
-      
-      // CRITICAL FIX ATTEMPT: Check both physical button state AND our tracking
-      if (event.buttons & 2) { // Bitwise check for right button (buttons is a bitmask)
-        // If buttons indicates right is pressed, but our ref doesn't, update it
-        if (!rightMouseButtonPressedRef.current) {
-          console.log("🚨 RIGHT BUTTON DETECTED DURING MOUSEMOVE, BUT REF IS FALSE - correcting");
-          rightMouseButtonPressedRef.current = true;
-          
-          // Also check if we need to force TrackballControls to recognize right button press
-          if (controlsRef.current) {
-            const controls = controlsRef.current as any;
-            console.log("⚙️ Current controls state:", controls._state);
-            
-            // If controls are not in pan state but should be, try to manually set state
-            if (controls._state !== 2) { // Assuming 2 is PAN state
-              console.log("⚙️ Attempting to manually set controls state to PAN");
-              try {
-                // Force the controls into PAN state
-                controls._state = 2;
-                controls._prevState = -1;
-                console.log("⚙️ Controls state manually set to PAN");
-              } catch (e) {
-                console.error("Failed to set controls state:", e);
-              }
-            }
-          }
-        }
-      } else {
-        // If buttons indicates right is NOT pressed, but our ref says it is, fix it
-        if (rightMouseButtonPressedRef.current) {
-          console.log("🚨 RIGHT BUTTON NOT DETECTED DURING MOUSEMOVE, BUT REF IS TRUE - correcting");
-          rightMouseButtonPressedRef.current = false;
-          
-          // Force TrackballControls to exit its state if we were panning
-          if (controlsRef.current) {
-            const controls = controlsRef.current as any;
-            if (controls._state === 2) { // If it's in PAN state
-              console.log("⚙️ Forcing controls out of PAN state");
-              try {
-                controls._state = -1; // Set to NONE state
-                controls._prevState = 2; // Remember we were in PAN
-                console.log("⚙️ Controls state manually reset to NONE");
-              } catch (e) {
-                console.error("Failed to reset controls state:", e);
-              }
-            }
-          }
-        }
-      }
-      
       // Handle measurement preview if in measuring mode and we have a start point
       if (isMeasuring && measureStartPoint) {
         const mouseCoords = getMouseCoordinates(event);
@@ -1983,25 +1683,6 @@ export default function Canvas3D({
       
       // Regular drag logic
       if (dragStateRef.current.isDragging) {
-        // ENHANCED LOGGING - Add button state
-        // ℹ️ Add more detailed logging for the first drag event
-        const isFirstDragEvent = !dragStateRef.current.currentMousePosition;
-        if (isFirstDragEvent) {
-          console.log("🔄 DRAG FIRST MOVEMENT:", {
-            button: event.button,
-            buttons: event.buttons,  // This shows which buttons are currently pressed
-            isDragging: dragStateRef.current.isDragging,
-            selectedAxis: dragStateRef.current.selectedAxis,
-            dragStartTimeStamp: Date.now(),
-            selectedObjectId: dragStateRef.current.selectedObject?.uuid,
-            controlsEnabled: controlsRef.current?.enabled,
-            // Add TrackballControls state info
-            controlsState: controlsRef.current ? 
-              (controlsRef.current as any)._state : "N/A",
-            rightButtonPressed: rightMouseButtonPressedRef.current
-          });
-        }
-        
         // Store the current mouse position
         dragStateRef.current.currentMousePosition = {
           x: event.clientX,
@@ -2018,10 +1699,7 @@ export default function Canvas3D({
           axis: dragStateRef.current.selectedAxis,
           dragging: dragStateRef.current.isDragging,
           reactIsDragging: isDragging,
-          selectedAxis: selectedAxis,
-          // Add button state to diagnose conflicts
-          buttons: event.buttons,
-          rightButtonPressed: rightMouseButtonPressedRef.current
+          selectedAxis: selectedAxis
         });
       }
 
@@ -2131,169 +1809,11 @@ export default function Canvas3D({
     };
 
       const handleMouseUp = (event: MouseEvent) => {
-        // Handle custom panning first - end any active panning operation
-        if (customPanRef.current.isPanning) {
-          console.log("🖐️ ENDING CUSTOM PAN");
-          
-          // Reset our custom panning state
-          customPanRef.current.isPanning = false;
-          customPanRef.current.startPoint = null;
-          customPanRef.current.startCameraPosition = null;
-          customPanRef.current.startCameraTarget = null;
-          
-          // Re-enable TrackballControls
-          if (controls) {
-            controls.enabled = true;
-          }
+        // Only process right mouse button releases when we're dragging
+        if (event.button !== 2) {
+          return;  // Don't reset dragging for non-right clicks
         }
-        
-        // CRITICAL TRACKING: Log all mouse up events
-        console.log("🖱️ MOUSE UP EVENT:", { 
-          timestamp: Date.now(),
-          button: event.button, 
-          buttons: event.buttons,
-          ctrlKey: event.ctrlKey,
-          altKey: event.altKey,
-          target: event.target ? (event.target as any).tagName : "unknown",
-          isDragging: dragStateRef.current.isDragging,
-          customPanning: customPanRef.current.isPanning,
-          rightButtonPressed: rightMouseButtonPressedRef.current,
-          controlsState: controlsRef.current ? 
-            {
-              _state: (controlsRef.current as any)._state,
-              enabled: controlsRef.current.enabled
-            } : "controls not available"
-        });
-        
-        // FIXED: Process mouse up for any button when we are dragging
-        // But only for right-button (2) when not dragging
-        if (!dragStateRef.current.isDragging && event.button !== 2) {
-          return;  // Don't process non-right clicks when not dragging
-        }
-        
-        // TARGETED FIX FOR PAN STICKING:
-        // Instead of recreating controls, we'll use a more targeted approach to fix the panning issue
-        // This approach only resets internal state without affecting the event listeners
-        if (dragStateRef.current.isDragging && controlsRef.current) {
-          console.log("🔧 DRAG OPERATION COMPLETED - Resetting controls state");
-          
-          // Access the underlying controls to reset its internal state
-          const controls = controlsRef.current as any;
-          
-          try {
-            // Make sure controls are enabled
-            controls.enabled = true;
-            
-            // Reset key internal state variables that could be "stuck"
-            if (typeof controls._state !== 'undefined') {
-              console.log("Resetting controls state from:", controls._state);
-              controls._state = -1; // STATE.NONE in TrackballControls
-            }
-            
-            if (typeof controls._prevState !== 'undefined') {
-              controls._prevState = -1;
-            }
-            
-            // Reset mouse tracking flags
-            if (typeof controls._mouseDownPoint !== 'undefined') {
-              controls._mouseDownPoint = null;
-            }
-            
-            if (typeof controls._mouseMoved !== 'undefined') {
-              controls._mouseMoved = false;
-            }
-            
-            // Reset any tracking of right button specifically
-            if (controls._mouseButtons && typeof controls._mouseButtons.RIGHT !== 'undefined') {
-              console.log("Ensuring right mouse button is not considered pressed in controls");
-              // Ensure right button is not considered down
-              controls._mouseButtons.RIGHT = -1;
-            }
-            
-            // Dispatch a synthetic mouseup event for the right button to help reset state
-            if (containerRef.current) {
-              console.log("Dispatching synthetic right button mouseup to reset control state");
-              const syntheticEvent = new MouseEvent('mouseup', {
-                bubbles: true,
-                cancelable: true,
-                button: 2, // Right button
-                buttons: 0, // No buttons pressed
-                clientX: event.clientX || 0,
-                clientY: event.clientY || 0
-              });
-              containerRef.current.dispatchEvent(syntheticEvent);
-            }
-            
-            console.log("✅ Controls state reset successfully");
-          } catch (e) {
-            console.error("Error resetting controls state:", e);
-          }
-          
-          // Force an update and render to apply changes
-          if (controlsRef.current) {
-            controlsRef.current.update();
-            needsRenderRef.current = true;
-          }
-        }
-        
-        // If this is a right mouse button up event, reset the flag
-        if (event.button === 2) {
-          rightMouseButtonPressedRef.current = false;
-          console.log("🖱️ RIGHT MOUSE BUTTON RELEASED");
-        }
-        
-        console.log("⚠️ HANDLING MOUSE UP:", { 
-          button: event.button, 
-          buttons: event.buttons,
-          isDragging: dragStateRef.current.isDragging,
-          selectedAxis: dragStateRef.current.selectedAxis,
-          controlsEnabled: controlsRef.current?.enabled,
-          rightButtonPressed: rightMouseButtonPressedRef.current,
-          timestamp: Date.now()
-        });
 
-        // CRITICAL FIX: Force reset of any pending state in TrackballControls
-        // This is a workaround for a bug where TrackballControls doesn't properly release state
-        // when a mouseup happens during drag or after drag is finished
-        if (controlsRef.current) {
-          // Force all internal state to be reset
-          if (dragStateRef.current.isDragging) {
-            console.log("🔄 FORCING TRACKBALL CONTROLS RESET due to drag operation");
-            
-            // Use our custom resetState method if available
-            // @ts-ignore
-            if (controlsRef.current.resetState && typeof controlsRef.current.resetState === 'function') {
-              console.log("Using custom resetState method to fix controls state");
-              // @ts-ignore
-              controlsRef.current.resetState();
-            } else {
-              // Fallback to direct property manipulation if method is unavailable
-              try {
-                console.log("Falling back to direct state manipulation");
-                // @ts-ignore - These are internal properties but we need to access them to fix the issue
-                if (controlsRef.current._state !== undefined) {
-                  console.log("Resetting internal control state from:", controlsRef.current._state);
-                  // @ts-ignore - Reset the state to NONE
-                  controlsRef.current._state = -1; // STATE.NONE
-                }
-                
-                // Reset any rotation/pan/zoom speed
-                // @ts-ignore
-                if (controlsRef.current.rotateSpeed !== undefined) controlsRef.current.rotateSpeed = 0;
-                // @ts-ignore
-                if (controlsRef.current.panSpeed !== undefined) controlsRef.current.panSpeed = 0;
-                // @ts-ignore
-                if (controlsRef.current.zoomSpeed !== undefined) controlsRef.current.zoomSpeed = 0;
-              } catch (e) {
-                console.error("Failed to reset TrackballControls state:", e);
-              }
-            }
-            
-            // Force an update to apply changes
-            controlsRef.current.update();
-          }
-        }
-        
         console.log("MOUSE UP EVENT DETAILS:", { 
           button: event.button, 
           refIsDragging: dragStateRef.current.isDragging,
@@ -2334,41 +1854,7 @@ export default function Canvas3D({
 
           // Re-enable controls
           if (controlsRef.current) {
-            // First synthesize a right mouse button up event for the controls
-            // This helps ensure the controls properly reset their internal state
-            if (containerRef.current) {
-              console.log("Synthesizing right mouseup event for controls");
-              const canvas = containerRef.current;
-              
-              try {
-                // Dispatch a synthetic mouseup event with button 2 (right button)
-                const syntheticEvent = new MouseEvent('mouseup', {
-                  bubbles: true,
-                  cancelable: true,
-                  button: 2,
-                  buttons: 0,
-                  clientX: event.clientX,
-                  clientY: event.clientY,
-                  view: window
-                });
-                
-                // Dispatch the event directly on the canvas element
-                canvas.dispatchEvent(syntheticEvent);
-                console.log("Successfully dispatched synthetic right mouseup event");
-              } catch (e) {
-                console.error("Failed to dispatch synthetic mouseup event:", e);
-              }
-            }
-            
-            // Then re-enable the controls
             controlsRef.current.enabled = true;
-            
-            // Also use our custom reset method if available
-            // @ts-ignore
-            if (controlsRef.current.resetState && typeof controlsRef.current.resetState === 'function') {
-              // @ts-ignore
-              controlsRef.current.resetState();
-            }
           }
           return;
         }
@@ -2547,25 +2033,6 @@ export default function Canvas3D({
           }
         }
 
-        // Debug log to inspect TrackballControls state before reset
-        if (controlsRef.current) {
-          console.log("TRACKBALL CONTROLS STATE (BEFORE RESET):", {
-            enabled: controlsRef.current.enabled,
-            // @ts-ignore - Accessing private properties for debugging
-            state: controlsRef.current._state,
-            // @ts-ignore - Accessing private properties for debugging
-            prevState: controlsRef.current._prevState,
-            // @ts-ignore - Accessing private properties for debugging
-            mouseButtons: controlsRef.current.mouseButtons,
-            // Try to inspect if any mouse button is considered "down"
-            // @ts-ignore - Accessing private properties for debugging
-            _mouseDown: controlsRef.current._mouseDown,
-            // Check if there are any pending mouse events
-            // @ts-ignore - Accessing private properties for debugging
-            _mouseMoveReceived: controlsRef.current._mouseMoveReceived
-          });
-        }
-        
         // Reset the React state for UI
         setIsDragging(false);
         setInitialMousePosition(null);
@@ -2586,85 +2053,7 @@ export default function Canvas3D({
 
         // Re-enable controls now that we're done dragging
         if (controlsRef.current) {
-          // Log the controls state before re-enabling
-          console.log("TRACKBALL CONTROLS STATE (BEFORE RE-ENABLE):", {
-            enabled: controlsRef.current.enabled,
-            mouseButtons: controlsRef.current.mouseButtons
-          });
-          
-          // DEEPER FIX: Reset TrackballControls completely and recreate it
-          // This is a more aggressive approach to get a clean state
-          if (containerRef.current && cameraRef.current && sceneRef.current) {
-            console.log("DEEP FIX: Recreating TrackballControls from scratch");
-            
-            // First attempt to explicitly reset internal state by directly accessing private properties
-            try {
-              // Try to access these private properties with any type to bypass TypeScript
-              const controls = controlsRef.current as any;
-              
-              console.log("Direct TrackballControls internal state manipulation:", {
-                beforeReset: { 
-                  _state: controls._state,
-                  _prevState: controls._prevState,
-                  _mouseButtons: controls._mouseButtons,
-                  _mouseDown: controls._mouseDown,
-                  _mouseMoved: controls._mouseMoved,
-                  enabled: controls.enabled
-                }
-              });
-              
-              // Direct reset of all internal state properties that might be causing the issue
-              controls._state = -1; // STATE.NONE in TrackballControls
-              controls._prevState = -1; 
-              controls._mouseDown = false;
-              controls._mouseMoved = false;
-              
-              // Reset all mouse button states (LEFT = 0, MIDDLE = 1, RIGHT = 2)
-              if (controls._mouseButtons) {
-                controls._mouseButtons.LEFT = -1;
-                controls._mouseButtons.MIDDLE = -1;
-                controls._mouseButtons.RIGHT = -1;
-              }
-              
-              console.log("After direct internal state reset:", {
-                _state: controls._state,
-                _prevState: controls._prevState,
-                _mouseButtons: controls._mouseButtons,
-                _mouseDown: controls._mouseDown,
-                _mouseMoved: controls._mouseMoved
-              });
-            } catch (e) {
-              console.error("Could not directly reset TrackballControls state:", e);
-            }
-            
-            // Also try the synthetic event approach as a backup plan
-            try {
-              console.log("Also dispatching synthetic mouseup event for right button");
-              
-              // Create a synthetic mouseup event for the right button (2)
-              const fakeEvent = new MouseEvent('mouseup', {
-                bubbles: true,
-                cancelable: true,
-                button: 2,  // Right mouse button 
-                buttons: 0,  // No buttons pressed after mouseup
-              });
-              
-              // Dispatch on document and container for maximum likelihood of capture
-              document.dispatchEvent(fakeEvent);
-              containerRef.current.dispatchEvent(fakeEvent);
-            } catch (e) {
-              console.error("Failed to dispatch synthetic event:", e);
-            }
-          }
-          
-          // Re-enable the controls
           controlsRef.current.enabled = true;
-          
-          // Log the controls state after fixes and re-enabling
-          console.log("TRACKBALL CONTROLS STATE (AFTER RE-ENABLE AND RESET):", {
-            enabled: controlsRef.current.enabled,
-            mouseButtons: controlsRef.current.mouseButtons
-          });
         }
 
         console.log("Dragging stopped, selection and states reset");
@@ -2688,34 +2077,8 @@ export default function Canvas3D({
     });
 
     // Use document instead of window for more reliable event capture
-    document.addEventListener("mousemove", (e) => {
-      // Log document mouse move events for debugging
-      if (e.button === 2) {
-        console.log("DOCUMENT MOUSE MOVE (RIGHT BUTTON):", { 
-          button: e.button,
-          buttonsProp: e.buttons, // This contains all currently pressed buttons
-          buttons: {
-            left: !!(e.buttons & 1),   // Check if bit 0 is set (left button)
-            middle: !!(e.buttons & 4), // Check if bit 2 is set (middle button)
-            right: !!(e.buttons & 2)   // Check if bit 1 is set (right button)
-          },
-          isDraggingRef: dragStateRef.current.isDragging,
-          controlsEnabled: controlsRef.current?.enabled
-        });
-      }
-      handleMouseMove(e);
-    });
-    
-    document.addEventListener("mouseup", (e) => {
-      // Log document mouse up events for debugging
-      console.log("DOCUMENT MOUSE UP:", { 
-        button: e.button,
-        buttonsProp: e.buttons, // Will show remaining buttons that are pressed
-        isDraggingRef: dragStateRef.current.isDragging,
-        controlsEnabled: controlsRef.current?.enabled
-      });
-      handleMouseUp(e);
-    });
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
 
     console.log("All event listeners attached successfully");
 
