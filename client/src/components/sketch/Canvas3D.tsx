@@ -2033,6 +2033,25 @@ export default function Canvas3D({
           }
         }
 
+        // Debug log to inspect TrackballControls state before reset
+        if (controlsRef.current) {
+          console.log("TRACKBALL CONTROLS STATE (BEFORE RESET):", {
+            enabled: controlsRef.current.enabled,
+            // @ts-ignore - Accessing private properties for debugging
+            state: controlsRef.current._state,
+            // @ts-ignore - Accessing private properties for debugging
+            prevState: controlsRef.current._prevState,
+            // @ts-ignore - Accessing private properties for debugging
+            mouseButtons: controlsRef.current.mouseButtons,
+            // Try to inspect if any mouse button is considered "down"
+            // @ts-ignore - Accessing private properties for debugging
+            _mouseDown: controlsRef.current._mouseDown,
+            // Check if there are any pending mouse events
+            // @ts-ignore - Accessing private properties for debugging
+            _mouseMoveReceived: controlsRef.current._mouseMoveReceived
+          });
+        }
+        
         // Reset the React state for UI
         setIsDragging(false);
         setInitialMousePosition(null);
@@ -2054,6 +2073,19 @@ export default function Canvas3D({
         // Re-enable controls now that we're done dragging
         if (controlsRef.current) {
           controlsRef.current.enabled = true;
+          
+          // Log the controls state after re-enabling
+          console.log("TRACKBALL CONTROLS STATE (AFTER RE-ENABLE):", {
+            enabled: controlsRef.current.enabled,
+            // @ts-ignore - Accessing private properties for debugging
+            state: controlsRef.current._state,
+            // @ts-ignore - Accessing private properties for debugging
+            prevState: controlsRef.current._prevState,
+            // @ts-ignore - Accessing private properties for debugging
+            mouseButtons: controlsRef.current.mouseButtons,
+            // @ts-ignore - Accessing private properties for debugging
+            _mouseDown: controlsRef.current._mouseDown
+          });
         }
 
         console.log("Dragging stopped, selection and states reset");
@@ -2077,8 +2109,34 @@ export default function Canvas3D({
     });
 
     // Use document instead of window for more reliable event capture
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("mousemove", (e) => {
+      // Log document mouse move events for debugging
+      if (e.button === 2) {
+        console.log("DOCUMENT MOUSE MOVE (RIGHT BUTTON):", { 
+          button: e.button,
+          buttonsProp: e.buttons, // This contains all currently pressed buttons
+          buttons: {
+            left: !!(e.buttons & 1),   // Check if bit 0 is set (left button)
+            middle: !!(e.buttons & 4), // Check if bit 2 is set (middle button)
+            right: !!(e.buttons & 2)   // Check if bit 1 is set (right button)
+          },
+          isDraggingRef: dragStateRef.current.isDragging,
+          controlsEnabled: controlsRef.current?.enabled
+        });
+      }
+      handleMouseMove(e);
+    });
+    
+    document.addEventListener("mouseup", (e) => {
+      // Log document mouse up events for debugging
+      console.log("DOCUMENT MOUSE UP:", { 
+        button: e.button,
+        buttonsProp: e.buttons, // Will show remaining buttons that are pressed
+        isDraggingRef: dragStateRef.current.isDragging,
+        controlsEnabled: controlsRef.current?.enabled
+      });
+      handleMouseUp(e);
+    });
 
     console.log("All event listeners attached successfully");
 
