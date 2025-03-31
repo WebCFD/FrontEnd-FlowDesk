@@ -10,6 +10,8 @@ import Settings from "@/pages/dashboard/settings";
 import Profile from "@/pages/dashboard/profile";
 import NewSimulation from "@/pages/dashboard/new-simulation";
 import WizardDesign from "@/pages/dashboard/wizard-design";
+// Test component for debugging
+import Canvas3DTest from "@/pages/canvas3d-test";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { ProtectedRoute } from "@/lib/protected-route";
@@ -35,6 +37,7 @@ function Router() {
       </Route>
       {/* Remove ProtectedRoute wrapper to allow direct access */}
       <Route path="/dashboard/wizard-design" component={WizardDesign} />
+      <Route path="/canvas3d-test" component={Canvas3DTest} />
       <Route path="/dashboard/settings">
         <ProtectedRoute>
           <Settings />
