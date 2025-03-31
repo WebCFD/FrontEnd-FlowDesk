@@ -2046,68 +2046,68 @@ export default function Canvas3D({
           return;  // Don't process non-right clicks when not dragging
         }
         
-        // CRITICAL FIX FOR PAN STICKING:
-        // When a drag operation completes, completely recreate the controls to ensure
-        // they start from a clean state without any stuck button or operation flags
-        if (dragStateRef.current.isDragging) {
-          console.log("🔧 DRAG OPERATION COMPLETED - Recreating controls to ensure clean state");
+        // TARGETED FIX FOR PAN STICKING:
+        // Instead of recreating controls, we'll use a more targeted approach to fix the panning issue
+        // This approach only resets internal state without affecting the event listeners
+        if (dragStateRef.current.isDragging && controlsRef.current) {
+          console.log("🔧 DRAG OPERATION COMPLETED - Resetting controls state");
           
-          // First, clean up and dispose the existing controls if there are any
-          if (controlsRef.current) {
-            try {
-              // Disable the current controls
-              controlsRef.current.enabled = false;
-              
-              // Try to remove any event listeners that might be active
-              controlsRef.current.dispose();
-              
-              console.log("✅ Existing controls disabled and disposed");
-            } catch (e) {
-              console.error("Error disposing controls:", e);
+          // Access the underlying controls to reset its internal state
+          const controls = controlsRef.current as any;
+          
+          try {
+            // Make sure controls are enabled
+            controls.enabled = true;
+            
+            // Reset key internal state variables that could be "stuck"
+            if (typeof controls._state !== 'undefined') {
+              console.log("Resetting controls state from:", controls._state);
+              controls._state = -1; // STATE.NONE in TrackballControls
             }
             
-            // Create completely new controls with the same settings
-            // Delay slightly to ensure all events are processed
-            setTimeout(() => {
-              try {
-                if (cameraRef.current && containerRef.current) {
-                  // Create new TrackballControls with the same parameters
-                  const newControls = new TrackballControls(
-                    cameraRef.current,
-                    containerRef.current
-                  );
-                  
-                  // Copy settings from our defaults
-                  newControls.rotateSpeed = 1.0;
-                  newControls.zoomSpeed = 1.2;
-                  newControls.panSpeed = 0.8;
-                  newControls.noZoom = false;
-                  newControls.noPan = false;
-                  newControls.staticMoving = true;
-                  newControls.dynamicDampingFactor = 0.3;
-                  newControls.keys = [65, 83, 68]; // A, S, D
-                  
-                  // Configure mouse buttons
-                  newControls.mouseButtons = {
-                    LEFT: THREE.MOUSE.ROTATE,
-                    MIDDLE: THREE.MOUSE.ZOOM,
-                    RIGHT: THREE.MOUSE.PAN
-                  };
-                  
-                  // Replace the controls reference
-                  controlsRef.current = newControls;
-                  
-                  console.log("✅ New controls created and configured");
-                  
-                  // Force a render to apply the new controls
-                  needsRenderRef.current = true;
-                } else {
-                  console.error("Cannot recreate controls - camera or container missing");
-                }
-              } catch (e) {
-                console.error("Error recreating controls:", e);
-              }
-            }, 100); // Small delay to ensure cleanup is complete
+            if (typeof controls._prevState !== 'undefined') {
+              controls._prevState = -1;
+            }
+            
+            // Reset mouse tracking flags
+            if (typeof controls._mouseDownPoint !== 'undefined') {
+              controls._mouseDownPoint = null;
+            }
+            
+            if (typeof controls._mouseMoved !== 'undefined') {
+              controls._mouseMoved = false;
+            }
+            
+            // Reset any tracking of right button specifically
+            if (controls._mouseButtons && typeof controls._mouseButtons.RIGHT !== 'undefined') {
+              console.log("Ensuring right mouse button is not considered pressed in controls");
+              // Ensure right button is not considered down
+              controls._mouseButtons.RIGHT = -1;
+            }
+            
+            // Dispatch a synthetic mouseup event for the right button to help reset state
+            if (containerRef.current) {
+              console.log("Dispatching synthetic right button mouseup to reset control state");
+              const syntheticEvent = new MouseEvent('mouseup', {
+                bubbles: true,
+                cancelable: true,
+                button: 2, // Right button
+                buttons: 0, // No buttons pressed
+                clientX: event.clientX || 0,
+                clientY: event.clientY || 0
+              });
+              containerRef.current.dispatchEvent(syntheticEvent);
+            }
+            
+            console.log("✅ Controls state reset successfully");
+          } catch (e) {
+            console.error("Error resetting controls state:", e);
+          }
+          
+          // Force an update and render to apply changes
+          if (controlsRef.current) {
+            controlsRef.current.update();
+            needsRenderRef.current = true;
           }
         }
         
