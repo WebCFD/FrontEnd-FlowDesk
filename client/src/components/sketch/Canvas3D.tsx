@@ -43,12 +43,6 @@ interface FloorData {
   stairPolygons?: StairPolygon[]; // Add stair polygons to floor data
 }
 
-// Utility function to normalize floor names consistently across the application
-const normalizeFloorName = (floorName: string): string => {
-  // Convert to lowercase and remove spaces - ensure consistent keys for storage/retrieval
-  return floorName.toLowerCase().replace(/\s+/g, '');
-};
-
 // Define 3D Measurement interface
 interface Measurement3D {
   startPoint: THREE.Vector3;
@@ -394,15 +388,6 @@ export default function Canvas3D({
   const [activeMeasurementLabel, setActiveMeasurementLabel] = useState<THREE.Sprite | null>(null);
 
   const isMeasureModeRef = useRef(false);
-  
-  // Store the positions of air entries that have been updated via dragging
-  // This is used to ensure they keep their positions when the scene is rebuilt
-  // Format: { floorName: { entryIndex: { x, y } } }
-  const updatedAirEntryPositionsRef = useRef<{
-    [floorName: string]: {
-      [entryIndex: number]: { x: number, y: number }
-    }
-  }>({});
   const dragStateRef = useRef({
     isDragging: false,
     selectedAxis: null as "x" | "z" | null,
@@ -675,24 +660,6 @@ export default function Canvas3D({
   ) => {
     const objects: THREE.Object3D[] = [];
     const perimeterPoints = createRoomPerimeter(floorData.lines);
-    
-    // Check if we have stored updated positions for this floor - use the shared normalization function
-    const normalizedFloorName = normalizeFloorName(floorData.name);
-    console.log(`[POSITION RETRIEVAL] Checking for positions with floor key: '${normalizedFloorName}'`);
-    console.log(`[POSITION RETRIEVAL] Raw floor name: '${floorData.name}', Normalized to: '${normalizedFloorName}'`);
-    console.log(`[POSITION RETRIEVAL] All stored positions:`, JSON.stringify(updatedAirEntryPositionsRef.current));
-    
-    // Try both possible keys for maximum compatibility during transition
-    let updatedPositions = updatedAirEntryPositionsRef.current[normalizedFloorName] || {};
-    
-    // If nothing is found with the normalized name, try the original 'ground' key as fallback
-    // This handles the existing data during transition
-    if (Object.keys(updatedPositions).length === 0 && normalizedFloorName === 'groundfloor') {
-        console.log(`[POSITION RETRIEVAL] No positions found with '${normalizedFloorName}', trying 'ground' as fallback`);
-        updatedPositions = updatedAirEntryPositionsRef.current['ground'] || {};
-    }
-    
-    console.log(`[POSITION RETRIEVAL] Retrieved positions for '${normalizedFloorName}':`, JSON.stringify(updatedPositions));
 
     // Create floor and ceiling surfaces
     if (perimeterPoints.length > 2) {
@@ -799,44 +766,14 @@ export default function Canvas3D({
           side: THREE.DoubleSide,
         });
 
-        // Check if we have a stored position for this entry
-        const updatedPosition = updatedPositions[index];
-        console.log(`[POSITION LOADING] Checking for stored position for entry ${index}:`, {
-          updatedPositionsExists: !!updatedPositions,
-          haveUpdatedPosition: !!updatedPosition,
-          updatedPositionValue: updatedPosition,
-          entryOriginalPosition: entry.position,
-          entryIndex: index,
-          floorName: floorData.name,
-          normalizedFloorName: normalizedFloorName,
-          allPositionsStoredForThisFloor: JSON.stringify(updatedPositions),
-          allFloorEntries: floorData.airEntries.length
-        });
-        
-        // Create a working copy of the entry position
-        let entryPosition = { ...entry.position };
-        
-        // If we have a stored position from previous dragging, use it
-        if (updatedPosition) {
-          console.log(`[POSITION LOADING] Using stored position for entry ${index}:`, {
-            from: entry.position,
-            to: updatedPosition,
-            diffX: updatedPosition.x - entry.position.x,
-            diffY: updatedPosition.y - entry.position.y
-          });
-          entryPosition = updatedPosition;
-        } else {
-          console.log(`[POSITION LOADING] No stored position found for entry ${index}, using original position:`, entry.position);
-        }
-        
         const mesh = new THREE.Mesh(geometry, material);
-        const position = transform2DTo3D(entryPosition);
+        const position = transform2DTo3D(entry.position);
         mesh.position.set(position.x, position.y, zPosition);
 
         // Add userData for raycasting identification - include the actual entry index for easy mapping
         mesh.userData = {
           type: entry.type,
-          position: entryPosition, // Use the potentially updated position
+          position: entry.position,
           dimensions: entry.dimensions,
           line: entry.line,
           index: objects.length,
@@ -1015,7 +952,7 @@ export default function Canvas3D({
     controls.mouseButtons = {
       LEFT: THREE.MOUSE.ROTATE,
       MIDDLE: THREE.MOUSE.DOLLY, // THREE.MOUSE.DOLLY instead of ZOOM for TrackballControls
-      RIGHT: THREE.MOUSE.PAN // Enable right mouse panning in controls
+      RIGHT: null // Don't use right mouse for controls, we'll handle it ourselves
     };
     // Add mechanism to disable controls during dragging
     controls.enabled = true;
@@ -1044,116 +981,15 @@ export default function Canvas3D({
 
     // Find the animation loop in the initial scene setup useEffect
     // Look for this code:
-    // Create a counter for the animation frames
-    const animationFrameCounter = { count: 0 };
-    
-    // Make sure controls are properly updated in the animation loop
-    const animate = () => {
+    // const animate = () => {
+    //   requestAnimationFrame(animate);
+    //   controls.update();
+    //   renderer.render(scene, camera);
+    // };
+    // animate();
+
+      const animate = () => {
         requestAnimationFrame(animate);
-        
-        // Increment the frame counter
-        animationFrameCounter.count += 1;
-        
-        // Essential: Update the controls in each animation frame
-        if (controlsRef.current) {
-            // Check for the hasListener issue by testing if the event listeners are attached
-            const canvas = controlsRef.current.domElement;
-            const hasListeners = canvas && (
-                canvas.onmousedown || 
-                canvas.onmousemove || 
-                canvas.onmouseup ||
-                // Check for THREE.js event listeners (with type assertion for TypeScript)
-                (canvas as any)._listeners 
-            );
-            
-            // If we're missing event listeners, recreate the controls on every frame
-            if (!hasListeners) {
-                console.log("🚨 Controls missing event listeners - recreating controls instance");
-                
-                // Store current camera position and target
-                const position = controlsRef.current.object.position.clone();
-                const target = controlsRef.current.target.clone();
-                
-                // Also store the current mouse button configuration
-                const prevMouseButtons = { ...controlsRef.current.mouseButtons };
-                const prevEnabled = controlsRef.current.enabled;
-                
-                // Log previous state before disposing
-                console.log("Previous controls state before recreation:", {
-                    position: position.toArray().map(n => n.toFixed(2)),
-                    target: target.toArray().map(n => n.toFixed(2)),
-                    mouseButtons: {
-                        left: prevMouseButtons.LEFT === THREE.MOUSE.ROTATE ? "ROTATE" : "OTHER",
-                        middle: prevMouseButtons.MIDDLE === THREE.MOUSE.DOLLY ? "DOLLY" : "OTHER",
-                        right: prevMouseButtons.RIGHT === THREE.MOUSE.PAN ? "PAN" : "OTHER"
-                    },
-                    enabled: prevEnabled
-                });
-                
-                // Dispose of the old controls to clean up any remaining listeners
-                controlsRef.current.dispose();
-                
-                // Create new controls with the same camera and canvas
-                // Ensure the camera is not null before creating controls
-                if (!cameraRef.current) {
-                    console.error("Cannot recreate controls: Camera reference is null");
-                    return;
-                }
-                const newControls = new TrackballControls(cameraRef.current, canvas);
-                
-                // Copy all the properties from your initial setup
-                newControls.rotateSpeed = 2.0;
-                newControls.zoomSpeed = 1.2;
-                newControls.panSpeed = 0.8;
-                newControls.noZoom = false;
-                newControls.noPan = false;
-                newControls.staticMoving = true;
-                newControls.dynamicDampingFactor = 0.2;
-                
-                // Explicitly set mouse buttons - ensure LEFT is ROTATE for rotation functionality
-                newControls.mouseButtons = {
-                    LEFT: THREE.MOUSE.ROTATE,
-                    MIDDLE: THREE.MOUSE.DOLLY,
-                    RIGHT: THREE.MOUSE.PAN
-                };
-                
-                // Set enabled state to match previous state
-                newControls.enabled = prevEnabled;
-                
-                console.log("Recreated controls configuration:", {
-                    mouseButtons: {
-                        left: newControls.mouseButtons.LEFT === THREE.MOUSE.ROTATE ? "ROTATE" : "OTHER",
-                        middle: newControls.mouseButtons.MIDDLE === THREE.MOUSE.DOLLY ? "DOLLY" : "OTHER",
-                        right: newControls.mouseButtons.RIGHT === THREE.MOUSE.PAN ? "PAN" : "OTHER"
-                    },
-                    enabled: newControls.enabled
-                });
-                
-                // Restore position and target
-                newControls.object.position.copy(position);
-                newControls.target.copy(target);
-                
-                // Check if listeners are properly set up after recreation
-                const hasNewListeners = newControls.domElement && (
-                    newControls.domElement.onmousedown || 
-                    newControls.domElement.onmousemove || 
-                    newControls.domElement.onmouseup ||
-                    (newControls.domElement as any)._listeners
-                );
-                
-                console.log("Controls recreation listener check:", {
-                    hasNewListeners: !!hasNewListeners
-                });
-                
-                // Update the reference
-                controlsRef.current = newControls;
-                
-                console.log("Controls recreated successfully");
-            } else {
-                // Regular update
-                controlsRef.current.update();
-            }
-        }
 
         // Handle dragging with the ref-based approach
         const dragState = dragStateRef.current;
@@ -1569,25 +1405,22 @@ export default function Canvas3D({
                       
                       // BETTER APPROACH 2: If actualEntryIndex fails, try using the parentEntryIndex to find the real parent mesh
                       if (index === -1 && axisObject.userData?.parentEntryIndex !== undefined) {
-                        // Ensure axisObject has userData and parentEntryIndex property
-                        const userData = axisObject.userData || {};
-                        const parentMeshIndex = userData.parentEntryIndex;
+                        const parentMeshIndex = axisObject.userData.parentEntryIndex;
                         console.log("Looking for parent mesh with index:", parentMeshIndex);
                         
                         // Find the parent mesh
-                        let parentMesh: (THREE.Mesh & {userData: {entryIndex?: number}}) | null = null;
+                        let parentMesh: THREE.Mesh | null = null;
                         sceneRef.current?.traverse((object) => {
                           if (object instanceof THREE.Mesh && 
                               object.userData && 
                               object.userData.type && 
                               ["window", "door", "vent"].includes(object.userData.type) && 
                               object.userData.index === parentMeshIndex) {
-                            // Cast the object to the right type
-                            parentMesh = object as THREE.Mesh & {userData: {entryIndex?: number}};
+                            parentMesh = object;
                           }
                         });
                         
-                        if (parentMesh && parentMesh.userData && typeof parentMesh.userData.entryIndex === 'number') {
+                        if (parentMesh && parentMesh.userData) {
                           // Use the parent mesh's entryIndex
                           const parentEntryIndex = parentMesh.userData.entryIndex;
                           if (typeof parentEntryIndex === 'number' && 
@@ -1748,11 +1581,6 @@ export default function Canvas3D({
 
             // We're selecting but not yet dragging
             setSelectedAxis(null);
-            
-            // Make sure controls are enabled when just selecting without dragging
-            if (controlsRef.current) {
-              controlsRef.current.enabled = true;
-            }
           }
         }
       } else {
@@ -1760,11 +1588,6 @@ export default function Canvas3D({
         // Clicked on empty space, clear selection
         setSelectedAirEntry(null);
         setSelectedAxis(null);
-        
-        // Enable camera controls for panning with right-click
-        if (controlsRef.current) {
-          controlsRef.current.enabled = true;
-        }
       }
     }
     };
@@ -1918,17 +1741,10 @@ export default function Canvas3D({
           return;  // Don't reset dragging for non-right clicks
         }
 
-        console.log("MOUSE UP EVENT DETAILS:", { 
+        console.log("Mouse up detected", { 
           button: event.button, 
           refIsDragging: dragStateRef.current.isDragging,
-          refAxis: dragStateRef.current.selectedAxis,
-          selectedObjectExists: !!dragStateRef.current.selectedObject,
-          selectedObjectPosition: dragStateRef.current.selectedObject ? 
-            dragStateRef.current.selectedObject.position.clone() : null,
-          selectedObjectUserData: dragStateRef.current.selectedObject ? 
-            JSON.stringify(dragStateRef.current.selectedObject.userData) : null,
-          floorKey: currentFloor,
-          normalizedFloorKey: currentFloor.toLowerCase().replace(/\s+/g, '')
+          refAxis: dragStateRef.current.selectedAxis
         });
         
         // Log the full state before we reset anything
@@ -1959,19 +1775,6 @@ export default function Canvas3D({
           // Re-enable controls
           if (controlsRef.current) {
             controlsRef.current.enabled = true;
-            
-            // Fix for "sticky pan" issue:
-            // Force a synthetic mouseup event on the canvas to ensure TrackballControls resets internal state
-            const canvas = controlsRef.current.domElement;
-            if (canvas) {
-              console.log("Dispatching synthetic mouseup event to fix sticky pan");
-              const mouseUpEvent = new MouseEvent('mouseup', {
-                bubbles: true,
-                cancelable: true,
-                button: 2  // Right mouse button
-              });
-              canvas.dispatchEvent(mouseUpEvent);
-            }
           }
           return;
         }
@@ -2079,59 +1882,64 @@ export default function Canvas3D({
             // Call the update callback
             onUpdateAirEntry(currentFloor, entryIndex, updatedEntry);
             
-            // IMPORTANT: Keep track of the updated entries to prevent them from resetting
-            // We store a mapping of entryIndex -> position to check against when scene rebuilds
-            console.log("DEBUG UPDATED POSITIONS REF BEFORE:", {
-              current: JSON.stringify(updatedAirEntryPositionsRef.current),
-              floorValue: currentFloor,
-              normalizedFloorValue: currentFloor.toLowerCase().replace(/\s+/g, ''),
-              floorType: typeof currentFloor,
-              floorExists: !!updatedAirEntryPositionsRef.current[currentFloor],
-              entryIndexValue: entryIndex,
-              entryIndexType: typeof entryIndex
-            });
-            
-            // Normalize the floor name using the shared function
-            const normalizedFloorName = normalizeFloorName(currentFloor);
-            console.log(`[POSITION STORAGE] Using normalized floor name for storage: '${normalizedFloorName}' (original: '${currentFloor}')`);
-            
-            // Create storage location with normalized key if it doesn't exist
-            if (!updatedAirEntryPositionsRef.current[normalizedFloorName]) {
-              updatedAirEntryPositionsRef.current[normalizedFloorName] = {};
-              console.log(`[POSITION STORAGE] Created new entry for floor: ${normalizedFloorName} in updatedAirEntryPositionsRef`);
-            }
-            
-            // Store the latest position for this entry index under the normalized key (main storage)
-            updatedAirEntryPositionsRef.current[normalizedFloorName][entryIndex] = {
-              x: updatedEntry.position.x,
-              y: updatedEntry.position.y
-            };
-            
-            // For backward compatibility with existing code, also store under 'ground' key 
-            // if this is the ground floor (transitional approach)
-            if (normalizedFloorName === 'groundfloor') {
-              if (!updatedAirEntryPositionsRef.current['ground']) {
-                updatedAirEntryPositionsRef.current['ground'] = {};
+            // IMPORTANT: The parent component may have updated the state
+            // We need to wait for the next render cycle to get the latest floor data
+            // Using setTimeout to defer this check until after the React state update
+            setTimeout(() => {
+              // Get the latest floor data after the parent component has processed the update
+              const latestFloorData = floors[currentFloor];
+              
+              if (latestFloorData && latestFloorData.airEntries) {
+                console.log("LATEST FLOOR DATA CHECK AFTER UPDATE:", {
+                  activeEntryIndex: entryIndex,
+                  allEntriesAfterParentUpdate: latestFloorData.airEntries.map((entry, idx) => ({
+                    index: idx,
+                    type: entry.type,
+                    position: entry.position,
+                    isActive: idx === entryIndex
+                  }))
+                });
+                
+                // Now we need to synchronize ALL air entry meshes with the latest floor data
+                // This ensures that no matter which air entry is dragged next, they all have correct positions
+                if (scene) {
+                  scene.traverse((object) => {
+                    if (
+                      object instanceof THREE.Mesh &&
+                      object.userData &&
+                      object.userData.type &&
+                      ["window", "door", "vent"].includes(object.userData.type) &&
+                      typeof object.userData.entryIndex === 'number'
+                    ) {
+                      // Get the entry index from the mesh userData
+                      const meshEntryIndex = object.userData.entryIndex;
+                      
+                      // Check if this index is valid in the latest floor data
+                      if (meshEntryIndex >= 0 && meshEntryIndex < latestFloorData.airEntries.length) {
+                        // Get the latest position data from the floor data
+                        const latestPosition = latestFloorData.airEntries[meshEntryIndex].position;
+                        
+                        // Compare positions - if different, update the userData
+                        const currentPosition = object.userData.position;
+                        if (
+                          !currentPosition ||
+                          currentPosition.x !== latestPosition.x ||
+                          currentPosition.y !== latestPosition.y
+                        ) {
+                          console.log(`SYNC: Updating mesh userData for entry ${meshEntryIndex}`, {
+                            from: currentPosition,
+                            to: latestPosition
+                          });
+                          
+                          // Update the userData with the latest position
+                          object.userData.position = { ...latestPosition };
+                        }
+                      }
+                    }
+                  });
+                }
               }
-              console.log(`[POSITION STORAGE] Also storing under legacy 'ground' key for compatibility`);
-              updatedAirEntryPositionsRef.current['ground'][entryIndex] = {
-                x: updatedEntry.position.x,
-                y: updatedEntry.position.y
-              };
-            }
-            
-            console.log(`[POSITION STORAGE] Stored position for ${normalizedFloorName}[${entryIndex}]:`, {
-              position: updatedEntry.position,
-              allStoredPositions: JSON.stringify(updatedAirEntryPositionsRef.current)
-            });
-            
-            console.log("STORING UPDATED POSITION:", {
-              originalFloor: currentFloor,
-              normalizedFloor: normalizedFloorName,
-              entryIndex,
-              position: updatedAirEntryPositionsRef.current[normalizedFloorName][entryIndex],
-              completeRef: JSON.stringify(updatedAirEntryPositionsRef.current)
-            });
+            }, 0);
             
             // CRITICAL FIX: Update the userData with the new position
             // This ensures that future position searches can find this object
@@ -2149,13 +1957,6 @@ export default function Canvas3D({
             }
           }
         }
-
-        // Log control state before reset
-        console.log("CONTROLS STATE BEFORE DRAG RESET:", {
-          controlsExist: !!controlsRef.current,
-          controlsEnabled: controlsRef.current ? controlsRef.current.enabled : 'N/A',
-          mouseButtons: controlsRef.current ? controlsRef.current.mouseButtons : 'N/A'
-        });
 
         // Reset the React state for UI
         setIsDragging(false);
@@ -2178,46 +1979,13 @@ export default function Canvas3D({
         // Re-enable controls now that we're done dragging
         if (controlsRef.current) {
           controlsRef.current.enabled = true;
-          console.log("CONTROLS RE-ENABLED:", {
-            enabled: controlsRef.current.enabled,
-            mouseButtons: controlsRef.current.mouseButtons
-          });
-          
-          // Fix for "sticky pan" issue:
-          // Force a synthetic mouseup event on the canvas to ensure TrackballControls resets internal state
-          const canvas = controlsRef.current.domElement;
-          if (canvas) {
-            console.log("Dispatching synthetic mouseup event to fix sticky pan");
-            const mouseUpEvent = new MouseEvent('mouseup', {
-              bubbles: true,
-              cancelable: true,
-              button: 2  // Right mouse button
-            });
-            canvas.dispatchEvent(mouseUpEvent);
-          }
-          
-          // Force controls to update its state
-          controlsRef.current.update();
-          console.log("CONTROLS AFTER UPDATE():", {
-            enabled: controlsRef.current.enabled,
-            mouseButtons: controlsRef.current.mouseButtons
-          });
-        } else {
-          console.log("WARNING: Could not re-enable controls - controlsRef.current is null");
         }
 
         console.log("Dragging stopped, selection and states reset");
     };
 
     // Now add the event listeners
-    console.log("Setting up event listeners on canvas:", {
-      canvasElement: canvas ? canvas.tagName : 'null',
-      controls: controlsRef.current ? {
-        enabled: controlsRef.current.enabled,
-        mouseButtons: controlsRef.current.mouseButtons,
-        domElement: controlsRef.current.domElement ? controlsRef.current.domElement.tagName : 'null'
-      } : 'null'
-    });
+    console.log("Setting up event listeners on canvas:", canvas);
 
     // Clear and specific event binding
     canvas.addEventListener("contextmenu", (e) => {
@@ -2225,165 +1993,17 @@ export default function Canvas3D({
       e.preventDefault();
     });
 
-    // Log when mousedown events are received
-    const mouseDownWrapper = (e: MouseEvent) => {
-      const buttonName = {
-        0: 'LEFT',
-        1: 'MIDDLE',
-        2: 'RIGHT'
-      }[e.button] || 'UNKNOWN';
-      
-      console.log(`Canvas mousedown detected: ${buttonName} BUTTON:`, {
-        button: e.button,
-        target: (e.target as HTMLElement)?.tagName,
-        controlsStatus: controlsRef.current ? {
-          enabled: controlsRef.current.enabled,
-          mouseButtons: controlsRef.current.mouseButtons
-        } : 'null'
-      });
-      
-      // Special debug for left button rotation issue
-      if (e.button === 0) {
-        console.log("LEFT MOUSE DOWN - This should trigger rotation in TrackballControls");
-        if (controlsRef.current) {
-          console.log("Controls configuration for left-click:", {
-            enabled: controlsRef.current.enabled,
-            leftButtonIs: controlsRef.current.mouseButtons.LEFT === THREE.MOUSE.ROTATE ? "ROTATE" : "OTHER"
-          });
-          
-          // Force rotation by explicitly forwarding the event to TrackballControls
-          // This may be needed if the TrackballControls isn't properly receiving the event
-          if (controlsRef.current.enabled && !isDragging) {
-            try {
-              // Call TrackballControls' internal handlers directly if they exist
-              const domElement = controlsRef.current.domElement;
-              
-              // Check if we can simulate a direct mousedown event on controls
-              if (domElement) {
-                console.log("Attempting to forward LEFT CLICK to controls for rotation");
-                // Dispatch a synthetic event directly to the element
-                const syntheticMouseEvent = new MouseEvent('mousedown', {
-                  bubbles: true,
-                  cancelable: true,
-                  view: window,
-                  button: 0,
-                  buttons: 1,
-                  clientX: e.clientX,
-                  clientY: e.clientY
-                });
-                
-                // Actually dispatch the synthetic event
-                domElement.dispatchEvent(syntheticMouseEvent);
-                console.log("Dispatched synthetic mousedown event");
-                
-                // Try to invoke TrackballControls' handler directly (if available as a property)
-                // Access as any type to work around TypeScript not knowing about TrackballControls internal methods
-                const controls = controlsRef.current as any;
-                if (controls.onMouseDown && typeof controls.onMouseDown === 'function') {
-                  console.log("Directly calling controls.onMouseDown handler");
-                  controls.onMouseDown(e);
-                }
-                
-                // Mark that we need to render
-                needsRenderRef.current = true;
-              }
-            } catch (error) {
-              console.error("Error while trying to forward left-click event:", error);
-            }
-          }
-        }
-      }
-      else if (e.button === 2) {
+    canvas.addEventListener("mousedown", (e) => {
+      console.log("Canvas mousedown detected, button:", e.button);
+      if (e.button === 2) {
         // Right mouse button for both measurements and context operations
         handleRightMouseDown(e);
       }
-    };
-    
-    canvas.addEventListener("mousedown", mouseDownWrapper);
+    });
 
-    // Create named handlers for event tracking
-    const mouseMoveHandler = (e: MouseEvent) => {
-      // Add button state to understand multi-button scenarios
-      if ((e.buttons & 2) === 2) { // Check if right button is held down
-        console.log("🔍 MOUSE MOVE STATE:", {
-          timestamp: Date.now(),
-          buttons: e.buttons,
-          rightButtonBit: (e.buttons & 2) === 2,
-          rightButtonPressedRef: dragStateRef.current.isDragging,
-          isDraggingRef: dragStateRef.current.isDragging,
-          customPanning: !controlsRef.current?.enabled,
-          controlsState: controlsRef.current ? {
-            enabled: controlsRef.current.enabled,
-            mouseButtons: controlsRef.current.mouseButtons
-          } : 'null',
-          mouseX: e.clientX,
-          mouseY: e.clientY
-        });
-      }
-      
-      handleMouseMove(e);
-    };
-    
-    const mouseUpHandler = (e: MouseEvent) => {
-      console.log("🔍 MOUSE UP:", {
-        button: e.button,
-        buttonNames: {
-          0: 'LEFT',
-          1: 'MIDDLE',
-          2: 'RIGHT'
-        }[e.button],
-        target: (e.target as HTMLElement)?.tagName,
-        coords: { x: e.clientX, y: e.clientY },
-        controlsStatus: controlsRef.current ? {
-          enabled: controlsRef.current.enabled,
-          mouseButtons: controlsRef.current.mouseButtons
-        } : 'null'
-      });
-      
-      handleMouseUp(e);
-      
-      // Debug control status after handler completes
-      if (controlsRef.current) {
-        console.log("🎮 CONTROLS AFTER MOUSEUP:", {
-          enabled: controlsRef.current.enabled,
-          mouseButtons: controlsRef.current.mouseButtons
-        });
-      }
-    };
-    
     // Use document instead of window for more reliable event capture
-    document.addEventListener("mousemove", mouseMoveHandler);
-    document.addEventListener("mouseup", mouseUpHandler);
-
-    // Set up periodic logging in animation loop to check controls state
-    const controlsStatusLogger = () => {
-      // Use the existing animationFrameCounter from the animation loop
-      // already incremented in the animate function
-      if (animationFrameCounter.count % 100 === 0) { // Log every 100 frames
-        console.log("🎮 CONTROLS DOM ELEMENT:", {
-          hasElement: !!controlsRef.current?.domElement,
-          tagName: controlsRef.current?.domElement?.tagName || '',
-          id: controlsRef.current?.domElement?.id || '',
-          hasMouseUp: !!controlsRef.current?.domElement?.onmouseup,
-          hasMouseDown: !!controlsRef.current?.domElement?.onmousedown,
-          hasMouseMove: !!controlsRef.current?.domElement?.onmousemove,
-          hasListeners: false // Not using eventNames method since it's not available
-        });
-        
-        console.log("🔄 ANIMATION FRAME CONTROLS STATE:", {
-          frame: animationFrameCounter.count,
-          enabled: controlsRef.current?.enabled,
-          mouseButtons: controlsRef.current?.mouseButtons,
-          rightButtonDown: (controlsRef.current?.mouseButtons?.RIGHT === THREE.MOUSE.PAN) ? 'PAN' : 'N/A',
-          dragActive: dragStateRef.current.isDragging
-        });
-      }
-      
-      requestAnimationFrame(controlsStatusLogger);
-    };
-    
-    // Start the logger
-    requestAnimationFrame(controlsStatusLogger);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
 
     console.log("All event listeners attached successfully");
 
