@@ -1066,8 +1066,8 @@ export default function Canvas3D({
                 (canvas as any)._listeners 
             );
             
-            // If we're missing event listeners, completely recreate the controls every 100 frames
-            if (!hasListeners && animationFrameCounter.count % 100 === 0) {
+            // If we're missing event listeners, recreate the controls on every frame
+            if (!hasListeners) {
                 console.log("🚨 Controls missing event listeners - recreating controls instance");
                 
                 // Store current camera position and target
@@ -1078,6 +1078,11 @@ export default function Canvas3D({
                 controlsRef.current.dispose();
                 
                 // Create new controls with the same camera and canvas
+                // Ensure the camera is not null before creating controls
+                if (!cameraRef.current) {
+                    console.error("Cannot recreate controls: Camera reference is null");
+                    return;
+                }
                 const newControls = new TrackballControls(cameraRef.current, canvas);
                 
                 // Copy all the properties from your initial setup
@@ -1522,7 +1527,9 @@ export default function Canvas3D({
                       
                       // BETTER APPROACH 2: If actualEntryIndex fails, try using the parentEntryIndex to find the real parent mesh
                       if (index === -1 && axisObject.userData?.parentEntryIndex !== undefined) {
-                        const parentMeshIndex = axisObject.userData.parentEntryIndex;
+                        // Ensure axisObject has userData and parentEntryIndex property
+                        const userData = axisObject.userData || {};
+                        const parentMeshIndex = userData.parentEntryIndex;
                         console.log("Looking for parent mesh with index:", parentMeshIndex);
                         
                         // Find the parent mesh
