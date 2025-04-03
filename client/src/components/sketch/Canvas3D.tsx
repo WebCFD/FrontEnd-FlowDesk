@@ -1074,6 +1074,22 @@ export default function Canvas3D({
                 const position = controlsRef.current.object.position.clone();
                 const target = controlsRef.current.target.clone();
                 
+                // Also store the current mouse button configuration
+                const prevMouseButtons = { ...controlsRef.current.mouseButtons };
+                const prevEnabled = controlsRef.current.enabled;
+                
+                // Log previous state before disposing
+                console.log("Previous controls state before recreation:", {
+                    position: position.toArray().map(n => n.toFixed(2)),
+                    target: target.toArray().map(n => n.toFixed(2)),
+                    mouseButtons: {
+                        left: prevMouseButtons.LEFT === THREE.MOUSE.ROTATE ? "ROTATE" : "OTHER",
+                        middle: prevMouseButtons.MIDDLE === THREE.MOUSE.DOLLY ? "DOLLY" : "OTHER",
+                        right: prevMouseButtons.RIGHT === THREE.MOUSE.PAN ? "PAN" : "OTHER"
+                    },
+                    enabled: prevEnabled
+                });
+                
                 // Dispose of the old controls to clean up any remaining listeners
                 controlsRef.current.dispose();
                 
@@ -1093,15 +1109,41 @@ export default function Canvas3D({
                 newControls.noPan = false;
                 newControls.staticMoving = true;
                 newControls.dynamicDampingFactor = 0.2;
+                
+                // Explicitly set mouse buttons - ensure LEFT is ROTATE for rotation functionality
                 newControls.mouseButtons = {
                     LEFT: THREE.MOUSE.ROTATE,
                     MIDDLE: THREE.MOUSE.DOLLY,
                     RIGHT: THREE.MOUSE.PAN
                 };
                 
+                // Set enabled state to match previous state
+                newControls.enabled = prevEnabled;
+                
+                console.log("Recreated controls configuration:", {
+                    mouseButtons: {
+                        left: newControls.mouseButtons.LEFT === THREE.MOUSE.ROTATE ? "ROTATE" : "OTHER",
+                        middle: newControls.mouseButtons.MIDDLE === THREE.MOUSE.DOLLY ? "DOLLY" : "OTHER",
+                        right: newControls.mouseButtons.RIGHT === THREE.MOUSE.PAN ? "PAN" : "OTHER"
+                    },
+                    enabled: newControls.enabled
+                });
+                
                 // Restore position and target
                 newControls.object.position.copy(position);
                 newControls.target.copy(target);
+                
+                // Check if listeners are properly set up after recreation
+                const hasNewListeners = newControls.domElement && (
+                    newControls.domElement.onmousedown || 
+                    newControls.domElement.onmousemove || 
+                    newControls.domElement.onmouseup ||
+                    (newControls.domElement as any)._listeners
+                );
+                
+                console.log("Controls recreation listener check:", {
+                    hasNewListeners: !!hasNewListeners
+                });
                 
                 // Update the reference
                 controlsRef.current = newControls;
@@ -2185,13 +2227,14 @@ export default function Canvas3D({
 
     // Log when mousedown events are received
     const mouseDownWrapper = (e: MouseEvent) => {
-      console.log("Canvas mousedown detected:", {
+      const buttonName = {
+        0: 'LEFT',
+        1: 'MIDDLE',
+        2: 'RIGHT'
+      }[e.button] || 'UNKNOWN';
+      
+      console.log(`Canvas mousedown detected: ${buttonName} BUTTON:`, {
         button: e.button,
-        buttonNames: {
-          0: 'LEFT',
-          1: 'MIDDLE',
-          2: 'RIGHT'
-        }[e.button],
         target: (e.target as HTMLElement)?.tagName,
         controlsStatus: controlsRef.current ? {
           enabled: controlsRef.current.enabled,
@@ -2199,7 +2242,58 @@ export default function Canvas3D({
         } : 'null'
       });
       
-      if (e.button === 2) {
+      // Special debug for left button rotation issue
+      if (e.button === 0) {
+        console.log("LEFT MOUSE DOWN - This should trigger rotation in TrackballControls");
+        if (controlsRef.current) {
+          console.log("Controls configuration for left-click:", {
+            enabled: controlsRef.current.enabled,
+            leftButtonIs: controlsRef.current.mouseButtons.LEFT === THREE.MOUSE.ROTATE ? "ROTATE" : "OTHER"
+          });
+          
+          // Force rotation by explicitly forwarding the event to TrackballControls
+          // This may be needed if the TrackballControls isn't properly receiving the event
+          if (controlsRef.current.enabled && !isDragging) {
+            try {
+              // Call TrackballControls' internal handlers directly if they exist
+              const domElement = controlsRef.current.domElement;
+              
+              // Check if we can simulate a direct mousedown event on controls
+              if (domElement) {
+                console.log("Attempting to forward LEFT CLICK to controls for rotation");
+                // Dispatch a synthetic event directly to the element
+                const syntheticMouseEvent = new MouseEvent('mousedown', {
+                  bubbles: true,
+                  cancelable: true,
+                  view: window,
+                  button: 0,
+                  buttons: 1,
+                  clientX: e.clientX,
+                  clientY: e.clientY
+                });
+                
+                // Actually dispatch the synthetic event
+                domElement.dispatchEvent(syntheticMouseEvent);
+                console.log("Dispatched synthetic mousedown event");
+                
+                // Try to invoke TrackballControls' handler directly (if available as a property)
+                // Access as any type to work around TypeScript not knowing about TrackballControls internal methods
+                const controls = controlsRef.current as any;
+                if (controls.onMouseDown && typeof controls.onMouseDown === 'function') {
+                  console.log("Directly calling controls.onMouseDown handler");
+                  controls.onMouseDown(e);
+                }
+                
+                // Mark that we need to render
+                needsRenderRef.current = true;
+              }
+            } catch (error) {
+              console.error("Error while trying to forward left-click event:", error);
+            }
+          }
+        }
+      }
+      else if (e.button === 2) {
         // Right mouse button for both measurements and context operations
         handleRightMouseDown(e);
       }
