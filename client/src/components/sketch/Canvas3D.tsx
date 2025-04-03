@@ -1044,15 +1044,39 @@ export default function Canvas3D({
 
     // Find the animation loop in the initial scene setup useEffect
     // Look for this code:
-    // const animate = () => {
-    //   requestAnimationFrame(animate);
-    //   controls.update();
-    //   renderer.render(scene, camera);
-    // };
-    // animate();
-
-      const animate = () => {
+    // Create a counter for the animation frames
+    const animationFrameCounter = { count: 0 };
+    
+    // Make sure controls are properly updated in the animation loop
+    const animate = () => {
         requestAnimationFrame(animate);
+        
+        // Increment the frame counter
+        animationFrameCounter.count += 1;
+        
+        // Essential: Update the controls in each animation frame
+        if (controlsRef.current) {
+            // Check for the hasListener issue by testing if the event listeners are attached
+            const canvas = controlsRef.current.domElement;
+            const hasListeners = canvas && (
+                canvas.onmousedown || 
+                canvas.onmousemove || 
+                canvas.onmouseup ||
+                // Check for THREE.js event listeners (with type assertion for TypeScript)
+                (canvas as any)._listeners 
+            );
+            
+            // If we're missing event listeners, re-initialize the controls every 100 frames
+            if (!hasListeners && animationFrameCounter.count % 100 === 0) {
+                console.log("🚨 Controls missing event listeners - reinitializing");
+                // Force controls to attach its event listeners
+                controlsRef.current.enabled = true;
+                controlsRef.current.update();
+            } else {
+                // Regular update
+                controlsRef.current.update();
+            }
+        }
 
         // Handle dragging with the ref-based approach
         const dragState = dragStateRef.current;
@@ -1856,6 +1880,19 @@ export default function Canvas3D({
           // Re-enable controls
           if (controlsRef.current) {
             controlsRef.current.enabled = true;
+            
+            // Fix for "sticky pan" issue:
+            // Force a synthetic mouseup event on the canvas to ensure TrackballControls resets internal state
+            const canvas = controlsRef.current.domElement;
+            if (canvas) {
+              console.log("Dispatching synthetic mouseup event to fix sticky pan");
+              const mouseUpEvent = new MouseEvent('mouseup', {
+                bubbles: true,
+                cancelable: true,
+                button: 2  // Right mouse button
+              });
+              canvas.dispatchEvent(mouseUpEvent);
+            }
           }
           return;
         }
@@ -2067,6 +2104,19 @@ export default function Canvas3D({
             mouseButtons: controlsRef.current.mouseButtons
           });
           
+          // Fix for "sticky pan" issue:
+          // Force a synthetic mouseup event on the canvas to ensure TrackballControls resets internal state
+          const canvas = controlsRef.current.domElement;
+          if (canvas) {
+            console.log("Dispatching synthetic mouseup event to fix sticky pan");
+            const mouseUpEvent = new MouseEvent('mouseup', {
+              bubbles: true,
+              cancelable: true,
+              button: 2  // Right mouse button
+            });
+            canvas.dispatchEvent(mouseUpEvent);
+          }
+          
           // Force controls to update its state
           controlsRef.current.update();
           console.log("CONTROLS AFTER UPDATE():", {
@@ -2174,13 +2224,10 @@ export default function Canvas3D({
     document.addEventListener("mousemove", mouseMoveHandler);
     document.addEventListener("mouseup", mouseUpHandler);
 
-    // Log animation frame function to track controls state
-    const animationFrameCounter = { count: 0 };
-    
     // Set up periodic logging in animation loop to check controls state
     const controlsStatusLogger = () => {
-      animationFrameCounter.count += 1;
-      
+      // Use the existing animationFrameCounter from the animation loop
+      // already incremented in the animate function
       if (animationFrameCounter.count % 100 === 0) { // Log every 100 frames
         console.log("🎮 CONTROLS DOM ELEMENT:", {
           hasElement: !!controlsRef.current?.domElement,
