@@ -557,29 +557,11 @@ export default function WizardDesign() {
         : floors[floorName]?.airEntries.map((entry, i) => ({ index: i, type: entry.type, position: entry.position }))
     });
 
-    // Create a deep clone of the updated entry to prevent reference issues
-    const deepClonedEntry = JSON.parse(JSON.stringify(updatedEntry));
-    
     // Use the store's setAirEntries function when updating the current floor
     if (floorName === currentFloor) {
-      // Create a deep copy of the air entries array with structuredClone
-      const updatedAirEntries = airEntries.map((entry, i) => 
-        i === index ? deepClonedEntry : { ...entry }
-      );
-      
-      // Set the air entries with the deep copy
+      const updatedAirEntries = [...airEntries];
+      updatedAirEntries[index] = updatedEntry;
       setAirEntries(updatedAirEntries);
-      
-      // Also update the floors data to keep everything in sync
-      const updatedFloors = { ...floors };
-      if (updatedFloors[floorName]) {
-        updatedFloors[floorName] = {
-          ...updatedFloors[floorName],
-          airEntries: [...updatedAirEntries]
-        };
-        // Update floor data in the store
-        useRoomStore.getState().setFloors(updatedFloors);
-      }
       
       // Log entries after updating
       console.log("PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR):", {
@@ -618,11 +600,8 @@ export default function WizardDesign() {
         }))
       });
 
-      // Create a deep clone of the updated entry to prevent reference issues
-      const deepClonedEntry = JSON.parse(JSON.stringify(updatedEntry));
-      
-      // Update the specific air entry with deep cloned data
-      floorAirEntries[index] = deepClonedEntry;
+      // Update the specific air entry
+      floorAirEntries[index] = updatedEntry;
 
       // Log the floor air entries after updating
       console.log("PARENT COMPONENT DEBUG - AFTER UPDATE (NON-CURRENT FLOOR):", {
@@ -640,10 +619,6 @@ export default function WizardDesign() {
         ...updatedFloors[floorName],
         airEntries: floorAirEntries
       };
-      
-      // Make sure we also update the "floors" state variable completely
-      // to ensure it's consistent across the component
-      useRoomStore.getState().setFloors(updatedFloors);
 
       // Update the room store with each floor's updated data
       Object.entries(updatedFloors).forEach(([floor, data]) => {
