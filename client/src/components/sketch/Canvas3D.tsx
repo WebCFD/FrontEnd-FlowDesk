@@ -1472,20 +1472,21 @@ export default function Canvas3D({
                         console.log("Looking for parent mesh with index:", parentMeshIndex);
                         
                         // Find the parent mesh
-                        let parentMesh: THREE.Mesh | null = null;
+                        let parentMesh: (THREE.Mesh & {userData: {entryIndex?: number}}) | null = null;
                         sceneRef.current?.traverse((object) => {
                           if (object instanceof THREE.Mesh && 
                               object.userData && 
                               object.userData.type && 
                               ["window", "door", "vent"].includes(object.userData.type) && 
                               object.userData.index === parentMeshIndex) {
-                            parentMesh = object;
+                            // Cast the object to the right type
+                            parentMesh = object as THREE.Mesh & {userData: {entryIndex?: number}};
                           }
                         });
                         
-                        if (parentMesh && parentMesh.userData) {
+                        if (parentMesh && parentMesh.userData && typeof parentMesh.userData.entryIndex === 'number') {
                           // Use the parent mesh's entryIndex
-                          const parentEntryIndex = (parentMesh as THREE.Mesh).userData.entryIndex;
+                          const parentEntryIndex = parentMesh.userData.entryIndex;
                           if (typeof parentEntryIndex === 'number' && 
                               parentEntryIndex >= 0 && 
                               parentEntryIndex < floorData.airEntries.length) {
@@ -2033,6 +2034,13 @@ export default function Canvas3D({
           }
         }
 
+        // Log control state before reset
+        console.log("CONTROLS STATE BEFORE DRAG RESET:", {
+          controlsExist: !!controlsRef.current,
+          controlsEnabled: controlsRef.current ? controlsRef.current.enabled : 'N/A',
+          mouseButtons: controlsRef.current ? controlsRef.current.mouseButtons : 'N/A'
+        });
+
         // Reset the React state for UI
         setIsDragging(false);
         setInitialMousePosition(null);
@@ -2054,13 +2062,33 @@ export default function Canvas3D({
         // Re-enable controls now that we're done dragging
         if (controlsRef.current) {
           controlsRef.current.enabled = true;
+          console.log("CONTROLS RE-ENABLED:", {
+            enabled: controlsRef.current.enabled,
+            mouseButtons: controlsRef.current.mouseButtons
+          });
+          
+          // Force controls to update its state
+          controlsRef.current.update();
+          console.log("CONTROLS AFTER UPDATE():", {
+            enabled: controlsRef.current.enabled,
+            mouseButtons: controlsRef.current.mouseButtons
+          });
+        } else {
+          console.log("WARNING: Could not re-enable controls - controlsRef.current is null");
         }
 
         console.log("Dragging stopped, selection and states reset");
     };
 
     // Now add the event listeners
-    console.log("Setting up event listeners on canvas:", canvas);
+    console.log("Setting up event listeners on canvas:", {
+      canvasElement: canvas ? canvas.tagName : 'null',
+      controls: controlsRef.current ? {
+        enabled: controlsRef.current.enabled,
+        mouseButtons: controlsRef.current.mouseButtons,
+        domElement: controlsRef.current.domElement ? controlsRef.current.domElement.tagName : 'null'
+      } : 'null'
+    });
 
     // Clear and specific event binding
     canvas.addEventListener("contextmenu", (e) => {
@@ -2068,17 +2096,116 @@ export default function Canvas3D({
       e.preventDefault();
     });
 
-    canvas.addEventListener("mousedown", (e) => {
-      console.log("Canvas mousedown detected, button:", e.button);
+    // Log when mousedown events are received
+    const mouseDownWrapper = (e: MouseEvent) => {
+      console.log("Canvas mousedown detected:", {
+        button: e.button,
+        buttonNames: {
+          0: 'LEFT',
+          1: 'MIDDLE',
+          2: 'RIGHT'
+        }[e.button],
+        target: (e.target as HTMLElement)?.tagName,
+        controlsStatus: controlsRef.current ? {
+          enabled: controlsRef.current.enabled,
+          mouseButtons: controlsRef.current.mouseButtons
+        } : 'null'
+      });
+      
       if (e.button === 2) {
         // Right mouse button for both measurements and context operations
         handleRightMouseDown(e);
       }
-    });
+    };
+    
+    canvas.addEventListener("mousedown", mouseDownWrapper);
 
+    // Create named handlers for event tracking
+    const mouseMoveHandler = (e: MouseEvent) => {
+      // Add button state to understand multi-button scenarios
+      if ((e.buttons & 2) === 2) { // Check if right button is held down
+        console.log("🔍 MOUSE MOVE STATE:", {
+          timestamp: Date.now(),
+          buttons: e.buttons,
+          rightButtonBit: (e.buttons & 2) === 2,
+          rightButtonPressedRef: dragStateRef.current.isDragging,
+          isDraggingRef: dragStateRef.current.isDragging,
+          customPanning: !controlsRef.current?.enabled,
+          controlsState: controlsRef.current ? {
+            enabled: controlsRef.current.enabled,
+            mouseButtons: controlsRef.current.mouseButtons
+          } : 'null',
+          mouseX: e.clientX,
+          mouseY: e.clientY
+        });
+      }
+      
+      handleMouseMove(e);
+    };
+    
+    const mouseUpHandler = (e: MouseEvent) => {
+      console.log("🔍 MOUSE UP:", {
+        button: e.button,
+        buttonNames: {
+          0: 'LEFT',
+          1: 'MIDDLE',
+          2: 'RIGHT'
+        }[e.button],
+        target: (e.target as HTMLElement)?.tagName,
+        coords: { x: e.clientX, y: e.clientY },
+        controlsStatus: controlsRef.current ? {
+          enabled: controlsRef.current.enabled,
+          mouseButtons: controlsRef.current.mouseButtons
+        } : 'null'
+      });
+      
+      handleMouseUp(e);
+      
+      // Debug control status after handler completes
+      if (controlsRef.current) {
+        console.log("🎮 CONTROLS AFTER MOUSEUP:", {
+          enabled: controlsRef.current.enabled,
+          mouseButtons: controlsRef.current.mouseButtons
+        });
+      }
+    };
+    
     // Use document instead of window for more reliable event capture
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("mousemove", mouseMoveHandler);
+    document.addEventListener("mouseup", mouseUpHandler);
+
+    // Log animation frame function to track controls state
+    const animationFrameCounter = { count: 0 };
+    
+    // Set up periodic logging in animation loop to check controls state
+    const controlsStatusLogger = () => {
+      animationFrameCounter.count += 1;
+      
+      if (animationFrameCounter.count % 100 === 0) { // Log every 100 frames
+        console.log("🎮 CONTROLS DOM ELEMENT:", {
+          hasElement: !!controlsRef.current?.domElement,
+          tagName: controlsRef.current?.domElement?.tagName || '',
+          id: controlsRef.current?.domElement?.id || '',
+          hasMouseUp: !!controlsRef.current?.domElement?.onmouseup,
+          hasMouseDown: !!controlsRef.current?.domElement?.onmousedown,
+          hasMouseMove: !!controlsRef.current?.domElement?.onmousemove,
+          hasListeners: false // Not using eventNames method since it's not available
+        });
+        
+        console.log("🔄 ANIMATION FRAME CONTROLS STATE:", {
+          frame: animationFrameCounter.count,
+          enabled: controlsRef.current?.enabled,
+          mouseButtons: controlsRef.current?.mouseButtons,
+          rightButtonDown: (controlsRef.current?.mouseButtons?.RIGHT === THREE.MOUSE.PAN) ? 'PAN' : 'N/A',
+          dragActive: dragStateRef.current.isDragging
+        });
+      }
+      
+      requestAnimationFrame(controlsStatusLogger);
+    };
+    
+    // Start the logger
+    requestAnimationFrame(controlsStatusLogger);
 
     console.log("All event listeners attached successfully");
 
