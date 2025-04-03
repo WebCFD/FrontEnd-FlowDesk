@@ -1066,12 +1066,42 @@ export default function Canvas3D({
                 (canvas as any)._listeners 
             );
             
-            // If we're missing event listeners, re-initialize the controls every 100 frames
+            // If we're missing event listeners, completely recreate the controls every 100 frames
             if (!hasListeners && animationFrameCounter.count % 100 === 0) {
-                console.log("🚨 Controls missing event listeners - reinitializing");
-                // Force controls to attach its event listeners
-                controlsRef.current.enabled = true;
-                controlsRef.current.update();
+                console.log("🚨 Controls missing event listeners - recreating controls instance");
+                
+                // Store current camera position and target
+                const position = controlsRef.current.object.position.clone();
+                const target = controlsRef.current.target.clone();
+                
+                // Dispose of the old controls to clean up any remaining listeners
+                controlsRef.current.dispose();
+                
+                // Create new controls with the same camera and canvas
+                const newControls = new TrackballControls(cameraRef.current, canvas);
+                
+                // Copy all the properties from your initial setup
+                newControls.rotateSpeed = 2.0;
+                newControls.zoomSpeed = 1.2;
+                newControls.panSpeed = 0.8;
+                newControls.noZoom = false;
+                newControls.noPan = false;
+                newControls.staticMoving = true;
+                newControls.dynamicDampingFactor = 0.2;
+                newControls.mouseButtons = {
+                    LEFT: THREE.MOUSE.ROTATE,
+                    MIDDLE: THREE.MOUSE.DOLLY,
+                    RIGHT: THREE.MOUSE.PAN
+                };
+                
+                // Restore position and target
+                newControls.object.position.copy(position);
+                newControls.target.copy(target);
+                
+                // Update the reference
+                controlsRef.current = newControls;
+                
+                console.log("Controls recreated successfully");
             } else {
                 // Regular update
                 controlsRef.current.update();
