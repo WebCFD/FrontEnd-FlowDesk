@@ -919,51 +919,46 @@ export default function Canvas3D({
       console.log(`Air Entry ${index} - Dot product X·Z: ${dotProduct.toFixed(6)} (should be close to 0 if perpendicular)`);
       
       // X axis - Red (Perpendicular to both Y and Z axes)
-      // DEBUGGING: Let's verify our approach by starting with a simpler method
-      
       // Get origin point at the air entry position
       const axisOrigin = new THREE.Vector3(position.x, position.y, zPosition);
       
-      // Create a direction object we can manipulate
-      const xDirectionVector = new THREE.Vector3(xDirection.x, xDirection.y, xDirection.z);
-      
       // Debug the axis origin and direction vectors
       console.log(`X-axis origin: ${axisOrigin.x}, ${axisOrigin.y}, ${axisOrigin.z}`);
-      console.log(`X-axis direction vector: ${xDirectionVector.x}, ${xDirectionVector.y}, ${xDirectionVector.z}`);
+      console.log(`X-axis direction vector (perpendicular to Z): ${xDirection.x}, ${xDirection.y}, ${xDirection.z}`);
       
-      // ALTERNATIVE APPROACH FOR X-AXIS
-      // Create a custom arrow for clearer visualization of the X axis
-      const xAxisArrowHelper = new THREE.ArrowHelper(
-        xDirectionVector,
-        axisOrigin,
-        axisLength,
-        0xff0000,  // Red color
-        axisLength * 0.2,  // Head length
-        axisLength * 0.1   // Head width
+      // Create X-axis mesh
+      const xAxisGeometry = new THREE.CylinderGeometry(5, 5, axisLength, 8);
+      const xAxisMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.7 });
+      const xAxis = new THREE.Mesh(xAxisGeometry, xAxisMaterial);
+      
+      // First, position the cylinder at the origin
+      xAxis.position.copy(axisOrigin);
+      
+      // Create a direction quaternion based on our X vector (which is perpendicular to Z)
+      // We need to orient the cylinder which defaults to pointing along Y
+      
+      // Create a forward vector pointing along the cylinder's default axis (Y-axis)
+      const xDefaultDirection = new THREE.Vector3(0, 1, 0);
+      
+      // Quaternion to rotate from the default direction to our X direction
+      const alignWithXDirection = new THREE.Quaternion().setFromUnitVectors(
+        xDefaultDirection, 
+        new THREE.Vector3(xDirection.x, xDirection.y, xDirection.z).normalize()
       );
       
-      console.log("Created ArrowHelper for X-axis with direction:", 
-        xDirectionVector.x.toFixed(4), 
-        xDirectionVector.y.toFixed(4), 
-        xDirectionVector.z.toFixed(4)
-      );
+      // Apply the rotation
+      xAxis.quaternion.copy(alignWithXDirection);
       
-      // Add userData to the arrow
-      xAxisArrowHelper.userData = { 
-        type: 'axis', 
-        direction: 'x',
-        parentEntryIndex: parentMeshIndex,
-        actualEntryIndex: index
-      };
+      // Move the cylinder so its center is positioned along the direction vector
+      xAxis.position.add(new THREE.Vector3(
+        xDirection.x * axisLength/2,
+        xDirection.y * axisLength/2,
+        0
+      ));
       
-      // Replace the mesh implementation with the arrow
-      const xAxis = xAxisArrowHelper;
-      
-      // Create traditional mesh as backup but don't use it
-      const xAxisGeometry = new THREE.CylinderGeometry(8, 8, axisLength, 8);
-      xAxisGeometry.rotateZ(-Math.PI / 2);
-      const xAxisMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.0 }); // Hidden
-      const xAxisMesh = new THREE.Mesh(xAxisGeometry, xAxisMaterial);
+      // Log the final transformation
+      console.log(`X-axis final position: ${xAxis.position.x}, ${xAxis.position.y}, ${xAxis.position.z}`);
+      console.log(`X-axis quaternion: ${xAxis.quaternion.x}, ${xAxis.quaternion.y}, ${xAxis.quaternion.z}, ${xAxis.quaternion.w}`);
       
       xAxis.userData = { 
         type: 'axis', 
@@ -993,36 +988,42 @@ export default function Canvas3D({
       };
 
       // Z axis - Blue (Normal to wall, pointing outward)
-      // Create a direction object for Z-axis
-      const zDirectionVector = new THREE.Vector3(zDirection.x, zDirection.y, zDirection.z);
-      
       // Debug the Z axis direction vector
       console.log(`Z-axis direction vector: ${zDirection.x}, ${zDirection.y}, ${zDirection.z}`);
       
-      // Create an arrow helper for the Z-axis
-      const zAxisArrowHelper = new THREE.ArrowHelper(
-        zDirectionVector,
-        axisOrigin,
-        axisLength,
-        0x0066ff,  // Bright blue
-        axisLength * 0.2,  // Head length 
-        axisLength * 0.1   // Head width
+      // Create Z-axis mesh
+      const zAxisGeometry = new THREE.CylinderGeometry(5, 5, axisLength, 8);
+      const zAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x0066ff, transparent: true, opacity: 0.7 });
+      const zAxis = new THREE.Mesh(zAxisGeometry, zAxisMaterial);
+      
+      // First, position the cylinder at the origin
+      zAxis.position.copy(axisOrigin);
+      
+      // Create a direction quaternion based on our Z vector
+      // We need to orient the cylinder which defaults to pointing along Y
+      
+      // Create a forward vector pointing along the cylinder's default axis (Y-axis)
+      const zDefaultDirection = new THREE.Vector3(0, 1, 0);
+      
+      // Quaternion to rotate from the default direction to our Z direction
+      const alignWithZDirection = new THREE.Quaternion().setFromUnitVectors(
+        zDefaultDirection, 
+        new THREE.Vector3(zDirection.x, zDirection.y, zDirection.z).normalize()
       );
       
-      console.log("Created ArrowHelper for Z-axis with direction:", 
-        zDirectionVector.x.toFixed(4), 
-        zDirectionVector.y.toFixed(4), 
-        zDirectionVector.z.toFixed(4)
-      );
+      // Apply the rotation
+      zAxis.quaternion.copy(alignWithZDirection);
       
-      // For comparison, keep the original cylinder mesh code (not used)
-      const zAxisGeometry = new THREE.CylinderGeometry(5, 5, axisLength, 12);
-      zAxisGeometry.rotateX(-Math.PI / 2);
-      const zAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x0066ff, transparent: true, opacity: 0.0 });
-      const zAxisMesh = new THREE.Mesh(zAxisGeometry, zAxisMaterial);
+      // Move the cylinder so its center is positioned along the direction vector
+      zAxis.position.add(new THREE.Vector3(
+        zDirection.x * axisLength/2,
+        zDirection.y * axisLength/2,
+        0
+      ));
       
-      // Use the arrow helper as our Z-axis
-      const zAxis = zAxisArrowHelper;
+      // Log the final transformation
+      console.log(`Z-axis final position: ${zAxis.position.x}, ${zAxis.position.y}, ${zAxis.position.z}`);
+      console.log(`Z-axis quaternion: ${zAxis.quaternion.x}, ${zAxis.quaternion.y}, ${zAxis.quaternion.z}, ${zAxis.quaternion.w}`);
       
       zAxis.userData = { 
         type: 'axis', 
