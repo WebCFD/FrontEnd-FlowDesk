@@ -1076,8 +1076,8 @@ export default function Canvas3D({
         fontface: "Arial",
         textColor: { r: 255, g: 0, b: 0, a: 1.0 },
         backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 }, // No background
-        borderColor: { r: 255, g: 0, b: 0, a: 1.0 },
-        borderThickness: 2,
+        borderColor: { r: 255, g: 0, b: 0, a: 0.0 }, // No border
+        borderThickness: 0,
         padding: 10
       });
       xLabel.position.set(labelDistance, 0, 0);
@@ -1100,8 +1100,8 @@ export default function Canvas3D({
         fontface: "Arial",
         textColor: { r: 0, g: 255, b: 0, a: 1.0 },
         backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 }, // No background
-        borderColor: { r: 0, g: 255, b: 0, a: 1.0 },
-        borderThickness: 2,
+        borderColor: { r: 0, g: 255, b: 0, a: 0.0 }, // No border
+        borderThickness: 0,
         padding: 10
       });
       yLabel.position.set(0, labelDistance, 0);
@@ -1124,8 +1124,8 @@ export default function Canvas3D({
         fontface: "Arial",
         textColor: { r: 0, g: 0, b: 255, a: 1.0 },
         backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 }, // No background
-        borderColor: { r: 0, g: 0, b: 255, a: 1.0 },
-        borderThickness: 2,
+        borderColor: { r: 0, g: 0, b: 255, a: 0.0 }, // No border
+        borderThickness: 0,
         padding: 10
       });
       zLabel.position.set(0, 0, labelDistance);
