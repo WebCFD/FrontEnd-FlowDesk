@@ -1041,6 +1041,39 @@ export default function Canvas3D({
     // Add coordinate axes
     const axesHelper = new THREE.AxesHelper(200);
     scene.add(axesHelper);
+    
+    // Add axis labels
+    const labelDistance = 220; // Slightly further than the axis length
+    
+    // X-axis label (red)
+    const xLabel = makeTextSprite("X", {
+      fontsize: 32,
+      fontface: "Arial",
+      textColor: { r: 255, g: 0, b: 0, a: 1.0 },
+      backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 }
+    });
+    xLabel.position.set(labelDistance, 0, 0);
+    scene.add(xLabel);
+    
+    // Y-axis label (green)
+    const yLabel = makeTextSprite("Y", {
+      fontsize: 32,
+      fontface: "Arial",
+      textColor: { r: 0, g: 255, b: 0, a: 1.0 },
+      backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 }
+    });
+    yLabel.position.set(0, labelDistance, 0);
+    scene.add(yLabel);
+    
+    // Z-axis label (blue)
+    const zLabel = makeTextSprite("Z", {
+      fontsize: 32,
+      fontface: "Arial",
+      textColor: { r: 0, g: 0, b: 255, a: 1.0 },
+      backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 }
+    });
+    zLabel.position.set(0, 0, labelDistance);
+    scene.add(zLabel);
 
     // Find the animation loop in the initial scene setup useEffect
     // Look for this code:
