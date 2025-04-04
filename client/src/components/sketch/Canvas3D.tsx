@@ -905,9 +905,12 @@ export default function Canvas3D({
       // Y axis is always vertical
       const yDirection = new THREE.Vector3(0, 0, 1);
       
-      // Create X direction that is floor-parallel (z=0) and perpendicular to Z
-      // This creates a vector that lies in the floor plane and is perpendicular to the wall
-      const xDirection = new THREE.Vector3(-zDirection.y, zDirection.x, 0).normalize();
+      // Create X direction by rotating the Z-axis 90 degrees around the vertical axis
+      // This ensures it's perpendicular to Z and in the floor plane
+      const rotationAxis = new THREE.Vector3(0, 0, 1); // Vertical axis
+      const xDirection = zDirection.clone()
+        .applyAxisAngle(rotationAxis, Math.PI/2)
+        .normalize();
       
       // X axis - Red (Perpendicular to both Y and Z axes)
       const xAxisGeometry = new THREE.CylinderGeometry(5, 5, axisLength, 8);
