@@ -919,9 +919,9 @@ export default function Canvas3D({
       console.log(`Air Entry ${index} - Dot product X·Z: ${dotProduct.toFixed(6)} (should be close to 0 if perpendicular)`);
       
       // X axis - Red (Perpendicular to both Y and Z axes)
-      const xAxisGeometry = new THREE.CylinderGeometry(8, 8, axisLength, 8); // Increased thickness for visibility
+      const xAxisGeometry = new THREE.CylinderGeometry(3, 3, axisLength, 8); // Increased thickness for visibility
       // We'll properly align the cylinder along its length instead of with rotation
-      const xAxisMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 1.0 }); // Increased opacity
+      const xAxisMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.8 }); // Increased opacity
       const xAxis = new THREE.Mesh(xAxisGeometry, xAxisMaterial);
       
       // Get origin point at the air entry position
@@ -960,8 +960,8 @@ export default function Canvas3D({
       };
 
       // Y axis - Green (Vertical)
-      const yAxisGeometry = new THREE.CylinderGeometry(8, 8, axisLength, 8); // Same thickness as X axis
-      const yAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 1.0 }); // Increased opacity
+      const yAxisGeometry = new THREE.CylinderGeometry(3, 3, axisLength, 8); // Same thickness as X axis
+      const yAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.8 }); // Increased opacity
       const yAxis = new THREE.Mesh(yAxisGeometry, yAxisMaterial);
       
       // Calculate the endpoint of the Y axis (vertical)
@@ -991,8 +991,9 @@ export default function Canvas3D({
       };
 
       // Z axis - Blue (Normal to wall, pointing outward)
-      const zAxisGeometry = new THREE.CylinderGeometry(8, 8, axisLength, 12); // Same thickness as X axis
-      const zAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x0066ff, transparent: true, opacity: 1.0 }); // Brighter blue
+      const zAxisGeometry = new THREE.CylinderGeometry(3, 3, axisLength, 12); // Same thickness as X axis
+      const zAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x0066ff, transparent: true, opacity: 0.3
+                                                        }); // Brighter blue
       const zAxis = new THREE.Mesh(zAxisGeometry, zAxisMaterial);
       
       // Debug the Z axis direction vector
