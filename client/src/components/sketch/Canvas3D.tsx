@@ -1038,46 +1038,100 @@ export default function Canvas3D({
     gridHelper.material.transparent = true;
     scene.add(gridHelper);
 
-    // Add coordinate axes
-    const axesHelper = new THREE.AxesHelper(200);
-    scene.add(axesHelper);
+    // Check if axes helper already exists before adding a new one
+    let axesHelperExists = false;
+    let xLabelExists = false;
+    let yLabelExists = false;
+    let zLabelExists = false;
     
-    // Add axis labels
+    // Check for existing axis elements to avoid duplicates
+    scene.traverse((object) => {
+      if (object instanceof THREE.AxesHelper) {
+        axesHelperExists = true;
+      }
+      
+      if (object.userData?.type === "axisLabel") {
+        if (object.userData.axis === "x") xLabelExists = true;
+        if (object.userData.axis === "y") yLabelExists = true;
+        if (object.userData.axis === "z") zLabelExists = true;
+      }
+    });
+    
+    // Add coordinate axes only if they don't already exist
+    if (!axesHelperExists) {
+      console.log("Adding coordinate axes helper");
+      const axesHelper = new THREE.AxesHelper(200);
+      scene.add(axesHelper);
+    } else {
+      console.log("Axes helper already exists, skipping creation");
+    }
+    
+    // Add axis labels if they don't already exist
     const labelDistance = 220; // Slightly further than the axis length
     console.log("Creating coordinate axis labels at distance:", labelDistance);
     
-    // X-axis label (red)
-    const xLabel = makeTextSprite("X", {
-      fontsize: 32,
-      fontface: "Arial",
-      textColor: { r: 255, g: 0, b: 0, a: 1.0 },
-      backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 }
-    });
-    xLabel.position.set(labelDistance, 0, 0);
-    scene.add(xLabel);
-    console.log("X-axis label created and added to scene at position:", xLabel.position);
+    // X-axis label (red) - only create if it doesn't exist
+    if (!xLabelExists) {
+      console.log("Creating X-axis label");
+      const xLabel = makeTextSprite("X", {
+        fontsize: 48, // Increased font size
+        fontface: "Arial",
+        textColor: { r: 255, g: 0, b: 0, a: 1.0 },
+        backgroundColor: { r: 255, g: 255, b: 255, a: 0.5 }, // Semi-transparent white background
+        borderColor: { r: 255, g: 0, b: 0, a: 1.0 },
+        borderThickness: 2,
+        padding: 10
+      });
+      xLabel.position.set(labelDistance, 0, 0);
+      // Add userData so we can identify axis labels in the scene
+      xLabel.userData = { type: "axisLabel", axis: "x" };
+      scene.add(xLabel);
+      console.log("X-axis label created and added to scene at position:", xLabel.position);
+    } else {
+      console.log("X-axis label already exists, skipping creation");
+    }
     
-    // Y-axis label (green)
-    const yLabel = makeTextSprite("Y", {
-      fontsize: 32,
-      fontface: "Arial",
-      textColor: { r: 0, g: 255, b: 0, a: 1.0 },
-      backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 }
-    });
-    yLabel.position.set(0, labelDistance, 0);
-    scene.add(yLabel);
-    console.log("Y-axis label created and added to scene at position:", yLabel.position);
+    // Y-axis label (green) - only create if it doesn't exist
+    if (!yLabelExists) {
+      console.log("Creating Y-axis label");
+      const yLabel = makeTextSprite("Y", {
+        fontsize: 48, // Increased font size
+        fontface: "Arial",
+        textColor: { r: 0, g: 255, b: 0, a: 1.0 },
+        backgroundColor: { r: 255, g: 255, b: 255, a: 0.5 }, // Semi-transparent white background
+        borderColor: { r: 0, g: 255, b: 0, a: 1.0 },
+        borderThickness: 2,
+        padding: 10
+      });
+      yLabel.position.set(0, labelDistance, 0);
+      // Add userData so we can identify axis labels in the scene
+      yLabel.userData = { type: "axisLabel", axis: "y" };
+      scene.add(yLabel);
+      console.log("Y-axis label created and added to scene at position:", yLabel.position);
+    } else {
+      console.log("Y-axis label already exists, skipping creation");
+    }
     
-    // Z-axis label (blue)
-    const zLabel = makeTextSprite("Z", {
-      fontsize: 32,
-      fontface: "Arial",
-      textColor: { r: 0, g: 0, b: 255, a: 1.0 },
-      backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 }
-    });
-    zLabel.position.set(0, 0, labelDistance);
-    scene.add(zLabel);
-    console.log("Z-axis label created and added to scene at position:", zLabel.position);
+    // Z-axis label (blue) - only create if it doesn't exist
+    if (!zLabelExists) {
+      console.log("Creating Z-axis label");
+      const zLabel = makeTextSprite("Z", {
+        fontsize: 48, // Increased font size
+        fontface: "Arial",
+        textColor: { r: 0, g: 0, b: 255, a: 1.0 },
+        backgroundColor: { r: 255, g: 255, b: 255, a: 0.5 }, // Semi-transparent white background
+        borderColor: { r: 0, g: 0, b: 255, a: 1.0 },
+        borderThickness: 2,
+        padding: 10
+      });
+      zLabel.position.set(0, 0, labelDistance);
+      // Add userData so we can identify axis labels in the scene
+      zLabel.userData = { type: "axisLabel", axis: "z" };
+      scene.add(zLabel);
+      console.log("Z-axis label created and added to scene at position:", zLabel.position);
+    } else {
+      console.log("Z-axis label already exists, skipping creation");
+    }
 
     // Find the animation loop in the initial scene setup useEffect
     // Look for this code:
@@ -2209,9 +2263,22 @@ export default function Canvas3D({
 
     if (!sceneRef.current) return;
 
-    // Clear previous geometry (except lights and helpers)
+    // Clear previous geometry (except lights, helpers, and axis labels)
     const toRemove: THREE.Object3D[] = [];
     sceneRef.current.traverse((object) => {
+      // Skip axis labels - we want to preserve them during scene rebuilds
+      if (object.userData?.type === "axisLabel") {
+        console.log("Preserving axis label during scene rebuild:", object.userData.axis);
+        return;
+      }
+      
+      // Skip axis helper
+      if (object instanceof THREE.AxesHelper) {
+        console.log("Preserving axes helper during scene rebuild");
+        return;
+      }
+      
+      // Remove all other meshes, sprites, and arrow helpers
       if (
         object instanceof THREE.Mesh ||
         object instanceof THREE.Sprite ||
@@ -2220,6 +2287,9 @@ export default function Canvas3D({
         toRemove.push(object);
       }
     });
+    
+    // Log what we're about to remove
+    console.log(`Removing ${toRemove.length} objects during scene rebuild`);
     toRemove.forEach((object) => sceneRef.current?.remove(object));
 
     // Create and add objects for each floor
