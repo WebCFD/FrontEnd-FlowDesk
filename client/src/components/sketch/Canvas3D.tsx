@@ -899,43 +899,35 @@ export default function Canvas3D({
       // - Y axis (green) to be vertical
       // - Z axis (blue) normal to the wall surface, pointing outward from the volume
       
-      // Use wallDirection for the X axis (horizontal along the wall)
-      const xDirection = wallDirection.clone();
-      // Ensure it's perfectly horizontal (zero Z component)
-      xDirection.z = 0;
-      xDirection.normalize();
+      // First, calculate the wall direction vector (from start to end of the wall)
+      const wallVector = new THREE.Vector3(
+        entry.line.end.x - entry.line.start.x,
+        entry.line.end.y - entry.line.start.y,
+        0
+      ).normalize();
+      
+      // X axis should point along the wall direction
+      const xDirection = wallVector;
       
       // Y axis is always vertical
       const yDirection = new THREE.Vector3(0, 0, 1);
       
-      // Z axis is normal to the wall, pointing outward
-      // We can use wallNormalVector directly since it's already calculated
-      const zDirection = wallNormalVector.clone();
-      // Ensure it's perfectly horizontal (zero Z component)
-      zDirection.z = 0;
-      zDirection.normalize();
+      // Z axis must be perpendicular to the wall surface, pointing outward from the room
+      // For a 2D vector (x,y), a perpendicular vector is (-y,x)
+      const zDirection = new THREE.Vector3(-wallVector.y, wallVector.x, 0).normalize();
+      
+      // We'll use THREE.ArrowHelper which is better for visualizing directions
       
       // X axis - Red (Horizontal along wall)
-      const xAxisGeometry = new THREE.CylinderGeometry(5, 5, axisLength, 8);
-      xAxisGeometry.rotateZ(-Math.PI / 2); // Initially pointing along X
-      const xAxisMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.8 });
-      const xAxis = new THREE.Mesh(xAxisGeometry, xAxisMaterial);
-      
-      // Position the axis cylinder
-      xAxis.position.set(
-        position.x + axisLength/2 * xDirection.x, 
-        position.y + axisLength/2 * xDirection.y, 
-        zPosition
+      // Create an arrow helper for the X axis - this automatically handles alignment
+      const xAxis = new THREE.ArrowHelper(
+        xDirection,                    // Direction vector
+        new THREE.Vector3(position.x, position.y, zPosition), // Origin position
+        axisLength,                    // Length
+        0xff0000,                      // Red color
+        axisLength * 0.2,              // Head length (20% of total)
+        axisLength * 0.1               // Head width (10% of total)
       );
-      
-      // Align with desired direction
-      const xAxisMatrix = new THREE.Matrix4();
-      xAxisMatrix.lookAt(
-        new THREE.Vector3(0, 0, 0), 
-        xDirection, 
-        new THREE.Vector3(0, 0, 1)
-      );
-      xAxis.setRotationFromMatrix(xAxisMatrix);
       
       xAxis.userData = { 
         type: 'axis', 
@@ -945,15 +937,15 @@ export default function Canvas3D({
       };
 
       // Y axis - Green (Vertical)
-      const yAxisGeometry = new THREE.CylinderGeometry(3, 3, axisLength, 8);
-      // No rotation needed as cylinder is already aligned with Y axis
-      const yAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.6 });
-      const yAxis = new THREE.Mesh(yAxisGeometry, yAxisMaterial);
-      yAxis.position.set(
-        position.x, 
-        position.y, 
-        zPosition + axisLength/2
+      const yAxis = new THREE.ArrowHelper(
+        new THREE.Vector3(0, 0, 1),    // Vertical direction
+        new THREE.Vector3(position.x, position.y, zPosition), // Origin position 
+        axisLength,                    // Length
+        0x00ff00,                      // Green color
+        axisLength * 0.2,              // Head length
+        axisLength * 0.1               // Head width
       );
+      
       yAxis.userData = { 
         type: 'axis', 
         direction: 'y',
@@ -961,25 +953,14 @@ export default function Canvas3D({
       };
 
       // Z axis - Blue (Normal to wall, pointing outward)
-      const zAxisGeometry = new THREE.CylinderGeometry(5, 5, axisLength, 8);
-      const zAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff, transparent: true, opacity: 0.8 });
-      const zAxis = new THREE.Mesh(zAxisGeometry, zAxisMaterial);
-      
-      // Position the axis cylinder
-      zAxis.position.set(
-        position.x + axisLength/2 * zDirection.x, 
-        position.y + axisLength/2 * zDirection.y, 
-        zPosition
+      const zAxis = new THREE.ArrowHelper(
+        zDirection,                    // Normal to wall direction
+        new THREE.Vector3(position.x, position.y, zPosition), // Origin position
+        axisLength,                    // Length
+        0x0000ff,                      // Blue color
+        axisLength * 0.2,              // Head length
+        axisLength * 0.1               // Head width
       );
-      
-      // Align with desired direction
-      const zAxisMatrix = new THREE.Matrix4();
-      zAxisMatrix.lookAt(
-        new THREE.Vector3(0, 0, 0), 
-        zDirection, 
-        new THREE.Vector3(0, 0, 1)
-      );
-      zAxis.setRotationFromMatrix(zAxisMatrix);
       
       zAxis.userData = { 
         type: 'axis', 
