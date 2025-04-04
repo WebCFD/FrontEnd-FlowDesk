@@ -104,7 +104,7 @@ const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
 const highlightSelectedAxis = (
   scene: THREE.Scene,
   airEntry: THREE.Mesh,
-  axisType: "x" | "z" | null,
+  axisType: "x" | "y" | "z" | null,
 ) => {
   /*console.log(
     `Highlighting axis: ${axisType} for air entry at position:`,
@@ -152,7 +152,16 @@ const highlightSelectedAxis = (
   // If an axis is selected, highlight it
   if (axisType) {
     //console.log(`Applying highlight to ${axisType} axis`);
-    const targetColor = axisType === "x" ? 0xff0000 : 0x0000ff; // Red or Blue
+    let targetColor: number = 0;
+    
+    // Set the target color based on the axis type
+    if (axisType === "x") {
+      targetColor = 0xff0000; // Red for X
+    } else if (axisType === "y") {
+      targetColor = 0x00ff00; // Green for Y
+    } else if (axisType === "z") {
+      targetColor = 0x0000ff; // Blue for Z
+    }
 
     arrows.forEach((arrow) => {
       const arrowLineMaterial = arrow.line.material as THREE.LineBasicMaterial;
@@ -198,7 +207,7 @@ const highlightHoveredArrow = (
     entry: AirEntry;
     object: THREE.Mesh | null;
   } | null,
-  selectedAxis: "x" | "z" | null,
+  selectedAxis: "x" | "y" | "z" | null,
 ) => {
   if (!scene) return;
 
@@ -209,15 +218,12 @@ const highlightHoveredArrow = (
       let isCurrentlySelected = false;
 
       if (selectedAirEntry?.object) {
+        const colorHex = (object.line.material as THREE.LineBasicMaterial).color.getHex();
         isCurrentlySelected =
           object.position.distanceTo(selectedAirEntry.object.position) < 10 &&
-          ((selectedAxis === "x" &&
-            (object.line.material as THREE.LineBasicMaterial).color.getHex() ===
-              0xff0000) ||
-            (selectedAxis === "z" &&
-              (
-                object.line.material as THREE.LineBasicMaterial
-              ).color.getHex() === 0x0000ff));
+          ((selectedAxis === "x" && colorHex === 0xff0000) ||
+           (selectedAxis === "y" && colorHex === 0x00ff00) ||
+           (selectedAxis === "z" && colorHex === 0x0000ff));
 
         // Skip the selected arrow (it's handled by highlightSelectedAxis)
         if (isCurrentlySelected) return;
@@ -365,8 +371,8 @@ export default function Canvas3D({
     object: THREE.Mesh | null;
   } | null>(null);
 
-  // Track which axis is selected for movement (x or z)
-  const [selectedAxis, setSelectedAxis] = useState<"x" | "z" | null>(null);
+  // Track which axis is selected for movement (x, y, or z)
+  const [selectedAxis, setSelectedAxis] = useState<"x" | "y" | "z" | null>(null);
 
   // Track if currently dragging
   const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -405,7 +411,7 @@ export default function Canvas3D({
   }>({});
   const dragStateRef = useRef({
     isDragging: false,
-    selectedAxis: null as "x" | "z" | null,
+    selectedAxis: null as "x" | "y" | "z" | null,
     startPosition: null as THREE.Vector3 | null,
     initialMousePosition: null as {x: number, y: number} | null,
     selectedObject: null as THREE.Mesh | null,
@@ -1255,8 +1261,13 @@ export default function Canvas3D({
             dragState.selectedObject.position.x = dragState.startPosition.x + (mouseDeltaX * scaleFactor);
             // Log position changes to verify movement
             console.log(`Drag X: ${dragState.selectedObject.position.x.toFixed(2)}, delta: ${mouseDeltaX}`);
+          } else if (dragState.selectedAxis === "y") {
+            // Move along the Y axis (vertical, up/down) - inverted Y movement feels more natural
+            dragState.selectedObject.position.y = dragState.startPosition.y - (mouseDeltaY * scaleFactor);
+            // Log position changes to verify movement
+            console.log(`Drag Y: ${dragState.selectedObject.position.y.toFixed(2)}, delta: ${mouseDeltaY}`);
           } else if (dragState.selectedAxis === "z") {
-            // Move along the Z axis (up/down) - inverted Y movement feels more natural
+            // Move along the Z axis (depth, forward/backward) - inverted Y movement feels more natural
             dragState.selectedObject.position.z = dragState.startPosition.z - (mouseDeltaY * scaleFactor);
             // Log position changes to verify movement
             console.log(`Drag Z: ${dragState.selectedObject.position.z.toFixed(2)}, delta: ${mouseDeltaY}`);
@@ -1544,6 +1555,7 @@ export default function Canvas3D({
             (object instanceof THREE.Mesh &&
               object.userData?.type === "axis")) &&
           (object.userData?.direction === "x" ||
+            object.userData?.direction === "y" ||
             object.userData?.direction === "z")
         ) {
           console.log("✅ Adding to axesHelpers");
@@ -1572,7 +1584,7 @@ export default function Canvas3D({
         // Get axis type from userData
         const axisDirection = axisObject.userData?.direction;
 
-        if (axisDirection === 'x' || axisDirection === 'z') {
+        if (axisDirection === 'x' || axisDirection === 'y' || axisDirection === 'z') {
                   // Find the parent air entry for this axis
                   let closestAirEntry: THREE.Mesh | null = null;
                   let closestDistance = Infinity;
@@ -1595,7 +1607,7 @@ export default function Canvas3D({
                   console.log("Found closest air entry at distance:", closestDistance);
 
                   // Set the axis for movement in the React state (for UI highlighting)
-                  setSelectedAxis(axisDirection as "x" | "z");
+                  setSelectedAxis(axisDirection as "x" | "y" | "z");
 
                   // Store which air entry we're manipulating
                   const airEntryData = (closestAirEntry as THREE.Mesh).userData;
@@ -1747,7 +1759,7 @@ export default function Canvas3D({
                   // IMPORTANT: Update the ref for actual dragging logic
                   dragStateRef.current = {
                     isDragging: true,
-                    selectedAxis: axisDirection as "x" | "z",
+                    selectedAxis: axisDirection as "x" | "y" | "z",
                     startPosition: new THREE.Vector3(
                       (closestAirEntry as THREE.Mesh).position.x,
                       (closestAirEntry as THREE.Mesh).position.y,
