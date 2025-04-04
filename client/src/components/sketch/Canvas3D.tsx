@@ -892,17 +892,51 @@ export default function Canvas3D({
       });
 
       // Create custom axis meshes that are better for intersection detection
-      // X axis - Red (Right)
+      
+      // Calculate proper axis directions
+      // We want:
+      // - X axis (red) to be horizontal along the wall
+      // - Y axis (green) to be vertical
+      // - Z axis (blue) normal to the wall surface, pointing outward from the volume
+      
+      // Use wallDirection for the X axis (horizontal along the wall)
+      const xDirection = wallDirection.clone();
+      // Ensure it's perfectly horizontal (zero Z component)
+      xDirection.z = 0;
+      xDirection.normalize();
+      
+      // Y axis is always vertical
+      const yDirection = new THREE.Vector3(0, 0, 1);
+      
+      // Z axis is normal to the wall, pointing outward
+      // We can use wallNormalVector directly since it's already calculated
+      const zDirection = wallNormalVector.clone();
+      // Ensure it's perfectly horizontal (zero Z component)
+      zDirection.z = 0;
+      zDirection.normalize();
+      
+      // X axis - Red (Horizontal along wall)
       const xAxisGeometry = new THREE.CylinderGeometry(5, 5, axisLength, 8);
-      // Rotate to point in correct direction
-      xAxisGeometry.rotateZ(-Math.PI / 2);
+      xAxisGeometry.rotateZ(-Math.PI / 2); // Initially pointing along X
       const xAxisMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.8 });
       const xAxis = new THREE.Mesh(xAxisGeometry, xAxisMaterial);
+      
+      // Position the axis cylinder
       xAxis.position.set(
-        position.x + axisLength/2 * right.x, 
-        position.y + axisLength/2 * right.y, 
+        position.x + axisLength/2 * xDirection.x, 
+        position.y + axisLength/2 * xDirection.y, 
         zPosition
       );
+      
+      // Align with desired direction
+      const xAxisMatrix = new THREE.Matrix4();
+      xAxisMatrix.lookAt(
+        new THREE.Vector3(0, 0, 0), 
+        xDirection, 
+        new THREE.Vector3(0, 0, 1)
+      );
+      xAxis.setRotationFromMatrix(xAxisMatrix);
+      
       xAxis.userData = { 
         type: 'axis', 
         direction: 'x',
@@ -910,15 +944,15 @@ export default function Canvas3D({
         actualEntryIndex: index // Store the actual entry index from the floor data
       };
 
-      // Y axis - Green (Forward/Normal) - optional, mainly for visualization
+      // Y axis - Green (Vertical)
       const yAxisGeometry = new THREE.CylinderGeometry(3, 3, axisLength, 8);
-      yAxisGeometry.rotateX(Math.PI / 2);
+      // No rotation needed as cylinder is already aligned with Y axis
       const yAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.6 });
       const yAxis = new THREE.Mesh(yAxisGeometry, yAxisMaterial);
       yAxis.position.set(
-        position.x + axisLength/2 * forward.x, 
-        position.y + axisLength/2 * forward.y, 
-        zPosition
+        position.x, 
+        position.y, 
+        zPosition + axisLength/2
       );
       yAxis.userData = { 
         type: 'axis', 
@@ -926,15 +960,27 @@ export default function Canvas3D({
         parentEntryIndex: objects.length - 1
       };
 
-      // Z axis - Blue (Up)
+      // Z axis - Blue (Normal to wall, pointing outward)
       const zAxisGeometry = new THREE.CylinderGeometry(5, 5, axisLength, 8);
       const zAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff, transparent: true, opacity: 0.8 });
       const zAxis = new THREE.Mesh(zAxisGeometry, zAxisMaterial);
+      
+      // Position the axis cylinder
       zAxis.position.set(
-        position.x, 
-        position.y, 
-        zPosition + axisLength/2
+        position.x + axisLength/2 * zDirection.x, 
+        position.y + axisLength/2 * zDirection.y, 
+        zPosition
       );
+      
+      // Align with desired direction
+      const zAxisMatrix = new THREE.Matrix4();
+      zAxisMatrix.lookAt(
+        new THREE.Vector3(0, 0, 0), 
+        zDirection, 
+        new THREE.Vector3(0, 0, 1)
+      );
+      zAxis.setRotationFromMatrix(zAxisMatrix);
+      
       zAxis.userData = { 
         type: 'axis', 
         direction: 'z',
@@ -1072,7 +1118,7 @@ export default function Canvas3D({
     // X-axis label (red) - only create if it doesn't exist
     if (!xLabelExists) {
       const xLabel = makeTextSprite("X", {
-        fontsize: 96, // Much larger font size
+        fontsize: 192, // Much larger font size
         fontface: "Arial",
         textColor: { r: 255, g: 0, b: 0, a: 1.0 },
         backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 }, // No background
@@ -1096,7 +1142,7 @@ export default function Canvas3D({
     // Y-axis label (green) - only create if it doesn't exist
     if (!yLabelExists) {
       const yLabel = makeTextSprite("Y", {
-        fontsize: 96, // Much larger font size
+        fontsize: 192, // Much larger font size
         fontface: "Arial",
         textColor: { r: 0, g: 255, b: 0, a: 1.0 },
         backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 }, // No background
@@ -1120,7 +1166,8 @@ export default function Canvas3D({
     // Z-axis label (blue) - only create if it doesn't exist
     if (!zLabelExists) {
       const zLabel = makeTextSprite("Z", {
-        fontsize: 96, // Much larger font size
+        fontsize: 192
+        , // Much larger font size
         fontface: "Arial",
         textColor: { r: 0, g: 0, b: 255, a: 1.0 },
         backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 }, // No background
