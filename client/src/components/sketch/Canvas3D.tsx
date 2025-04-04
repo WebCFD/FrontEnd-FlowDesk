@@ -960,8 +960,8 @@ export default function Canvas3D({
       };
 
       // Y axis - Green (Vertical)
-      const yAxisGeometry = new THREE.CylinderGeometry(3, 3, axisLength, 8);
-      const yAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.6 });
+      const yAxisGeometry = new THREE.CylinderGeometry(8, 8, axisLength, 8); // Same thickness as X axis
+      const yAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 1.0 }); // Increased opacity
       const yAxis = new THREE.Mesh(yAxisGeometry, yAxisMaterial);
       
       // Calculate the endpoint of the Y axis (vertical)
@@ -991,7 +991,7 @@ export default function Canvas3D({
       };
 
       // Z axis - Blue (Normal to wall, pointing outward)
-      const zAxisGeometry = new THREE.CylinderGeometry(5, 5, axisLength, 12); // More segments
+      const zAxisGeometry = new THREE.CylinderGeometry(8, 8, axisLength, 12); // Same thickness as X axis
       const zAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x0066ff, transparent: true, opacity: 1.0 }); // Brighter blue
       const zAxis = new THREE.Mesh(zAxisGeometry, zAxisMaterial);
       
