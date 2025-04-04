@@ -904,7 +904,7 @@ export default function Canvas3D({
       console.log(`Air Entry ${index} - Z-axis vector:`, zDirection);
       
       // Y axis is always vertical
-      const yDirection = new THREE.Vector3(0, 0, 1);
+      const verticalDirection = new THREE.Vector3(0, 0, 1);
       
       // Create X direction by rotating the Z-axis 90 degrees around the vertical axis
       // This ensures it's perpendicular to Z and in the floor plane
@@ -920,7 +920,7 @@ export default function Canvas3D({
       
       // X axis - Red (Perpendicular to both Y and Z axes)
       const xAxisGeometry = new THREE.CylinderGeometry(8, 8, axisLength, 8); // Increased thickness for visibility
-      xAxisGeometry.rotateZ(-Math.PI / 2); // Initially pointing along X
+      // We'll properly align the cylinder along its length instead of with rotation
       const xAxisMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 1.0 }); // Increased opacity
       const xAxis = new THREE.Mesh(xAxisGeometry, xAxisMaterial);
       
@@ -931,23 +931,26 @@ export default function Canvas3D({
       console.log(`X-axis origin: ${axisOrigin.x}, ${axisOrigin.y}, ${axisOrigin.z}`);
       console.log(`X-axis direction vector: ${xDirection.x}, ${xDirection.y}, ${xDirection.z}`);
       
-      // Position the axis starting at the air entry, extending in the X direction
-      xAxis.position.copy(axisOrigin).add(
-        new THREE.Vector3(axisLength/2 * xDirection.x, axisLength/2 * xDirection.y, 0)
+      // Calculate the endpoint of the axis
+      const xAxisEndPoint = new THREE.Vector3(
+        axisOrigin.x + axisLength * xDirection.x,
+        axisOrigin.y + axisLength * xDirection.y,
+        axisOrigin.z + axisLength * xDirection.z
       );
       
-      // Create a proper orientation matrix to align cylinder with X direction
-      const xAxisMatrix = new THREE.Matrix4();
+      // Calculate the midpoint between origin and endpoint
+      const xAxisMidPoint = new THREE.Vector3().addVectors(axisOrigin, xAxisEndPoint).multiplyScalar(0.5);
       
-      // Look from origin toward the direction vector
-      xAxisMatrix.lookAt(
-        new THREE.Vector3(0, 0, 0), 
-        xDirection,  // Look toward the X direction vector
-        new THREE.Vector3(0, 0, 1)  // Keep Z-up orientation
-      );
+      // Position the axis at the midpoint
+      xAxis.position.copy(xAxisMidPoint);
       
-      // Apply the rotation
-      xAxis.setRotationFromMatrix(xAxisMatrix);
+      // Create direction vector from origin to endpoint
+      const xAxisDirectionVector = new THREE.Vector3().subVectors(xAxisEndPoint, axisOrigin).normalize();
+      
+      // Use quaternion to rotate cylinder to align with direction vector
+      // We need to align the cylinder's local Y-axis with our direction vector
+      const xAxisUp = new THREE.Vector3(0, 1, 0); // Cylinder's default axis
+      xAxis.quaternion.setFromUnitVectors(xAxisUp, xAxisDirectionVector);
       
       xAxis.userData = { 
         type: 'axis', 
@@ -958,18 +961,29 @@ export default function Canvas3D({
 
       // Y axis - Green (Vertical)
       const yAxisGeometry = new THREE.CylinderGeometry(3, 3, axisLength, 8);
-      // No rotation needed as cylinder is already aligned with Y axis
       const yAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.6 });
       const yAxis = new THREE.Mesh(yAxisGeometry, yAxisMaterial);
       
-      // Position at air entry, extending upward vertically
-      yAxis.position.set(
-        position.x, 
-        position.y, 
-        zPosition + axisLength/2
+      // Calculate the endpoint of the Y axis (vertical)
+      const yAxisEndPoint = new THREE.Vector3(
+        axisOrigin.x,
+        axisOrigin.y,
+        axisOrigin.z + axisLength
       );
       
-      // Y axis is always vertical, no special rotation needed
+      // Calculate the midpoint between origin and endpoint
+      const yAxisMidPoint = new THREE.Vector3().addVectors(axisOrigin, yAxisEndPoint).multiplyScalar(0.5);
+      
+      // Position the axis at the midpoint
+      yAxis.position.copy(yAxisMidPoint);
+      
+      // Create direction vector from origin to endpoint (vertical)
+      // Use local variable name to avoid collision
+      const yAxisDirection = new THREE.Vector3(0, 0, 1); // Always vertical
+      
+      // Use quaternion to rotate cylinder to align with Y direction
+      const yAxisUp = new THREE.Vector3(0, 1, 0); // Cylinder's default axis
+      yAxis.quaternion.setFromUnitVectors(yAxisUp, yAxisDirection);
       yAxis.userData = { 
         type: 'axis', 
         direction: 'y',
@@ -978,27 +992,31 @@ export default function Canvas3D({
 
       // Z axis - Blue (Normal to wall, pointing outward)
       const zAxisGeometry = new THREE.CylinderGeometry(5, 5, axisLength, 12); // More segments
-      zAxisGeometry.rotateX(-Math.PI / 2); // Rotate to point along Z axis (perpendicular)
       const zAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x0066ff, transparent: true, opacity: 1.0 }); // Brighter blue
       const zAxis = new THREE.Mesh(zAxisGeometry, zAxisMaterial);
       
       // Debug the Z axis direction vector
       console.log(`Z-axis direction vector: ${zDirection.x}, ${zDirection.y}, ${zDirection.z}`);
       
-      // Use the same origin point established for X axis
-      // Position the z-axis cylinder - extending outward perpendicular to the wall
-      zAxis.position.copy(axisOrigin).add(
-        new THREE.Vector3(axisLength/2 * zDirection.x, axisLength/2 * zDirection.y, 0)
+      // Calculate the endpoint of the Z axis
+      const zAxisEndPoint = new THREE.Vector3(
+        axisOrigin.x + axisLength * zDirection.x,
+        axisOrigin.y + axisLength * zDirection.y,
+        axisOrigin.z + axisLength * zDirection.z
       );
       
-      // Align with direction perpendicular to the wall
-      const zAxisMatrix = new THREE.Matrix4();
-      zAxisMatrix.lookAt(
-        new THREE.Vector3(0, 0, 0), 
-        zDirection, 
-        new THREE.Vector3(0, 0, 1)
-      );
-      zAxis.setRotationFromMatrix(zAxisMatrix);
+      // Calculate the midpoint between origin and endpoint
+      const zAxisMidPoint = new THREE.Vector3().addVectors(axisOrigin, zAxisEndPoint).multiplyScalar(0.5);
+      
+      // Position the axis at the midpoint
+      zAxis.position.copy(zAxisMidPoint);
+      
+      // Create direction vector from origin to endpoint
+      const zAxisDirectionVector = new THREE.Vector3().subVectors(zAxisEndPoint, axisOrigin).normalize();
+      
+      // Use quaternion to rotate cylinder to align with direction vector
+      const zAxisUp = new THREE.Vector3(0, 1, 0); // Cylinder's default axis
+      zAxis.quaternion.setFromUnitVectors(zAxisUp, zAxisDirectionVector);
       
       zAxis.userData = { 
         type: 'axis', 
@@ -1642,7 +1660,7 @@ export default function Canvas3D({
                           if (object instanceof THREE.Mesh && 
                               object.userData && 
                               object.userData.type && 
-                              ["window", "door", "vent"].includes(object.userData.type) && 
+                              ["window", "door", "vent"].includes(object.userData.type as string) && 
                               object.userData.index === parentMeshIndex) {
                             // Cast the object to the right type
                             parentMesh = object as THREE.Mesh & {userData: {entryIndex?: number}};
