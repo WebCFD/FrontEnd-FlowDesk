@@ -894,9 +894,9 @@ export default function Canvas3D({
       // Create custom axis meshes that are better for intersection detection
       
       // Create the local coordinate system for this air entry:
-      // - Z axis (blue) is normal to the wall surface (using the 'forward' vector)
+      // - Z axis (blue) is normal to the wall surface (using the 'forward' vector) 
       // - Y axis (green) is vertical (pointing upward)
-      // - X axis (red) is horizontal and perpendicular to Z (using cross product and projection)
+      // - X axis (red) is perpendicular to both Y and Z (using right-hand rule cross product)
       
       // Z axis should point perpendicular to the wall (normal to the surface)
       // This is the "forward" vector in the mesh's orientation
@@ -905,21 +905,11 @@ export default function Canvas3D({
       // Y axis is always vertical
       const yDirection = new THREE.Vector3(0, 0, 1);
       
-      // X axis must be horizontal and perpendicular to Z
-      // First calculate a temporary vector perpendicular to Y (any horizontal vector)
-      const tempVector = new THREE.Vector3(1, 0, 0);
-      // If the temporary vector is too similar to Z, use another horizontal vector
-      if (Math.abs(tempVector.dot(zDirection)) > 0.9) {
-        tempVector.set(0, 1, 0);
-      }
+      // X axis needs to be perpendicular to both Y and Z
+      // Calculate X as the cross product of Y and Z
+      const xDirection = new THREE.Vector3().crossVectors(yDirection, zDirection).normalize();
       
-      // X is perpendicular to both Z and the temp vector
-      const xDirection = new THREE.Vector3().crossVectors(zDirection, tempVector).normalize();
-      // Ensure X is horizontal by projecting onto horizontal plane
-      xDirection.z = 0;
-      xDirection.normalize();
-      
-      // X axis - Red (Horizontal and perpendicular to Z axis)
+      // X axis - Red (Perpendicular to both Y and Z axes)
       const xAxisGeometry = new THREE.CylinderGeometry(5, 5, axisLength, 8);
       xAxisGeometry.rotateZ(-Math.PI / 2); // Initially pointing along X
       const xAxisMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.8 });
