@@ -1,0 +1,86 @@
+const handleMouseUp = (event: MouseEvent) => {
+  // Only process right mouse button releases when we're dragging
+  if (event.button !== 2) {
+    return;  // Don't reset dragging for non-right clicks
+  }
+
+  console.log("MOUSE UP EVENT DETAILS:", { 
+    button: event.button, 
+    refIsDragging: dragStateRef.current.isDragging
+    // other logging properties...
+  });
+  
+  // Check if we were dragging
+  if (dragStateRef.current.isDragging && dragStateRef.current.selectedObject) {
+    // Handle position updates and storing positions as in your original code
+    // ...
+    
+    // Reset the drag state
+    setIsDragging(false);
+    setInitialMousePosition(null);
+    setSelectedAirEntry(null);
+    setSelectedAxis(null);
+    
+    dragStateRef.current = {
+      isDragging: false,
+      selectedAxis: null,
+      startPosition: null,
+      initialMousePosition: null,
+      currentMousePosition: null,
+      selectedObject: null,
+      entryIndex: -1
+    };
+    
+    // PREVENTATIVE CONTROL RECREATION
+    // Instead of just re-enabling controls, completely recreate them
+    if (controlsRef.current && cameraRef.current && containerRef.current) {
+      console.log("Preventatively recreating controls after drag operation");
+      
+      // Store current camera position and target
+      const position = controlsRef.current.object.position.clone();
+      const target = controlsRef.current.target.clone();
+      
+      // Dispose of the old controls
+      controlsRef.current.dispose();
+      
+      // Create new controls with the same camera and canvas
+      const newControls = new TrackballControls(cameraRef.current, containerRef.current.querySelector('canvas'));
+      
+      // Copy all the properties from the initial setup
+      newControls.rotateSpeed = 2.0;
+      newControls.zoomSpeed = 1.2;
+      newControls.panSpeed = 0.8;
+      newControls.noZoom = false;
+      newControls.noPan = false;
+      newControls.staticMoving = true;
+      newControls.dynamicDampingFactor = 0.2;
+      newControls.mouseButtons = {
+        LEFT: THREE.MOUSE.ROTATE,
+        MIDDLE: THREE.MOUSE.DOLLY,
+        RIGHT: THREE.MOUSE.PAN
+      };
+      
+      // Restore position and target
+      newControls.object.position.copy(position);
+      newControls.target.copy(target);
+      
+      // Update the reference
+      controlsRef.current = newControls;
+      
+      console.log("Controls recreated successfully");
+    } else {
+      console.log("WARNING: Could not recreate controls - missing references");
+      // Fall back to just enabling the controls if recreation isn't possible
+      if (controlsRef.current) {
+        controlsRef.current.enabled = true;
+      }
+    }
+  } else {
+    // If we weren't dragging, just make sure controls are enabled
+    if (controlsRef.current) {
+      controlsRef.current.enabled = true;
+    }
+  }
+  
+  console.log("Drag operation complete, selection and states reset");
+};
