@@ -893,22 +893,22 @@ export default function Canvas3D({
 
       // Create custom axis meshes that are better for intersection detection
       
-      // Calculate proper axis directions
-      // We want:
-      // - X axis (red) to be horizontal along the wall
-      // - Y axis (green) to be vertical
-      // - Z axis (blue) normal to the wall surface, pointing outward from the volume
+      // Create the local coordinate system for this air entry
+      // Using the same orientation vectors from the mesh's basis:
+      // - X axis (red) is horizontal along the wall (using the 'right' vector)
+      // - Y axis (green) is vertical (up vector)
+      // - Z axis (blue) is normal to the wall surface (using the 'forward' vector)
       
-      // X axis should point along the wall direction (right vector)
-      const xDirection = right.clone();
+      // Z axis should point perpendicular to the wall (normal to the surface)
+      // This is the "forward" vector in the mesh's orientation
+      const zDirection = forward.clone();
       
       // Y axis is always vertical
       const yDirection = new THREE.Vector3(0, 0, 1);
       
-      // Z axis must be perpendicular to the wall surface, pointing outward from the room
-      // Use the forward vector from the mesh's orientation
-      // This vector was already calculated and is correct as it points normal to the surface
-      const zDirection = forward.clone();
+      // X axis must be along the wall (right vector)
+      // Use the right vector from the mesh's orientation
+      const xDirection = right.clone();
       
       // X axis - Red (Horizontal along wall)
       const xAxisGeometry = new THREE.CylinderGeometry(5, 5, axisLength, 8);
