@@ -2061,18 +2061,76 @@ export default function Canvas3D({
 
         // Re-enable controls now that we're done dragging
         if (controlsRef.current) {
-          controlsRef.current.enabled = true;
-          console.log("CONTROLS RE-ENABLED:", {
+          // Check if controls have proper event handlers
+          const hasMouseUp = !!controlsRef.current.domElement?.onmouseup;
+          const hasMouseDown = !!controlsRef.current.domElement?.onmousedown;
+          const hasMouseMove = !!controlsRef.current.domElement?.onmousemove;
+          const hasListeners = hasMouseUp && hasMouseDown && hasMouseMove;
+          
+          console.log("CONTROLS STATE AT DRAG END:", {
             enabled: controlsRef.current.enabled,
-            mouseButtons: controlsRef.current.mouseButtons
+            mouseButtons: controlsRef.current.mouseButtons,
+            hasMouseUp,
+            hasMouseDown,
+            hasMouseMove,
+            hasListeners
           });
           
-          // Force controls to update its state
-          controlsRef.current.update();
-          console.log("CONTROLS AFTER UPDATE():", {
-            enabled: controlsRef.current.enabled,
-            mouseButtons: controlsRef.current.mouseButtons
-          });
+          // If event listeners are missing, recreate controls immediately
+          if (!hasListeners && cameraRef.current && rendererRef.current) {
+            console.log("🚨 Controls missing event listeners at drag end - recreating immediately");
+            
+            try {
+              // Store current camera position and target
+              const position = controlsRef.current.object.position.clone();
+              const target = controlsRef.current.target.clone();
+              
+              // Dispose of the old controls
+              controlsRef.current.dispose();
+              
+              // Create new controls with the same camera and canvas
+              const newControls = new TrackballControls(cameraRef.current, rendererRef.current.domElement);
+              
+              // Copy all the properties from the initial setup
+              newControls.rotateSpeed = 2.0;
+              newControls.zoomSpeed = 1.2;
+              newControls.panSpeed = 0.8;
+              newControls.noZoom = false;
+              newControls.noPan = false;
+              newControls.staticMoving = true;
+              newControls.dynamicDampingFactor = 0.2;
+              newControls.mouseButtons = {
+                LEFT: THREE.MOUSE.ROTATE,
+                MIDDLE: THREE.MOUSE.DOLLY,
+                RIGHT: THREE.MOUSE.PAN
+              };
+              
+              // Restore position and target
+              newControls.object.position.copy(position);
+              newControls.target.copy(target);
+              
+              // Make sure controls are enabled
+              newControls.enabled = true;
+              
+              // Update the reference
+              controlsRef.current = newControls;
+              
+              console.log("Controls recreated successfully after drag end");
+            } catch (error) {
+              console.error("Failed to recreate controls after drag:", error);
+            }
+          } else {
+            // Just re-enable existing controls
+            controlsRef.current.enabled = true;
+            
+            // Force controls to update its state
+            controlsRef.current.update();
+            
+            console.log("CONTROLS RE-ENABLED:", {
+              enabled: controlsRef.current.enabled,
+              mouseButtons: controlsRef.current.mouseButtons
+            });
+          }
         } else {
           console.log("WARNING: Could not re-enable controls - controlsRef.current is null");
         }
@@ -2177,19 +2235,27 @@ export default function Canvas3D({
     // Log animation frame function to track controls state
     const animationFrameCounter = { count: 0 };
     
-    // Set up periodic logging in animation loop to check controls state
+    // Set up periodic logging in animation loop to check controls state and recreate if needed
     const controlsStatusLogger = () => {
       animationFrameCounter.count += 1;
       
-      if (animationFrameCounter.count % 100 === 0) { // Log every 100 frames
+      // Check controls status every 100 frames
+      if (animationFrameCounter.count % 100 === 0) {
+        // Check if controls exist and have proper event handlers
+        const hasElement = !!controlsRef.current?.domElement;
+        const hasMouseUp = !!controlsRef.current?.domElement?.onmouseup;
+        const hasMouseDown = !!controlsRef.current?.domElement?.onmousedown;
+        const hasMouseMove = !!controlsRef.current?.domElement?.onmousemove;
+        const hasListeners = hasMouseUp && hasMouseDown && hasMouseMove;
+        
         console.log("🎮 CONTROLS DOM ELEMENT:", {
-          hasElement: !!controlsRef.current?.domElement,
+          hasElement,
           tagName: controlsRef.current?.domElement?.tagName || '',
           id: controlsRef.current?.domElement?.id || '',
-          hasMouseUp: !!controlsRef.current?.domElement?.onmouseup,
-          hasMouseDown: !!controlsRef.current?.domElement?.onmousedown,
-          hasMouseMove: !!controlsRef.current?.domElement?.onmousemove,
-          hasListeners: false // Not using eventNames method since it's not available
+          hasMouseUp,
+          hasMouseDown,
+          hasMouseMove,
+          hasListeners
         });
         
         console.log("🔄 ANIMATION FRAME CONTROLS STATE:", {
@@ -2199,6 +2265,62 @@ export default function Canvas3D({
           rightButtonDown: (controlsRef.current?.mouseButtons?.RIGHT === THREE.MOUSE.PAN) ? 'PAN' : 'N/A',
           dragActive: dragStateRef.current.isDragging
         });
+        
+        // Check if we need to recreate controls because event listeners are missing
+        // Only recreate if we're not actively dragging
+        if ((!hasListeners || !hasElement) && !dragStateRef.current.isDragging && controlsRef.current && cameraRef.current && rendererRef.current) {
+          console.log("🚨 Controls missing event listeners - recreating controls instance");
+          
+          // Store current camera position and target
+          const position = controlsRef.current.object.position.clone();
+          const target = controlsRef.current.target.clone();
+          
+          try {
+            // Dispose of the old controls
+            controlsRef.current.dispose();
+            
+            // Create new controls with the same camera and canvas
+            const newControls = new TrackballControls(cameraRef.current, rendererRef.current.domElement);
+            
+            // Copy all the properties from the initial setup
+            newControls.rotateSpeed = 2.0;
+            newControls.zoomSpeed = 1.2;
+            newControls.panSpeed = 0.8;
+            newControls.noZoom = false;
+            newControls.noPan = false;
+            newControls.staticMoving = true;
+            newControls.dynamicDampingFactor = 0.2;
+            newControls.mouseButtons = {
+              LEFT: THREE.MOUSE.ROTATE,
+              MIDDLE: THREE.MOUSE.DOLLY,
+              RIGHT: THREE.MOUSE.PAN
+            };
+            
+            // Restore position and target
+            newControls.object.position.copy(position);
+            newControls.target.copy(target);
+            
+            // Make sure controls are enabled
+            newControls.enabled = true;
+            
+            // Update the reference
+            controlsRef.current = newControls;
+            
+            console.log("Controls recreated successfully", {
+              hasElement: !!controlsRef.current.domElement,
+              hasMouseUp: !!controlsRef.current.domElement?.onmouseup,
+              hasMouseDown: !!controlsRef.current.domElement?.onmousedown,
+              hasMouseMove: !!controlsRef.current.domElement?.onmousemove,
+              enabled: controlsRef.current.enabled
+            });
+            
+            // Force an immediate update
+            controlsRef.current.update();
+            needsRenderRef.current = true;
+          } catch (error) {
+            console.error("Failed to recreate controls:", error);
+          }
+        }
       }
       
       requestAnimationFrame(controlsStatusLogger);
