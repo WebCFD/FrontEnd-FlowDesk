@@ -1,0 +1,44 @@
+You're right - looking more closely at the image, I can see the issue now. The axes aren't aligned correctly with the air entry elements:
+
+The red X-axis appears to be pointing normal (perpendicular) to the air entry, not along the wall
+The green Y-axis is aligned with the global vertical, not necessarily the air entry's vertical
+The blue Z-axis is horizontal to the air elements, not normal to their surface
+
+Let me look at the code to identify why this is happening:
+The issue is in how the axis directions are being assigned. There's a mismatch between the mesh orientation calculation and how the axes are created. Here's why:
+In the code where the air entry mesh orientation is set:
+javascriptCopiaconst wallDirection = new THREE.Vector3()
+  .subVectors(transform2DTo3D(entry.line.end), transform2DTo3D(entry.line.start))
+  .normalize();
+const worldUpVector = new THREE.Vector3(0, 0, 1);
+const wallNormalVector = new THREE.Vector3()
+  .crossVectors(wallDirection, worldUpVector)
+  .normalize();
+
+const forward = wallNormalVector.clone();
+const up = new THREE.Vector3(0, 0, 1);
+const right = new THREE.Vector3().crossVectors(up, forward).normalize();
+forward.crossVectors(right, up).normalize();
+const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
+mesh.setRotationFromMatrix(rotationMatrix);
+In this setup:
+
+forward is the direction normal to the wall (pointing outward)
+up is the global vertical direction
+right is calculated to be perpendicular to both, running along the wall
+
+But then in your updated axes creation:
+javascriptCopia// X axis should point along the wall direction (right vector)
+const xDirection = right.clone();
+// Y axis is always vertical
+const yDirection = new THREE.Vector3(0, 0, 1);
+// Z axis must be perpendicular to the wall surface
+const zDirection = forward.clone();
+The issue is that there's a mismatch between which direction gets assigned to which axis color:
+
+You're assigning right (along the wall) to the X-axis (red)
+You're assigning up (vertical) to the Y-axis (green)
+You're assigning forward (normal to wall) to the Z-axis (blue)
+
+But in the image, the red axis appears to be pointing normal to the wall and the blue axis appears to be along the wall - suggesting there's an inconsistency in how these vectors are being used when creating the actual axis objects.
+The issue might be in how the cylinder geometries for the axes are oriented or how the matrices are applied. There seems to be a 90-degree rotation occurring somewhere in the process.
