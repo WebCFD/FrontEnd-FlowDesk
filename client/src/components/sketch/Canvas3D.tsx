@@ -961,7 +961,7 @@ export default function Canvas3D({
 
       // Z axis - Blue (Normal to wall, pointing outward)
       const zAxisGeometry = new THREE.CylinderGeometry(5, 5, axisLength, 8);
-      zAxisGeometry.rotateZ(-Math.PI / 2); // Initially pointing along X (we'll rotate it to point perpendicular)
+      zAxisGeometry.rotateX(-Math.PI / 2); // Rotate to point along Z axis (perpendicular)
       const zAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff, transparent: true, opacity: 0.8 });
       const zAxis = new THREE.Mesh(zAxisGeometry, zAxisMaterial);
       
