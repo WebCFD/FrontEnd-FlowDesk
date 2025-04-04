@@ -49,6 +49,17 @@ const normalizeFloorName = (floorName: string): string => {
   return floorName.toLowerCase().replace(/\s+/g, '');
 };
 
+// Define a mesh interface for air entries to help with TypeScript type checking
+interface AirEntryMesh extends THREE.Mesh {
+  userData: {
+    entryIndex?: number;
+    type?: string;
+    index?: number;
+    position?: Point;
+    [key: string]: any;
+  };
+}
+
 // Define 3D Measurement interface
 interface Measurement3D {
   startPoint: THREE.Vector3;
@@ -416,7 +427,13 @@ export default function Canvas3D({
     initialMousePosition: null as {x: number, y: number} | null,
     selectedObject: null as THREE.Mesh | null,
     currentMousePosition: null as {x: number, y: number} | null,
-    entryIndex: -1
+    entryIndex: -1,
+    // Direction vectors for local axis movement
+    axisDirectionVectors: {
+      x: null as THREE.Vector3 | null,
+      y: null as THREE.Vector3 | null,
+      z: null as THREE.Vector3 | null
+    }
   });
 
   // Add this ref to track measurement state
@@ -1256,21 +1273,43 @@ export default function Canvas3D({
           // Scale factor to convert mouse pixels to scene units - consistent value
           const scaleFactor = 8.0; // Adjust this value based on testing
 
-          if (dragState.selectedAxis === "x") {
-            // Move along the X axis (left/right)
-            dragState.selectedObject.position.x = dragState.startPosition.x + (mouseDeltaX * scaleFactor);
-            // Log position changes to verify movement
-            console.log(`Drag X: ${dragState.selectedObject.position.x.toFixed(2)}, delta: ${mouseDeltaX}`);
+          // Combine mouse movements for a single drag value (using the larger of the two)
+          const dragDelta = Math.abs(mouseDeltaX) > Math.abs(mouseDeltaY) ? mouseDeltaX : -mouseDeltaY;
+          
+          if (dragState.selectedAxis === "x" && dragState.axisDirectionVectors.x) {
+            // Move along the local X axis using the direction vector
+            const directionVector = dragState.axisDirectionVectors.x;
+            
+            // Create a new position by adding the movement along the direction vector
+            const newPos = new THREE.Vector3(
+              dragState.startPosition.x + (directionVector.x * dragDelta * scaleFactor),
+              dragState.startPosition.y + (directionVector.y * dragDelta * scaleFactor),
+              dragState.startPosition.z
+            );
+            
+            // Update the object's position
+            dragState.selectedObject.position.copy(newPos);
+            
+            console.log(`Drag X along local axis: [${directionVector.x.toFixed(2)}, ${directionVector.y.toFixed(2)}, ${directionVector.z.toFixed(2)}], delta: ${dragDelta}`);
           } else if (dragState.selectedAxis === "y") {
-            // Move along the Y axis (vertical, up/down) - inverted Y movement feels more natural
+            // Y axis is always vertical in our system
             dragState.selectedObject.position.y = dragState.startPosition.y - (mouseDeltaY * scaleFactor);
-            // Log position changes to verify movement
             console.log(`Drag Y: ${dragState.selectedObject.position.y.toFixed(2)}, delta: ${mouseDeltaY}`);
-          } else if (dragState.selectedAxis === "z") {
-            // Move along the Z axis (depth, forward/backward) - inverted Y movement feels more natural
-            dragState.selectedObject.position.z = dragState.startPosition.z - (mouseDeltaY * scaleFactor);
-            // Log position changes to verify movement
-            console.log(`Drag Z: ${dragState.selectedObject.position.z.toFixed(2)}, delta: ${mouseDeltaY}`);
+          } else if (dragState.selectedAxis === "z" && dragState.axisDirectionVectors.z) {
+            // Move along the local Z axis using the direction vector
+            const directionVector = dragState.axisDirectionVectors.z;
+            
+            // Create a new position by adding the movement along the direction vector
+            const newPos = new THREE.Vector3(
+              dragState.startPosition.x + (directionVector.x * dragDelta * scaleFactor),
+              dragState.startPosition.y + (directionVector.y * dragDelta * scaleFactor),
+              dragState.startPosition.z
+            );
+            
+            // Update the object's position
+            dragState.selectedObject.position.copy(newPos);
+            
+            console.log(`Drag Z along local axis: [${directionVector.x.toFixed(2)}, ${directionVector.y.toFixed(2)}, ${directionVector.z.toFixed(2)}], delta: ${dragDelta}`);
           }
 
           // Always force a render during dragging
@@ -1609,9 +1648,11 @@ export default function Canvas3D({
                   // Set the axis for movement in the React state (for UI highlighting)
                   setSelectedAxis(axisDirection as "x" | "y" | "z");
 
-                  // Store which air entry we're manipulating
-                  const airEntryData = (closestAirEntry as THREE.Mesh).userData;
-
+                  // Cast to our mesh interface for more specific typing
+                  const typedAirEntry = closestAirEntry as AirEntryMesh;
+                  // Store which air entry we're manipulating with proper typing
+                  const airEntryData = typedAirEntry.userData;
+                  
                   // Add type safety check
                   if (!airEntryData || !airEntryData.position) {
                     console.error("Missing position data in air entry");
@@ -1664,23 +1705,26 @@ export default function Canvas3D({
 
                       // BETTER APPROACH 2: If actualEntryIndex fails, try using the parentEntryIndex to find the real parent mesh
                       if (index === -1 && axisObject.userData?.parentEntryIndex !== undefined) {
-                        const parentMeshIndex = axisObject.userData.parentEntryIndex;
-                        console.log("Looking for parent mesh with index:", parentMeshIndex);
+                        const parentObjIndex = axisObject.userData.parentEntryIndex;
+                        console.log("Looking for parent mesh with index:", parentObjIndex);
 
-                        // Find the parent mesh
-                        let parentMesh: (THREE.Mesh & {userData: {entryIndex?: number}}) | null = null;
+                        // Find the parent mesh using our defined AirEntryMesh interface
+                        let parentMesh: AirEntryMesh | null = null;
                         sceneRef.current?.traverse((object) => {
                           if (object instanceof THREE.Mesh && 
                               object.userData && 
                               object.userData.type && 
-                              ["window", "door", "vent"].includes(object.userData.type as string) && 
-                              object.userData.index === parentMeshIndex) {
-                            // Cast the object to the right type
-                            parentMesh = object as THREE.Mesh & {userData: {entryIndex?: number}};
+                              ["window", "door", "vent"].includes(object.userData.type as string)) {
+                            const meshAsAirEntry = object as AirEntryMesh;
+                            if (meshAsAirEntry.userData.index === parentObjIndex) {
+                              // Cast the object to our interface type
+                              parentMesh = meshAsAirEntry;
+                            }
                           }
                         });
 
-                        if (parentMesh && parentMesh.userData && typeof parentMesh.userData.entryIndex === 'number') {
+                        // Since we've defined AirEntryMesh interface, this should work properly
+                        if (parentMesh) {
                           // Use the parent mesh's entryIndex
                           const parentEntryIndex = parentMesh.userData.entryIndex;
                           if (typeof parentEntryIndex === 'number' && 
@@ -1756,6 +1800,41 @@ export default function Canvas3D({
                   // Start dragging - update React state for UI
                   setIsDragging(true);
 
+                  // Find the air entry object in the scene to get the local axis vectors
+                  // Need to use the actual entry index as the reference for finding axis objects
+                  const entryIndexForAxis = index; // Use the entry index we just found
+                  
+                  const meshes = scene.children.filter(child => 
+                    child instanceof THREE.Mesh && 
+                    child.userData && 
+                    child.userData.type === "axis" && 
+                    child.userData.actualEntryIndex === entryIndexForAxis
+                  ) as THREE.Mesh[];
+
+                  // Extract direction vectors from the mesh transforms
+                  let xAxisDirection = new THREE.Vector3(1, 0, 0);
+                  let yAxisDirection = new THREE.Vector3(0, 0, 1); // Y axis is vertical in our system
+                  let zAxisDirection = new THREE.Vector3(0, 1, 0);
+
+                  // Try to find the axis meshes and extract their direction vectors
+                  meshes.forEach(mesh => {
+                    if (mesh.userData.direction === "x") {
+                      // Extract world direction of X axis from mesh orientation
+                      const worldDirection = new THREE.Vector3();
+                      mesh.getWorldDirection(worldDirection);
+                      // The cylinder is along the Y axis by default, so we need the up vector
+                      xAxisDirection.set(worldDirection.x, worldDirection.y, 0).normalize();
+                      console.log("Found X axis mesh - direction vector:", xAxisDirection);
+                    }
+                    else if (mesh.userData.direction === "z") {
+                      // Extract world direction of Z axis from mesh orientation
+                      const worldDirection = new THREE.Vector3();
+                      mesh.getWorldDirection(worldDirection);
+                      zAxisDirection.set(worldDirection.x, worldDirection.y, 0).normalize();
+                      console.log("Found Z axis mesh - direction vector:", zAxisDirection);
+                    }
+                  });
+
                   // IMPORTANT: Update the ref for actual dragging logic
                   dragStateRef.current = {
                     isDragging: true,
@@ -1774,7 +1853,12 @@ export default function Canvas3D({
                       y: event.clientY
                     },
                     selectedObject: closestAirEntry,
-                    entryIndex: index
+                    entryIndex: index,
+                    axisDirectionVectors: {
+                      x: xAxisDirection,
+                      y: yAxisDirection,
+                      z: zAxisDirection
+                    }
                   };
 
                   // Immediately disable controls when dragging starts
@@ -2126,7 +2210,12 @@ export default function Canvas3D({
           initialMousePosition: null,
           currentMousePosition: null,
           selectedObject: null,
-          entryIndex: -1
+          entryIndex: -1,
+          axisDirectionVectors: {
+            x: null,
+            y: null,
+            z: null
+          }
         };
 
         // PREVENTATIVE CONTROL RECREATION
@@ -2480,7 +2569,12 @@ export default function Canvas3D({
               initialMousePosition: null,
               currentMousePosition: null,
               selectedObject: null,
-              entryIndex: -1
+              entryIndex: -1,
+              axisDirectionVectors: {
+                x: null,
+                y: null,
+                z: null
+              }
             };
           }
         } else {
@@ -2495,7 +2589,12 @@ export default function Canvas3D({
             initialMousePosition: null,
             currentMousePosition: null,
             selectedObject: null,
-            entryIndex: -1
+            entryIndex: -1,
+            axisDirectionVectors: {
+              x: null,
+              y: null,
+              z: null
+            }
           };
         }
       } else {
@@ -2510,7 +2609,12 @@ export default function Canvas3D({
           initialMousePosition: null,
           currentMousePosition: null,
           selectedObject: null,
-          entryIndex: -1
+          entryIndex: -1,
+          axisDirectionVectors: {
+            x: null,
+            y: null,
+            z: null
+          }
         };
       }
     } else {
@@ -2526,7 +2630,12 @@ export default function Canvas3D({
         initialMousePosition: null,
         currentMousePosition: null,
         selectedObject: null,
-        entryIndex: -1
+        entryIndex: -1,
+        axisDirectionVectors: {
+          x: null,
+          y: null,
+          z: null
+        }
       };
     }
   }, [floors, currentFloor, ceilingHeight, floorDeckThickness]);
