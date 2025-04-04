@@ -1044,6 +1044,7 @@ export default function Canvas3D({
     
     // Add axis labels
     const labelDistance = 220; // Slightly further than the axis length
+    console.log("Creating coordinate axis labels at distance:", labelDistance);
     
     // X-axis label (red)
     const xLabel = makeTextSprite("X", {
@@ -1054,6 +1055,7 @@ export default function Canvas3D({
     });
     xLabel.position.set(labelDistance, 0, 0);
     scene.add(xLabel);
+    console.log("X-axis label created and added to scene at position:", xLabel.position);
     
     // Y-axis label (green)
     const yLabel = makeTextSprite("Y", {
@@ -1064,6 +1066,7 @@ export default function Canvas3D({
     });
     yLabel.position.set(0, labelDistance, 0);
     scene.add(yLabel);
+    console.log("Y-axis label created and added to scene at position:", yLabel.position);
     
     // Z-axis label (blue)
     const zLabel = makeTextSprite("Z", {
@@ -1074,6 +1077,7 @@ export default function Canvas3D({
     });
     zLabel.position.set(0, 0, labelDistance);
     scene.add(zLabel);
+    console.log("Z-axis label created and added to scene at position:", zLabel.position);
 
     // Find the animation loop in the initial scene setup useEffect
     // Look for this code:
