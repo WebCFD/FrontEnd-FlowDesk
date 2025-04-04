@@ -901,6 +901,7 @@ export default function Canvas3D({
       // Z axis should point perpendicular to the wall (normal to the surface)
       // This is the "forward" vector in the mesh's orientation
       const zDirection = forward.clone();
+      console.log(`Air Entry ${index} - Z-axis vector:`, zDirection);
       
       // Y axis is always vertical
       const yDirection = new THREE.Vector3(0, 0, 1);
@@ -911,11 +912,16 @@ export default function Canvas3D({
       const xDirection = zDirection.clone()
         .applyAxisAngle(rotationAxis, Math.PI/2)
         .normalize();
+      console.log(`Air Entry ${index} - X-axis vector after 90° rotation:`, xDirection);
+      
+      // Verify perpendicularity - dot product should be close to 0
+      const dotProduct = xDirection.dot(zDirection);
+      console.log(`Air Entry ${index} - Dot product X·Z: ${dotProduct.toFixed(6)} (should be close to 0 if perpendicular)`);
       
       // X axis - Red (Perpendicular to both Y and Z axes)
-      const xAxisGeometry = new THREE.CylinderGeometry(5, 5, axisLength, 8);
+      const xAxisGeometry = new THREE.CylinderGeometry(8, 8, axisLength, 8); // Increased thickness for visibility
       xAxisGeometry.rotateZ(-Math.PI / 2); // Initially pointing along X
-      const xAxisMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.8 });
+      const xAxisMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 1.0 }); // Increased opacity
       const xAxis = new THREE.Mesh(xAxisGeometry, xAxisMaterial);
       
       // Position the axis cylinder along the wall direction
@@ -962,9 +968,9 @@ export default function Canvas3D({
       };
 
       // Z axis - Blue (Normal to wall, pointing outward)
-      const zAxisGeometry = new THREE.CylinderGeometry(5, 5, axisLength, 8);
+      const zAxisGeometry = new THREE.CylinderGeometry(5, 5, axisLength, 12); // More segments
       zAxisGeometry.rotateX(-Math.PI / 2); // Rotate to point along Z axis (perpendicular)
-      const zAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff, transparent: true, opacity: 0.8 });
+      const zAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x0066ff, transparent: true, opacity: 1.0 }); // Brighter blue
       const zAxis = new THREE.Mesh(zAxisGeometry, zAxisMaterial);
       
       // Position the z-axis cylinder - extending outward perpendicular to the wall
