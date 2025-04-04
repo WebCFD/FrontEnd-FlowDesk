@@ -919,35 +919,51 @@ export default function Canvas3D({
       console.log(`Air Entry ${index} - Dot product X·Z: ${dotProduct.toFixed(6)} (should be close to 0 if perpendicular)`);
       
       // X axis - Red (Perpendicular to both Y and Z axes)
-      const xAxisGeometry = new THREE.CylinderGeometry(8, 8, axisLength, 8); // Increased thickness for visibility
-      xAxisGeometry.rotateZ(-Math.PI / 2); // Initially pointing along X
-      const xAxisMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 1.0 }); // Increased opacity
-      const xAxis = new THREE.Mesh(xAxisGeometry, xAxisMaterial);
+      // DEBUGGING: Let's verify our approach by starting with a simpler method
       
       // Get origin point at the air entry position
       const axisOrigin = new THREE.Vector3(position.x, position.y, zPosition);
       
+      // Create a direction object we can manipulate
+      const xDirectionVector = new THREE.Vector3(xDirection.x, xDirection.y, xDirection.z);
+      
       // Debug the axis origin and direction vectors
       console.log(`X-axis origin: ${axisOrigin.x}, ${axisOrigin.y}, ${axisOrigin.z}`);
-      console.log(`X-axis direction vector: ${xDirection.x}, ${xDirection.y}, ${xDirection.z}`);
+      console.log(`X-axis direction vector: ${xDirectionVector.x}, ${xDirectionVector.y}, ${xDirectionVector.z}`);
       
-      // Position the axis starting at the air entry, extending in the X direction
-      xAxis.position.copy(axisOrigin).add(
-        new THREE.Vector3(axisLength/2 * xDirection.x, axisLength/2 * xDirection.y, 0)
+      // ALTERNATIVE APPROACH FOR X-AXIS
+      // Create a custom arrow for clearer visualization of the X axis
+      const xAxisArrowHelper = new THREE.ArrowHelper(
+        xDirectionVector,
+        axisOrigin,
+        axisLength,
+        0xff0000,  // Red color
+        axisLength * 0.2,  // Head length
+        axisLength * 0.1   // Head width
       );
       
-      // Create a proper orientation matrix to align cylinder with X direction
-      const xAxisMatrix = new THREE.Matrix4();
-      
-      // Look from origin toward the direction vector
-      xAxisMatrix.lookAt(
-        new THREE.Vector3(0, 0, 0), 
-        xDirection,  // Look toward the X direction vector
-        new THREE.Vector3(0, 0, 1)  // Keep Z-up orientation
+      console.log("Created ArrowHelper for X-axis with direction:", 
+        xDirectionVector.x.toFixed(4), 
+        xDirectionVector.y.toFixed(4), 
+        xDirectionVector.z.toFixed(4)
       );
       
-      // Apply the rotation
-      xAxis.setRotationFromMatrix(xAxisMatrix);
+      // Add userData to the arrow
+      xAxisArrowHelper.userData = { 
+        type: 'axis', 
+        direction: 'x',
+        parentEntryIndex: parentMeshIndex,
+        actualEntryIndex: index
+      };
+      
+      // Replace the mesh implementation with the arrow
+      const xAxis = xAxisArrowHelper;
+      
+      // Create traditional mesh as backup but don't use it
+      const xAxisGeometry = new THREE.CylinderGeometry(8, 8, axisLength, 8);
+      xAxisGeometry.rotateZ(-Math.PI / 2);
+      const xAxisMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.0 }); // Hidden
+      const xAxisMesh = new THREE.Mesh(xAxisGeometry, xAxisMaterial);
       
       xAxis.userData = { 
         type: 'axis', 
@@ -977,28 +993,36 @@ export default function Canvas3D({
       };
 
       // Z axis - Blue (Normal to wall, pointing outward)
-      const zAxisGeometry = new THREE.CylinderGeometry(5, 5, axisLength, 12); // More segments
-      zAxisGeometry.rotateX(-Math.PI / 2); // Rotate to point along Z axis (perpendicular)
-      const zAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x0066ff, transparent: true, opacity: 1.0 }); // Brighter blue
-      const zAxis = new THREE.Mesh(zAxisGeometry, zAxisMaterial);
+      // Create a direction object for Z-axis
+      const zDirectionVector = new THREE.Vector3(zDirection.x, zDirection.y, zDirection.z);
       
       // Debug the Z axis direction vector
       console.log(`Z-axis direction vector: ${zDirection.x}, ${zDirection.y}, ${zDirection.z}`);
       
-      // Use the same origin point established for X axis
-      // Position the z-axis cylinder - extending outward perpendicular to the wall
-      zAxis.position.copy(axisOrigin).add(
-        new THREE.Vector3(axisLength/2 * zDirection.x, axisLength/2 * zDirection.y, 0)
+      // Create an arrow helper for the Z-axis
+      const zAxisArrowHelper = new THREE.ArrowHelper(
+        zDirectionVector,
+        axisOrigin,
+        axisLength,
+        0x0066ff,  // Bright blue
+        axisLength * 0.2,  // Head length 
+        axisLength * 0.1   // Head width
       );
       
-      // Align with direction perpendicular to the wall
-      const zAxisMatrix = new THREE.Matrix4();
-      zAxisMatrix.lookAt(
-        new THREE.Vector3(0, 0, 0), 
-        zDirection, 
-        new THREE.Vector3(0, 0, 1)
+      console.log("Created ArrowHelper for Z-axis with direction:", 
+        zDirectionVector.x.toFixed(4), 
+        zDirectionVector.y.toFixed(4), 
+        zDirectionVector.z.toFixed(4)
       );
-      zAxis.setRotationFromMatrix(zAxisMatrix);
+      
+      // For comparison, keep the original cylinder mesh code (not used)
+      const zAxisGeometry = new THREE.CylinderGeometry(5, 5, axisLength, 12);
+      zAxisGeometry.rotateX(-Math.PI / 2);
+      const zAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x0066ff, transparent: true, opacity: 0.0 });
+      const zAxisMesh = new THREE.Mesh(zAxisGeometry, zAxisMaterial);
+      
+      // Use the arrow helper as our Z-axis
+      const zAxis = zAxisArrowHelper;
       
       zAxis.userData = { 
         type: 'axis', 
