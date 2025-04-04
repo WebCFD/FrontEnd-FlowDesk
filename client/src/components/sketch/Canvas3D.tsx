@@ -1067,17 +1067,15 @@ export default function Canvas3D({
     }
     
     // Add axis labels if they don't already exist
-    const labelDistance = 220; // Slightly further than the axis length
-    console.log("Creating coordinate axis labels at distance:", labelDistance);
+    const labelDistance = 100; // Position closer to the origin
     
     // X-axis label (red) - only create if it doesn't exist
     if (!xLabelExists) {
-      console.log("Creating X-axis label");
       const xLabel = makeTextSprite("X", {
-        fontsize: 48, // Increased font size
+        fontsize: 96, // Much larger font size
         fontface: "Arial",
         textColor: { r: 255, g: 0, b: 0, a: 1.0 },
-        backgroundColor: { r: 255, g: 255, b: 255, a: 0.5 }, // Semi-transparent white background
+        backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 }, // No background
         borderColor: { r: 255, g: 0, b: 0, a: 1.0 },
         borderThickness: 2,
         padding: 10
@@ -1086,19 +1084,22 @@ export default function Canvas3D({
       // Add userData so we can identify axis labels in the scene
       xLabel.userData = { type: "axisLabel", axis: "x" };
       scene.add(xLabel);
-      console.log("X-axis label created and added to scene at position:", xLabel.position);
     } else {
-      console.log("X-axis label already exists, skipping creation");
+      // Adjust position of existing label
+      scene.traverse((object) => {
+        if (object.userData?.type === "axisLabel" && object.userData.axis === "x") {
+          object.position.set(labelDistance, 0, 0);
+        }
+      });
     }
     
     // Y-axis label (green) - only create if it doesn't exist
     if (!yLabelExists) {
-      console.log("Creating Y-axis label");
       const yLabel = makeTextSprite("Y", {
-        fontsize: 48, // Increased font size
+        fontsize: 96, // Much larger font size
         fontface: "Arial",
         textColor: { r: 0, g: 255, b: 0, a: 1.0 },
-        backgroundColor: { r: 255, g: 255, b: 255, a: 0.5 }, // Semi-transparent white background
+        backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 }, // No background
         borderColor: { r: 0, g: 255, b: 0, a: 1.0 },
         borderThickness: 2,
         padding: 10
@@ -1107,19 +1108,22 @@ export default function Canvas3D({
       // Add userData so we can identify axis labels in the scene
       yLabel.userData = { type: "axisLabel", axis: "y" };
       scene.add(yLabel);
-      console.log("Y-axis label created and added to scene at position:", yLabel.position);
     } else {
-      console.log("Y-axis label already exists, skipping creation");
+      // Adjust position of existing label
+      scene.traverse((object) => {
+        if (object.userData?.type === "axisLabel" && object.userData.axis === "y") {
+          object.position.set(0, labelDistance, 0);
+        }
+      });
     }
     
     // Z-axis label (blue) - only create if it doesn't exist
     if (!zLabelExists) {
-      console.log("Creating Z-axis label");
       const zLabel = makeTextSprite("Z", {
-        fontsize: 48, // Increased font size
+        fontsize: 96, // Much larger font size
         fontface: "Arial",
         textColor: { r: 0, g: 0, b: 255, a: 1.0 },
-        backgroundColor: { r: 255, g: 255, b: 255, a: 0.5 }, // Semi-transparent white background
+        backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 }, // No background
         borderColor: { r: 0, g: 0, b: 255, a: 1.0 },
         borderThickness: 2,
         padding: 10
@@ -1128,9 +1132,13 @@ export default function Canvas3D({
       // Add userData so we can identify axis labels in the scene
       zLabel.userData = { type: "axisLabel", axis: "z" };
       scene.add(zLabel);
-      console.log("Z-axis label created and added to scene at position:", zLabel.position);
     } else {
-      console.log("Z-axis label already exists, skipping creation");
+      // Adjust position of existing label
+      scene.traverse((object) => {
+        if (object.userData?.type === "axisLabel" && object.userData.axis === "z") {
+          object.position.set(0, 0, labelDistance);
+        }
+      });
     }
 
     // Find the animation loop in the initial scene setup useEffect
