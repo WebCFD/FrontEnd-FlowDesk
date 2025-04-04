@@ -1815,36 +1815,6 @@ export default function Canvas3D({
           return;  // Don't reset dragging for non-right clicks
         }
 
-        console.log("MOUSE UP EVENT DETAILS:", { 
-          button: event.button, 
-          refIsDragging: dragStateRef.current.isDragging,
-          refAxis: dragStateRef.current.selectedAxis,
-          selectedObjectExists: !!dragStateRef.current.selectedObject,
-          selectedObjectPosition: dragStateRef.current.selectedObject ? 
-            dragStateRef.current.selectedObject.position.clone() : null,
-          selectedObjectUserData: dragStateRef.current.selectedObject ? 
-            JSON.stringify(dragStateRef.current.selectedObject.userData) : null,
-          floorKey: currentFloor,
-          normalizedFloorKey: currentFloor.toLowerCase().replace(/\s+/g, '')
-        });
-        
-        // Log the full state before we reset anything
-        console.log("SELECTION STATE BEFORE RESET:", {
-          selectedAirEntry: selectedAirEntry ? {
-            index: selectedAirEntry.index,
-            type: selectedAirEntry.entry.type,
-            position: selectedAirEntry.entry.position
-          } : null,
-          selectedAxis,
-          isDragging,
-          dragStateRef: {
-            isDragging: dragStateRef.current.isDragging,
-            selectedAxis: dragStateRef.current.selectedAxis,
-            entryIndex: dragStateRef.current.entryIndex,
-            selectedObject: dragStateRef.current.selectedObject ? "exists" : "null"
-          }
-        });
-
         // Check if we were dragging from the ref
         if (!dragStateRef.current.isDragging || 
             !dragStateRef.current.selectedObject || 
@@ -1901,88 +1871,18 @@ export default function Canvas3D({
               }
             }
 
-            console.log("POSITION TRANSFORMATION DEBUG:", {
-              transformVariables: {
-                PIXELS_TO_CM,
-                centerX,
-                centerY,
-                newPosition3DRaw: {
-                  x: newPosition3D.x,
-                  y: newPosition3D.y, 
-                  z: newPosition3D.z
-                },
-              },
-              calculations: {
-                newXCalc: `${newPosition3D.x} / ${PIXELS_TO_CM} + ${centerX} = ${newX}`,
-                newYCalc: `${centerY} - ${newPosition3D.y} / ${PIXELS_TO_CM} = ${newY}`
-              },
-              userData: dragStateRef.current.selectedObject.userData,
-              from: currentEntry.position,
-              to: updatedEntry.position,
-              object3DPosition: newPosition3D
-            });
-
-            // Add detailed logging before callback with all entries
-            console.log("CALLING onUpdateAirEntry with:", {
-              floor: currentFloor,
-              entryIndex,
-              updatedEntry,
-              objectUserData: dragStateRef.current.selectedObject.userData
-            });
-            
-            // Debug log to show all air entries in floor before update
-            console.log("MULTI-ENTRY DEBUG - ALL ENTRIES BEFORE UPDATE:", {
-              activeEntryIndex: entryIndex,
-              allEntries: floorData.airEntries.map((entry, idx) => ({
-                index: idx,
-                type: entry.type,
-                position: entry.position,
-                isActive: idx === entryIndex
-              }))
-            });
-            
-            // Find all 3D objects that are air entries and log their state
-            const airEntryObjects = scene.children.filter(
-              obj => obj.userData && obj.userData.type && ["window", "door", "vent"].includes(obj.userData.type)
-            );
-            
-            console.log("SCENE OBJECTS CHECK - AIR ENTRY 3D OBJECTS:", {
-              count: airEntryObjects.length,
-              objects: airEntryObjects.map(obj => ({
-                type: obj.userData.type,
-                position3D: {
-                  x: obj.position.x,
-                  y: obj.position.y,
-                  z: obj.position.z
-                },
-                userData: obj.userData,
-                isBeingUpdated: obj.userData.entryIndex === entryIndex
-              }))
-            });
-            
             // Call the update callback
             onUpdateAirEntry(currentFloor, entryIndex, updatedEntry);
             
             // IMPORTANT: Keep track of the updated entries to prevent them from resetting
             // We store a mapping of entryIndex -> position to check against when scene rebuilds
-            console.log("DEBUG UPDATED POSITIONS REF BEFORE:", {
-              current: JSON.stringify(updatedAirEntryPositionsRef.current),
-              floorValue: currentFloor,
-              normalizedFloorValue: currentFloor.toLowerCase().replace(/\s+/g, ''),
-              floorType: typeof currentFloor,
-              floorExists: !!updatedAirEntryPositionsRef.current[currentFloor],
-              entryIndexValue: entryIndex,
-              entryIndexType: typeof entryIndex
-            });
             
             // Normalize the floor name using the shared function
             const normalizedFloorName = normalizeFloorName(currentFloor);
-            console.log(`[POSITION STORAGE] Using normalized floor name for storage: '${normalizedFloorName}' (original: '${currentFloor}')`);
             
             // Create storage location with normalized key if it doesn't exist
             if (!updatedAirEntryPositionsRef.current[normalizedFloorName]) {
               updatedAirEntryPositionsRef.current[normalizedFloorName] = {};
-              console.log(`[POSITION STORAGE] Created new entry for floor: ${normalizedFloorName} in updatedAirEntryPositionsRef`);
             }
             
             // Store the latest position for this entry index under the normalized key (main storage)
@@ -1997,34 +1897,15 @@ export default function Canvas3D({
               if (!updatedAirEntryPositionsRef.current['ground']) {
                 updatedAirEntryPositionsRef.current['ground'] = {};
               }
-              console.log(`[POSITION STORAGE] Also storing under legacy 'ground' key for compatibility`);
               updatedAirEntryPositionsRef.current['ground'][entryIndex] = {
                 x: updatedEntry.position.x,
                 y: updatedEntry.position.y
               };
             }
             
-            console.log(`[POSITION STORAGE] Stored position for ${normalizedFloorName}[${entryIndex}]:`, {
-              position: updatedEntry.position,
-              allStoredPositions: JSON.stringify(updatedAirEntryPositionsRef.current)
-            });
-            
-            console.log("STORING UPDATED POSITION:", {
-              originalFloor: currentFloor,
-              normalizedFloor: normalizedFloorName,
-              entryIndex,
-              position: updatedAirEntryPositionsRef.current[normalizedFloorName][entryIndex],
-              completeRef: JSON.stringify(updatedAirEntryPositionsRef.current)
-            });
-            
             // CRITICAL FIX: Update the userData with the new position
             // This ensures that future position searches can find this object
             if (dragStateRef.current.selectedObject) {
-              console.log("Updating userData position for the dragged object:", {
-                from: dragStateRef.current.selectedObject.userData.position,
-                to: updatedEntry.position
-              });
-              
               // Update the userData position immediately for the dragged object
               dragStateRef.current.selectedObject.userData.position = { ...updatedEntry.position };
               
@@ -2033,13 +1914,6 @@ export default function Canvas3D({
             }
           }
         }
-
-        // Log control state before reset
-        console.log("CONTROLS STATE BEFORE DRAG RESET:", {
-          controlsExist: !!controlsRef.current,
-          controlsEnabled: controlsRef.current ? controlsRef.current.enabled : 'N/A',
-          mouseButtons: controlsRef.current ? controlsRef.current.mouseButtons : 'N/A'
-        });
 
         // Reset the React state for UI
         setIsDragging(false);
@@ -2059,83 +1933,50 @@ export default function Canvas3D({
           entryIndex: -1
         };
 
-        // Re-enable controls now that we're done dragging
-        if (controlsRef.current) {
-          // Check if controls have proper event handlers
-          const hasMouseUp = !!controlsRef.current.domElement?.onmouseup;
-          const hasMouseDown = !!controlsRef.current.domElement?.onmousedown;
-          const hasMouseMove = !!controlsRef.current.domElement?.onmousemove;
-          const hasListeners = hasMouseUp && hasMouseDown && hasMouseMove;
+        // PREVENTATIVE CONTROL RECREATION
+        // Instead of just re-enabling controls, completely recreate them
+        if (controlsRef.current && cameraRef.current && containerRef.current) {
+          // Store current camera position and target
+          const position = controlsRef.current.object.position.clone();
+          const target = controlsRef.current.target.clone();
           
-          console.log("CONTROLS STATE AT DRAG END:", {
-            enabled: controlsRef.current.enabled,
-            mouseButtons: controlsRef.current.mouseButtons,
-            hasMouseUp,
-            hasMouseDown,
-            hasMouseMove,
-            hasListeners
-          });
+          // Dispose of the old controls
+          controlsRef.current.dispose();
           
-          // If event listeners are missing, recreate controls immediately
-          if (!hasListeners && cameraRef.current && rendererRef.current) {
-            console.log("🚨 Controls missing event listeners at drag end - recreating immediately");
-            
-            try {
-              // Store current camera position and target
-              const position = controlsRef.current.object.position.clone();
-              const target = controlsRef.current.target.clone();
-              
-              // Dispose of the old controls
-              controlsRef.current.dispose();
-              
-              // Create new controls with the same camera and canvas
-              const newControls = new TrackballControls(cameraRef.current, rendererRef.current.domElement);
-              
-              // Copy all the properties from the initial setup
-              newControls.rotateSpeed = 2.0;
-              newControls.zoomSpeed = 1.2;
-              newControls.panSpeed = 0.8;
-              newControls.noZoom = false;
-              newControls.noPan = false;
-              newControls.staticMoving = true;
-              newControls.dynamicDampingFactor = 0.2;
-              newControls.mouseButtons = {
-                LEFT: THREE.MOUSE.ROTATE,
-                MIDDLE: THREE.MOUSE.DOLLY,
-                RIGHT: THREE.MOUSE.PAN
-              };
-              
-              // Restore position and target
-              newControls.object.position.copy(position);
-              newControls.target.copy(target);
-              
-              // Make sure controls are enabled
-              newControls.enabled = true;
-              
-              // Update the reference
-              controlsRef.current = newControls;
-              
-              console.log("Controls recreated successfully after drag end");
-            } catch (error) {
-              console.error("Failed to recreate controls after drag:", error);
-            }
-          } else {
-            // Just re-enable existing controls
-            controlsRef.current.enabled = true;
-            
-            // Force controls to update its state
-            controlsRef.current.update();
-            
-            console.log("CONTROLS RE-ENABLED:", {
-              enabled: controlsRef.current.enabled,
-              mouseButtons: controlsRef.current.mouseButtons
-            });
-          }
+          // Create new controls with the same camera and canvas
+          const newControls = new TrackballControls(cameraRef.current, containerRef.current.querySelector('canvas'));
+          
+          // Copy all the properties from the initial setup
+          newControls.rotateSpeed = 2.0;
+          newControls.zoomSpeed = 1.2;
+          newControls.panSpeed = 0.8;
+          newControls.noZoom = false;
+          newControls.noPan = false;
+          newControls.staticMoving = true;
+          newControls.dynamicDampingFactor = 0.2;
+          newControls.mouseButtons = {
+            LEFT: THREE.MOUSE.ROTATE,
+            MIDDLE: THREE.MOUSE.DOLLY,
+            RIGHT: THREE.MOUSE.PAN
+          };
+          
+          // Restore position and target
+          newControls.object.position.copy(position);
+          newControls.target.copy(target);
+          
+          // Make sure controls are enabled
+          newControls.enabled = true;
+          
+          // Update the reference
+          controlsRef.current = newControls;
         } else {
-          console.log("WARNING: Could not re-enable controls - controlsRef.current is null");
+          // Fall back to just enabling the controls if recreation isn't possible
+          if (controlsRef.current) {
+            controlsRef.current.enabled = true;
+          }
         }
 
-        console.log("Dragging stopped, selection and states reset");
+        // Dragging stopped, selection and states reset
     };
 
     // Now add the event listeners
@@ -2168,74 +2009,7 @@ export default function Canvas3D({
     document.addEventListener("mousemove", mouseMoveHandler);
     document.addEventListener("mouseup", mouseUpHandler);
 
-    // Log animation frame function to track controls state
-    const animationFrameCounter = { count: 0 };
-    
-    // Set up periodic checking in animation loop to recreate controls when needed
-    const controlsStatusChecker = () => {
-      animationFrameCounter.count += 1;
-      
-      // Check controls status every 100 frames, but don't log anything
-      if (animationFrameCounter.count % 100 === 0) {
-        // Check if controls exist and have proper event handlers
-        const hasElement = !!controlsRef.current?.domElement;
-        const hasMouseUp = !!controlsRef.current?.domElement?.onmouseup;
-        const hasMouseDown = !!controlsRef.current?.domElement?.onmousedown;
-        const hasMouseMove = !!controlsRef.current?.domElement?.onmousemove;
-        const hasListeners = hasMouseUp && hasMouseDown && hasMouseMove;
-        
-        // Check if we need to recreate controls because event listeners are missing
-        // Only recreate if we're not actively dragging
-        if ((!hasListeners || !hasElement) && !dragStateRef.current.isDragging && controlsRef.current && cameraRef.current && rendererRef.current) {
-          // Store current camera position and target
-          const position = controlsRef.current.object.position.clone();
-          const target = controlsRef.current.target.clone();
-          
-          try {
-            // Dispose of the old controls
-            controlsRef.current.dispose();
-            
-            // Create new controls with the same camera and canvas
-            const newControls = new TrackballControls(cameraRef.current, rendererRef.current.domElement);
-            
-            // Copy all the properties from the initial setup
-            newControls.rotateSpeed = 2.0;
-            newControls.zoomSpeed = 1.2;
-            newControls.panSpeed = 0.8;
-            newControls.noZoom = false;
-            newControls.noPan = false;
-            newControls.staticMoving = true;
-            newControls.dynamicDampingFactor = 0.2;
-            newControls.mouseButtons = {
-              LEFT: THREE.MOUSE.ROTATE,
-              MIDDLE: THREE.MOUSE.DOLLY,
-              RIGHT: THREE.MOUSE.PAN
-            };
-            
-            // Restore position and target
-            newControls.object.position.copy(position);
-            newControls.target.copy(target);
-            
-            // Make sure controls are enabled
-            newControls.enabled = true;
-            
-            // Update the reference
-            controlsRef.current = newControls;
-            
-            // Force an immediate update
-            controlsRef.current.update();
-            needsRenderRef.current = true;
-          } catch (error) {
-            // Silently handle errors to avoid console spam
-          }
-        }
-      }
-      
-      requestAnimationFrame(controlsStatusChecker);
-    };
-    
-    // Start the checker
-    requestAnimationFrame(controlsStatusChecker);
+    // We don't need periodic checking anymore since we're preventatively recreating controls after each drag
 
     // All event listeners are now attached
 
