@@ -43,6 +43,12 @@ interface FloorData {
   stairPolygons?: StairPolygon[]; // Add stair polygons to floor data
 }
 
+// Utility function to normalize floor names consistently across the application
+const normalizeFloorName = (floorName: string): string => {
+  // Convert to lowercase and remove spaces - ensure consistent keys for storage/retrieval
+  return floorName.toLowerCase().replace(/\s+/g, '');
+};
+
 // Define 3D Measurement interface
 interface Measurement3D {
   startPoint: THREE.Vector3;
@@ -388,6 +394,15 @@ export default function Canvas3D({
   const [activeMeasurementLabel, setActiveMeasurementLabel] = useState<THREE.Sprite | null>(null);
 
   const isMeasureModeRef = useRef(false);
+  
+  // Store the positions of air entries that have been updated via dragging
+  // This is used to ensure they keep their positions when the scene is rebuilt
+  // Format: { floorName: { entryIndex: { x, y } } }
+  const updatedAirEntryPositionsRef = useRef<{
+    [floorName: string]: {
+      [entryIndex: number]: { x: number, y: number }
+    }
+  }>({});
   const dragStateRef = useRef({
     isDragging: false,
     selectedAxis: null as "x" | "z" | null,
@@ -660,6 +675,24 @@ export default function Canvas3D({
   ) => {
     const objects: THREE.Object3D[] = [];
     const perimeterPoints = createRoomPerimeter(floorData.lines);
+    
+    // Check if we have stored updated positions for this floor - use the shared normalization function
+    const normalizedFloorName = normalizeFloorName(floorData.name);
+    console.log(`[POSITION RETRIEVAL] Checking for positions with floor key: '${normalizedFloorName}'`);
+    console.log(`[POSITION RETRIEVAL] Raw floor name: '${floorData.name}', Normalized to: '${normalizedFloorName}'`);
+    console.log(`[POSITION RETRIEVAL] All stored positions:`, JSON.stringify(updatedAirEntryPositionsRef.current));
+    
+    // Try both possible keys for maximum compatibility during transition
+    let updatedPositions = updatedAirEntryPositionsRef.current[normalizedFloorName] || {};
+    
+    // If nothing is found with the normalized name, try the original 'ground' key as fallback
+    // This handles the existing data during transition
+    if (Object.keys(updatedPositions).length === 0 && normalizedFloorName === 'groundfloor') {
+        console.log(`[POSITION RETRIEVAL] No positions found with '${normalizedFloorName}', trying 'ground' as fallback`);
+        updatedPositions = updatedAirEntryPositionsRef.current['ground'] || {};
+    }
+    
+    console.log(`[POSITION RETRIEVAL] Retrieved positions for '${normalizedFloorName}':`, JSON.stringify(updatedPositions));
 
     // Create floor and ceiling surfaces
     if (perimeterPoints.length > 2) {
@@ -766,14 +799,44 @@ export default function Canvas3D({
           side: THREE.DoubleSide,
         });
 
+        // Check if we have a stored position for this entry
+        const updatedPosition = updatedPositions[index];
+        console.log(`[POSITION LOADING] Checking for stored position for entry ${index}:`, {
+          updatedPositionsExists: !!updatedPositions,
+          haveUpdatedPosition: !!updatedPosition,
+          updatedPositionValue: updatedPosition,
+          entryOriginalPosition: entry.position,
+          entryIndex: index,
+          floorName: floorData.name,
+          normalizedFloorName: normalizedFloorName,
+          allPositionsStoredForThisFloor: JSON.stringify(updatedPositions),
+          allFloorEntries: floorData.airEntries.length
+        });
+        
+        // Create a working copy of the entry position
+        let entryPosition = { ...entry.position };
+        
+        // If we have a stored position from previous dragging, use it
+        if (updatedPosition) {
+          console.log(`[POSITION LOADING] Using stored position for entry ${index}:`, {
+            from: entry.position,
+            to: updatedPosition,
+            diffX: updatedPosition.x - entry.position.x,
+            diffY: updatedPosition.y - entry.position.y
+          });
+          entryPosition = updatedPosition;
+        } else {
+          console.log(`[POSITION LOADING] No stored position found for entry ${index}, using original position:`, entry.position);
+        }
+        
         const mesh = new THREE.Mesh(geometry, material);
-        const position = transform2DTo3D(entry.position);
+        const position = transform2DTo3D(entryPosition);
         mesh.position.set(position.x, position.y, zPosition);
 
         // Add userData for raycasting identification - include the actual entry index for easy mapping
         mesh.userData = {
           type: entry.type,
-          position: entry.position,
+          position: entryPosition, // Use the potentially updated position
           dimensions: entry.dimensions,
           line: entry.line,
           index: objects.length,
@@ -952,7 +1015,7 @@ export default function Canvas3D({
     controls.mouseButtons = {
       LEFT: THREE.MOUSE.ROTATE,
       MIDDLE: THREE.MOUSE.DOLLY, // THREE.MOUSE.DOLLY instead of ZOOM for TrackballControls
-      RIGHT: null // Don't use right mouse for controls, we'll handle it ourselves
+      RIGHT: THREE.MOUSE.PAN // Enable right mouse panning in controls
     };
     // Add mechanism to disable controls during dragging
     controls.enabled = true;
@@ -1409,18 +1472,19 @@ export default function Canvas3D({
                         console.log("Looking for parent mesh with index:", parentMeshIndex);
                         
                         // Find the parent mesh
-                        let parentMesh: THREE.Mesh | null = null;
+                        let parentMesh: (THREE.Mesh & {userData: {entryIndex?: number}}) | null = null;
                         sceneRef.current?.traverse((object) => {
                           if (object instanceof THREE.Mesh && 
                               object.userData && 
                               object.userData.type && 
                               ["window", "door", "vent"].includes(object.userData.type) && 
                               object.userData.index === parentMeshIndex) {
-                            parentMesh = object;
+                            // Cast the object to the right type
+                            parentMesh = object as THREE.Mesh & {userData: {entryIndex?: number}};
                           }
                         });
                         
-                        if (parentMesh && parentMesh.userData) {
+                        if (parentMesh && parentMesh.userData && typeof parentMesh.userData.entryIndex === 'number') {
                           // Use the parent mesh's entryIndex
                           const parentEntryIndex = parentMesh.userData.entryIndex;
                           if (typeof parentEntryIndex === 'number' && 
@@ -1581,6 +1645,11 @@ export default function Canvas3D({
 
             // We're selecting but not yet dragging
             setSelectedAxis(null);
+            
+            // Make sure controls are enabled when just selecting without dragging
+            if (controlsRef.current) {
+              controlsRef.current.enabled = true;
+            }
           }
         }
       } else {
@@ -1588,6 +1657,11 @@ export default function Canvas3D({
         // Clicked on empty space, clear selection
         setSelectedAirEntry(null);
         setSelectedAxis(null);
+        
+        // Enable camera controls for panning with right-click
+        if (controlsRef.current) {
+          controlsRef.current.enabled = true;
+        }
       }
     }
     };
@@ -1741,10 +1815,17 @@ export default function Canvas3D({
           return;  // Don't reset dragging for non-right clicks
         }
 
-        console.log("Mouse up detected", { 
+        console.log("MOUSE UP EVENT DETAILS:", { 
           button: event.button, 
           refIsDragging: dragStateRef.current.isDragging,
-          refAxis: dragStateRef.current.selectedAxis
+          refAxis: dragStateRef.current.selectedAxis,
+          selectedObjectExists: !!dragStateRef.current.selectedObject,
+          selectedObjectPosition: dragStateRef.current.selectedObject ? 
+            dragStateRef.current.selectedObject.position.clone() : null,
+          selectedObjectUserData: dragStateRef.current.selectedObject ? 
+            JSON.stringify(dragStateRef.current.selectedObject.userData) : null,
+          floorKey: currentFloor,
+          normalizedFloorKey: currentFloor.toLowerCase().replace(/\s+/g, '')
         });
         
         // Log the full state before we reset anything
@@ -1882,64 +1963,59 @@ export default function Canvas3D({
             // Call the update callback
             onUpdateAirEntry(currentFloor, entryIndex, updatedEntry);
             
-            // IMPORTANT: The parent component may have updated the state
-            // We need to wait for the next render cycle to get the latest floor data
-            // Using setTimeout to defer this check until after the React state update
-            setTimeout(() => {
-              // Get the latest floor data after the parent component has processed the update
-              const latestFloorData = floors[currentFloor];
-              
-              if (latestFloorData && latestFloorData.airEntries) {
-                console.log("LATEST FLOOR DATA CHECK AFTER UPDATE:", {
-                  activeEntryIndex: entryIndex,
-                  allEntriesAfterParentUpdate: latestFloorData.airEntries.map((entry, idx) => ({
-                    index: idx,
-                    type: entry.type,
-                    position: entry.position,
-                    isActive: idx === entryIndex
-                  }))
-                });
-                
-                // Now we need to synchronize ALL air entry meshes with the latest floor data
-                // This ensures that no matter which air entry is dragged next, they all have correct positions
-                if (scene) {
-                  scene.traverse((object) => {
-                    if (
-                      object instanceof THREE.Mesh &&
-                      object.userData &&
-                      object.userData.type &&
-                      ["window", "door", "vent"].includes(object.userData.type) &&
-                      typeof object.userData.entryIndex === 'number'
-                    ) {
-                      // Get the entry index from the mesh userData
-                      const meshEntryIndex = object.userData.entryIndex;
-                      
-                      // Check if this index is valid in the latest floor data
-                      if (meshEntryIndex >= 0 && meshEntryIndex < latestFloorData.airEntries.length) {
-                        // Get the latest position data from the floor data
-                        const latestPosition = latestFloorData.airEntries[meshEntryIndex].position;
-                        
-                        // Compare positions - if different, update the userData
-                        const currentPosition = object.userData.position;
-                        if (
-                          !currentPosition ||
-                          currentPosition.x !== latestPosition.x ||
-                          currentPosition.y !== latestPosition.y
-                        ) {
-                          console.log(`SYNC: Updating mesh userData for entry ${meshEntryIndex}`, {
-                            from: currentPosition,
-                            to: latestPosition
-                          });
-                          
-                          // Update the userData with the latest position
-                          object.userData.position = { ...latestPosition };
-                        }
-                      }
-                    }
-                  });
-                }
+            // IMPORTANT: Keep track of the updated entries to prevent them from resetting
+            // We store a mapping of entryIndex -> position to check against when scene rebuilds
+            console.log("DEBUG UPDATED POSITIONS REF BEFORE:", {
+              current: JSON.stringify(updatedAirEntryPositionsRef.current),
+              floorValue: currentFloor,
+              normalizedFloorValue: currentFloor.toLowerCase().replace(/\s+/g, ''),
+              floorType: typeof currentFloor,
+              floorExists: !!updatedAirEntryPositionsRef.current[currentFloor],
+              entryIndexValue: entryIndex,
+              entryIndexType: typeof entryIndex
+            });
+            
+            // Normalize the floor name using the shared function
+            const normalizedFloorName = normalizeFloorName(currentFloor);
+            console.log(`[POSITION STORAGE] Using normalized floor name for storage: '${normalizedFloorName}' (original: '${currentFloor}')`);
+            
+            // Create storage location with normalized key if it doesn't exist
+            if (!updatedAirEntryPositionsRef.current[normalizedFloorName]) {
+              updatedAirEntryPositionsRef.current[normalizedFloorName] = {};
+              console.log(`[POSITION STORAGE] Created new entry for floor: ${normalizedFloorName} in updatedAirEntryPositionsRef`);
+            }
+            
+            // Store the latest position for this entry index under the normalized key (main storage)
+            updatedAirEntryPositionsRef.current[normalizedFloorName][entryIndex] = {
+              x: updatedEntry.position.x,
+              y: updatedEntry.position.y
+            };
+            
+            // For backward compatibility with existing code, also store under 'ground' key 
+            // if this is the ground floor (transitional approach)
+            if (normalizedFloorName === 'groundfloor') {
+              if (!updatedAirEntryPositionsRef.current['ground']) {
+                updatedAirEntryPositionsRef.current['ground'] = {};
               }
-            }, 0);
+              console.log(`[POSITION STORAGE] Also storing under legacy 'ground' key for compatibility`);
+              updatedAirEntryPositionsRef.current['ground'][entryIndex] = {
+                x: updatedEntry.position.x,
+                y: updatedEntry.position.y
+              };
+            }
+            
+            console.log(`[POSITION STORAGE] Stored position for ${normalizedFloorName}[${entryIndex}]:`, {
+              position: updatedEntry.position,
+              allStoredPositions: JSON.stringify(updatedAirEntryPositionsRef.current)
+            });
+            
+            console.log("STORING UPDATED POSITION:", {
+              originalFloor: currentFloor,
+              normalizedFloor: normalizedFloorName,
+              entryIndex,
+              position: updatedAirEntryPositionsRef.current[normalizedFloorName][entryIndex],
+              completeRef: JSON.stringify(updatedAirEntryPositionsRef.current)
+            });
             
             // CRITICAL FIX: Update the userData with the new position
             // This ensures that future position searches can find this object
@@ -1957,6 +2033,13 @@ export default function Canvas3D({
             }
           }
         }
+
+        // Log control state before reset
+        console.log("CONTROLS STATE BEFORE DRAG RESET:", {
+          controlsExist: !!controlsRef.current,
+          controlsEnabled: controlsRef.current ? controlsRef.current.enabled : 'N/A',
+          mouseButtons: controlsRef.current ? controlsRef.current.mouseButtons : 'N/A'
+        });
 
         // Reset the React state for UI
         setIsDragging(false);
@@ -1979,13 +2062,33 @@ export default function Canvas3D({
         // Re-enable controls now that we're done dragging
         if (controlsRef.current) {
           controlsRef.current.enabled = true;
+          console.log("CONTROLS RE-ENABLED:", {
+            enabled: controlsRef.current.enabled,
+            mouseButtons: controlsRef.current.mouseButtons
+          });
+          
+          // Force controls to update its state
+          controlsRef.current.update();
+          console.log("CONTROLS AFTER UPDATE():", {
+            enabled: controlsRef.current.enabled,
+            mouseButtons: controlsRef.current.mouseButtons
+          });
+        } else {
+          console.log("WARNING: Could not re-enable controls - controlsRef.current is null");
         }
 
         console.log("Dragging stopped, selection and states reset");
     };
 
     // Now add the event listeners
-    console.log("Setting up event listeners on canvas:", canvas);
+    console.log("Setting up event listeners on canvas:", {
+      canvasElement: canvas ? canvas.tagName : 'null',
+      controls: controlsRef.current ? {
+        enabled: controlsRef.current.enabled,
+        mouseButtons: controlsRef.current.mouseButtons,
+        domElement: controlsRef.current.domElement ? controlsRef.current.domElement.tagName : 'null'
+      } : 'null'
+    });
 
     // Clear and specific event binding
     canvas.addEventListener("contextmenu", (e) => {
@@ -1993,17 +2096,116 @@ export default function Canvas3D({
       e.preventDefault();
     });
 
-    canvas.addEventListener("mousedown", (e) => {
-      console.log("Canvas mousedown detected, button:", e.button);
+    // Log when mousedown events are received
+    const mouseDownWrapper = (e: MouseEvent) => {
+      console.log("Canvas mousedown detected:", {
+        button: e.button,
+        buttonNames: {
+          0: 'LEFT',
+          1: 'MIDDLE',
+          2: 'RIGHT'
+        }[e.button],
+        target: (e.target as HTMLElement)?.tagName,
+        controlsStatus: controlsRef.current ? {
+          enabled: controlsRef.current.enabled,
+          mouseButtons: controlsRef.current.mouseButtons
+        } : 'null'
+      });
+      
       if (e.button === 2) {
         // Right mouse button for both measurements and context operations
         handleRightMouseDown(e);
       }
-    });
+    };
+    
+    canvas.addEventListener("mousedown", mouseDownWrapper);
 
+    // Create named handlers for event tracking
+    const mouseMoveHandler = (e: MouseEvent) => {
+      // Add button state to understand multi-button scenarios
+      if ((e.buttons & 2) === 2) { // Check if right button is held down
+        console.log("🔍 MOUSE MOVE STATE:", {
+          timestamp: Date.now(),
+          buttons: e.buttons,
+          rightButtonBit: (e.buttons & 2) === 2,
+          rightButtonPressedRef: dragStateRef.current.isDragging,
+          isDraggingRef: dragStateRef.current.isDragging,
+          customPanning: !controlsRef.current?.enabled,
+          controlsState: controlsRef.current ? {
+            enabled: controlsRef.current.enabled,
+            mouseButtons: controlsRef.current.mouseButtons
+          } : 'null',
+          mouseX: e.clientX,
+          mouseY: e.clientY
+        });
+      }
+      
+      handleMouseMove(e);
+    };
+    
+    const mouseUpHandler = (e: MouseEvent) => {
+      console.log("🔍 MOUSE UP:", {
+        button: e.button,
+        buttonNames: {
+          0: 'LEFT',
+          1: 'MIDDLE',
+          2: 'RIGHT'
+        }[e.button],
+        target: (e.target as HTMLElement)?.tagName,
+        coords: { x: e.clientX, y: e.clientY },
+        controlsStatus: controlsRef.current ? {
+          enabled: controlsRef.current.enabled,
+          mouseButtons: controlsRef.current.mouseButtons
+        } : 'null'
+      });
+      
+      handleMouseUp(e);
+      
+      // Debug control status after handler completes
+      if (controlsRef.current) {
+        console.log("🎮 CONTROLS AFTER MOUSEUP:", {
+          enabled: controlsRef.current.enabled,
+          mouseButtons: controlsRef.current.mouseButtons
+        });
+      }
+    };
+    
     // Use document instead of window for more reliable event capture
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("mousemove", mouseMoveHandler);
+    document.addEventListener("mouseup", mouseUpHandler);
+
+    // Log animation frame function to track controls state
+    const animationFrameCounter = { count: 0 };
+    
+    // Set up periodic logging in animation loop to check controls state
+    const controlsStatusLogger = () => {
+      animationFrameCounter.count += 1;
+      
+      if (animationFrameCounter.count % 100 === 0) { // Log every 100 frames
+        console.log("🎮 CONTROLS DOM ELEMENT:", {
+          hasElement: !!controlsRef.current?.domElement,
+          tagName: controlsRef.current?.domElement?.tagName || '',
+          id: controlsRef.current?.domElement?.id || '',
+          hasMouseUp: !!controlsRef.current?.domElement?.onmouseup,
+          hasMouseDown: !!controlsRef.current?.domElement?.onmousedown,
+          hasMouseMove: !!controlsRef.current?.domElement?.onmousemove,
+          hasListeners: false // Not using eventNames method since it's not available
+        });
+        
+        console.log("🔄 ANIMATION FRAME CONTROLS STATE:", {
+          frame: animationFrameCounter.count,
+          enabled: controlsRef.current?.enabled,
+          mouseButtons: controlsRef.current?.mouseButtons,
+          rightButtonDown: (controlsRef.current?.mouseButtons?.RIGHT === THREE.MOUSE.PAN) ? 'PAN' : 'N/A',
+          dragActive: dragStateRef.current.isDragging
+        });
+      }
+      
+      requestAnimationFrame(controlsStatusLogger);
+    };
+    
+    // Start the logger
+    requestAnimationFrame(controlsStatusLogger);
 
     console.log("All event listeners attached successfully");
 
