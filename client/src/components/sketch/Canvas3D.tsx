@@ -913,8 +913,33 @@ export default function Canvas3D({
       const yDirection = new THREE.Vector3(0, 0, 1);
       
       // Z axis must be perpendicular to the wall surface, pointing outward from the room
-      // For a 2D vector (x,y), a perpendicular vector is (-y,x)
-      const zDirection = new THREE.Vector3(-wallVector.y, wallVector.x, 0).normalize();
+      // We need to determine which side of the wall is "outside" by checking against room contour
+      // First, calculate a basic perpendicular vector
+      // For a 2D vector (x,y), perpendicular vectors are (-y,x) or (y,-x)
+      
+      // Calculate both possible perpendicular vectors
+      const perpOption1 = new THREE.Vector3(-wallVector.y, wallVector.x, 0).normalize();
+      const perpOption2 = new THREE.Vector3(wallVector.y, -wallVector.x, 0).normalize();
+      
+      // Choose the one that points outward - using the midpoint of the air entry as reference
+      const centerPoint = new THREE.Vector3(
+        (entry.line.start.x + entry.line.end.x) / 2,
+        (entry.line.start.y + entry.line.end.y) / 2,
+        0
+      );
+      
+      // We choose the direction that points away from the room center (generally at origin)
+      // By checking which direction increases the distance from origin
+      const testPoint1 = new THREE.Vector3().addVectors(centerPoint, perpOption1);
+      const testPoint2 = new THREE.Vector3().addVectors(centerPoint, perpOption2);
+      
+      // Calculate distances from origin
+      const distanceOrigin = centerPoint.length();
+      const distance1 = testPoint1.length();
+      const distance2 = testPoint2.length();
+      
+      // Choose the vector that increases distance from origin (points outward)
+      const zDirection = distance1 > distanceOrigin ? perpOption1 : perpOption2;
       
       // X axis - Red (Horizontal along wall)
       const xAxisGeometry = new THREE.CylinderGeometry(5, 5, axisLength, 8);
