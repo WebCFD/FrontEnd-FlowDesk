@@ -924,20 +924,29 @@ export default function Canvas3D({
       const xAxisMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 1.0 }); // Increased opacity
       const xAxis = new THREE.Mesh(xAxisGeometry, xAxisMaterial);
       
-      // Position the axis cylinder along the wall direction
-      xAxis.position.set(
-        position.x + axisLength/2 * xDirection.x, 
-        position.y + axisLength/2 * xDirection.y, 
-        zPosition
+      // Get origin point at the air entry position
+      const axisOrigin = new THREE.Vector3(position.x, position.y, zPosition);
+      
+      // Debug the axis origin and direction vectors
+      console.log(`X-axis origin: ${axisOrigin.x}, ${axisOrigin.y}, ${axisOrigin.z}`);
+      console.log(`X-axis direction vector: ${xDirection.x}, ${xDirection.y}, ${xDirection.z}`);
+      
+      // Position the axis starting at the air entry, extending in the X direction
+      xAxis.position.copy(axisOrigin).add(
+        new THREE.Vector3(axisLength/2 * xDirection.x, axisLength/2 * xDirection.y, 0)
       );
       
-      // Align with wall direction
+      // Create a proper orientation matrix to align cylinder with X direction
       const xAxisMatrix = new THREE.Matrix4();
+      
+      // Look from origin toward the direction vector
       xAxisMatrix.lookAt(
         new THREE.Vector3(0, 0, 0), 
-        xDirection, 
-        new THREE.Vector3(0, 0, 1)
+        xDirection,  // Look toward the X direction vector
+        new THREE.Vector3(0, 0, 1)  // Keep Z-up orientation
       );
+      
+      // Apply the rotation
       xAxis.setRotationFromMatrix(xAxisMatrix);
       
       xAxis.userData = { 
@@ -973,11 +982,13 @@ export default function Canvas3D({
       const zAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x0066ff, transparent: true, opacity: 1.0 }); // Brighter blue
       const zAxis = new THREE.Mesh(zAxisGeometry, zAxisMaterial);
       
+      // Debug the Z axis direction vector
+      console.log(`Z-axis direction vector: ${zDirection.x}, ${zDirection.y}, ${zDirection.z}`);
+      
+      // Use the same origin point established for X axis
       // Position the z-axis cylinder - extending outward perpendicular to the wall
-      zAxis.position.set(
-        position.x + axisLength/2 * zDirection.x, 
-        position.y + axisLength/2 * zDirection.y, 
-        zPosition
+      zAxis.position.copy(axisOrigin).add(
+        new THREE.Vector3(axisLength/2 * zDirection.x, axisLength/2 * zDirection.y, 0)
       );
       
       // Align with direction perpendicular to the wall
