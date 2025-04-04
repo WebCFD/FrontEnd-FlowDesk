@@ -896,7 +896,7 @@ export default function Canvas3D({
       // Create the local coordinate system for this air entry:
       // - Z axis (blue) is normal to the wall surface (using the 'forward' vector) 
       // - Y axis (green) is vertical (pointing upward)
-      // - X axis (red) is perpendicular to both Y and Z (using right-hand rule cross product)
+      // - X axis (red) is horizontal and perpendicular to Z (using the 2D perpendicular vector technique)
       
       // Z axis should point perpendicular to the wall (normal to the surface)
       // This is the "forward" vector in the mesh's orientation
@@ -905,9 +905,10 @@ export default function Canvas3D({
       // Y axis is always vertical
       const yDirection = new THREE.Vector3(0, 0, 1);
       
-      // X axis needs to be perpendicular to both Y and Z
-      // Calculate X as the cross product of Z and Y (order matters for right-hand rule)
-      const xDirection = new THREE.Vector3().crossVectors(zDirection, yDirection).normalize();
+      // First get a horizontal direction perpendicular to Z
+      // We can create a horizontal vector based on Z by keeping X and Y components
+      // but ensuring it's perpendicular to Z by swapping them and negating one
+      const xDirection = new THREE.Vector3(-zDirection.y, zDirection.x, 0).normalize();
       
       // X axis - Red (Perpendicular to both Y and Z axes)
       const xAxisGeometry = new THREE.CylinderGeometry(5, 5, axisLength, 8);
