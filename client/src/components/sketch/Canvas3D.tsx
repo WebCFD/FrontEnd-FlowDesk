@@ -2139,37 +2139,14 @@ export default function Canvas3D({
     };
 
     // Now add the event listeners
-    console.log("Setting up event listeners on canvas:", {
-      canvasElement: canvas ? canvas.tagName : 'null',
-      controls: controlsRef.current ? {
-        enabled: controlsRef.current.enabled,
-        mouseButtons: controlsRef.current.mouseButtons,
-        domElement: controlsRef.current.domElement ? controlsRef.current.domElement.tagName : 'null'
-      } : 'null'
-    });
-
+    
     // Clear and specific event binding
     canvas.addEventListener("contextmenu", (e) => {
-      console.log("Context menu prevented");
       e.preventDefault();
     });
 
-    // Log when mousedown events are received
+    // Handle mousedown events
     const mouseDownWrapper = (e: MouseEvent) => {
-      console.log("Canvas mousedown detected:", {
-        button: e.button,
-        buttonNames: {
-          0: 'LEFT',
-          1: 'MIDDLE',
-          2: 'RIGHT'
-        }[e.button],
-        target: (e.target as HTMLElement)?.tagName,
-        controlsStatus: controlsRef.current ? {
-          enabled: controlsRef.current.enabled,
-          mouseButtons: controlsRef.current.mouseButtons
-        } : 'null'
-      });
-      
       if (e.button === 2) {
         // Right mouse button for both measurements and context operations
         handleRightMouseDown(e);
@@ -2180,52 +2157,11 @@ export default function Canvas3D({
 
     // Create named handlers for event tracking
     const mouseMoveHandler = (e: MouseEvent) => {
-      // Add button state to understand multi-button scenarios
-      if ((e.buttons & 2) === 2) { // Check if right button is held down
-        console.log("🔍 MOUSE MOVE STATE:", {
-          timestamp: Date.now(),
-          buttons: e.buttons,
-          rightButtonBit: (e.buttons & 2) === 2,
-          rightButtonPressedRef: dragStateRef.current.isDragging,
-          isDraggingRef: dragStateRef.current.isDragging,
-          customPanning: !controlsRef.current?.enabled,
-          controlsState: controlsRef.current ? {
-            enabled: controlsRef.current.enabled,
-            mouseButtons: controlsRef.current.mouseButtons
-          } : 'null',
-          mouseX: e.clientX,
-          mouseY: e.clientY
-        });
-      }
-      
       handleMouseMove(e);
     };
     
     const mouseUpHandler = (e: MouseEvent) => {
-      console.log("🔍 MOUSE UP:", {
-        button: e.button,
-        buttonNames: {
-          0: 'LEFT',
-          1: 'MIDDLE',
-          2: 'RIGHT'
-        }[e.button],
-        target: (e.target as HTMLElement)?.tagName,
-        coords: { x: e.clientX, y: e.clientY },
-        controlsStatus: controlsRef.current ? {
-          enabled: controlsRef.current.enabled,
-          mouseButtons: controlsRef.current.mouseButtons
-        } : 'null'
-      });
-      
       handleMouseUp(e);
-      
-      // Debug control status after handler completes
-      if (controlsRef.current) {
-        console.log("🎮 CONTROLS AFTER MOUSEUP:", {
-          enabled: controlsRef.current.enabled,
-          mouseButtons: controlsRef.current.mouseButtons
-        });
-      }
     };
     
     // Use document instead of window for more reliable event capture
@@ -2235,11 +2171,11 @@ export default function Canvas3D({
     // Log animation frame function to track controls state
     const animationFrameCounter = { count: 0 };
     
-    // Set up periodic logging in animation loop to check controls state and recreate if needed
-    const controlsStatusLogger = () => {
+    // Set up periodic checking in animation loop to recreate controls when needed
+    const controlsStatusChecker = () => {
       animationFrameCounter.count += 1;
       
-      // Check controls status every 100 frames
+      // Check controls status every 100 frames, but don't log anything
       if (animationFrameCounter.count % 100 === 0) {
         // Check if controls exist and have proper event handlers
         const hasElement = !!controlsRef.current?.domElement;
@@ -2248,29 +2184,9 @@ export default function Canvas3D({
         const hasMouseMove = !!controlsRef.current?.domElement?.onmousemove;
         const hasListeners = hasMouseUp && hasMouseDown && hasMouseMove;
         
-        console.log("🎮 CONTROLS DOM ELEMENT:", {
-          hasElement,
-          tagName: controlsRef.current?.domElement?.tagName || '',
-          id: controlsRef.current?.domElement?.id || '',
-          hasMouseUp,
-          hasMouseDown,
-          hasMouseMove,
-          hasListeners
-        });
-        
-        console.log("🔄 ANIMATION FRAME CONTROLS STATE:", {
-          frame: animationFrameCounter.count,
-          enabled: controlsRef.current?.enabled,
-          mouseButtons: controlsRef.current?.mouseButtons,
-          rightButtonDown: (controlsRef.current?.mouseButtons?.RIGHT === THREE.MOUSE.PAN) ? 'PAN' : 'N/A',
-          dragActive: dragStateRef.current.isDragging
-        });
-        
         // Check if we need to recreate controls because event listeners are missing
         // Only recreate if we're not actively dragging
         if ((!hasListeners || !hasElement) && !dragStateRef.current.isDragging && controlsRef.current && cameraRef.current && rendererRef.current) {
-          console.log("🚨 Controls missing event listeners - recreating controls instance");
-          
           // Store current camera position and target
           const position = controlsRef.current.object.position.clone();
           const target = controlsRef.current.target.clone();
@@ -2306,30 +2222,22 @@ export default function Canvas3D({
             // Update the reference
             controlsRef.current = newControls;
             
-            console.log("Controls recreated successfully", {
-              hasElement: !!controlsRef.current.domElement,
-              hasMouseUp: !!controlsRef.current.domElement?.onmouseup,
-              hasMouseDown: !!controlsRef.current.domElement?.onmousedown,
-              hasMouseMove: !!controlsRef.current.domElement?.onmousemove,
-              enabled: controlsRef.current.enabled
-            });
-            
             // Force an immediate update
             controlsRef.current.update();
             needsRenderRef.current = true;
           } catch (error) {
-            console.error("Failed to recreate controls:", error);
+            // Silently handle errors to avoid console spam
           }
         }
       }
       
-      requestAnimationFrame(controlsStatusLogger);
+      requestAnimationFrame(controlsStatusChecker);
     };
     
-    // Start the logger
-    requestAnimationFrame(controlsStatusLogger);
+    // Start the checker
+    requestAnimationFrame(controlsStatusChecker);
 
-    console.log("All event listeners attached successfully");
+    // All event listeners are now attached
 
 
     // Add double-click handler for air entry editing
