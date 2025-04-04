@@ -906,8 +906,8 @@ export default function Canvas3D({
       const yDirection = new THREE.Vector3(0, 0, 1);
       
       // X axis needs to be perpendicular to both Y and Z
-      // Calculate X as the cross product of Y and Z
-      const xDirection = new THREE.Vector3().crossVectors(yDirection, zDirection).normalize();
+      // Calculate X as the cross product of Z and Y (order matters for right-hand rule)
+      const xDirection = new THREE.Vector3().crossVectors(zDirection, yDirection).normalize();
       
       // X axis - Red (Perpendicular to both Y and Z axes)
       const xAxisGeometry = new THREE.CylinderGeometry(5, 5, axisLength, 8);
