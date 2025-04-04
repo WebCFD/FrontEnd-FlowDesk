@@ -384,7 +384,7 @@ export default function Canvas3D({
     object: THREE.ArrowHelper;
     type: "x" | "y" | "z";
   } | null>(null);
-    
+
   // Measurement state variables
   const [isMeasuring, setIsMeasuring] = useState(false);
   const [measureStartPoint, setMeasureStartPoint] = useState<THREE.Vector3 | null>(null);
@@ -394,7 +394,7 @@ export default function Canvas3D({
   const [activeMeasurementLabel, setActiveMeasurementLabel] = useState<THREE.Sprite | null>(null);
 
   const isMeasureModeRef = useRef(false);
-  
+
   // Store the positions of air entries that have been updated via dragging
   // This is used to ensure they keep their positions when the scene is rebuilt
   // Format: { floorName: { entryIndex: { x, y } } }
@@ -419,7 +419,7 @@ export default function Canvas3D({
     startPoint: null as THREE.Vector3 | null
   });
 
-  
+
   // Calculate base height for each floor
   const getFloorBaseHeight = (floorName: string): number => {
     const floorOrder = [
@@ -675,23 +675,23 @@ export default function Canvas3D({
   ) => {
     const objects: THREE.Object3D[] = [];
     const perimeterPoints = createRoomPerimeter(floorData.lines);
-    
+
     // Check if we have stored updated positions for this floor - use the shared normalization function
     const normalizedFloorName = normalizeFloorName(floorData.name);
     console.log(`[POSITION RETRIEVAL] Checking for positions with floor key: '${normalizedFloorName}'`);
     console.log(`[POSITION RETRIEVAL] Raw floor name: '${floorData.name}', Normalized to: '${normalizedFloorName}'`);
     console.log(`[POSITION RETRIEVAL] All stored positions:`, JSON.stringify(updatedAirEntryPositionsRef.current));
-    
+
     // Try both possible keys for maximum compatibility during transition
     let updatedPositions = updatedAirEntryPositionsRef.current[normalizedFloorName] || {};
-    
+
     // If nothing is found with the normalized name, try the original 'ground' key as fallback
     // This handles the existing data during transition
     if (Object.keys(updatedPositions).length === 0 && normalizedFloorName === 'groundfloor') {
         console.log(`[POSITION RETRIEVAL] No positions found with '${normalizedFloorName}', trying 'ground' as fallback`);
         updatedPositions = updatedAirEntryPositionsRef.current['ground'] || {};
     }
-    
+
     console.log(`[POSITION RETRIEVAL] Retrieved positions for '${normalizedFloorName}':`, JSON.stringify(updatedPositions));
 
     // Create floor and ceiling surfaces
@@ -812,10 +812,10 @@ export default function Canvas3D({
           allPositionsStoredForThisFloor: JSON.stringify(updatedPositions),
           allFloorEntries: floorData.airEntries.length
         });
-        
+
         // Create a working copy of the entry position
         let entryPosition = { ...entry.position };
-        
+
         // If we have a stored position from previous dragging, use it
         if (updatedPosition) {
           console.log(`[POSITION LOADING] Using stored position for entry ${index}:`, {
@@ -828,7 +828,7 @@ export default function Canvas3D({
         } else {
           console.log(`[POSITION LOADING] No stored position found for entry ${index}, using original position:`, entry.position);
         }
-        
+
         const mesh = new THREE.Mesh(geometry, material);
         const position = transform2DTo3D(entryPosition);
         mesh.position.set(position.x, position.y, zPosition);
@@ -842,7 +842,7 @@ export default function Canvas3D({
           index: objects.length,
           entryIndex: index  // Add the actual index in the airEntries array
         };
-        
+
         console.log(`AIR ENTRY userData for mesh at index ${index}:`, {
           meshPosition3D: { x: position.x, y: position.y, z: zPosition },
           userData: mesh.userData,
@@ -880,7 +880,7 @@ export default function Canvas3D({
       // Add coordinate system axes
       const axisLength = 50; // Length of the coordinate axes
       console.log(`Creating custom axis arrows for entry at position ${position.x}, ${position.y}, ${zPosition}`);
-      
+
       // Store the entry's index in airEntries array for direct reference
       const parentMeshIndex = objects.length - 1;
       console.log("AXIS CREATION:", {
@@ -1019,7 +1019,7 @@ export default function Canvas3D({
     };
     // Add mechanism to disable controls during dragging
     controls.enabled = true;
-    
+
     console.log("TrackballControls buttons configured:", controls.mouseButtons);
     controlsRef.current = controls;
 
@@ -1152,13 +1152,13 @@ export default function Canvas3D({
     const getMouseCoordinates = (event: MouseEvent): THREE.Vector2 => {
       const canvas = containerRef.current;
       if (!canvas) return new THREE.Vector2(0, 0);
-      
+
       const rect = canvas.getBoundingClientRect();
       const mouseX = ((event.clientX - rect.left) / rect.width) * 2 - 1;
       const mouseY = -((event.clientY - rect.top) / rect.height) * 2 + 1;
       return new THREE.Vector2(mouseX, mouseY);
     };
-    
+
     // Helper function to cast ray and find intersection point
     const getRaycastPoint = (mouseCoords: THREE.Vector2): THREE.Vector3 | null => {
       if (!cameraRef.current || !sceneRef.current) {
@@ -1194,7 +1194,7 @@ export default function Canvas3D({
       console.log("getRaycastPoint: No intersections found");
       return null;
     };
-    
+
     // Renamed function to handle right clicks for measurements
 
 
@@ -1253,7 +1253,7 @@ export default function Canvas3D({
         }
       }
     };
-    
+
     const handleRightMouseDown = (event: MouseEvent) => {
       // Prevent the default context menu
       event.preventDefault();
@@ -1301,9 +1301,9 @@ export default function Canvas3D({
       // Get mouse position for raycasting
       const canvas = containerRef.current;
       if (!canvas || !cameraRef.current || !sceneRef.current) return;
-      
+
       const mouseCoords = getMouseCoordinates(event);
-      
+
       // Set up raycaster
       const raycaster = new THREE.Raycaster();
       raycaster.setFromCamera(mouseCoords, cameraRef.current);
@@ -1454,7 +1454,7 @@ export default function Canvas3D({
                           type: entry.type
                         }))
                       });
-                      
+
                       // BETTER APPROACH 1: First try to use the actualEntryIndex from the axis userData if available
                       // This is the most reliable way since it's explicitly set when creating the axis
                       if (typeof axisObject.userData?.actualEntryIndex === 'number') {
@@ -1465,12 +1465,12 @@ export default function Canvas3D({
                           console.log("Found air entry using actualEntryIndex:", index);
                         }
                       }
-                      
+
                       // BETTER APPROACH 2: If actualEntryIndex fails, try using the parentEntryIndex to find the real parent mesh
                       if (index === -1 && axisObject.userData?.parentEntryIndex !== undefined) {
                         const parentMeshIndex = axisObject.userData.parentEntryIndex;
                         console.log("Looking for parent mesh with index:", parentMeshIndex);
-                        
+
                         // Find the parent mesh
                         let parentMesh: (THREE.Mesh & {userData: {entryIndex?: number}}) | null = null;
                         sceneRef.current?.traverse((object) => {
@@ -1483,7 +1483,7 @@ export default function Canvas3D({
                             parentMesh = object as THREE.Mesh & {userData: {entryIndex?: number}};
                           }
                         });
-                        
+
                         if (parentMesh && parentMesh.userData && typeof parentMesh.userData.entryIndex === 'number') {
                           // Use the parent mesh's entryIndex
                           const parentEntryIndex = parentMesh.userData.entryIndex;
@@ -1495,7 +1495,7 @@ export default function Canvas3D({
                           }
                         }
                       }
-                      
+
                       // FALLBACK APPROACH: Only if both direct methods fail, try position-based search
                       // Log each entry's position to check for near matches
                       if (index === -1) {
@@ -1509,7 +1509,7 @@ export default function Canvas3D({
                             closeMatch: xDiff < 1 && yDiff < 1
                           });
                         });
-                        
+
                         // Try exact match first
                         index = floorData.airEntries.findIndex(
                           (entry) =>
@@ -1517,13 +1517,13 @@ export default function Canvas3D({
                             entry.position.y === airEntryData.position.y,
                         );
                         console.log("Found entry index by exact position search:", index);
-                        
+
                         // If exact match fails, try approximate match with a larger threshold
                         if (index === -1) {
                           // Increase the position tolerance to handle larger differences
                           // This is much more forgiving than before (64 units in your case)
                           const POSITION_TOLERANCE = 70; // Increased from 1 to handle large discrepancies
-                          
+
                           index = floorData.airEntries.findIndex(
                             (entry) =>
                               Math.abs(entry.position.x - airEntryData.position.x) < POSITION_TOLERANCE &&
@@ -1588,7 +1588,7 @@ export default function Canvas3D({
 
               console.log("Started dragging with axis:", axisDirection);
               console.log("Started dragging", { axis: axisDirection });
-              
+
               // Log detailed drag state at drag start
               console.log("DRAG STATE INITIALIZED:", {
                 axis: dragStateRef.current.selectedAxis,
@@ -1619,7 +1619,7 @@ export default function Canvas3D({
             false,
             );
 
-        
+
       console.log("Mesh intersections found:", meshIntersects.length);
 
       if (meshIntersects.length > 0) {
@@ -1645,7 +1645,7 @@ export default function Canvas3D({
 
             // We're selecting but not yet dragging
             setSelectedAxis(null);
-            
+
             // Make sure controls are enabled when just selecting without dragging
             if (controlsRef.current) {
               controlsRef.current.enabled = true;
@@ -1657,7 +1657,7 @@ export default function Canvas3D({
         // Clicked on empty space, clear selection
         setSelectedAirEntry(null);
         setSelectedAxis(null);
-        
+
         // Enable camera controls for panning with right-click
         if (controlsRef.current) {
           controlsRef.current.enabled = true;
@@ -1671,17 +1671,17 @@ export default function Canvas3D({
       if (isMeasuring && measureStartPoint) {
         const mouseCoords = getMouseCoordinates(event);
         const intersectionPoint = getRaycastPoint(mouseCoords);
-        
+
         if (intersectionPoint) {
           // Update the temporary measurement line
           updateActiveMeasurement(measureStartPoint, intersectionPoint);
         }
-        
+
         // Always force a render during measurement
         needsRenderRef.current = true;
         return;
       }
-      
+
       // Regular drag logic
       if (dragStateRef.current.isDragging) {
         // Store the current mouse position
@@ -1711,7 +1711,7 @@ export default function Canvas3D({
         if (rendererRef.current && sceneRef.current && cameraRef.current) {
           rendererRef.current.render(sceneRef.current, cameraRef.current);
         }
-      
+
       // Add hover detection logic
       else {
         // Only do hover detection if we're not dragging
@@ -1873,24 +1873,24 @@ export default function Canvas3D({
 
             // Call the update callback
             onUpdateAirEntry(currentFloor, entryIndex, updatedEntry);
-            
+
             // IMPORTANT: Keep track of the updated entries to prevent them from resetting
             // We store a mapping of entryIndex -> position to check against when scene rebuilds
-            
+
             // Normalize the floor name using the shared function
             const normalizedFloorName = normalizeFloorName(currentFloor);
-            
+
             // Create storage location with normalized key if it doesn't exist
             if (!updatedAirEntryPositionsRef.current[normalizedFloorName]) {
               updatedAirEntryPositionsRef.current[normalizedFloorName] = {};
             }
-            
+
             // Store the latest position for this entry index under the normalized key (main storage)
             updatedAirEntryPositionsRef.current[normalizedFloorName][entryIndex] = {
               x: updatedEntry.position.x,
               y: updatedEntry.position.y
             };
-            
+
             // For backward compatibility with existing code, also store under 'ground' key 
             // if this is the ground floor (transitional approach)
             if (normalizedFloorName === 'groundfloor') {
@@ -1902,13 +1902,13 @@ export default function Canvas3D({
                 y: updatedEntry.position.y
               };
             }
-            
+
             // CRITICAL FIX: Update the userData with the new position
             // This ensures that future position searches can find this object
             if (dragStateRef.current.selectedObject) {
               // Update the userData position immediately for the dragged object
               dragStateRef.current.selectedObject.userData.position = { ...updatedEntry.position };
-              
+
               // Also update entryIndex to ensure it's correct for next time
               dragStateRef.current.selectedObject.userData.entryIndex = entryIndex;
             }
@@ -1939,13 +1939,13 @@ export default function Canvas3D({
           // Store current camera position and target
           const position = controlsRef.current.object.position.clone();
           const target = controlsRef.current.target.clone();
-          
+
           // Dispose of the old controls
           controlsRef.current.dispose();
-          
+
           // Create new controls with the same camera and canvas
           const newControls = new TrackballControls(cameraRef.current, containerRef.current.querySelector('canvas'));
-          
+
           // Copy all the properties from the initial setup
           newControls.rotateSpeed = 2.0;
           newControls.zoomSpeed = 1.2;
@@ -1959,14 +1959,14 @@ export default function Canvas3D({
             MIDDLE: THREE.MOUSE.DOLLY,
             RIGHT: THREE.MOUSE.PAN
           };
-          
+
           // Restore position and target
           newControls.object.position.copy(position);
           newControls.target.copy(target);
-          
+
           // Make sure controls are enabled
           newControls.enabled = true;
-          
+
           // Update the reference
           controlsRef.current = newControls;
         } else {
@@ -1980,7 +1980,7 @@ export default function Canvas3D({
     };
 
     // Now add the event listeners
-    
+
     // Clear and specific event binding
     canvas.addEventListener("contextmenu", (e) => {
       e.preventDefault();
@@ -1993,18 +1993,18 @@ export default function Canvas3D({
         handleRightMouseDown(e);
       }
     };
-    
+
     canvas.addEventListener("mousedown", mouseDownWrapper);
 
     // Create named handlers for event tracking
     const mouseMoveHandler = (e: MouseEvent) => {
       handleMouseMove(e);
     };
-    
+
     const mouseUpHandler = (e: MouseEvent) => {
       handleMouseUp(e);
     };
-    
+
     // Use document instead of window for more reliable event capture
     document.addEventListener("mousemove", mouseMoveHandler);
     document.addEventListener("mouseup", mouseUpHandler);
@@ -2064,7 +2064,7 @@ export default function Canvas3D({
             entryPosition: airEntryData.position,
             storedEntryIndex: airEntryData.entryIndex
           });
-          
+
           // First try to use the stored entryIndex if available (most reliable)
           if (typeof airEntryData.entryIndex === 'number') {
             if (airEntryData.entryIndex >= 0 && airEntryData.entryIndex < floorData.airEntries.length) {
@@ -2072,7 +2072,7 @@ export default function Canvas3D({
               console.log("Double-click found entry using stored entryIndex:", foundIndex);
             }
           }
-          
+
           // Fall back to position search if needed
           if (foundIndex === -1) {
             // Try exact match first
@@ -2081,7 +2081,7 @@ export default function Canvas3D({
                 entry.position.x === airEntryData.position.x &&
                 entry.position.y === airEntryData.position.y,
             );
-            
+
             // If exact match fails, try approximate match with larger tolerance
             if (foundIndex === -1) {
               const POSITION_TOLERANCE = 70; // Match the value used in handleRightMouseDown
@@ -2142,7 +2142,7 @@ export default function Canvas3D({
 
   useEffect(() => {
     console.log("Canvas3D received floors data:", floors);
-    
+
     // Log detailed information about all air entries for debugging purposes
     Object.entries(floors).forEach(([floorName, floorData]) => {
       if (floorData.airEntries?.length) {
@@ -2346,7 +2346,7 @@ export default function Canvas3D({
 
   // Effect to update wall transparency when the prop changes
   // Measurement utility functions
-  
+
   // Create a measurement line between two points
   const createMeasurementLine = (start: THREE.Vector3, end: THREE.Vector3): THREE.Line => {
     const geometry = new THREE.BufferGeometry().setFromPoints([start, end]);
@@ -2357,20 +2357,20 @@ export default function Canvas3D({
     });
     return new THREE.Line(geometry, material);
   };
-  
+
   // Calculate the distance between two 3D points
   const calculateDistance = (start: THREE.Vector3, end: THREE.Vector3): number => {
     return start.distanceTo(end);
   };
-  
+
   // Create a measurement label with distance info
   const createMeasurementLabel = (start: THREE.Vector3, end: THREE.Vector3, distance: number): THREE.Sprite => {
     // Position the label at the midpoint of the line
     const midpoint = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
-    
+
     // Format the distance with 2 decimal places and add unit (cm)
     const formattedDistance = `${distance.toFixed(2)} cm`;
-    
+
     // Create text sprite with white background for visibility
     const label = makeTextSprite(formattedDistance, {
       fontsize: 22,
@@ -2381,23 +2381,23 @@ export default function Canvas3D({
       borderThickness: 2,
       padding: 6
     });
-    
+
     label.position.copy(midpoint);
     return label;
   };
-  
+
   // Add a completed measurement to the scene and state
   const addMeasurement = (start: THREE.Vector3, end: THREE.Vector3) => {
     if (!sceneRef.current) return;
-    
+
     const distance = calculateDistance(start, end);
     const line = createMeasurementLine(start, end);
     const label = createMeasurementLabel(start, end, distance);
-    
+
     // Add both to the scene
     sceneRef.current.add(line);
     sceneRef.current.add(label);
-    
+
     // Store the measurement in state
     const newMeasurement: Measurement3D = {
       startPoint: start.clone(),
@@ -2406,13 +2406,13 @@ export default function Canvas3D({
       line,
       label
     };
-    
+
     setMeasurements([...measurements, newMeasurement]);
-    
+
     // Trigger a render
     needsRenderRef.current = true;
   };
-  
+
   // Clean up active measurement (when canceling or completing a measurement)
   const cleanupActiveMeasurement = () => {
     if (sceneRef.current) {
@@ -2434,31 +2434,31 @@ export default function Canvas3D({
       needsRenderRef.current = true;
     }
   };
-  
+
   // Update active measurement line while dragging
   const updateActiveMeasurement = (start: THREE.Vector3, end: THREE.Vector3) => {
     if (!sceneRef.current) return;
-    
+
     // Clean up existing temporary measurement
     cleanupActiveMeasurement();
-    
+
     // Create new temporary measurement
     const line = createMeasurementLine(start, end);
     const distance = calculateDistance(start, end);
     const label = createMeasurementLabel(start, end, distance);
-    
+
     // Add to scene
     sceneRef.current.add(line);
     sceneRef.current.add(label);
-    
+
     // Update state
     setActiveMeasurementLine(line);
     setActiveMeasurementLabel(label);
-    
+
     // Trigger a render
     needsRenderRef.current = true;
   };
-  
+
   // Effect to handle measure mode changes
   useEffect(() => {
     console.log("isMeasureMode prop changed:", isMeasureMode);
@@ -2490,21 +2490,21 @@ export default function Canvas3D({
       cleanupActiveMeasurement();
       setMeasureStartPoint(null);
       setMeasureEndPoint(null);
-      
+
 
       // Reset measurement ref state
       measurementStateRef.current.inProgress = false;
       measurementStateRef.current.startPoint = null;
     }
   }, [isMeasureMode]);
-  
+
   // Effect to clean up measurements when changing floors
   useEffect(() => {
     // Clean up any active measurement
     cleanupActiveMeasurement();
     setMeasureStartPoint(null);
     setMeasureEndPoint(null);
-    
+
     // Clean up all existing measurements as they're specific to a floor
     if (measurements.length > 0 && sceneRef.current) {
       measurements.forEach(measure => {
@@ -2514,7 +2514,7 @@ export default function Canvas3D({
       setMeasurements([]);
     }
   }, [currentFloor]);
-  
+
   useEffect(() => {
     if (sceneRef.current) {
       // Update the opacity of only wall materials in the scene, not air entries
@@ -2522,11 +2522,11 @@ export default function Canvas3D({
         if (object instanceof THREE.Mesh && 
             object.material instanceof THREE.MeshPhongMaterial &&
             object.material.transparent) {
-          
+
           // Only update walls, not air entries (windows, doors, vents)
           const isAirEntry = object.userData?.type && 
                             ["window", "door", "vent"].includes(object.userData.type);
-          
+
           if (!isAirEntry) {
             // This is a wall material that needs updating
             object.material.opacity = wallTransparency;
