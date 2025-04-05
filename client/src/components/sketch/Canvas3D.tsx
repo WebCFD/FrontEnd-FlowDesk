@@ -4002,25 +4002,7 @@ export default function Canvas3D({
   return (
     <>
       <div className="flex flex-col h-full">
-        {/* Top section with simulation info - matching Step 1 layout */}
-        <div className="p-4 pb-2 border-b">
-          <div className="max-w-xl space-y-4">
-            <div>
-              <h3 className="text-sm font-medium mb-1">Simulation name</h3>
-              <div className="text-base border rounded px-3 py-1 bg-gray-50">
-                {simulationName || "Untitled Simulation"}
-              </div>
-            </div>
-            <div>
-              <h3 className="text-sm font-medium mb-1">Simulation type</h3>
-              <div className="text-base border rounded px-3 py-1 bg-gray-50">
-                {simulationType}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* 3D Canvas section - now with same dimensions as Step 1 */}
+        {/* 3D Canvas section */}
         <div className="flex flex-1">
           {/* Main canvas container */}
           <div className="flex-1 relative">
