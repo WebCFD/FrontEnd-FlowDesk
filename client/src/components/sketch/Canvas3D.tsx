@@ -2037,11 +2037,47 @@ export default function Canvas3D({
       
       // Handle hover detection for eraser mode
       if (isEraserMode && !dragStateRef.current.isDragging) {
+        // Log TrackballControls state
+        const controlsState = controlsRef.current ? {
+          enabled: controlsRef.current.enabled,
+          // Use button state to determine if controls are being used
+          buttons: event.buttons // 0 = no buttons, 1 = left, 2 = right, 4 = middle
+        } : 'No controls';
+        
+        console.log(`🎮 TrackballControls state: ${JSON.stringify(controlsState)}`);
+        
+        // Skip hover detection if mouse buttons are being held down
+        if (event.buttons !== 0) {
+          console.log("⏩ Skipping hover detection during active mouse button press");
+          return;
+        }
+        
         console.log("🔍 Eraser mode hover detection active - looking for air entries to highlight");
+        
+        // Get detailed client info
+        const clientInfo = {
+          event: {
+            type: event.type,
+            clientX: event.clientX,
+            clientY: event.clientY,
+            button: event.button,
+            buttons: event.buttons,
+            ctrlKey: event.ctrlKey,
+            altKey: event.altKey
+          },
+          container: containerRef.current ? {
+            width: containerRef.current.clientWidth,
+            height: containerRef.current.clientHeight,
+            rect: containerRef.current.getBoundingClientRect()
+          } : null
+        };
+        console.log(`📱 Client info: ${JSON.stringify(clientInfo)}`);
+        
         // Log some info about what's available
         if (sceneRef.current) {
           let airEntryCount = 0;
           const airEntryDetails: string[] = [];
+          const airEntryBoundingBoxes: any[] = [];
           
           sceneRef.current.traverse((object) => {
             if (
@@ -2051,18 +2087,52 @@ export default function Canvas3D({
               ["window", "door", "vent"].includes(object.userData.type)
             ) {
               airEntryCount++;
-              airEntryDetails.push(`${object.userData.type} at position ${JSON.stringify(object.userData.position)}, 3D position ${JSON.stringify(object.position)}`);
+              // Calculate screen position
+              const worldPos = object.position.clone();
+              const screenPos = worldPos.project(cameraRef.current!);
+              
+              // Convert to screen coordinates
+              const screenX = (screenPos.x + 1) / 2 * window.innerWidth;
+              const screenY = -(screenPos.y - 1) / 2 * window.innerHeight;
+              
+              // Get object bounding box
+              const boundingBox = new THREE.Box3().setFromObject(object);
+              const size = new THREE.Vector3();
+              boundingBox.getSize(size);
+              
+              airEntryDetails.push(`${object.userData.type} at screen position (${screenX.toFixed(0)}, ${screenY.toFixed(0)}), world position ${JSON.stringify(object.position)}`);
+              airEntryBoundingBoxes.push({
+                type: object.userData.type,
+                userData: object.userData,
+                position: object.position,
+                boundingBox: { 
+                  min: boundingBox.min,
+                  max: boundingBox.max,
+                  size: size
+                }
+              });
             }
           });
           
-          console.log(`🏠 Scene contains ${airEntryCount} air entry meshes available for highlighting:`);
+          console.log(`🏠 Scene contains ${airEntryCount} air entry meshes for highlighting`);
+          
           if (airEntryCount > 0) {
-            console.log(`🏠 Air entries details: ${airEntryDetails.join(' | ')}`);
+            console.log(`🏠 Air entries details: ${airEntryDetails.join('\n')}`);
+            console.log(`📦 Bounding boxes: `, airEntryBoundingBoxes);
           }
         }
         
         const mouseCoords = getMouseCoordinates(event);
-        console.log(`🖱️ Mouse coordinates: ${JSON.stringify(mouseCoords)}`);
+        console.log(`🖱️ Mouse normalized coordinates: ${JSON.stringify(mouseCoords)}`);
+        
+        // Get raw client coordinates too
+        const canvas = containerRef.current;
+        if (canvas) {
+          const rect = canvas.getBoundingClientRect();
+          const rawX = event.clientX - rect.left;
+          const rawY = event.clientY - rect.top;
+          console.log(`🖱️ Mouse raw canvas coordinates: (${rawX}, ${rawY})`);
+        }
         
         // Reset previously highlighted element if any
         if (hoveredEraseTarget) {
@@ -2121,8 +2191,6 @@ export default function Canvas3D({
                 opacity: 0.8,
                 transparent: true,
                 side: THREE.DoubleSide,
-                emissive: 0xff0000,
-                emissiveIntensity: 1.0,
                 wireframe: false
               });
               
@@ -2390,8 +2458,10 @@ export default function Canvas3D({
               // Legacy format for backward compatibility:
               // Keep this simple format for backward compatibility
               updatedAirEntryPositionsRef.current['ground'][entryIndex] = {
-                x: updatedEntry.position.x,
-                y: updatedEntry.position.y
+                position: {
+                  x: updatedEntry.position.x,
+                  y: updatedEntry.position.y
+                }
               };
             }
 
