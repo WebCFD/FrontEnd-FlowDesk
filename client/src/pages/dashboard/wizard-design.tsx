@@ -1161,7 +1161,12 @@ export default function WizardDesign() {
                           draggable={true}
                           onDragStart={(e) => {
                             console.log(`Starting drag for ${item.name}`);
-                            e.dataTransfer.setData('application/json', JSON.stringify(item));
+                            // Only send the necessary data without React elements to avoid circular references
+                            const serializable = { 
+                              id: item.id, 
+                              name: item.name 
+                            };
+                            e.dataTransfer.setData('application/json', JSON.stringify(serializable));
                             e.dataTransfer.effectAllowed = 'copy';
                           }}
                         >
