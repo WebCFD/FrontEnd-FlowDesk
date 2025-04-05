@@ -817,34 +817,6 @@ export default function WizardDesign() {
 
   const renderStep1 = () => (
     <>
-      <div className="max-w-xl space-y-4">
-        <div>
-          <Label htmlFor="simulation-name">Simulation name</Label>
-          <Input
-            id="simulation-name"
-            value={simulationName}
-            onChange={(e) => setSimulationName(e.target.value)}
-            placeholder="Enter simulation name"
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="simulation-type">Simulation type</Label>
-          <Select value={simulationType} onValueChange={setSimulationType}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select simulation type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="comfort">
-                Comfort Simulation (steady run)
-              </SelectItem>
-              <SelectItem value="renovation">
-                Air Renovation Convection Simulation (transient run)
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
 
       <Card className="mt-4">
         <CardContent className="p-4">
@@ -1122,21 +1094,6 @@ export default function WizardDesign() {
     console.log("Rendering Step 2 content");
     return (
       <div className="space-y-6">
-        {/* Top section with simulation name and type */}
-        <div className="max-w-xl space-y-4">
-          <div>
-            <Label htmlFor="simulation-name">Simulation name</Label>
-            <div className="border rounded-md px-3 py-2 bg-gray-50">
-              {simulationName || "Untitled Simulation"}
-            </div>
-          </div>
-          <div>
-            <Label htmlFor="simulation-type">Simulation type</Label>
-            <div className="border rounded-md px-3 py-2 bg-gray-50">
-              {simulationType === "comfort" ? "Comfort Simulation (steady run)" : "Air Renovation Convection Simulation (transient run)"}
-            </div>
-          </div>
-        </div>
       
         <div className="flex gap-6">
           {/* Left sidebar for controls */}
@@ -1591,10 +1548,55 @@ export default function WizardDesign() {
     );
   };
 
+  // Shared simulation info component used across all steps
+  const renderSimulationInfo = () => (
+    <div className="max-w-xl space-y-4 mb-6">
+      <div>
+        <Label htmlFor="simulation-name">Simulation name</Label>
+        {step === 1 ? (
+          <Input
+            id="simulation-name"
+            value={simulationName}
+            onChange={(e) => setSimulationName(e.target.value)}
+            placeholder="Enter simulation name"
+          />
+        ) : (
+          <div className="border rounded-md px-3 py-2 bg-gray-50">
+            {simulationName || "Untitled Simulation"}
+          </div>
+        )}
+      </div>
+      <div>
+        <Label htmlFor="simulation-type">Simulation type</Label>
+        {step === 1 ? (
+          <Select value={simulationType} onValueChange={setSimulationType}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select simulation type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="comfort">
+                Comfort Simulation (steady run)
+              </SelectItem>
+              <SelectItem value="renovation">
+                Air Renovation Convection Simulation (transient run)
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        ) : (
+          <div className="border rounded-md px-3 py-2 bg-gray-50">
+            {simulationType === "comfort" ? "Comfort Simulation (steady run)" : "Air Renovation Convection Simulation (transient run)"}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <DashboardLayout>
       <div className="container mx-auto py-4 px-3 space-y-4">
         {renderStepIndicator()}
+        {/* Display simulation info at the top for all steps */}
+        {renderSimulationInfo()}
         <div className="min-h-[690px]">
           {step === 1 && renderStep1()}
           {step === 2 && renderStep2()}
