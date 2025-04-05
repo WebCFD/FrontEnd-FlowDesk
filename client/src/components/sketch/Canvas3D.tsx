@@ -453,6 +453,17 @@ export default function Canvas3D({
             }
             console.log("  - Restored original scale for highlighted element");
           }
+          
+          // Remove any debug visualization helpers for this object
+          if (sceneRef.current && hoveredEraseTarget.object.uuid) {
+            sceneRef.current.traverse((obj) => {
+              if (obj.userData?.type === 'debug-helper' && 
+                  obj.userData?.target === hoveredEraseTarget.object.uuid) {
+                console.log("  - Removing debug hitbox visualization");
+                sceneRef.current?.remove(obj);
+              }
+            });
+          }
         } catch (err) {
           console.error("Error during eraser mode cleanup:", err);
         }
@@ -484,6 +495,12 @@ export default function Canvas3D({
             } catch (err) {
               console.error("Error restoring scale for object during cleanup:", err);
             }
+          }
+          
+          // Also remove any debug hitbox visualizations that might be left
+          if (object.userData?.type === 'debug-helper') {
+            console.log("  - Removing debug hitbox visualization during cleanup");
+            sceneRef.current?.remove(object);
           }
         });
       }
@@ -2347,9 +2364,10 @@ export default function Canvas3D({
             const originalLineThreshold = raycaster.params.Line.threshold;
             const originalPointsThreshold = raycaster.params.Points.threshold;
             
-            // Use appropriate thresholds - not too large to avoid false positives
-            raycaster.params.Line.threshold = 5;  
-            raycaster.params.Points.threshold = 5;
+            // Use significantly reduced thresholds for more precise detection
+            // Reduced from 5 to 2 to avoid detecting when cursor is slightly away from elements
+            raycaster.params.Line.threshold = 2;  
+            raycaster.params.Points.threshold = 2;
             
             // Make sure we're using recursive flag = true to catch child objects too
             const meshIntersects = raycaster.intersectObjects(airEntryMeshes, true);
@@ -2501,14 +2519,41 @@ export default function Canvas3D({
                 mesh.userData.originalScale = mesh.scale.clone();
               }
               
-              // Make the hovered mesh larger for better visibility
-              // Make it 3x the original size when hovered (super visible)
-              mesh.scale.set(3.0, 3.0, 3.0);
+              // Make the hovered mesh larger for better visibility but not too large
+              // Reduce from 3.0 to 2.0 to ensure better matching between visual and collision detection
+              // This helps prevent the case where cursor appears to be on element but raycaster detects it's not
+              mesh.scale.set(2.0, 2.0, 2.0);
               
               // Force update to the geometry
               if (mesh.geometry) {
                 mesh.geometry.computeBoundingSphere();
                 mesh.geometry.computeBoundingBox();
+                
+                // Add debug visualization for hitbox
+                if (process.env.NODE_ENV === 'development') {
+                  try {
+                    // Create a visualization of the hitbox/bounding box for debugging
+                    const box = new THREE.Box3().setFromObject(mesh);
+                    const boxHelper = new THREE.Box3Helper(box, new THREE.Color(0xff00ff));
+                    boxHelper.userData = { type: 'debug-helper', target: mesh.uuid };
+                    
+                    // Remove any existing debug helpers for this object
+                    if (sceneRef.current) {
+                      sceneRef.current.traverse((obj) => {
+                        if (obj.userData?.type === 'debug-helper' && 
+                            obj.userData?.target === mesh.uuid) {
+                          sceneRef.current?.remove(obj);
+                        }
+                      });
+                      
+                      // Add the new helper
+                      sceneRef.current.add(boxHelper);
+                      console.log(`Added debug hitbox visualization for ${mesh.userData.type}`);
+                    }
+                  } catch (err) {
+                    console.error("Error creating debug hitbox visualization:", err);
+                  }
+                }
               }
               
               console.log(`Made hovered ${mesh.userData.type} larger for better visibility`);

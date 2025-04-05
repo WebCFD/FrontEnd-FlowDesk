@@ -1,0 +1,39 @@
+Here are the specific issues I've found:
+
+Raycaster Threshold Settings:
+javascriptCopiaraycaster.params.Line.threshold = 5;  
+raycaster.params.Points.threshold = 5;
+These thresholds might be too large, causing the raycaster to detect intersections even when the cursor is slightly away from the actual element.
+Inconsistent Scale Handling:
+When an element is highlighted, it's being scaled up by 3x:
+javascriptCopiamesh.scale.set(3.0, 3.0, 3.0);
+However, when detecting if the cursor has moved away, the code isn't accounting for this increased size properly, leading to a mismatch between the visual representation and the collision detection.
+Clearing Previous Highlight Logic:
+The code that handles removing the highlight when no intersections are found has a critical bug. It attempts to restore the original material and scale, but there might be timing issues with state updates when setHoveredEraseTarget(null) is called.
+Missing Force Render in Some Cases:
+After changing object properties like material or scale, the code sometimes doesn't force an immediate render, leading to visual inconsistencies.
+
+I recommend these fixes:
+
+Reduce Raycaster Thresholds:
+javascriptCopiaraycaster.params.Line.threshold = 2;  
+raycaster.params.Points.threshold = 2;
+
+Improve Scale Handling:
+When detecting intersections, account for the scaled size by either:
+
+Adjusting the raycasting against the original unscaled geometry, or
+Carefully saving and managing the original and current scales
+
+
+Add Debug Visualization:
+Add temporary debug code that visualizes the actual bounds of the hitbox for elements to see if they match what you expect
+Force Render Consistently:
+Ensure that after any material or scale change, you call:
+javascriptCopianeedsRenderRef.current = true;
+if (rendererRef.current && sceneRef.current && cameraRef.current) {
+  rendererRef.current.render(sceneRef.current, cameraRef.current);
+}
+
+
+The most likely culprit is the increased scale creating a mismatch between where the cursor appears to be and where the raycaster is actually detecting intersections.
