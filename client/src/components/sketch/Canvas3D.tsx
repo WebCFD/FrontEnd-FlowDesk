@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { TrackballControls } from "three/addons/controls/TrackballControls.js";
 import { makeTextSprite } from "@/lib/three-utils";
@@ -416,6 +416,9 @@ export default function Canvas3D({
     object: THREE.Mesh;
     originalMaterial: THREE.Material | THREE.Material[];
   } | null>(null);
+  
+  // Track last mouse position for directional debugging
+  const lastMousePositionRef = useRef<{ x: number, y: number }>({ x: 0, y: 0 });
 
   // Create a ref to track the current isEraserMode value to ensure it's always up-to-date in event handlers
   const isEraserModeRef = useRef(isEraserMode);
@@ -2156,6 +2159,17 @@ export default function Canvas3D({
     };
 
     const handleMouseMove = (event: MouseEvent) => {
+      // Track mouse direction movement for debugging
+      const dx = event.clientX - lastMousePositionRef.current.x;
+      const dy = event.clientY - lastMousePositionRef.current.y;
+      const directionX = dx > 0 ? "RIGHT" : dx < 0 ? "LEFT" : "";
+      const directionY = dy > 0 ? "DOWN" : dy < 0 ? "UP" : "";
+      
+      console.log(`🖱️ MOUSE DIRECTION: ${directionX}${directionY} (dx=${dx.toFixed(1)}, dy=${dy.toFixed(1)})`);
+      
+      // Update the last position
+      lastMousePositionRef.current = { x: event.clientX, y: event.clientY };
+      
       // Update debug info for UI display
       const mouseCoords = getMouseCoordinates(event);
       
@@ -2364,10 +2378,10 @@ export default function Canvas3D({
             const originalLineThreshold = raycaster.params.Line.threshold;
             const originalPointsThreshold = raycaster.params.Points.threshold;
             
-            // Use significantly reduced thresholds for more precise detection
-            // Reduced from 5 to 2 to avoid detecting when cursor is slightly away from elements
-            raycaster.params.Line.threshold = 2;  
-            raycaster.params.Points.threshold = 2;
+            // CRITICAL DEBUG: Use very small thresholds for maximum precision
+            // This ensures we only detect elements when directly hovering over them
+            raycaster.params.Line.threshold = 0.5;  
+            raycaster.params.Points.threshold = 0.5;
             
             // Make sure we're using recursive flag = true to catch child objects too
             const meshIntersects = raycaster.intersectObjects(airEntryMeshes, true);
@@ -2391,6 +2405,17 @@ export default function Canvas3D({
             
             // Update debug info whether we have intersections or not
             const hasIntersections = meshIntersects.length > 0;
+            
+            // Add screen-space logging if we have a hoveredEraseTarget
+            if (hoveredEraseTarget && cameraRef.current) {
+              const screenPos = hoveredEraseTarget.object.position.clone().project(cameraRef.current);
+              const screenX = (screenPos.x + 1) / 2 * window.innerWidth;
+              const screenY = -(screenPos.y - 1) / 2 * window.innerHeight;
+              
+              console.log(`📌 Highlighted object screen position: (${screenX.toFixed(0)}, ${screenY.toFixed(0)})`);
+              console.log(`📌 Mouse position: (${event.clientX}, ${event.clientY})`);
+              console.log(`📌 Distance: ${Math.sqrt(Math.pow(screenX - event.clientX, 2) + Math.pow(screenY - event.clientY, 2)).toFixed(1)}px`);
+            }
             
             setDebugInfo(prev => ({
               ...prev,
@@ -2453,6 +2478,14 @@ export default function Canvas3D({
               
               // Clear the hover target - do this last after all other processing
               setHoveredEraseTarget(null);
+              
+              // Force explicit verification of state update with callback
+              setTimeout(() => {
+                console.log("🔍 Verifying hover target cleared:", hoveredEraseTarget ? "STILL PRESENT" : "Successfully cleared");
+                if (hoveredEraseTarget) {
+                  console.error("CRITICAL ERROR: Hover target not cleared after setState call");
+                }
+              }, 0);
             }
             
             if (hasIntersections) {
@@ -3698,6 +3731,96 @@ export default function Canvas3D({
       needsRenderRef.current = true;
     }
   }, [wallTransparency]);
+  
+  // Complete event system reset function for debugging hover issues
+  const resetHoveringCompletely = useCallback(() => {
+    console.log("🔄 COMPLETE EVENT SYSTEM RESET");
+    
+    // Remove all existing event listeners
+    const container = containerRef.current;
+    if (container) {
+      // Store a reference to the mouseHandlers
+      const mouseUpHandler = handleMouseUp;
+      const mouseMoveHandler = handleMouseMove;
+      const mouseDownHandler = mouseDownWrapper;
+      
+      // Remove existing event listeners
+      document.removeEventListener("mousemove", mouseMoveHandler);
+      document.removeEventListener("mouseup", mouseUpHandler);
+      document.removeEventListener("mousedown", mouseDownHandler);
+    }
+    
+    // Re-enable controls
+    if (controlsRef.current) {
+      controlsRef.current.enabled = true;
+      if (typeof controlsRef.current.update === 'function') {
+        controlsRef.current.update();
+      }
+    }
+    
+    // Clear hover target with proper cleanup
+    if (hoveredEraseTarget) {
+      try {
+        hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
+        if (hoveredEraseTarget.object.userData?.originalScale) {
+          hoveredEraseTarget.object.scale.copy(hoveredEraseTarget.object.userData.originalScale);
+          
+          if (hoveredEraseTarget.object.geometry) {
+            hoveredEraseTarget.object.geometry.computeBoundingSphere();
+            hoveredEraseTarget.object.geometry.computeBoundingBox();
+          }
+        }
+      } catch (err) {
+        console.error("Error during hover cleanup in reset:", err);
+      }
+    }
+    
+    // Clear all debug helpers
+    if (sceneRef.current) {
+      const helpersToRemove: THREE.Object3D[] = [];
+      sceneRef.current.traverse((obj) => {
+        if (obj.userData?.type === 'debug-helper') {
+          helpersToRemove.push(obj);
+        }
+      });
+      
+      helpersToRemove.forEach(helper => {
+        sceneRef.current?.remove(helper);
+      });
+    }
+    
+    // Force clear hover state
+    setHoveredEraseTarget(null);
+    
+    // Force a complete render
+    needsRenderRef.current = true;
+    if (rendererRef.current && sceneRef.current && cameraRef.current) {
+      rendererRef.current.render(sceneRef.current, cameraRef.current);
+    }
+    
+    // Reset cursor
+    if (containerRef.current) {
+      containerRef.current.style.cursor = isEraserMode ? 'not-allowed' : 'auto';
+    }
+    
+    // Reattach event listeners after a small delay
+    setTimeout(() => {
+      if (containerRef.current) {
+        document.addEventListener("mousemove", handleMouseMove);
+        document.addEventListener("mouseup", handleMouseUp);
+        document.addEventListener("mousedown", mouseDownWrapper);
+        console.log("✅ Event listeners reattached");
+      }
+    }, 50);
+    
+    console.log("✅ Complete event system reset finished");
+  }, [hoveredEraseTarget, isEraserMode, handleMouseMove, handleMouseUp, mouseDownWrapper]);
+  
+  // Add a useEffect to reset the system when entering/exiting eraser mode
+  useEffect(() => {
+    console.log("🔄 Eraser mode changed, performing complete system reset");
+    resetHoveringCompletely();
+  }, [isEraserMode, resetHoveringCompletely]);
 
   return (
     <>
