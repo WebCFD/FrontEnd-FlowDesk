@@ -1543,11 +1543,14 @@ export default function WizardDesign() {
         <SceneProvider>
           {mode === "step2" ? (
             <RoomSketchPro
-              key="step2-view"
+              key={`step2-view-${currentFloor}`} // Add the currentFloor to the key to force re-render on floor change
               instanceId="step2-view"
-              lines={lines}
-              airEntries={airEntries}
+              lines={floors[currentFloor]?.lines || lines} // Use the floor-specific lines directly
+              airEntries={floors[currentFloor]?.airEntries || airEntries} // Use the floor-specific air entries directly
               wallTransparency={wallTransparency}
+              roomHeight={ceilingHeight}
+              currentFloor={currentFloor} // Pass the current floor explicitly
+              floors={floors} // Pass the entire floors object directly
               onWallTransparencyChange={(value) => {
                 console.log("Wizard: Wall transparency changing to:", value);
                 setWallTransparency(value);
