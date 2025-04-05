@@ -426,29 +426,45 @@ export default function Canvas3D({
     console.log("📌 isEraserModeRef updated to:", isEraserModeRef.current);
     
     // When turning off eraser mode, clean up any highlighted elements
-    if (!isEraserMode && hoveredEraseTarget) {
-      console.log("🔄 Eraser mode turned off - cleaning up highlighted elements");
+    if (!isEraserMode) {
+      console.log("🔄 Eraser mode turned off - performing comprehensive cleanup");
       
-      // Restore original material 
-      hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
-      
-      // Restore original scale if applicable
-      if (hoveredEraseTarget.object.userData?.originalScale) {
-        hoveredEraseTarget.object.scale.copy(hoveredEraseTarget.object.userData.originalScale);
+      // Clean up highlighted element if it exists
+      if (hoveredEraseTarget) {
+        console.log("  - Restoring original material for highlighted element");
         
-        // Force update to the geometry
-        if (hoveredEraseTarget.object.geometry) {
-          hoveredEraseTarget.object.geometry.computeBoundingSphere();
-          hoveredEraseTarget.object.geometry.computeBoundingBox();
+        // Restore original material 
+        hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
+        
+        // Restore original scale if applicable
+        if (hoveredEraseTarget.object.userData?.originalScale) {
+          hoveredEraseTarget.object.scale.copy(hoveredEraseTarget.object.userData.originalScale);
+          
+          // Force update to the geometry
+          if (hoveredEraseTarget.object.geometry) {
+            hoveredEraseTarget.object.geometry.computeBoundingSphere();
+            hoveredEraseTarget.object.geometry.computeBoundingBox();
+          }
+          console.log("  - Restored original scale for highlighted element");
         }
+        
+        // Clear the hover target
+        setHoveredEraseTarget(null);
       }
       
-      // Clear the hover target
-      setHoveredEraseTarget(null);
+      // IMPORTANT: Always do these cleanup steps regardless of whether we had a hovered target
+      // This ensures the system resets properly if eraser mode is turned off
       
       // Re-enable controls when exiting eraser mode
       if (controlsRef.current) {
+        console.log("  - Re-enabling TrackballControls for camera movement");
         controlsRef.current.enabled = true;
+      }
+      
+      // Reset cursor on container if it exists
+      if (containerRef.current) {
+        containerRef.current.style.cursor = 'auto';
+        console.log("  - Resetting cursor style to default");
       }
       
       // Force render to update the appearance
@@ -2235,28 +2251,63 @@ export default function Canvas3D({
             ) {
               // We won't automatically enlarge all objects now - we'll only enlarge them
               // when they're actually under the mouse cursor
-              // Store the original object without modifying it
               airEntryMeshes.push(object as THREE.Mesh);
             }
           });
           
           console.log(`Found ${airEntryMeshes.length} potential air entries for eraser hover detection`);
           
+          // Detect when no air entries are available
+          if (airEntryMeshes.length === 0 && hoveredEraseTarget) {
+            console.log("⚠️ No air entries found in scene but we have a hovered target - cleaning up");
+            
+            // Restore original material
+            hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
+            
+            // Restore original scale if applicable
+            if (hoveredEraseTarget.object.userData?.originalScale) {
+              hoveredEraseTarget.object.scale.copy(hoveredEraseTarget.object.userData.originalScale);
+              
+              // Force update to the geometry
+              if (hoveredEraseTarget.object.geometry) {
+                hoveredEraseTarget.object.geometry.computeBoundingSphere();
+                hoveredEraseTarget.object.geometry.computeBoundingBox();
+              }
+            }
+            
+            // Clear the hover target
+            setHoveredEraseTarget(null);
+            
+            // Re-enable controls
+            if (controlsRef.current) {
+              console.log("🎮 Re-enabling TrackballControls after scene reset");
+              controlsRef.current.enabled = true;
+            }
+            
+            needsRenderRef.current = true;
+          }
+          
           // Set up raycaster
           if (cameraRef.current) {
             const raycaster = new THREE.Raycaster();
             raycaster.setFromCamera(mouseCoords, cameraRef.current);
             
-            // Increase raycaster precision for air entries (larger threshold for better detection)
-            const originalThreshold = raycaster.params.Line.threshold;
-            raycaster.params.Line.threshold = 10;  // Increase line threshold for better detection
-            raycaster.params.Points.threshold = 10; // Increase point threshold for better detection
+            // IMPORTANT: We want to be precise when detecting intersections in eraser mode
+            // Use smaller thresholds to ensure we only highlight when directly over elements
+            // This prevents false positives that can prevent proper "mouse moved away" detection
+            const originalLineThreshold = raycaster.params.Line.threshold;
+            const originalPointsThreshold = raycaster.params.Points.threshold;
+            
+            // Use appropriate thresholds - not too large to avoid false positives
+            raycaster.params.Line.threshold = 5;  
+            raycaster.params.Points.threshold = 5;
             
             // Make sure we're using recursive flag = true to catch child objects too
             const meshIntersects = raycaster.intersectObjects(airEntryMeshes, true);
             
-            // Restore original threshold when we're done
-            raycaster.params.Line.threshold = originalThreshold;
+            // Restore original thresholds when we're done
+            raycaster.params.Line.threshold = originalLineThreshold;
+            raycaster.params.Points.threshold = originalPointsThreshold;
             
             // Enhanced debugging for air entry intersections
             console.log(`Found ${meshIntersects.length} intersections with air entries`);
@@ -2286,47 +2337,14 @@ export default function Canvas3D({
             if (!hasIntersections && hoveredEraseTarget) {
               console.log("🔄 Clearing previous highlight - no intersection found");
               
-              // Restore original material 
-              hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
-              
-              // Restore original scale if applicable
-              if (hoveredEraseTarget.object.userData?.originalScale) {
-                hoveredEraseTarget.object.scale.copy(hoveredEraseTarget.object.userData.originalScale);
-                
-                // Force update to the geometry
-                if (hoveredEraseTarget.object.geometry) {
-                  hoveredEraseTarget.object.geometry.computeBoundingSphere();
-                  hoveredEraseTarget.object.geometry.computeBoundingBox();
+              try {
+                // Restore original material if it exists
+                if (hoveredEraseTarget.originalMaterial) {
+                  hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
+                  console.log("  - Restored original material for element");
+                } else {
+                  console.log("⚠️ No original material found for object, can't restore");
                 }
-              }
-              
-              // Clear the hover target
-              setHoveredEraseTarget(null);
-              
-              // Re-enable controls when not hovering
-              if (controlsRef.current) {
-                console.log("🎮 Re-enabling TrackballControls after mouse moved away from element");
-                controlsRef.current.enabled = true;
-              }
-              
-              // Also, visually reset the cursor 
-              const canvas = containerRef.current?.querySelector('canvas');
-              if (canvas) {
-                canvas.style.cursor = 'auto';
-              }
-              
-              needsRenderRef.current = true;
-            }
-            
-            if (hasIntersections) {
-              console.log("Intersection found! Highlighting element");
-              const mesh = meshIntersects[0].object as THREE.Mesh;
-              console.log("Mesh data for eraser hover:", mesh.userData);
-              
-              // If we're already hovering over a different object, restore it first
-              if (hoveredEraseTarget && hoveredEraseTarget.object !== mesh) {
-                // Restore original material
-                hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
                 
                 // Restore original scale if applicable
                 if (hoveredEraseTarget.object.userData?.originalScale) {
@@ -2337,8 +2355,62 @@ export default function Canvas3D({
                     hoveredEraseTarget.object.geometry.computeBoundingSphere();
                     hoveredEraseTarget.object.geometry.computeBoundingBox();
                   }
+                  console.log("  - Restored original scale for element");
+                }
+                
+                // Re-enable controls when not hovering
+                if (controlsRef.current) {
+                  console.log("🎮 Re-enabling TrackballControls after cursor moved away from element");
+                  controlsRef.current.enabled = true;
+                }
+                
+                // Reset cursor to eraser mode cursor (not auto, since we're still in eraser mode)
+                if (containerRef.current) {
+                  containerRef.current.style.cursor = 'not-allowed'; // Keep eraser cursor
+                  console.log("  - Reset cursor to eraser mode style");
+                }
+                
+                needsRenderRef.current = true;
+              } catch (err) {
+                console.error("Error while clearing previous highlight:", err);
+              }
+              
+              // Clear the hover target - do this last after all other processing
+              setHoveredEraseTarget(null);
+            }
+            
+            if (hasIntersections) {
+              console.log("Intersection found! Highlighting element");
+              const mesh = meshIntersects[0].object as THREE.Mesh;
+              console.log("Mesh data for eraser hover:", mesh.userData);
+              
+              // If we're already hovering over a different object, restore it first
+              if (hoveredEraseTarget && hoveredEraseTarget.object !== mesh) {
+                console.log("🔄 Switching hover target to new element");
+                
+                try {
+                  // Restore original material if it exists
+                  if (hoveredEraseTarget.originalMaterial) {
+                    hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
+                    console.log("  - Restored original material for previous element");
+                  } else {
+                    console.log("⚠️ No original material found for previous object");
+                  }
                   
-                  console.log(`Restored scale for previously hovered ${hoveredEraseTarget.object.userData.type}`);
+                  // Restore original scale if applicable
+                  if (hoveredEraseTarget.object.userData?.originalScale) {
+                    hoveredEraseTarget.object.scale.copy(hoveredEraseTarget.object.userData.originalScale);
+                    
+                    // Force update to the geometry
+                    if (hoveredEraseTarget.object.geometry) {
+                      hoveredEraseTarget.object.geometry.computeBoundingSphere();
+                      hoveredEraseTarget.object.geometry.computeBoundingBox();
+                    }
+                    
+                    console.log(`  - Restored scale for previously hovered ${hoveredEraseTarget.object.userData.type}`);
+                  }
+                } catch (err) {
+                  console.error("Error while cleaning up previous hover target:", err);
                 }
               }
               
