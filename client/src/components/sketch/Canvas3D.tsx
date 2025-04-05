@@ -1431,24 +1431,30 @@ export default function Canvas3D({
       }
         // Render the scene if needed
         if (
-          needsRenderRef.current &&
           rendererRef.current &&
           sceneRef.current &&
-          cameraRef.current
+          cameraRef.current &&
+          (needsRenderRef.current || isEraserMode) // Force render every frame in eraser mode
         ) {
-          // Always render during drag operations for smooth feedback
+          // Always render during drag operations or eraser mode for smooth feedback
           const isDraggingNow = dragStateRef.current.isDragging;
-
+          
+          // Log rendering reason
           if (isDraggingNow) {
             console.log("Rendering during drag operation");
+          } else if (isEraserMode) {
+            console.log("Force rendering in eraser mode for hover detection");
           }
 
+          // Always render the scene
           rendererRef.current.render(sceneRef.current, cameraRef.current);
 
-          // Only reset the needs render flag if we're not dragging
-          // During dragging we want to render every frame
-          if (!isDraggingNow) {
+          // Only reset the needs render flag if we're not in a state that requires continuous rendering
+          if (!isDraggingNow && !isEraserMode) {
             needsRenderRef.current = false;
+          } else {
+            // Make sure we keep rendering on the next frame
+            needsRenderRef.current = true;
           }
         }
     };
@@ -2034,6 +2040,10 @@ export default function Canvas3D({
     const handleMouseMove = (event: MouseEvent) => {
       // Update debug info for UI display
       const mouseCoords = getMouseCoordinates(event);
+      
+      // Add more detailed debug logging
+      console.log(`🔍 MOUSE MOVE: coords=${mouseCoords.x.toFixed(2)},${mouseCoords.y.toFixed(2)}, isEraserMode=${isEraserMode}`);
+      
       setDebugInfo(prev => ({
         ...prev,
         mousePosition: `${event.clientX}, ${event.clientY} | Normalized: ${mouseCoords.x.toFixed(2)}, ${mouseCoords.y.toFixed(2)}`,
@@ -2271,18 +2281,23 @@ export default function Canvas3D({
               // Store original material and apply highlight material
               const originalMaterial = mesh.material;
               
-              // Create new highlight material (bright red, fully visible)
-              // Use MeshPhongMaterial instead of MeshBasicMaterial to support emissive property
-              const highlightMaterial = new THREE.MeshPhongMaterial({
-                color: 0xff3333,  // Brighter red
-                opacity: 1.0,     // Fully opaque for better visibility
+              // Create new highlight material (uses a combination of techniques for maximum visibility)
+              // 1. Create a bright MeshBasicMaterial to ensure visibility regardless of lighting
+              const highlightMaterial = new THREE.MeshBasicMaterial({
+                color: 0xff0000,    // Bright red
+                wireframe: false,   // Solid material as base
                 transparent: true,
+                opacity: 0.9,       // Slightly transparent
                 side: THREE.DoubleSide,
-                wireframe: false,
-                emissive: 0xff0000, // Add emissive property for glow effect
-                emissiveIntensity: 1.0,
-                shininess: 100    // Make it shiny for better visibility
+                depthTest: false,   // Ignore depth test - show through walls
+                depthWrite: false   // Don't write to depth buffer
               });
+              
+              console.log("🎨 Created highlight material:", highlightMaterial);
+              
+              // Add extra logging to ensure the material is correctly applied
+              console.log("👁️ Current visibility of mesh:", mesh.visible);
+              mesh.visible = true; // Force visibility
               
               // Apply highlight material
               mesh.material = highlightMaterial;
@@ -2310,9 +2325,49 @@ export default function Canvas3D({
                 originalMaterial: originalMaterial
               });
               
-              // Disable controls when hovering over an erasable element
+              // CRITICAL: Disable controls when hovering over an erasable element
               if (controlsRef.current) {
-                controlsRef.current.enabled = false;
+                // First, completely dispose of existing controls
+                const oldControls = controlsRef.current;
+                const cameraPos = oldControls.object.position.clone();
+                const targetPos = oldControls.target.clone();
+                
+                // Log control state before disabling
+                console.log("📊 TrackballControls state before disabling:", {
+                  enabled: oldControls.enabled,
+                  position: cameraPos,
+                  target: targetPos
+                });
+                
+                // Dispose of controls to release event listeners
+                oldControls.dispose();
+                
+                // Create new disabled controls
+                if (cameraRef.current && containerRef.current) {
+                  const canvas = containerRef.current.querySelector('canvas');
+                  if (canvas) {
+                    const newControls = new TrackballControls(cameraRef.current, canvas);
+                    
+                    // Configure the new controls
+                    newControls.rotateSpeed = 2.0;
+                    newControls.zoomSpeed = 1.2;
+                    newControls.panSpeed = 0.8;
+                    newControls.staticMoving = true;
+                    newControls.dynamicDampingFactor = 0.2;
+                    
+                    // Restore camera position and target
+                    newControls.object.position.copy(cameraPos);
+                    newControls.target.copy(targetPos);
+                    
+                    // Important: Disable the controls
+                    newControls.enabled = false;
+                    
+                    // Replace the reference
+                    controlsRef.current = newControls;
+                    
+                    console.log("🎮 Created new disabled TrackballControls");
+                  }
+                }
               }
               
               // Force render to update the appearance
