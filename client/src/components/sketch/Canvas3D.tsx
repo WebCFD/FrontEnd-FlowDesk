@@ -2455,9 +2455,28 @@ export default function Canvas3D({
           }
 
           if (foundIndex !== -1) {
+            // Get the base entry from floor data
+            const baseEntry = floorData.airEntries[foundIndex];
+            
+            // Check if we have updated dimensions for this entry in our ref
+            const normalizedFloorName = normalizeFloorName(currentFloor);
+            const updatedData = updatedAirEntryPositionsRef.current[normalizedFloorName]?.[foundIndex];
+            
+            // Create a merged entry with the latest dimensions
+            const mergedEntry = {
+              ...baseEntry,
+              dimensions: updatedData?.dimensions || baseEntry.dimensions
+            };
+            
+            console.log("Opening air entry dialog with data:", {
+              baseEntry,
+              updatedData,
+              mergedEntry
+            });
+            
             setEditingAirEntry({
               index: foundIndex,
-              entry: floorData.airEntries[foundIndex],
+              entry: mergedEntry,
             });
           }
         }
