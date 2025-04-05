@@ -370,6 +370,18 @@ export default function Canvas3D({
   onUpdateAirEntry,
   onDeleteAirEntry,
 }: Canvas3DProps) {
+  // Debug state for UI display
+  const [debugInfo, setDebugInfo] = useState<{
+    mousePosition: string;
+    eraserMode: boolean;
+    hovering: boolean;
+    lastIntersection: string;
+  }>({
+    mousePosition: "No data",
+    eraserMode: false,
+    hovering: false,
+    lastIntersection: "None",
+  });
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
@@ -2020,9 +2032,16 @@ export default function Canvas3D({
     };
 
     const handleMouseMove = (event: MouseEvent) => {
+      // Update debug info for UI display
+      const mouseCoords = getMouseCoordinates(event);
+      setDebugInfo(prev => ({
+        ...prev,
+        mousePosition: `${event.clientX}, ${event.clientY} | Normalized: ${mouseCoords.x.toFixed(2)}, ${mouseCoords.y.toFixed(2)}`,
+        eraserMode: isEraserMode
+      }));
+      
       // Handle measurement preview if in measuring mode and we have a start point
       if (isMeasuring && measureStartPoint) {
-        const mouseCoords = getMouseCoordinates(event);
         const intersectionPoint = getRaycastPoint(mouseCoords);
 
         if (intersectionPoint) {
@@ -2176,6 +2195,15 @@ export default function Canvas3D({
             // Check for intersections with air entry meshes
             const meshIntersects = raycaster.intersectObjects(airEntryMeshes, false);
             console.log(`Found ${meshIntersects.length} intersections with air entries`);
+            
+            // Update debug info whether we have intersections or not
+            setDebugInfo(prev => ({
+              ...prev,
+              hovering: meshIntersects.length > 0,
+              lastIntersection: meshIntersects.length > 0 
+                ? `${meshIntersects[0].object.userData.type} at ${Math.round(meshIntersects[0].distance)}` 
+                : 'None'
+            }));
             
             if (meshIntersects.length > 0) {
               console.log("Intersection found! Highlighting element");
@@ -2562,6 +2590,10 @@ export default function Canvas3D({
       }
       
       console.log("🔴 Eraser click detected in Canvas3D");
+      setDebugInfo(prev => ({
+        ...prev,
+        lastIntersection: "Processing eraser click..."
+      }));
       
       // Log available air entries in the current floor
       const floorData = floors[currentFloor];
@@ -2582,6 +2614,10 @@ export default function Canvas3D({
         const airEntryData = mesh.userData;
         
         console.log("✅ Using highlighted air entry for deletion:", airEntryData);
+        setDebugInfo(prev => ({
+          ...prev,
+          lastIntersection: `Deleting ${airEntryData.type} at entry index ${airEntryData.entryIndex}`
+        }));
         
         console.log("Air entry selected for deletion:", airEntryData);
         
@@ -2805,8 +2841,8 @@ export default function Canvas3D({
       }
 
       // Remove global event listeners
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("mousemove", mouseMoveHandler);
+      document.removeEventListener("mouseup", mouseUpHandler);
     };
   }, []);
 
@@ -3285,7 +3321,32 @@ export default function Canvas3D({
 
   return (
     <>
-      <div ref={containerRef} className="w-full h-full" />
+      <div ref={containerRef} className="w-full h-full relative">
+        {/* Debug overlay */}
+        <div 
+          style={{
+            position: 'absolute',
+            top: 10,
+            left: 10,
+            background: 'rgba(0,0,0,0.5)',
+            color: 'white',
+            padding: 10,
+            borderRadius: 5,
+            fontSize: 14,
+            zIndex: 1000,
+            pointerEvents: 'none', // Don't interfere with mouse events
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 4
+          }}
+        >
+          <div><strong>DEBUG INFO</strong></div>
+          <div>Mouse: {debugInfo.mousePosition}</div>
+          <div>Eraser Mode: {debugInfo.eraserMode ? 'Active' : 'Inactive'}</div>
+          <div>Hovering: {debugInfo.hovering ? 'YES' : 'no'}</div>
+          <div>Last Intersection: {debugInfo.lastIntersection}</div>
+        </div>
+      </div>
 
       {/* Dialog for editing air entries */}
       {editingAirEntry && (
