@@ -2203,23 +2203,9 @@ export default function Canvas3D({
               object.userData.type &&
               ["window", "door", "vent"].includes(object.userData.type)
             ) {
-              // Temporarily increase the scale of the object for better detection
-              // Store original scale if we haven't already
-              if (!object.userData.originalScale) {
-                object.userData.originalScale = object.scale.clone();
-                
-                // Make the object temporarily larger for raycasting (2x size)
-                object.scale.set(2.0, 2.0, 2.0);
-                
-                // Force an update to the object's geometry to ensure raycasting works correctly
-                if (object.geometry) {
-                  object.geometry.computeBoundingSphere();
-                  object.geometry.computeBoundingBox();
-                }
-                
-                console.log(`Enlarged ${object.userData.type} for better hover detection`);
-              }
-              
+              // We won't automatically enlarge all objects now - we'll only enlarge them
+              // when they're actually under the mouse cursor
+              // Store the original object without modifying it
               airEntryMeshes.push(object as THREE.Mesh);
             }
           });
@@ -2265,6 +2251,35 @@ export default function Canvas3D({
                 ? `${meshIntersects[0].object.userData.type} (entry ${meshIntersects[0].object.userData.entryIndex}) at ${Math.round(meshIntersects[0].distance)}` 
                 : 'None'
             }));
+            
+            // If there are no intersections and we have a previously hovered target, reset it
+            if (!hasIntersections && hoveredEraseTarget) {
+              console.log("🔄 Clearing previous highlight - no intersection found");
+              
+              // Restore original material 
+              hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
+              
+              // Restore original scale if applicable
+              if (hoveredEraseTarget.object.userData?.originalScale) {
+                hoveredEraseTarget.object.scale.copy(hoveredEraseTarget.object.userData.originalScale);
+                
+                // Force update to the geometry
+                if (hoveredEraseTarget.object.geometry) {
+                  hoveredEraseTarget.object.geometry.computeBoundingSphere();
+                  hoveredEraseTarget.object.geometry.computeBoundingBox();
+                }
+              }
+              
+              // Clear the hover target
+              setHoveredEraseTarget(null);
+              
+              // Re-enable controls when not hovering
+              if (controlsRef.current) {
+                controlsRef.current.enabled = true;
+              }
+              
+              needsRenderRef.current = true;
+            }
             
             if (hasIntersections) {
               console.log("Intersection found! Highlighting element");
@@ -2314,22 +2329,22 @@ export default function Canvas3D({
               // Apply highlight material
               mesh.material = highlightMaterial;
               
-              // Make the hovered mesh even larger for better visibility
-              if (mesh.userData.originalScale) {
-                // Store the current "enlarged" scale (from eraser mode scale increase)
-                const currentScale = mesh.scale.clone();
-                
-                // Make it 3x the original size when hovered (super visible)
-                mesh.scale.set(3.0, 3.0, 3.0);
-                
-                // Force update to the geometry
-                if (mesh.geometry) {
-                  mesh.geometry.computeBoundingSphere();
-                  mesh.geometry.computeBoundingBox();
-                }
-                
-                console.log(`Made hovered ${mesh.userData.type} even larger for better visibility`);
+              // Store original scale if not already stored
+              if (!mesh.userData.originalScale) {
+                mesh.userData.originalScale = mesh.scale.clone();
               }
+              
+              // Make the hovered mesh larger for better visibility
+              // Make it 3x the original size when hovered (super visible)
+              mesh.scale.set(3.0, 3.0, 3.0);
+              
+              // Force update to the geometry
+              if (mesh.geometry) {
+                mesh.geometry.computeBoundingSphere();
+                mesh.geometry.computeBoundingBox();
+              }
+              
+              console.log(`Made hovered ${mesh.userData.type} larger for better visibility`);
               
               // Store the highlighted object and its original material
               setHoveredEraseTarget({
