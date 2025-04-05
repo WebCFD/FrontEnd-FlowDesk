@@ -1344,11 +1344,14 @@ export default function Canvas3D({
   
   // Connect the handleViewChange function to the onViewChange prop
   useEffect(() => {
-    if (onViewChange) {
+    if (onViewChange && typeof onViewChange === 'function') {
       // Pass our local handleViewChange function to the parent component
-      // This enables the parent to call it when a view change is requested
-      onViewChange(handleViewChange);
-      console.log("View change handler connected to parent component");
+      try {
+        onViewChange(handleViewChange);
+        console.log("View change handler connected to parent component");
+      } catch (err) {
+        console.error("Error connecting view change handler:", err);
+      }
     }
   }, [onViewChange, handleViewChange]);
 
