@@ -49,11 +49,11 @@ interface RoomSketchProProps {
 const DEFAULTS = {
   ROOM_HEIGHT: 210,
   PIXELS_TO_CM: 25 / 20,
-  GRID_SIZE: 1000,
-  GRID_DIVISIONS: 40,
+  GRID_SIZE: 1000, // Match Canvas3D grid size
+  GRID_DIVISIONS: 40, // Match Canvas3D grid divisions
   BACKGROUND_COLOR: 0xf8fafc,
   WALL_COLOR: 0x3b82f6,
-  FLOOR_COLOR: 0x808080,
+  FLOOR_COLOR: 0x808080, // Original floor color
   ROOF_COLOR: 0xe0e0e0,
 };
 
@@ -258,10 +258,10 @@ export function RoomSketchPro({
     dirLight.castShadow = true;
     scene.add(dirLight);
 
-    // Add floor plane (in XY plane)
-    const floorGeometry = new THREE.PlaneGeometry(500, 500);
+    // Add floor plane (in XY plane) - match Canvas3D size (1000x1000)
+    const floorGeometry = new THREE.PlaneGeometry(1000, 1000);
     const floorMaterial = new THREE.MeshStandardMaterial({
-      color: 0xcccccc,
+      color: 0xcccccc, // Keep original color
       side: THREE.DoubleSide,
       transparent: true,
       opacity: 0.5,
