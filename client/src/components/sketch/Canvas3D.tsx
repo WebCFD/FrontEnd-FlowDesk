@@ -78,6 +78,8 @@ interface Canvas3DProps {
   wallTransparency: number;
   isMeasureMode?: boolean;
   isEraserMode?: boolean;
+  simulationName?: string;
+  simulationType?: string;
   onUpdateAirEntry?: (
     floorName: string,
     index: number,
@@ -369,6 +371,8 @@ export default function Canvas3D({
   wallTransparency = 0.7,
   isMeasureMode = false,
   isEraserMode, // Removed default value to ensure external state is always respected
+  simulationName = "",
+  simulationType = "Comfort Simulation (steady run)",
   onUpdateAirEntry,
   onDeleteAirEntry,
   onViewChange,
@@ -3997,30 +4001,137 @@ export default function Canvas3D({
 
   return (
     <>
-      <div ref={containerRef} className="w-full h-full relative">
-        {/* Debug overlay */}
-        <div 
-          style={{
-            position: 'absolute',
-            top: 10,
-            left: 10,
-            background: 'rgba(0,0,0,0.5)',
-            color: 'white',
-            padding: 10,
-            borderRadius: 5,
-            fontSize: 14,
-            zIndex: 1000,
-            pointerEvents: 'none', // Don't interfere with mouse events
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 4
-          }}
-        >
-          <div><strong>DEBUG INFO</strong></div>
-          <div>Mouse: {debugInfo.mousePosition}</div>
-          <div>Eraser Mode: {debugInfo.eraserMode ? 'Active' : 'Inactive'}</div>
-          <div>Hovering: {debugInfo.hovering ? 'YES' : 'no'}</div>
-          <div>Last Intersection: {debugInfo.lastIntersection}</div>
+      <div className="flex flex-col h-full">
+        {/* Top section with simulation info - matching Step 1 layout */}
+        <div className="p-4 pb-2 border-b">
+          <div className="max-w-xl space-y-4">
+            <div>
+              <h3 className="text-sm font-medium mb-1">Simulation name</h3>
+              <div className="text-base border rounded px-3 py-1 bg-gray-50">
+                {simulationName || "Untitled Simulation"}
+              </div>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium mb-1">Simulation type</h3>
+              <div className="text-base border rounded px-3 py-1 bg-gray-50">
+                {simulationType}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 3D Canvas section - now with same dimensions as Step 1 */}
+        <div className="flex flex-1">
+          {/* Left sidebar for tool options - matching Step 1 sidebar layout */}
+          <div className="w-72 border-r p-4 space-y-6">
+            <div>
+              <h3 className="font-semibold text-lg mb-4">View Controls</h3>
+              <div className="space-y-4">
+                <div>
+                  <h4 className="text-sm font-medium mb-2">Wall Transparency</h4>
+                  <div className="flex items-center">
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.01"
+                      value={wallTransparency}
+                      onChange={(e) => console.log("Wall transparency slider moved in Canvas3D")}
+                      className="flex-1"
+                      disabled
+                    />
+                    <span className="text-xs text-gray-500 ml-2">{Math.round(wallTransparency * 100)}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h3 className="font-semibold text-lg mb-4">Furniture</h3>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="border rounded text-center p-2 opacity-60 cursor-not-allowed">
+                  <div className="flex justify-center mb-1">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <rect x="4" y="14" width="16" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                      <rect x="6" y="10" width="12" height="4" stroke="currentColor" strokeWidth="1.5" />
+                    </svg>
+                  </div>
+                  <div className="text-xs">Table</div>
+                </div>
+                <div className="border rounded text-center p-2 opacity-60 cursor-not-allowed">
+                  <div className="flex justify-center mb-1">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="9" r="3" stroke="currentColor" strokeWidth="1.5" />
+                      <path d="M16 18C16 15.7909 14.2091 14 12 14C9.79086 14 8 15.7909 8 18" stroke="currentColor" strokeWidth="1.5" />
+                    </svg>
+                  </div>
+                  <div className="text-xs">Person</div>
+                </div>
+                <div className="border rounded text-center p-2 opacity-60 cursor-not-allowed">
+                  <div className="flex justify-center mb-1">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <rect x="4" y="12" width="16" height="8" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                      <path d="M6 12V10C6 8.89543 6.89543 8 8 8H16C17.1046 8 18 8.89543 18 10V12" stroke="currentColor" strokeWidth="1.5" />
+                    </svg>
+                  </div>
+                  <div className="text-xs">Armchair</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Files section - identical to Step 1 */}
+            <div>
+              <h3 className="font-semibold text-lg mb-4">Files</h3>
+              <div className="space-y-2">
+                <button className="w-full flex items-center gap-2 px-3 py-2 text-sm border rounded hover:bg-gray-50 opacity-60 cursor-not-allowed" disabled>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                    <polyline points="17 21 17 13 7 13 7 21" />
+                    <polyline points="7 3 7 8 15 8" />
+                  </svg>
+                  Save Design
+                </button>
+                <button className="w-full flex items-center gap-2 px-3 py-2 text-sm border rounded hover:bg-gray-50 opacity-60 cursor-not-allowed" disabled>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                  </svg>
+                  Load Design
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Main canvas container */}
+          <div className="flex-1 relative">
+            <div ref={containerRef} className="w-full h-full relative">
+              {/* Debug overlay */}
+              <div 
+                style={{
+                  position: 'absolute',
+                  top: 10,
+                  left: 10,
+                  background: 'rgba(0,0,0,0.5)',
+                  color: 'white',
+                  padding: 10,
+                  borderRadius: 5,
+                  fontSize: 14,
+                  zIndex: 1000,
+                  pointerEvents: 'none', // Don't interfere with mouse events
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 4
+                }}
+              >
+                <div><strong>DEBUG INFO</strong></div>
+                <div>Mouse: {debugInfo.mousePosition}</div>
+                <div>Eraser Mode: {debugInfo.eraserMode ? 'Active' : 'Inactive'}</div>
+                <div>Hovering: {debugInfo.hovering ? 'YES' : 'no'}</div>
+                <div>Last Intersection: {debugInfo.lastIntersection}</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
