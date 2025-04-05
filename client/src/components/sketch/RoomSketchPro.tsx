@@ -293,7 +293,7 @@ export function RoomSketchPro({
     dirLight.castShadow = true;
     scene.add(dirLight);
 
-    // Add floor plane (in XY plane) - use floor size from context if available, otherwise use default (1000x1000)
+    // Add floor plane for reference grid - use floor size from context if available, otherwise use default (1000x1000)
     const floorSize = geometryData?.floorSize || 1000;
     const floorGeometry = new THREE.PlaneGeometry(floorSize, floorSize);
     const floorMaterial = new THREE.MeshStandardMaterial({
@@ -307,6 +307,25 @@ export function RoomSketchPro({
     floor.receiveShadow = true;
     scene.add(floor);
     floorRef.current = floor;
+
+    // Create grid helper - matches Canvas3D's grid
+    const gridSize = 1000;
+    const divisions = 50;
+    const gridHelper = new THREE.GridHelper(gridSize, divisions, 0x888888, 0xcccccc);
+    gridHelper.rotation.x = Math.PI / 2; // Rotate to match our coordinate system (XY plane)
+    scene.add(gridHelper);
+    
+    // Use both props and context to get a complete list of floors
+    const floorsFromProps = floors ? Object.keys(floors) : [];
+    const floorsFromContext = geometryData?.floors ? Object.keys(geometryData.floors) : [];
+    const allFloors = [...new Set([...floorsFromProps, ...floorsFromContext])];
+    
+    console.log("RoomSketchPro - Setting up multifloor visualization for floors:", allFloors);
+    
+    // Add floor planes for each floor level (will be properly positioned in createMultiFloor)
+    if (allFloors.length > 1) {
+      console.log("RoomSketchPro - Setting up multifloor visualization");
+    }
 
     return scene;
   };
@@ -530,6 +549,372 @@ export function RoomSketchPro({
     };
   }, [width, height, geometryData?.floors, currentFloor, floors, roomHeight]);
   
+  // Function to create multifloor visualization
+  const createMultiFloorVisualization = (scene: THREE.Scene, renderer: THREE.WebGLRenderer, camera: THREE.PerspectiveCamera) => {
+    console.log("RoomSketchPro - Creating multifloor visualization");
+    
+    // Get the full list of floors from both props and context
+    const floorsFromProps = floors ? Object.keys(floors) : [];
+    const floorsFromContext = geometryData?.floors ? Object.keys(geometryData.floors) : [];
+    const allFloorNames = [...new Set([...floorsFromProps, ...floorsFromContext])].sort();
+    
+    if (allFloorNames.length <= 1) {
+      console.log("RoomSketchPro - Only one floor, skipping multifloor visualization");
+      return;
+    }
+    
+    console.log("RoomSketchPro - Visualizing multiple floors:", allFloorNames);
+    
+    // Constants for floor rendering
+    const FLOOR_HEIGHT = DEFAULTS.ROOM_HEIGHT; // Height between floors 
+    const FLOOR_THICKNESS = 20; // Thickness of the floor/ceiling
+    
+    // Create materials
+    const floorMaterial = new THREE.MeshStandardMaterial({
+      color: 0x888888,
+      transparent: true,
+      opacity: 0.8,
+      roughness: 0.7,
+      metalness: 0.2,
+      side: THREE.DoubleSide
+    });
+    
+    // Create group to hold all floors
+    const multiFloorGroup = new THREE.Group();
+    multiFloorGroup.name = "multiFloorGroup";
+    
+    // Track created floors for stair connections
+    const floorGroups: Record<string, THREE.Group> = {};
+    
+    // Function to create a floor section from floors data
+    const createFloorFromData = (floorName: string, zPosition: number) => {
+      console.log(`RoomSketchPro - Creating floor ${floorName} at z=${zPosition}`);
+      
+      // Create a group for this floor
+      const floorGroup = new THREE.Group();
+      floorGroup.name = `floor_${floorName}`;
+      floorGroup.position.z = zPosition;
+      
+      // Get floor data from either props or context
+      const floorData = (floors && floors[floorName]) || 
+                        (geometryData?.floors && geometryData.floors[floorName]);
+      
+      if (!floorData) {
+        console.warn(`RoomSketchPro - No data for floor ${floorName}`);
+        return floorGroup;
+      }
+      
+      // Extract floor lines
+      const floorLines = floorData.lines || [];
+      
+      if (floorLines.length === 0) {
+        console.warn(`RoomSketchPro - No walls for floor ${floorName}`);
+        return floorGroup;
+      }
+      
+      // Add walls for this floor
+      floorLines.forEach((line, lineIndex) => {
+        const start_bottom = transform2DTo3D(line.start, 0); // Start at 0 relative to floor position
+        const end_bottom = transform2DTo3D(line.end, 0);
+        const start_top = transform2DTo3D(line.start, FLOOR_HEIGHT);
+        const end_top = transform2DTo3D(line.end, FLOOR_HEIGHT);
+  
+        const vertices = new Float32Array([
+          start_bottom.x, start_bottom.y, start_bottom.z,
+          end_bottom.x, end_bottom.y, end_bottom.z,
+          start_top.x, start_top.y, start_top.z,
+          end_top.x, end_top.y, end_top.z,
+        ]);
+  
+        const indices = new Uint16Array([0, 1, 2, 1, 3, 2]);
+        const uvs = new Float32Array([0, 0, 1, 0, 0, 1, 1, 1]);
+  
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+        geometry.setAttribute("uv", new THREE.BufferAttribute(uvs, 2));
+        geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+        geometry.computeVertexNormals();
+  
+        // Use the same wall material as the main view
+        const wallMaterial = wallMaterialRef.current || new THREE.MeshStandardMaterial({
+          color: 0xffffff,
+          opacity: wallTransparency,
+          transparent: true,
+          side: THREE.DoubleSide,
+        });
+        
+        const wall = new THREE.Mesh(geometry, wallMaterial);
+        wall.name = `wall_${floorName}_${lineIndex}`;
+        
+        // Add userData to the wall for identification and manipulation
+        wall.userData = {
+          type: "wall",
+          floor: floorName,
+          index: lineIndex,
+          line: line,
+          isSelectable: true
+        };
+        
+        floorGroup.add(wall);
+      });
+      
+      // Add floor/ceiling planes using the room perimeter
+      if (floorLines.length > 2) {
+        try {
+          // Try to create perimeter and shape
+          const floorPerimeter = roomUtils.createRoomPerimeter(floorLines);
+          const floorShape = roomUtils.createShapeFromPerimeter(floorPerimeter);
+          
+          if (floorShape) {
+            // Create ceiling for this floor (also serves as floor for above level)
+            const floorGeometry = new THREE.ShapeGeometry(floorShape);
+            
+            // Create floor/ceiling
+            const floorPlane = new THREE.Mesh(floorGeometry, floorMaterial);
+            floorPlane.position.z = FLOOR_HEIGHT; // Top of this floor level
+            floorPlane.name = `ceiling_${floorName}`;
+            floorGroup.add(floorPlane);
+            
+            // If not ground floor, add floor plane
+            if (floorName !== 'ground') {
+              const floorBottomPlane = new THREE.Mesh(floorGeometry, floorMaterial);
+              floorBottomPlane.position.z = 0; // Bottom of this floor
+              floorBottomPlane.name = `floor_bottom_${floorName}`;
+              floorGroup.add(floorBottomPlane);
+            }
+          }
+        } catch (error) {
+          console.warn(`RoomSketchPro - Error creating floor planes for ${floorName}:`, error);
+        }
+      }
+      
+      // Add air entries for this floor
+      const airEntries = floorData.airEntries || [];
+      airEntries.forEach(entry => {
+        if (entry.type === 'window' || entry.type === 'door' || entry.type === 'vent') {
+          // Position will be handled by the air entry creation function
+          // Just pass the entry as is
+          createAirEntryForMultifloor(entry, floorGroup);
+        }
+      });
+      
+      // Store this floor group for later stair connections
+      floorGroups[floorName] = floorGroup;
+      
+      return floorGroup;
+    };
+    
+    // Determine floor placement in 3D space
+    const floorSpacing = FLOOR_HEIGHT + FLOOR_THICKNESS;
+    
+    // Create each floor at the appropriate Z position
+    allFloorNames.forEach((floorName, index) => {
+      // Calculate z position based on floor index (ground floor at z=0)
+      const zPosition = index * floorSpacing;
+      const floorGroup = createFloorFromData(floorName, zPosition);
+      multiFloorGroup.add(floorGroup);
+    });
+    
+    // Connect floors with stairs if stair data is available
+    allFloorNames.forEach((floorName) => {
+      const floorData = (floors && floors[floorName]) || 
+                        (geometryData?.floors && geometryData.floors[floorName]);
+      
+      if (floorData?.stairPolygons && floorData.stairPolygons.length > 0) {
+        console.log(`RoomSketchPro - Adding stairs for floor ${floorName}:`, floorData.stairPolygons);
+        
+        // Process each stair polygon
+        floorData.stairPolygons.forEach((stairData: any, stairIndex: number) => {
+          // Create stair visualization
+          createStairsVisualization(stairData, floorName, stairIndex, multiFloorGroup, floorGroups);
+        });
+      }
+    });
+    
+    // Add the multi-floor group to the scene
+    scene.add(multiFloorGroup);
+    
+    // Set camera to see all floors
+    if (allFloorNames.length > 1) {
+      // Position camera to see all floors
+      const totalHeight = (allFloorNames.length * floorSpacing) + 100;
+      camera.position.set(0, -totalHeight, totalHeight);
+      camera.lookAt(0, 0, totalHeight / 2);
+      
+      // Update controls target
+      if (controlsRef.current) {
+        controlsRef.current.target.set(0, 0, totalHeight / 2);
+        controlsRef.current.update();
+      }
+      
+      // Render the updated view
+      renderer.render(scene, camera);
+    }
+  };
+  
+  // Function to create an air entry (door, window, vent) for multifloor visualization
+  const createAirEntryForMultifloor = (entry: AirEntry, floorGroup: THREE.Group) => {
+    // Create simplified air entry representation
+    const width = entry.dimensions.width * DEFAULTS.PIXELS_TO_CM;
+    const height = entry.dimensions.height * DEFAULTS.PIXELS_TO_CM;
+    
+    // Calculate Z position based on entry type
+    const zPosition =
+      entry.type === "door"
+        ? height / 2 // Center the door vertically
+        : (entry.dimensions.distanceToFloor || 0) * DEFAULTS.PIXELS_TO_CM;
+    
+    // Calculate wall normal for proper orientation
+    const wallDirection = new THREE.Vector3()
+      .subVectors(
+        transform2DTo3D(entry.line.end),
+        transform2DTo3D(entry.line.start),
+      )
+      .normalize();
+    
+    const worldUpVector = new THREE.Vector3(0, 0, 1);
+    const wallNormalVector = new THREE.Vector3()
+      .crossVectors(wallDirection, worldUpVector)
+      .normalize();
+    
+    // Create appropriate geometry based on type
+    let geometry: THREE.BufferGeometry;
+    let material: THREE.Material;
+    let color: number;
+    
+    switch (entry.type) {
+      case "window":
+        geometry = new THREE.PlaneGeometry(width, height);
+        color = 0x88ccff;
+        material = new THREE.MeshBasicMaterial({ 
+          color, 
+          transparent: true, 
+          opacity: 0.6,
+          side: THREE.DoubleSide 
+        });
+        break;
+      case "door":
+        geometry = new THREE.BoxGeometry(width, height, 5);
+        color = 0x8b4513;
+        material = new THREE.MeshBasicMaterial({ color });
+        break;
+      case "vent":
+        geometry = new THREE.PlaneGeometry(width, height);
+        color = 0x888888;
+        material = new THREE.MeshBasicMaterial({ color });
+        break;
+      default:
+        // Fallback
+        geometry = new THREE.PlaneGeometry(width, height);
+        color = 0xcccccc;
+        material = new THREE.MeshBasicMaterial({ color });
+    }
+    
+    const mesh = new THREE.Mesh(geometry, material);
+    const position = transform2DTo3D(entry.position);
+    mesh.position.set(position.x, position.y, zPosition);
+    
+    // Apply rotation to face properly
+    const forward = wallNormalVector.clone();
+    const up = new THREE.Vector3(0, 0, 1);
+    const right = new THREE.Vector3().crossVectors(up, forward).normalize();
+    forward.crossVectors(right, up).normalize();
+    
+    const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
+    mesh.setRotationFromMatrix(rotationMatrix);
+    
+    // Add to floor group
+    mesh.name = `${entry.type}_${position.x.toFixed(0)}_${position.y.toFixed(0)}`;
+    floorGroup.add(mesh);
+  };
+  
+  // Function to create stair visualization between floors
+  const createStairsVisualization = (
+    stairData: any, 
+    floorName: string, 
+    stairIndex: number, 
+    multiFloorGroup: THREE.Group,
+    floorGroups: Record<string, THREE.Group>
+  ) => {
+    // Get floor indices
+    const floorNames = Object.keys(floorGroups).sort();
+    const currentFloorIndex = floorNames.indexOf(floorName);
+    
+    // Only create stairs if we have a valid upper floor
+    if (currentFloorIndex < 0 || currentFloorIndex >= floorNames.length - 1) {
+      return;
+    }
+    
+    // Get the floors this stair connects
+    const lowerFloorName = floorName;
+    const upperFloorName = floorNames[currentFloorIndex + 1];
+    
+    if (!lowerFloorName || !upperFloorName || !floorGroups[lowerFloorName] || !floorGroups[upperFloorName]) {
+      console.warn("RoomSketchPro - Cannot create stairs, missing floor groups:", {
+        lowerFloorName,
+        upperFloorName,
+        availableGroups: Object.keys(floorGroups)
+      });
+      return;
+    }
+    
+    console.log(`RoomSketchPro - Creating stairs from ${lowerFloorName} to ${upperFloorName}`);
+    
+    // Create stair material
+    const stairMaterial = new THREE.MeshStandardMaterial({
+      color: 0x888888,
+      roughness: 0.7,
+      metalness: 0.2
+    });
+    
+    // Constants for stair dimensions
+    const STAIR_RISE = 20; // Height of each step (cm)
+    const STAIR_RUN = 25;  // Depth of each step (cm)
+    const STAIR_WIDTH = 100; // Width of stairs (cm)
+    
+    // Get floor heights
+    const lowerFloorHeight = floorGroups[lowerFloorName].position.z;
+    const upperFloorHeight = floorGroups[upperFloorName].position.z;
+    const heightDifference = upperFloorHeight - lowerFloorHeight;
+    
+    // Calculate number of steps based on height
+    const numSteps = Math.floor(heightDifference / STAIR_RISE);
+    
+    if (numSteps <= 0) {
+      console.warn("RoomSketchPro - Cannot create stairs, invalid height difference:", heightDifference);
+      return;
+    }
+    
+    // Create stair group
+    const stairGroup = new THREE.Group();
+    stairGroup.name = `stairs_${lowerFloorName}_to_${upperFloorName}_${stairIndex}`;
+    
+    // Get stair position from stair data
+    const stairPosition = transform2DTo3D(stairData.position || { x: 0, y: 0 });
+    
+    // Create each step
+    for (let i = 0; i < numSteps; i++) {
+      const stepGeometry = new THREE.BoxGeometry(STAIR_WIDTH, STAIR_RUN, STAIR_RISE);
+      const step = new THREE.Mesh(stepGeometry, stairMaterial);
+      
+      // Position step
+      step.position.set(
+        0, // Center on X
+        i * STAIR_RUN, // Position along Y based on step number
+        lowerFloorHeight + (i + 0.5) * STAIR_RISE // Position Z based on step height
+      );
+      
+      step.name = `step_${i}`;
+      stairGroup.add(step);
+    }
+    
+    // Position the stair group based on stair data
+    stairGroup.position.copy(stairPosition);
+    
+    // Add to the multi-floor group
+    multiFloorGroup.add(stairGroup);
+  };
+  
   // Add a new effect to respond to current floor changes in context or from props
   useEffect(() => {
     // Check both context data and direct props
@@ -562,14 +947,24 @@ export function RoomSketchPro({
           sceneRef.current?.remove(obj);
         });
         
-        // Rebuild walls and air entries with new data
-        if (rendererRef.current && cameraRef.current) {
+        // Check if we should display multiple floors
+        const floorsFromProps = floors ? Object.keys(floors) : [];
+        const floorsFromContext = geometryData?.floors ? Object.keys(geometryData.floors) : [];
+        const allFloors = [...new Set([...floorsFromProps, ...floorsFromContext])];
+        
+        // If we have multiple floors and both props are provided, create multifloor visualization
+        if (allFloors.length > 1 && floors && Object.keys(floors).length > 1) {
+          console.log("RoomSketchPro - Creating multifloor visualization with floors:", allFloors);
+          createMultiFloorVisualization(sceneRef.current, rendererRef.current, cameraRef.current);
+        } else {
+          // Otherwise just build the current floor
+          console.log("RoomSketchPro - Creating single floor view");
           createWalls(sceneRef.current, rendererRef.current, cameraRef.current);
           createAirEntries(sceneRef.current);
-          
-          // Render the updated scene
-          rendererRef.current.render(sceneRef.current, cameraRef.current);
         }
+        
+        // Render the updated scene
+        rendererRef.current.render(sceneRef.current, cameraRef.current);
       }
     }
   }, [geometryData?.currentFloor, currentFloor, floors]);
