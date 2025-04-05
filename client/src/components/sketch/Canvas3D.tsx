@@ -2965,6 +2965,10 @@ export default function Canvas3D({
         lastIntersection: "Processing eraser click..."
       }));
       
+      // Check if controls are disabled - this is an indicator that we're hovering over an element
+      const areControlsDisabled = controlsRef.current && !controlsRef.current.enabled;
+      console.log("🎮 Controls disabled:", areControlsDisabled);
+      
       // Log available air entries in the current floor
       const floorData = floors[currentFloor];
       if (floorData && floorData.airEntries) {
@@ -3074,6 +3078,79 @@ export default function Canvas3D({
             const normalizedFloorName = normalizeFloorName(currentFloor);
             if (updatedAirEntryPositionsRef.current[normalizedFloorName]?.[foundIndex]) {
               delete updatedAirEntryPositionsRef.current[normalizedFloorName][foundIndex];
+            }
+            
+            // Reset hover state after deletion
+            setHoveredEraseTarget(null);
+            
+            // Force a complete render
+            needsRenderRef.current = true;
+            if (rendererRef.current && sceneRef.current && cameraRef.current) {
+              rendererRef.current.render(sceneRef.current, cameraRef.current);
+            }
+            
+            // Re-enable controls after deletion
+            if (controlsRef.current) {
+              controlsRef.current.enabled = true;
+            }
+          }
+        }
+      } else {
+        // If no hover target is detected but controls are disabled, do a direct raycast to try to find something
+        if (areControlsDisabled) {
+          console.log("Controls disabled but no hover target, attempting direct raycast");
+          
+          // Extract mouse position from event
+          const rect = containerRef.current?.getBoundingClientRect();
+          if (!rect) return;
+          
+          const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+          const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+          
+          // Set up raycaster
+          const raycaster = new THREE.Raycaster();
+          raycaster.params.Line = { threshold: 0.5 }; // Use lower threshold for precise detection
+          raycaster.setFromCamera(new THREE.Vector2(x, y), cameraRef.current!);
+          
+          // Check for intersections
+          const intersects = raycaster.intersectObjects(sceneRef.current!.children, true);
+          
+          // Filter to only include air entries
+          const airEntryIntersects = intersects.filter(intersect => 
+            intersect.object.userData?.type === 'window' || 
+            intersect.object.userData?.type === 'door' || 
+            intersect.object.userData?.type === 'vent'
+          );
+          
+          if (airEntryIntersects.length > 0) {
+            const firstIntersect = airEntryIntersects[0];
+            console.log("Direct raycast found air entry to delete:", firstIntersect.object.userData);
+            
+            // Use the same code as above to handle deletion
+            const airEntryData = firstIntersect.object.userData;
+            let foundIndex = -1;
+            
+            if (typeof airEntryData.entryIndex === 'number') {
+              if (airEntryData.entryIndex >= 0 && airEntryData.entryIndex < floorData.airEntries.length) {
+                foundIndex = airEntryData.entryIndex;
+              }
+            }
+            
+            if (foundIndex !== -1) {
+              console.log("Deleting air entry at index:", foundIndex);
+              onDeleteAirEntry(currentFloor, foundIndex);
+              
+              // Clean up any references in our state
+              if (selectedAirEntry && selectedAirEntry.index === foundIndex) {
+                setSelectedAirEntry(null);
+                setSelectedAxis(null);
+                setIsDragging(false);
+              }
+              
+              // Re-enable controls after deletion
+              if (controlsRef.current) {
+                controlsRef.current.enabled = true;
+              }
             }
           }
         }
