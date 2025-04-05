@@ -412,12 +412,19 @@ export default function Canvas3D({
 
   const isMeasureModeRef = useRef(false);
 
-  // Store the positions of air entries that have been updated via dragging
-  // This is used to ensure they keep their positions when the scene is rebuilt
-  // Format: { floorName: { entryIndex: { x, y } } }
+  // Store the positions and dimensions of air entries that have been updated
+  // This is used to ensure they keep their properties when the scene is rebuilt
+  // Format: { floorName: { entryIndex: { position: { x, y }, dimensions?: { width, height, distanceToFloor? } } } }
   const updatedAirEntryPositionsRef = useRef<{
     [floorName: string]: {
-      [entryIndex: number]: { x: number, y: number }
+      [entryIndex: number]: {
+        position: { x: number, y: number },
+        dimensions?: {
+          width: number,
+          height: number,
+          distanceToFloor?: number
+        }
+      }
     }
   }>({});
   const dragStateRef = useRef({
@@ -481,6 +488,29 @@ export default function Canvas3D({
       ...editingAirEntry.entry,
       dimensions: dimensions,
     };
+
+    // Store the dimensions in our ref to preserve them during scene rebuilds
+    const normalizedFloorName = normalizeFloorName(currentFloor);
+
+    // Initialize storage structure if needed
+    if (!updatedAirEntryPositionsRef.current[normalizedFloorName]) {
+      updatedAirEntryPositionsRef.current[normalizedFloorName] = {};
+    }
+
+    // Check if we already have position data for this entry
+    if (!updatedAirEntryPositionsRef.current[normalizedFloorName][index]) {
+      // If no position data exists yet, initialize with the current position
+      updatedAirEntryPositionsRef.current[normalizedFloorName][index] = {
+        position: { ...editingAirEntry.entry.position },
+        dimensions: dimensions
+      };
+    } else {
+      // If position data exists, just update the dimensions
+      updatedAirEntryPositionsRef.current[normalizedFloorName][index].dimensions = dimensions;
+    }
+
+    console.log(`[DIMENSION STORAGE] Stored dimensions for entry ${index}:`, 
+      JSON.stringify(updatedAirEntryPositionsRef.current[normalizedFloorName][index]));
 
     // Call the parent component's handler
     onUpdateAirEntry(currentFloor, index, updatedEntry);
@@ -800,14 +830,73 @@ export default function Canvas3D({
       );
       floorData.airEntries.forEach((entry, index) => {
         console.log(`Creating air entry ${index} of type ${entry.type}`);
+        
+        // Check if we have stored data for this entry (position and/or dimensions)
+        const updatedEntryData = updatedPositions[index];
+        console.log(`[ENTRY DATA LOADING] Checking for stored entry data for entry ${index}:`, {
+          updatedPositionsExists: !!updatedPositions,
+          haveUpdatedData: !!updatedEntryData,
+          updatedEntryData: updatedEntryData,
+          entryOriginalPosition: entry.position,
+          entryOriginalDimensions: entry.dimensions,
+          entryIndex: index,
+          floorName: floorData.name,
+          normalizedFloorName: normalizedFloorName,
+          allPositionsStoredForThisFloor: JSON.stringify(updatedPositions),
+          allFloorEntries: floorData.airEntries.length
+        });
+
+        // Create working copies of entry position and dimensions
+        let entryPosition = { ...entry.position };
+        let entryDimensions = { ...entry.dimensions };
+        
+        // Handle backward compatibility with old storage format
+        if (updatedEntryData) {
+          // Check if this is the old format (direct x/y properties) or new format (position/dimensions props)
+          if ('x' in updatedEntryData && 'y' in updatedEntryData) {
+            // Old format - just position data
+            console.log(`[ENTRY DATA LOADING] Found legacy position format for entry ${index}:`, {
+              from: entry.position,
+              to: updatedEntryData,
+              diffX: updatedEntryData.x - entry.position.x,
+              diffY: updatedEntryData.y - entry.position.y
+            });
+            entryPosition = { x: updatedEntryData.x, y: updatedEntryData.y };
+          } else if (updatedEntryData.position) {
+            // New format - has position and maybe dimensions
+            console.log(`[ENTRY DATA LOADING] Using stored position for entry ${index}:`, {
+              from: entry.position,
+              to: updatedEntryData.position,
+              diffX: updatedEntryData.position.x - entry.position.x,
+              diffY: updatedEntryData.position.y - entry.position.y
+            });
+            entryPosition = updatedEntryData.position;
+            
+            // If we also have dimensions, use those
+            if (updatedEntryData.dimensions) {
+              console.log(`[ENTRY DATA LOADING] Using stored dimensions for entry ${index}:`, {
+                from: entry.dimensions,
+                to: updatedEntryData.dimensions
+              });
+              entryDimensions = updatedEntryData.dimensions;
+            }
+          }
+        } else {
+          console.log(`[ENTRY DATA LOADING] No stored data found for entry ${index}, using original values:`, {
+            position: entry.position,
+            dimensions: entry.dimensions
+          });
+        }
+        
         // Use dimensions directly as they are already in cm
-        const width = entry.dimensions.width;
-        const height = entry.dimensions.height;
+        // Now use our possibly updated dimensions
+        const width = entryDimensions.width;
+        const height = entryDimensions.height;
         const zPosition =
           baseHeight +
           (entry.type === "door"
             ? height / 2
-            : entry.dimensions.distanceToFloor || 0);
+            : entryDimensions.distanceToFloor || 0);
 
         const geometry = new THREE.PlaneGeometry(width, height);
         const material = new THREE.MeshPhongMaterial({
@@ -822,36 +911,6 @@ export default function Canvas3D({
           side: THREE.DoubleSide,
         });
 
-        // Check if we have a stored position for this entry
-        const updatedPosition = updatedPositions[index];
-        console.log(`[POSITION LOADING] Checking for stored position for entry ${index}:`, {
-          updatedPositionsExists: !!updatedPositions,
-          haveUpdatedPosition: !!updatedPosition,
-          updatedPositionValue: updatedPosition,
-          entryOriginalPosition: entry.position,
-          entryIndex: index,
-          floorName: floorData.name,
-          normalizedFloorName: normalizedFloorName,
-          allPositionsStoredForThisFloor: JSON.stringify(updatedPositions),
-          allFloorEntries: floorData.airEntries.length
-        });
-
-        // Create a working copy of the entry position
-        let entryPosition = { ...entry.position };
-
-        // If we have a stored position from previous dragging, use it
-        if (updatedPosition) {
-          console.log(`[POSITION LOADING] Using stored position for entry ${index}:`, {
-            from: entry.position,
-            to: updatedPosition,
-            diffX: updatedPosition.x - entry.position.x,
-            diffY: updatedPosition.y - entry.position.y
-          });
-          entryPosition = updatedPosition;
-        } else {
-          console.log(`[POSITION LOADING] No stored position found for entry ${index}, using original position:`, entry.position);
-        }
-
         const mesh = new THREE.Mesh(geometry, material);
         const position = transform2DTo3D(entryPosition);
         mesh.position.set(position.x, position.y, zPosition);
@@ -860,7 +919,7 @@ export default function Canvas3D({
         mesh.userData = {
           type: entry.type,
           position: entryPosition, // Use the potentially updated position
-          dimensions: entry.dimensions,
+          dimensions: entryDimensions, // Use the potentially updated dimensions
           line: entry.line,
           index: objects.length,
           entryIndex: index  // Add the actual index in the airEntries array
@@ -2167,10 +2226,22 @@ export default function Canvas3D({
             }
 
             // Store the latest position for this entry index under the normalized key (main storage)
-            updatedAirEntryPositionsRef.current[normalizedFloorName][entryIndex] = {
-              x: updatedEntry.position.x,
-              y: updatedEntry.position.y
-            };
+            // See if we already have an entry with dimensions
+            if (!updatedAirEntryPositionsRef.current[normalizedFloorName][entryIndex]) {
+              // Create a new entry with just the position
+              updatedAirEntryPositionsRef.current[normalizedFloorName][entryIndex] = {
+                position: {
+                  x: updatedEntry.position.x,
+                  y: updatedEntry.position.y
+                }
+              };
+            } else {
+              // Update just the position and preserve any existing dimensions
+              updatedAirEntryPositionsRef.current[normalizedFloorName][entryIndex].position = {
+                x: updatedEntry.position.x,
+                y: updatedEntry.position.y
+              };
+            }
 
             // For backward compatibility with existing code, also store under 'ground' key 
             // if this is the ground floor (transitional approach)
@@ -2178,6 +2249,9 @@ export default function Canvas3D({
               if (!updatedAirEntryPositionsRef.current['ground']) {
                 updatedAirEntryPositionsRef.current['ground'] = {};
               }
+              
+              // Legacy format for backward compatibility:
+              // Keep this simple format for backward compatibility
               updatedAirEntryPositionsRef.current['ground'][entryIndex] = {
                 x: updatedEntry.position.x,
                 y: updatedEntry.position.y
