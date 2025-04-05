@@ -1288,7 +1288,7 @@ export default function Canvas3D({
   
   // Handle camera view changes when requested via props
   const handleViewChange = useCallback((direction: ViewDirection) => {
-    if (!cameraRef.current || !controlsRef.current) {
+    if (!cameraRef.current || !controlsRef.current || !sceneRef.current) {
       console.log("Cannot change view - camera or controls not initialized");
       return;
     }
@@ -1297,29 +1297,58 @@ export default function Canvas3D({
     const baseHeight = getFloorBaseHeight(currentFloor);
     const roomCenter = new THREE.Vector3(0, 0, baseHeight + (ceilingHeight / 2));
     
-    // Distance from the center to position the camera
-    const distance = 800;
+    // Calculate the bounding box of all visible objects to determine optimal view distance
+    const boundingBox = new THREE.Box3();
+    
+    // Add all meshes to the bounding box calculation
+    sceneRef.current.traverse((object) => {
+      if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
+        // Skip helpers and invisible objects
+        if (object.visible && 
+            !object.userData?.isHelper && 
+            !(object instanceof THREE.GridHelper) &&
+            !(object instanceof THREE.AxesHelper)) {
+          boundingBox.expandByObject(object);
+        }
+      }
+    });
+    
+    // Calculate the size of the bounding box
+    const size = new THREE.Vector3();
+    boundingBox.getSize(size);
+    
+    // Use the largest dimension to determine view distance
+    // Multiply by 2.0 to ensure everything is visible with some margin
+    const objectSize = Math.max(size.x, size.y, size.z);
+    const distance = objectSize > 0 ? objectSize * 2.0 : 1000;
     
     console.log(`Changing camera view to ${direction}. Room center:`, roomCenter);
+    console.log(`View distance: ${distance}, Room size:`, size);
     
-    // Reset camera position based on the view direction
+    // Reset camera position based on the view direction with exact vectors as requested
     switch (direction) {
       case "+X":
+        // (1, 0, 0) direction
         cameraRef.current.position.set(distance, 0, roomCenter.z);
         break;
       case "-X":
+        // (-1, 0, 0) direction
         cameraRef.current.position.set(-distance, 0, roomCenter.z);
         break;
       case "+Y":
+        // (0, 1, 0) direction
         cameraRef.current.position.set(0, distance, roomCenter.z);
         break;
       case "-Y":
+        // (0, -1, 0) direction
         cameraRef.current.position.set(0, -distance, roomCenter.z);
         break;
       case "+Z":
+        // (0, 0, 1) direction - Top view
         cameraRef.current.position.set(0, 0, roomCenter.z + distance);
         break;
       case "-Z":
+        // (0, 0, -1) direction - Bottom view
         cameraRef.current.position.set(0, 0, roomCenter.z - distance);
         break;
     }
@@ -1335,8 +1364,10 @@ export default function Canvas3D({
     controlsRef.current.update();
     
     // Force a render update
-    if (sceneRef.current && rendererRef.current) {
+    if (rendererRef.current) {
       rendererRef.current.render(sceneRef.current, cameraRef.current);
+      // Set needs render flag to ensure the scene updates in the animation loop
+      needsRenderRef.current = true;
     }
     
     console.log(`Camera view changed to ${direction}`);
