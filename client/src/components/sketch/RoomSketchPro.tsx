@@ -44,6 +44,12 @@ interface RoomSketchProProps {
   onFurnitureAdd?: (item: FurnitureItem) => void;
   wallTransparency: number;
   onWallTransparencyChange: (value: number) => void;
+  currentFloor?: string;
+  floors?: Record<string, {
+    lines: Line[];
+    airEntries: AirEntry[];
+    stairPolygons?: any[];
+  }>;
 }
 
 // Constants
@@ -230,13 +236,15 @@ export function RoomSketchPro({
   onFurnitureAdd,
   wallTransparency = 0.8,
   onWallTransparencyChange,
+  currentFloor,
+  floors,
 }: RoomSketchProProps) {
   // Get data from SceneContext
   const { geometryData } = useSceneContext();
   
   // Add logging to debug the component
   console.log("RoomSketchPro - Component Props:", { 
-    width, height, instanceId, lines, airEntries, roomHeight, wallTransparency 
+    width, height, instanceId, lines, airEntries, roomHeight, wallTransparency, currentFloor, floors
   });
   console.log("RoomSketchPro - SceneContext geometryData:", geometryData);
   
@@ -520,12 +528,15 @@ export function RoomSketchPro({
       });
       container.removeEventListener("drop", handleDrop);
     };
-  }, [width, height, geometryData?.floors]);
+  }, [width, height, geometryData?.floors, currentFloor, floors, roomHeight]);
   
-  // Add a new effect to respond to current floor changes in context
+  // Add a new effect to respond to current floor changes in context or from props
   useEffect(() => {
-    console.log("RoomSketchPro - Current floor changed in context to:", geometryData?.currentFloor);
+    // Check both context data and direct props
+    const contextFloor = geometryData?.currentFloor;
+    console.log("RoomSketchPro - Current floor changed to:", currentFloor || contextFloor);
     console.log("RoomSketchPro - Available floors in context:", Object.keys(geometryData?.floors || {}));
+    console.log("RoomSketchPro - Available floors from props:", floors ? Object.keys(floors) : []);
     
     // Only rebuild scene if we already have one
     if (sceneRef.current && rendererRef.current && cameraRef.current) {
@@ -561,7 +572,7 @@ export function RoomSketchPro({
         }
       }
     }
-  }, [geometryData?.currentFloor]);
+  }, [geometryData?.currentFloor, currentFloor, floors]);
 
   // Extract perimeter points using useMemo to avoid recalculation
   // Use geometryData.lines from the context if available, otherwise fall back to lines prop
@@ -584,11 +595,22 @@ export function RoomSketchPro({
     camera: THREE.PerspectiveCamera,
   ) => {
     console.log("RoomSketchPro - createWalls called with scene:", scene);
-    // Use lines from props if available, or try to get them from the context's current floor data
-    const currentFloorData = geometryData?.floors?.[geometryData.currentFloor];
+    // First, check if we have direct floors and currentFloor props
+    const currentFloorFromProps = currentFloor && floors && floors[currentFloor];
+    
+    // If direct props are available, use them; otherwise, try to get them from the context
+    const useDirectProps = currentFloorFromProps && floors && currentFloor;
+    const currentFloorName = useDirectProps ? currentFloor : geometryData?.currentFloor;
+    const currentFloorData = useDirectProps 
+        ? floors[currentFloorName] 
+        : geometryData?.floors?.[geometryData?.currentFloor];
+        
+    // Get lines for the current floor - first from props, then from context if needed
     const contextLines = currentFloorData?.lines || geometryData?.lines || [];
     const linesToUse = lines.length > 0 ? lines : contextLines;
-    console.log("RoomSketchPro - Current floor in context:", geometryData?.currentFloor);
+    
+    console.log("RoomSketchPro - Current floor:", currentFloorName);
+    console.log("RoomSketchPro - Using direct props:", useDirectProps);
     console.log("RoomSketchPro - Using lines data:", linesToUse);
     
     const textureLoader = new THREE.TextureLoader();
@@ -724,10 +746,22 @@ export function RoomSketchPro({
       side: THREE.DoubleSide,
     });
 
-    // Use air entries from props if available, or try to get them from the context's current floor data
-    const currentFloorData = geometryData?.floors?.[geometryData.currentFloor];
+    // First, check if we have direct floors and currentFloor props
+    const currentFloorFromProps = currentFloor && floors && floors[currentFloor];
+    
+    // If direct props are available, use them; otherwise, try to get them from the context
+    const useDirectProps = currentFloorFromProps && floors && currentFloor;
+    const currentFloorName = useDirectProps ? currentFloor : geometryData?.currentFloor;
+    const currentFloorData = useDirectProps 
+        ? floors[currentFloorName] 
+        : geometryData?.floors?.[geometryData?.currentFloor];
+        
+    // Get air entries for the current floor - first from props, then from context if needed
     const contextAirEntries = currentFloorData?.airEntries || geometryData?.airEntries || [];
     const entriesData = airEntries.length > 0 ? airEntries : contextAirEntries;
+    
+    console.log("RoomSketchPro - Current floor for air entries:", currentFloorName);
+    console.log("RoomSketchPro - Using direct props for air entries:", useDirectProps);
     console.log("RoomSketchPro - Using air entries data:", entriesData);
     entriesData.forEach((entry) => {
       // Set material based on entry type
