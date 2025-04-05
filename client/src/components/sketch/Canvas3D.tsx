@@ -2037,10 +2037,28 @@ export default function Canvas3D({
       
       // Handle hover detection for eraser mode
       if (isEraserMode && !dragStateRef.current.isDragging) {
+        console.log("Eraser mode hover detection active - looking for air entries to highlight");
+        // Log some info about what's available
+        if (sceneRef.current) {
+          let airEntryCount = 0;
+          sceneRef.current.traverse((object) => {
+            if (
+              object instanceof THREE.Mesh &&
+              object.userData &&
+              object.userData.type &&
+              ["window", "door", "vent"].includes(object.userData.type)
+            ) {
+              airEntryCount++;
+            }
+          });
+          console.log(`Scene contains ${airEntryCount} air entry meshes available for highlighting`);
+        }
+        
         const mouseCoords = getMouseCoordinates(event);
         
         // Reset previously highlighted element if any
         if (hoveredEraseTarget) {
+          console.log("Resetting previously highlighted element");
           // Restore original material
           hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
           setHoveredEraseTarget(null);
@@ -2070,6 +2088,8 @@ export default function Canvas3D({
             }
           });
           
+          console.log(`Found ${airEntryMeshes.length} potential air entries for eraser hover detection`);
+          
           // Set up raycaster
           if (cameraRef.current) {
             const raycaster = new THREE.Raycaster();
@@ -2077,9 +2097,12 @@ export default function Canvas3D({
             
             // Check for intersections with air entry meshes
             const meshIntersects = raycaster.intersectObjects(airEntryMeshes, false);
+            console.log(`Found ${meshIntersects.length} intersections with air entries`);
             
             if (meshIntersects.length > 0) {
+              console.log("Intersection found! Highlighting element");
               const mesh = meshIntersects[0].object as THREE.Mesh;
+              console.log("Mesh data:", mesh.userData);
               
               // Store original material and apply highlight material
               const originalMaterial = mesh.material;
@@ -2691,7 +2714,7 @@ export default function Canvas3D({
   }, []);
 
   useEffect(() => {
-    console.log("Canvas3D received floors data:", floors);
+    console.log("Canvas3D received floors data:", floors, "Current eraser mode:", isEraserMode);
 
     // Log detailed information about all air entries for debugging purposes
     Object.entries(floors).forEach(([floorName, floorData]) => {
@@ -2704,6 +2727,8 @@ export default function Canvas3D({
             dimensions: entry.dimensions
           }))
         );
+      } else {
+        console.log(`DEBUG - FLOOR STATE: Floor ${floorName} has NO air entries`);
       }
     });
 
@@ -3103,7 +3128,25 @@ export default function Canvas3D({
   
   // Effect to handle eraser mode changes
   useEffect(() => {
-    console.log("isEraserMode prop changed:", isEraserMode);
+    console.log("Canvas3D isEraserMode prop changed:", isEraserMode, "- Applying UI changes");
+    
+    // Log how many air entry elements exist in the scene
+    if (sceneRef.current) {
+      console.log("Checking scene for air entries in useEffect:");
+      let airEntryCount = 0;
+      sceneRef.current.traverse((object) => {
+        if (
+          object instanceof THREE.Mesh &&
+          object.userData &&
+          object.userData.type &&
+          ["window", "door", "vent"].includes(object.userData.type)
+        ) {
+          airEntryCount++;
+          console.log(`Found air entry in scene: ${object.userData.type} at position:`, object.userData.position);
+        }
+      });
+      console.log(`Total air entries in scene for eraser mode: ${airEntryCount}`);
+    }
     
     // Add visual indication of eraser mode
     if (containerRef.current) {
