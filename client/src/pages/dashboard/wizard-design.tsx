@@ -1528,6 +1528,8 @@ export default function WizardDesign() {
             wallTransparency={wallTransparency}
             isMeasureMode={isMeasureMode}
             isEraserMode={isEraserMode}
+            simulationName={simulationName}
+            simulationType={simulationType === "comfort" ? "Comfort Simulation (steady run)" : "Air Renovation Convection Simulation (transient run)"}
             onUpdateAirEntry={handleUpdateAirEntryFrom3D}
             onDeleteAirEntry={handleDeleteAirEntryFrom3D}
             onViewChange={handleViewChange}
