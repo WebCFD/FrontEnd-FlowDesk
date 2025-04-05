@@ -9,12 +9,14 @@ import { Slider } from "@/components/ui/slider";
 import { Save, Upload, Eraser, ArrowRight, ArrowLeft } from "lucide-react";
 import Canvas2D from "@/components/sketch/Canvas2D";
 import { RoomSketchPro } from "@/components/sketch/RoomSketchPro";
+import { SceneProvider } from "@/contexts/SceneContext";
 
 export default function NewSimulation() {
   const [step, setStep] = useState(1);
   const [simulationName, setSimulationName] = useState("");
   const [gridSize, setGridSize] = useState(20);
   const [currentTool, setCurrentTool] = useState<'wall' | 'eraser'>('wall');
+  const [wallTransparency, setWallTransparency] = useState(0.5);
 
   // Debug logs for step changes
   useEffect(() => {
@@ -84,7 +86,14 @@ export default function NewSimulation() {
           <div className="space-y-6">
             {/* 3D View */}
             <div className="w-full h-[600px] border rounded-lg overflow-hidden bg-white">
-              <RoomSketchPro width={800} height={600} />
+              <SceneProvider>
+                <RoomSketchPro 
+                  width={800} 
+                  height={600} 
+                  wallTransparency={wallTransparency}
+                  onWallTransparencyChange={setWallTransparency}
+                />
+              </SceneProvider>
             </div>
 
             {/* Parameters Card */}
