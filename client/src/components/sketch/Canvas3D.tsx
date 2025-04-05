@@ -1390,6 +1390,20 @@ export default function Canvas3D({
               });
               
               // FIXED: Using the improved displacement calculation
+              // Log detailed information about exact movement
+              console.log("==========================================");
+              console.log("CRITICAL Z-AXIS MOVEMENT DEBUG:");
+              console.log("Wall direction: " + (Math.abs(wallDir.x) > Math.abs(wallDir.y) ? "VERTICAL (N/S)" : "HORIZONTAL (E/W)"));
+              console.log("Z-axis direction vector:", dirVector);
+              console.log(`Applied movement: X:${dirVector.x * betterDisplacement}, Y:${dirVector.y * betterDisplacement}`);
+              
+              if (Math.abs(dirVector.x) > Math.abs(dirVector.y)) {
+                console.log("PRIMARY MOVEMENT DIRECTION: EAST-WEST");
+              } else {
+                console.log("PRIMARY MOVEMENT DIRECTION: NORTH-SOUTH");
+              }
+              console.log("==========================================");
+              
               newPosition.x += dirVector.x * betterDisplacement;
               newPosition.y += dirVector.y * betterDisplacement;
               // Z component would be dirVector.z * betterDisplacement if needed
