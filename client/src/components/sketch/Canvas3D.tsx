@@ -1331,6 +1331,15 @@ export default function Canvas3D({
             // BLUE Z axis (perpendicular to wall surface)
             const dirVector = dragState.axisDirectionVectors.z;
             
+            console.log("🔴🔴🔴 Z-AXIS DRAG IN PROGRESS 🔴🔴🔴");
+            console.log("CRITICAL MOVEMENT INFO:");
+            console.log(`Z-axis vector: [${dirVector.x}, ${dirVector.y}, ${dirVector.z}]`);
+            if (Math.abs(dirVector.x) > Math.abs(dirVector.y)) {
+              console.log(`PRIMARY DIRECTION: EAST-WEST (due to dominant X component: ${dirVector.x})`);
+            } else {
+              console.log(`PRIMARY DIRECTION: NORTH-SOUTH (due to dominant Y component: ${dirVector.y})`);
+            }
+            
             // Debug the Z axis movement in detail
             console.log("==== Z AXIS MOVEMENT DETAILS ====");
             console.log("Air entry index:", dragState.entryIndex);
