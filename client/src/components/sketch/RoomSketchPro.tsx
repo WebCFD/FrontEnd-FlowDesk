@@ -296,6 +296,12 @@ export function RoomSketchPro({
     });
     renderer.setSize(width, height);
     renderer.setPixelRatio(window.devicePixelRatio);
+    
+    // Make the renderer's DOM element fill its container, similar to Canvas3D
+    renderer.domElement.style.width = '100%';
+    renderer.domElement.style.height = '100%';
+    renderer.domElement.style.display = 'block'; // Ensures no extra space
+    
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     return renderer;
@@ -411,10 +417,7 @@ export function RoomSketchPro({
 
     // Setup renderer
     const renderer = setupRenderer();
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    // No need to set renderer properties again, already done in setupRenderer()
     containerRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
@@ -426,6 +429,29 @@ export function RoomSketchPro({
     controls.keys = ["KeyA", "KeyS", "KeyD"];
     controlsRef.current = controls;
 
+    // Handle window resize - makes the component responsive like Canvas3D
+    const handleResize = () => {
+      if (!containerRef.current || !cameraRef.current || !rendererRef.current) return;
+      
+      // Get container's current dimensions
+      const { width: containerWidth, height: containerHeight } = containerRef.current.getBoundingClientRect();
+      
+      // Update camera aspect ratio
+      cameraRef.current.aspect = containerWidth / containerHeight;
+      cameraRef.current.updateProjectionMatrix();
+      
+      // Resize renderer to match container dimensions
+      rendererRef.current.setSize(containerWidth, containerHeight, false);
+      
+      // Tell controls to update
+      if (controlsRef.current) {
+        controlsRef.current.update();
+      }
+    };
+
+    // Add resize listener
+    window.addEventListener('resize', handleResize);
+    
     // Animation loop
     const animate = () => {
       requestAnimationFrame(animate);
@@ -442,10 +468,14 @@ export function RoomSketchPro({
     });
     container.addEventListener("drop", handleDrop);
 
+    // Initial resize
+    handleResize();
+
     // Cleanup
     return () => {
       controls.dispose();
       renderer.dispose();
+      window.removeEventListener('resize', handleResize);
       container.removeEventListener("dragover", (e) => {
         e.preventDefault();
         e.dataTransfer!.dropEffect = "copy";
