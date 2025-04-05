@@ -34,6 +34,7 @@ import {
   ZoomIn,
   Share2,
   ChevronDown,
+  FileText,
 } from "lucide-react";
 import Canvas2D from "@/components/sketch/Canvas2D";
 import { RoomSketchPro } from "@/components/sketch/RoomSketchPro";
@@ -1093,99 +1094,139 @@ export default function WizardDesign() {
   const renderStep2 = () => {
     console.log("Rendering Step 2 content");
     return (
-      <div className="space-y-6">
-      
-        <div className="flex gap-6">
-          {/* Left sidebar for controls */}
-          <div className="w-72 space-y-6">
-            <div>
-              <h3 className="font-semibold text-lg mb-4">View Controls</h3>
-              <div className="space-y-2">
-                <div>
-                  <label className="text-sm font-medium mb-2">Wall Transparency</label>
-                  <div className="flex items-center">
-                    <Slider
-                      value={[wallTransparency]}
-                      onValueChange={(values: number[]) => {
-                        console.log("Wizard: Wall transparency changing to:", values[0]);
-                        setWallTransparency(values[0]);
-                      }}
-                      min={0}
-                      max={1}
-                      step={0.01}
-                      className="flex-1"
-                    />
-                    <span className="text-xs text-gray-500 ml-2">{Math.round(wallTransparency * 100)}%</span>
+      <>
+        <Card className="mt-4">
+          <CardContent className="p-4">
+            {/* We'll use a custom toolbar for Step 2 that looks like the one in Step 1 */}
+            <div className="mb-4 flex">
+              <div className="bg-card border rounded-md inline-flex shadow-sm overflow-hidden">
+                <Button
+                  variant="ghost"
+                  className="px-3 py-2 text-sm font-medium rounded-none bg-blue-50 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+                  disabled
+                >
+                  3D Editor
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="px-3 py-2 text-sm font-medium rounded-none hover:bg-gray-50"
+                  disabled
+                >
+                  3D Preview
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              {/* Left side menus - copy style from Step 1 */}
+              <div className="w-72 space-y-6">
+                {/* Main options */}
+                <div className="border rounded-lg p-4">
+                  <h3 className="font-semibold text-lg mb-4">3D Menu</h3>
+                  
+                  {/* Wall Transparency */}
+                  <div className="space-y-4 mt-4">
+                    <h3 className="font-semibold">Wall Transparency</h3>
+                    <div className="px-2">
+                      <Slider
+                        value={[wallTransparency]}
+                        onValueChange={(values: number[]) => {
+                          console.log("Wizard: Wall transparency changing to:", values[0]);
+                          setWallTransparency(values[0]);
+                        }}
+                        min={0}
+                        max={1}
+                        step={0.01}
+                        className="flex-1"
+                      />
+                      <div className="text-sm text-right mt-1">
+                        {Math.round(wallTransparency * 100)}%
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Furniture */}
+                  <div className="space-y-4 mt-4">
+                    <h3 className="font-semibold">Furniture</h3>
+                    <div className="grid grid-cols-3 gap-2">
+                      {[
+                        { id: 'table', name: 'Table', icon: <rect x="4" y="14" width="16" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" /> },
+                        { id: 'person', name: 'Person', icon: <circle cx="12" cy="9" r="3" stroke="currentColor" strokeWidth="1.5" /> },
+                        { id: 'armchair', name: 'Armchair', icon: <rect x="4" y="12" width="16" height="8" rx="1" stroke="currentColor" strokeWidth="1.5" /> }
+                      ].map(item => (
+                        <Button
+                          key={item.id}
+                          variant="outline"
+                          className="h-auto py-2 flex flex-col items-center justify-center gap-1"
+                        >
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            {item.icon}
+                          </svg>
+                          <span className="text-xs">{item.name}</span>
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Parameters (matching style from Step 1) */}
+                <div className="border rounded-lg p-4">
+                  <h3 className="font-semibold text-lg mb-4">Parameters</h3>
+                  <div className="space-y-4">
+                    <div className="space-y-4">
+                      <Label>Air Flow Rate</Label>
+                      <Slider defaultValue={[50]} max={100} step={1} />
+                      <div className="text-sm text-right">50 m³/h</div>
+                    </div>
+                    <div className="space-y-4">
+                      <Label>Temperature</Label>
+                      <Slider defaultValue={[20]} max={40} min={0} step={1} />
+                      <div className="text-sm text-right">20°C</div>
+                    </div>
+                    <div className="space-y-4">
+                      <Label>Humidity</Label>
+                      <Slider defaultValue={[45]} max={100} min={0} step={1} />
+                      <div className="text-sm text-right">45%</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Files section matching Step 1 */}
+                <div className="border rounded-lg p-4">
+                  <h3 className="font-semibold text-lg mb-4">Files</h3>
+                  <div className="space-y-2">
+                    <Button variant="outline" className="w-full flex items-center gap-2">
+                      <Save className="h-4 w-4" />
+                      Save Design
+                    </Button>
+                    <Button variant="outline" className="w-full flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      Load Design
+                    </Button>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div>
-              <h3 className="font-semibold text-lg mb-4">Furniture</h3>
-              <div className="grid grid-cols-2 gap-2">
-                {[
-                  { id: 'table', name: 'Table', icon: <rect x="4" y="14" width="16" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" /> },
-                  { id: 'person', name: 'Person', icon: <circle cx="12" cy="9" r="3" stroke="currentColor" strokeWidth="1.5" /> },
-                  { id: 'armchair', name: 'Armchair', icon: <rect x="4" y="12" width="16" height="8" rx="1" stroke="currentColor" strokeWidth="1.5" /> }
-                ].map(item => (
-                  <div key={item.id} className="border rounded text-center p-2">
-                    <div className="flex justify-center mb-1">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        {item.icon}
-                      </svg>
-                    </div>
-                    <div className="text-xs">{item.name}</div>
-                  </div>
-                ))}
+              {/* Main content area - matching dimensions */}
+              <div className="flex-1 border rounded-lg overflow-hidden bg-white min-w-[600px]">
+                <RoomSketchPro
+                  width={800}
+                  height={600}
+                  key="step2-view"
+                  instanceId="step2-view"
+                  lines={lines}
+                  airEntries={airEntries}
+                  wallTransparency={wallTransparency}
+                  onWallTransparencyChange={(value) => {
+                    console.log("Wizard: Wall transparency changing to:", value);
+                    setWallTransparency(value);
+                  }}
+                />
               </div>
-            </div>
-          </div>
-
-          {/* Main content area */}
-          <div className="flex-1 border rounded-lg overflow-hidden bg-white min-w-[600px]">
-            <RoomSketchPro
-              width={800}
-              height={600}
-              key="step2-view"
-              instanceId="step2-view"
-              lines={lines}
-              airEntries={airEntries}
-              wallTransparency={wallTransparency}
-              onWallTransparencyChange={(value) => {
-                console.log("Wizard: Wall transparency changing to:", value);
-                setWallTransparency(value);
-              }}
-            />
-          </div>
-        </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Simulation Parameters</CardTitle>
-            <CardDescription>
-              Configure the physical parameters for your simulation
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-4">
-              <Label>Air Flow Rate</Label>
-              <Slider defaultValue={[50]} max={100} step={1} />
-              <div className="text-sm text-right">50 m³/h</div>
-            </div>
-            <div className="space-y-4">
-              <Label>Temperature</Label>
-              <Slider defaultValue={[20]} max={40} min={0} step={1} />
-              <div className="text-sm text-right">20°C</div>
-            </div>
-            <div className="space-y-4">
-              <Label>Humidity</Label>
-              <Slider defaultValue={[45]} max={100} min={0} step={1} />
-              <div className="text-sm text-right">45%</div>
             </div>
           </CardContent>
         </Card>
-      </div>
+      </>
     );
   };
 

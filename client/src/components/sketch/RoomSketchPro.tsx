@@ -1145,7 +1145,7 @@ export function RoomSketchPro({
         paneGlassMaterial,
       );
 
-      glassPane.position.set(...pos);
+      glassPane.position.set(pos[0], pos[1], pos[2]);
       windowGroup.add(glassPane);
     });
 
@@ -1534,15 +1534,17 @@ export function RoomSketchPro({
   };
 
   return (
-    <div className="flex gap-4">
-      <div
-        ref={containerRef}
-        style={{
-          width: `${width}px`,
-          height: `${height}px`,
-          position: "relative",
-        }}
-      />
-    </div>
+    <div 
+      ref={containerRef}
+      className="w-full h-full bg-white"
+      style={{
+        width: `${width}px`, 
+        height: `${height}px`,
+        position: "relative",
+        border: "1px solid #e0e0e0",
+        borderRadius: "0.25rem",
+        overflow: "hidden"
+      }}
+    />
   );
 }
