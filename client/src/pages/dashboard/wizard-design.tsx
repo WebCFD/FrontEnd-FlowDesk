@@ -543,7 +543,6 @@ export default function WizardDesign() {
   const handleToggleEraserMode = () => {
     const newEraserMode = !isEraserMode;
     console.log("🔴 ERASER TOGGLE - Toggling eraser mode, current:", isEraserMode, "new:", newEraserMode);
-    setIsEraserMode(newEraserMode);
     
     // Disable measurement mode when enabling eraser mode
     if (newEraserMode) {
@@ -551,17 +550,20 @@ export default function WizardDesign() {
       setIsMeasureMode(false);
     }
     
-    // Add a delayed check to verify the state was updated correctly
-    setTimeout(() => {
-      console.log("🔴 ERASER TOGGLE - After state update, isEraserMode:", isEraserMode);
-    }, 100);
-    
+    // Use the new value for toast notifications instead of the current state
+    // which hasn't been updated yet
     toast({
-      title: isEraserMode ? "Eraser Mode Disabled" : "Eraser Mode Enabled",
-      description: isEraserMode 
-        ? "Exited eraser mode" 
-        : "Click on a window, door, or vent to delete it",
+      title: newEraserMode ? "Eraser Mode Enabled" : "Eraser Mode Disabled",
+      description: newEraserMode
+        ? "Click on a window, door, or vent to delete it"
+        : "Exited eraser mode",
     });
+    
+    // Set the state after preparing the toast notification
+    setIsEraserMode(newEraserMode);
+    
+    // Log for debugging
+    console.log("🔴 ERASER TOGGLE - Set isEraserMode to:", newEraserMode);
   };
 
   const handleDeleteAirEntryFrom3D = (

@@ -420,13 +420,18 @@ export default function Canvas3D({
   // Create a ref to track the current isEraserMode value to ensure it's always up-to-date in event handlers
   const isEraserModeRef = useRef(isEraserMode);
   
-  // Update the ref whenever isEraserMode changes
+  // Synchronize the ref with isEraserMode state immediately
+  // This needs to happen in a separate useEffect to ensure proper sequence of operations
   useEffect(() => {
+    // First update the ref to match the current state
     isEraserModeRef.current = isEraserMode;
-    console.log("📌 isEraserModeRef updated to:", isEraserModeRef.current);
-    
-    // When turning off eraser mode, clean up any highlighted elements
-    if (!isEraserMode) {
+    console.log("📌 isEraserModeRef synchronized to:", isEraserModeRef.current);
+  }, [isEraserMode]);
+  
+  // Handle cleanup when exiting eraser mode
+  useEffect(() => {
+    // Only perform cleanup when turning off eraser mode
+    if (isEraserMode === false) {
       console.log("🔄 Eraser mode turned off - performing comprehensive cleanup");
       
       // Clean up highlighted element if it exists
@@ -3552,15 +3557,16 @@ export default function Canvas3D({
     }
   }, [currentFloor]);
   
-  // Effect to handle eraser mode changes
+  // Effect to handle eraser mode changes - UI updates only
   useEffect(() => {
+    const eraserModeValue = isEraserMode === true; // Force a boolean value
     console.log("Canvas3D isEraserMode prop changed:", isEraserMode, "- Applying UI changes", 
                 isEraserMode === undefined ? "👉 UNDEFINED VALUE!" : "");
     
     // Update debug info to reflect current eraser mode state
     setDebugInfo(prev => ({
       ...prev,
-      eraserMode: isEraserMode === true // Force a boolean value
+      eraserMode: eraserModeValue
     }));
     
     // Log how many air entry elements exist in the scene
@@ -3583,7 +3589,7 @@ export default function Canvas3D({
     
     // Add visual indication of eraser mode
     if (containerRef.current) {
-      if (isEraserMode) {
+      if (eraserModeValue) {
         containerRef.current.style.cursor = 'not-allowed'; // Eraser cursor
         containerRef.current.title = 'Left-click to erase air entries (windows, doors, vents)';
         console.log("Set cursor to not-allowed - eraser mode active");
