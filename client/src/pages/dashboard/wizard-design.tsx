@@ -1158,6 +1158,12 @@ export default function WizardDesign() {
                           key={item.id}
                           variant="outline"
                           className="h-auto py-2 flex flex-col items-center justify-center gap-1"
+                          draggable={true}
+                          onDragStart={(e) => {
+                            console.log(`Starting drag for ${item.name}`);
+                            e.dataTransfer.setData('application/json', JSON.stringify(item));
+                            e.dataTransfer.effectAllowed = 'copy';
+                          }}
                         >
                           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                             {item.icon}
