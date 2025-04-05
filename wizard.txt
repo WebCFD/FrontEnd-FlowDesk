@@ -1540,8 +1540,9 @@ export default function WizardDesign() {
 
     return (
       <div className="flex-1 border rounded-lg overflow-hidden bg-white min-w-[600px]">
-        <SceneProvider>
-          {mode === "step2" ? (
+        {/* Special case for Step 2 which renders RoomSketchPro */}
+        {mode === "step2" ? (
+          <SceneProvider>
             <RoomSketchPro
               key="step2-view"
               instanceId="step2-view"
@@ -1553,34 +1554,36 @@ export default function WizardDesign() {
                 setWallTransparency(value);
               }}
             />
-          ) : tab === "2d-editor" ? (
-            <Canvas2D
-              gridSize={gridSize}
-              currentTool={currentTool}
-              currentAirEntry={currentAirEntry}
-              airEntries={airEntries}
-              measurements={measurements}
-              stairPolygons={stairPolygons}
-              onMeasurementsUpdate={setMeasurements}
-              onStairPolygonsUpdate={setStairPolygons}
-              lines={lines}
-              floorText={formatFloorText(currentFloor)}
-              isMultifloor={isMultifloor}
-              onLinesUpdate={(newLines) => {
-                setLines(newLines);
-                const hasClosedContour =
-                  newLines.length > 0 &&
-                  newLines.some(
-                    (line) =>
-                      isInClosedContour(line.start, newLines) ||
-                      isInClosedContour(line.end, newLines),
-                  );
-                setHasClosedContour(hasClosedContour);
-              }}
-              onAirEntriesUpdate={setAirEntries}
-              onLineSelect={handleLineSelect}
-            />
-          ) : (
+          </SceneProvider>
+        ) : tab === "2d-editor" ? (
+          <Canvas2D
+            gridSize={gridSize}
+            currentTool={currentTool}
+            currentAirEntry={currentAirEntry}
+            airEntries={airEntries}
+            measurements={measurements}
+            stairPolygons={stairPolygons}
+            onMeasurementsUpdate={setMeasurements}
+            onStairPolygonsUpdate={setStairPolygons}
+            lines={lines}
+            floorText={formatFloorText(currentFloor)}
+            isMultifloor={isMultifloor}
+            onLinesUpdate={(newLines) => {
+              setLines(newLines);
+              const hasClosedContour =
+                newLines.length > 0 &&
+                newLines.some(
+                  (line) =>
+                    isInClosedContour(line.start, newLines) ||
+                    isInClosedContour(line.end, newLines),
+                );
+              setHasClosedContour(hasClosedContour);
+            }}
+            onAirEntriesUpdate={setAirEntries}
+            onLineSelect={handleLineSelect}
+          />
+        ) : (
+          <SceneProvider>
             <Canvas3D
               floors={floors}
               currentFloor={currentFloor}
@@ -1595,8 +1598,8 @@ export default function WizardDesign() {
               onDeleteAirEntry={handleDeleteAirEntryFrom3D}
               onViewChange={handleViewChange}
             />
-          )}
-        </SceneProvider>
+          </SceneProvider>
+        )}
       </div>
     );
   };
@@ -1645,44 +1648,3 @@ export default function WizardDesign() {
         </div>
         <div className="flex justify-end gap-2 pt-6 mt-6 border-t">
           {step > 1 && (
-            <Button onClick={handleBack} variant="outline">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back
-            </Button>
-          )}
-          {step < 3 ? (
-            <Button onClick={handleNext}>
-              Next
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          ) : (
-            <Button onClick={handleStartSimulation}>Start Simulation</Button>
-          )}
-        </div>
-      </div>
-
-      <FloorLoadDialog
-        isOpen={isFloorLoadDialogOpen}
-        onClose={() => setIsFloorLoadDialogOpen(false)}
-        onConfirm={performFloorLoad}
-        sourceFloor={loadFromFloor}
-        targetFloor={currentFloor}
-        hasContent={
-          floors[currentFloor]?.lines.length > 0 ||
-          floors[currentFloor]?.airEntries.length > 0
-        }
-        hasStairs={
-          floors[loadFromFloor]?.stairPolygons?.some((stair) => {
-            const connectsToTargetFloor =
-              (stair.direction === "up" &&
-                getConnectedFloorName(loadFromFloor, "up") === currentFloor) ||
-              (stair.direction === "down" &&
-                getConnectedFloorName(loadFromFloor, "down") === currentFloor);
-
-            return connectsToTargetFloor;
-          }) || false
-        }
-      />
-    </DashboardLayout>
-  );
-}
