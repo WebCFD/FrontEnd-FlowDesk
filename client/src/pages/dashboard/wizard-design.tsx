@@ -1583,20 +1583,22 @@ export default function WizardDesign() {
             onLineSelect={handleLineSelect}
           />
         ) : (
-          <Canvas3D
-            floors={floors}
-            currentFloor={currentFloor}
-            ceilingHeight={ceilingHeight}
-            floorDeckThickness={floorDeckThickness}
-            wallTransparency={wallTransparency}
-            isMeasureMode={isMeasureMode}
-            isEraserMode={isEraserMode}
-            simulationName={simulationName}
-            simulationType={simulationType === "comfort" ? "Comfort Simulation (steady run)" : "Air Renovation Convection Simulation (transient run)"}
-            onUpdateAirEntry={handleUpdateAirEntryFrom3D}
-            onDeleteAirEntry={handleDeleteAirEntryFrom3D}
-            onViewChange={handleViewChange}
-          />
+          <SceneProvider>
+            <Canvas3D
+              floors={floors}
+              currentFloor={currentFloor}
+              ceilingHeight={ceilingHeight}
+              floorDeckThickness={floorDeckThickness}
+              wallTransparency={wallTransparency}
+              isMeasureMode={isMeasureMode}
+              isEraserMode={isEraserMode}
+              simulationName={simulationName}
+              simulationType={simulationType === "comfort" ? "Comfort Simulation (steady run)" : "Air Renovation Convection Simulation (transient run)"}
+              onUpdateAirEntry={handleUpdateAirEntryFrom3D}
+              onDeleteAirEntry={handleDeleteAirEntryFrom3D}
+              onViewChange={handleViewChange}
+            />
+          </SceneProvider>
         )}
       </div>
     );
