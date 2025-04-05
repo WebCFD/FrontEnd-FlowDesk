@@ -542,8 +542,11 @@ export function RoomSketchPro({
     camera: THREE.PerspectiveCamera,
   ) => {
     console.log("RoomSketchPro - createWalls called with scene:", scene);
-    // Always use the lines passed directly through props, fallback to context only if needed
-    const linesToUse = lines.length > 0 ? lines : (geometryData?.lines || []);
+    // Use lines from props if available, or try to get them from the context's current floor data
+    const currentFloorData = geometryData?.floors?.[geometryData.currentFloor];
+    const contextLines = currentFloorData?.lines || geometryData?.lines || [];
+    const linesToUse = lines.length > 0 ? lines : contextLines;
+    console.log("RoomSketchPro - Current floor in context:", geometryData?.currentFloor);
     console.log("RoomSketchPro - Using lines data:", linesToUse);
     
     const textureLoader = new THREE.TextureLoader();
@@ -679,8 +682,11 @@ export function RoomSketchPro({
       side: THREE.DoubleSide,
     });
 
-    // Always use the air entries from props if available, fallback to context only if needed
-    const entriesData = airEntries.length > 0 ? airEntries : (geometryData?.airEntries || []);
+    // Use air entries from props if available, or try to get them from the context's current floor data
+    const currentFloorData = geometryData?.floors?.[geometryData.currentFloor];
+    const contextAirEntries = currentFloorData?.airEntries || geometryData?.airEntries || [];
+    const entriesData = airEntries.length > 0 ? airEntries : contextAirEntries;
+    console.log("RoomSketchPro - Using air entries data:", entriesData);
     entriesData.forEach((entry) => {
       // Set material based on entry type
       let material;
