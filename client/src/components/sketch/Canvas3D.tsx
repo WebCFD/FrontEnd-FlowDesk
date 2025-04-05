@@ -2181,6 +2181,23 @@ export default function Canvas3D({
               object.userData.type &&
               ["window", "door", "vent"].includes(object.userData.type)
             ) {
+              // Temporarily increase the scale of the object for better detection
+              // Store original scale if we haven't already
+              if (!object.userData.originalScale) {
+                object.userData.originalScale = object.scale.clone();
+                
+                // Make the object temporarily larger for raycasting (2x size)
+                object.scale.set(2.0, 2.0, 2.0);
+                
+                // Force an update to the object's geometry to ensure raycasting works correctly
+                if (object.geometry) {
+                  object.geometry.computeBoundingSphere();
+                  object.geometry.computeBoundingBox();
+                }
+                
+                console.log(`Enlarged ${object.userData.type} for better hover detection`);
+              }
+              
               airEntryMeshes.push(object as THREE.Mesh);
             }
           });
@@ -2192,9 +2209,29 @@ export default function Canvas3D({
             const raycaster = new THREE.Raycaster();
             raycaster.setFromCamera(mouseCoords, cameraRef.current);
             
-            // Check for intersections with air entry meshes
-            const meshIntersects = raycaster.intersectObjects(airEntryMeshes, false);
+            // Increase raycaster precision for air entries (larger threshold for better detection)
+            const originalThreshold = raycaster.params.Line.threshold;
+            raycaster.params.Line.threshold = 10;  // Increase line threshold for better detection
+            raycaster.params.Points.threshold = 10; // Increase point threshold for better detection
+            
+            // Make sure we're using recursive flag = true to catch child objects too
+            const meshIntersects = raycaster.intersectObjects(airEntryMeshes, true);
+            
+            // Restore original threshold when we're done
+            raycaster.params.Line.threshold = originalThreshold;
+            
+            // Enhanced debugging for air entry intersections
             console.log(`Found ${meshIntersects.length} intersections with air entries`);
+            
+            // Log detailed info about available air entry meshes
+            console.log(`DEBUG: Eraser mode hover detection - ${airEntryMeshes.length} air entries in scene`);
+            airEntryMeshes.forEach((mesh, i) => {
+              console.log(`Air Entry #${i}: type=${mesh.userData.type}, position=${JSON.stringify(mesh.position)}, worldPosition=${JSON.stringify(mesh.getWorldPosition(new THREE.Vector3()))}`);
+              
+              // Output mesh bounding box for debugging
+              const boundingBox = new THREE.Box3().setFromObject(mesh);
+              console.log(`  Bounding box: min=(${boundingBox.min.x.toFixed(2)}, ${boundingBox.min.y.toFixed(2)}, ${boundingBox.min.z.toFixed(2)}), max=(${boundingBox.max.x.toFixed(2)}, ${boundingBox.max.y.toFixed(2)}, ${boundingBox.max.z.toFixed(2)})`);
+            });
             
             // Update debug info whether we have intersections or not
             const hasIntersections = meshIntersects.length > 0;
@@ -2212,22 +2249,60 @@ export default function Canvas3D({
               const mesh = meshIntersects[0].object as THREE.Mesh;
               console.log("Mesh data for eraser hover:", mesh.userData);
               
+              // If we're already hovering over a different object, restore it first
+              if (hoveredEraseTarget && hoveredEraseTarget.object !== mesh) {
+                // Restore original material
+                hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
+                
+                // Restore original scale if applicable
+                if (hoveredEraseTarget.object.userData?.originalScale) {
+                  hoveredEraseTarget.object.scale.copy(hoveredEraseTarget.object.userData.originalScale);
+                  
+                  // Force update to the geometry
+                  if (hoveredEraseTarget.object.geometry) {
+                    hoveredEraseTarget.object.geometry.computeBoundingSphere();
+                    hoveredEraseTarget.object.geometry.computeBoundingBox();
+                  }
+                  
+                  console.log(`Restored scale for previously hovered ${hoveredEraseTarget.object.userData.type}`);
+                }
+              }
+              
               // Store original material and apply highlight material
               const originalMaterial = mesh.material;
               
-              // Create new highlight material (bright red, semi-transparent with glow effect)
-              const highlightMaterial = new THREE.MeshBasicMaterial({
+              // Create new highlight material (bright red, fully visible)
+              // Use MeshPhongMaterial instead of MeshBasicMaterial to support emissive property
+              const highlightMaterial = new THREE.MeshPhongMaterial({
                 color: 0xff3333,  // Brighter red
                 opacity: 1.0,     // Fully opaque for better visibility
                 transparent: true,
                 side: THREE.DoubleSide,
                 wireframe: false,
                 emissive: 0xff0000, // Add emissive property for glow effect
-                emissiveIntensity: 1.0
+                emissiveIntensity: 1.0,
+                shininess: 100    // Make it shiny for better visibility
               });
               
               // Apply highlight material
               mesh.material = highlightMaterial;
+              
+              // Make the hovered mesh even larger for better visibility
+              if (mesh.userData.originalScale) {
+                // Store the current "enlarged" scale (from eraser mode scale increase)
+                const currentScale = mesh.scale.clone();
+                
+                // Make it 3x the original size when hovered (super visible)
+                mesh.scale.set(3.0, 3.0, 3.0);
+                
+                // Force update to the geometry
+                if (mesh.geometry) {
+                  mesh.geometry.computeBoundingSphere();
+                  mesh.geometry.computeBoundingBox();
+                }
+                
+                console.log(`Made hovered ${mesh.userData.type} even larger for better visibility`);
+              }
               
               // Store the highlighted object and its original material
               setHoveredEraseTarget({
@@ -2248,11 +2323,46 @@ export default function Canvas3D({
       } else if (!isEraserMode && hoveredEraseTarget) {
         // If we exit eraser mode but still have a highlighted object, restore it
         hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
+        
+        // Restore original scale if it was stored
+        if (hoveredEraseTarget.object.userData?.originalScale) {
+          hoveredEraseTarget.object.scale.copy(hoveredEraseTarget.object.userData.originalScale);
+          console.log(`Restored original scale for ${hoveredEraseTarget.object.userData.type}`);
+          
+          // Force update to the geometry
+          if (hoveredEraseTarget.object.geometry) {
+            hoveredEraseTarget.object.geometry.computeBoundingSphere();
+            hoveredEraseTarget.object.geometry.computeBoundingBox();
+          }
+        }
+        
         setHoveredEraseTarget(null);
         
         // Re-enable controls
         if (controlsRef.current) {
           controlsRef.current.enabled = true;
+        }
+        
+        // Restore all air entries to original scale when exiting eraser mode
+        if (sceneRef.current) {
+          sceneRef.current.traverse((object) => {
+            if (
+              object instanceof THREE.Mesh &&
+              object.userData?.originalScale
+            ) {
+              // Restore original scale
+              object.scale.copy(object.userData.originalScale);
+              
+              // Remove the originalScale property to reset state for next time
+              delete object.userData.originalScale;
+              
+              // Update geometry after scaling back
+              if (object.geometry) {
+                object.geometry.computeBoundingSphere();
+                object.geometry.computeBoundingBox();
+              }
+            }
+          });
         }
         
         // Force render to update the appearance
@@ -2616,6 +2726,40 @@ export default function Canvas3D({
       if (hoveredEraseTarget) {
         const mesh = hoveredEraseTarget.object;
         const airEntryData = mesh.userData;
+        
+        // Enlarged visuals didn't turn back to normal size automatically in the case of a click
+        // So we need to restore the scale here
+        if (mesh.userData.originalScale) {
+          // Store original scale for cleanup afterwards
+          const originalScale = mesh.userData.originalScale;
+          
+          // Schedule a cleanup after deletion
+          setTimeout(() => {
+            // We may still need to traverse the scene to find the enlarged meshes and restore them
+            if (sceneRef.current) {
+              sceneRef.current.traverse((object) => {
+                if (
+                  object instanceof THREE.Mesh &&
+                  object.userData?.originalScale
+                ) {
+                  // Restore original scale
+                  object.scale.copy(object.userData.originalScale);
+                  
+                  // Remove the originalScale property to reset state for next time
+                  delete object.userData.originalScale;
+                  
+                  // Update geometry after scaling back
+                  if (object.geometry) {
+                    object.geometry.computeBoundingSphere();
+                    object.geometry.computeBoundingBox();
+                  }
+                  
+                  console.log("Cleaned up scale for a mesh after eraser click");
+                }
+              });
+            }
+          }, 50); // Short timeout to let the deletion happen first
+        }
         
         console.log("✅ Using highlighted air entry for deletion:", airEntryData);
         setDebugInfo(prev => ({
