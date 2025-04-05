@@ -2197,29 +2197,33 @@ export default function Canvas3D({
             console.log(`Found ${meshIntersects.length} intersections with air entries`);
             
             // Update debug info whether we have intersections or not
+            const hasIntersections = meshIntersects.length > 0;
+            
             setDebugInfo(prev => ({
               ...prev,
-              hovering: meshIntersects.length > 0,
-              lastIntersection: meshIntersects.length > 0 
-                ? `${meshIntersects[0].object.userData.type} at ${Math.round(meshIntersects[0].distance)}` 
+              hovering: hasIntersections,
+              lastIntersection: hasIntersections
+                ? `${meshIntersects[0].object.userData.type} (entry ${meshIntersects[0].object.userData.entryIndex}) at ${Math.round(meshIntersects[0].distance)}` 
                 : 'None'
             }));
             
-            if (meshIntersects.length > 0) {
+            if (hasIntersections) {
               console.log("Intersection found! Highlighting element");
               const mesh = meshIntersects[0].object as THREE.Mesh;
-              console.log("Mesh data:", mesh.userData);
+              console.log("Mesh data for eraser hover:", mesh.userData);
               
               // Store original material and apply highlight material
               const originalMaterial = mesh.material;
               
-              // Create new highlight material (bright red, semi-transparent)
+              // Create new highlight material (bright red, semi-transparent with glow effect)
               const highlightMaterial = new THREE.MeshBasicMaterial({
-                color: 0xff0000,  // Red
-                opacity: 0.8,
+                color: 0xff3333,  // Brighter red
+                opacity: 1.0,     // Fully opaque for better visibility
                 transparent: true,
                 side: THREE.DoubleSide,
-                wireframe: false
+                wireframe: false,
+                emissive: 0xff0000, // Add emissive property for glow effect
+                emissiveIntensity: 1.0
               });
               
               // Apply highlight material
@@ -3262,6 +3266,12 @@ export default function Canvas3D({
   // Effect to handle eraser mode changes
   useEffect(() => {
     console.log("Canvas3D isEraserMode prop changed:", isEraserMode, "- Applying UI changes");
+    
+    // Update debug info to reflect current eraser mode state
+    setDebugInfo(prev => ({
+      ...prev,
+      eraserMode: isEraserMode
+    }));
     
     // Log how many air entry elements exist in the scene
     if (sceneRef.current) {
