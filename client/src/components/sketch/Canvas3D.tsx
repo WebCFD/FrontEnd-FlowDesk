@@ -1761,7 +1761,11 @@ export default function Canvas3D({
 
       if (axesIntersects.length > 0) {
         const axisObject = axesIntersects[0].object as THREE.Mesh;
+        console.log('==========================================');
+        console.log('AXIS SELECTED - DETAILS:');
         console.log('Axis clicked:', axisObject.userData);
+        console.log('Mesh UUID:', axisObject.uuid);
+        console.log('==========================================');
 
         // Define type for axis mesh userData to fix TypeScript errors
         type AxisMeshUserData = {
@@ -1774,6 +1778,16 @@ export default function Canvas3D({
         // Get axis type from userData with correct typing
         const axisUserData = axisObject.userData as AxisMeshUserData;
         const axisDirection = axisUserData.direction;
+        
+        console.log(`SELECTED AXIS: ${axisDirection?.toUpperCase()}`);
+        
+        // Log surrounding axes for debugging
+        console.log('Searching surrounding scene for related objects');
+        sceneRef.current.traverse((obj) => {
+          if (obj.position.distanceTo(axisObject.position) < 30) {
+            console.log(`Nearby object: ${obj.uuid.substring(0, 8)} - Type: ${obj.type} - userData: `, obj.userData);
+          }
+        });
 
         if (axisDirection === 'x' || axisDirection === 'y' || axisDirection === 'z') {
                   // Find the parent air entry for this axis
