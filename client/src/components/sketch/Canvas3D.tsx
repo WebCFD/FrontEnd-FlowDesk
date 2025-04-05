@@ -3533,7 +3533,11 @@ export default function Canvas3D({
     
     // Update SceneContext with current floor's geometric data for RoomSketchPro to use
     const currentFloorData = floors[currentFloor];
+    console.log("Canvas3D - Current floor data:", currentFloorData);
+    
     if (currentFloorData) {
+      console.log(`Canvas3D - Updating SceneContext with ${currentFloorData.lines?.length || 0} lines and ${currentFloorData.airEntries?.length || 0} airEntries`);
+      
       updateGeometryData({
         lines: currentFloorData.lines || [],
         airEntries: currentFloorData.airEntries || [],

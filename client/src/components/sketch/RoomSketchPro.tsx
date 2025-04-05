@@ -234,6 +234,29 @@ export function RoomSketchPro({
   // Get data from SceneContext
   const { geometryData } = useSceneContext();
   
+  // Add logging to debug the component
+  console.log("RoomSketchPro - Component Props:", { 
+    width, height, instanceId, lines, airEntries, roomHeight, wallTransparency 
+  });
+  console.log("RoomSketchPro - SceneContext geometryData:", geometryData);
+  
+  // Monitor geometryData changes
+  useEffect(() => {
+    console.log("RoomSketchPro - geometryData changed in context:", geometryData);
+    
+    if (!geometryData) {
+      console.warn("RoomSketchPro - geometryData is null or undefined in context");
+    } else {
+      console.log(`RoomSketchPro - geometryData contains ${geometryData.lines?.length || 0} lines and ${geometryData.airEntries?.length || 0} air entries`);
+    }
+    
+    // Check if we have a valid scene to update
+    if (sceneRef.current && rendererRef.current && cameraRef.current && geometryData) {
+      console.log("RoomSketchPro - Attempting to update scene with new geometryData");
+      // We could trigger redrawing walls and air entries here if needed
+    }
+  }, [geometryData]);
+  
   const containerRef = useRef<HTMLDivElement>(null);
   const [furniture, setFurniture] = useState<FurnitureItem[]>([]);
 
@@ -409,12 +432,21 @@ export function RoomSketchPro({
 
   // Initialize scene
   useEffect(() => {
-    if (!containerRef.current) return;
+    console.log("RoomSketchPro - Initialization effect running");
+    
+    if (!containerRef.current) {
+      console.error("RoomSketchPro - Container ref is null, cannot initialize");
+      return;
+    }
 
     // Setup scene
     const scene = setupScene();
-    if (!scene) return;
+    if (!scene) {
+      console.error("RoomSketchPro - Scene setup failed");
+      return;
+    }
     sceneRef.current = scene;
+    console.log("RoomSketchPro - Scene initialized successfully");
 
     // Setup camera
     const camera = setupCamera();
@@ -509,6 +541,9 @@ export function RoomSketchPro({
     renderer: THREE.WebGLRenderer,
     camera: THREE.PerspectiveCamera,
   ) => {
+    console.log("RoomSketchPro - createWalls called with scene:", scene);
+    console.log("RoomSketchPro - Using lines data:", geometryData?.lines || lines);
+    
     const textureLoader = new THREE.TextureLoader();
     const brickTexture = textureLoader.load(
       "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/brick_diffuse.jpg",
@@ -517,6 +552,7 @@ export function RoomSketchPro({
         texture.wrapT = THREE.RepeatWrapping;
         texture.repeat.set(2, 1);
         renderer.render(scene, camera);
+        console.log("RoomSketchPro - Brick texture loaded successfully");
       },
     );
 
@@ -529,9 +565,16 @@ export function RoomSketchPro({
       side: THREE.DoubleSide,
     });
     wallMaterialRef.current = wallMaterial;
+    console.log("RoomSketchPro - Wall material created with transparency:", wallTransparency);
 
     // Convert 2D lines to 3D walls - use geometryData.lines from the context if available
     const linesData = geometryData?.lines || lines;
+    console.log(`RoomSketchPro - Creating walls from ${linesData.length} lines`);
+    
+    if (linesData.length === 0) {
+      console.warn("RoomSketchPro - No lines data available to create walls");
+    }
+    
     linesData.forEach((line, lineIndex) => {
       const start_bottom = transform2DTo3D(line.start);
       const end_bottom = transform2DTo3D(line.end);
