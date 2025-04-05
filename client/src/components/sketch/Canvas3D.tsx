@@ -1278,12 +1278,35 @@ export default function Canvas3D({
           const distanceToObject = camera.position.distanceTo(dragState.selectedObject.position);
           const scaleFactor = Math.max(0.5, Math.min(10.0, distanceToObject / 100));
           
-          // Calculate a single displacement value based on the dominant mouse movement direction
-          const dragMagnitude = Math.abs(mouseDeltaX) > Math.abs(mouseDeltaY) ? 
-            mouseDeltaX : -mouseDeltaY;  // Y is negated because screen Y increases downward
+          // Create a 2D vector for the mouse movement
+          const mouseMovementVector = new THREE.Vector2(mouseDeltaX, -mouseDeltaY); // Y is negated because screen Y increases downward
+          
+          // Get the camera's view direction to adjust mouse movement based on view
+          const cameraDirection = new THREE.Vector3();
+          camera.getWorldDirection(cameraDirection);
+          
+          // Log camera and mouse info for debugging
+          console.log("Camera direction:", cameraDirection);
+          console.log("Mouse movement vector:", mouseMovementVector);
+          
+          // Calculate overall movement magnitude
+          const movementMagnitude = mouseMovementVector.length() * scaleFactor;
+          
+          // Determine movement direction based on the sign of the dominant axis
+          const movementSign = Math.abs(mouseDeltaX) > Math.abs(mouseDeltaY) 
+            ? Math.sign(mouseDeltaX) 
+            : Math.sign(-mouseDeltaY);
           
           // Scale the displacement
-          const displacement = dragMagnitude * scaleFactor;
+          const displacement = movementMagnitude * movementSign;
+          
+          console.log("Movement calculation:", {
+            mouseDeltaX,
+            mouseDeltaY,
+            movementMagnitude,
+            movementSign,
+            finalDisplacement: displacement
+          });
           
           // Start with the original position
           const newPosition = dragState.startPosition.clone();
@@ -1333,35 +1356,86 @@ export default function Canvas3D({
               console.log("Z direction vector:", dirVector);
               console.log("Dot product with wall direction:", dotProduct);
               console.log("Expected movement direction:", Math.abs(wallDir.x) > Math.abs(wallDir.y) ? "NORTH/SOUTH" : "EAST/WEST");
+              
+              // COMPLETELY NEW APPROACH:
+              // Calculate movement based on mouse's relation to the 2D vector that represents the Z axis
+              // Create 2D versions of our vectors
+              const zAxis2D = new THREE.Vector2(dirVector.x, dirVector.y).normalize();
+              const mouse2D = new THREE.Vector2(mouseDeltaX, -mouseDeltaY).normalize();
+              
+              // Take dot product between mouse movement and Z axis to determine how aligned they are
+              const moveAlignment = zAxis2D.dot(mouse2D);
+              
+              // The sign of the dot product tells us which direction to move along the Z axis
+              // Magnitude is based on total mouse movement, but direction is determined by alignment
+              // This should help with the Z axis movement regardless of camera view
+              
+              console.log("NEW CALCULATION METHOD:");
+              console.log("Z-axis 2D:", zAxis2D);
+              console.log("Mouse 2D:", mouse2D);
+              console.log("Movement alignment (dot product):", moveAlignment);
+              
+              // Calculate a better displacement that respects the Z axis direction
+              // Use the original movement magnitude but with corrected direction
+              const betterDisplacement = movementMagnitude * Math.sign(moveAlignment);
+              
+              console.log("Original displacement:", displacement);
+              console.log("Better displacement:", betterDisplacement);
+              
+              // BEFORE applying movement
+              console.log("BEFORE movement - Position:", {
+                x: newPosition.x.toFixed(2),
+                y: newPosition.y.toFixed(2),
+                z: newPosition.z.toFixed(2)
+              });
+              
+              // FIXED: Using the improved displacement calculation
+              newPosition.x += dirVector.x * betterDisplacement;
+              newPosition.y += dirVector.y * betterDisplacement;
+              // Z component would be dirVector.z * betterDisplacement if needed
+              
+              // AFTER applying movement
+              console.log("AFTER movement - Position:", {
+                x: newPosition.x.toFixed(2),
+                y: newPosition.y.toFixed(2),
+                z: newPosition.z.toFixed(2)
+              });
+              
+              console.log("Movement delta:", {
+                x: (dirVector.x * betterDisplacement).toFixed(2),
+                y: (dirVector.y * betterDisplacement).toFixed(2)
+              });
+              
+              console.log("==== END Z AXIS MOVEMENT DETAILS ====");
+              
+              console.log(`Drag Z perpendicular to wall (BLUE): [${dirVector.x.toFixed(2)}, ${dirVector.y.toFixed(2)}, ${dirVector.z.toFixed(2)}], betterDisplacement: ${betterDisplacement.toFixed(2)}`);
+            } else {
+              // Fallback to old approach if we don't have entry data
+              console.log("No entry data available, using fallback approach");
+              
+              // BEFORE applying movement
+              console.log("BEFORE movement - Position:", {
+                x: newPosition.x.toFixed(2),
+                y: newPosition.y.toFixed(2),
+                z: newPosition.z.toFixed(2)
+              });
+              
+              // Apply regular displacement as fallback
+              newPosition.x += dirVector.x * displacement;
+              newPosition.y += dirVector.y * displacement;
+              
+              // AFTER applying movement
+              console.log("AFTER movement - Position:", {
+                x: newPosition.x.toFixed(2),
+                y: newPosition.y.toFixed(2),
+                z: newPosition.z.toFixed(2)
+              });
+              
+              console.log("Displacement value:", displacement.toFixed(2));
+              console.log("==== END Z AXIS MOVEMENT DETAILS ====");
+              
+              console.log(`Drag Z perpendicular to wall (BLUE): [${dirVector.x.toFixed(2)}, ${dirVector.y.toFixed(2)}, ${dirVector.z.toFixed(2)}], displacement: ${displacement.toFixed(2)}`);
             }
-            
-            // BEFORE applying movement
-            console.log("BEFORE movement - Position:", {
-              x: newPosition.x.toFixed(2),
-              y: newPosition.y.toFixed(2),
-              z: newPosition.z.toFixed(2)
-            });
-            
-            // FIXED: Use the correct direction vector components for movement
-            newPosition.x += dirVector.x * displacement;
-            newPosition.y += dirVector.y * displacement;
-            // Z component would be dirVector.z * displacement if needed
-            
-            // AFTER applying movement
-            console.log("AFTER movement - Position:", {
-              x: newPosition.x.toFixed(2),
-              y: newPosition.y.toFixed(2),
-              z: newPosition.z.toFixed(2)
-            });
-            
-            console.log("Movement delta:", {
-              x: (dirVector.x * displacement).toFixed(2),
-              y: (dirVector.y * displacement).toFixed(2)
-            });
-            console.log("Displacement value:", displacement.toFixed(2));
-            console.log("==== END Z AXIS MOVEMENT DETAILS ====");
-            
-            console.log(`Drag Z perpendicular to wall (BLUE): [${dirVector.x.toFixed(2)}, ${dirVector.y.toFixed(2)}, ${dirVector.z.toFixed(2)}], displacement: ${displacement.toFixed(2)}`);
           }
           
           // Update the object's position
