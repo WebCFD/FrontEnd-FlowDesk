@@ -78,6 +78,7 @@ export default function AirEntryDialog({
   // Reset dimensions when dialog opens with new type or initialValues
   useEffect(() => {
     if (isOpen) {
+      console.log("Dialog opened with initial values:", initialValues);
       setDimensions(getDefaultValues());
     }
   }, [isOpen, type, initialValues]);
