@@ -4,6 +4,7 @@ import { TrackballControls } from "three/addons/controls/TrackballControls.js";
 import { makeTextSprite } from "@/lib/three-utils";
 import AirEntryDialog from "./AirEntryDialog";
 import { ViewDirection } from "./Toolbar3D";
+import { useSceneContext } from "../../contexts/SceneContext";
 
 interface Point {
   x: number;
@@ -377,6 +378,8 @@ export default function Canvas3D({
   onDeleteAirEntry,
   onViewChange,
 }: Canvas3DProps) {
+  // Access the SceneContext to share data with RoomSketchPro
+  const { updateGeometryData, updateSceneData } = useSceneContext();
   // Debug state for UI display
   const [debugInfo, setDebugInfo] = useState<{
     mousePosition: string;
@@ -3527,6 +3530,47 @@ export default function Canvas3D({
         objects.forEach((obj) => sceneRef.current?.add(obj));
       }
     });
+    
+    // Update SceneContext with current floor's geometric data for RoomSketchPro to use
+    const currentFloorData = floors[currentFloor];
+    if (currentFloorData) {
+      updateGeometryData({
+        lines: currentFloorData.lines || [],
+        airEntries: currentFloorData.airEntries || [],
+        floorSize: GRID_SIZE,
+        gridSize: GRID_DIVISIONS
+      });
+      
+      // Update scene objects in context
+      if (sceneRef.current) {
+        // Find walls, floor, and air entries to expose in context
+        const walls: THREE.Object3D[] = [];
+        let floor: THREE.Object3D | undefined;
+        const airEntries: THREE.Object3D[] = [];
+        
+        sceneRef.current.traverse((object) => {
+          if (object instanceof THREE.Mesh && object.userData.type === 'floor') {
+            floor = object;
+          } else if (object instanceof THREE.Mesh && object.userData.type === 'wall') {
+            walls.push(object);
+          } else if (object instanceof THREE.Mesh && 
+                    (object.userData.type === 'window' || 
+                     object.userData.type === 'door' || 
+                     object.userData.type === 'vent')) {
+            airEntries.push(object);
+          }
+        });
+        
+        updateSceneData({
+          walls,
+          floor,
+          airEntries,
+          gridHelper: sceneRef.current.children.find(
+            (obj) => obj instanceof THREE.GridHelper
+          )
+        });
+      }
+    }
 
     // After rebuilding the scene, we need to restore or reset selection state
     if (selectedAirEntry) {
@@ -3667,7 +3711,7 @@ export default function Canvas3D({
         }
       };
     }
-  }, [floors, currentFloor, ceilingHeight, floorDeckThickness]);
+  }, [floors, currentFloor, ceilingHeight, floorDeckThickness, updateGeometryData, updateSceneData]);
 
   useEffect(() => {
     // Mark that rendering is needed when selection or dragging state changes
