@@ -542,7 +542,9 @@ export function RoomSketchPro({
     camera: THREE.PerspectiveCamera,
   ) => {
     console.log("RoomSketchPro - createWalls called with scene:", scene);
-    console.log("RoomSketchPro - Using lines data:", geometryData?.lines || lines);
+    // Always use the lines passed directly through props, fallback to context only if needed
+    const linesToUse = lines.length > 0 ? lines : (geometryData?.lines || []);
+    console.log("RoomSketchPro - Using lines data:", linesToUse);
     
     const textureLoader = new THREE.TextureLoader();
     const brickTexture = textureLoader.load(
@@ -567,12 +569,13 @@ export function RoomSketchPro({
     wallMaterialRef.current = wallMaterial;
     console.log("RoomSketchPro - Wall material created with transparency:", wallTransparency);
 
-    // Convert 2D lines to 3D walls - use geometryData.lines from the context if available
-    const linesData = geometryData?.lines || lines;
+    // Always use lines from props if available, fallback to context only if needed
+    const linesData = linesToUse; // Use the lines we prepared above
     console.log(`RoomSketchPro - Creating walls from ${linesData.length} lines`);
     
     if (linesData.length === 0) {
       console.warn("RoomSketchPro - No lines data available to create walls");
+      return; // Exit early if no lines
     }
     
     linesData.forEach((line, lineIndex) => {
@@ -676,8 +679,8 @@ export function RoomSketchPro({
       side: THREE.DoubleSide,
     });
 
-    // Use geometryData.airEntries from the context if available, otherwise fall back to airEntries prop
-    const entriesData = geometryData?.airEntries || airEntries;
+    // Always use the air entries from props if available, fallback to context only if needed
+    const entriesData = airEntries.length > 0 ? airEntries : (geometryData?.airEntries || []);
     entriesData.forEach((entry) => {
       // Set material based on entry type
       let material;
