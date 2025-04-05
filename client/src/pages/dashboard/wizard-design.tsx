@@ -1548,45 +1548,33 @@ export default function WizardDesign() {
     );
   };
 
-  // Shared simulation info component used across all steps
+  // Shared simulation info component used across all steps - always editable
   const renderSimulationInfo = () => (
     <div className="max-w-xl space-y-4 mb-6">
       <div>
         <Label htmlFor="simulation-name">Simulation name</Label>
-        {step === 1 ? (
-          <Input
-            id="simulation-name"
-            value={simulationName}
-            onChange={(e) => setSimulationName(e.target.value)}
-            placeholder="Enter simulation name"
-          />
-        ) : (
-          <div className="border rounded-md px-3 py-2 bg-gray-50">
-            {simulationName || "Untitled Simulation"}
-          </div>
-        )}
+        <Input
+          id="simulation-name"
+          value={simulationName}
+          onChange={(e) => setSimulationName(e.target.value)}
+          placeholder="Enter simulation name"
+        />
       </div>
       <div>
         <Label htmlFor="simulation-type">Simulation type</Label>
-        {step === 1 ? (
-          <Select value={simulationType} onValueChange={setSimulationType}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select simulation type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="comfort">
-                Comfort Simulation (steady run)
-              </SelectItem>
-              <SelectItem value="renovation">
-                Air Renovation Convection Simulation (transient run)
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        ) : (
-          <div className="border rounded-md px-3 py-2 bg-gray-50">
-            {simulationType === "comfort" ? "Comfort Simulation (steady run)" : "Air Renovation Convection Simulation (transient run)"}
-          </div>
-        )}
+        <Select value={simulationType} onValueChange={setSimulationType}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select simulation type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="comfort">
+              Comfort Simulation (steady run)
+            </SelectItem>
+            <SelectItem value="renovation">
+              Air Renovation Convection Simulation (transient run)
+            </SelectItem>
+          </SelectContent>
+        </Select>
       </div>
     </div>
   );
