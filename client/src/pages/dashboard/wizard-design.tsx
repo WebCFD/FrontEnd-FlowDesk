@@ -38,6 +38,7 @@ import {
 } from "lucide-react";
 import Canvas2D from "@/components/sketch/Canvas2D";
 import { RoomSketchPro } from "@/components/sketch/RoomSketchPro";
+import { SceneProvider } from "@/contexts/SceneContext";
 import { cn } from "@/lib/utils";
 import AirEntryDialog from "@/components/sketch/AirEntryDialog";
 import Canvas3D from "@/components/sketch/Canvas3D";
@@ -203,9 +204,6 @@ const getConnectedFloorName = (
 
   return floorName; // No valid connected floor
 };
-
-// Import SceneProvider
-import { SceneProvider } from '../../contexts/SceneContext';
 
 export default function WizardDesign() {
   const [, setLocation] = useLocation();
@@ -1544,17 +1542,19 @@ export default function WizardDesign() {
       <div className="flex-1 border rounded-lg overflow-hidden bg-white min-w-[600px]">
         {/* Special case for Step 2 which renders RoomSketchPro */}
         {mode === "step2" ? (
-          <RoomSketchPro
-            key="step2-view"
-            instanceId="step2-view"
-            lines={lines}
-            airEntries={airEntries}
-            wallTransparency={wallTransparency}
-            onWallTransparencyChange={(value) => {
-              console.log("Wizard: Wall transparency changing to:", value);
-              setWallTransparency(value);
-            }}
-          />
+          <SceneProvider>
+            <RoomSketchPro
+              key="step2-view"
+              instanceId="step2-view"
+              lines={lines}
+              airEntries={airEntries}
+              wallTransparency={wallTransparency}
+              onWallTransparencyChange={(value) => {
+                console.log("Wizard: Wall transparency changing to:", value);
+                setWallTransparency(value);
+              }}
+            />
+          </SceneProvider>
         ) : tab === "2d-editor" ? (
           <Canvas2D
             gridSize={gridSize}
