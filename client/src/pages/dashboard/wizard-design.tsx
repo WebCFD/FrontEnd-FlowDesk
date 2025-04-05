@@ -204,6 +204,9 @@ const getConnectedFloorName = (
   return floorName; // No valid connected floor
 };
 
+// Import SceneProvider
+import { SceneProvider } from '../../contexts/SceneContext';
+
 export default function WizardDesign() {
   const [, setLocation] = useLocation();
   const { user, setReturnTo } = useAuth();

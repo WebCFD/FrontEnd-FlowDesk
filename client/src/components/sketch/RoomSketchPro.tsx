@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { TrackballControls } from "three/addons/controls/TrackballControls.js";
 import { makeTextSprite } from "@/lib/three-utils";
 import { createTableModel, createPersonModel, createArmchairModel } from "./furniture-models";
+import { useSceneContext } from "../../contexts/SceneContext";
 
 // Types
 interface Point {
@@ -230,6 +231,9 @@ export function RoomSketchPro({
   wallTransparency = 0.8,
   onWallTransparencyChange,
 }: RoomSketchProProps) {
+  // Get data from SceneContext
+  const { geometryData } = useSceneContext();
+  
   const containerRef = useRef<HTMLDivElement>(null);
   const [furniture, setFurniture] = useState<FurnitureItem[]>([]);
 
@@ -258,8 +262,9 @@ export function RoomSketchPro({
     dirLight.castShadow = true;
     scene.add(dirLight);
 
-    // Add floor plane (in XY plane) - match Canvas3D size (1000x1000)
-    const floorGeometry = new THREE.PlaneGeometry(1000, 1000);
+    // Add floor plane (in XY plane) - use floor size from context if available, otherwise use default (1000x1000)
+    const floorSize = geometryData?.floorSize || 1000;
+    const floorGeometry = new THREE.PlaneGeometry(floorSize, floorSize);
     const floorMaterial = new THREE.MeshStandardMaterial({
       color: 0xcccccc, // Keep original color
       side: THREE.DoubleSide,
@@ -485,9 +490,10 @@ export function RoomSketchPro({
   }, [width, height]);
 
   // Extract perimeter points using useMemo to avoid recalculation
+  // Use geometryData.lines from the context if available, otherwise fall back to lines prop
   const perimeter = useMemo(
-    () => roomUtils.createRoomPerimeter(lines),
-    [lines],
+    () => roomUtils.createRoomPerimeter(geometryData?.lines || lines),
+    [geometryData?.lines, lines],
   );
 
   // Create shape from perimeter
@@ -524,8 +530,9 @@ export function RoomSketchPro({
     });
     wallMaterialRef.current = wallMaterial;
 
-    // Convert 2D lines to 3D walls
-    lines.forEach((line) => {
+    // Convert 2D lines to 3D walls - use geometryData.lines from the context if available
+    const linesData = geometryData?.lines || lines;
+    linesData.forEach((line) => {
       const start_bottom = transform2DTo3D(line.start);
       const end_bottom = transform2DTo3D(line.end);
       const start_top = transform2DTo3D(line.start, DEFAULTS.ROOM_HEIGHT);
@@ -617,7 +624,9 @@ export function RoomSketchPro({
       side: THREE.DoubleSide,
     });
 
-    airEntries.forEach((entry) => {
+    // Use geometryData.airEntries from the context if available, otherwise fall back to airEntries prop
+    const entriesData = geometryData?.airEntries || airEntries;
+    entriesData.forEach((entry) => {
       // Set material based on entry type
       let material;
       if (entry.type === "window") {
