@@ -34,8 +34,8 @@ interface FurnitureItem {
 }
 
 interface RoomSketchProProps {
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
   instanceId?: string;
   lines?: Line[];
   airEntries?: AirEntry[];
@@ -1567,10 +1567,6 @@ export function RoomSketchPro({
     <div 
       ref={containerRef}
       className="w-full h-full relative"
-      style={{
-        width: `${width}px`, 
-        height: `${height}px`,
-      }}
     >
       {/* This div is intentionally empty. The Three.js canvas will be rendered here via DOM insertion */}
     </div>
