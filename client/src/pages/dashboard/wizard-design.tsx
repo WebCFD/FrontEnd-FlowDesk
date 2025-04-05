@@ -247,6 +247,13 @@ export default function WizardDesign() {
     removeFloor,
     copyFloorAs,
   } = useRoomStore();
+  
+  // Switch to 3D preview when step is 2
+  useEffect(() => {
+    if (step === 2) {
+      setTab("3d-preview");
+    }
+  }, [step]);
 
   // Get current floor data
   const currentFloorData = floors[currentFloor];
@@ -1093,12 +1100,6 @@ export default function WizardDesign() {
 
   const renderStep2 = () => {
     console.log("Rendering Step 2 content");
-    
-    // When we're in Step 2, switch to 3D preview tab
-    useEffect(() => {
-      setTab("3d-preview");
-    }, []);
-    
     return (
       <Card className="mt-4">
         <CardContent className="p-4">
