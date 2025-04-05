@@ -36,7 +36,7 @@ const HOVER_DISTANCE = 10;
 // Add this debug log function
 const debugLog = (message: string, data?: any) => {
   const timestamp = new Date().toISOString().substr(11, 12);
-  console.log(`[${timestamp}] CANVAS-DEBUG: ${message}`, data || "");
+  // Logging removed
 };
 
 const cmToPixels = (cm: number): number => {
@@ -159,10 +159,7 @@ const distanceToLineSegment = (
 
 const calculatePositionAlongWall = (line: Line, point: Point): Point => {
   try {
-    console.log("Calculating position along wall:", {
-      line: { start: line.start, end: line.end },
-      point,
-    });
+    // Position calculation logging removed
 
     const lineVector = {
       x: line.end.x - line.start.x,
@@ -201,12 +198,7 @@ const calculatePositionAlongWall = (line: Line, point: Point): Point => {
       y: line.start.y + unitVector.y * clampedDot,
     };
 
-    console.log("Position calculation:", {
-      lineLength,
-      dotProduct,
-      clampedDot,
-      finalPosition,
-    });
+    // Position result logging removed
 
     return finalPosition;
   } catch (error) {
@@ -1066,7 +1058,7 @@ export default function Canvas2D({
     // At the beginning of handleMouseMove
     // Find this section near the beginning of handleMouseMove
     if (currentTool === "measure" && isMeasuring && measureStart) {
-      console.log("Updating measurement preview");
+      // Measurement preview update
       const { point: nearestPoint } = findNearestEndpoint(point);
       const snappedPoint = nearestPoint || snapToGrid(point);
       setMeasureEnd(snappedPoint);
@@ -1098,16 +1090,11 @@ export default function Canvas2D({
 
     if (isDraggingAirEntry && draggedAirEntry.index !== -1) {
       const point = getCanvasPoint(e);
-      console.log(
-        "Mouse move with drag state:",
-        isDraggingAirEntry,
-        draggedAirEntry.index,
-      );
+      // Handle air entry dragging
       const entry = draggedAirEntry.entry;
 
       const newPosition = calculatePositionAlongWall(entry.line, point);
-      console.log("New position calculated:", newPosition);
-
+      // Calculate new position
       const newAirEntries = [...airEntries];
       newAirEntries[draggedAirEntry.index] = {
         ...entry,
@@ -1115,7 +1102,6 @@ export default function Canvas2D({
       };
 
       if (onAirEntriesUpdate) {
-        console.log("Updating air entries with:", newAirEntries);
         onAirEntriesUpdate(newAirEntries);
       }
       return;
@@ -1524,8 +1510,6 @@ export default function Canvas2D({
   const findAirEntryAtLocation = (
     clickPoint: Point,
   ): { index: number; entry: AirEntry } | null => {
-    //console.log("Checking for AirEntry at point:", clickPoint);
-
     for (let i = 0; i < airEntries.length; i++) {
       const entry = airEntries[i];
       const normal = calculateNormal(entry.line);
@@ -1543,20 +1527,16 @@ export default function Canvas2D({
       };
 
       const distanceToEntry = distanceToLineSegment(clickPoint, start, end);
-      console.log("Distance to entry:", distanceToEntry, "Entry index:", i);
-
+      
       if (distanceToEntry < 20 / zoom) {
-        console.log("Found AirEntry at index:", i);
         return { index: i, entry };
       }
     }
 
-    // console.log("No AirEntry found at point");
     return null;
   };
 
   const updateAirEntriesWithWalls = (newLines: Line[], oldLines: Line[]) => {
-    //console.log("Updating air entries with walls");
 
     if (airEntries.length === 0) return;
 
