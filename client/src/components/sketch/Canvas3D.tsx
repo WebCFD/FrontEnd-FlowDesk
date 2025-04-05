@@ -2146,6 +2146,9 @@ export default function Canvas3D({
         
         console.log("🔍 Eraser mode hover detection active - looking for air entries to highlight");
         
+        // We already have mouseCoords from the beginning of handleMouseMove
+        console.log(`Mouse coordinates (normalized): ${mouseCoords.x.toFixed(2)}, ${mouseCoords.y.toFixed(2)}`);
+        
         // Get detailed client info
         const clientInfo = {
           event: {
@@ -2214,7 +2217,7 @@ export default function Canvas3D({
           }
         }
         
-        const mouseCoords = getMouseCoordinates(event);
+        // Just log the mouse coordinates we already have
         console.log(`🖱️ Mouse normalized coordinates: ${JSON.stringify(mouseCoords)}`);
         
         // Get raw client coordinates too
