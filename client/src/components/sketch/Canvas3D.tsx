@@ -431,14 +431,14 @@ export default function Canvas3D({
   const SCREEN_PROXIMITY_THRESHOLD = 50; // Maximum screen distance in pixels to consider "hovering"
   
   // Helper function to check if mouse is actually over an object in screen space
-  const isActuallyHovering = (
+  // Helper function to get screen distance between an object and mouse
+  const getScreenDistance = (
     object: THREE.Object3D | null,
     mouseX: number,
     mouseY: number,
-    camera: THREE.Camera,
-    maxDistance: number = SCREEN_PROXIMITY_THRESHOLD
-  ): boolean => {
-    if (!object) return false;
+    camera: THREE.Camera | null
+  ): number => {
+    if (!object || !camera) return Infinity;
     
     // Project the object's position to screen space
     const screenPos = object.position.clone().project(camera);
@@ -446,10 +446,23 @@ export default function Canvas3D({
     const screenY = -(screenPos.y - 1) / 2 * window.innerHeight;
     
     // Calculate distance between mouse and object in screen space
-    const distance = Math.sqrt(
+    return Math.sqrt(
       Math.pow(screenX - mouseX, 2) + 
       Math.pow(screenY - mouseY, 2)
     );
+  };
+  
+  const isActuallyHovering = (
+    object: THREE.Object3D | null,
+    mouseX: number,
+    mouseY: number,
+    camera: THREE.Camera | null,
+    maxDistance: number = SCREEN_PROXIMITY_THRESHOLD
+  ): boolean => {
+    if (!object || !camera) return false;
+    
+    // Get the screen distance
+    const distance = getScreenDistance(object, mouseX, mouseY, camera);
     
     // Debug logging
     console.log(`Screen distance check: ${distance.toFixed(1)}px, threshold: ${maxDistance}px`);
@@ -2477,9 +2490,13 @@ export default function Canvas3D({
               console.log(`Hover state: raycaster says ${hasIntersections ? 'yes' : 'no'}, screen space check says ${isCurrentlyHovering ? 'yes' : 'no'}`);
             }
             
-            // Use screen space check to potentially override raycaster result
-            // This helps with stability - if raycaster shows intersection but object is far from cursor, ignore it
-            const actualHasIntersections = isCurrentlyHovering;
+            // Use screen space check WITH the raycaster result
+            // But don't be too strict - if raycaster says we're hovering and screen dist is reasonable (< 50px), accept it
+            // This ensures we can highlight objects properly while still rejecting extreme false positives
+            const actualHasIntersections = hasIntersections && (
+              isCurrentlyHovering || 
+              (currentMesh && getScreenDistance(currentMesh, event.clientX, event.clientY, cameraRef.current) < 50)
+            );
             
             // Only change hover state if:
             // 1. Enough time has passed since last update OR
@@ -2504,10 +2521,10 @@ export default function Canvas3D({
             // Update debug info with both raycaster and screen space check results
             setDebugInfo(prev => ({
               ...prev,
-              hovering: actualHasIntersections, // Use the actual (screen space verified) state
+              hovering: !!actualHasIntersections, // Convert to boolean to fix type error
               lastIntersection: hasIntersections
                 ? `${meshIntersects[0].object.userData.type} (entry ${meshIntersects[0].object.userData.entryIndex}), screen dist: ${
-                    hasIntersections && currentMesh 
+                    hasIntersections && currentMesh && cameraRef.current
                       ? Math.round(Math.sqrt(
                           Math.pow((currentMesh.position.clone().project(cameraRef.current).x + 1) / 2 * window.innerWidth - event.clientX, 2) + 
                           Math.pow(-(currentMesh.position.clone().project(cameraRef.current).y - 1) / 2 * window.innerHeight - event.clientY, 2)
