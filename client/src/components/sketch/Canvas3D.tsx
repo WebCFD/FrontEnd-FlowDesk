@@ -4004,7 +4004,7 @@ export default function Canvas3D({
       <div className="flex flex-col h-full">
         {/* Only the main canvas - no UI elements */}
         <div className="w-full h-full" ref={containerRef}>
-          <canvas ref={canvasRef} className="w-full h-full" />
+          {/* The containerRef will be used to create canvas element via Three.js */}
           {/* Debug overlay */}
           <div 
             style={{

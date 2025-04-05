@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import {
@@ -1093,6 +1093,12 @@ export default function WizardDesign() {
 
   const renderStep2 = () => {
     console.log("Rendering Step 2 content");
+    
+    // When we're in Step 2, switch to 3D preview tab
+    useEffect(() => {
+      setTab("3d-preview");
+    }, []);
+    
     return (
       <Card className="mt-4">
         <CardContent className="p-4">
@@ -1100,8 +1106,6 @@ export default function WizardDesign() {
             {/* Render the same canvas section from Step 1 */}
             {renderCanvasSection()}
           </div>
-          {/* Switch to 3D preview tab automatically for Step 2 */}
-          <div className="hidden">{React.useEffect(() => setTab("3d-preview"), [])}</div>
         </CardContent>
       </Card>
     );
