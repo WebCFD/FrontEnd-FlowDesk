@@ -379,7 +379,7 @@ export default function Canvas3D({
   onViewChange,
 }: Canvas3DProps) {
   // Access the SceneContext to share data with RoomSketchPro
-  const { updateGeometryData, updateSceneData } = useSceneContext();
+  const { updateGeometryData, updateSceneData, updateFloorData, setCurrentFloor: setContextCurrentFloor } = useSceneContext();
   // Debug state for UI display
   const [debugInfo, setDebugInfo] = useState<{
     mousePosition: string;
@@ -3531,18 +3531,30 @@ export default function Canvas3D({
       }
     });
     
-    // Update SceneContext with current floor's geometric data for RoomSketchPro to use
+    // Update SceneContext with ALL floors data for comprehensive sharing with RoomSketchPro
+    console.log("Canvas3D - Updating SceneContext with all floors data");
+    
+    // First, update the entire floors object in the context
+    updateGeometryData({
+      floors: floors,
+      currentFloor: currentFloor,
+      floorSize: GRID_SIZE,
+      gridSize: GRID_DIVISIONS
+    });
+    
+    // Then set current floor data for immediate use
     const currentFloorData = floors[currentFloor];
     console.log("Canvas3D - Current floor data:", currentFloorData);
     
     if (currentFloorData) {
-      console.log(`Canvas3D - Updating SceneContext with ${currentFloorData.lines?.length || 0} lines and ${currentFloorData.airEntries?.length || 0} airEntries`);
+      console.log(`Canvas3D - Updating current floor geometry with ${currentFloorData.lines?.length || 0} lines and ${currentFloorData.airEntries?.length || 0} airEntries`);
       
-      updateGeometryData({
-        lines: currentFloorData.lines || [],
-        airEntries: currentFloorData.airEntries || [],
-        floorSize: GRID_SIZE,
-        gridSize: GRID_DIVISIONS
+      // Update current floor in context (this will trigger setCurrentFloor in the context)
+      setContextCurrentFloor(currentFloor);
+      
+      // Also individually update each floor to ensure proper synchronization
+      Object.entries(floors).forEach(([floorName, floorData]) => {
+        updateFloorData(floorName, floorData);
       });
       
       // Update scene objects in context

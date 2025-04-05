@@ -40,8 +40,13 @@ interface SceneContextType {
     airEntries: AirEntry[];
     floorSize: number;
     gridSize: number;
+    currentFloor: string;
+    floors: Record<string, any>;
   };
   updateGeometryData: (data: Partial<SceneContextType['geometryData']>) => void;
+  // New methods for multifloor handling
+  updateFloorData: (floorName: string, floorData: any) => void;
+  setCurrentFloor: (floorName: string) => void;
 }
 
 const SceneContext = createContext<SceneContextType | undefined>(undefined);
@@ -52,7 +57,9 @@ export const SceneProvider: React.FC<{children: React.ReactNode}> = ({ children 
     lines: [],
     airEntries: [],
     floorSize: 1000,
-    gridSize: 20
+    gridSize: 20,
+    currentFloor: "ground",
+    floors: {}
   });
 
   const updateSceneData = (data: Partial<SceneContextType['sceneData']>) => {
@@ -71,6 +78,39 @@ export const SceneProvider: React.FC<{children: React.ReactNode}> = ({ children 
       return newData;
     });
   };
+  
+  // New function to update multifloor data synchronously
+  const updateFloorData = (floorName: string, floorData: any) => {
+    console.log(`SceneContext - updateFloorData called for floor: ${floorName}`, floorData);
+    setGeometryData(prev => {
+      const updatedFloors = { ...prev.floors, [floorName]: floorData };
+      return {
+        ...prev,
+        floors: updatedFloors,
+        // If this is the current floor, also update the primary geometry data
+        ...(floorName === prev.currentFloor ? {
+          lines: floorData.lines || [],
+          airEntries: floorData.airEntries || []
+        } : {})
+      };
+    });
+  };
+  
+  // New function to set the current floor
+  const setCurrentFloor = (floorName: string) => {
+    console.log(`SceneContext - setCurrentFloor: ${floorName}`);
+    setGeometryData(prev => {
+      // Get floor data for the specified floor
+      const floorData = prev.floors[floorName] || { lines: [], airEntries: [] };
+      return {
+        ...prev,
+        currentFloor: floorName,
+        // Update primary geometry data with the selected floor's data
+        lines: floorData.lines || [],
+        airEntries: floorData.airEntries || []
+      };
+    });
+  };
 
   return (
     <SceneContext.Provider value={{
@@ -78,7 +118,9 @@ export const SceneProvider: React.FC<{children: React.ReactNode}> = ({ children 
       updateSceneData,
       getSceneObject,
       geometryData,
-      updateGeometryData
+      updateGeometryData,
+      updateFloorData,
+      setCurrentFloor
     }}>
       {children}
     </SceneContext.Provider>
