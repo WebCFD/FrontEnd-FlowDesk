@@ -3736,20 +3736,6 @@ export default function Canvas3D({
   const resetHoveringCompletely = useCallback(() => {
     console.log("🔄 COMPLETE EVENT SYSTEM RESET");
     
-    // Remove all existing event listeners
-    const container = containerRef.current;
-    if (container) {
-      // Store a reference to the mouseHandlers
-      const mouseUpHandler = handleMouseUp;
-      const mouseMoveHandler = handleMouseMove;
-      const mouseDownHandler = mouseDownWrapper;
-      
-      // Remove existing event listeners
-      document.removeEventListener("mousemove", mouseMoveHandler);
-      document.removeEventListener("mouseup", mouseUpHandler);
-      document.removeEventListener("mousedown", mouseDownHandler);
-    }
-    
     // Re-enable controls
     if (controlsRef.current) {
       controlsRef.current.enabled = true;
@@ -3803,18 +3789,8 @@ export default function Canvas3D({
       containerRef.current.style.cursor = isEraserMode ? 'not-allowed' : 'auto';
     }
     
-    // Reattach event listeners after a small delay
-    setTimeout(() => {
-      if (containerRef.current) {
-        document.addEventListener("mousemove", handleMouseMove);
-        document.addEventListener("mouseup", handleMouseUp);
-        document.addEventListener("mousedown", mouseDownWrapper);
-        console.log("✅ Event listeners reattached");
-      }
-    }, 50);
-    
     console.log("✅ Complete event system reset finished");
-  }, [hoveredEraseTarget, isEraserMode, handleMouseMove, handleMouseUp, mouseDownWrapper]);
+  }, [hoveredEraseTarget, isEraserMode]);
   
   // Add a useEffect to reset the system when entering/exiting eraser mode
   useEffect(() => {
