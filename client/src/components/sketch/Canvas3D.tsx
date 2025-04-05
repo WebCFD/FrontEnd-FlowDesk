@@ -1270,54 +1270,50 @@ export default function Canvas3D({
           const mouseDeltaX = dragState.currentMousePosition.x - dragState.initialMousePosition.x;
           const mouseDeltaY = dragState.currentMousePosition.y - dragState.initialMousePosition.y;
           
-          // Get camera for ray projections
+          // Get camera for projections
           const camera = cameraRef.current;
           if (!camera) return;
           
-          // Scale factor to convert screen pixels to scene units - adjusted for distance to improve precision
+          // Scale factor to convert screen pixels to scene units
           const distanceToObject = camera.position.distanceTo(dragState.selectedObject.position);
           const scaleFactor = Math.max(0.5, Math.min(10.0, distanceToObject / 100));
           
           // Calculate a single displacement value based on the dominant mouse movement direction
-          // This value will be transformed according to the selected axis's direction
           const dragMagnitude = Math.abs(mouseDeltaX) > Math.abs(mouseDeltaY) ? 
-            mouseDeltaX : -mouseDeltaY;  // Note: Y is negated because screen Y increases downward
+            mouseDeltaX : -mouseDeltaY;  // Y is negated because screen Y increases downward
           
-          // Calculate the displacement in scene units
-          const localDisplacement = dragMagnitude * scaleFactor;
+          // Scale the displacement
+          const displacement = dragMagnitude * scaleFactor;
           
           // Start with the original position
           const newPosition = dragState.startPosition.clone();
           
-          // Apply movement based on selected axis in LOCAL coordinates
+          // Apply movement based on selected axis using the CORRECT axis direction vector
           if (dragState.selectedAxis === "x" && dragState.axisDirectionVectors.x) {
-            // RED X axis: Movement along the wall (parallel to the wall surface)
-            const localXDir = dragState.axisDirectionVectors.x;
-            newPosition.x += localXDir.x * localDisplacement;
-            newPosition.y += localXDir.y * localDisplacement;
-            // Don't change Z position when moving along X axis
+            // RED X axis movement (along the wall)
+            const dirVector = dragState.axisDirectionVectors.x;
+            newPosition.x += dirVector.x * displacement;
+            newPosition.y += dirVector.y * displacement;
+            // Z position doesn't change for X axis movement
             
-            console.log(`Drag X along wall (RED): [${localXDir.x.toFixed(2)}, ${localXDir.y.toFixed(2)}, ${localXDir.z.toFixed(2)}], displacement: ${localDisplacement.toFixed(2)}`);
+            console.log(`Drag X along wall (RED): [${dirVector.x.toFixed(2)}, ${dirVector.y.toFixed(2)}, ${dirVector.z.toFixed(2)}], displacement: ${displacement.toFixed(2)}`);
           } 
           else if (dragState.selectedAxis === "y") {
-            // GREEN Y axis: Always vertical movement (up/down) in world coordinates
-            // In our coordinate system, Y is actually the Z axis when drawn in 3D
-            // Always move vertically regardless of wall orientation
+            // GREEN Y axis is always vertical (world space)
+            newPosition.z += displacement;
             
-            // Apply vertical movement directly to Z coordinate
-            newPosition.z += localDisplacement;
-            // Don't change X or Y position when moving along vertical axis
-            
-            console.log(`Drag Y vertical (GREEN): displacement: ${localDisplacement.toFixed(2)}, new Z: ${newPosition.z.toFixed(2)}`);
+            console.log(`Drag Y vertical (GREEN): displacement: ${displacement.toFixed(2)}, new Z: ${newPosition.z.toFixed(2)}`);
           } 
           else if (dragState.selectedAxis === "z" && dragState.axisDirectionVectors.z) {
-            // BLUE Z axis: Movement perpendicular to the wall (inward/outward)
-            const localZDir = dragState.axisDirectionVectors.z;
-            newPosition.x += localZDir.x * localDisplacement;
-            newPosition.y += localZDir.y * localDisplacement;
-            // Don't change Z position when moving along Z axis (which is parallel to wall normal)
+            // BLUE Z axis (perpendicular to wall surface)
+            const dirVector = dragState.axisDirectionVectors.z;
             
-            console.log(`Drag Z perpendicular to wall (BLUE): [${localZDir.x.toFixed(2)}, ${localZDir.y.toFixed(2)}, ${localZDir.z.toFixed(2)}], displacement: ${localDisplacement.toFixed(2)}`);
+            // FIXED: Use the correct direction vector components for movement
+            newPosition.x += dirVector.x * displacement;
+            newPosition.y += dirVector.y * displacement;
+            // Z component would be dirVector.z * displacement if needed
+            
+            console.log(`Drag Z perpendicular to wall (BLUE): [${dirVector.x.toFixed(2)}, ${dirVector.y.toFixed(2)}, ${dirVector.z.toFixed(2)}], displacement: ${displacement.toFixed(2)}`);
           }
           
           // Update the object's position

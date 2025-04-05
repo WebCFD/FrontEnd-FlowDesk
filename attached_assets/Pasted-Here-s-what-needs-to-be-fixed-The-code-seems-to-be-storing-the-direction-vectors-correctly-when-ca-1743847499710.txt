@@ -1,0 +1,64 @@
+Here's what needs to be fixed:
+
+The code seems to be storing the direction vectors correctly when capturing them from the air entry's local axes, but it's not using them correctly during the drag operation.
+The displacement calculation needs to properly transform the mouse movement into the air entry's local coordinate system, and then apply that local displacement along the selected axis.
+
+Here's a solution to fix this issue:
+javascriptCopia// In the animate function, replace the current drag handling logic with:
+if (dragState.isDragging && dragState.selectedObject && dragState.startPosition && 
+    dragState.initialMousePosition && dragState.currentMousePosition) {
+
+  // Calculate mouse delta in screen space
+  const mouseDeltaX = dragState.currentMousePosition.x - dragState.initialMousePosition.x;
+  const mouseDeltaY = dragState.currentMousePosition.y - dragState.initialMousePosition.y;
+  
+  // Get camera for projections
+  const camera = cameraRef.current;
+  if (!camera) return;
+  
+  // Scale factor to convert screen pixels to scene units
+  const distanceToObject = camera.position.distanceTo(dragState.selectedObject.position);
+  const scaleFactor = Math.max(0.5, Math.min(10.0, distanceToObject / 100));
+  
+  // Calculate a single displacement value based on the dominant mouse movement direction
+  const dragMagnitude = Math.abs(mouseDeltaX) > Math.abs(mouseDeltaY) ? 
+    mouseDeltaX : -mouseDeltaY;  // Y is negated because screen Y increases downward
+  
+  // Scale the displacement
+  const displacement = dragMagnitude * scaleFactor;
+  
+  // Start with the original position
+  const newPosition = dragState.startPosition.clone();
+  
+  // Apply movement based on selected axis using the CORRECT axis direction vector
+  if (dragState.selectedAxis === "x" && dragState.axisDirectionVectors.x) {
+    // RED X axis movement (along the wall)
+    const dirVector = dragState.axisDirectionVectors.x;
+    newPosition.x += dirVector.x * displacement;
+    newPosition.y += dirVector.y * displacement;
+    // Z position doesn't change for X axis movement
+  } 
+  else if (dragState.selectedAxis === "y") {
+    // GREEN Y axis is always vertical (world space)
+    newPosition.z += displacement;
+  } 
+  else if (dragState.selectedAxis === "z" && dragState.axisDirectionVectors.z) {
+    // BLUE Z axis (perpendicular to wall surface)
+    const dirVector = dragState.axisDirectionVectors.z;
+    
+    // FIXED: Use the correct direction vector components for movement
+    newPosition.x += dirVector.x * displacement;
+    newPosition.y += dirVector.y * displacement;
+    // Z component would be dirVector.z * displacement if needed
+  }
+  
+  // Update the object's position
+  dragState.selectedObject.position.copy(newPosition);
+}
+The key improvements are:
+
+The direction vectors are properly extracted when the drag starts, specifically capturing the Z-axis vector that represents the perpendicular direction to the wall surface.
+When dragging along the Z-axis, the movement is applied using both X and Y components of the direction vector, which ensures the element moves along its local Z axis rather than in global coordinates.
+The displacement calculation takes into account the camera distance to provide more intuitive dragging.
+
+These changes should fix the issue where the East window incorrectly moves North-South when dragging its Z axis, ensuring that objects properly follow their local coordinate systems during drag operations.

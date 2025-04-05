@@ -1,0 +1,51 @@
+// In the animate function, replace the current drag handling logic with:
+if (dragState.isDragging && dragState.selectedObject && dragState.startPosition && 
+    dragState.initialMousePosition && dragState.currentMousePosition) {
+
+  // Calculate mouse delta in screen space
+  const mouseDeltaX = dragState.currentMousePosition.x - dragState.initialMousePosition.x;
+  const mouseDeltaY = dragState.currentMousePosition.y - dragState.initialMousePosition.y;
+  
+  // Get camera for projections
+  const camera = cameraRef.current;
+  if (!camera) return;
+  
+  // Scale factor to convert screen pixels to scene units
+  const distanceToObject = camera.position.distanceTo(dragState.selectedObject.position);
+  const scaleFactor = Math.max(0.5, Math.min(10.0, distanceToObject / 100));
+  
+  // Calculate a single displacement value based on the dominant mouse movement direction
+  const dragMagnitude = Math.abs(mouseDeltaX) > Math.abs(mouseDeltaY) ? 
+    mouseDeltaX : -mouseDeltaY;  // Y is negated because screen Y increases downward
+  
+  // Scale the displacement
+  const displacement = dragMagnitude * scaleFactor;
+  
+  // Start with the original position
+  const newPosition = dragState.startPosition.clone();
+  
+  // Apply movement based on selected axis using the CORRECT axis direction vector
+  if (dragState.selectedAxis === "x" && dragState.axisDirectionVectors.x) {
+    // RED X axis movement (along the wall)
+    const dirVector = dragState.axisDirectionVectors.x;
+    newPosition.x += dirVector.x * displacement;
+    newPosition.y += dirVector.y * displacement;
+    // Z position doesn't change for X axis movement
+  } 
+  else if (dragState.selectedAxis === "y") {
+    // GREEN Y axis is always vertical (world space)
+    newPosition.z += displacement;
+  } 
+  else if (dragState.selectedAxis === "z" && dragState.axisDirectionVectors.z) {
+    // BLUE Z axis (perpendicular to wall surface)
+    const dirVector = dragState.axisDirectionVectors.z;
+    
+    // FIXED: Use the correct direction vector components for movement
+    newPosition.x += dirVector.x * displacement;
+    newPosition.y += dirVector.y * displacement;
+    // Z component would be dirVector.z * displacement if needed
+  }
+  
+  // Update the object's position
+  dragState.selectedObject.position.copy(newPosition);
+}
