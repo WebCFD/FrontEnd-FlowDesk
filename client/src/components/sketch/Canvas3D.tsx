@@ -2178,12 +2178,42 @@ export default function Canvas3D({
 
       // Regular drag logic
       if (dragStateRef.current.isDragging) {
+        console.log("==========================================");
+        console.log("DRAG OPERATION IN PROGRESS:");
+        console.log("Selected axis:", dragStateRef.current.selectedAxis);
+        console.log("Dragging entry index:", dragStateRef.current.entryIndex);
+        
+        // Get the air entry data for more context
+        const entryData = floors[currentFloor]?.airEntries[dragStateRef.current.entryIndex];
+        if (entryData) {
+          console.log("Entry being dragged:", {
+            type: entryData.type,
+            position: entryData.position,
+            dimensions: entryData.dimensions,
+            wallStart: entryData.line.start,
+            wallEnd: entryData.line.end
+          });
+          
+          // Log axis direction details
+          if (dragStateRef.current.axisDirectionVectors && dragStateRef.current.selectedAxis) {
+            const dirVector = dragStateRef.current.axisDirectionVectors[dragStateRef.current.selectedAxis];
+            if (dirVector) {
+              console.log(`${dragStateRef.current.selectedAxis.toUpperCase()} axis direction vector:`, dirVector);
+              
+              if (dragStateRef.current.selectedAxis === "z") {
+                console.log("Z-AXIS MOVEMENT - Should be moving EAST-WEST since vector is (1,0,0)");
+              }
+            }
+          }
+        }
+        console.log("==========================================");
+        
         // Store the current mouse position
         dragStateRef.current.currentMousePosition = {
           x: event.clientX,
           y: event.clientY
         };
-
+        
         // Make sure we need to render
         needsRenderRef.current = true;
 
