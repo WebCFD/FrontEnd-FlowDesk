@@ -1266,51 +1266,52 @@ export default function Canvas3D({
         if (dragState.isDragging && dragState.selectedObject && dragState.startPosition && 
             dragState.initialMousePosition && dragState.currentMousePosition) {
 
-          // Calculate movement based on mouse delta
+          // Calculate mouse delta in screen space
           const mouseDeltaX = dragState.currentMousePosition.x - dragState.initialMousePosition.x;
           const mouseDeltaY = dragState.currentMousePosition.y - dragState.initialMousePosition.y;
-
-          // Scale factor to convert mouse pixels to scene units - consistent value
-          const scaleFactor = 8.0; // Adjust this value based on testing
-
-          // Combine mouse movements for a single drag value (using the larger of the two)
-          const dragDelta = Math.abs(mouseDeltaX) > Math.abs(mouseDeltaY) ? mouseDeltaX : -mouseDeltaY;
           
+          // Determine drag magnitude - use the larger mouse movement component
+          // and preserve its sign for direction
+          const dragMagnitude = Math.abs(mouseDeltaX) > Math.abs(mouseDeltaY) ? 
+            mouseDeltaX : -mouseDeltaY;  // Note: Y is negated because screen Y increases downward
+          
+          // Scale factor to convert screen pixels to scene units
+          const scaleFactor = 8.0;
+          
+          // Calculate the displacement in the local axis
+          const localDisplacement = dragMagnitude * scaleFactor;
+          
+          // Start with the original position
+          const newPosition = dragState.startPosition.clone();
+          
+          // Apply movement based on selected axis in LOCAL coordinates,
+          // transforming the local displacement to global coordinates
           if (dragState.selectedAxis === "x" && dragState.axisDirectionVectors.x) {
-            // Move along the local X axis using the direction vector
-            const directionVector = dragState.axisDirectionVectors.x;
+            // X-axis: Apply displacement along local X direction vector
+            const localXDir = dragState.axisDirectionVectors.x;
+            newPosition.x += localXDir.x * localDisplacement;
+            newPosition.y += localXDir.y * localDisplacement;
+            newPosition.z += localXDir.z * localDisplacement;
             
-            // Create a new position by adding the movement along the direction vector
-            const newPos = new THREE.Vector3(
-              dragState.startPosition.x + (directionVector.x * dragDelta * scaleFactor),
-              dragState.startPosition.y + (directionVector.y * dragDelta * scaleFactor),
-              dragState.startPosition.z
-            );
+            console.log(`Drag X along local axis: [${localXDir.x.toFixed(2)}, ${localXDir.y.toFixed(2)}, ${localXDir.z.toFixed(2)}], displacement: ${localDisplacement.toFixed(2)}`);
+          } 
+          else if (dragState.selectedAxis === "y") {
+            // Y-axis: Always vertical in world space (along global Z)
+            newPosition.z += localDisplacement;
+            console.log(`Drag Y: vertical displacement: ${localDisplacement.toFixed(2)}`);
+          } 
+          else if (dragState.selectedAxis === "z" && dragState.axisDirectionVectors.z) {
+            // Z-axis: Apply displacement along local Z direction vector
+            const localZDir = dragState.axisDirectionVectors.z;
+            newPosition.x += localZDir.x * localDisplacement;
+            newPosition.y += localZDir.y * localDisplacement;
+            newPosition.z += localZDir.z * localDisplacement;
             
-            // Update the object's position
-            dragState.selectedObject.position.copy(newPos);
-            
-            console.log(`Drag X along local axis: [${directionVector.x.toFixed(2)}, ${directionVector.y.toFixed(2)}, ${directionVector.z.toFixed(2)}], delta: ${dragDelta}`);
-          } else if (dragState.selectedAxis === "y") {
-            // Y axis is always vertical in our system
-            dragState.selectedObject.position.y = dragState.startPosition.y - (mouseDeltaY * scaleFactor);
-            console.log(`Drag Y: ${dragState.selectedObject.position.y.toFixed(2)}, delta: ${mouseDeltaY}`);
-          } else if (dragState.selectedAxis === "z" && dragState.axisDirectionVectors.z) {
-            // Move along the local Z axis using the direction vector
-            const directionVector = dragState.axisDirectionVectors.z;
-            
-            // Create a new position by adding the movement along the direction vector
-            const newPos = new THREE.Vector3(
-              dragState.startPosition.x + (directionVector.x * dragDelta * scaleFactor),
-              dragState.startPosition.y + (directionVector.y * dragDelta * scaleFactor),
-              dragState.startPosition.z
-            );
-            
-            // Update the object's position
-            dragState.selectedObject.position.copy(newPos);
-            
-            console.log(`Drag Z along local axis: [${directionVector.x.toFixed(2)}, ${directionVector.y.toFixed(2)}, ${directionVector.z.toFixed(2)}], delta: ${dragDelta}`);
+            console.log(`Drag Z along local axis: [${localZDir.x.toFixed(2)}, ${localZDir.y.toFixed(2)}, ${localZDir.z.toFixed(2)}], displacement: ${localDisplacement.toFixed(2)}`);
           }
+          
+          // Update the object's position
+          dragState.selectedObject.position.copy(newPosition);
 
           // Always force a render during dragging
           needsRenderRef.current = true;
