@@ -576,18 +576,19 @@ export default function WizardDesign() {
   };
   
   // Handle view direction changes
-  // Store the camera view change callback function returned from Canvas3D
+  // Store the camera view change callback function provided by Canvas3D
   const [viewChangeFunction, setViewChangeFunction] = useState<
     ((direction: ViewDirection) => void) | null
   >(null);
   
-  // This function receives the callback from Canvas3D that handles the actual camera change
+  // This function receives the callback from Canvas3D 
+  // It will be passed to Canvas3D as the onViewChange prop
   const handleViewChange = (callback: (direction: ViewDirection) => void) => {
     console.log("Received camera control callback from Canvas3D");
-    setViewChangeFunction(callback);
+    setViewChangeFunction(() => callback);
   };
   
-  // This function is connected to the dropdown menu and calls the actual view change function
+  // This function is called by the dropdown menu items
   const changeViewDirection = (direction: ViewDirection) => {
     console.log(`Changing view to: ${direction}`);
     if (viewChangeFunction) {
