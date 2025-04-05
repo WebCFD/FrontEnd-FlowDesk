@@ -541,11 +541,15 @@ export default function WizardDesign() {
   
   // Toggle 3D eraser mode
   const handleToggleEraserMode = () => {
-    setIsEraserMode(!isEraserMode);
+    const newEraserMode = !isEraserMode;
+    console.log("Toggling eraser mode, current:", isEraserMode, "new:", newEraserMode);
+    setIsEraserMode(newEraserMode);
+    
     // Disable measurement mode when enabling eraser mode
-    if (!isEraserMode) {
+    if (newEraserMode) {
       setIsMeasureMode(false);
     }
+    
     toast({
       title: isEraserMode ? "Eraser Mode Disabled" : "Eraser Mode Enabled",
       description: isEraserMode 

@@ -44,7 +44,10 @@ export function Toolbar3D({
               "w-full h-16 flex flex-col items-center justify-center gap-1",
               isEraserMode && "bg-violet-500 hover:bg-violet-600 text-white border-violet-600"
             )}
-            onClick={onToggleEraserMode}
+            onClick={() => {
+              console.log("Eraser button clicked, current isEraserMode:", isEraserMode);
+              if (onToggleEraserMode) onToggleEraserMode();
+            }}
           >
             <Eraser className="w-6 h-6" />
             <span className="text-xs">Eraser</span>
