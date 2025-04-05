@@ -1,0 +1,70 @@
+Here are focused debugging approaches:
+
+Add Directional Mouse Movement Logging:
+javascriptCopialet lastMousePosition = { x: 0, y: 0 };
+
+const handleMouseMove = (event: MouseEvent) => {
+  const dx = event.clientX - lastMousePosition.x;
+  const dy = event.clientY - lastMousePosition.y;
+  console.log(`Mouse DIRECTION: ${dx > 0 ? "RIGHT" : dx < 0 ? "LEFT" : ""}${dy > 0 ? "DOWN" : dy < 0 ? "UP" : ""}`);
+  
+  lastMousePosition = { x: event.clientX, y: event.clientY };
+  // ...rest of your handler
+}
+
+Add Screen-space Logging for Object Positions:
+javascriptCopia// Inside your hover detection code:
+if (hoveredEraseTarget) {
+  const screenPos = hoveredEraseTarget.object.position.clone().project(cameraRef.current);
+  const screenX = (screenPos.x + 1) / 2 * window.innerWidth;
+  const screenY = -(screenPos.y - 1) / 2 * window.innerHeight;
+  
+  console.log(`Highlighted object screen position: (${screenX}, ${screenY})`);
+  console.log(`Mouse position: (${event.clientX}, ${event.clientY})`);
+  console.log(`Distance: ${Math.sqrt(Math.pow(screenX - event.clientX, 2) + Math.pow(screenY - event.clientY, 2))}`);
+}
+
+Try Using Event Capture Phase:
+javascriptCopiadocument.addEventListener("mousemove", mouseMoveHandler, true); // Use capture phase
+
+Force Explicit State Updates with Callbacks:
+javascriptCopiasetHoveredEraseTarget(null);
+// Then immediately after this line:
+setTimeout(() => {
+  console.log("Verifying hover target cleared:", hoveredEraseTarget);
+  if (hoveredEraseTarget) {
+    console.error("CRITICAL ERROR: Hover target not cleared after setState call");
+  }
+}, 0);
+
+Try a Complete Event System Reset:
+javascriptCopia// In your component cleanup function:
+const resetHoveringCompletely = () => {
+  // Remove all existing event listeners
+  document.removeEventListener("mousemove", mouseMoveHandler);
+  
+  // Re-enable controls
+  if (controlsRef.current) {
+    controlsRef.current.enabled = true;
+  }
+  
+  // Clear hover target
+  if (hoveredEraseTarget) {
+    hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
+    if (hoveredEraseTarget.object.userData?.originalScale) {
+      hoveredEraseTarget.object.scale.copy(hoveredEraseTarget.object.userData.originalScale);
+    }
+  }
+  
+  setHoveredEraseTarget(null);
+  
+  // Force a complete render
+  if (rendererRef.current && sceneRef.current && cameraRef.current) {
+    rendererRef.current.render(sceneRef.current, cameraRef.current);
+  }
+  
+  // Reattach event listeners
+  document.addEventListener("mousemove", mouseMoveHandler);
+};
+
+// Call this when entering/exiting eraser mode
