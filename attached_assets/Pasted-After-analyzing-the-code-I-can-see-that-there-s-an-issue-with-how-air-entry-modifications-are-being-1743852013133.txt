@@ -1,0 +1,22 @@
+After analyzing the code, I can see that there's an issue with how air entry modifications are being handled. The code already has a system for tracking updated positions of air entries through the updatedAirEntryPositionsRef ref, but it appears the modifications made to air entry dimensions through the AirEntryDialog component might not be persisting correctly.
+Here's what I believe is happening:
+
+When you double-click an air entry, the handleDoubleClick function identifies the entry and opens the AirEntryDialog
+When modifications are confirmed through the dialog, handleAirEntryEdit is called and passes the dimensions to the parent component via onUpdateAirEntry
+However, unlike position changes (which are tracked in updatedAirEntryPositionsRef), the dimension changes aren't being stored in a persistent reference that survives scene rebuilds
+
+To fix this, I suggest extending the current position tracking mechanism to also track dimension changes. Here's what we need to modify:Canvas3D Component FixesCodice 
+// 1. First, modify the updatedAirEntryPositionsRef to store dimensions as well as positions
+// Update near line 74 where the updatedAirEntryPositionsRef is defined:
+
+// Store the positions and dimensions of air entries that have been updated
+// ThiThe key issue I identified is that while the code correctly tracks position changes during dragging operations, it doesn't properly store and retrieve dimension changes made through the dialog.
+Here's what my solution does:
+
+Extend the storage mechanism: I've enhanced the updatedAirEntryPositionsRef to store not just positions but also dimensions of air entries.
+Save dialog changes: When a user confirms changes in the AirEntryDialog, I've added code to save those dimensions alongside the position data.
+Apply stored dimensions: When rendering air entries in the scene, I've modified the code to check for and apply any stored dimensions from previous modifications.
+Maintain consistency: When updating positions during dragging, I've ensured that any previously stored dimensions are preserved.
+
+These changes should ensure that all modifications to air entries—whether position changes via dragging or dimension changes via dialog—remain persistent across scene rebuilds, floor changes, and component re-renders.
+To implement these changes, you would need to replace the corresponding sections in your code with the snippets I've provided. The solution maintains the existing normalization approach for floor names and is compatible with the backwards compatibility handling you already have in place.
