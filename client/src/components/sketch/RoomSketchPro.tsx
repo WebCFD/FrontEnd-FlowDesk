@@ -220,8 +220,8 @@ const createRoomPerimeter = roomUtils.createRoomPerimeter;
 const ROOM_HEIGHT = DEFAULTS.ROOM_HEIGHT;
 
 export function RoomSketchPro({
-  width,
-  height,
+  width = 800,  // Set default width to match Canvas3D
+  height = 600, // Set default height to match Canvas3D
   instanceId = "default",
   lines = [],
   airEntries = [],
@@ -1536,15 +1536,13 @@ export function RoomSketchPro({
   return (
     <div 
       ref={containerRef}
-      className="w-full h-full bg-white"
+      className="w-full h-full relative"
       style={{
         width: `${width}px`, 
         height: `${height}px`,
-        position: "relative",
-        border: "1px solid #e0e0e0",
-        borderRadius: "0.25rem",
-        overflow: "hidden"
       }}
-    />
+    >
+      {/* This div is intentionally empty. The Three.js canvas will be rendered here via DOM insertion */}
+    </div>
   );
 }
