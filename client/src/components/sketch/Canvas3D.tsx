@@ -1287,24 +1287,27 @@ export default function Canvas3D({
           // Apply movement based on selected axis in LOCAL coordinates,
           // transforming the local displacement to global coordinates
           if (dragState.selectedAxis === "x" && dragState.axisDirectionVectors.x) {
+            // X-axis: Apply displacement along local X direction vector
+            const localXDir = dragState.axisDirectionVectors.x;
+            newPosition.x += localXDir.x * localDisplacement;
+            newPosition.y += localXDir.y * localDisplacement;
+            newPosition.z += localXDir.z * localDisplacement;
+            
+            console.log(`Drag X along local axis: [${localXDir.x.toFixed(2)}, ${localXDir.y.toFixed(2)}, ${localXDir.z.toFixed(2)}], displacement: ${localDisplacement.toFixed(2)}`);
+          } 
+          else if (dragState.selectedAxis === "y") {
+            // Y-axis: Always vertical in world space (along global Z)
+            newPosition.z += localDisplacement;
+            console.log(`Drag Y: vertical displacement: ${localDisplacement.toFixed(2)}`);
+          } 
+          else if (dragState.selectedAxis === "z" && dragState.axisDirectionVectors.z) {
             // Z-axis: Apply displacement along local Z direction vector
-            // Note: We're using Z axis for lateral movement along the wall
             const localZDir = dragState.axisDirectionVectors.z;
             newPosition.x += localZDir.x * localDisplacement;
             newPosition.y += localZDir.y * localDisplacement;
             newPosition.z += localZDir.z * localDisplacement;
             
             console.log(`Drag Z along local axis: [${localZDir.x.toFixed(2)}, ${localZDir.y.toFixed(2)}, ${localZDir.z.toFixed(2)}], displacement: ${localDisplacement.toFixed(2)}`);
-          } 
-          else if (dragState.selectedAxis === "z") {
-            // Y-axis: Always vertical in world space (along global Z)
-            newPosition.z += localDisplacement;
-            console.log(`Drag Y: vertical displacement: ${localDisplacement.toFixed(2)}`);
-          } 
-          else if (dragState.selectedAxis === "y" && dragState.axisDirectionVectors.y) {
-            // X-axis: Prevent movement as it's normal to the wall
-            // This deliberately does nothing to prevent the object from moving away from the wall
-            console.log("Drag X prevented - this axis is normal to the wall");
           }
           
           // Update the object's position
