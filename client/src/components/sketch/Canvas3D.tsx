@@ -417,6 +417,15 @@ export default function Canvas3D({
     originalMaterial: THREE.Material | THREE.Material[];
   } | null>(null);
 
+  // Create a ref to track the current isEraserMode value to ensure it's always up-to-date in event handlers
+  const isEraserModeRef = useRef(isEraserMode);
+  
+  // Update the ref whenever isEraserMode changes
+  useEffect(() => {
+    isEraserModeRef.current = isEraserMode;
+    console.log("📌 isEraserModeRef updated to:", isEraserModeRef.current);
+  }, [isEraserMode]);
+
   // Store the initial mouse position for calculating drag distance
   const [initialMousePosition, setInitialMousePosition] = useState<{
     x: number;
@@ -2041,13 +2050,16 @@ export default function Canvas3D({
       // Update debug info for UI display
       const mouseCoords = getMouseCoordinates(event);
       
+      // Use the ref to get the current eraser mode value, which is always up-to-date
+      const currentEraserMode = isEraserModeRef.current;
+      
       // Add more detailed debug logging
-      console.log(`🔍 MOUSE MOVE: coords=${mouseCoords.x.toFixed(2)},${mouseCoords.y.toFixed(2)}, isEraserMode=${isEraserMode}`);
+      console.log(`🔍 MOUSE MOVE: coords=${mouseCoords.x.toFixed(2)},${mouseCoords.y.toFixed(2)}, isEraserMode=${currentEraserMode}, isEraserModeRef=${isEraserModeRef.current}`);
       
       setDebugInfo(prev => ({
         ...prev,
         mousePosition: `${event.clientX}, ${event.clientY} | Normalized: ${mouseCoords.x.toFixed(2)}, ${mouseCoords.y.toFixed(2)}`,
-        eraserMode: isEraserMode
+        eraserMode: currentEraserMode || false // Ensure it's always a boolean value to fix type error
       }));
       
       // Handle measurement preview if in measuring mode and we have a start point
@@ -2064,8 +2076,8 @@ export default function Canvas3D({
         return;
       }
       
-      // Handle hover detection for eraser mode
-      if (isEraserMode && !dragStateRef.current.isDragging) {
+      // Handle hover detection for eraser mode - using ref to ensure we have the current value
+      if (isEraserModeRef.current && !dragStateRef.current.isDragging) {
         // Log TrackballControls state
         const controlsState = controlsRef.current ? {
           enabled: controlsRef.current.enabled,
@@ -2375,7 +2387,7 @@ export default function Canvas3D({
             }
           }
         }
-      } else if (!isEraserMode && hoveredEraseTarget) {
+      } else if (!isEraserModeRef.current && hoveredEraseTarget) {
         // If we exit eraser mode but still have a highlighted object, restore it
         hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
         
@@ -2752,9 +2764,9 @@ export default function Canvas3D({
 
     // Handle eraser clicks
     const handleEraserClick = (event: MouseEvent) => {
-      // Only handle when in eraser mode
-      if (!isEraserMode || !onDeleteAirEntry) {
-        console.log("🚫 Eraser click ignored - isEraserMode:", isEraserMode, "onDeleteAirEntry:", !!onDeleteAirEntry);
+      // Only handle when in eraser mode - using ref for reliable state
+      if (!isEraserModeRef.current || !onDeleteAirEntry) {
+        console.log("🚫 Eraser click ignored - isEraserMode:", isEraserModeRef.current, "onDeleteAirEntry:", !!onDeleteAirEntry);
         return;
       }
       
@@ -2884,7 +2896,7 @@ export default function Canvas3D({
       if (e.button === 2) {
         // Right mouse button for both measurements and context operations
         handleRightMouseDown(e);
-      } else if (e.button === 0 && isEraserMode) {
+      } else if (e.button === 0 && isEraserModeRef.current) {
         // Left mouse button in eraser mode
         handleEraserClick(e);
       }
