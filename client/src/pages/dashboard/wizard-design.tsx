@@ -576,14 +576,25 @@ export default function WizardDesign() {
   };
   
   // Handle view direction changes
-  const handleViewChange = (direction: ViewDirection) => {
-    console.log(`View direction changed to: ${direction}`);
-    // Display toast notification for view change
-    toast({
-      title: `View Changed to ${direction}`,
-      description: `Camera position updated to ${direction} view`,
-    });
-    // The actual camera positioning is handled by Canvas3D component
+  // Store the camera view change callback function returned from Canvas3D
+  const [viewChangeFunction, setViewChangeFunction] = useState<
+    ((direction: ViewDirection) => void) | null
+  >(null);
+  
+  // This function receives the callback from Canvas3D that handles the actual camera change
+  const handleViewChange = (callback: (direction: ViewDirection) => void) => {
+    console.log("Received camera control callback from Canvas3D");
+    setViewChangeFunction(callback);
+  };
+  
+  // This function is connected to the dropdown menu and calls the actual view change function
+  const changeViewDirection = (direction: ViewDirection) => {
+    console.log(`Changing view to: ${direction}`);
+    if (viewChangeFunction) {
+      viewChangeFunction(direction);
+    } else {
+      console.log("View change function not available yet");
+    }
   };
 
   const handleDeleteAirEntryFrom3D = (
@@ -970,22 +981,22 @@ export default function WizardDesign() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="start">
-                        <DropdownMenuItem onClick={() => handleViewChange("+X")}>
+                        <DropdownMenuItem onClick={() => changeViewDirection("+X")}>
                           +X View
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleViewChange("-X")}>
+                        <DropdownMenuItem onClick={() => changeViewDirection("-X")}>
                           -X View
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleViewChange("+Y")}>
+                        <DropdownMenuItem onClick={() => changeViewDirection("+Y")}>
                           +Y View
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleViewChange("-Y")}>
+                        <DropdownMenuItem onClick={() => changeViewDirection("-Y")}>
                           -Y View
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleViewChange("+Z")}>
+                        <DropdownMenuItem onClick={() => changeViewDirection("+Z")}>
                           +Z View (Top)
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleViewChange("-Z")}>
+                        <DropdownMenuItem onClick={() => changeViewDirection("-Z")}>
                           -Z View (Bottom)
                         </DropdownMenuItem>
                       </DropdownMenuContent>

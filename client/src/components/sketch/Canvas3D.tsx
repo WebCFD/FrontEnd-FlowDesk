@@ -87,7 +87,7 @@ interface Canvas3DProps {
     floorName: string,
     index: number
   ) => void;
-  onViewChange?: (direction: ViewDirection) => void;
+  onViewChange?: (callback: (direction: ViewDirection) => void) => void;
 }
 
 
@@ -1342,12 +1342,13 @@ export default function Canvas3D({
     console.log(`Camera view changed to ${direction}`);
   }, [ceilingHeight, currentFloor, getFloorBaseHeight]);
   
-  // Use the handleViewChange as a callback when parent calls onViewChange
+  // Connect the handleViewChange function to the onViewChange prop
   useEffect(() => {
     if (onViewChange) {
-      // We don't need to do anything here - just making sure the deps array includes handleViewChange
-      // so it has the latest version of handleViewChange available when called
-      console.log("View change handler ready");
+      // Pass our local handleViewChange function to the parent component
+      // This enables the parent to call it when a view change is requested
+      onViewChange(handleViewChange);
+      console.log("View change handler connected to parent component");
     }
   }, [onViewChange, handleViewChange]);
 
