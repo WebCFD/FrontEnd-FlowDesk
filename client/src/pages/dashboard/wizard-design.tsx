@@ -1122,6 +1122,22 @@ export default function WizardDesign() {
     console.log("Rendering Step 2 content");
     return (
       <div className="space-y-6">
+        {/* Top section with simulation name and type */}
+        <div className="max-w-xl space-y-4">
+          <div>
+            <Label htmlFor="simulation-name">Simulation name</Label>
+            <div className="border rounded-md px-3 py-2 bg-gray-50">
+              {simulationName || "Untitled Simulation"}
+            </div>
+          </div>
+          <div>
+            <Label htmlFor="simulation-type">Simulation type</Label>
+            <div className="border rounded-md px-3 py-2 bg-gray-50">
+              {simulationType === "comfort" ? "Comfort Simulation (steady run)" : "Air Renovation Convection Simulation (transient run)"}
+            </div>
+          </div>
+        </div>
+      
         <div className="flex gap-6">
           {/* Left sidebar for controls */}
           <div className="w-72 space-y-6">
@@ -1170,41 +1186,20 @@ export default function WizardDesign() {
           </div>
 
           {/* Main content area */}
-          <div className="flex-1 h-[690px]">
-            {/* Top section with simulation name and type directly in the main area */}
-            <div className="mb-4">
-              <div className="max-w-xl space-y-4">
-                <div>
-                  <h3 className="text-sm font-medium mb-1">Simulation name</h3>
-                  <div className="text-base border rounded px-3 py-1 bg-gray-50">
-                    {simulationName || "Untitled Simulation"}
-                  </div>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium mb-1">Simulation type</h3>
-                  <div className="text-base border rounded px-3 py-1 bg-gray-50">
-                    {simulationType === "comfort" ? "Comfort Simulation (steady run)" : "Air Renovation Convection Simulation (transient run)"}
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {/* Main 3D view content in a separate bordered container */}
-            <div className="border rounded-lg overflow-hidden bg-white h-[550px]">
-              <RoomSketchPro
-                width={800}
-                height={550} /* Adjusted height to fit in the new layout */
-                key="step2-view"
-                instanceId="step2-view"
-                lines={lines}
-                airEntries={airEntries}
-                wallTransparency={wallTransparency}
-                onWallTransparencyChange={(value) => {
-                  console.log("Wizard: Wall transparency changing to:", value);
-                  setWallTransparency(value);
-                }}
-              />
-            </div>
+          <div className="flex-1 h-[690px] border rounded-lg overflow-hidden bg-white">
+            <RoomSketchPro
+              width={800}
+              height={690}
+              key="step2-view"
+              instanceId="step2-view"
+              lines={lines}
+              airEntries={airEntries}
+              wallTransparency={wallTransparency}
+              onWallTransparencyChange={(value) => {
+                console.log("Wizard: Wall transparency changing to:", value);
+                setWallTransparency(value);
+              }}
+            />
           </div>
         </div>
 
