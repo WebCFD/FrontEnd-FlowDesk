@@ -2,7 +2,15 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Eye, Eraser, Ruler } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Eye, Eraser, Ruler, ChevronDown } from "lucide-react";
+
+export type ViewDirection = "+X" | "-X" | "+Y" | "-Y" | "+Z" | "-Z";
 
 interface Toolbar3DProps {
   isActive: boolean;
@@ -12,6 +20,7 @@ interface Toolbar3DProps {
   onToggleMeasureMode: () => void;
   isEraserMode?: boolean;
   onToggleEraserMode?: () => void;
+  onViewChange?: (direction: ViewDirection) => void;
 }
 
 export function Toolbar3D({
@@ -22,6 +31,7 @@ export function Toolbar3D({
   onToggleMeasureMode,
   isEraserMode = false,
   onToggleEraserMode,
+  onViewChange,
 }: Toolbar3DProps) {
   return (
     <div className={cn(
@@ -31,13 +41,39 @@ export function Toolbar3D({
       <div className="space-y-4">
         <h3 className="font-semibold">3D Tools</h3>
         <div className="grid grid-cols-3 gap-2">
-          <Button
-            variant="outline"
-            className="w-full h-16 flex flex-col items-center justify-center gap-1"
-          >
-            <Eye className="w-6 h-6" />
-            <span className="text-xs">View</span>
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full h-16 flex flex-col items-center justify-center gap-1"
+              >
+                <Eye className="w-6 h-6" />
+                <span className="text-xs flex items-center">
+                  View <ChevronDown className="h-3 w-3 ml-1" />
+                </span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem onClick={() => onViewChange && onViewChange("+X")}>
+                +X View
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onViewChange && onViewChange("-X")}>
+                -X View
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onViewChange && onViewChange("+Y")}>
+                +Y View
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onViewChange && onViewChange("-Y")}>
+                -Y View
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onViewChange && onViewChange("+Z")}>
+                +Z View (Top)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onViewChange && onViewChange("-Z")}>
+                -Z View (Bottom)
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button
             variant={isEraserMode ? "default" : "outline"}
             className={cn(

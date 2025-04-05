@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { TrackballControls } from "three/addons/controls/TrackballControls.js";
 import { makeTextSprite } from "@/lib/three-utils";
 import AirEntryDialog from "./AirEntryDialog";
+import { ViewDirection } from "./Toolbar3D";
 
 interface Point {
   x: number;
@@ -86,6 +87,7 @@ interface Canvas3DProps {
     floorName: string,
     index: number
   ) => void;
+  onViewChange?: (direction: ViewDirection) => void;
 }
 
 
@@ -369,6 +371,7 @@ export default function Canvas3D({
   isEraserMode, // Removed default value to ensure external state is always respected
   onUpdateAirEntry,
   onDeleteAirEntry,
+  onViewChange,
 }: Canvas3DProps) {
   // Debug state for UI display
   const [debugInfo, setDebugInfo] = useState<{
@@ -1282,6 +1285,71 @@ export default function Canvas3D({
 
     return objects;
   };
+  
+  // Handle camera view changes when requested via props
+  const handleViewChange = useCallback((direction: ViewDirection) => {
+    if (!cameraRef.current || !controlsRef.current) {
+      console.log("Cannot change view - camera or controls not initialized");
+      return;
+    }
+    
+    // Get the center of the scene - use the current floor's base height
+    const baseHeight = getFloorBaseHeight(currentFloor);
+    const roomCenter = new THREE.Vector3(0, 0, baseHeight + (ceilingHeight / 2));
+    
+    // Distance from the center to position the camera
+    const distance = 800;
+    
+    console.log(`Changing camera view to ${direction}. Room center:`, roomCenter);
+    
+    // Reset camera position based on the view direction
+    switch (direction) {
+      case "+X":
+        cameraRef.current.position.set(distance, 0, roomCenter.z);
+        break;
+      case "-X":
+        cameraRef.current.position.set(-distance, 0, roomCenter.z);
+        break;
+      case "+Y":
+        cameraRef.current.position.set(0, distance, roomCenter.z);
+        break;
+      case "-Y":
+        cameraRef.current.position.set(0, -distance, roomCenter.z);
+        break;
+      case "+Z":
+        cameraRef.current.position.set(0, 0, roomCenter.z + distance);
+        break;
+      case "-Z":
+        cameraRef.current.position.set(0, 0, roomCenter.z - distance);
+        break;
+    }
+    
+    // Look at the room center
+    cameraRef.current.lookAt(roomCenter);
+    
+    // Update camera properties
+    cameraRef.current.updateProjectionMatrix();
+    
+    // Reset the trackball controls to match this new camera view
+    controlsRef.current.target.copy(roomCenter);
+    controlsRef.current.update();
+    
+    // Force a render update
+    if (sceneRef.current && rendererRef.current) {
+      rendererRef.current.render(sceneRef.current, cameraRef.current);
+    }
+    
+    console.log(`Camera view changed to ${direction}`);
+  }, [ceilingHeight, currentFloor, getFloorBaseHeight]);
+  
+  // Use the handleViewChange as a callback when parent calls onViewChange
+  useEffect(() => {
+    if (onViewChange) {
+      // We don't need to do anything here - just making sure the deps array includes handleViewChange
+      // so it has the latest version of handleViewChange available when called
+      console.log("View change handler ready");
+    }
+  }, [onViewChange, handleViewChange]);
 
   useEffect(() => {
     if (!containerRef.current) return;
