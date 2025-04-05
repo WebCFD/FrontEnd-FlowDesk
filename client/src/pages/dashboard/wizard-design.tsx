@@ -1123,31 +1123,99 @@ export default function WizardDesign() {
     return (
       <div className="space-y-6">
         <div className="flex gap-6">
-          <FurnitureMenu
-            onDragStart={(item) => {
-              console.log("Started dragging:", item.name);
-            }}
-            wallTransparency={wallTransparency}
-            onWallTransparencyChange={(value) => {
-              console.log("Wizard: Wall transparency changing to:", value);
-              setWallTransparency(value);
-            }}
-          />
+          {/* Left sidebar for view controls and furniture */}
+          <div className="w-72 space-y-6">
+            <div>
+              <h3 className="font-semibold text-lg mb-4">View Controls</h3>
+              <div className="space-y-2">
+                <div>
+                  <label className="text-sm font-medium mb-2">Wall Transparency</label>
+                  <div className="flex items-center">
+                    <Slider
+                      value={[wallTransparency]}
+                      onValueChange={(values) => {
+                        console.log("Wizard: Wall transparency changing to:", values[0]);
+                        setWallTransparency(values[0]);
+                      }}
+                      min={0}
+                      max={1}
+                      step={0.01}
+                      className="flex-1"
+                    />
+                    <span className="text-xs text-gray-500 ml-2">{Math.round(wallTransparency * 100)}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h3 className="font-semibold text-lg mb-4">Furniture</h3>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="border rounded text-center p-2">
+                  <div className="flex justify-center mb-1">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <rect x="4" y="14" width="16" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                      <rect x="6" y="10" width="12" height="4" stroke="currentColor" strokeWidth="1.5" />
+                    </svg>
+                  </div>
+                  <div className="text-xs">Table</div>
+                </div>
+                <div className="border rounded text-center p-2">
+                  <div className="flex justify-center mb-1">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="9" r="3" stroke="currentColor" strokeWidth="1.5" />
+                      <path d="M16 18C16 15.7909 14.2091 14 12 14C9.79086 14 8 15.7909 8 18" stroke="currentColor" strokeWidth="1.5" />
+                    </svg>
+                  </div>
+                  <div className="text-xs">Person</div>
+                </div>
+                <div className="border rounded text-center p-2">
+                  <div className="flex justify-center mb-1">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <rect x="4" y="12" width="16" height="8" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                      <path d="M6 12V10C6 8.89543 6.89543 8 8 8H16C17.1046 8 18 8.89543 18 10V12" stroke="currentColor" strokeWidth="1.5" />
+                    </svg>
+                  </div>
+                  <div className="text-xs">Armchair</div>
+                </div>
+              </div>
+            </div>
+          </div>
 
+          {/* Main content area with 3D view */}
           <div className="flex-1 h-[690px] border rounded-lg overflow-hidden bg-white">
-            <RoomSketchPro
-              width={800}
-              height={690}
-              key="step2-view"
-              instanceId="step2-view"
-              lines={lines}
-              airEntries={airEntries}
-              wallTransparency={wallTransparency}
-              onWallTransparencyChange={(value) => {
-                console.log("Wizard: Wall transparency changing to:", value);
-                setWallTransparency(value);
-              }}
-            />
+            <div className="p-4 pb-2 border-b">
+              <div className="max-w-xl space-y-4">
+                <div>
+                  <h3 className="text-sm font-medium mb-1">Simulation name</h3>
+                  <div className="text-base border rounded px-3 py-1 bg-gray-50">
+                    {simulationName || "Untitled Simulation"}
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium mb-1">Simulation type</h3>
+                  <div className="text-base border rounded px-3 py-1 bg-gray-50">
+                    {simulationType === "comfort" ? "Comfort Simulation (steady run)" : "Air Renovation Convection Simulation (transient run)"}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="h-[600px]">
+              <Canvas3D
+                floors={floors}
+                currentFloor={currentFloor}
+                ceilingHeight={ceilingHeight}
+                floorDeckThickness={floorDeckThickness}
+                wallTransparency={wallTransparency}
+                isMeasureMode={isMeasureMode}
+                isEraserMode={isEraserMode}
+                simulationName={simulationName}
+                simulationType={simulationType === "comfort" ? "Comfort Simulation (steady run)" : "Air Renovation Convection Simulation (transient run)"}
+                onUpdateAirEntry={handleUpdateAirEntryFrom3D}
+                onDeleteAirEntry={handleDeleteAirEntryFrom3D}
+                onViewChange={handleViewChange}
+              />
+            </div>
           </div>
         </div>
 
