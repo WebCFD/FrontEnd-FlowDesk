@@ -424,7 +424,37 @@ export default function Canvas3D({
   useEffect(() => {
     isEraserModeRef.current = isEraserMode;
     console.log("📌 isEraserModeRef updated to:", isEraserModeRef.current);
-  }, [isEraserMode]);
+    
+    // When turning off eraser mode, clean up any highlighted elements
+    if (!isEraserMode && hoveredEraseTarget) {
+      console.log("🔄 Eraser mode turned off - cleaning up highlighted elements");
+      
+      // Restore original material 
+      hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
+      
+      // Restore original scale if applicable
+      if (hoveredEraseTarget.object.userData?.originalScale) {
+        hoveredEraseTarget.object.scale.copy(hoveredEraseTarget.object.userData.originalScale);
+        
+        // Force update to the geometry
+        if (hoveredEraseTarget.object.geometry) {
+          hoveredEraseTarget.object.geometry.computeBoundingSphere();
+          hoveredEraseTarget.object.geometry.computeBoundingBox();
+        }
+      }
+      
+      // Clear the hover target
+      setHoveredEraseTarget(null);
+      
+      // Re-enable controls when exiting eraser mode
+      if (controlsRef.current) {
+        controlsRef.current.enabled = true;
+      }
+      
+      // Force render to update the appearance
+      needsRenderRef.current = true;
+    }
+  }, [isEraserMode, hoveredEraseTarget]);
 
   // Store the initial mouse position for calculating drag distance
   const [initialMousePosition, setInitialMousePosition] = useState<{
@@ -2275,7 +2305,14 @@ export default function Canvas3D({
               
               // Re-enable controls when not hovering
               if (controlsRef.current) {
+                console.log("🎮 Re-enabling TrackballControls after mouse moved away from element");
                 controlsRef.current.enabled = true;
+              }
+              
+              // Also, visually reset the cursor 
+              const canvas = containerRef.current?.querySelector('canvas');
+              if (canvas) {
+                canvas.style.cursor = 'auto';
               }
               
               needsRenderRef.current = true;
@@ -2402,53 +2439,6 @@ export default function Canvas3D({
             }
           }
         }
-      } else if (!isEraserModeRef.current && hoveredEraseTarget) {
-        // If we exit eraser mode but still have a highlighted object, restore it
-        hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
-        
-        // Restore original scale if it was stored
-        if (hoveredEraseTarget.object.userData?.originalScale) {
-          hoveredEraseTarget.object.scale.copy(hoveredEraseTarget.object.userData.originalScale);
-          console.log(`Restored original scale for ${hoveredEraseTarget.object.userData.type}`);
-          
-          // Force update to the geometry
-          if (hoveredEraseTarget.object.geometry) {
-            hoveredEraseTarget.object.geometry.computeBoundingSphere();
-            hoveredEraseTarget.object.geometry.computeBoundingBox();
-          }
-        }
-        
-        setHoveredEraseTarget(null);
-        
-        // Re-enable controls
-        if (controlsRef.current) {
-          controlsRef.current.enabled = true;
-        }
-        
-        // Restore all air entries to original scale when exiting eraser mode
-        if (sceneRef.current) {
-          sceneRef.current.traverse((object) => {
-            if (
-              object instanceof THREE.Mesh &&
-              object.userData?.originalScale
-            ) {
-              // Restore original scale
-              object.scale.copy(object.userData.originalScale);
-              
-              // Remove the originalScale property to reset state for next time
-              delete object.userData.originalScale;
-              
-              // Update geometry after scaling back
-              if (object.geometry) {
-                object.geometry.computeBoundingSphere();
-                object.geometry.computeBoundingBox();
-              }
-            }
-          });
-        }
-        
-        // Force render to update the appearance
-        needsRenderRef.current = true;
       }
 
       // Regular drag logic
