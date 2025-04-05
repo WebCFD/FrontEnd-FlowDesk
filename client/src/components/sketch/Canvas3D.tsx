@@ -438,23 +438,54 @@ export default function Canvas3D({
       if (hoveredEraseTarget) {
         console.log("  - Restoring original material for highlighted element");
         
-        // Restore original material 
-        hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
-        
-        // Restore original scale if applicable
-        if (hoveredEraseTarget.object.userData?.originalScale) {
-          hoveredEraseTarget.object.scale.copy(hoveredEraseTarget.object.userData.originalScale);
+        try {
+          // Restore original material 
+          hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
           
-          // Force update to the geometry
-          if (hoveredEraseTarget.object.geometry) {
-            hoveredEraseTarget.object.geometry.computeBoundingSphere();
-            hoveredEraseTarget.object.geometry.computeBoundingBox();
+          // Restore original scale if applicable
+          if (hoveredEraseTarget.object.userData?.originalScale) {
+            hoveredEraseTarget.object.scale.copy(hoveredEraseTarget.object.userData.originalScale);
+            
+            // Force update to the geometry
+            if (hoveredEraseTarget.object.geometry) {
+              hoveredEraseTarget.object.geometry.computeBoundingSphere();
+              hoveredEraseTarget.object.geometry.computeBoundingBox();
+            }
+            console.log("  - Restored original scale for highlighted element");
           }
-          console.log("  - Restored original scale for highlighted element");
+        } catch (err) {
+          console.error("Error during eraser mode cleanup:", err);
         }
         
         // Clear the hover target
         setHoveredEraseTarget(null);
+      }
+      
+      // Additional cleanup - reset any mesh that might still have eraser state
+      if (sceneRef.current) {
+        sceneRef.current.traverse((object) => {
+          if (
+            object instanceof THREE.Mesh &&
+            object.userData?.originalScale &&
+            ["window", "door", "vent"].includes(object.userData?.type || "")
+          ) {
+            try {
+              // Restore the original scale
+              object.scale.copy(object.userData.originalScale);
+              delete object.userData.originalScale;
+              
+              // Update geometry
+              if (object.geometry) {
+                object.geometry.computeBoundingSphere();
+                object.geometry.computeBoundingBox();
+              }
+              
+              console.log(`  - Restored scale for ${object.userData?.type} that was missed`);
+            } catch (err) {
+              console.error("Error restoring scale for object during cleanup:", err);
+            }
+          }
+        });
       }
       
       // IMPORTANT: Always do these cleanup steps regardless of whether we had a hovered target
@@ -464,6 +495,11 @@ export default function Canvas3D({
       if (controlsRef.current) {
         console.log("  - Re-enabling TrackballControls for camera movement");
         controlsRef.current.enabled = true;
+        
+        // Force controls update
+        if (typeof controlsRef.current.update === 'function') {
+          controlsRef.current.update();
+        }
       }
       
       // Reset cursor on container if it exists
@@ -474,6 +510,11 @@ export default function Canvas3D({
       
       // Force render to update the appearance
       needsRenderRef.current = true;
+      
+      // Force immediate render to update visuals
+      if (rendererRef.current && sceneRef.current && cameraRef.current) {
+        rendererRef.current.render(sceneRef.current, cameraRef.current);
+      }
     }
   }, [isEraserMode, hoveredEraseTarget]);
 
@@ -2366,10 +2407,14 @@ export default function Canvas3D({
                   console.log("  - Restored original scale for element");
                 }
                 
-                // Re-enable controls when not hovering
+                // CRITICAL: Ensure controls are re-enabled immediately when hovering ends
                 if (controlsRef.current) {
                   console.log("🎮 Re-enabling TrackballControls after cursor moved away from element");
                   controlsRef.current.enabled = true;
+                  // Force controls update on the next frame
+                  if (typeof controlsRef.current.update === 'function') {
+                    controlsRef.current.update();
+                  }
                 }
                 
                 // Reset cursor to eraser mode cursor (not auto, since we're still in eraser mode)
@@ -2379,6 +2424,11 @@ export default function Canvas3D({
                 }
                 
                 needsRenderRef.current = true;
+                
+                // Force immediate render to update visuals
+                if (rendererRef.current && sceneRef.current && cameraRef.current) {
+                  rendererRef.current.render(sceneRef.current, cameraRef.current);
+                }
               } catch (err) {
                 console.error("Error while clearing previous highlight:", err);
               }
@@ -2471,46 +2521,22 @@ export default function Canvas3D({
               
               // CRITICAL: Disable controls when hovering over an erasable element
               if (controlsRef.current) {
-                // First, completely dispose of existing controls
-                const oldControls = controlsRef.current;
-                const cameraPos = oldControls.object.position.clone();
-                const targetPos = oldControls.target.clone();
-                
                 // Log control state before disabling
                 console.log("📊 TrackballControls state before disabling:", {
-                  enabled: oldControls.enabled,
-                  position: cameraPos,
-                  target: targetPos
+                  enabled: controlsRef.current.enabled,
+                  position: controlsRef.current.object.position.clone(),
+                  target: controlsRef.current.target.clone()
                 });
                 
-                // Dispose of controls to release event listeners
-                oldControls.dispose();
+                // Simply disable the controls - don't recreate them
+                // This preserves the control state and makes re-enabling easier
+                controlsRef.current.enabled = false;
                 
-                // Create new disabled controls
-                if (cameraRef.current && containerRef.current) {
-                  const canvas = containerRef.current.querySelector('canvas');
-                  if (canvas) {
-                    const newControls = new TrackballControls(cameraRef.current, canvas);
-                    
-                    // Configure the new controls
-                    newControls.rotateSpeed = 2.0;
-                    newControls.zoomSpeed = 1.2;
-                    newControls.panSpeed = 0.8;
-                    newControls.staticMoving = true;
-                    newControls.dynamicDampingFactor = 0.2;
-                    
-                    // Restore camera position and target
-                    newControls.object.position.copy(cameraPos);
-                    newControls.target.copy(targetPos);
-                    
-                    // Important: Disable the controls
-                    newControls.enabled = false;
-                    
-                    // Replace the reference
-                    controlsRef.current = newControls;
-                    
-                    console.log("🎮 Created new disabled TrackballControls");
-                  }
+                console.log("🎮 Disabled TrackballControls");
+                
+                // Force controls to update their state immediately
+                if (typeof controlsRef.current.update === 'function') {
+                  controlsRef.current.update();
                 }
               }
               
