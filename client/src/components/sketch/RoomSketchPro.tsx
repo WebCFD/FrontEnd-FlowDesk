@@ -532,7 +532,7 @@ export function RoomSketchPro({
 
     // Convert 2D lines to 3D walls - use geometryData.lines from the context if available
     const linesData = geometryData?.lines || lines;
-    linesData.forEach((line) => {
+    linesData.forEach((line, lineIndex) => {
       const start_bottom = transform2DTo3D(line.start);
       const end_bottom = transform2DTo3D(line.end);
       const start_top = transform2DTo3D(line.start, DEFAULTS.ROOM_HEIGHT);
@@ -564,6 +564,15 @@ export function RoomSketchPro({
 
       const wall = new THREE.Mesh(geometry, wallMaterial);
       wall.name = "wall";
+      
+      // Add userData to the wall for identification and manipulation
+      wall.userData = {
+        type: "wall",
+        index: lineIndex,
+        line: line,
+        isSelectable: true
+      };
+      
       scene.add(wall);
     });
   };
@@ -1241,6 +1250,18 @@ export function RoomSketchPro({
     shadowCatcher.position.set(0, 0, frameDepth / 2 + 0.1);
     windowGroup.add(shadowCatcher);
 
+    // Add userData to the window group for identification and manipulation
+    windowGroup.userData = {
+      type: "window",
+      position: entry.position,
+      dimensions: entry.dimensions,
+      line: entry.line,
+      isSelectable: true
+    };
+    
+    // Set name for easier identification
+    windowGroup.name = "window";
+    
     // Add the entire window group to the scene
     scene.add(windowGroup);
 
@@ -1253,7 +1274,10 @@ export function RoomSketchPro({
     renderer: THREE.WebGLRenderer,
     camera: THREE.PerspectiveCamera,
   ) => {
-    const perimeterPoints = roomUtils.createRoomPerimeter(lines);
+    // Use the geometryData.lines if available, otherwise fall back to props 
+    const linesData = geometryData?.lines || lines;
+    const perimeterPoints = roomUtils.createRoomPerimeter(linesData);
+    
     if (perimeterPoints.length > 2) {
       // Create shape from perimeter points
       const shape = new THREE.Shape();
@@ -1291,7 +1315,20 @@ export function RoomSketchPro({
 
       const floor = new THREE.Mesh(floorGeometry, floorMaterial);
       floor.position.set(0, 0, 0); // Place at Z=0
+      floor.name = "floor";
+      
+      // Add userData to the floor for identification and manipulation
+      floor.userData = {
+        type: "floor",
+        index: 0,
+        isSelectable: true,
+        lines: linesData, // Store the lines data used to create this floor
+        perimeterPoints: perimeterPoints // Store the perimeter points
+      };
+      
       scene.add(floor);
+      // Store the floor mesh in the ref for later access
+      floorRef.current = floor;
 
       // Create roof geometry and mesh
       const roofGeometry = new THREE.ShapeGeometry(shape);
@@ -1303,6 +1340,16 @@ export function RoomSketchPro({
       });
       const roof = new THREE.Mesh(roofGeometry, roofMaterial);
       roof.position.set(0, 0, DEFAULTS.ROOM_HEIGHT); // Place at Z=ROOM_HEIGHT
+      roof.name = "roof";
+      
+      // Add userData to the roof for identification and manipulation
+      roof.userData = {
+        type: "roof",
+        index: 0,
+        isSelectable: true,
+        lines: linesData // Store the lines data used to create this roof
+      };
+      
       scene.add(roof);
     }
   };
