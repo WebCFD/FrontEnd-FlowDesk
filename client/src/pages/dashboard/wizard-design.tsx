@@ -1075,7 +1075,7 @@ export default function WizardDesign() {
             </div>
 
             {/* Right side - Canvas */}
-            {renderCanvasSection()}
+            {renderCanvasSection("tabs")}
           </div>
         </CardContent>
       </Card>
