@@ -33,15 +33,22 @@ import {
   RotateCw,
   ZoomIn,
   Share2,
+  ChevronDown,
 } from "lucide-react";
 import Canvas2D from "@/components/sketch/Canvas2D";
 import { RoomSketchPro } from "@/components/sketch/RoomSketchPro";
 import { cn } from "@/lib/utils";
 import AirEntryDialog from "@/components/sketch/AirEntryDialog";
 import Canvas3D from "@/components/sketch/Canvas3D";
-import { Toolbar3D } from "@/components/sketch/Toolbar3D";
+import { Toolbar3D, ViewDirection } from "@/components/sketch/Toolbar3D";
 import { useRoomStore } from "@/lib/store/room-store";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -522,6 +529,8 @@ export default function WizardDesign() {
     }
   };
 
+  // Handle view direction changes is defined below
+
 
   // Add these functions:
   // Toggle 3D measurement mode
@@ -564,6 +573,17 @@ export default function WizardDesign() {
     
     // Log for debugging
     console.log("🔴 ERASER TOGGLE - Set isEraserMode to:", newEraserMode);
+  };
+  
+  // Handle view direction changes
+  const handleViewChange = (direction: ViewDirection) => {
+    console.log(`View direction changed to: ${direction}`);
+    // Display toast notification for view change
+    toast({
+      title: `View Changed to ${direction}`,
+      description: `Camera position updated to ${direction} view`,
+    });
+    // The actual camera positioning is handled by Canvas3D component
   };
 
   const handleDeleteAirEntryFrom3D = (
@@ -937,13 +957,39 @@ export default function WizardDesign() {
                 <h3 className="font-semibold text-lg mb-4">3D Tools</h3>
                 <div className="space-y-4">
                   <div className="grid grid-cols-3 gap-2">
-                    <Button
-                      variant="outline"
-                      className="w-full h-16 flex flex-col items-center justify-center gap-1"
-                    >
-                      <Eye className="w-6 h-6" />
-                      <span className="text-xs">View</span>
-                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full h-16 flex flex-col items-center justify-center gap-1"
+                        >
+                          <Eye className="w-6 h-6" />
+                          <span className="text-xs flex items-center">
+                            View <ChevronDown className="h-3 w-3 ml-1" />
+                          </span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start">
+                        <DropdownMenuItem onClick={() => handleViewChange("+X")}>
+                          +X View
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleViewChange("-X")}>
+                          -X View
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleViewChange("+Y")}>
+                          +Y View
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleViewChange("-Y")}>
+                          -Y View
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleViewChange("+Z")}>
+                          +Z View (Top)
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleViewChange("-Z")}>
+                          -Z View (Bottom)
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                     <Button
                       variant={isEraserMode ? "default" : "outline"}
                       className="w-full h-16 flex flex-col items-center justify-center gap-1"
@@ -1472,6 +1518,7 @@ export default function WizardDesign() {
             isEraserMode={isEraserMode}
             onUpdateAirEntry={handleUpdateAirEntryFrom3D}
             onDeleteAirEntry={handleDeleteAirEntryFrom3D}
+            onViewChange={handleViewChange}
           />
         )}
       </div>
