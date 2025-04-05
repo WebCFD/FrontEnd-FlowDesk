@@ -1143,10 +1143,10 @@ export default function WizardDesign() {
           </div>
 
           {/* Main content area */}
-          <div className="flex-1 h-[690px] border rounded-lg overflow-hidden bg-white">
+          <div className="flex-1 border rounded-lg overflow-hidden bg-white min-w-[600px]">
             <RoomSketchPro
               width={800}
-              height={690}
+              height={600}
               key="step2-view"
               instanceId="step2-view"
               lines={lines}
