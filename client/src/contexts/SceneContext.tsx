@@ -64,7 +64,12 @@ export const SceneProvider: React.FC<{children: React.ReactNode}> = ({ children 
   };
 
   const updateGeometryData = (data: Partial<SceneContextType['geometryData']>) => {
-    setGeometryData(prev => ({ ...prev, ...data }));
+    console.log("SceneContext - updateGeometryData called with:", data);
+    setGeometryData(prev => {
+      const newData = { ...prev, ...data };
+      console.log("SceneContext - geometryData updated to:", newData);
+      return newData;
+    });
   };
 
   return (
