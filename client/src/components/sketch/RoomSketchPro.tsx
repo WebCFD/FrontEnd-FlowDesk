@@ -898,52 +898,80 @@ export function RoomSketchPro({
     multiFloorGroup: THREE.Group,
     floorGroups: Record<string, THREE.Group>
   ) => {
-    console.log(`🪜 Starting stair visualization for floor "${floorName}" stair #${stairIndex}`);
+    console.log(`Starting stair visualization for floor "${floorName}" stair #${stairIndex}:`, stairData);
     
     // Get floor indices
     const floorNames = Object.keys(floorGroups).sort();
     const currentFloorIndex = floorNames.indexOf(floorName);
     
-    console.log(`🪜 Floor index info:`, {
+    console.log(`Floor index info:`, {
       floorName,
       currentFloorIndex,
       availableFloors: floorNames,
-      hasPreviousFloor: currentFloorIndex > 0,
-      hasNextFloor: currentFloorIndex < floorNames.length - 1,
-      totalFloors: floorNames.length
+      totalFloors: floorNames.length,
+      stairDirection: stairData.direction
     });
     
-    // Only create stairs if we have a valid upper floor
-    if (currentFloorIndex < 0 || currentFloorIndex >= floorNames.length - 1) {
-      console.warn(`⚠️ Cannot create stairs for "${floorName}" (index ${currentFloorIndex}): No valid floor above`);
+    // Determine connected floor based on stair direction
+    let connectedFloorName: string | null = null;
+    
+    // If stair direction is specified, use it to determine the connected floor
+    if (stairData.direction) {
+      if (stairData.direction === 'up') {
+        // If direction is up, we're connecting from this floor to the one above
+        const floorIndex = currentFloorIndex - 1; // Floor above has lower index in the array
+        connectedFloorName = floorIndex >= 0 ? floorNames[floorIndex] : null;
+        
+        console.log(`Stair goes UP from ${floorName} to ${connectedFloorName || 'nowhere'}`);
+      } 
+      else if (stairData.direction === 'down') {
+        // If direction is down, we're connecting from this floor to the one below
+        const floorIndex = currentFloorIndex + 1; // Floor below has higher index in the array
+        connectedFloorName = floorIndex < floorNames.length ? floorNames[floorIndex] : null;
+        
+        console.log(`Stair goes DOWN from ${floorName} to ${connectedFloorName || 'nowhere'}`);
+      }
+    } 
+    // Fallback to default behavior if no direction is specified
+    else if (currentFloorIndex < floorNames.length - 1) {
+      connectedFloorName = floorNames[currentFloorIndex + 1];
+      console.log(`No direction specified, defaulting to connect ${floorName} to ${connectedFloorName}`);
+    }
+    
+    // Check if we have a valid connected floor
+    if (!connectedFloorName) {
+      console.warn(`Cannot create stairs for "${floorName}": No valid connected floor for direction ${stairData.direction}`);
       return;
     }
     
-    // Get the floors this stair connects
-    const lowerFloorName = floorName;
-    const upperFloorName = floorNames[currentFloorIndex + 1];
+    // For simplicity in the rest of the code, standardize terminology:
+    // The current floor where the stair starts is sourceFloor
+    // The floor where the stair leads to is targetFloor
+    const sourceFloorName = floorName;
+    const targetFloorName = connectedFloorName;
     
-    console.log(`🪜 Stair will connect:`, {
-      lowerFloor: lowerFloorName,
-      upperFloor: upperFloorName,
-      hasLowerFloorGroup: !!floorGroups[lowerFloorName],
-      hasUpperFloorGroup: !!floorGroups[upperFloorName],
+    console.log(`Stair will connect:`, {
+      sourceFloor: sourceFloorName,
+      targetFloor: targetFloorName,
+      hasSourceFloorGroup: !!floorGroups[sourceFloorName],
+      hasTargetFloorGroup: !!floorGroups[targetFloorName],
       stairData: {
         hasPosition: !!stairData.position,
-        position: stairData.position ? `(${stairData.position.x}, ${stairData.position.y})` : 'undefined'
+        position: stairData.position ? `(${stairData.position.x}, ${stairData.position.y})` : 'undefined',
+        direction: stairData.direction || 'none'
       }
     });
     
-    if (!lowerFloorName || !upperFloorName || !floorGroups[lowerFloorName] || !floorGroups[upperFloorName]) {
-      console.warn("⚠️ Cannot create stairs, missing floor groups:", {
-        lowerFloorName,
-        upperFloorName,
+    if (!sourceFloorName || !targetFloorName || !floorGroups[sourceFloorName] || !floorGroups[targetFloorName]) {
+      console.warn("Cannot create stairs, missing floor groups:", {
+        sourceFloorName,
+        targetFloorName,
         availableGroups: Object.keys(floorGroups)
       });
       return;
     }
     
-    console.log(`🪜 Creating stairs from ${lowerFloorName} to ${upperFloorName}`);
+    console.log(`Creating stairs from ${sourceFloorName} to ${targetFloorName}`);
     
     // Create stair material
     const stairMaterial = new THREE.MeshStandardMaterial({
@@ -957,22 +985,22 @@ export function RoomSketchPro({
     const STAIR_RUN = 25;  // Depth of each step (cm)
     const STAIR_WIDTH = 100; // Width of stairs (cm)
     
-    // Get floor heights
-    const lowerFloorHeight = floorGroups[lowerFloorName].position.z;
-    const upperFloorHeight = floorGroups[upperFloorName].position.z;
-    const heightDifference = upperFloorHeight - lowerFloorHeight;
+    // Get floor heights - using our new sourceFloor and targetFloor variables
+    const sourceFloorHeight = floorGroups[sourceFloorName].position.z;
+    const targetFloorHeight = floorGroups[targetFloorName].position.z;
+    const heightDifference = targetFloorHeight - sourceFloorHeight;
     
     // Calculate number of steps based on height
-    const numSteps = Math.floor(heightDifference / STAIR_RISE);
+    const numSteps = Math.floor(Math.abs(heightDifference) / STAIR_RISE);
     
     if (numSteps <= 0) {
-      console.warn("RoomSketchPro - Cannot create stairs, invalid height difference:", heightDifference);
+      console.warn("Cannot create stairs, invalid height difference:", heightDifference);
       return;
     }
     
     // Create stair group
     const stairGroup = new THREE.Group();
-    stairGroup.name = `stairs_${lowerFloorName}_to_${upperFloorName}_${stairIndex}`;
+    stairGroup.name = `stairs_${sourceFloorName}_to_${targetFloorName}_${stairIndex}`;
     
     // Get stair position from stair data
     const stairPosition = transform2DTo3D(stairData.position || { x: 0, y: 0 });
@@ -982,11 +1010,21 @@ export function RoomSketchPro({
       const stepGeometry = new THREE.BoxGeometry(STAIR_WIDTH, STAIR_RUN, STAIR_RISE);
       const step = new THREE.Mesh(stepGeometry, stairMaterial);
       
+      // Determine step position based on direction
+      let stepZPosition;
+      if (heightDifference > 0) {
+        // Going up from source to target
+        stepZPosition = sourceFloorHeight + (i + 0.5) * STAIR_RISE;
+      } else {
+        // Going down from source to target
+        stepZPosition = sourceFloorHeight - (i + 0.5) * STAIR_RISE;
+      }
+      
       // Position step
       step.position.set(
         0, // Center on X
         i * STAIR_RUN, // Position along Y based on step number
-        lowerFloorHeight + (i + 0.5) * STAIR_RISE // Position Z based on step height
+        stepZPosition // Position Z based on step height and direction
       );
       
       step.name = `step_${i}`;
