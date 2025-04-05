@@ -1318,38 +1318,55 @@ export default function Canvas3D({
     boundingBox.getSize(size);
     
     // Use the largest dimension to determine view distance
-    // Multiply by 2.0 to ensure everything is visible with some margin
+    // Multiply by 2.2 to ensure everything is visible with a 10% margin
     const objectSize = Math.max(size.x, size.y, size.z);
-    const distance = objectSize > 0 ? objectSize * 2.0 : 1000;
+    const distance = objectSize > 0 ? objectSize * 2.2 : 1000;
     
     console.log(`Changing camera view to ${direction}. Room center:`, roomCenter);
     console.log(`View distance: ${distance}, Room size:`, size);
     
-    // Reset camera position based on the view direction with exact vectors as requested
+    // Position the camera and set up its view based on the selected direction
     switch (direction) {
       case "+X":
-        // (1, 0, 0) direction
+        // Looking at X axis frontally with grid horizontal (looking from +X toward -X)
+        // For +X view: Position on +X axis, with Z up (grid is horizontal in XY plane)
         cameraRef.current.position.set(distance, 0, roomCenter.z);
+        cameraRef.current.up.set(0, 0, 1); // Z is up to keep grid horizontal
         break;
+        
       case "-X":
-        // (-1, 0, 0) direction
+        // Looking at X axis from behind with grid horizontal (looking from -X toward +X)
+        // For -X view: Position on -X axis, with Z up (grid is horizontal in XY plane)
         cameraRef.current.position.set(-distance, 0, roomCenter.z);
+        cameraRef.current.up.set(0, 0, 1); // Z is up to keep grid horizontal
         break;
+        
       case "+Y":
-        // (0, 1, 0) direction
+        // Looking at Y axis frontally with grid horizontal (looking from +Y toward -Y)
+        // For +Y view: Position on +Y axis, with Z up (grid is horizontal in XY plane)
         cameraRef.current.position.set(0, distance, roomCenter.z);
+        cameraRef.current.up.set(0, 0, 1); // Z is up to keep grid horizontal
         break;
+        
       case "-Y":
-        // (0, -1, 0) direction
+        // Looking at Y axis from behind with grid horizontal (looking from -Y toward +Y)
+        // For -Y view: Position on -Y axis, with Z up (grid is horizontal in XY plane)
         cameraRef.current.position.set(0, -distance, roomCenter.z);
+        cameraRef.current.up.set(0, 0, 1); // Z is up to keep grid horizontal
         break;
+        
       case "+Z":
-        // (0, 0, 1) direction - Top view
+        // Top view - looking down from +Z toward -Z
+        // X horizontal, Y vertical in view
         cameraRef.current.position.set(0, 0, roomCenter.z + distance);
+        cameraRef.current.up.set(0, 1, 0); // Y is up for top view
         break;
+        
       case "-Z":
-        // (0, 0, -1) direction - Bottom view
+        // Bottom view - looking up from -Z toward +Z
+        // X horizontal, Y vertical in view
         cameraRef.current.position.set(0, 0, roomCenter.z - distance);
+        cameraRef.current.up.set(0, -1, 0); // -Y is up (because we're looking from below)
         break;
     }
     
