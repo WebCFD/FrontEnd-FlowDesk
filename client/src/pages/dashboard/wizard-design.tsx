@@ -223,6 +223,7 @@ export default function WizardDesign() {
   const [loadFromFloor, setLoadFromFloor] = useState("ground");
   const [floorDeckThickness, setFloorDeckThickness] = useState(35); // Default 35cm
   const [isMeasureMode, setIsMeasureMode] = useState(false);
+  const [isEraserMode, setIsEraserMode] = useState(false);
 
   // Use the global room store with updated selectors
   const {
@@ -522,10 +523,14 @@ export default function WizardDesign() {
   };
 
 
-  // Add this function:
+  // Add these functions:
   // Toggle 3D measurement mode
   const handleToggleMeasureMode = () => {
     setIsMeasureMode(!isMeasureMode);
+    // Disable eraser mode when enabling measure mode
+    if (!isMeasureMode) {
+      setIsEraserMode(false);
+    }
     toast({
       title: isMeasureMode ? "Measurement Mode Disabled" : "Measurement Mode Enabled",
       description: isMeasureMode 
@@ -533,7 +538,82 @@ export default function WizardDesign() {
         : "Click to place start point, click again for end point",
     });
   };
+  
+  // Toggle 3D eraser mode
+  const handleToggleEraserMode = () => {
+    setIsEraserMode(!isEraserMode);
+    // Disable measurement mode when enabling eraser mode
+    if (!isEraserMode) {
+      setIsMeasureMode(false);
+    }
+    toast({
+      title: isEraserMode ? "Eraser Mode Disabled" : "Eraser Mode Enabled",
+      description: isEraserMode 
+        ? "Exited eraser mode" 
+        : "Click on a window, door, or vent to delete it",
+    });
+  };
 
+  const handleDeleteAirEntryFrom3D = (
+    floorName: string,
+    index: number
+  ) => {
+    // Create a copy of the floors data
+    console.log(`Deleting air entry in floor ${floorName}, index ${index}`);
+    
+    // Use the store's setAirEntries function when updating the current floor
+    if (floorName === currentFloor) {
+      // Create a deep copy of the air entries array
+      const updatedAirEntries = airEntries.filter((_, i) => i !== index);
+      
+      // Set the air entries with the filtered array
+      setAirEntries(updatedAirEntries);
+      
+      // Also update the floors data to keep everything in sync
+      const updatedFloors = { ...floors };
+      if (updatedFloors[floorName]) {
+        updatedFloors[floorName] = {
+          ...updatedFloors[floorName],
+          airEntries: [...updatedAirEntries]
+        };
+        // Update floor data in the store
+        useRoomStore.getState().setFloors(updatedFloors);
+      }
+      
+      toast({
+        title: "Air Entry Deleted",
+        description: `Deleted air entry from ${formatFloorText(floorName)}`,
+      });
+      return;
+    }
+    
+    // For other floors, create a deep copy of the floors object
+    const updatedFloors = { ...floors };
+    
+    // Check if the floor and its air entries exist
+    if (updatedFloors[floorName]?.airEntries) {
+      // Create a filtered copy of the air entries array
+      const floorAirEntries = updatedFloors[floorName].airEntries.filter((_, i) => i !== index);
+      
+      // Create a copy of the floor data with the updated air entries
+      updatedFloors[floorName] = {
+        ...updatedFloors[floorName],
+        airEntries: floorAirEntries
+      };
+      
+      // Update the room store with the updated floors data
+      useRoomStore.getState().setFloors(updatedFloors);
+      
+      // Update the specific floor in the store
+      useRoomStore.getState().updateFloor(floorName, updatedFloors[floorName]);
+      
+      toast({
+        title: "Air Entry Deleted",
+        description: `Deleted air entry from ${formatFloorText(floorName)}`,
+      });
+    }
+  };
+  
   const handleUpdateAirEntryFrom3D = (
     floorName: string,
     index: number, 
@@ -853,8 +933,9 @@ export default function WizardDesign() {
                       <span className="text-xs">Camera</span>
                     </Button>
                     <Button
-                      variant="outline"
+                      variant={isEraserMode ? "default" : "outline"}
                       className="w-full h-16 flex flex-col items-center justify-center gap-1"
+                      onClick={handleToggleEraserMode}
                     >
                       <Eraser className="w-6 h-6" />
                       <span className="text-xs">Eraser</span>
@@ -1376,7 +1457,9 @@ export default function WizardDesign() {
             floorDeckThickness={floorDeckThickness}
             wallTransparency={wallTransparency}
             isMeasureMode={isMeasureMode}
+            isEraserMode={isEraserMode}
             onUpdateAirEntry={handleUpdateAirEntryFrom3D}
+            onDeleteAirEntry={handleDeleteAirEntryFrom3D}
           />
         )}
       </div>

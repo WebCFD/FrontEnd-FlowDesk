@@ -10,6 +10,8 @@ interface Toolbar3DProps {
   onWallTransparencyChange: (value: number) => void;
   isMeasureMode: boolean;
   onToggleMeasureMode: () => void;
+  isEraserMode?: boolean;
+  onToggleEraserMode?: () => void;
 }
 
 export function Toolbar3D({
@@ -18,6 +20,8 @@ export function Toolbar3D({
   onWallTransparencyChange,
   isMeasureMode,
   onToggleMeasureMode,
+  isEraserMode = false,
+  onToggleEraserMode,
 }: Toolbar3DProps) {
   return (
     <div className={cn(
@@ -35,8 +39,12 @@ export function Toolbar3D({
             <span className="text-xs">Camera</span>
           </Button>
           <Button
-            variant="outline"
-            className="w-full h-16 flex flex-col items-center justify-center gap-1"
+            variant={isEraserMode ? "default" : "outline"}
+            className={cn(
+              "w-full h-16 flex flex-col items-center justify-center gap-1",
+              isEraserMode && "bg-violet-500 hover:bg-violet-600 text-white border-violet-600"
+            )}
+            onClick={onToggleEraserMode}
           >
             <Eraser className="w-6 h-6" />
             <span className="text-xs">Eraser</span>

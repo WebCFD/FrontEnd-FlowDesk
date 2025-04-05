@@ -76,10 +76,15 @@ interface Canvas3DProps {
   floorDeckThickness?: number;
   wallTransparency: number;
   isMeasureMode?: boolean;
+  isEraserMode?: boolean;
   onUpdateAirEntry?: (
     floorName: string,
     index: number,
     entry: AirEntry,
+  ) => void;
+  onDeleteAirEntry?: (
+    floorName: string,
+    index: number
   ) => void;
 }
 
@@ -361,7 +366,9 @@ export default function Canvas3D({
   floorDeckThickness = 35,
   wallTransparency = 0.7,
   isMeasureMode = false,
+  isEraserMode = false,
   onUpdateAirEntry,
+  onDeleteAirEntry,
 }: Canvas3DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -2346,11 +2353,112 @@ export default function Canvas3D({
       e.preventDefault();
     });
 
+    // Handle eraser clicks
+    const handleEraserClick = (event: MouseEvent) => {
+      // Only handle when in eraser mode
+      if (!isEraserMode || !onDeleteAirEntry) return;
+      
+      console.log("Eraser click detected");
+      
+      // Get mouse position for raycasting
+      const canvas = containerRef.current;
+      if (!canvas || !cameraRef.current || !sceneRef.current) return;
+      
+      const mouseCoords = getMouseCoordinates(event);
+      
+      // Set up raycaster
+      const raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera(mouseCoords, cameraRef.current);
+      
+      // Find all meshes in the scene that represent air entries
+      const airEntryMeshes: THREE.Mesh[] = [];
+      
+      sceneRef.current.traverse((object) => {
+        // Collect air entry meshes (windows, doors, vents)
+        if (
+          object instanceof THREE.Mesh &&
+          object.userData &&
+          object.userData.type &&
+          ["window", "door", "vent"].includes(object.userData.type)
+        ) {
+          airEntryMeshes.push(object as THREE.Mesh);
+        }
+      });
+      
+      console.log("Found", airEntryMeshes.length, "air entries for potential deletion");
+      
+      // Check for intersections with air entry meshes
+      const meshIntersects = raycaster.intersectObjects(airEntryMeshes, false);
+      
+      if (meshIntersects.length > 0) {
+        const mesh = meshIntersects[0].object as THREE.Mesh;
+        const airEntryData = mesh.userData;
+        
+        console.log("Air entry selected for deletion:", airEntryData);
+        
+        // Find the index of this air entry in the floors data
+        let foundIndex = -1;
+        const floorData = floors[currentFloor];
+        
+        if (floorData && floorData.airEntries) {
+          // First try to use the stored entryIndex if available (most reliable)
+          if (typeof airEntryData.entryIndex === 'number') {
+            if (airEntryData.entryIndex >= 0 && airEntryData.entryIndex < floorData.airEntries.length) {
+              foundIndex = airEntryData.entryIndex;
+              console.log("Found air entry using stored entryIndex:", foundIndex);
+            }
+          }
+          
+          // Fall back to position search if needed
+          if (foundIndex === -1 && airEntryData.position) {
+            // Try exact match first
+            foundIndex = floorData.airEntries.findIndex(
+              (entry) =>
+                entry.position.x === airEntryData.position.x &&
+                entry.position.y === airEntryData.position.y
+            );
+            
+            // If exact match fails, try approximate match with tolerance
+            if (foundIndex === -1) {
+              const POSITION_TOLERANCE = 70;
+              foundIndex = floorData.airEntries.findIndex(
+                (entry) =>
+                  Math.abs(entry.position.x - airEntryData.position.x) < POSITION_TOLERANCE &&
+                  Math.abs(entry.position.y - airEntryData.position.y) < POSITION_TOLERANCE
+              );
+              console.log("Found air entry by approximate position match:", foundIndex);
+            }
+          }
+          
+          if (foundIndex !== -1) {
+            console.log("Deleting air entry at index:", foundIndex);
+            onDeleteAirEntry(currentFloor, foundIndex);
+            
+            // Clean up any references in our state
+            if (selectedAirEntry && selectedAirEntry.index === foundIndex) {
+              setSelectedAirEntry(null);
+              setSelectedAxis(null);
+              setIsDragging(false);
+            }
+            
+            // Remove from updatedAirEntryPositionsRef if it exists
+            const normalizedFloorName = normalizeFloorName(currentFloor);
+            if (updatedAirEntryPositionsRef.current[normalizedFloorName]?.[foundIndex]) {
+              delete updatedAirEntryPositionsRef.current[normalizedFloorName][foundIndex];
+            }
+          }
+        }
+      }
+    };
+
     // Handle mousedown events
     const mouseDownWrapper = (e: MouseEvent) => {
       if (e.button === 2) {
         // Right mouse button for both measurements and context operations
         handleRightMouseDown(e);
+      } else if (e.button === 0 && isEraserMode) {
+        // Left mouse button in eraser mode
+        handleEraserClick(e);
       }
     };
 
@@ -2494,7 +2602,7 @@ export default function Canvas3D({
         );
         renderer.domElement.removeEventListener(
           "mousedown",
-          handleRightMouseDown,
+          mouseDownWrapper,
         );
         renderer.domElement.removeEventListener("dblclick", handleDoubleClick);
 
@@ -2923,6 +3031,24 @@ export default function Canvas3D({
       setMeasurements([]);
     }
   }, [currentFloor]);
+  
+  // Effect to handle eraser mode changes
+  useEffect(() => {
+    console.log("isEraserMode prop changed:", isEraserMode);
+    
+    // Add visual indication of eraser mode
+    if (containerRef.current) {
+      if (isEraserMode) {
+        containerRef.current.style.cursor = 'not-allowed'; // Eraser cursor
+        containerRef.current.title = 'Left-click to erase air entries (windows, doors, vents)';
+        console.log("Set cursor to not-allowed - eraser mode active");
+      } else if (!isMeasureMode) { // Only reset if we're not in measure mode
+        containerRef.current.style.cursor = 'auto';
+        containerRef.current.title = '';
+        console.log("Set cursor to auto - eraser mode inactive");
+      }
+    }
+  }, [isEraserMode, isMeasureMode]);
 
   useEffect(() => {
     if (sceneRef.current) {
