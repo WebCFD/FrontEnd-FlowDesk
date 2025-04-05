@@ -973,11 +973,26 @@ export function RoomSketchPro({
     
     console.log(`Creating stairs from ${sourceFloorName} to ${targetFloorName}`);
     
-    // Create stair material
+    // Create stair material with more distinctive appearance for debugging
+    // Use different colors based on direction for easier visual debugging
+    const stairColor = stairData.direction === 'up' ? 0xff5500 : 0x00aaff;
+    
+    console.log(`STAIR VISUAL - Creating stairs with color:`, stairColor === 0xff5500 ? 'ORANGE (UP)' : 'BLUE (DOWN)');
+    
     const stairMaterial = new THREE.MeshStandardMaterial({
-      color: 0x888888,
-      roughness: 0.7,
-      metalness: 0.2
+      color: stairColor,
+      roughness: 0.5,
+      metalness: 0.3,
+      emissive: stairData.direction === 'up' ? 0x661100 : 0x002244,
+      emissiveIntensity: 0.3
+    });
+    
+    // Create a helper material for the stair bounding box
+    const boundingBoxMaterial = new THREE.MeshBasicMaterial({
+      color: 0xffff00,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.5
     });
     
     // Constants for stair dimensions
@@ -1003,7 +1018,24 @@ export function RoomSketchPro({
     stairGroup.name = `stairs_${sourceFloorName}_to_${targetFloorName}_${stairIndex}`;
     
     // Get stair position from stair data
-    const stairPosition = transform2DTo3D(stairData.position || { x: 0, y: 0 });
+    // If stair data has polygon points, use the centroid of those points
+    let stairPosition;
+    if (stairData.points && stairData.points.length > 0) {
+      console.log(`STAIR POSITION - Using polygon points:`, stairData.points);
+      
+      // Calculate centroid from points
+      const avgX = stairData.points.reduce((sum, pt) => sum + pt.x, 0) / stairData.points.length;
+      const avgY = stairData.points.reduce((sum, pt) => sum + pt.y, 0) / stairData.points.length;
+      
+      console.log(`STAIR POSITION - Calculated centroid: (${avgX}, ${avgY})`);
+      stairPosition = transform2DTo3D({ x: avgX, y: avgY });
+    } else if (stairData.position) {
+      console.log(`STAIR POSITION - Using direct position:`, stairData.position);
+      stairPosition = transform2DTo3D(stairData.position);
+    } else {
+      console.log(`STAIR POSITION - No position data, using default position (0,0)`);
+      stairPosition = transform2DTo3D({ x: 0, y: 0 });
+    }
     
     // Create each step
     for (let i = 0; i < numSteps; i++) {
@@ -1033,6 +1065,45 @@ export function RoomSketchPro({
     
     // Position the stair group based on stair data
     stairGroup.position.copy(stairPosition);
+    
+    // Create a visual indicator for the stairs - a big wireframe box for easier visibility
+    const indicatorSize = Math.max(STAIR_WIDTH, numSteps * STAIR_RUN, Math.abs(heightDifference)) * 1.5;
+    console.log(`STAIR VISUAL - Creating indicator with size: ${indicatorSize}`);
+    
+    // Create a wireframe box to make stairs more visible
+    const indicatorGeometry = new THREE.BoxGeometry(indicatorSize, indicatorSize, indicatorSize);
+    const indicator = new THREE.Mesh(indicatorGeometry, boundingBoxMaterial);
+    indicator.name = "stair_indicator";
+    
+    // Position the indicator at the center of the stair group
+    indicator.position.set(0, numSteps * STAIR_RUN / 2, heightDifference / 2);
+    
+    // Add a bright colored direction arrow
+    const arrowMaterial = new THREE.MeshBasicMaterial({ 
+      color: stairData.direction === 'up' ? 0xff00ff : 0x00ffff,
+      transparent: true,
+      opacity: 0.8
+    });
+    
+    // Create arrow shape
+    const arrowHeight = indicatorSize * 0.4;
+    const arrowWidth = indicatorSize * 0.2;
+    const arrowGeometry = new THREE.ConeGeometry(arrowWidth, arrowHeight, 8);
+    const arrow = new THREE.Mesh(arrowGeometry, arrowMaterial);
+    
+    // Position arrow to point in the right direction (up or down)
+    arrow.position.set(0, 0, stairData.direction === 'up' ? arrowHeight/2 : -arrowHeight/2);
+    arrow.rotation.x = stairData.direction === 'up' ? Math.PI : 0;
+    
+    // Add arrow to indicator
+    indicator.add(arrow);
+    
+    // Add indicator to stair group
+    stairGroup.add(indicator);
+    
+    // Log the creation of the stairs
+    console.log(`STAIR VISUAL - Created stairs with ${numSteps} steps, height difference: ${heightDifference}`);
+    console.log(`STAIR VISUAL - Final stair position: (${stairPosition.x}, ${stairPosition.y}, ${stairPosition.z})`);
     
     // Add to the multi-floor group
     multiFloorGroup.add(stairGroup);
