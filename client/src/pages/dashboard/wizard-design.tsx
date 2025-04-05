@@ -248,10 +248,12 @@ export default function WizardDesign() {
     copyFloorAs,
   } = useRoomStore();
   
-  // Switch to 3D preview when step is 2
+  // Switch to 3D preview when step is 2, and reset to 2D when going back to step 1
   useEffect(() => {
     if (step === 2) {
       setTab("3d-preview");
+    } else if (step === 1) {
+      setTab("2d-editor");
     }
   }, [step]);
 
