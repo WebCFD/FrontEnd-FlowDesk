@@ -1010,8 +1010,7 @@ export default function Canvas3D({
       yAxis.userData = { 
         type: 'axis', 
         direction: 'y',
-        parentEntryIndex: parentMeshIndex,
-        actualEntryIndex: index // Store the actual entry index from the floor data
+        parentEntryIndex: objects.length - 1
       };
 
       // Z axis - Blue (Normal to wall, pointing outward)
@@ -1046,8 +1045,7 @@ export default function Canvas3D({
       zAxis.userData = { 
         type: 'axis', 
         direction: 'z',
-        parentEntryIndex: parentMeshIndex, // Reference to the parent mesh
-        actualEntryIndex: index // Store the actual entry index from the floor data
+        parentEntryIndex: objects.length - 1
       };
 
       // Add the axis meshes to the objects array
