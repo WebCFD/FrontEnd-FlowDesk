@@ -2037,10 +2037,12 @@ export default function Canvas3D({
       
       // Handle hover detection for eraser mode
       if (isEraserMode && !dragStateRef.current.isDragging) {
-        console.log("Eraser mode hover detection active - looking for air entries to highlight");
+        console.log("🔍 Eraser mode hover detection active - looking for air entries to highlight");
         // Log some info about what's available
         if (sceneRef.current) {
           let airEntryCount = 0;
+          const airEntryDetails: string[] = [];
+          
           sceneRef.current.traverse((object) => {
             if (
               object instanceof THREE.Mesh &&
@@ -2049,16 +2051,22 @@ export default function Canvas3D({
               ["window", "door", "vent"].includes(object.userData.type)
             ) {
               airEntryCount++;
+              airEntryDetails.push(`${object.userData.type} at position ${JSON.stringify(object.userData.position)}, 3D position ${JSON.stringify(object.position)}`);
             }
           });
-          console.log(`Scene contains ${airEntryCount} air entry meshes available for highlighting`);
+          
+          console.log(`🏠 Scene contains ${airEntryCount} air entry meshes available for highlighting:`);
+          if (airEntryCount > 0) {
+            console.log(`🏠 Air entries details: ${airEntryDetails.join(' | ')}`);
+          }
         }
         
         const mouseCoords = getMouseCoordinates(event);
+        console.log(`🖱️ Mouse coordinates: ${JSON.stringify(mouseCoords)}`);
         
         // Reset previously highlighted element if any
         if (hoveredEraseTarget) {
-          console.log("Resetting previously highlighted element");
+          console.log("🔄 Resetting previously highlighted element");
           // Restore original material
           hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
           setHoveredEraseTarget(null);
@@ -2107,12 +2115,15 @@ export default function Canvas3D({
               // Store original material and apply highlight material
               const originalMaterial = mesh.material;
               
-              // Create new highlight material (red, semi-transparent)
-              const highlightMaterial = new THREE.MeshPhongMaterial({
+              // Create new highlight material (bright red, semi-transparent)
+              const highlightMaterial = new THREE.MeshBasicMaterial({
                 color: 0xff0000,  // Red
-                opacity: 0.7,
+                opacity: 0.8,
                 transparent: true,
                 side: THREE.DoubleSide,
+                emissive: 0xff0000,
+                emissiveIntensity: 1.0,
+                wireframe: false
               });
               
               // Apply highlight material
@@ -2475,16 +2486,32 @@ export default function Canvas3D({
     // Handle eraser clicks
     const handleEraserClick = (event: MouseEvent) => {
       // Only handle when in eraser mode
-      if (!isEraserMode || !onDeleteAirEntry) return;
+      if (!isEraserMode || !onDeleteAirEntry) {
+        console.log("🚫 Eraser click ignored - isEraserMode:", isEraserMode, "onDeleteAirEntry:", !!onDeleteAirEntry);
+        return;
+      }
       
-      console.log("Eraser click detected");
+      console.log("🔴 Eraser click detected in Canvas3D");
+      
+      // Log available air entries in the current floor
+      const floorData = floors[currentFloor];
+      if (floorData && floorData.airEntries) {
+        console.log(`🏠 Current floor ${currentFloor} has ${floorData.airEntries.length} air entries:`, 
+          floorData.airEntries.map((entry, idx) => 
+            `${idx}: ${entry.type} at (${entry.position.x}, ${entry.position.y})`
+          )
+        );
+      }
+      
+      // Debug what is hovered
+      console.log("🔍 hoveredEraseTarget state:", hoveredEraseTarget ? "Present" : "Null");
       
       // If we have a hovered target, use that directly rather than raycasting again
       if (hoveredEraseTarget) {
         const mesh = hoveredEraseTarget.object;
         const airEntryData = mesh.userData;
         
-        console.log("Using highlighted air entry for deletion:", airEntryData);
+        console.log("✅ Using highlighted air entry for deletion:", airEntryData);
         
         console.log("Air entry selected for deletion:", airEntryData);
         
