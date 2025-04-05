@@ -423,6 +423,41 @@ export default function Canvas3D({
   // Create a ref to track the current isEraserMode value to ensure it's always up-to-date in event handlers
   const isEraserModeRef = useRef(isEraserMode);
   
+  // Hover stability settings to prevent fluctuations
+  const lastHoverTimeRef = useRef<number>(0);
+  const lastIntersectionRef = useRef<boolean>(false);
+  const HOVER_DEBOUNCE_TIME = 150; // ms between hover state changes
+  const HOVER_DISTANCE_THRESHOLD = 5; // Minimum pixel distance for hover state to change
+  const SCREEN_PROXIMITY_THRESHOLD = 50; // Maximum screen distance in pixels to consider "hovering"
+  
+  // Helper function to check if mouse is actually over an object in screen space
+  const isActuallyHovering = (
+    object: THREE.Object3D | null,
+    mouseX: number,
+    mouseY: number,
+    camera: THREE.Camera,
+    maxDistance: number = SCREEN_PROXIMITY_THRESHOLD
+  ): boolean => {
+    if (!object) return false;
+    
+    // Project the object's position to screen space
+    const screenPos = object.position.clone().project(camera);
+    const screenX = (screenPos.x + 1) / 2 * window.innerWidth;
+    const screenY = -(screenPos.y - 1) / 2 * window.innerHeight;
+    
+    // Calculate distance between mouse and object in screen space
+    const distance = Math.sqrt(
+      Math.pow(screenX - mouseX, 2) + 
+      Math.pow(screenY - mouseY, 2)
+    );
+    
+    // Debug logging
+    console.log(`Screen distance check: ${distance.toFixed(1)}px, threshold: ${maxDistance}px`);
+    
+    // Return true if mouse is within threshold distance of object
+    return distance <= maxDistance;
+  }
+  
   // Synchronize the ref with isEraserMode state immediately
   // This needs to happen in a separate useEffect to ensure proper sequence of operations
   useEffect(() => {
@@ -2403,8 +2438,57 @@ export default function Canvas3D({
               console.log(`  Bounding box: min=(${boundingBox.min.x.toFixed(2)}, ${boundingBox.min.y.toFixed(2)}, ${boundingBox.min.z.toFixed(2)}), max=(${boundingBox.max.x.toFixed(2)}, ${boundingBox.max.y.toFixed(2)}, ${boundingBox.max.z.toFixed(2)})`);
             });
             
-            // Update debug info whether we have intersections or not
+            // Apply debouncing to prevent hover state fluctuation
+            const currentTime = Date.now();
+            const timeSinceLastUpdate = currentTime - lastHoverTimeRef.current;
             const hasIntersections = meshIntersects.length > 0;
+            
+            // Calculate mouse movement distance since last position
+            const mouseDistanceMoved = Math.sqrt(
+              Math.pow(event.clientX - lastMousePositionRef.current.x, 2) + 
+              Math.pow(event.clientY - lastMousePositionRef.current.y, 2)
+            );
+            
+            // Update last mouse position for the next calculation
+            lastMousePositionRef.current = { x: event.clientX, y: event.clientY };
+            
+            // Get the current mesh if we have intersections
+            const currentMesh = hasIntersections ? meshIntersects[0].object as THREE.Object3D : null;
+            
+            // Check if mouse is actually hovering over the object in screen space
+            // This prevents false positives from raycaster when object is far from cursor in screen space
+            const isCurrentlyHovering = hasIntersections && 
+              isActuallyHovering(currentMesh, event.clientX, event.clientY, cameraRef.current);
+            
+            // Add detailed debugging with mouse coordinates and screen distances
+            if (hasIntersections && currentMesh) {
+              const screenPos = currentMesh.position.clone().project(cameraRef.current);
+              const screenX = (screenPos.x + 1) / 2 * window.innerWidth;
+              const screenY = -(screenPos.y - 1) / 2 * window.innerHeight;
+              const distance = Math.sqrt(
+                Math.pow(screenX - event.clientX, 2) + 
+                Math.pow(screenY - event.clientY, 2)
+              );
+              
+              console.log(`Hover state: raycaster says ${hasIntersections ? 'yes' : 'no'}, screen space check says ${isCurrentlyHovering ? 'yes' : 'no'}`);
+              console.log(`Mouse (${event.clientX}, ${event.clientY}), Object screen pos (${screenX.toFixed(0)}, ${screenY.toFixed(0)}), Distance: ${distance.toFixed(1)}px`);
+              console.log(`Movement since last: ${mouseDistanceMoved.toFixed(1)}px, Time since last update: ${timeSinceLastUpdate}ms`);
+            } else {
+              console.log(`Hover state: raycaster says ${hasIntersections ? 'yes' : 'no'}, screen space check says ${isCurrentlyHovering ? 'yes' : 'no'}`);
+            }
+            
+            // Use screen space check to potentially override raycaster result
+            // This helps with stability - if raycaster shows intersection but object is far from cursor, ignore it
+            const actualHasIntersections = isCurrentlyHovering;
+            
+            // Only change hover state if:
+            // 1. Enough time has passed since last update OR
+            // 2. Intersection state has changed significantly OR
+            // 3. Mouse has moved beyond threshold distance
+            const shouldUpdateHoverState = 
+              timeSinceLastUpdate > HOVER_DEBOUNCE_TIME || 
+              (actualHasIntersections !== lastIntersectionRef.current) ||
+              mouseDistanceMoved > HOVER_DISTANCE_THRESHOLD;
             
             // Add screen-space logging if we have a hoveredEraseTarget
             if (hoveredEraseTarget && cameraRef.current) {
@@ -2417,17 +2501,30 @@ export default function Canvas3D({
               console.log(`📌 Distance: ${Math.sqrt(Math.pow(screenX - event.clientX, 2) + Math.pow(screenY - event.clientY, 2)).toFixed(1)}px`);
             }
             
+            // Update debug info with both raycaster and screen space check results
             setDebugInfo(prev => ({
               ...prev,
-              hovering: hasIntersections,
+              hovering: actualHasIntersections, // Use the actual (screen space verified) state
               lastIntersection: hasIntersections
-                ? `${meshIntersects[0].object.userData.type} (entry ${meshIntersects[0].object.userData.entryIndex}) at ${Math.round(meshIntersects[0].distance)}` 
+                ? `${meshIntersects[0].object.userData.type} (entry ${meshIntersects[0].object.userData.entryIndex}), screen dist: ${
+                    hasIntersections && currentMesh 
+                      ? Math.round(Math.sqrt(
+                          Math.pow((currentMesh.position.clone().project(cameraRef.current).x + 1) / 2 * window.innerWidth - event.clientX, 2) + 
+                          Math.pow(-(currentMesh.position.clone().project(cameraRef.current).y - 1) / 2 * window.innerHeight - event.clientY, 2)
+                        ))
+                      : 'N/A'
+                  }px` 
                 : 'None'
             }));
             
-            // If there are no intersections and we have a previously hovered target, reset it
-            if (!hasIntersections && hoveredEraseTarget) {
+            // If there are no actual intersections and we have a previously hovered target, reset it
+            // But only if our debounce settings allow it to prevent flickering
+            if (!actualHasIntersections && hoveredEraseTarget && shouldUpdateHoverState) {
               console.log("🔄 Clearing previous highlight - no intersection found");
+              
+              // Update last hover time and intersection state
+              lastHoverTimeRef.current = currentTime;
+              lastIntersectionRef.current = false;
               
               try {
                 // Restore original material if it exists
@@ -2488,8 +2585,15 @@ export default function Canvas3D({
               }, 0);
             }
             
-            if (hasIntersections) {
+            // Check if we should update hover state based on debouncing
+            // Only highlight if the object is actually under the cursor in screen space
+            if (actualHasIntersections && (shouldUpdateHoverState || !hoveredEraseTarget)) {
               console.log("Intersection found! Highlighting element");
+              
+              // Update last hover time and intersection state
+              lastHoverTimeRef.current = currentTime;
+              lastIntersectionRef.current = true;
+              
               const mesh = meshIntersects[0].object as THREE.Mesh;
               console.log("Mesh data for eraser hover:", mesh.userData);
               
