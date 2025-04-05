@@ -1308,10 +1308,58 @@ export default function Canvas3D({
             // BLUE Z axis (perpendicular to wall surface)
             const dirVector = dragState.axisDirectionVectors.z;
             
+            // Debug the Z axis movement in detail
+            console.log("==== Z AXIS MOVEMENT DETAILS ====");
+            console.log("Air entry index:", dragState.entryIndex);
+            
+            // Get the air entry data for more context
+            const entryData = floors[currentFloor]?.airEntries[dragState.entryIndex];
+            if (entryData) {
+              // Calculate wall direction
+              const wallDir = new THREE.Vector2(
+                entryData.line.end.x - entryData.line.start.x,
+                entryData.line.end.y - entryData.line.start.y
+              ).normalize();
+              
+              console.log("Wall data:", {
+                start: entryData.line.start,
+                end: entryData.line.end,
+                direction: wallDir,
+                isHorizontal: Math.abs(wallDir.x) > Math.abs(wallDir.y)
+              });
+              
+              // Check Z direction vector against wall
+              const dotProduct = Math.abs(wallDir.x * dirVector.x + wallDir.y * dirVector.y);
+              console.log("Z direction vector:", dirVector);
+              console.log("Dot product with wall direction:", dotProduct);
+              console.log("Expected movement direction:", Math.abs(wallDir.x) > Math.abs(wallDir.y) ? "NORTH/SOUTH" : "EAST/WEST");
+            }
+            
+            // BEFORE applying movement
+            console.log("BEFORE movement - Position:", {
+              x: newPosition.x.toFixed(2),
+              y: newPosition.y.toFixed(2),
+              z: newPosition.z.toFixed(2)
+            });
+            
             // FIXED: Use the correct direction vector components for movement
             newPosition.x += dirVector.x * displacement;
             newPosition.y += dirVector.y * displacement;
             // Z component would be dirVector.z * displacement if needed
+            
+            // AFTER applying movement
+            console.log("AFTER movement - Position:", {
+              x: newPosition.x.toFixed(2),
+              y: newPosition.y.toFixed(2),
+              z: newPosition.z.toFixed(2)
+            });
+            
+            console.log("Movement delta:", {
+              x: (dirVector.x * displacement).toFixed(2),
+              y: (dirVector.y * displacement).toFixed(2)
+            });
+            console.log("Displacement value:", displacement.toFixed(2));
+            console.log("==== END Z AXIS MOVEMENT DETAILS ====");
             
             console.log(`Drag Z perpendicular to wall (BLUE): [${dirVector.x.toFixed(2)}, ${dirVector.y.toFixed(2)}, ${dirVector.z.toFixed(2)}], displacement: ${displacement.toFixed(2)}`);
           }
@@ -1833,6 +1881,33 @@ export default function Canvas3D({
                   const yAxisDirection = new THREE.Vector3(0, 0, 1); 
                   let zAxisDirection = new THREE.Vector3(0, 1, 0);
 
+                  // Debug wall orientation
+                  const wallInfo = {
+                    wallStart: floorData.airEntries[index].line.start,
+                    wallEnd: floorData.airEntries[index].line.end,
+                    entryPosition: floorData.airEntries[index].position,
+                    entryType: floorData.airEntries[index].type
+                  };
+
+                  // Calculate wall direction to help with debugging
+                  const wallDirection = new THREE.Vector2(
+                    wallInfo.wallEnd.x - wallInfo.wallStart.x,
+                    wallInfo.wallEnd.y - wallInfo.wallStart.y
+                  ).normalize();
+                  
+                  console.log("---------------------------------------------");
+                  console.log(`DEBUG WALL ORIENTATION for ${wallInfo.entryType} at index ${index}:`);
+                  console.log("Wall start:", wallInfo.wallStart);
+                  console.log("Wall end:", wallInfo.wallEnd);
+                  console.log("Wall direction vector:", wallDirection);
+                  console.log("Entry position:", wallInfo.entryPosition);
+                  
+                  // Attempt to determine wall orientation (N/S or E/W)
+                  const isHorizontalWall = Math.abs(wallDirection.x) > Math.abs(wallDirection.y);
+                  console.log("Wall appears to be:", isHorizontalWall ? "HORIZONTAL (E-W)" : "VERTICAL (N-S)");
+                  console.log("Expected Z axis should point:", isHorizontalWall ? "NORTH/SOUTH" : "EAST/WEST");
+                  console.log("---------------------------------------------");
+
                   // Try to find the axis meshes and extract their direction vectors
                   meshes.forEach(mesh => {
                     if (mesh.userData.direction === "x") {
@@ -1841,23 +1916,34 @@ export default function Canvas3D({
                       mesh.getWorldDirection(worldDirection);
                       // The cylinder is along the Y axis by default, so we need the up vector
                       xAxisDirection.set(worldDirection.x, worldDirection.y, 0).normalize();
-                      console.log("Found X axis mesh - direction vector:", xAxisDirection);
+                      console.log(`Found X axis mesh for ${wallInfo.entryType} - direction vector:`, xAxisDirection);
                     }
                     else if (mesh.userData.direction === "z") {
                       // Extract world direction of Z axis from mesh orientation
                       const worldDirection = new THREE.Vector3();
                       mesh.getWorldDirection(worldDirection);
                       zAxisDirection.set(worldDirection.x, worldDirection.y, 0).normalize();
-                      console.log("Found Z axis mesh - direction vector:", zAxisDirection);
+                      console.log(`Found Z axis mesh for ${wallInfo.entryType} - direction vector:`, zAxisDirection);
+                      
+                      // Check Z axis alignment with wall
+                      const dotProduct = Math.abs(wallDirection.x * zAxisDirection.x + wallDirection.y * zAxisDirection.y);
+                      console.log("Z axis alignment with wall direction (dot product):", dotProduct);
+                      console.log("Z axis should be perpendicular to wall, dot product should be close to 0");
+                      
+                      // Verify perpendicular relationship
+                      if (dotProduct > 0.1) {
+                        console.warn("WARNING: Z axis is not properly perpendicular to wall!");
+                      }
                     }
                     // No need to find Y axis mesh since its direction is always (0,0,1)
                   });
                   
                   // Log axis directions for debugging
-                  console.log("Axis directions for air entry", index);
+                  console.log(`FINAL AXIS DIRECTIONS for ${wallInfo.entryType} at index ${index}:`);
                   console.log("X axis (RED - along wall):", xAxisDirection);
                   console.log("Y axis (GREEN - vertical):", yAxisDirection);
                   console.log("Z axis (BLUE - perpendicular to wall):", zAxisDirection);
+                  console.log("---------------------------------------------");
 
                   // IMPORTANT: Update the ref for actual dragging logic
                   dragStateRef.current = {
