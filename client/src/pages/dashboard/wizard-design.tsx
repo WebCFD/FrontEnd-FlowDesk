@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLocation } from "wouter";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import {
@@ -247,18 +247,6 @@ export default function WizardDesign() {
     removeFloor,
     copyFloorAs,
   } = useRoomStore();
-  
-  // Handle tab changes based on step number
-  useEffect(() => {
-    // Only manage tabs for steps 1 and 2
-    if (step === 1) {
-      setTab("2d-editor");
-    } else if (step === 2) {
-      setTab("3d-preview");
-    }
-    // Step 3 doesn't use tabs
-    console.log(`Current step changed to: ${step}`);
-  }, [step]);
 
   // Get current floor data
   const currentFloorData = floors[currentFloor];
@@ -499,11 +487,7 @@ export default function WizardDesign() {
   };
 
   const handleNext = () => {
-    if (step < 3) {
-      const newStep = step + 1;
-      console.log(`Advancing from step ${step} to step ${newStep}`);
-      setStep(newStep);
-    }
+    if (step < 3) setStep(step + 1);
   };
 
   const handleAirEntryDimensionsConfirm = (dimensions: {
@@ -546,30 +530,10 @@ export default function WizardDesign() {
     }
   };
 
-  // Handle view direction changes 
-  
-  // Store the camera view change callback function provided by Canvas3D
-  const [viewChangeFunction, setViewChangeFunction] = useState<
-    ((direction: ViewDirection) => void) | null
-  >(null);
-  
-  // This function receives the callback from Canvas3D 
-  // It will be passed to Canvas3D as the onViewChange prop
-  const handleViewChange = (callback: (direction: ViewDirection) => void) => {
-    console.log("Received camera control callback from Canvas3D");
-    setViewChangeFunction(() => callback);
-  };
-  
-  // This function is called by the dropdown menu items
-  const changeViewDirection = (direction: ViewDirection) => {
-    console.log(`Changing view to: ${direction}`);
-    if (viewChangeFunction) {
-      viewChangeFunction(direction);
-    } else {
-      console.log("View change function not available yet");
-    }
-  };
+  // Handle view direction changes is defined below
 
+
+  // Add these functions:
   // Toggle 3D measurement mode
   const handleToggleMeasureMode = () => {
     setIsMeasureMode(!isMeasureMode);
@@ -610,6 +574,29 @@ export default function WizardDesign() {
     
     // Log for debugging
     console.log("🔴 ERASER TOGGLE - Set isEraserMode to:", newEraserMode);
+  };
+  
+  // Handle view direction changes
+  // Store the camera view change callback function provided by Canvas3D
+  const [viewChangeFunction, setViewChangeFunction] = useState<
+    ((direction: ViewDirection) => void) | null
+  >(null);
+  
+  // This function receives the callback from Canvas3D 
+  // It will be passed to Canvas3D as the onViewChange prop
+  const handleViewChange = (callback: (direction: ViewDirection) => void) => {
+    console.log("Received camera control callback from Canvas3D");
+    setViewChangeFunction(() => callback);
+  };
+  
+  // This function is called by the dropdown menu items
+  const changeViewDirection = (direction: ViewDirection) => {
+    console.log(`Changing view to: ${direction}`);
+    if (viewChangeFunction) {
+      viewChangeFunction(direction);
+    } else {
+      console.log("View change function not available yet");
+    }
   };
 
   const handleDeleteAirEntryFrom3D = (
@@ -802,206 +789,6 @@ export default function WizardDesign() {
 
 
   
-  // Shared simulation info component used across all steps - always editable
-  const renderSimulationInfo = () => (
-    <div className="max-w-xl space-y-4 mb-6">
-      <div>
-        <Label htmlFor="simulation-name">Simulation name</Label>
-        <Input
-          id="simulation-name"
-          value={simulationName}
-          onChange={(e) => setSimulationName(e.target.value)}
-          placeholder="Enter simulation name"
-        />
-      </div>
-      <div>
-        <Label htmlFor="simulation-type">Simulation type</Label>
-        <Select value={simulationType} onValueChange={setSimulationType}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select simulation type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="comfort">
-              Comfort Simulation (steady run)
-            </SelectItem>
-            <SelectItem value="renovation">
-              Air Renovation Convection Simulation (transient run)
-            </SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-    </div>
-  );
-
-  const renderParametersMenu = () => (
-    <div className="border rounded-lg p-4">
-      <h3 className="font-semibold text-lg mb-4">Parameters</h3>
-      <div className="space-y-4">
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="multifloor"
-            checked={isMultifloor}
-            onCheckedChange={(checked) => setIsMultifloor(checked as boolean)}
-          />
-          <Label htmlFor="multifloor">Multifloor</Label>
-        </div>
-
-        {isMultifloor && (
-          <div className="space-y-4 pt-2">
-            <div className="space-y-2">
-              <Label>Current Floor</Label>
-              <Select value={currentFloor} onValueChange={handleFloorChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select floor" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ground">
-                    {formatFloorText("ground")}
-                  </SelectItem>
-                  {floors.ground.hasClosedContour && (
-                    <>
-                      <SelectItem value="first">
-                        {formatFloorText("first")}
-                      </SelectItem>
-                      {floors.first?.hasClosedContour && (
-                        <SelectItem value="second">
-                          {formatFloorText("second")}
-                        </SelectItem>
-                      )}
-                      {floors.second?.hasClosedContour && (
-                        <SelectItem value="third">
-                          {formatFloorText("third")}
-                        </SelectItem>
-                      )}
-                      {floors.third?.hasClosedContour && (
-                        <SelectItem value="fourth">
-                          {formatFloorText("fourth")}
-                        </SelectItem>
-                      )}
-                      {floors.fourth?.hasClosedContour && (
-                        <SelectItem value="fifth">
-                          {formatFloorText("fifth")}
-                        </SelectItem>
-                      )}
-                    </>
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Load from Floor</Label>
-              <div className="flex gap-2">
-                <Select value={loadFromFloor} onValueChange={setLoadFromFloor}>
-                  <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Select floor to load from" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(floors).map(([floorName, floor]) => (
-                      <SelectItem key={floorName} value={floorName}>
-                        {formatFloorText(floorName)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleLoadTemplate}
-                >
-                  Load
-                </Button>
-              </div>
-            </div>
-
-            <div className="pt-4">
-              <Button
-                variant={currentTool === "stairs" ? "default" : "outline"}
-                className={cn(
-                  "w-full",
-                  currentTool === "stairs" &&
-                    "bg-violet-500 hover:bg-violet-600 text-white border-violet-600",
-                )}
-                onClick={() => {
-                  setCurrentTool("stairs");
-                  setCurrentAirEntry(null);
-                  setTab("2d-editor");
-                  toast({
-                    title: "Stair Design Tool Activated",
-                    description:
-                      "Click on the canvas to place points and create a stair polygon. Close the shape by clicking near the first point.",
-                  });
-                }}
-              >
-                <FileEdit className="mr-2 h-4 w-4" />
-                Stair Design
-              </Button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
-  const renderCanvasSection = () => {
-    // Add these debug statements
-    if (tab === "3d-preview") {
-      console.log("Rendering 3D view with floors data:", floors);
-      console.log(
-        `Current floor '${currentFloor}' stair polygons:`,
-        floors[currentFloor]?.stairPolygons || [],
-      );
-    }
-
-    return (
-      <div className="flex-1 border rounded-lg overflow-hidden bg-white min-w-[600px]">
-        {tab === "2d-editor" ? (
-          <Canvas2D
-            gridSize={gridSize}
-            currentTool={currentTool}
-            currentAirEntry={currentAirEntry}
-            airEntries={airEntries}
-            measurements={measurements}
-            stairPolygons={stairPolygons}
-            onMeasurementsUpdate={setMeasurements}
-            onStairPolygonsUpdate={setStairPolygons}
-            lines={lines}
-            floorText={formatFloorText(currentFloor)}
-            isMultifloor={isMultifloor}
-            onLinesUpdate={(newLines) => {
-              setLines(newLines);
-              const hasClosedContour =
-                newLines.length > 0 &&
-                newLines.some(
-                  (line) =>
-                    isInClosedContour(line.start, newLines) ||
-                    isInClosedContour(line.end, newLines),
-                );
-              setHasClosedContour(hasClosedContour);
-            }}
-            onAirEntriesUpdate={setAirEntries}
-            onLineSelect={handleLineSelect}
-          />
-        ) : (
-          <Canvas3D
-            floors={floors}
-            currentFloor={currentFloor}
-            ceilingHeight={ceilingHeight}
-            floorDeckThickness={floorDeckThickness}
-            wallTransparency={wallTransparency}
-            isMeasureMode={isMeasureMode}
-            isEraserMode={isEraserMode}
-            simulationName={simulationName}
-            simulationType={simulationType === "comfort" ? "Comfort Simulation (steady run)" : "Air Renovation Convection Simulation (transient run)"}
-            onUpdateAirEntry={handleUpdateAirEntryFrom3D}
-            onDeleteAirEntry={handleDeleteAirEntryFrom3D}
-            onViewChange={handleViewChange}
-          />
-        )}
-      </div>
-    );
-  };
-
   const renderStepIndicator = () => (
     <div className="w-full">
       <div className="relative h-16 bg-muted/10 border rounded-lg">
@@ -1307,20 +1094,143 @@ export default function WizardDesign() {
   const renderStep2 = () => {
     console.log("Rendering Step 2 content");
     return (
-      <Card className="mt-4">
-        <CardContent className="p-4">
-          <div className="flex">
-            {/* Render the same canvas section from Step 1 */}
-            {renderCanvasSection()}
-          </div>
-        </CardContent>
-      </Card>
+      <>
+        <Card className="mt-4">
+          <CardContent className="p-4">
+            {/* We'll use a custom toolbar for Step 2 that looks like the one in Step 1 */}
+            <div className="mb-4 flex">
+              <div className="bg-card border rounded-md inline-flex shadow-sm overflow-hidden">
+                <Button
+                  variant="ghost"
+                  className="px-3 py-2 text-sm font-medium rounded-none bg-blue-50 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+                  disabled
+                >
+                  3D Editor
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="px-3 py-2 text-sm font-medium rounded-none hover:bg-gray-50"
+                  disabled
+                >
+                  3D Preview
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              {/* Left side menus - copy style from Step 1 */}
+              <div className="w-72 space-y-6">
+                {/* Main options */}
+                <div className="border rounded-lg p-4">
+                  <h3 className="font-semibold text-lg mb-4">3D Menu</h3>
+                  
+                  {/* Wall Transparency */}
+                  <div className="space-y-4 mt-4">
+                    <h3 className="font-semibold">Wall Transparency</h3>
+                    <div className="px-2">
+                      <Slider
+                        value={[wallTransparency]}
+                        onValueChange={(values: number[]) => {
+                          console.log("Wizard: Wall transparency changing to:", values[0]);
+                          setWallTransparency(values[0]);
+                        }}
+                        min={0}
+                        max={1}
+                        step={0.01}
+                        className="flex-1"
+                      />
+                      <div className="text-sm text-right mt-1">
+                        {Math.round(wallTransparency * 100)}%
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Furniture */}
+                  <div className="space-y-4 mt-4">
+                    <h3 className="font-semibold">Furniture</h3>
+                    <div className="grid grid-cols-3 gap-2">
+                      {[
+                        { id: 'table', name: 'Table', icon: <rect x="4" y="14" width="16" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" /> },
+                        { id: 'person', name: 'Person', icon: <circle cx="12" cy="9" r="3" stroke="currentColor" strokeWidth="1.5" /> },
+                        { id: 'armchair', name: 'Armchair', icon: <rect x="4" y="12" width="16" height="8" rx="1" stroke="currentColor" strokeWidth="1.5" /> }
+                      ].map(item => (
+                        <Button
+                          key={item.id}
+                          variant="outline"
+                          className="h-auto py-2 flex flex-col items-center justify-center gap-1"
+                        >
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            {item.icon}
+                          </svg>
+                          <span className="text-xs">{item.name}</span>
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Parameters (matching style from Step 1) */}
+                <div className="border rounded-lg p-4">
+                  <h3 className="font-semibold text-lg mb-4">Parameters</h3>
+                  <div className="space-y-4">
+                    <div className="space-y-4">
+                      <Label>Air Flow Rate</Label>
+                      <Slider defaultValue={[50]} max={100} step={1} />
+                      <div className="text-sm text-right">50 m³/h</div>
+                    </div>
+                    <div className="space-y-4">
+                      <Label>Temperature</Label>
+                      <Slider defaultValue={[20]} max={40} min={0} step={1} />
+                      <div className="text-sm text-right">20°C</div>
+                    </div>
+                    <div className="space-y-4">
+                      <Label>Humidity</Label>
+                      <Slider defaultValue={[45]} max={100} min={0} step={1} />
+                      <div className="text-sm text-right">45%</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Files section matching Step 1 */}
+                <div className="border rounded-lg p-4">
+                  <h3 className="font-semibold text-lg mb-4">Files</h3>
+                  <div className="space-y-2">
+                    <Button variant="outline" className="w-full flex items-center gap-2">
+                      <Save className="h-4 w-4" />
+                      Save Design
+                    </Button>
+                    <Button variant="outline" className="w-full flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      Load Design
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Main content area - matching dimensions */}
+              <div className="flex-1 border rounded-lg overflow-hidden bg-white min-w-[600px]">
+                <RoomSketchPro
+                  width={800}
+                  height={600}
+                  key="step2-view"
+                  instanceId="step2-view"
+                  lines={lines}
+                  airEntries={airEntries}
+                  wallTransparency={wallTransparency}
+                  onWallTransparencyChange={(value) => {
+                    console.log("Wizard: Wall transparency changing to:", value);
+                    setWallTransparency(value);
+                  }}
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </>
     );
   };
 
-  const renderStep3 = () => {
-    console.log("Rendering Step 3 content");
-    return (
+  const renderStep3 = () => (
     <div className="space-y-6">
       <Card>
         <CardHeader>
@@ -1399,8 +1309,7 @@ export default function WizardDesign() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
-    );
-  };
+  );
 
   const isInClosedContour = (point: Point, lines: Line[]): boolean => {
     const arePointsEqual = (p1: Point, p2: Point): boolean => {
@@ -1510,6 +1419,102 @@ export default function WizardDesign() {
   const handleBack = () => {
     if (step > 1) setStep(step - 1);
   };
+
+  const renderParametersMenu = () => (
+    <div className="border rounded-lg p-4">
+      <h3 className="font-semibold text-lg mb-4">Parameters</h3>
+      <div className="space-y-4">
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="multifloor"
+            checked={isMultifloor}
+            onCheckedChange={(checked) => setIsMultifloor(checked as boolean)}
+          />
+          <Label htmlFor="multifloor">Multifloor</Label>
+        </div>
+
+        {isMultifloor && (
+          <div className="space-y-4 pt-2">
+            <div className="space-y-2">
+              <Label>Current Floor</Label>
+              <Select value={currentFloor} onValueChange={handleFloorChange}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select floor" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ground">
+                    {formatFloorText("ground")}
+                  </SelectItem>
+                  {floors.ground.hasClosedContour && (
+                    <>
+                      <SelectItem value="first">
+                        {formatFloorText("first")}
+                      </SelectItem>
+                      {floors.first?.hasClosedContour && (
+                        <SelectItem value="second">
+                          {formatFloorText("second")}
+                        </SelectItem>
+                      )}
+                      {floors.second?.hasClosedContour && (
+                        <SelectItem value="third">
+                          {formatFloorText("third")}
+                        </SelectItem>
+                      )}
+                      {floors.third?.hasClosedContour && (
+                        <SelectItem value="fourth">
+                          {formatFloorText("fourth")}
+                        </SelectItem>
+                      )}
+                      {floors.fourth?.hasClosedContour && (
+                        <SelectItem value="fifth">
+                          {formatFloorText("fifth")}
+                        </SelectItem>
+                      )}
+                    </>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Load from Floor</Label>
+              <div className="flex gap-2">
+                <Select value={loadFromFloor} onValueChange={setLoadFromFloor}>
+                  <SelectTrigger className="flex-1">
+                    <SelectValue placeholder="Select floor to load from" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(floors).map(([floorName, floor]) => (
+                      <SelectItem key={floorName} value={floorName}>
+                        {formatFloorText(floorName)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleLoadTemplate}
+                >
+                  Load
+                </Button>
+              </div>
+            </div>
+
+            <div className="pt-4">
+              <Button
+                variant={currentTool === "stairs" ? "default" : "outline"}
+                className={cn(
+                  "w-full",
+                  currentTool === "stairs" &&
+                    "bg-violet-500 hover:bg-violet-600 text-white border-violet-600",
+                )}
+                onClick={() => {
+                  setCurrentTool("stairs");
+                  setCurrentAirEntry(null);
+                  setTab("2d-editor");
+                  toast({
+                    title: "Stair Design Tool Activated",
                     description:
                       "Click on the canvas to place points and create a stair polygon. Close the shape by clicking near the first point.",
                   });
@@ -1585,7 +1590,35 @@ export default function WizardDesign() {
   };
 
   // Shared simulation info component used across all steps - always editable
-  /* renderSimulationInfo defined earlier */
+  const renderSimulationInfo = () => (
+    <div className="max-w-xl space-y-4 mb-6">
+      <div>
+        <Label htmlFor="simulation-name">Simulation name</Label>
+        <Input
+          id="simulation-name"
+          value={simulationName}
+          onChange={(e) => setSimulationName(e.target.value)}
+          placeholder="Enter simulation name"
+        />
+      </div>
+      <div>
+        <Label htmlFor="simulation-type">Simulation type</Label>
+        <Select value={simulationType} onValueChange={setSimulationType}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select simulation type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="comfort">
+              Comfort Simulation (steady run)
+            </SelectItem>
+            <SelectItem value="renovation">
+              Air Renovation Convection Simulation (transient run)
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
+  );
 
   return (
     <DashboardLayout>
@@ -1603,3 +1636,41 @@ export default function WizardDesign() {
             <Button onClick={handleBack} variant="outline">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back
+            </Button>
+          )}
+          {step < 3 ? (
+            <Button onClick={handleNext}>
+              Next
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          ) : (
+            <Button onClick={handleStartSimulation}>Start Simulation</Button>
+          )}
+        </div>
+      </div>
+
+      <FloorLoadDialog
+        isOpen={isFloorLoadDialogOpen}
+        onClose={() => setIsFloorLoadDialogOpen(false)}
+        onConfirm={performFloorLoad}
+        sourceFloor={loadFromFloor}
+        targetFloor={currentFloor}
+        hasContent={
+          floors[currentFloor]?.lines.length > 0 ||
+          floors[currentFloor]?.airEntries.length > 0
+        }
+        hasStairs={
+          floors[loadFromFloor]?.stairPolygons?.some((stair) => {
+            const connectsToTargetFloor =
+              (stair.direction === "up" &&
+                getConnectedFloorName(loadFromFloor, "up") === currentFloor) ||
+              (stair.direction === "down" &&
+                getConnectedFloorName(loadFromFloor, "down") === currentFloor);
+
+            return connectsToTargetFloor;
+          }) || false
+        }
+      />
+    </DashboardLayout>
+  );
+}
