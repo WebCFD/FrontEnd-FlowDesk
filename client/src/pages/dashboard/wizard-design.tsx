@@ -1123,7 +1123,7 @@ export default function WizardDesign() {
     return (
       <div className="space-y-6">
         <div className="flex gap-6">
-          {/* Left sidebar for view controls and furniture */}
+          {/* Left sidebar for controls */}
           <div className="w-72 space-y-6">
             <div>
               <h3 className="font-semibold text-lg mb-4">View Controls</h3>
@@ -1133,7 +1133,7 @@ export default function WizardDesign() {
                   <div className="flex items-center">
                     <Slider
                       value={[wallTransparency]}
-                      onValueChange={(values) => {
+                      onValueChange={(values: number[]) => {
                         console.log("Wizard: Wall transparency changing to:", values[0]);
                         setWallTransparency(values[0]);
                       }}
@@ -1147,74 +1147,65 @@ export default function WizardDesign() {
                 </div>
               </div>
             </div>
-            
+
             <div>
               <h3 className="font-semibold text-lg mb-4">Furniture</h3>
               <div className="grid grid-cols-2 gap-2">
-                <div className="border rounded text-center p-2">
-                  <div className="flex justify-center mb-1">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                      <rect x="4" y="14" width="16" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
-                      <rect x="6" y="10" width="12" height="4" stroke="currentColor" strokeWidth="1.5" />
-                    </svg>
+                {[
+                  { id: 'table', name: 'Table', icon: <rect x="4" y="14" width="16" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" /> },
+                  { id: 'person', name: 'Person', icon: <circle cx="12" cy="9" r="3" stroke="currentColor" strokeWidth="1.5" /> },
+                  { id: 'armchair', name: 'Armchair', icon: <rect x="4" y="12" width="16" height="8" rx="1" stroke="currentColor" strokeWidth="1.5" /> }
+                ].map(item => (
+                  <div key={item.id} className="border rounded text-center p-2">
+                    <div className="flex justify-center mb-1">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        {item.icon}
+                      </svg>
+                    </div>
+                    <div className="text-xs">{item.name}</div>
                   </div>
-                  <div className="text-xs">Table</div>
-                </div>
-                <div className="border rounded text-center p-2">
-                  <div className="flex justify-center mb-1">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                      <circle cx="12" cy="9" r="3" stroke="currentColor" strokeWidth="1.5" />
-                      <path d="M16 18C16 15.7909 14.2091 14 12 14C9.79086 14 8 15.7909 8 18" stroke="currentColor" strokeWidth="1.5" />
-                    </svg>
-                  </div>
-                  <div className="text-xs">Person</div>
-                </div>
-                <div className="border rounded text-center p-2">
-                  <div className="flex justify-center mb-1">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                      <rect x="4" y="12" width="16" height="8" rx="1" stroke="currentColor" strokeWidth="1.5" />
-                      <path d="M6 12V10C6 8.89543 6.89543 8 8 8H16C17.1046 8 18 8.89543 18 10V12" stroke="currentColor" strokeWidth="1.5" />
-                    </svg>
-                  </div>
-                  <div className="text-xs">Armchair</div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* Main content area with 3D view */}
+          {/* Main content area */}
           <div className="flex-1 h-[690px] border rounded-lg overflow-hidden bg-white">
-            <div className="p-4 pb-2 border-b">
-              <div className="max-w-xl space-y-4">
-                <div>
-                  <h3 className="text-sm font-medium mb-1">Simulation name</h3>
-                  <div className="text-base border rounded px-3 py-1 bg-gray-50">
-                    {simulationName || "Untitled Simulation"}
+            <div className="flex flex-col h-full">
+              {/* Top section with simulation name and type */}
+              <div className="p-4 pb-2 border-b">
+                <div className="max-w-xl space-y-4">
+                  <div>
+                    <h3 className="text-sm font-medium mb-1">Simulation name</h3>
+                    <div className="text-base border rounded px-3 py-1 bg-gray-50">
+                      {simulationName || "Untitled Simulation"}
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium mb-1">Simulation type</h3>
-                  <div className="text-base border rounded px-3 py-1 bg-gray-50">
-                    {simulationType === "comfort" ? "Comfort Simulation (steady run)" : "Air Renovation Convection Simulation (transient run)"}
+                  <div>
+                    <h3 className="text-sm font-medium mb-1">Simulation type</h3>
+                    <div className="text-base border rounded px-3 py-1 bg-gray-50">
+                      {simulationType === "comfort" ? "Comfort Simulation (steady run)" : "Air Renovation Convection Simulation (transient run)"}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="h-[600px]">
-              <Canvas3D
-                floors={floors}
-                currentFloor={currentFloor}
-                ceilingHeight={ceilingHeight}
-                floorDeckThickness={floorDeckThickness}
-                wallTransparency={wallTransparency}
-                isMeasureMode={isMeasureMode}
-                isEraserMode={isEraserMode}
-                simulationName={simulationName}
-                simulationType={simulationType === "comfort" ? "Comfort Simulation (steady run)" : "Air Renovation Convection Simulation (transient run)"}
-                onUpdateAirEntry={handleUpdateAirEntryFrom3D}
-                onDeleteAirEntry={handleDeleteAirEntryFrom3D}
-                onViewChange={handleViewChange}
-              />
+              
+              {/* Main content - keep original RoomSketchPro functionality */}
+              <div className="flex-1">
+                <RoomSketchPro
+                  width={800}
+                  height={600} /* Adjusted height to fit in the new layout */
+                  key="step2-view"
+                  instanceId="step2-view"
+                  lines={lines}
+                  airEntries={airEntries}
+                  wallTransparency={wallTransparency}
+                  onWallTransparencyChange={(value) => {
+                    console.log("Wizard: Wall transparency changing to:", value);
+                    setWallTransparency(value);
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>
