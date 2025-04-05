@@ -856,8 +856,8 @@ export default function WizardDesign() {
                       variant="outline"
                       className="w-full h-16 flex flex-col items-center justify-center gap-1"
                     >
-                      <RotateCw className="w-6 h-6" />
-                      <span className="text-xs">Rotate</span>
+                      <Eraser className="w-6 h-6" />
+                      <span className="text-xs">Eraser</span>
                     </Button>
                     <Button
                       variant={isMeasureMode ? "default" : "outline"}
