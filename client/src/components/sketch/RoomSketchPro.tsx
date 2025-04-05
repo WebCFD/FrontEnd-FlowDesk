@@ -433,6 +433,7 @@ export function RoomSketchPro({
   // Initialize scene
   useEffect(() => {
     console.log("RoomSketchPro - Initialization effect running");
+    console.log("RoomSketchPro - Floors in context:", geometryData?.floors);
     
     if (!containerRef.current) {
       console.error("RoomSketchPro - Container ref is null, cannot initialize");
@@ -519,7 +520,48 @@ export function RoomSketchPro({
       });
       container.removeEventListener("drop", handleDrop);
     };
-  }, [width, height]);
+  }, [width, height, geometryData?.floors]);
+  
+  // Add a new effect to respond to current floor changes in context
+  useEffect(() => {
+    console.log("RoomSketchPro - Current floor changed in context to:", geometryData?.currentFloor);
+    console.log("RoomSketchPro - Available floors in context:", Object.keys(geometryData?.floors || {}));
+    
+    // Only rebuild scene if we already have one
+    if (sceneRef.current && rendererRef.current && cameraRef.current) {
+      console.log("RoomSketchPro - Rebuilding scene for floor change");
+      
+      // Clear existing scene objects except lights and grid
+      if (sceneRef.current) {
+        // Get a list of all objects to remove
+        const objectsToRemove: THREE.Object3D[] = [];
+        sceneRef.current.traverse((object) => {
+          // Skip lights, camera, and grid - only remove walls and air entries
+          if (object.type !== 'DirectionalLight' && 
+              object.type !== 'AmbientLight' &&
+              object.type !== 'PerspectiveCamera' &&
+              object.type !== 'GridHelper' &&
+              object.type !== 'Scene') {
+            objectsToRemove.push(object);
+          }
+        });
+        
+        // Remove the objects
+        objectsToRemove.forEach(obj => {
+          sceneRef.current?.remove(obj);
+        });
+        
+        // Rebuild walls and air entries with new data
+        if (rendererRef.current && cameraRef.current) {
+          createWalls(sceneRef.current, rendererRef.current, cameraRef.current);
+          createAirEntries(sceneRef.current);
+          
+          // Render the updated scene
+          rendererRef.current.render(sceneRef.current, cameraRef.current);
+        }
+      }
+    }
+  }, [geometryData?.currentFloor]);
 
   // Extract perimeter points using useMemo to avoid recalculation
   // Use geometryData.lines from the context if available, otherwise fall back to lines prop
