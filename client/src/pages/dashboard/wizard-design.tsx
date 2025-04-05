@@ -1097,11 +1097,11 @@ export default function WizardDesign() {
       <Card className="mt-4">
         <CardContent className="p-4">
           <div className="flex">
-            {/* Switch to 3D editor tab automatically for Step 2 */}
-            {setTab("3d-preview")}
             {/* Render the same canvas section from Step 1 */}
             {renderCanvasSection()}
           </div>
+          {/* Switch to 3D preview tab automatically for Step 2 */}
+          <div className="hidden">{React.useEffect(() => setTab("3d-preview"), [])}</div>
         </CardContent>
       </Card>
     );
