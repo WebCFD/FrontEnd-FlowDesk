@@ -1207,22 +1207,8 @@ export default function WizardDesign() {
                 </div>
               </div>
 
-              {/* Main content area - matching dimensions */}
-              <div className="flex-1 border rounded-lg overflow-hidden bg-white min-w-[600px]">
-                <RoomSketchPro
-                  width={800}
-                  height={600}
-                  key="step2-view"
-                  instanceId="step2-view"
-                  lines={lines}
-                  airEntries={airEntries}
-                  wallTransparency={wallTransparency}
-                  onWallTransparencyChange={(value) => {
-                    console.log("Wizard: Wall transparency changing to:", value);
-                    setWallTransparency(value);
-                  }}
-                />
-              </div>
+              {/* Main content area - using the same renderCanvasSection as 3D preview for consistency */}
+              {renderCanvasSection("step2")}
             </div>
           </CardContent>
         </Card>
@@ -1530,9 +1516,9 @@ export default function WizardDesign() {
     </div>
   );
 
-  const renderCanvasSection = () => {
-    // Add these debug statements
-    if (tab === "3d-preview") {
+  const renderCanvasSection = (mode = "tabs") => {
+    // Add these debug statements for 3D preview
+    if (tab === "3d-preview" && mode === "tabs") {
       console.log("Rendering 3D view with floors data:", floors);
       console.log(
         `Current floor '${currentFloor}' stair polygons:`,
@@ -1542,7 +1528,20 @@ export default function WizardDesign() {
 
     return (
       <div className="flex-1 border rounded-lg overflow-hidden bg-white min-w-[600px]">
-        {tab === "2d-editor" ? (
+        {/* Special case for Step 2 which renders RoomSketchPro */}
+        {mode === "step2" ? (
+          <RoomSketchPro
+            key="step2-view"
+            instanceId="step2-view"
+            lines={lines}
+            airEntries={airEntries}
+            wallTransparency={wallTransparency}
+            onWallTransparencyChange={(value) => {
+              console.log("Wizard: Wall transparency changing to:", value);
+              setWallTransparency(value);
+            }}
+          />
+        ) : tab === "2d-editor" ? (
           <Canvas2D
             gridSize={gridSize}
             currentTool={currentTool}
