@@ -366,7 +366,7 @@ export default function Canvas3D({
   floorDeckThickness = 35,
   wallTransparency = 0.7,
   isMeasureMode = false,
-  isEraserMode = false,
+  isEraserMode, // Removed default value to ensure external state is always respected
   onUpdateAirEntry,
   onDeleteAirEntry,
 }: Canvas3DProps) {
@@ -3050,7 +3050,8 @@ export default function Canvas3D({
   }, []);
 
   useEffect(() => {
-    console.log("Canvas3D received floors data:", floors, "Current eraser mode:", isEraserMode);
+    console.log("Canvas3D received floors data:", floors, "Current eraser mode:", isEraserMode, 
+                isEraserMode === undefined ? "⚠️ UNDEFINED VALUE!" : "✅ Valid boolean");
 
     // Log detailed information about all air entries for debugging purposes
     Object.entries(floors).forEach(([floorName, floorData]) => {
@@ -3464,12 +3465,13 @@ export default function Canvas3D({
   
   // Effect to handle eraser mode changes
   useEffect(() => {
-    console.log("Canvas3D isEraserMode prop changed:", isEraserMode, "- Applying UI changes");
+    console.log("Canvas3D isEraserMode prop changed:", isEraserMode, "- Applying UI changes", 
+                isEraserMode === undefined ? "👉 UNDEFINED VALUE!" : "");
     
     // Update debug info to reflect current eraser mode state
     setDebugInfo(prev => ({
       ...prev,
-      eraserMode: isEraserMode
+      eraserMode: isEraserMode === true // Force a boolean value
     }));
     
     // Log how many air entry elements exist in the scene
