@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Camera, Eraser, Ruler } from "lucide-react";
+import { Eye, Eraser, Ruler } from "lucide-react";
 
 interface Toolbar3DProps {
   isActive: boolean;
@@ -35,8 +35,8 @@ export function Toolbar3D({
             variant="outline"
             className="w-full h-16 flex flex-col items-center justify-center gap-1"
           >
-            <Camera className="w-6 h-6" />
-            <span className="text-xs">Camera</span>
+            <Eye className="w-6 h-6" />
+            <span className="text-xs">View</span>
           </Button>
           <Button
             variant={isEraserMode ? "default" : "outline"}

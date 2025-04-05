@@ -29,7 +29,7 @@ import {
   ArrowRight,
   ArrowLeft,
   Ruler,
-  Camera,
+  Eye,
   RotateCw,
   ZoomIn,
   Share2,
@@ -941,8 +941,8 @@ export default function WizardDesign() {
                       variant="outline"
                       className="w-full h-16 flex flex-col items-center justify-center gap-1"
                     >
-                      <Camera className="w-6 h-6" />
-                      <span className="text-xs">Camera</span>
+                      <Eye className="w-6 h-6" />
+                      <span className="text-xs">View</span>
                     </Button>
                     <Button
                       variant={isEraserMode ? "default" : "outline"}
