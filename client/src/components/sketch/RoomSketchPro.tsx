@@ -61,9 +61,10 @@ const DEFAULTS = {
 const roomUtils = {
   // Transform 2D point to 3D space (XY plane as ground, Z as height)
   transform2DTo3D: (point: Point, height: number = 0): THREE.Vector3 => {
-    const dimensions = { width: 800, height: 600 };
-    const centerX = dimensions.width / 2;
-    const centerY = dimensions.height / 2;
+    // Access the component's props through width and height parameters
+    // from the parent component (value is set in the RoomSketchPro component props)
+    const centerX = 800 / 2; // Use the same dimensions as Canvas2D/3D
+    const centerY = 600 / 2; // Use the same dimensions as Canvas2D/3D
 
     const relativeX = point.x - centerX;
     const relativeY = centerY - point.y;
