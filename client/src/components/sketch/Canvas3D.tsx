@@ -398,6 +398,12 @@ export default function Canvas3D({
   // Store the original position for reference
   const [dragStartPosition, setDragStartPosition] =
     useState<THREE.Vector3 | null>(null);
+    
+  // For eraser mode - track what element is being hovered and its original material
+  const [hoveredEraseTarget, setHoveredEraseTarget] = useState<{
+    object: THREE.Mesh;
+    originalMaterial: THREE.Material | THREE.Material[];
+  } | null>(null);
 
   // Store the initial mouse position for calculating drag distance
   const [initialMousePosition, setInitialMousePosition] = useState<{
@@ -2028,6 +2034,96 @@ export default function Canvas3D({
         needsRenderRef.current = true;
         return;
       }
+      
+      // Handle hover detection for eraser mode
+      if (isEraserMode && !dragStateRef.current.isDragging) {
+        const mouseCoords = getMouseCoordinates(event);
+        
+        // Reset previously highlighted element if any
+        if (hoveredEraseTarget) {
+          // Restore original material
+          hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
+          setHoveredEraseTarget(null);
+          
+          // Re-enable controls when not hovering over an erasable element
+          if (controlsRef.current) {
+            controlsRef.current.enabled = true;
+          }
+          
+          // Force render to update the appearance
+          needsRenderRef.current = true;
+        }
+        
+        // Find potential erase targets
+        const airEntryMeshes: THREE.Mesh[] = [];
+        
+        if (sceneRef.current) {
+          sceneRef.current.traverse((object) => {
+            // Collect air entry meshes (windows, doors, vents)
+            if (
+              object instanceof THREE.Mesh &&
+              object.userData &&
+              object.userData.type &&
+              ["window", "door", "vent"].includes(object.userData.type)
+            ) {
+              airEntryMeshes.push(object as THREE.Mesh);
+            }
+          });
+          
+          // Set up raycaster
+          if (cameraRef.current) {
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouseCoords, cameraRef.current);
+            
+            // Check for intersections with air entry meshes
+            const meshIntersects = raycaster.intersectObjects(airEntryMeshes, false);
+            
+            if (meshIntersects.length > 0) {
+              const mesh = meshIntersects[0].object as THREE.Mesh;
+              
+              // Store original material and apply highlight material
+              const originalMaterial = mesh.material;
+              
+              // Create new highlight material (red, semi-transparent)
+              const highlightMaterial = new THREE.MeshPhongMaterial({
+                color: 0xff0000,  // Red
+                opacity: 0.7,
+                transparent: true,
+                side: THREE.DoubleSide,
+              });
+              
+              // Apply highlight material
+              mesh.material = highlightMaterial;
+              
+              // Store the highlighted object and its original material
+              setHoveredEraseTarget({
+                object: mesh,
+                originalMaterial: originalMaterial
+              });
+              
+              // Disable controls when hovering over an erasable element
+              if (controlsRef.current) {
+                controlsRef.current.enabled = false;
+              }
+              
+              // Force render to update the appearance
+              needsRenderRef.current = true;
+            }
+          }
+        }
+      } else if (!isEraserMode && hoveredEraseTarget) {
+        // If we exit eraser mode but still have a highlighted object, restore it
+        hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
+        setHoveredEraseTarget(null);
+        
+        // Re-enable controls
+        if (controlsRef.current) {
+          controlsRef.current.enabled = true;
+        }
+        
+        // Force render to update the appearance
+        needsRenderRef.current = true;
+      }
 
       // Regular drag logic
       if (dragStateRef.current.isDragging) {
@@ -2360,39 +2456,12 @@ export default function Canvas3D({
       
       console.log("Eraser click detected");
       
-      // Get mouse position for raycasting
-      const canvas = containerRef.current;
-      if (!canvas || !cameraRef.current || !sceneRef.current) return;
-      
-      const mouseCoords = getMouseCoordinates(event);
-      
-      // Set up raycaster
-      const raycaster = new THREE.Raycaster();
-      raycaster.setFromCamera(mouseCoords, cameraRef.current);
-      
-      // Find all meshes in the scene that represent air entries
-      const airEntryMeshes: THREE.Mesh[] = [];
-      
-      sceneRef.current.traverse((object) => {
-        // Collect air entry meshes (windows, doors, vents)
-        if (
-          object instanceof THREE.Mesh &&
-          object.userData &&
-          object.userData.type &&
-          ["window", "door", "vent"].includes(object.userData.type)
-        ) {
-          airEntryMeshes.push(object as THREE.Mesh);
-        }
-      });
-      
-      console.log("Found", airEntryMeshes.length, "air entries for potential deletion");
-      
-      // Check for intersections with air entry meshes
-      const meshIntersects = raycaster.intersectObjects(airEntryMeshes, false);
-      
-      if (meshIntersects.length > 0) {
-        const mesh = meshIntersects[0].object as THREE.Mesh;
+      // If we have a hovered target, use that directly rather than raycasting again
+      if (hoveredEraseTarget) {
+        const mesh = hoveredEraseTarget.object;
         const airEntryData = mesh.userData;
+        
+        console.log("Using highlighted air entry for deletion:", airEntryData);
         
         console.log("Air entry selected for deletion:", airEntryData);
         
