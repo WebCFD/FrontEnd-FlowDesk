@@ -308,12 +308,7 @@ export function RoomSketchPro({
     scene.add(floor);
     floorRef.current = floor;
 
-    // Create grid helper - matches Canvas3D's grid
-    const gridSize = 1000;
-    const divisions = 50;
-    const gridHelper = new THREE.GridHelper(gridSize, divisions, 0x888888, 0xcccccc);
-    gridHelper.rotation.x = Math.PI / 2; // Rotate to match our coordinate system (XY plane)
-    scene.add(gridHelper);
+    // Removed grid helper as requested
     
     // Use both props and context to get a complete list of floors
     const floorsFromProps = floors ? Object.keys(floors) : [];
@@ -558,6 +553,37 @@ export function RoomSketchPro({
     const floorsFromContext = geometryData?.floors ? Object.keys(geometryData.floors) : [];
     const allFloorNames = [...new Set([...floorsFromProps, ...floorsFromContext])].sort();
     
+    console.log("🏢 DEBUG - MultifloorViz - Available floors:", {
+      fromProps: floorsFromProps,
+      fromContext: floorsFromContext,
+      combined: allFloorNames
+    });
+    
+    // Add more detailed logging about floor data structure
+    console.log("🏢 DETAILED FLOOR DATA:");
+    if (floors) {
+      Object.keys(floors).forEach(floorKey => {
+        console.log(`Floor [${floorKey}] from props:`, {
+          lines: floors[floorKey]?.lines?.length || 0,
+          airEntries: floors[floorKey]?.airEntries?.length || 0,
+          stairs: floors[floorKey]?.stairPolygons?.length || 0,
+          linesExample: floors[floorKey]?.lines?.slice(0, 1) || 'none',
+          airEntriesExample: floors[floorKey]?.airEntries?.slice(0, 1) || 'none',
+          stairsExample: floors[floorKey]?.stairPolygons?.slice(0, 1) || 'none'
+        });
+      });
+    }
+    
+    if (geometryData?.floors) {
+      Object.keys(geometryData.floors).forEach(floorKey => {
+        console.log(`Floor [${floorKey}] from context:`, {
+          lines: geometryData.floors[floorKey]?.lines?.length || 0,
+          airEntries: geometryData.floors[floorKey]?.airEntries?.length || 0,
+          stairs: geometryData.floors[floorKey]?.stairPolygons?.length || 0
+        });
+      });
+    }
+    
     if (allFloorNames.length <= 1) {
       console.log("RoomSketchPro - Only one floor, skipping multifloor visualization");
       return;
@@ -588,7 +614,7 @@ export function RoomSketchPro({
     
     // Function to create a floor section from floors data
     const createFloorFromData = (floorName: string, zPosition: number) => {
-      console.log(`RoomSketchPro - Creating floor ${floorName} at z=${zPosition}`);
+      console.log(`🏢 RoomSketchPro - Creating floor ${floorName} at z=${zPosition}`);
       
       // Create a group for this floor
       const floorGroup = new THREE.Group();
@@ -596,19 +622,33 @@ export function RoomSketchPro({
       floorGroup.position.z = zPosition;
       
       // Get floor data from either props or context
-      const floorData = (floors && floors[floorName]) || 
-                        (geometryData?.floors && geometryData.floors[floorName]);
+      const floorDataFromProps = floors && floors[floorName];
+      const floorDataFromContext = geometryData?.floors && geometryData.floors[floorName];
+      const floorData = floorDataFromProps || floorDataFromContext;
+      
+      console.log(`🏢 Floor [${floorName}] data sources:`, {
+        fromProps: !!floorDataFromProps,
+        fromContext: !!floorDataFromContext,
+        hasData: !!floorData,
+        dataSource: floorDataFromProps ? 'props' : (floorDataFromContext ? 'context' : 'none')
+      });
       
       if (!floorData) {
-        console.warn(`RoomSketchPro - No data for floor ${floorName}`);
+        console.warn(`⚠️ RoomSketchPro - No data for floor ${floorName}`);
         return floorGroup;
       }
       
       // Extract floor lines
       const floorLines = floorData.lines || [];
       
+      console.log(`🏢 Floor [${floorName}] content:`, {
+        lineCount: floorLines.length,
+        airEntryCount: floorData.airEntries?.length || 0,
+        stairCount: floorData.stairPolygons?.length || 0
+      });
+      
       if (floorLines.length === 0) {
-        console.warn(`RoomSketchPro - No walls for floor ${floorName}`);
+        console.warn(`⚠️ RoomSketchPro - No walls for floor ${floorName}`);
         return floorGroup;
       }
       
@@ -716,18 +756,40 @@ export function RoomSketchPro({
     });
     
     // Connect floors with stairs if stair data is available
+    console.log("🪜 Starting stair connections between floors...");
     allFloorNames.forEach((floorName) => {
-      const floorData = (floors && floors[floorName]) || 
-                        (geometryData?.floors && geometryData.floors[floorName]);
+      // Get floor data from either props or context
+      const floorDataFromProps = floors && floors[floorName];
+      const floorDataFromContext = geometryData?.floors && geometryData.floors[floorName];
+      const floorData = floorDataFromProps || floorDataFromContext;
+      
+      console.log(`🪜 Checking for stairs in floor [${floorName}]:`, {
+        hasStairsData: !!floorData?.stairPolygons,
+        stairCount: floorData?.stairPolygons?.length || 0,
+        dataSource: floorDataFromProps ? 'props' : (floorDataFromContext ? 'context' : 'none')
+      });
       
       if (floorData?.stairPolygons && floorData.stairPolygons.length > 0) {
-        console.log(`RoomSketchPro - Adding stairs for floor ${floorName}:`, floorData.stairPolygons);
+        console.log(`🪜 Adding ${floorData.stairPolygons.length} stairs for floor ${floorName}:`);
+        
+        // Log stair data in a detailed format
+        floorData.stairPolygons.forEach((stairData: any, index: number) => {
+          console.log(`Stair #${index} data:`, {
+            position: stairData.position ? `(${stairData.position.x}, ${stairData.position.y})` : 'undefined',
+            hasDirection: !!stairData.direction,
+            direction: stairData.direction,
+            width: stairData.width,
+            depth: stairData.depth
+          });
+        });
         
         // Process each stair polygon
         floorData.stairPolygons.forEach((stairData: any, stairIndex: number) => {
           // Create stair visualization
           createStairsVisualization(stairData, floorName, stairIndex, multiFloorGroup, floorGroups);
         });
+      } else {
+        console.log(`ℹ️ No stairs found for floor [${floorName}]`);
       }
     });
     
@@ -836,12 +898,24 @@ export function RoomSketchPro({
     multiFloorGroup: THREE.Group,
     floorGroups: Record<string, THREE.Group>
   ) => {
+    console.log(`🪜 Starting stair visualization for floor "${floorName}" stair #${stairIndex}`);
+    
     // Get floor indices
     const floorNames = Object.keys(floorGroups).sort();
     const currentFloorIndex = floorNames.indexOf(floorName);
     
+    console.log(`🪜 Floor index info:`, {
+      floorName,
+      currentFloorIndex,
+      availableFloors: floorNames,
+      hasPreviousFloor: currentFloorIndex > 0,
+      hasNextFloor: currentFloorIndex < floorNames.length - 1,
+      totalFloors: floorNames.length
+    });
+    
     // Only create stairs if we have a valid upper floor
     if (currentFloorIndex < 0 || currentFloorIndex >= floorNames.length - 1) {
+      console.warn(`⚠️ Cannot create stairs for "${floorName}" (index ${currentFloorIndex}): No valid floor above`);
       return;
     }
     
@@ -849,8 +923,19 @@ export function RoomSketchPro({
     const lowerFloorName = floorName;
     const upperFloorName = floorNames[currentFloorIndex + 1];
     
+    console.log(`🪜 Stair will connect:`, {
+      lowerFloor: lowerFloorName,
+      upperFloor: upperFloorName,
+      hasLowerFloorGroup: !!floorGroups[lowerFloorName],
+      hasUpperFloorGroup: !!floorGroups[upperFloorName],
+      stairData: {
+        hasPosition: !!stairData.position,
+        position: stairData.position ? `(${stairData.position.x}, ${stairData.position.y})` : 'undefined'
+      }
+    });
+    
     if (!lowerFloorName || !upperFloorName || !floorGroups[lowerFloorName] || !floorGroups[upperFloorName]) {
-      console.warn("RoomSketchPro - Cannot create stairs, missing floor groups:", {
+      console.warn("⚠️ Cannot create stairs, missing floor groups:", {
         lowerFloorName,
         upperFloorName,
         availableGroups: Object.keys(floorGroups)
@@ -858,7 +943,7 @@ export function RoomSketchPro({
       return;
     }
     
-    console.log(`RoomSketchPro - Creating stairs from ${lowerFloorName} to ${upperFloorName}`);
+    console.log(`🪜 Creating stairs from ${lowerFloorName} to ${upperFloorName}`);
     
     // Create stair material
     const stairMaterial = new THREE.MeshStandardMaterial({
@@ -952,13 +1037,35 @@ export function RoomSketchPro({
         const floorsFromContext = geometryData?.floors ? Object.keys(geometryData.floors) : [];
         const allFloors = [...new Set([...floorsFromProps, ...floorsFromContext])];
         
-        // If we have multiple floors and both props are provided, create multifloor visualization
-        if (allFloors.length > 1 && floors && Object.keys(floors).length > 1) {
-          console.log("RoomSketchPro - Creating multifloor visualization with floors:", allFloors);
+        console.log("DEBUG - Multi-floor check:", {
+          floorsFromProps,
+          floorsFromContext,
+          allFloors,
+          hasFloorsProps: !!floors,
+          floorsLength: floors ? Object.keys(floors).length : 0,
+          geometryDataFloors: geometryData?.floors
+        });
+        
+        // Force multifloor visualization whenever we have more than one floor in floors prop
+        if (floors && Object.keys(floors).length > 1) {
+          // Extra debug to see exact floor data structure
+          console.log("🌈 FLOORS STRUCTURE DEBUG:");
+          Object.keys(floors).forEach(floorKey => {
+            console.log(`Floor [${floorKey}]:`, {
+              lineCount: floors[floorKey]?.lines?.length || 0,
+              airEntryCount: floors[floorKey]?.airEntries?.length || 0,
+              hasStairs: !!floors[floorKey]?.stairPolygons?.length,
+              stairCount: floors[floorKey]?.stairPolygons?.length || 0
+            });
+          });
+          
+          console.log("RoomSketchPro - Creating multifloor visualization with floors:", Object.keys(floors));
           createMultiFloorVisualization(sceneRef.current, rendererRef.current, cameraRef.current);
         } else {
           // Otherwise just build the current floor
-          console.log("RoomSketchPro - Creating single floor view");
+          console.log("RoomSketchPro - Creating single floor view - multifloor condition not met");
+          console.log("🔎 SINGLE FLOOR DEBUG - floors object:", floors);
+          console.log("🔎 SINGLE FLOOR DEBUG - currentFloor:", currentFloor);
           createWalls(sceneRef.current, rendererRef.current, cameraRef.current);
           createAirEntries(sceneRef.current);
         }
