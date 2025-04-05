@@ -1335,7 +1335,7 @@ export default function Canvas3D({
             mouseDeltaX : -mouseDeltaY;  // Note: Y is negated because screen Y increases downward
           
           // Scale factor to convert screen pixels to scene units
-          const scaleFactor = 8.0;
+          const scaleFactor = 4.0;
           
           // Calculate the displacement in the local axis
           const localDisplacement = dragMagnitude * scaleFactor;
@@ -2467,12 +2467,6 @@ export default function Canvas3D({
               ...baseEntry,
               dimensions: updatedData?.dimensions || baseEntry.dimensions
             };
-            
-            console.log("Opening air entry dialog with data:", {
-              baseEntry,
-              updatedData,
-              mergedEntry
-            });
             
             setEditingAirEntry({
               index: foundIndex,

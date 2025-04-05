@@ -65,20 +65,19 @@ export default function AirEntryDialog({
 
     switch (type) {
       case 'window':
-        return windowDefaults;
+        return { ...windowDefaults };
       case 'door':
-        return doorDefaults;
+        return { ...doorDefaults };
       case 'vent':
-        return ventDefaults;
+        return { ...ventDefaults };
       default:
-        return windowDefaults;
+        return { ...windowDefaults };
     }
   }
 
   // Reset dimensions when dialog opens with new type or initialValues
   useEffect(() => {
     if (isOpen) {
-      console.log("Dialog opened with initial values:", initialValues);
       setDimensions(getDefaultValues());
     }
   }, [isOpen, type, initialValues]);
@@ -105,18 +104,10 @@ export default function AirEntryDialog({
   // FIND THIS SECTION in AirEntryDialog.tsx - The handleDragStart function
 
   const handleDragStart = (e: React.MouseEvent) => {
-    console.log('[DRAG-DEBUG] AirEntry - Mouse down event', {
-      x: e.clientX,
-      y: e.clientY,
-      target: e.target
-    });
-
     // Only allow dragging from header
     const header = (e.target as Element).closest('[data-drag-handle]');
-    console.log('[DRAG-DEBUG] AirEntry - Is header element found?', !!header);
 
     if (!header) {
-      console.log('[DRAG-DEBUG] AirEntry - Not on header, ignoring');
       return;
     }
 
@@ -126,37 +117,26 @@ export default function AirEntryDialog({
     // Get the dialog element (directly from current target)
     const dialogElement = (e.currentTarget as HTMLElement);
     if (!dialogElement) {
-      console.error('[DRAG-DEBUG] AirEntry - Dialog element not found');
       return;
     }
 
     const dialogRect = dialogElement.getBoundingClientRect();
-    console.log('[DRAG-DEBUG] AirEntry - Dialog rect:', dialogRect);
 
     // Calculate mouse offset from dialog's top-left corner
     const offsetX = e.clientX - dialogRect.left;
     const offsetY = e.clientY - dialogRect.top;
-    console.log('[DRAG-DEBUG] AirEntry - Offsets:', { offsetX, offsetY });
 
     // If this is the first drag, initialize position
     if (!hasBeenDragged) {
       setPosition({ x: dialogRect.left, y: dialogRect.top });
-      console.log('[DRAG-DEBUG] AirEntry - Setting initial position:', { x: dialogRect.left, y: dialogRect.top });
     }
 
     // Start tracking the drag
     draggingRef.current = true;
     setIsDragging(true);
-    console.log('[DRAG-DEBUG] AirEntry - Started dragging');
 
     // Function to handle mouse movement during drag
     const handleMouseMove = (moveEvent: MouseEvent) => {
-      console.log('[DRAG-DEBUG] AirEntry - Mouse move', { 
-        x: moveEvent.clientX, 
-        y: moveEvent.clientY,
-        isDragging: draggingRef.current
-      });
-
       if (!draggingRef.current) return;
 
       // Calculate new position
@@ -167,13 +147,11 @@ export default function AirEntryDialog({
       requestAnimationFrame(() => {
         setPosition({ x: newX, y: newY });
         setHasBeenDragged(true);
-        console.log('[DRAG-DEBUG] AirEntry - Position updated', { x: newX, y: newY });
       });
     };
 
     // Function to handle the end of dragging
     const handleMouseUp = () => {
-      console.log('[DRAG-DEBUG] AirEntry - Mouse up event, isDragging:', draggingRef.current);
       draggingRef.current = false;
       setIsDragging(false);
       document.removeEventListener('mousemove', handleMouseMove);
@@ -181,7 +159,6 @@ export default function AirEntryDialog({
     };
 
     // Add global event listeners
-    console.log('[DRAG-DEBUG] AirEntry - Adding document event listeners');
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
   };
@@ -253,7 +230,7 @@ export default function AirEntryDialog({
                 <Input
                   id="distance"
                   type="number"
-                  value={dimensions.distanceToFloor}
+                  value={dimensions.distanceToFloor || 0}
                   onChange={(e) => setDimensions(prev => ({ ...prev, distanceToFloor: Number(e.target.value) }))}
                   className="col-span-3"
                 />
