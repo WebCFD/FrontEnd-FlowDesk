@@ -1555,6 +1555,35 @@ export default function WizardDesign() {
                 console.log("Wizard: Wall transparency changing to:", value);
                 setWallTransparency(value);
               }}
+              onComponentMount={() => {
+                // Add detailed logging of the data being passed to RoomSketchPro
+                console.log("🔄 DATA FLOW: wizard-design -> RoomSketchPro:", {
+                  currentFloor,
+                  floorCount: Object.keys(floors).length,
+                  floorNames: Object.keys(floors),
+                  hasMultipleFloors: Object.keys(floors).length > 1,
+                  hasStairs: Object.values(floors).some(f => f.stairPolygons?.length > 0),
+                  floors: Object.keys(floors).reduce((acc, floorName) => {
+                    acc[floorName] = {
+                      lineCount: floors[floorName]?.lines?.length || 0,
+                      airEntryCount: floors[floorName]?.airEntries?.length || 0,
+                      stairCount: floors[floorName]?.stairPolygons?.length || 0
+                    };
+                    return acc;
+                  }, {})
+                });
+                
+                // Log specific floor contents
+                Object.keys(floors).forEach(floorName => {
+                  console.log(`📊 FLOOR DATA FOR [${floorName}]:`, {
+                    lineCount: floors[floorName]?.lines?.length || 0,
+                    airEntryCount: floors[floorName]?.airEntries?.length || 0,
+                    hasStairs: !!floors[floorName]?.stairPolygons?.length,
+                    stairCount: floors[floorName]?.stairPolygons?.length || 0,
+                    isCurrentFloor: floorName === currentFloor
+                  });
+                });
+              }}
             />
           ) : tab === "2d-editor" ? (
             <Canvas2D

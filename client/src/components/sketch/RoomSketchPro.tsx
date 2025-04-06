@@ -50,6 +50,7 @@ interface RoomSketchProProps {
     airEntries: AirEntry[];
     stairPolygons?: any[];
   }>;
+  onComponentMount?: () => void; // New prop for tracking data flow
 }
 
 // Constants
@@ -244,6 +245,7 @@ export function RoomSketchPro({
   onWallTransparencyChange,
   currentFloor,
   floors,
+  onComponentMount,
 }: RoomSketchProProps) {
   // Get data from SceneContext
   const { geometryData } = useSceneContext();
@@ -463,6 +465,12 @@ export function RoomSketchPro({
     console.log("RoomSketchPro - Initialization effect running");
     console.log("RoomSketchPro - Floors in context:", geometryData?.floors);
     
+    // Call onComponentMount callback if provided
+    if (onComponentMount) {
+      console.log("RoomSketchPro - Calling onComponentMount callback");
+      onComponentMount();
+    }
+    
     if (!containerRef.current) {
       console.error("RoomSketchPro - Container ref is null, cannot initialize");
       return;
@@ -548,7 +556,7 @@ export function RoomSketchPro({
       });
       container.removeEventListener("drop", handleDrop);
     };
-  }, [width, height, geometryData?.floors, currentFloor, floors, roomHeight]);
+  }, [width, height, geometryData?.floors, currentFloor, floors, roomHeight, onComponentMount]);
   
   // Function to create multifloor visualization
   const createMultiFloorVisualization = (scene: THREE.Scene, renderer: THREE.WebGLRenderer, camera: THREE.PerspectiveCamera) => {
@@ -1253,29 +1261,33 @@ export function RoomSketchPro({
           willCreateMultifloorView: hasMultipleFloors || hasStairs
         });
         
-        // Create multifloor visualization if we have multiple floors OR if we have stairs
-        if (hasMultipleFloors || hasStairs) {
-          // Extra debug to see exact floor data structure
-          console.log("🌈 FLOORS STRUCTURE DEBUG:");
-          Object.keys(floors).forEach(floorKey => {
-            console.log(`Floor [${floorKey}]:`, {
-              lineCount: floors[floorKey]?.lines?.length || 0,
-              airEntryCount: floors[floorKey]?.airEntries?.length || 0,
-              hasStairs: !!floors[floorKey]?.stairPolygons?.length,
-              stairCount: floors[floorKey]?.stairPolygons?.length || 0
-            });
+        // REMOVED CONDITIONAL LOGIC - Always display all elements from Canvas3D
+        console.log("🔄 RSP: ALWAYS displaying ALL elements from Canvas3D data, no conditional checks");
+        
+        // Debug floor data structure
+        console.log("📊 RSP: Received floor data:", 
+          Object.keys(floors || {}).map(key => ({
+            floorName: key,
+            lineCount: floors[key]?.lines?.length || 0,
+            airEntryCount: floors[key]?.airEntries?.length || 0,
+            stairCount: floors[key]?.stairPolygons?.length || 0,
+            hasContent: !!(floors[key]?.lines?.length || floors[key]?.airEntries?.length || floors[key]?.stairPolygons?.length)
+          }))
+        );
+        
+        // Detailed floor structure logging
+        console.log("🌈 FLOORS STRUCTURE DEBUG:");
+        Object.keys(floors || {}).forEach(floorKey => {
+          console.log(`Floor [${floorKey}]:`, {
+            lineCount: floors[floorKey]?.lines?.length || 0,
+            airEntryCount: floors[floorKey]?.airEntries?.length || 0,
+            hasStairs: !!floors[floorKey]?.stairPolygons?.length,
+            stairCount: floors[floorKey]?.stairPolygons?.length || 0
           });
-          
-          console.log("RoomSketchPro - Creating multifloor visualization with floors:", Object.keys(floors));
-          createMultiFloorVisualization(sceneRef.current, rendererRef.current, cameraRef.current);
-        } else {
-          // Otherwise just build the current floor
-          console.log("RoomSketchPro - Creating single floor view - multifloor condition not met");
-          console.log("🔎 SINGLE FLOOR DEBUG - floors object:", floors);
-          console.log("🔎 SINGLE FLOOR DEBUG - currentFloor:", currentFloor);
-          createWalls(sceneRef.current, rendererRef.current, cameraRef.current);
-          createAirEntries(sceneRef.current);
-        }
+        });
+        
+        console.log("RoomSketchPro - Creating visualization with ALL floors:", Object.keys(floors || {}));
+        createMultiFloorVisualization(sceneRef.current, rendererRef.current, cameraRef.current);
         
         // Render the updated scene
         rendererRef.current.render(sceneRef.current, cameraRef.current);
@@ -1345,6 +1357,14 @@ export function RoomSketchPro({
     wallMaterialRef.current = wallMaterial;
     console.log("RoomSketchPro - Wall material created with transparency:", wallTransparency);
 
+    // Check if we need to display multifloor visualization
+    if (floors && Object.keys(floors).length > 1) {
+      console.log("🏢 MULTIFLOOR MODE DETECTED - Using createMultiFloorVisualization for all floors");
+      // We have multiple floors, use the multifloor visualization
+      createMultiFloorVisualization(scene, renderer, camera);
+      return; // Exit early as multifloor visualization handles all rendering
+    }
+    
     // Always use lines from props if available, fallback to context only if needed
     const linesData = linesToUse; // Use the lines we prepared above
     console.log(`RoomSketchPro - Creating walls from ${linesData.length} lines`);
@@ -1464,6 +1484,13 @@ export function RoomSketchPro({
     const currentFloorData = useDirectProps 
         ? floors[currentFloorName] 
         : geometryData?.floors?.[geometryData?.currentFloor];
+    
+    // Check if multifloor visualization has already been created
+    // If so, we don't need to create air entries here as they're already in the multifloor groups
+    if (scene.children.find(child => child.name === "multiFloorGroup")) {
+      console.log("🏢 MULTIFLOOR MODE ACTIVE - Air entries already created in floor groups");
+      return; // Exit early since multifloor visualization includes air entries
+    }
         
     // Get air entries for the current floor - first from props, then from context if needed
     const contextAirEntries = currentFloorData?.airEntries || geometryData?.airEntries || [];
@@ -2413,6 +2440,41 @@ export function RoomSketchPro({
       });
     }
   }, [wallTransparency]);
+
+  // Add an effect to log the scene contents after each render
+  useEffect(() => {
+    if (sceneRef.current) {
+      // Add a slight delay to ensure the scene is fully rendered
+      const timeoutId = setTimeout(() => {
+        console.log("🔍 RSP SCENE CONTENTS:");
+        let objectCount = 0;
+        let floorGroups = 0;
+        let wallCount = 0;
+        let stairCount = 0;
+        let airEntryCount = 0;
+        
+        sceneRef.current.traverse((object) => {
+          if (object.type !== 'Scene' && object.type !== 'PerspectiveCamera' && 
+              object.type !== 'DirectionalLight' && object.type !== 'AmbientLight' &&
+              object.type !== 'GridHelper') {
+            objectCount++;
+            
+            // Count object types
+            if (object.name.includes('floor_')) floorGroups++;
+            if (object.name.includes('wall')) wallCount++;
+            if (object.name.includes('stair')) stairCount++;
+            if (object.name.includes('window') || object.name.includes('door') || object.name.includes('vent')) airEntryCount++;
+            
+            console.log(`Object #${objectCount}: Name=${object.name}, Type=${object.type}, Visible=${object.visible}, Position=(${object.position.x.toFixed(1)}, ${object.position.y.toFixed(1)}, ${object.position.z.toFixed(1)})`);
+          }
+        });
+        
+        console.log(`RSP Scene Summary: Total objects=${objectCount}, Floors=${floorGroups}, Walls=${wallCount}, Stairs=${stairCount}, AirEntries=${airEntryCount}`);
+      }, 1000); // 1 second delay
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [floors, currentFloor]);
 
   // Handle wall transparency changes with logging
   const handleWallTransparencyChange = (value: number) => {
