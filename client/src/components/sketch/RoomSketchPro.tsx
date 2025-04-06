@@ -727,7 +727,7 @@ export function RoomSketchPro({
     
     // Constants for floor rendering
     const FLOOR_HEIGHT = DEFAULTS.ROOM_HEIGHT; // Height between floors 
-    const FLOOR_THICKNESS = 20; // Thickness of the floor/ceiling
+    const FLOOR_THICKNESS = 20; // Thickness of the floor, needed for proper spacing
     
     // Create materials
     const floorMaterial = new THREE.MeshStandardMaterial({
@@ -785,7 +785,7 @@ export function RoomSketchPro({
       }
       
       // Add walls for this floor
-      floorLines.forEach((line, lineIndex) => {
+      floorLines.forEach((line: Line, lineIndex: number) => {
         const start_bottom = transform2DTo3D(line.start, 0); // Start at 0 relative to floor position
         const end_bottom = transform2DTo3D(line.end, 0);
         const start_top = transform2DTo3D(line.start, FLOOR_HEIGHT);
@@ -862,7 +862,7 @@ export function RoomSketchPro({
       
       // Add air entries for this floor
       const airEntries = floorData.airEntries || [];
-      airEntries.forEach(entry => {
+      airEntries.forEach((entry: AirEntry) => {
         if (entry.type === 'window' || entry.type === 'door' || entry.type === 'vent') {
           // Position will be handled by the air entry creation function
           // Just pass the entry as is
@@ -876,13 +876,42 @@ export function RoomSketchPro({
       return floorGroup;
     };
     
-    // Determine floor placement in 3D space
-    const floorSpacing = FLOOR_HEIGHT + FLOOR_THICKNESS;
+    // Determine floor placement in 3D space - using the same logic as Canvas3D
+    // Add this function to match Canvas3D positioning logic exactly
+    const getFloorBaseHeight = (floorName: string): number => {
+      const floorOrder = [
+        "ground",
+        "first",
+        "second",
+        "third",
+        "fourth",
+        "fifth",
+      ];
+      const index = floorOrder.indexOf(floorName);
+      if (index === -1) return 0;
+      
+      let baseHeight = 0;
+      for (let i = 0; i < index; i++) {
+        const previousFloor = floorOrder[i];
+        // Use the exact same property as Canvas3D to check if floor exists
+        if (floors && floors[previousFloor]) {
+          // Check for closed contour property if available
+          const hasValidFloor = floors[previousFloor].lines && 
+                              floors[previousFloor].lines.length > 2;
+          if (hasValidFloor) {
+            baseHeight += FLOOR_HEIGHT + FLOOR_THICKNESS;
+          }
+        }
+      }
+      console.log(`🏢 RSP - Floor [${floorName}] base height calculated: ${baseHeight} (using Canvas3D algorithm)`);
+      return baseHeight;
+    };
     
-    // Create each floor at the appropriate Z position
+    // Create each floor at the appropriate Z position using Canvas3D positioning
     allFloorNames.forEach((floorName, index) => {
-      // Calculate z position based on floor index (ground floor at z=0)
-      const zPosition = index * floorSpacing;
+      // Calculate z position using the same function Canvas3D uses
+      const zPosition = getFloorBaseHeight(floorName);
+      console.log(`🏢 RSP - Positioning floor [${floorName}] at z=${zPosition} (previously: ${index * (FLOOR_HEIGHT + FLOOR_THICKNESS)})`);
       
       // Use the original floor name for display purposes but normalize for internal storage
       const floorGroup = createFloorFromData(floorName, zPosition);
@@ -909,7 +938,7 @@ export function RoomSketchPro({
       console.log(`🪜 DATA INSPECTION: Stairs in floor [${floorName}]:`, {
         hasStairsData: !!floorData?.stairPolygons,
         stairCount: floorData?.stairPolygons?.length || 0,
-        stairData: floorData?.stairPolygons ? floorData.stairPolygons.map(s => ({ 
+        stairData: floorData?.stairPolygons ? floorData.stairPolygons.map((s: any) => ({ 
           id: s.id, 
           pointCount: s.points?.length || 0,
           direction: s.direction
@@ -969,14 +998,15 @@ export function RoomSketchPro({
     
     // Set camera to see all floors
     if (allFloorNames.length > 1) {
-      // Position camera to see all floors
-      const totalHeight = (allFloorNames.length * floorSpacing) + 100;
-      camera.position.set(0, -totalHeight, totalHeight);
-      camera.lookAt(0, 0, totalHeight / 2);
+      // Position camera to see all floors - use Canvas3D height calculation
+      const lastFloor = allFloorNames[allFloorNames.length - 1];
+      const maxHeight = getFloorBaseHeight(lastFloor) + FLOOR_HEIGHT + 100;
+      camera.position.set(0, -maxHeight, maxHeight);
+      camera.lookAt(0, 0, maxHeight / 2);
       
       // Update controls target
       if (controlsRef.current) {
-        controlsRef.current.target.set(0, 0, totalHeight / 2);
+        controlsRef.current.target.set(0, 0, maxHeight / 2);
         controlsRef.current.update();
       }
       
@@ -1340,7 +1370,7 @@ export function RoomSketchPro({
       return; // Exit early if no lines
     }
     
-    linesData.forEach((line, lineIndex) => {
+    linesData.forEach((line: Line, lineIndex: number) => {
       const start_bottom = transform2DTo3D(line.start);
       const end_bottom = transform2DTo3D(line.end);
       const start_top = transform2DTo3D(line.start, DEFAULTS.ROOM_HEIGHT);
@@ -1456,7 +1486,7 @@ export function RoomSketchPro({
     
     console.log("RoomSketchPro - Current floor for air entries:", currentFloorName);
     console.log("RoomSketchPro - Using air entries data from resolveGeometryData:", entriesData);
-    entriesData.forEach((entry) => {
+    entriesData.forEach((entry: AirEntry) => {
       // Set material based on entry type
       let material;
       if (entry.type === "window") {
