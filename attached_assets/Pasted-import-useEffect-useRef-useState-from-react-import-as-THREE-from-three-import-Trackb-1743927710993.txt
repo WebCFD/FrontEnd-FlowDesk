@@ -1,0 +1,259 @@
+import { useEffect, useRef, useState } from "react";
+import * as THREE from "three";
+import { TrackballControls } from "three/addons/controls/TrackballControls.js";
+import { useSceneContext } from "../../contexts/SceneContext";
+
+export function RoomSketchPro({ width = 800, height = 600 }) {
+  // Get data from SceneContext - this is the key to showing the same content
+  const { geometryData } = useSceneContext();
+  const containerRef = useRef(null);
+
+  // Essential Three.js refs
+  const sceneRef = useRef(null);
+  const cameraRef = useRef(null);
+  const rendererRef = useRef(null);
+  const controlsRef = useRef(null);
+
+  // Initialize scene once
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    // Create scene
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xf0f0f0);
+    sceneRef.current = scene;
+
+    // Add lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(ambientLight);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    dirLight.position.set(100, 100, 100);
+    scene.add(dirLight);
+
+    // Create camera
+    const camera = new THREE.PerspectiveCamera(45, width / height, 1, 10000);
+    camera.position.set(0, 0, 1000);
+    camera.lookAt(0, 0, 0);
+    cameraRef.current = camera;
+
+    // Create renderer
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(width, height);
+    containerRef.current.appendChild(renderer.domElement);
+    rendererRef.current = renderer;
+
+    // Create controls
+    const controls = new TrackballControls(camera, renderer.domElement);
+    controls.rotateSpeed = 1.0;
+    controls.zoomSpeed = 1.2;
+    controls.panSpeed = 0.8;
+    controlsRef.current = controls;
+
+    // Add grid for reference
+    const gridHelper = new THREE.GridHelper(1000, 40);
+    gridHelper.rotation.x = Math.PI / 2;
+    scene.add(gridHelper);
+
+    // Animation loop
+    const animate = () => {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    // Handle resize
+    const handleResize = () => {
+      if (!containerRef.current) return;
+      camera.aspect = containerRef.current.clientWidth / containerRef.current.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
+    };
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      controls.dispose();
+      renderer.dispose();
+      containerRef.current.removeChild(renderer.domElement);
+    };
+  }, [width, height]);
+
+  // Update scene when geometryData changes
+  useEffect(() => {
+    if (!sceneRef.current || !geometryData || !geometryData.floors) return;
+
+    // Clean up existing mesh objects
+    sceneRef.current.children
+      .filter(child => child instanceof THREE.Mesh)
+      .forEach(mesh => sceneRef.current.remove(mesh));
+
+    // Common material for all elements
+    const material = new THREE.MeshStandardMaterial({
+      color: 0x3b82f6,
+      opacity: 0.7,
+      transparent: true,
+      side: THREE.DoubleSide,
+    });
+
+    // Simplified conversion from 2D to 3D
+    const transform2DTo3D = (point, height = 0) => {
+      const centerX = 800 / 2;
+      const centerY = 600 / 2;
+      const pixelsToCm = 25 / 20;
+      
+      return new THREE.Vector3(
+        (point.x - centerX) * pixelsToCm,
+        (centerY - point.y) * pixelsToCm,
+        height
+      );
+    };
+
+    // Render all floors
+    Object.entries(geometryData.floors).forEach(([floorName, floorData]) => {
+      if (!floorData) return;
+      
+      // Calculate floor height
+      const floorIndex = ["ground", "first", "second", "third"].indexOf(floorName);
+      const baseHeight = floorIndex * 250; // Simple floor height calculation
+      
+      // Create walls
+      if (floorData.lines) {
+        floorData.lines.forEach(line => {
+          // Create wall
+          const start_bottom = transform2DTo3D(line.start, baseHeight);
+          const end_bottom = transform2DTo3D(line.end, baseHeight);
+          const start_top = transform2DTo3D(line.start, baseHeight + 210); // 210cm wall height
+          const end_top = transform2DTo3D(line.end, baseHeight + 210);
+
+          // Create wall geometry
+          const wallGeometry = new THREE.BufferGeometry();
+          const vertices = new Float32Array([
+            start_bottom.x, start_bottom.y, start_bottom.z,
+            end_bottom.x, end_bottom.y, end_bottom.z,
+            start_top.x, start_top.y, start_top.z,
+            end_top.x, end_top.y, end_top.z,
+          ]);
+          const indices = new Uint16Array([0, 1, 2, 1, 3, 2]);
+          
+          wallGeometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+          wallGeometry.setIndex(new THREE.BufferAttribute(indices, 1));
+          wallGeometry.computeVertexNormals();
+          
+          const wall = new THREE.Mesh(wallGeometry, material);
+          sceneRef.current.add(wall);
+        });
+      }
+      
+      // Create air entries (windows, doors, vents)
+      if (floorData.airEntries) {
+        floorData.airEntries.forEach(entry => {
+          const width = entry.dimensions.width;
+          const height = entry.dimensions.height;
+          const position = transform2DTo3D(entry.position);
+          
+          // Set Z position based on entry type
+          let zPosition = baseHeight;
+          if (entry.type === "door") {
+            zPosition += height / 2; // Center door vertically
+          } else {
+            zPosition += entry.dimensions.distanceToFloor || 100; // Default 100cm from floor
+          }
+          
+          // Create entry geometry
+          const entryGeometry = new THREE.PlaneGeometry(width, height);
+          const entryMaterial = new THREE.MeshStandardMaterial({
+            color: entry.type === "window" ? 0x88ccff : entry.type === "door" ? 0x8b4513 : 0x888888,
+            opacity: 0.7,
+            transparent: true,
+            side: THREE.DoubleSide,
+          });
+          
+          const entryMesh = new THREE.Mesh(entryGeometry, entryMaterial);
+          entryMesh.position.set(position.x, position.y, zPosition);
+          
+          // Calculate proper orientation
+          if (entry.line) {
+            const wallDirection = new THREE.Vector3()
+              .subVectors(transform2DTo3D(entry.line.end), transform2DTo3D(entry.line.start))
+              .normalize();
+            const worldUpVector = new THREE.Vector3(0, 0, 1);
+            const wallNormalVector = new THREE.Vector3()
+              .crossVectors(wallDirection, worldUpVector)
+              .normalize();
+              
+            const forward = wallNormalVector.clone();
+            const up = new THREE.Vector3(0, 0, 1);
+            const right = new THREE.Vector3().crossVectors(up, forward).normalize();
+            forward.crossVectors(right, up).normalize();
+            
+            const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
+            entryMesh.setRotationFromMatrix(rotationMatrix);
+          }
+          
+          sceneRef.current.add(entryMesh);
+        });
+      }
+      
+      // Create floor surface
+      if (floorData.lines && floorData.lines.length > 2) {
+        // Create a closed path from lines
+        const points = [];
+        const linesToProcess = [...floorData.lines];
+        let currentLine = linesToProcess.shift();
+        if (!currentLine) return;
+        
+        points.push(transform2DTo3D(currentLine.start, baseHeight));
+        points.push(transform2DTo3D(currentLine.end, baseHeight));
+        
+        while (linesToProcess.length > 0) {
+          const nextLineIndex = linesToProcess.findIndex(
+            l => 
+              (Math.abs(l.start.x - currentLine.end.x) < 1 && Math.abs(l.start.y - currentLine.end.y) < 1) ||
+              (Math.abs(l.end.x - currentLine.end.x) < 1 && Math.abs(l.end.y - currentLine.end.y) < 1)
+          );
+          
+          if (nextLineIndex === -1) break;
+          
+          currentLine = linesToProcess.splice(nextLineIndex, 1)[0];
+          if (Math.abs(currentLine.start.x - points[points.length-1].x) < 1 && 
+              Math.abs(currentLine.start.y - points[points.length-1].y) < 1) {
+            points.push(transform2DTo3D(currentLine.end, baseHeight));
+          } else {
+            points.push(transform2DTo3D(currentLine.start, baseHeight));
+          }
+        }
+        
+        // Create floor geometry if we have enough points
+        if (points.length > 2) {
+          const floorShape = new THREE.Shape();
+          floorShape.moveTo(points[0].x, points[0].y);
+          for (let i = 1; i < points.length; i++) {
+            floorShape.lineTo(points[i].x, points[i].y);
+          }
+          
+          const floorGeometry = new THREE.ShapeGeometry(floorShape);
+          const floorMaterial = new THREE.MeshStandardMaterial({
+            color: 0x808080,
+            opacity: 0.3,
+            transparent: true,
+            side: THREE.DoubleSide,
+          });
+          
+          const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+          sceneRef.current.add(floor);
+          
+          // Create ceiling at the top of the walls
+          const ceiling = new THREE.Mesh(floorGeometry, floorMaterial.clone());
+          ceiling.position.z = baseHeight + 210; // 210cm wall height
+          sceneRef.current.add(ceiling);
+        }
+      }
+    });
+  }, [geometryData]);
+
+  return (
+    <div ref={containerRef} className="w-full h-full" />
+  );
+}
