@@ -898,13 +898,18 @@ export function RoomSketchPro({
     multiFloorGroup: THREE.Group,
     floorGroups: Record<string, THREE.Group>
   ) => {
-    console.log(`Starting stair visualization for floor "${floorName}" stair #${stairIndex}:`, stairData);
+    console.log(`STAIR CONNECT - Starting stair visualization for floor "${floorName}" stair #${stairIndex}:`, stairData);
+    
+    // Safety check: Make sure we're not using the stair ID as a floor name by mistake
+    if (stairData.id && stairData.floor) {
+      console.log(`STAIR CONNECT - Stair metadata: id=${stairData.id}, associated floor=${stairData.floor}`);
+    }
     
     // Get floor indices
     const floorNames = Object.keys(floorGroups).sort();
     const currentFloorIndex = floorNames.indexOf(floorName);
     
-    console.log(`Floor index info:`, {
+    console.log(`STAIR CONNECT - Floor index info:`, {
       floorName,
       currentFloorIndex,
       availableFloors: floorNames,
@@ -915,27 +920,42 @@ export function RoomSketchPro({
     // Determine connected floor based on stair direction
     let connectedFloorName: string | null = null;
     
-    // If stair direction is specified, use it to determine the connected floor
-    if (stairData.direction) {
+    // Handle the case where connectsTo property is explicitly provided
+    if (stairData.connectsTo && typeof stairData.connectsTo === 'string') {
+      // Normalize the floor name to ensure consistent matching
+      const normalizedConnectsTo = stairData.connectsTo.toLowerCase().replace(/\s+/g, '');
+      
+      // Check if this floor name exists in our available floors
+      if (floorNames.includes(normalizedConnectsTo)) {
+        connectedFloorName = normalizedConnectsTo;
+        console.log(`STAIR CONNECT - Using explicit connectsTo property: ${floorName} connects to ${connectedFloorName}`);
+      } else {
+        console.log(`STAIR CONNECT - connectsTo property "${stairData.connectsTo}" does not match any available floor names:`, floorNames);
+        // If connectsTo doesn't match a floor name, we'll fall through to the direction-based logic
+      }
+    }
+    
+    // If connectsTo didn't provide a valid floor, use direction to determine the connected floor
+    if (!connectedFloorName && stairData.direction) {
       if (stairData.direction === 'up') {
         // If direction is up, we're connecting from this floor to the one above
         const floorIndex = currentFloorIndex - 1; // Floor above has lower index in the array
         connectedFloorName = floorIndex >= 0 ? floorNames[floorIndex] : null;
         
-        console.log(`Stair goes UP from ${floorName} to ${connectedFloorName || 'nowhere'}`);
+        console.log(`STAIR CONNECT - Stair goes UP from ${floorName} to ${connectedFloorName || 'nowhere'}`);
       } 
       else if (stairData.direction === 'down') {
         // If direction is down, we're connecting from this floor to the one below
         const floorIndex = currentFloorIndex + 1; // Floor below has higher index in the array
         connectedFloorName = floorIndex < floorNames.length ? floorNames[floorIndex] : null;
         
-        console.log(`Stair goes DOWN from ${floorName} to ${connectedFloorName || 'nowhere'}`);
+        console.log(`STAIR CONNECT - Stair goes DOWN from ${floorName} to ${connectedFloorName || 'nowhere'}`);
       }
     } 
-    // Fallback to default behavior if no direction is specified
-    else if (currentFloorIndex < floorNames.length - 1) {
+    // Fallback to default behavior if no direction or connectsTo is specified
+    else if (!connectedFloorName && currentFloorIndex < floorNames.length - 1) {
       connectedFloorName = floorNames[currentFloorIndex + 1];
-      console.log(`No direction specified, defaulting to connect ${floorName} to ${connectedFloorName}`);
+      console.log(`STAIR CONNECT - No direction specified, defaulting to connect ${floorName} to ${connectedFloorName}`);
     }
     
     // Check if we have a valid connected floor
@@ -1146,7 +1166,7 @@ export function RoomSketchPro({
         const floorsFromContext = geometryData?.floors ? Object.keys(geometryData.floors) : [];
         const allFloors = [...new Set([...floorsFromProps, ...floorsFromContext])];
         
-        console.log("DEBUG - Multi-floor check:", {
+        console.log("MULTIFLOOR-DEBUG - Multi-floor check:", {
           floorsFromProps,
           floorsFromContext,
           allFloors,
@@ -1155,8 +1175,31 @@ export function RoomSketchPro({
           geometryDataFloors: geometryData?.floors
         });
         
-        // Force multifloor visualization whenever we have more than one floor in floors prop
-        if (floors && Object.keys(floors).length > 1) {
+        // Enhanced condition: Force multifloor visualization when:
+        // 1. We have more than one floor in the floors prop
+        // 2. OR if we have a stairs object in any of the floors
+        const hasMultipleFloors = floors && Object.keys(floors).length > 1;
+        
+        // Check if any floor has stairs
+        let hasStairs = false;
+        if (floors) {
+          Object.keys(floors).forEach(floorKey => {
+            if (floors[floorKey]?.stairPolygons?.length > 0) {
+              hasStairs = true;
+              console.log(`MULTIFLOOR-DEBUG - Found stairs in floor [${floorKey}]:`, 
+                floors[floorKey].stairPolygons);
+            }
+          });
+        }
+        
+        console.log("MULTIFLOOR-DEBUG - Visualization decision:", {
+          hasMultipleFloors,
+          hasStairs,
+          willCreateMultifloorView: hasMultipleFloors || hasStairs
+        });
+        
+        // Create multifloor visualization if we have multiple floors OR if we have stairs
+        if (hasMultipleFloors || hasStairs) {
           // Extra debug to see exact floor data structure
           console.log("🌈 FLOORS STRUCTURE DEBUG:");
           Object.keys(floors).forEach(floorKey => {
