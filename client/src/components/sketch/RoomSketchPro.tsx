@@ -283,6 +283,8 @@ export function RoomSketchPro({
   const controlsRef = useRef<TrackballControls | null>(null);
   const floorRef = useRef<THREE.Mesh | null>(null);
   const wallMaterialRef = useRef<THREE.MeshStandardMaterial | null>(null);
+  const animationRef = useRef<boolean>(false);
+  const animationFrameIdRef = useRef<number>();
 
   // Setup scene and lighting
   const setupScene = () => {
@@ -538,13 +540,21 @@ export function RoomSketchPro({
     
     // Animation loop
     const animate = () => {
-      requestAnimationFrame(animate);
+      animationFrameIdRef.current = requestAnimationFrame(animate);
       if (controlsRef.current && rendererRef.current && sceneRef.current && cameraRef.current) {
         controlsRef.current.update();
         rendererRef.current.render(sceneRef.current, cameraRef.current);
       }
     };
-    animate();
+    
+    // Check if we already have an animation frame running
+    if (!animationRef.current) {
+      console.log("RoomSketchPro - Starting animation loop");
+      animationRef.current = true;
+      animate();
+    } else {
+      console.log("RoomSketchPro - Animation loop already running, skipping initialization");
+    }
 
     // Add drag and drop handlers
     const container = containerRef.current;
@@ -559,8 +569,21 @@ export function RoomSketchPro({
 
     // Cleanup
     return () => {
+      // Cancel animation frame if it exists
+      if (animationFrameIdRef.current) {
+        console.log("RoomSketchPro - Cancelling animation frame");
+        cancelAnimationFrame(animationFrameIdRef.current);
+        animationFrameIdRef.current = undefined;
+      }
+      
+      // Keep animation flag as true to prevent duplicate animations on remount
+      // This is important since we're preserving the scene
+      
+      // Dispose of controls and renderer if they exist
       if (controlsRef.current) controlsRef.current.dispose();
       if (rendererRef.current) rendererRef.current.dispose();
+      
+      // Remove event listeners
       window.removeEventListener('resize', handleResize);
       container.removeEventListener("dragover", (e) => {
         e.preventDefault();
