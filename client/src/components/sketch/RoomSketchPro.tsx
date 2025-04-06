@@ -784,6 +784,11 @@ export function RoomSketchPro({
     // Stair connections have been removed as requested
     console.log("🏢 MULTIFLOOR MODE ACTIVE - Air entries already created in floor groups");
     
+    // We still need to ensure the floor groups are registered even without stairs
+    Object.keys(floorGroups).forEach(floorName => {
+      console.log(`Adding floor group to scene: ${floorName}`);
+    });
+    
     // Add the multi-floor group to the scene
     scene.add(multiFloorGroup);
     
@@ -919,6 +924,12 @@ export function RoomSketchPro({
         const floorsFromProps = floors ? Object.keys(floors) : [];
         const floorsFromContext = geometryData?.floors ? Object.keys(geometryData.floors) : [];
         const allFloors = [...new Set([...floorsFromProps, ...floorsFromContext])];
+        
+        // Log current scene state before cleanup
+        console.log("RoomSketchPro - SCENE STATE BEFORE CLEANUP:");
+        sceneRef.current.traverse((object) => {
+          console.log(`Object: ${object.name || 'unnamed'}, Type: ${object.type}, Visible: ${object.visible}`);
+        });
         
         console.log("MULTIFLOOR-DEBUG - Multi-floor check:", {
           floorsFromProps,
