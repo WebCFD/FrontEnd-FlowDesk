@@ -802,8 +802,40 @@ export function RoomSketchPro({
     
     console.log(`🪜 STAIR SUMMARY: Processed ${totalStairsProcessed} stairs total from Canvas3D data`);
     
+    // DEBUG: Verify all stairs are still in their floor groups before adding to scene
+    console.log(`🔍 STAIR_DEBUG: FINAL CHECK BEFORE ADDING MULTIFLOOR GROUP TO SCENE`);
+    let finalStairsFound = 0;
+    
+    allFloorNames.forEach((floorName) => {
+      const floorGroup = floorGroups[floorName];
+      if (floorGroup) {
+        let stairsInThisFloor = 0;
+        floorGroup.traverse((child) => {
+          if (child.name?.includes('stair_')) {
+            stairsInThisFloor++;
+            finalStairsFound++;
+            console.log(`🔍 STAIR_DEBUG: Found stair "${child.name}" in floor group "${floorName}" before scene add`);
+          }
+        });
+        console.log(`🔍 STAIR_DEBUG: Floor "${floorName}" has ${stairsInThisFloor} stairs before scene add`);
+      }
+    });
+    
+    console.log(`🔍 STAIR_DEBUG: Total stairs found in all floor groups before scene add: ${finalStairsFound}`);
+    
     // Add the multi-floor group to the scene
     scene.add(multiFloorGroup);
+    
+    // DEBUG: Check that stairs are still present after adding to scene
+    console.log(`🔍 STAIR_DEBUG: VERIFICATION AFTER ADDING TO SCENE`);
+    let stairsAfterSceneAdd = 0;
+    scene.traverse((object) => {
+      if (object.name?.includes('stair_')) {
+        stairsAfterSceneAdd++;
+        console.log(`🔍 STAIR_DEBUG: Found stair "${object.name}" in scene traverse after adding multiFloorGroup`);
+      }
+    });
+    console.log(`🔍 STAIR_DEBUG: Total stairs found in scene after adding multiFloorGroup: ${stairsAfterSceneAdd}`);
     
     // Set camera to see all floors
     if (allFloorNames.length > 1) {
@@ -975,6 +1007,20 @@ export function RoomSketchPro({
     // Add to floor group
     floorGroup.add(stairMesh);
     console.log(`✅ Added stair #${stairIndex} to floor ${floorName} with wall texture`);
+    
+    // DEBUG: Log stair mesh details for troubleshooting
+    console.log(`🔍 STAIR_DEBUG: Stair mesh created - ID: ${stairMesh.id}, Name: ${stairMesh.name}`);
+    console.log(`🔍 STAIR_DEBUG: Parent floor group - Name: ${floorGroup.name}, Children: ${floorGroup.children.length}`);
+    
+    // Log floor group hierarchy
+    console.log(`🔍 STAIR_DEBUG: Floor group structure after adding stair:`);
+    let stairFound = false;
+    floorGroup.traverse((child) => {
+      if (child.name === stairMesh.name) {
+        stairFound = true;
+        console.log(`🔍 STAIR_DEBUG: Found stair mesh "${child.name}" in floor group traverse`);
+      }
+    });
   };
   
   // Simplified effect to directly mirror Canvas3D content
@@ -987,6 +1033,18 @@ export function RoomSketchPro({
       if (sceneRef.current) {
         // Get a list of all objects to remove
         const objectsToRemove: THREE.Object3D[] = [];
+        
+        // DEBUG: Before removal, log all stair objects that might exist
+        console.log("🔍 STAIR_DEBUG: CHECKING FOR STAIRS BEFORE SCENE CLEANUP");
+        let stairsBeforeCleanup = 0;
+        sceneRef.current.traverse((object) => {
+          if (object.name?.includes('stair_')) {
+            stairsBeforeCleanup++;
+            console.log(`🔍 STAIR_DEBUG: Found stair object before cleanup: ${object.name}, Parent: ${object.parent?.name || 'none'}`);
+          }
+        });
+        console.log(`🔍 STAIR_DEBUG: Total stairs found before cleanup: ${stairsBeforeCleanup}`);
+        
         sceneRef.current.traverse((object) => {
           // Skip lights, camera, and grid - only remove walls, floors, and air entries
           if (object.type !== 'DirectionalLight' && 
@@ -994,6 +1052,24 @@ export function RoomSketchPro({
               object.type !== 'PerspectiveCamera' &&
               object.type !== 'GridHelper' &&
               object.type !== 'Scene') {
+            
+            // DEBUG: Check if we're removing a stair or floor group containing stairs
+            if (object.name?.includes('stair_')) {
+              console.log(`⚠️ STAIR_DEBUG: TRYING TO REMOVE STAIR: ${object.name}`);
+            }
+            if (object.name?.includes('floor_')) {
+              let stairsInFloorGroup = 0;
+              object.traverse((child) => {
+                if (child.name?.includes('stair_')) {
+                  stairsInFloorGroup++;
+                  console.log(`⚠️ STAIR_DEBUG: Floor group being removed contains stair: ${child.name}`);
+                }
+              });
+              if (stairsInFloorGroup > 0) {
+                console.log(`⚠️ STAIR_DEBUG: Removing floor group with ${stairsInFloorGroup} stairs: ${object.name}`);
+              }
+            }
+            
             objectsToRemove.push(object);
           }
         });
