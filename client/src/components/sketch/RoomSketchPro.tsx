@@ -544,14 +544,31 @@ export function RoomSketchPro({
       rendererRef.current = renderer;
     }
 
-    // Setup controls if not already set up
-    if (!controlsRef.current && cameraRef.current && rendererRef.current) {
+    // Always reset controls when component initializes to ensure proper behavior after switching views
+    if (cameraRef.current && rendererRef.current) {
+      // Clean up existing controls if they exist
+      if (controlsRef.current) {
+        console.log("RoomSketchPro - Disposing of existing controls before recreating");
+        controlsRef.current.dispose();
+        controlsRef.current = null;
+      }
+      
+      // Create new controls instance
+      console.log("RoomSketchPro - Creating fresh TrackballControls instance");
       const controls = new TrackballControls(cameraRef.current, rendererRef.current.domElement);
       controls.rotateSpeed = 1.0;
       controls.zoomSpeed = 1.2;
       controls.panSpeed = 0.8;
       controls.keys = ["KeyA", "KeyS", "KeyD"];
+      
+      // Configure additional control settings
+      controls.noZoom = false;
+      controls.noPan = false;
+      controls.staticMoving = false; // Enables some inertia
+      
+      // Store reference
       controlsRef.current = controls;
+      console.log("RoomSketchPro - New controls initialized successfully");
     }
 
     // Handle window resize - makes the component responsive like Canvas3D
@@ -606,29 +623,56 @@ export function RoomSketchPro({
     // Initial resize
     handleResize();
 
-    // Cleanup
+    // Enhanced cleanup function with better tracking
     return () => {
+      console.log("RoomSketchPro - Component cleanup beginning");
+      
       // Cancel animation frame if it exists
       if (animationFrameIdRef.current) {
-        console.log("RoomSketchPro - Cancelling animation frame");
+        console.log("RoomSketchPro - Cancelling animation frame:", animationFrameIdRef.current);
         cancelAnimationFrame(animationFrameIdRef.current);
         animationFrameIdRef.current = undefined;
+      } else {
+        console.log("RoomSketchPro - No animation frame to cancel");
       }
       
       // Keep animation flag as true to prevent duplicate animations on remount
       // This is important since we're preserving the scene
+      console.log("RoomSketchPro - Keeping animationRef.current as:", animationRef.current, 
+                  "(preserving animation state between remounts)");
       
-      // Dispose of controls and renderer if they exist
-      if (controlsRef.current) controlsRef.current.dispose();
-      if (rendererRef.current) rendererRef.current.dispose();
+      // Properly dispose of controls with logging
+      if (controlsRef.current) {
+        console.log("RoomSketchPro - Disposing TrackballControls");
+        controlsRef.current.dispose();
+        controlsRef.current = null;
+      } else {
+        console.log("RoomSketchPro - No controls to dispose");
+      }
+      
+      // Dispose of renderer with logging
+      if (rendererRef.current) {
+        console.log("RoomSketchPro - Disposing WebGLRenderer");
+        rendererRef.current.dispose();
+        // Don't set to null as we're preserving it for future remounts
+      } else {
+        console.log("RoomSketchPro - No renderer to dispose");
+      }
       
       // Remove event listeners
+      console.log("RoomSketchPro - Removing event listeners");
       window.removeEventListener('resize', handleResize);
-      container.removeEventListener("dragover", (e) => {
-        e.preventDefault();
-        e.dataTransfer!.dropEffect = "copy";
-      });
-      container.removeEventListener("drop", handleDrop);
+      
+      // Only remove event listeners if container exists
+      if (container) {
+        container.removeEventListener("dragover", (e) => {
+          e.preventDefault();
+          e.dataTransfer!.dropEffect = "copy";
+        });
+        container.removeEventListener("drop", handleDrop);
+      }
+      
+      console.log("RoomSketchPro - Component cleanup complete");
     };
   }, [width, height, geometryData?.floors, currentFloor, floors, roomHeight, onComponentMount]);
   
