@@ -781,12 +781,31 @@ export function RoomSketchPro({
       multiFloorGroup.add(floorGroup);
     });
     
-    // Stair connections have been removed as requested
-    console.log("🏢 MULTIFLOOR MODE ACTIVE - Air entries already created in floor groups");
-    
-    // We still need to ensure the floor groups are registered even without stairs
-    Object.keys(floorGroups).forEach(floorName => {
-      console.log(`Adding floor group to scene: ${floorName}`);
+    // Process stairs data but don't actually create the stairs
+    console.log("🪜 Processing stair connections without creating visual stairs...");
+    allFloorNames.forEach((floorName) => {
+      // Get floor data from either props or context
+      const floorDataFromProps = floors && floors[floorName];
+      const floorDataFromContext = geometryData?.floors && geometryData.floors[floorName];
+      const floorData = floorDataFromProps || floorDataFromContext;
+      
+      console.log(`🪜 Checking for stairs in floor [${floorName}]:`, {
+        hasStairsData: !!floorData?.stairPolygons,
+        stairCount: floorData?.stairPolygons?.length || 0,
+        dataSource: floorDataFromProps ? 'props' : (floorDataFromContext ? 'context' : 'none')
+      });
+      
+      if (floorData?.stairPolygons && floorData.stairPolygons.length > 0) {
+        console.log(`🪜 Processing ${floorData.stairPolygons.length} stairs for floor ${floorName} (without creating visuals)`);
+        
+        // Process each stair polygon but don't create visuals
+        floorData.stairPolygons.forEach((stairData: any, stairIndex: number) => {
+          // Just call the placeholder function that doesn't create stairs
+          createStairsVisualization(stairData, floorName, stairIndex, multiFloorGroup, floorGroups);
+        });
+      } else {
+        console.log(`ℹ️ No stairs found for floor [${floorName}]`);
+      }
     });
     
     // Add the multi-floor group to the scene
@@ -886,7 +905,18 @@ export function RoomSketchPro({
     floorGroup.add(mesh);
   };
   
-  // Stair visualization has been removed as requested
+  // Stair visualization function with no actual stair creation
+  const createStairsVisualization = (
+    stairData: any, 
+    floorName: string, 
+    stairIndex: number, 
+    multiFloorGroup: THREE.Group,
+    floorGroups: Record<string, THREE.Group>
+  ) => {
+    // Log the stair information but don't create anything
+    console.log(`STAIR INFO - Skipping creation of stair #${stairIndex} for floor ${floorName}`);
+    // No actual stair creation as requested
+  };
   
   // Add a new effect to respond to current floor changes in context or from props
   useEffect(() => {
