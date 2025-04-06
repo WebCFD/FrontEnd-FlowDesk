@@ -1,0 +1,66 @@
+Pasted-I-ll-propose-a-key-initial-simplification-that-would-have-a-significant-impact-consolidating-the-da-1743949387995.txt
+I'll propose a key initial simplification that would have a significant impact: consolidating the data flow logic for retrieving geometry data from multiple sources.
+Simplified Data Source Resolution
+Currently, the component has scattered data retrieval logic that repeatedly checks both props and context in different places. Let's consolidate this into a single, clear function:
+javascriptCopia// Add this function near the top of your component
+const resolveGeometryData = () => {
+  // Get floors data - prioritize props over context
+  const floorsData = floors || geometryData?.floors || {};
+  
+  // Get current floor data
+  const currentFloorName = currentFloor || geometryData?.currentFloor || "ground";
+  const currentFloorData = (currentFloor && floors && floors[currentFloor]) || 
+                           (geometryData?.currentFloor && geometryData?.floors && 
+                            geometryData.floors[geometryData?.currentFloor]);
+  
+  // Get lines for current floor
+  const currentLines = (currentFloorData?.lines?.length > 0) 
+    ? currentFloorData.lines 
+    : (lines.length > 0 ? lines : geometryData?.lines || []);
+  
+  // Get air entries for current floor
+  const currentAirEntries = (currentFloorData?.airEntries?.length > 0)
+    ? currentFloorData.airEntries
+    : (airEntries.length > 0 ? airEntries : geometryData?.airEntries || []);
+  
+  // Get all floor names for multifloor visualization
+  const allFloorNames = Object.keys(floorsData);
+  
+  return {
+    floorsData,
+    currentFloorName,
+    currentFloorData,
+    currentLines,
+    currentAirEntries,
+    allFloorNames,
+    hasMultipleFloors: allFloorNames.length > 1
+  };
+};
+Then, replace all the scattered data access logic with calls to this function:
+javascriptCopia// In createWalls
+const { currentLines, currentFloorName } = resolveGeometryData();
+console.log(`RoomSketchPro - Creating walls for floor ${currentFloorName} with ${currentLines.length} lines`);
+
+// In createMultiFloorVisualization
+const { floorsData, allFloorNames } = resolveGeometryData();
+console.log("RoomSketchPro - Creating multifloor visualization for floors:", allFloorNames);
+
+// In your effects
+useEffect(() => {
+  const { hasMultipleFloors } = resolveGeometryData();
+  if (hasMultipleFloors) {
+    createMultiFloorVisualization(sceneRef.current, rendererRef.current, cameraRef.current);
+  } else {
+    // Single floor visualization
+    // ...
+  }
+}, [floors, currentFloor, geometryData]);
+This single simplification would:
+
+Eliminate duplicated logic scattered throughout the component
+Provide a consistent way to access geometry data
+Make the data flow more predictable and easier to debug
+Remove many of the nested conditionals that make the code hard to follow
+Make future changes easier as data access logic is centralized
+
+This is an excellent first step that simplifies the component without sacrificing functionality, and sets the stage for further targeted simplifications.
