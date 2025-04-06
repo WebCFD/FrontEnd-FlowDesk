@@ -462,10 +462,49 @@ export function RoomSketchPro({
     }
   };
 
+  // Consolidated data resolution function
+  const resolveGeometryData = () => {
+    // Get floors data - prioritize props over context
+    const floorsData = floors || geometryData?.floors || {};
+    
+    // Get current floor data
+    const currentFloorName = currentFloor || geometryData?.currentFloor || "ground";
+    const currentFloorData = (currentFloor && floors && floors[currentFloor]) || 
+                          (geometryData?.currentFloor && geometryData?.floors && 
+                          geometryData.floors[geometryData?.currentFloor]);
+    
+    // Get lines for current floor
+    const currentLines = (currentFloorData?.lines?.length > 0) 
+      ? currentFloorData.lines 
+      : (lines?.length > 0 ? lines : geometryData?.lines || []);
+    
+    // Get air entries for current floor
+    const currentAirEntries = (currentFloorData?.airEntries?.length > 0)
+      ? currentFloorData.airEntries
+      : (airEntries?.length > 0 ? airEntries : geometryData?.airEntries || []);
+    
+    // Get all floor names for multifloor visualization
+    const allFloorNames = Object.keys(floorsData);
+    
+    return {
+      floorsData,
+      currentFloorName,
+      currentFloorData,
+      currentLines,
+      currentAirEntries,
+      allFloorNames,
+      hasMultipleFloors: allFloorNames.length > 1
+    };
+  };
+
   // Initialize scene
   useEffect(() => {
     console.log("RoomSketchPro - Initialization effect running");
+    
+    // Get resolved geometry data
+    const { currentFloorName, hasMultipleFloors, allFloorNames } = resolveGeometryData();
     console.log("RoomSketchPro - Floors in context:", geometryData?.floors);
+    console.log("RoomSketchPro - Resolved floors:", allFloorNames);
     
     // Call onComponentMount callback if provided
     if (onComponentMount) {
@@ -612,10 +651,10 @@ export function RoomSketchPro({
       return;
     }
     
-    // Only use the floors passed directly from Canvas3D via props
-    const allFloorNames = floors ? Object.keys(floors) : [];
+    // Use the consolidated data resolution function
+    const { floorsData, allFloorNames } = resolveGeometryData();
     
-    console.log("🏢 SIMPLIFIED VISUALIZATION - Using floors directly from props:", allFloorNames);
+    console.log("🏢 SIMPLIFIED VISUALIZATION - Using resolved floor data:", allFloorNames);
     
     // Standard floor ordering
     allFloorNames.sort((a, b) => {
@@ -674,16 +713,12 @@ export function RoomSketchPro({
       floorGroup.name = `floor_${floorName}`;
       floorGroup.position.z = zPosition;
       
-      // Get floor data from either props or context
-      const floorDataFromProps = floors && floors[floorName];
-      const floorDataFromContext = geometryData?.floors && geometryData.floors[floorName];
-      const floorData = floorDataFromProps || floorDataFromContext;
+      // Use the consolidated data resolution function
+      const { floorsData } = resolveGeometryData();
+      const floorData = floorsData[floorName];
       
-      console.log(`🏢 Floor [${floorName}] data sources:`, {
-        fromProps: !!floorDataFromProps,
-        fromContext: !!floorDataFromContext,
-        hasData: !!floorData,
-        dataSource: floorDataFromProps ? 'props' : (floorDataFromContext ? 'context' : 'none')
+      console.log(`🏢 Floor [${floorName}] data via resolveGeometryData():`, {
+        hasData: !!floorData
       });
       
       if (!floorData) {
@@ -823,8 +858,9 @@ export function RoomSketchPro({
     let totalStairsProcessed = 0;
     
     allFloorNames.forEach((floorName) => {
-      // Get floor data directly from props (Canvas3D data)
-      const floorData = floors && floors[floorName];
+      // Use the consolidated data resolution function
+      const { floorsData } = resolveGeometryData();
+      const floorData = floorsData[floorName];
       
       console.log(`🪜 DATA INSPECTION: Stairs in floor [${floorName}]:`, {
         hasStairsData: !!floorData?.stairPolygons,
@@ -1193,12 +1229,11 @@ export function RoomSketchPro({
     }
   }, [floors, currentFloor]);
 
-  // Extract perimeter points using useMemo to avoid recalculation
-  // Use geometryData.lines from the context if available, otherwise fall back to lines prop
-  const perimeter = useMemo(
-    () => roomUtils.createRoomPerimeter(geometryData?.lines || lines),
-    [geometryData?.lines, lines],
-  );
+  // Extract perimeter points using resolveGeometryData for better consistency
+  const perimeter = useMemo(() => {
+    const { currentLines } = resolveGeometryData();
+    return roomUtils.createRoomPerimeter(currentLines);
+  }, [geometryData?.lines, lines, currentFloor, floors]);
 
   // Create shape from perimeter
   const shape = useMemo(
@@ -1214,23 +1249,12 @@ export function RoomSketchPro({
     camera: THREE.PerspectiveCamera,
   ) => {
     console.log("RoomSketchPro - createWalls called with scene:", scene);
-    // First, check if we have direct floors and currentFloor props
-    const currentFloorFromProps = currentFloor && floors && floors[currentFloor];
-    
-    // If direct props are available, use them; otherwise, try to get them from the context
-    const useDirectProps = currentFloorFromProps && floors && currentFloor;
-    const currentFloorName = useDirectProps ? currentFloor : geometryData?.currentFloor;
-    const currentFloorData = useDirectProps 
-        ? floors[currentFloorName] 
-        : geometryData?.floors?.[geometryData?.currentFloor];
-        
-    // Get lines for the current floor - first from props, then from context if needed
-    const contextLines = currentFloorData?.lines || geometryData?.lines || [];
-    const linesToUse = lines.length > 0 ? lines : contextLines;
+    // Use resolveGeometryData to get current lines
+    const { currentLines, currentFloorName } = resolveGeometryData();
+    const linesToUse = currentLines;
     
     console.log("RoomSketchPro - Current floor:", currentFloorName);
-    console.log("RoomSketchPro - Using direct props:", useDirectProps);
-    console.log("RoomSketchPro - Using lines data:", linesToUse);
+    console.log("RoomSketchPro - Using lines data from resolveGeometryData:", linesToUse);
     
     const textureLoader = new THREE.TextureLoader();
     const brickTexture = textureLoader.load(
@@ -1373,15 +1397,8 @@ export function RoomSketchPro({
       side: THREE.DoubleSide,
     });
 
-    // First, check if we have direct floors and currentFloor props
-    const currentFloorFromProps = currentFloor && floors && floors[currentFloor];
-    
-    // If direct props are available, use them; otherwise, try to get them from the context
-    const useDirectProps = currentFloorFromProps && floors && currentFloor;
-    const currentFloorName = useDirectProps ? currentFloor : geometryData?.currentFloor;
-    const currentFloorData = useDirectProps 
-        ? floors[currentFloorName] 
-        : geometryData?.floors?.[geometryData?.currentFloor];
+    // Use resolveGeometryData to get current air entries and floor data
+    const { currentAirEntries, currentFloorName } = resolveGeometryData();
     
     // Check if multifloor visualization has already been created
     // If so, we don't need to create air entries here as they're already in the multifloor groups
@@ -1389,14 +1406,12 @@ export function RoomSketchPro({
       console.log("🏢 MULTIFLOOR MODE ACTIVE - Air entries already created in floor groups");
       return; // Exit early since multifloor visualization includes air entries
     }
-        
-    // Get air entries for the current floor - first from props, then from context if needed
-    const contextAirEntries = currentFloorData?.airEntries || geometryData?.airEntries || [];
-    const entriesData = airEntries.length > 0 ? airEntries : contextAirEntries;
+    
+    // Use the resolved air entries
+    const entriesData = currentAirEntries;
     
     console.log("RoomSketchPro - Current floor for air entries:", currentFloorName);
-    console.log("RoomSketchPro - Using direct props for air entries:", useDirectProps);
-    console.log("RoomSketchPro - Using air entries data:", entriesData);
+    console.log("RoomSketchPro - Using air entries data from resolveGeometryData:", entriesData);
     entriesData.forEach((entry) => {
       // Set material based on entry type
       let material;
