@@ -562,6 +562,21 @@ export function RoomSketchPro({
   const createMultiFloorVisualization = (scene: THREE.Scene, renderer: THREE.WebGLRenderer, camera: THREE.PerspectiveCamera) => {
     console.log("RoomSketchPro - Creating multifloor visualization - SIMPLIFIED");
     
+    // Check if a multiFloorGroup already exists in the scene
+    let existingMultiFloorGroup: THREE.Group | undefined;
+    scene.traverse((object) => {
+      if (object.name === 'multiFloorGroup') {
+        existingMultiFloorGroup = object as THREE.Group;
+      }
+    });
+    
+    if (existingMultiFloorGroup) {
+      console.log("♻️ REUSING: Existing multiFloorGroup found, will skip full rebuild");
+      // Return early if we already have a multiFloorGroup
+      // This prevents rebuilding the entire scene on every sync with Canvas3D
+      return;
+    }
+    
     // Only use the floors passed directly from Canvas3D via props
     const allFloorNames = floors ? Object.keys(floors) : [];
     
@@ -1023,86 +1038,122 @@ export function RoomSketchPro({
     });
   };
   
-  // Simplified effect to directly mirror Canvas3D content
+  // Track the last floor data to minimize unnecessary rebuilds
+  const lastFloorsRef = useRef<typeof floors | null>(null);
+  const lastCurrentFloorRef = useRef<string | null | undefined>(null);
+  const sceneRebuildCountRef = useRef(0);
+  
+  // Optimized effect to sync with Canvas3D content only when necessary
   useEffect(() => {
     // Only rebuild scene if we already have one
     if (sceneRef.current && rendererRef.current && cameraRef.current) {
-      console.log("RoomSketchPro - SIMPLIFIED: Direct mirroring of Canvas3D content");
+      // Check if we actually need to update (has the data really changed?)
+      const floorsChanged = JSON.stringify(lastFloorsRef.current) !== JSON.stringify(floors);
+      const currentFloorChanged = lastCurrentFloorRef.current !== currentFloor;
       
-      // Clear existing scene objects except lights and grid
-      if (sceneRef.current) {
-        // Get a list of all objects to remove
-        const objectsToRemove: THREE.Object3D[] = [];
+      // Track rebuild attempts to prevent excessive rebuilds
+      sceneRebuildCountRef.current++;
+      const rebuildCount = sceneRebuildCountRef.current;
+      
+      if (!floorsChanged && !currentFloorChanged && rebuildCount > 1) {
+        console.log("🔄 OPTIMIZATION: Skipping unnecessary scene rebuild - no data changes detected");
+        return; // Skip rebuild when data hasn't changed
+      }
+      
+      // Update refs with current data
+      lastFloorsRef.current = floors;
+      lastCurrentFloorRef.current = currentFloor;
+      
+      console.log(`RoomSketchPro - SYNC: Mirroring Canvas3D content (rebuild #${rebuildCount})`);
+      
+      try {
+        // Preserve any existing multifloor groups since they contain our stairs
+        let existingMultiFloorGroup: THREE.Group | null = null;
         
-        // DEBUG: Before removal, log all stair objects that might exist
-        console.log("🔍 STAIR_DEBUG: CHECKING FOR STAIRS BEFORE SCENE CLEANUP");
-        let stairsBeforeCleanup = 0;
+        // Identify any existing multiFloorGroup
         sceneRef.current.traverse((object) => {
-          if (object.name?.includes('stair_')) {
-            stairsBeforeCleanup++;
-            console.log(`🔍 STAIR_DEBUG: Found stair object before cleanup: ${object.name}, Parent: ${object.parent?.name || 'none'}`);
-          }
-        });
-        console.log(`🔍 STAIR_DEBUG: Total stairs found before cleanup: ${stairsBeforeCleanup}`);
-        
-        sceneRef.current.traverse((object) => {
-          // Skip lights, camera, and grid - only remove walls, floors, and air entries
-          if (object.type !== 'DirectionalLight' && 
-              object.type !== 'AmbientLight' &&
-              object.type !== 'PerspectiveCamera' &&
-              object.type !== 'GridHelper' &&
-              object.type !== 'Scene') {
-            
-            // DEBUG: Check if we're removing a stair or floor group containing stairs
-            if (object.name?.includes('stair_')) {
-              console.log(`⚠️ STAIR_DEBUG: TRYING TO REMOVE STAIR: ${object.name}`);
-            }
-            if (object.name?.includes('floor_')) {
-              let stairsInFloorGroup = 0;
-              object.traverse((child) => {
-                if (child.name?.includes('stair_')) {
-                  stairsInFloorGroup++;
-                  console.log(`⚠️ STAIR_DEBUG: Floor group being removed contains stair: ${child.name}`);
-                }
-              });
-              if (stairsInFloorGroup > 0) {
-                console.log(`⚠️ STAIR_DEBUG: Removing floor group with ${stairsInFloorGroup} stairs: ${object.name}`);
-              }
-            }
-            
-            objectsToRemove.push(object);
+          if (object.name === 'multiFloorGroup') {
+            existingMultiFloorGroup = object as THREE.Group;
+            console.log("🔍 FOUND: Existing multiFloorGroup in scene");
           }
         });
         
-        // Remove the objects
-        objectsToRemove.forEach(obj => {
-          sceneRef.current?.remove(obj);
-        });
-        
-        // Log current scene state before adding new objects
-        console.log("RoomSketchPro - SCENE STATE AFTER CLEANUP:");
-        sceneRef.current.traverse((object) => {
-          console.log(`Object: ${object.name || 'unnamed'}, Type: ${object.type}, Visible: ${object.visible}`);
-        });
-        
-        // Always create multi-floor visualization with the data from floors prop
-        if (floors && Object.keys(floors).length > 0) {
-          console.log("✅ MIRRORING CANVAS3D - Creating visualization with data from Canvas3D:", 
-            Object.keys(floors).map(key => ({ 
-              floor: key, 
-              lines: floors[key]?.lines?.length || 0,
-              airEntries: floors[key]?.airEntries?.length || 0 
-            }))
-          );
+        // Clear existing scene objects except lights, grid, and multiFloorGroup if it exists
+        if (sceneRef.current) {
+          // Get a list of all objects to remove (except multiFloorGroup)
+          const objectsToRemove: THREE.Object3D[] = [];
           
-          // Always use the createMultiFloorVisualization function directly
-          createMultiFloorVisualization(sceneRef.current, rendererRef.current, cameraRef.current);
-        } else {
-          console.warn("⚠️ No floor data available from Canvas3D to mirror");
+          // Before removal, log stair objects for debugging
+          console.log("🔍 STAIR_DEBUG: CHECKING FOR STAIRS BEFORE SCENE CLEANUP");
+          let stairsBeforeCleanup = 0;
+          sceneRef.current.traverse((object) => {
+            if (object.name?.includes('stair_')) {
+              stairsBeforeCleanup++;
+              console.log(`🔍 STAIR_DEBUG: Found stair object before cleanup: ${object.name}, Parent: ${object.parent?.name || 'none'}`);
+            }
+          });
+          console.log(`🔍 STAIR_DEBUG: Total stairs found before cleanup: ${stairsBeforeCleanup}`);
+          
+          sceneRef.current.traverse((object) => {
+            // Skip lights, camera, grid, and scene
+            const isBasicSceneElement = 
+              object.type === 'DirectionalLight' || 
+              object.type === 'AmbientLight' ||
+              object.type === 'PerspectiveCamera' ||
+              object.type === 'GridHelper' ||
+              object.type === 'Scene';
+            
+            // If we've decided to keep the multiFloorGroup, skip it too
+            const isMultiFloorGroup = existingMultiFloorGroup && 
+              (object === existingMultiFloorGroup || isDescendantOf(object, existingMultiFloorGroup));
+              
+            // Helper function to check if an object is a descendant of another
+            function isDescendantOf(obj: THREE.Object3D, parent: THREE.Object3D): boolean {
+              let current = obj.parent;
+              while (current) {
+                if (current === parent) return true;
+                current = current.parent;
+              }
+              return false;
+            }
+            
+            if (!isBasicSceneElement && !isMultiFloorGroup) {
+              // Don't log every removal, that's too verbose
+              if (object.name && (object.name.includes('stair_') || object.name.includes('floor_'))) {
+                console.log(`🧹 CLEANUP: Removing object ${object.name}`);
+              }
+              objectsToRemove.push(object);
+            }
+          });
+          
+          // Remove the objects
+          objectsToRemove.forEach(obj => {
+            sceneRef.current?.remove(obj);
+          });
+          
+          // Log whether we're reusing multiFloorGroup or creating a new visualization
+          if (existingMultiFloorGroup && floors && Object.keys(floors).length > 0) {
+            console.log("♻️ REUSING: Keeping existing multiFloorGroup and updating visualizations as needed");
+            
+            // We may need to update specific parts of the visualization based on what changed
+            if (currentFloorChanged) {
+              console.log(`🔄 UPDATING: Current floor changed from ${lastCurrentFloorRef.current} to ${currentFloor}`);
+              // Apply any current floor specific updates here if needed
+            }
+          } 
+          // Create new visualization if we don't have one or if we explicitly want a fresh rebuild
+          else if (floors && Object.keys(floors).length > 0) {
+            console.log("🆕 CREATING: New multiFloorVisualization with data from Canvas3D");
+            createMultiFloorVisualization(sceneRef.current, rendererRef.current, cameraRef.current);
+          } else {
+            console.warn("⚠️ No floor data available from Canvas3D to mirror");
+          }
+          
+          // Always render the updated scene
+          rendererRef.current.render(sceneRef.current, cameraRef.current);
         }
-        
-        // Render the updated scene
-        rendererRef.current.render(sceneRef.current, cameraRef.current);
+      } catch (error) {
+        console.error("❌ ERROR during RSP scene synchronization:", error);
       }
     }
   }, [floors, currentFloor]);
