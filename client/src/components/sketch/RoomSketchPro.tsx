@@ -768,32 +768,39 @@ export function RoomSketchPro({
       multiFloorGroup.add(floorGroup);
     });
     
-    // Process stairs data but don't actually create the stairs
-    console.log("🪜 Processing stair connections without creating visual stairs...");
+    // Process and create stairs with the same texture as walls
+    console.log("🪜 DATA FLOW: Canvas3D -> RSP - Processing stairs from Canvas3D data and applying wall textures");
+    let totalStairsProcessed = 0;
+    
     allFloorNames.forEach((floorName) => {
-      // Get floor data from either props or context
-      const floorDataFromProps = floors && floors[floorName];
-      const floorDataFromContext = geometryData?.floors && geometryData.floors[floorName];
-      const floorData = floorDataFromProps || floorDataFromContext;
+      // Get floor data directly from props (Canvas3D data)
+      const floorData = floors && floors[floorName];
       
-      console.log(`🪜 Checking for stairs in floor [${floorName}]:`, {
+      console.log(`🪜 DATA INSPECTION: Stairs in floor [${floorName}]:`, {
         hasStairsData: !!floorData?.stairPolygons,
         stairCount: floorData?.stairPolygons?.length || 0,
-        dataSource: floorDataFromProps ? 'props' : (floorDataFromContext ? 'context' : 'none')
+        stairData: floorData?.stairPolygons ? floorData.stairPolygons.map(s => ({ 
+          id: s.id, 
+          pointCount: s.points?.length || 0,
+          direction: s.direction
+        })) : 'none'
       });
       
       if (floorData?.stairPolygons && floorData.stairPolygons.length > 0) {
-        console.log(`🪜 Processing ${floorData.stairPolygons.length} stairs for floor ${floorName} (without creating visuals)`);
+        totalStairsProcessed += floorData.stairPolygons.length;
+        console.log(`🪜 MIRRORING STAIRS: Found ${floorData.stairPolygons.length} stairs in floor ${floorName} from Canvas3D`);
         
-        // Process each stair polygon but don't create visuals
+        // Process each stair polygon and create them with wall texture
         floorData.stairPolygons.forEach((stairData: any, stairIndex: number) => {
-          // Just call the placeholder function that doesn't create stairs
-          createStairsVisualization(stairData, floorName, stairIndex, multiFloorGroup, floorGroups);
+          // Process and visualize the stairs with wall texture using our new function
+          processStairsFromCanvas3D(stairData, floorName, stairIndex, multiFloorGroup, floorGroups);
         });
       } else {
         console.log(`ℹ️ No stairs found for floor [${floorName}]`);
       }
     });
+    
+    console.log(`🪜 STAIR SUMMARY: Processed ${totalStairsProcessed} stairs total from Canvas3D data`);
     
     // Add the multi-floor group to the scene
     scene.add(multiFloorGroup);
@@ -892,17 +899,82 @@ export function RoomSketchPro({
     floorGroup.add(mesh);
   };
   
-  // Stair visualization function with no actual stair creation
-  const createStairsVisualization = (
+  // Process stairs data from Canvas3D and apply RSP textures
+  const processStairsFromCanvas3D = (
     stairData: any, 
     floorName: string, 
     stairIndex: number, 
     multiFloorGroup: THREE.Group,
     floorGroups: Record<string, THREE.Group>
   ) => {
-    // Log the stair information but don't create anything
-    console.log(`STAIR INFO - Skipping creation of stair #${stairIndex} for floor ${floorName}`);
-    // No actual stair creation as requested
+    // Get the floor group where this stair belongs
+    const floorGroup = floorGroups[floorName];
+    if (!floorGroup) {
+      console.warn(`⚠️ Cannot find floor group for stairs: ${floorName}`);
+      return;
+    }
+
+    console.log(`🪜 PROCESSING STAIRS - Canvas3D to RSP - Stair #${stairIndex} on floor ${floorName}:`, stairData);
+    
+    // Extract stair data
+    const points = stairData.points;
+    if (!points || points.length < 3) {
+      console.warn(`⚠️ Invalid stair data: need at least 3 points, got ${points?.length || 0}`);
+      return;
+    }
+
+    console.log(`🔄 DATA FLOW: Canvas3D stairs -> RSP - Creating stair with ${points.length} points and wall texture`);
+    
+    // Create a shape from the points
+    const stairShape = new THREE.Shape();
+    const firstPoint = transform2DTo3D(points[0]);
+    stairShape.moveTo(firstPoint.x, firstPoint.y);
+    
+    // Add remaining points to shape
+    for (let i = 1; i < points.length; i++) {
+      const point = transform2DTo3D(points[i]);
+      stairShape.lineTo(point.x, point.y);
+    }
+    
+    // Close the shape
+    stairShape.closePath();
+    
+    // Create geometry from shape
+    const stairGeometry = new THREE.ShapeGeometry(stairShape);
+    
+    // Use the same wall material as the walls for consistency
+    const stairMaterial = wallMaterialRef.current || new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      opacity: wallTransparency,
+      transparent: true,
+      side: THREE.DoubleSide,
+    });
+
+    // Create the mesh
+    const stairMesh = new THREE.Mesh(stairGeometry, stairMaterial);
+    stairMesh.name = `stair_${floorName}_${stairIndex}`;
+    
+    // Set position - stairs are at the floor level by default
+    if (stairData.direction === "down") {
+      // For downward stairs, position them lower
+      stairMesh.position.z = 10; // Slightly above the floor
+    } else {
+      // For upward stairs, position them higher
+      stairMesh.position.z = 50; // Mid-level height
+    }
+    
+    // Add userData for identification
+    stairMesh.userData = {
+      type: "stair",
+      floor: floorName,
+      index: stairIndex,
+      data: stairData,
+      isSelectable: true
+    };
+    
+    // Add to floor group
+    floorGroup.add(stairMesh);
+    console.log(`✅ Added stair #${stairIndex} to floor ${floorName} with wall texture`);
   };
   
   // Simplified effect to directly mirror Canvas3D content
