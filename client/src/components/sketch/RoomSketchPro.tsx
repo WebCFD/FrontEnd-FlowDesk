@@ -226,6 +226,12 @@ const transform2DTo3D = roomUtils.transform2DTo3D;
 const createRoomPerimeter = roomUtils.createRoomPerimeter;
 const ROOM_HEIGHT = DEFAULTS.ROOM_HEIGHT;
 
+// Utility function to normalize floor names consistently across application
+const normalizeFloorName = (floorName: string): string => {
+  // Convert to lowercase and remove spaces - ensure consistent keys
+  return floorName.toLowerCase().replace(/\s+/g, '');
+};
+
 export function RoomSketchPro({
   width = 800,  // Set default width to match Canvas3D
   height = 600, // Set default height to match Canvas3D
@@ -614,7 +620,9 @@ export function RoomSketchPro({
     
     // Function to create a floor section from floors data
     const createFloorFromData = (floorName: string, zPosition: number) => {
-      console.log(`🏢 RoomSketchPro - Creating floor ${floorName} at z=${zPosition}`);
+      // Normalize the floor name for consistency
+      const normalizedFloorName = normalizeFloorName(floorName);
+      console.log(`🏢 RoomSketchPro - Creating floor ${floorName} at z=${zPosition} (normalized: ${normalizedFloorName})`);
       
       // Create a group for this floor
       const floorGroup = new THREE.Group();
@@ -751,7 +759,17 @@ export function RoomSketchPro({
     allFloorNames.forEach((floorName, index) => {
       // Calculate z position based on floor index (ground floor at z=0)
       const zPosition = index * floorSpacing;
+      
+      // Use the original floor name for display purposes but normalize for internal storage
       const floorGroup = createFloorFromData(floorName, zPosition);
+      
+      // Store normalized floor name for consistent lookups
+      const normalizedFloorName = normalizeFloorName(floorName);
+      console.log(`🏢 Floor storage mapping: "${floorName}" (original) -> "${normalizedFloorName}" (normalized)`);
+      
+      // Store the floor group under both the original and normalized names for better compatibility
+      floorGroups[normalizedFloorName] = floorGroup;
+      
       multiFloorGroup.add(floorGroup);
     });
     
@@ -902,7 +920,12 @@ export function RoomSketchPro({
     
     // Safety check: Make sure we're not using the stair ID as a floor name by mistake
     if (stairData.id && stairData.floor) {
-      console.log(`STAIR CONNECT - Stair metadata: id=${stairData.id}, associated floor=${stairData.floor}`);
+      // Normalize the floor name from stair data to ensure consistent matching
+      const normalizedStairFloor = normalizeFloorName(stairData.floor);
+      console.log(`STAIR CONNECT - Stair metadata: id=${stairData.id}, associated floor=${stairData.floor}, normalized=${normalizedStairFloor}`);
+      
+      // Update the stair data with the normalized floor name
+      stairData.floor = normalizedStairFloor;
     }
     
     // Get floor indices
@@ -923,15 +946,23 @@ export function RoomSketchPro({
     // Handle the case where connectsTo property is explicitly provided
     if (stairData.connectsTo && typeof stairData.connectsTo === 'string') {
       // Normalize the floor name to ensure consistent matching
-      const normalizedConnectsTo = stairData.connectsTo.toLowerCase().replace(/\s+/g, '');
+      const normalizedConnectsTo = normalizeFloorName(stairData.connectsTo);
+      
+      console.log(`STAIR CONNECT - Checking connectsTo: original=${stairData.connectsTo}, normalized=${normalizedConnectsTo}`);
       
       // Check if this floor name exists in our available floors
       if (floorNames.includes(normalizedConnectsTo)) {
         connectedFloorName = normalizedConnectsTo;
         console.log(`STAIR CONNECT - Using explicit connectsTo property: ${floorName} connects to ${connectedFloorName}`);
       } else {
-        console.log(`STAIR CONNECT - connectsTo property "${stairData.connectsTo}" does not match any available floor names:`, floorNames);
-        // If connectsTo doesn't match a floor name, we'll fall through to the direction-based logic
+        // Try matching with the non-normalized floor name as a fallback
+        if (floorNames.includes(stairData.connectsTo)) {
+          connectedFloorName = stairData.connectsTo;
+          console.log(`STAIR CONNECT - Using original connectsTo property: ${floorName} connects to ${connectedFloorName}`);
+        } else {
+          console.log(`STAIR CONNECT - connectsTo property "${stairData.connectsTo}" does not match any available floor names:`, floorNames);
+          // If connectsTo doesn't match a floor name, we'll fall through to the direction-based logic
+        }
       }
     }
     
@@ -982,10 +1013,32 @@ export function RoomSketchPro({
       }
     });
     
-    if (!sourceFloorName || !targetFloorName || !floorGroups[sourceFloorName] || !floorGroups[targetFloorName]) {
+    // Ensure we look for the normalized versions of floor names too
+    const normalizedSourceFloor = normalizeFloorName(sourceFloorName);
+    const normalizedTargetFloor = normalizeFloorName(targetFloorName);
+    
+    // Check if we have the source and target floor groups under their original or normalized names
+    const sourceFloorGroup = floorGroups[sourceFloorName] || floorGroups[normalizedSourceFloor];
+    const targetFloorGroup = floorGroups[targetFloorName] || floorGroups[normalizedTargetFloor];
+    
+    console.log(`STAIR CONNECT - Floor lookup check:`, {
+      sourceFloorName,
+      normalizedSourceFloor,
+      targetFloorName,
+      normalizedTargetFloor,
+      hasSourceOriginal: !!floorGroups[sourceFloorName],
+      hasSourceNormalized: !!floorGroups[normalizedSourceFloor],
+      hasTargetOriginal: !!floorGroups[targetFloorName],
+      hasTargetNormalized: !!floorGroups[normalizedTargetFloor],
+      availableGroups: Object.keys(floorGroups)
+    });
+    
+    if (!sourceFloorGroup || !targetFloorGroup) {
       console.warn("Cannot create stairs, missing floor groups:", {
         sourceFloorName,
+        normalizedSourceFloor,
         targetFloorName,
+        normalizedTargetFloor,
         availableGroups: Object.keys(floorGroups)
       });
       return;
@@ -1020,10 +1073,12 @@ export function RoomSketchPro({
     const STAIR_RUN = 25;  // Depth of each step (cm)
     const STAIR_WIDTH = 100; // Width of stairs (cm)
     
-    // Get floor heights - using our new sourceFloor and targetFloor variables
-    const sourceFloorHeight = floorGroups[sourceFloorName].position.z;
-    const targetFloorHeight = floorGroups[targetFloorName].position.z;
+    // Get floor heights - using the floor groups we found
+    const sourceFloorHeight = sourceFloorGroup.position.z;
+    const targetFloorHeight = targetFloorGroup.position.z;
     const heightDifference = targetFloorHeight - sourceFloorHeight;
+    
+    console.log(`STAIR HEIGHTS - Source floor (${sourceFloorName}) height: ${sourceFloorHeight}, Target floor (${targetFloorName}) height: ${targetFloorHeight}, Difference: ${heightDifference}`);
     
     // Calculate number of steps based on height
     const numSteps = Math.floor(Math.abs(heightDifference) / STAIR_RISE);
