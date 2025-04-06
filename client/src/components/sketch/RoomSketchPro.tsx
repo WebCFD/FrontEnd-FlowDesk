@@ -476,32 +476,42 @@ export function RoomSketchPro({
       return;
     }
 
-    // Setup scene
-    const scene = setupScene();
-    if (!scene) {
-      console.error("RoomSketchPro - Scene setup failed");
-      return;
+    // Only create a new scene if one doesn't exist yet
+    if (!sceneRef.current) {
+      console.log("RoomSketchPro - Creating new scene - first initialization");
+      const scene = setupScene();
+      if (!scene) {
+        console.error("RoomSketchPro - Scene setup failed");
+        return;
+      }
+      sceneRef.current = scene;
+      console.log("RoomSketchPro - Scene initialized successfully");
+    } else {
+      console.log("RoomSketchPro - Reusing existing scene - prevent recreation");
     }
-    sceneRef.current = scene;
-    console.log("RoomSketchPro - Scene initialized successfully");
 
-    // Setup camera
-    const camera = setupCamera();
-    cameraRef.current = camera;
+    // Setup camera if not already set up
+    if (!cameraRef.current) {
+      const camera = setupCamera();
+      cameraRef.current = camera;
+    }
 
-    // Setup renderer
-    const renderer = setupRenderer();
-    // No need to set renderer properties again, already done in setupRenderer()
-    containerRef.current.appendChild(renderer.domElement);
-    rendererRef.current = renderer;
+    // Setup renderer if not already set up
+    if (!rendererRef.current) {
+      const renderer = setupRenderer();
+      containerRef.current.appendChild(renderer.domElement);
+      rendererRef.current = renderer;
+    }
 
-    // Setup controls
-    const controls = new TrackballControls(camera, renderer.domElement);
-    controls.rotateSpeed = 1.0;
-    controls.zoomSpeed = 1.2;
-    controls.panSpeed = 0.8;
-    controls.keys = ["KeyA", "KeyS", "KeyD"];
-    controlsRef.current = controls;
+    // Setup controls if not already set up
+    if (!controlsRef.current && cameraRef.current && rendererRef.current) {
+      const controls = new TrackballControls(cameraRef.current, rendererRef.current.domElement);
+      controls.rotateSpeed = 1.0;
+      controls.zoomSpeed = 1.2;
+      controls.panSpeed = 0.8;
+      controls.keys = ["KeyA", "KeyS", "KeyD"];
+      controlsRef.current = controls;
+    }
 
     // Handle window resize - makes the component responsive like Canvas3D
     const handleResize = () => {
@@ -529,8 +539,10 @@ export function RoomSketchPro({
     // Animation loop
     const animate = () => {
       requestAnimationFrame(animate);
-      controls.update();
-      renderer.render(scene, camera);
+      if (controlsRef.current && rendererRef.current && sceneRef.current && cameraRef.current) {
+        controlsRef.current.update();
+        rendererRef.current.render(sceneRef.current, cameraRef.current);
+      }
     };
     animate();
 
@@ -547,8 +559,8 @@ export function RoomSketchPro({
 
     // Cleanup
     return () => {
-      controls.dispose();
-      renderer.dispose();
+      if (controlsRef.current) controlsRef.current.dispose();
+      if (rendererRef.current) rendererRef.current.dispose();
       window.removeEventListener('resize', handleResize);
       container.removeEventListener("dragover", (e) => {
         e.preventDefault();
