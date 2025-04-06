@@ -560,40 +560,27 @@ export function RoomSketchPro({
   
   // Function to create multifloor visualization
   const createMultiFloorVisualization = (scene: THREE.Scene, renderer: THREE.WebGLRenderer, camera: THREE.PerspectiveCamera) => {
-    console.log("RoomSketchPro - Creating multifloor visualization");
+    console.log("RoomSketchPro - Creating multifloor visualization - SIMPLIFIED");
     
-    // Get the full list of floors from both props and context
-    const floorsFromProps = floors ? Object.keys(floors) : [];
-    const floorsFromContext = geometryData?.floors ? Object.keys(geometryData.floors) : [];
-    const allFloorNames = [...new Set([...floorsFromProps, ...floorsFromContext])].sort();
+    // Only use the floors passed directly from Canvas3D via props
+    const allFloorNames = floors ? Object.keys(floors) : [];
     
-    console.log("🏢 DEBUG - MultifloorViz - Available floors:", {
-      fromProps: floorsFromProps,
-      fromContext: floorsFromContext,
-      combined: allFloorNames
+    console.log("🏢 SIMPLIFIED VISUALIZATION - Using floors directly from props:", allFloorNames);
+    
+    // Standard floor ordering
+    allFloorNames.sort((a, b) => {
+      const floorOrder = ["ground", "first", "second", "third", "fourth", "fifth"];
+      return floorOrder.indexOf(a) - floorOrder.indexOf(b);
     });
     
-    // Add more detailed logging about floor data structure
-    console.log("🏢 DETAILED FLOOR DATA:");
+    // Add detailed logging about floor data structure
+    console.log("🏢 FLOOR DATA MIRROR FROM CANVAS3D:");
     if (floors) {
       Object.keys(floors).forEach(floorKey => {
-        console.log(`Floor [${floorKey}] from props:`, {
+        console.log(`Floor [${floorKey}] mirrored from Canvas3D:`, {
           lines: floors[floorKey]?.lines?.length || 0,
           airEntries: floors[floorKey]?.airEntries?.length || 0,
-          stairs: floors[floorKey]?.stairPolygons?.length || 0,
-          linesExample: floors[floorKey]?.lines?.slice(0, 1) || 'none',
-          airEntriesExample: floors[floorKey]?.airEntries?.slice(0, 1) || 'none',
-          stairsExample: floors[floorKey]?.stairPolygons?.slice(0, 1) || 'none'
-        });
-      });
-    }
-    
-    if (geometryData?.floors) {
-      Object.keys(geometryData.floors).forEach(floorKey => {
-        console.log(`Floor [${floorKey}] from context:`, {
-          lines: geometryData.floors[floorKey]?.lines?.length || 0,
-          airEntries: geometryData.floors[floorKey]?.airEntries?.length || 0,
-          stairs: geometryData.floors[floorKey]?.stairPolygons?.length || 0
+          stairs: floors[floorKey]?.stairPolygons?.length || 0
         });
       });
     }
@@ -918,24 +905,18 @@ export function RoomSketchPro({
     // No actual stair creation as requested
   };
   
-  // Add a new effect to respond to current floor changes in context or from props
+  // Simplified effect to directly mirror Canvas3D content
   useEffect(() => {
-    // Check both context data and direct props
-    const contextFloor = geometryData?.currentFloor;
-    console.log("RoomSketchPro - Current floor changed to:", currentFloor || contextFloor);
-    console.log("RoomSketchPro - Available floors in context:", Object.keys(geometryData?.floors || {}));
-    console.log("RoomSketchPro - Available floors from props:", floors ? Object.keys(floors) : []);
-    
     // Only rebuild scene if we already have one
     if (sceneRef.current && rendererRef.current && cameraRef.current) {
-      console.log("RoomSketchPro - Rebuilding scene for floor change");
+      console.log("RoomSketchPro - SIMPLIFIED: Direct mirroring of Canvas3D content");
       
       // Clear existing scene objects except lights and grid
       if (sceneRef.current) {
         // Get a list of all objects to remove
         const objectsToRemove: THREE.Object3D[] = [];
         sceneRef.current.traverse((object) => {
-          // Skip lights, camera, and grid - only remove walls and air entries
+          // Skip lights, camera, and grid - only remove walls, floors, and air entries
           if (object.type !== 'DirectionalLight' && 
               object.type !== 'AmbientLight' &&
               object.type !== 'PerspectiveCamera' &&
@@ -950,82 +931,33 @@ export function RoomSketchPro({
           sceneRef.current?.remove(obj);
         });
         
-        // Check if we should display multiple floors
-        const floorsFromProps = floors ? Object.keys(floors) : [];
-        const floorsFromContext = geometryData?.floors ? Object.keys(geometryData.floors) : [];
-        const allFloors = [...new Set([...floorsFromProps, ...floorsFromContext])];
-        
-        // Log current scene state before cleanup
-        console.log("RoomSketchPro - SCENE STATE BEFORE CLEANUP:");
+        // Log current scene state before adding new objects
+        console.log("RoomSketchPro - SCENE STATE AFTER CLEANUP:");
         sceneRef.current.traverse((object) => {
           console.log(`Object: ${object.name || 'unnamed'}, Type: ${object.type}, Visible: ${object.visible}`);
         });
         
-        console.log("MULTIFLOOR-DEBUG - Multi-floor check:", {
-          floorsFromProps,
-          floorsFromContext,
-          allFloors,
-          hasFloorsProps: !!floors,
-          floorsLength: floors ? Object.keys(floors).length : 0,
-          geometryDataFloors: geometryData?.floors
-        });
-        
-        // Enhanced condition: Force multifloor visualization when:
-        // 1. We have more than one floor in the floors prop
-        // 2. OR if we have a stairs object in any of the floors
-        const hasMultipleFloors = floors && Object.keys(floors).length > 1;
-        
-        // Check if any floor has stairs
-        let hasStairs = false;
-        if (floors) {
-          Object.keys(floors).forEach(floorKey => {
-            if (floors[floorKey]?.stairPolygons?.length > 0) {
-              hasStairs = true;
-              console.log(`MULTIFLOOR-DEBUG - Found stairs in floor [${floorKey}]:`, 
-                floors[floorKey].stairPolygons);
-            }
-          });
+        // Always create multi-floor visualization with the data from floors prop
+        if (floors && Object.keys(floors).length > 0) {
+          console.log("✅ MIRRORING CANVAS3D - Creating visualization with data from Canvas3D:", 
+            Object.keys(floors).map(key => ({ 
+              floor: key, 
+              lines: floors[key]?.lines?.length || 0,
+              airEntries: floors[key]?.airEntries?.length || 0 
+            }))
+          );
+          
+          // Always use the createMultiFloorVisualization function directly
+          createMultiFloorVisualization(sceneRef.current, rendererRef.current, cameraRef.current);
+        } else {
+          console.warn("⚠️ No floor data available from Canvas3D to mirror");
         }
-        
-        console.log("MULTIFLOOR-DEBUG - Visualization decision:", {
-          hasMultipleFloors,
-          hasStairs,
-          willCreateMultifloorView: hasMultipleFloors || hasStairs
-        });
-        
-        // REMOVED CONDITIONAL LOGIC - Always display all elements from Canvas3D
-        console.log("🔄 RSP: ALWAYS displaying ALL elements from Canvas3D data, no conditional checks");
-        
-        // Debug floor data structure
-        console.log("📊 RSP: Received floor data:", 
-          Object.keys(floors || {}).map(key => ({
-            floorName: key,
-            lineCount: floors[key]?.lines?.length || 0,
-            airEntryCount: floors[key]?.airEntries?.length || 0,
-            stairCount: floors[key]?.stairPolygons?.length || 0,
-            hasContent: !!(floors[key]?.lines?.length || floors[key]?.airEntries?.length || floors[key]?.stairPolygons?.length)
-          }))
-        );
-        
-        // Detailed floor structure logging
-        console.log("🌈 FLOORS STRUCTURE DEBUG:");
-        Object.keys(floors || {}).forEach(floorKey => {
-          console.log(`Floor [${floorKey}]:`, {
-            lineCount: floors[floorKey]?.lines?.length || 0,
-            airEntryCount: floors[floorKey]?.airEntries?.length || 0,
-            hasStairs: !!floors[floorKey]?.stairPolygons?.length,
-            stairCount: floors[floorKey]?.stairPolygons?.length || 0
-          });
-        });
-        
-        console.log("RoomSketchPro - Creating visualization with ALL floors:", Object.keys(floors || {}));
-        createMultiFloorVisualization(sceneRef.current, rendererRef.current, cameraRef.current);
         
         // Render the updated scene
         rendererRef.current.render(sceneRef.current, cameraRef.current);
       }
     }
-  }, [geometryData?.currentFloor, currentFloor, floors]);
+  }, [floors, currentFloor]);
 
   // Extract perimeter points using useMemo to avoid recalculation
   // Use geometryData.lines from the context if available, otherwise fall back to lines prop
