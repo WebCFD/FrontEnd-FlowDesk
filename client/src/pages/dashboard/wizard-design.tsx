@@ -1561,26 +1561,25 @@ export default function WizardDesign() {
                   currentFloor,
                   floorCount: Object.keys(floors).length,
                   floorNames: Object.keys(floors),
-                  hasMultipleFloors: Object.keys(floors).length > 1,
-                  hasStairs: Object.values(floors).some(f => f.stairPolygons?.length > 0),
-                  floors: Object.keys(floors).reduce((acc, floorName) => {
-                    acc[floorName] = {
-                      lineCount: floors[floorName]?.lines?.length || 0,
-                      airEntryCount: floors[floorName]?.airEntries?.length || 0,
-                      stairCount: floors[floorName]?.stairPolygons?.length || 0
-                    };
-                    return acc;
-                  }, {})
+                  hasMultipleFloors: Object.keys(floors).length > 1
                 });
                 
-                // Log specific floor contents
+                // Log which floor is active in Canvas3D for comparison
+                console.log("⚠️ IMPORTANT: RoomSketchPro should EXACTLY mirror Canvas3D view", {
+                  currentFloorName: currentFloor,
+                  sendingMultifloorData: true,
+                  note: "Canvas3D displays a specific floor, RSP should show exactly the same"
+                });
+                
+                // Log specific floor contents that will be displayed in Canvas3D vs RSP
                 Object.keys(floors).forEach(floorName => {
                   console.log(`📊 FLOOR DATA FOR [${floorName}]:`, {
                     lineCount: floors[floorName]?.lines?.length || 0,
                     airEntryCount: floors[floorName]?.airEntries?.length || 0,
                     hasStairs: !!floors[floorName]?.stairPolygons?.length,
                     stairCount: floors[floorName]?.stairPolygons?.length || 0,
-                    isCurrentFloor: floorName === currentFloor
+                    isCurrentFloor: floorName === currentFloor,
+                    shouldBeVisibleInRSP: floorName === currentFloor // Only current floor should be visible in RSP
                   });
                 });
               }}
