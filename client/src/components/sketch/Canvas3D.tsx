@@ -1708,12 +1708,12 @@ export default function Canvas3D({
           // Always render during drag operations or eraser mode for smooth feedback
           const isDraggingNow = dragStateRef.current.isDragging;
           
-          // Log rendering reason
+        /*  // Log rendering reason
           if (isDraggingNow) {
             console.log("Rendering during drag operation");
           } else if (isEraserMode) {
             console.log("Force rendering in eraser mode for hover detection");
-          }
+          }*/
 
           // Always render the scene
           rendererRef.current.render(sceneRef.current, cameraRef.current);
