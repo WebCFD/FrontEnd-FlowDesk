@@ -1,19 +1,19 @@
 import * as THREE from 'three';
 
-// Definición de los tipos que necesitamos
-interface Point {
+// Definición de los tipos internos que necesitamos
+interface Point2D {
   x: number;
   y: number;
 }
 
 interface Line {
-  start: Point;
-  end: Point;
+  start: Point2D;
+  end: Point2D;
 }
 
 interface AirEntry {
   type: "window" | "door" | "vent";
-  position: Point;
+  position: Point2D;
   dimensions: {
     width: number;
     height: number;
@@ -24,7 +24,7 @@ interface AirEntry {
 
 interface StairPolygon {
   id: string;
-  points: Point[];
+  points: Point2D[];
   floor: string;
   direction?: "up" | "down";
   connectsTo?: string;
@@ -41,7 +41,7 @@ interface FloorData {
 }
 
 // Interfaces para el formato de exportación
-interface Point {
+interface PointXZ {
   x: number;
   z: number;
 }
@@ -90,7 +90,7 @@ interface AirEntryExport {
 
 interface StairExport {
   id: string;
-  points: Point[];
+  points: PointXZ[];
   connectsTo?: string;
   direction?: string;
 }
@@ -103,7 +103,7 @@ interface FurnitureExport {
 }
 
 interface RoomExport {
-  points: Point[];
+  points: PointXZ[];
   height: number;
   duration?: number;
 }
@@ -136,7 +136,7 @@ export function generateSimulationData(
   // Procesar cada piso
   Object.entries(floors).forEach(([floorName, floorData]) => {
     // Crear los puntos de la habitación a partir de las líneas
-    const roomPoints: Point[] = extractRoomPointsFromLines(floorData.lines);
+    const roomPoints: PointXZ[] = extractRoomPointsFromLines(floorData.lines);
 
     // Convertir air entries (ventanas, puertas, etc.)
     const airEntries: AirEntryExport[] = floorData.airEntries.map((entry, index) => {
@@ -197,12 +197,12 @@ export function generateSimulationData(
 /**
  * Extrae puntos únicos y ordenados de un conjunto de líneas
  */
-function extractRoomPointsFromLines(lines: any[]): Point[] {
+function extractRoomPointsFromLines(lines: any[]): PointXZ[] {
   // Si no hay líneas, retornar un arreglo vacío
   if (!lines || lines.length === 0) return [];
 
   // Intentar construir un polígono ordenado a partir de las líneas
-  const points: Point[] = [];
+  const points: PointXZ[] = [];
   const startLine = lines[0];
   
   // Añadir el primer punto
