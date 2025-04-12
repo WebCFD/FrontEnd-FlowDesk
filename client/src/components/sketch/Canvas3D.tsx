@@ -759,6 +759,20 @@ export default function Canvas3D({
       bottomZ = baseHeight + ceilingHeight;
       topZ = baseHeight + ceilingHeight + floorDeckThickness;
     }
+    
+    // Enrich the stairPolygon with 3D position data to share with RoomSketchPro
+    stairPolygon.position3D = {
+      baseHeight: baseHeight,
+      bottomZ: bottomZ,
+      topZ: topZ
+    };
+    
+    console.log(`🔢 STAIR 3D POSITION DATA: ${stairPolygon.id}`, {
+      baseHeight,
+      bottomZ,
+      topZ,
+      direction: stairPolygon.direction
+    });
 
     // Create extruded geometry for the stair
     const extrudeSettings = {
