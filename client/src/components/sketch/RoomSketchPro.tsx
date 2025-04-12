@@ -1131,8 +1131,18 @@ export function RoomSketchPro({
     // Close the shape
     stairShape.closePath();
     
-    // Create geometry from shape
-    const stairGeometry = new THREE.ShapeGeometry(stairShape);
+    // Create extruded geometry to match Canvas3D's 3D look
+    const extrudeSettings = {
+      steps: 1,
+      // Usar espesor dinámico basado en los datos position3D si están disponibles
+      depth: stairData.position3D ? 
+        (stairData.direction === "down" ? 35 : 35) : // Espesor común para pisos
+        (stairData.direction === "down" ? 10 : 10),  // Fallback si no hay position3D
+      bevelEnabled: false,
+    };
+    
+    // Usar ExtrudeGeometry en lugar de ShapeGeometry para crear un bloque 3D
+    const stairGeometry = new THREE.ExtrudeGeometry(stairShape, extrudeSettings);
     
     // Use a more visible material for stairs with purple color to match Canvas3D
     const stairMaterial = new THREE.MeshStandardMaterial({
