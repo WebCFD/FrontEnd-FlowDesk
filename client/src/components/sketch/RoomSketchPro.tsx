@@ -1134,12 +1134,14 @@ export function RoomSketchPro({
     // Create geometry from shape
     const stairGeometry = new THREE.ShapeGeometry(stairShape);
     
-    // Use the same wall material as the walls for consistency
-    const stairMaterial = wallMaterialRef.current || new THREE.MeshStandardMaterial({
-      color: 0xffffff,
-      opacity: wallTransparency,
+    // Use a more visible material for stairs with purple color to match Canvas3D
+    const stairMaterial = new THREE.MeshStandardMaterial({
+      color: 0x7c3aed, // Color morado similar al de Canvas3D
+      opacity: 0.8, // Mayor opacidad para mejor visibilidad
       transparent: true,
       side: THREE.DoubleSide,
+      roughness: 0.3,
+      metalness: 0.2,
     });
 
     // Create the mesh
