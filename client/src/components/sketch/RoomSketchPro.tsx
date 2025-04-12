@@ -1146,13 +1146,21 @@ export function RoomSketchPro({
     const stairMesh = new THREE.Mesh(stairGeometry, stairMaterial);
     stairMesh.name = `stair_${floorName}_${stairIndex}`;
     
-    // Set position - stairs are at the floor level by default
-    if (stairData.direction === "down") {
-      // For downward stairs, position them lower
-      stairMesh.position.z = 10; // Slightly above the floor
+    // Set position using 3D position data from Canvas3D if available
+    if (stairData.position3D) {
+      // Use precise 3D position data from Canvas3D
+      console.log(`🔄 PRECISE POSITION: Using position3D data from Canvas3D for stair ${stairData.id}:`, stairData.position3D);
+      stairMesh.position.z = stairData.position3D.bottomZ;
     } else {
-      // For upward stairs, position them higher
-      stairMesh.position.z = 50; // Mid-level height
+      // Fallback to legacy hardcoded values if position3D is not available
+      console.log(`⚠️ LEGACY POSITION: No position3D data for stair ${stairData.id}, using legacy Z values`);
+      if (stairData.direction === "down") {
+        // For downward stairs, position them lower
+        stairMesh.position.z = 10; // Slightly above the floor
+      } else {
+        // For upward stairs, position them higher
+        stairMesh.position.z = 50; // Mid-level height
+      }
     }
     
     // Add userData for identification
