@@ -1,5 +1,44 @@
-import { FloorData } from "@/contexts/SceneContext";
 import * as THREE from 'three';
+
+// Definición de los tipos que necesitamos
+interface Point {
+  x: number;
+  y: number;
+}
+
+interface Line {
+  start: Point;
+  end: Point;
+}
+
+interface AirEntry {
+  type: "window" | "door" | "vent";
+  position: Point;
+  dimensions: {
+    width: number;
+    height: number;
+    distanceToFloor?: number;
+  };
+  line: Line;
+}
+
+interface StairPolygon {
+  id: string;
+  points: Point[];
+  floor: string;
+  direction?: "up" | "down";
+  connectsTo?: string;
+  isImported?: boolean;
+}
+
+// Definición del tipo para los datos de planta
+interface FloorData {
+  lines: Line[];
+  airEntries: AirEntry[];
+  hasClosedContour: boolean;
+  name?: string;
+  stairPolygons?: StairPolygon[];
+}
 
 // Interfaces para el formato de exportación
 interface Point {
