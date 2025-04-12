@@ -1070,7 +1070,11 @@ export default function WizardDesign() {
               <div className="border rounded-lg p-4">
                 <h3 className="font-semibold text-lg mb-4">Files</h3>
                 <div className="space-y-2">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start"
+                    onClick={() => handleSaveDesign("design_step1.json")}
+                  >
                     <Save className="mr-2 h-4 w-4" />
                     Save Design
                   </Button>
@@ -1214,7 +1218,11 @@ export default function WizardDesign() {
                 <div className="border rounded-lg p-4">
                   <h3 className="font-semibold text-lg mb-4">Files</h3>
                   <div className="space-y-2">
-                    <Button variant="outline" className="w-full flex items-center gap-2">
+                    <Button 
+                      variant="outline" 
+                      className="w-full flex items-center gap-2"
+                      onClick={() => handleSaveDesign("design_step2.json")}
+                    >
                       <Save className="h-4 w-4" />
                       Save Design
                     </Button>
