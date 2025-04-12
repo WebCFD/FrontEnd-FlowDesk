@@ -1150,16 +1150,18 @@ export function RoomSketchPro({
     if (stairData.position3D) {
       // Use precise 3D position data from Canvas3D
       console.log(`🔄 PRECISE POSITION: Using position3D data from Canvas3D for stair ${stairData.id}:`, stairData.position3D);
+      
+      // Importante: Asignar la posición Z correcta
       stairMesh.position.z = stairData.position3D.bottomZ;
     } else {
-      // Fallback to legacy hardcoded values if position3D is not available
+      // Fallback a legacy hardcoded values if position3D is not available
       console.log(`⚠️ LEGACY POSITION: No position3D data for stair ${stairData.id}, using legacy Z values`);
+      
+      // Esta parte puede mantener la lógica de fallback anterior, pero con un mejor mensaje
       if (stairData.direction === "down") {
-        // For downward stairs, position them lower
-        stairMesh.position.z = 10; // Slightly above the floor
+        stairMesh.position.z = 10; // Legacy: Slightly above the floor
       } else {
-        // For upward stairs, position them higher
-        stairMesh.position.z = 50; // Mid-level height
+        stairMesh.position.z = 50; // Legacy: Mid-level height
       }
     }
     
@@ -1169,15 +1171,16 @@ export function RoomSketchPro({
       floor: floorName,
       index: stairIndex,
       data: stairData,
+      position3D: stairData.position3D, // Guardar también aquí para referencia
       isSelectable: true
     };
     
     // Add to floor group
     floorGroup.add(stairMesh);
-    console.log(`✅ Added stair #${stairIndex} to floor ${floorName} with wall texture`);
+    console.log(`✅ Added stair #${stairIndex} to floor ${floorName} with wall texture at z=${stairMesh.position.z}`);
     
     // DEBUG: Log stair mesh details for troubleshooting
-    console.log(`🔍 STAIR_DEBUG: Stair mesh created - ID: ${stairMesh.id}, Name: ${stairMesh.name}`);
+    console.log(`🔍 STAIR_DEBUG: Stair mesh created - ID: ${stairMesh.id}, Name: ${stairMesh.name}, Z position: ${stairMesh.position.z}`);
     console.log(`🔍 STAIR_DEBUG: Parent floor group - Name: ${floorGroup.name}, Children: ${floorGroup.children.length}`);
     
     // Log floor group hierarchy

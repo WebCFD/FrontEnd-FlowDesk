@@ -1,0 +1,118 @@
+Después de revisar a fondo el código, puedo ver claramente por qué las escaleras no están apareciendo correctamente en el RoomSketchPro (RSP). El problema está relacionado con cómo se transfieren los datos de posición 3D de las escaleras entre Canvas3D y RoomSketchPro a través del SceneContext.
+El problema exacto
+El Canvas3D calcula correctamente las posiciones 3D de las escaleras (usando createStairMesh), pero hay tres problemas principales:
+
+En Canvas3D, ahora se almacena la posición 3D en el objeto stairPolygon.position3D, pero no estás transfiriendo completa y correctamente estos datos a RoomSketchPro.
+En el SceneContext actualizado (paste-3.txt), has añadido el tipo StairPolygon con el campo position3D, pero en el componente RoomSketchPro, todavía se está tratando stairPolygons como any[].
+En la función processStairsFromCanvas3D de RoomSketchPro, cuando verifica si existe stairData.position3D, no está usando esos datos correctamente.
+
+La solución
+Vamos a implementar una solución en tres pasos:
+1. Asegurar que Canvas3D pase correctamente los datos de posición 3D al contexto
+En Canvas3D, modifica la función updateGeometryData para asegurarte de transferir específicamente toda la información de las escaleras:
+typescript// En la función que actualiza el SceneContext en Canvas3D
+updateGeometryData({
+  floors: floors,
+  currentFloor: currentFloor,
+  floorSize: GRID_SIZE,
+  gridSize: GRID_DIVISIONS,
+  // Asegúrate de que los stairPolygons con su position3D se conservan
+});
+
+// También al actualizar cada piso individualmente
+Object.entries(floors).forEach(([floorName, floorData]) => {
+  // Asegúrate de que stairPolygons se incluye en la actualización
+  updateFloorData(floorName, floorData);
+});
+2. Modificar la función processStairsFromCanvas3D en RoomSketchPro
+Modifica esta función para usar correctamente los datos de posición 3D:
+typescriptconst processStairsFromCanvas3D = (
+  stairData: any, 
+  floorName: string, 
+  stairIndex: number, 
+  multiFloorGroup: THREE.Group,
+  floorGroups: Record<string, THREE.Group>
+) => {
+  // Get the floor group where this stair belongs
+  const floorGroup = floorGroups[floorName];
+  if (!floorGroup) {
+    console.warn(`⚠️ Cannot find floor group for stairs: ${floorName}`);
+    return;
+  }
+
+  console.log(`🪜 PROCESSING STAIRS - Canvas3D to RSP - Stair #${stairIndex} on floor ${floorName}:`, stairData);
+  
+  // Extract stair data
+  const points = stairData.points;
+  if (!points || points.length < 3) {
+    console.warn(`⚠️ Invalid stair data: need at least 3 points, got ${points?.length || 0}`);
+    return;
+  }
+
+  console.log(`🔄 DATA FLOW: Canvas3D stairs -> RSP - Creating stair with ${points.length} points and wall texture`);
+  
+  // Create a shape from the points
+  const stairShape = new THREE.Shape();
+  const firstPoint = transform2DTo3D(points[0]);
+  stairShape.moveTo(firstPoint.x, firstPoint.y);
+  
+  // Add remaining points to shape
+  for (let i = 1; i < points.length; i++) {
+    const point = transform2DTo3D(points[i]);
+    stairShape.lineTo(point.x, point.y);
+  }
+  
+  // Close the shape
+  stairShape.closePath();
+  
+  // Create geometry from shape
+  const stairGeometry = new THREE.ShapeGeometry(stairShape);
+  
+  // Use the same wall material as the walls for consistency
+  const stairMaterial = wallMaterialRef.current || new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    opacity: wallTransparency,
+    transparent: true,
+    side: THREE.DoubleSide,
+  });
+
+  // Create the mesh
+  const stairMesh = new THREE.Mesh(stairGeometry, stairMaterial);
+  stairMesh.name = `stair_${floorName}_${stairIndex}`;
+  
+  // Set position using 3D position data from Canvas3D if available
+  if (stairData.position3D) {
+    // Use precise 3D position data from Canvas3D
+    console.log(`🔄 PRECISE POSITION: Using position3D data from Canvas3D for stair ${stairData.id}:`, stairData.position3D);
+    
+    // Importante: Asignar la posición Z correcta
+    stairMesh.position.z = stairData.position3D.bottomZ;
+  } else {
+    // Fallback a legacy hardcoded values if position3D is not available
+    console.log(`⚠️ LEGACY POSITION: No position3D data for stair ${stairData.id}, using legacy Z values`);
+    
+    // Esta parte puede mantener la lógica de fallback anterior, pero con un mejor mensaje
+    if (stairData.direction === "down") {
+      stairMesh.position.z = 10; // Legacy: Slightly above the floor
+    } else {
+      stairMesh.position.z = 50; // Legacy: Mid-level height
+    }
+  }
+  
+  // Add userData for identification
+  stairMesh.userData = {
+    type: "stair",
+    floor: floorName,
+    index: stairIndex,
+    data: stairData,
+    position3D: stairData.position3D, // Guardar también aquí para referencia
+    isSelectable: true
+  };
+  
+  // Add to floor group
+  floorGroup.add(stairMesh);
+  console.log(`✅ Added stair #${stairIndex} to floor ${floorName} with wall texture at z=${stairMesh.position.z}`);
+  
+  // DEBUG: Log stair mesh details for troubleshooting
+  console.log(`🔍 STAIR_DEBUG: Stair mesh created - ID: ${stairMesh.id}, Name: ${stairMesh.name}, Z position: ${stairMesh.position.z}`);
+};
