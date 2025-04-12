@@ -1,0 +1,136 @@
+Primero, necesitamos definir mejor los tipos en el SceneContext:
+typescript// Definir el tipo para StairPolygon
+interface StairPolygon {
+  id: string;
+  points: Point[];
+  floor: string;
+  direction?: "up" | "down";
+  connectsTo?: string;
+  // Añadir datos de posición 3D calculada
+  position3D?: {
+    baseHeight: number;
+    bottomZ: number;
+    topZ: number;
+  };
+}
+
+// Definir el tipo para FloorData
+interface FloorData {
+  lines: Line[];
+  airEntries: AirEntry[];
+  hasClosedContour: boolean;
+  name: string;
+  stairPolygons?: StairPolygon[];  // Ahora con tipo específico
+}
+
+// Actualizar la interfaz del contexto
+interface SceneContextType {
+  // Resto de propiedades...
+  geometryData: {
+    lines: Line[];
+    airEntries: AirEntry[];
+    floorSize: number;
+    gridSize: number;
+    currentFloor: string;
+    floors: Record<string, FloorData>;  // Ahora con tipo FloorData
+  };
+  // Resto de métodos...
+}
+Cómo implementar la solución:
+1. En Canvas3D, al procesar escaleras, incluye la información 3D:
+javascript// En la función createStairMesh de Canvas3D
+const createStairMesh = (
+  stairPolygon: StairPolygon,
+  baseHeight: number,
+  isCurrentFloor: boolean,
+): THREE.Object3D[] => {
+  // Calcular posiciones Z
+  let bottomZ, topZ;
+  if (stairPolygon.direction === "down") {
+    bottomZ = baseHeight - floorDeckThickness;
+    topZ = baseHeight;
+  } else {
+    bottomZ = baseHeight + ceilingHeight;
+    topZ = baseHeight + ceilingHeight + floorDeckThickness;
+  }
+  
+  // Almacenar esta información en el objeto stairPolygon
+  // ¡Esta es la línea clave!
+  stairPolygon.position3D = {
+    baseHeight,
+    bottomZ,
+    topZ
+  };
+  
+  // Resto del código para crear la malla...
+  
+  // También almacenar información en userData de la malla
+  stairMesh.userData = {
+    type: "stair",
+    floor: stairPolygon.floor,
+    index: stairIndex,
+    data: stairPolygon,
+    position3D: stairPolygon.position3D,
+    isSelectable: true
+  };
+  
+  // ...
+  
+  return objects;
+};
+2. Al actualizar el SceneContext desde Canvas3D:
+javascript// Al actualizar los datos de pisos en el contexto
+updateFloorData(floorName, {
+  ...floorData,
+  // Asegurarse de que stairPolygons incluya los datos de posición 3D
+  stairPolygons: floorData.stairPolygons?.map(stair => ({
+    ...stair,
+    // Incluir explícitamente la información de posición 3D
+    position3D: stair.position3D || {
+      baseHeight: getFloorBaseHeight(floorName),
+      bottomZ: stair.direction === "down" 
+        ? getFloorBaseHeight(floorName) - floorDeckThickness 
+        : getFloorBaseHeight(floorName) + ceilingHeight,
+      topZ: stair.direction === "down" 
+        ? getFloorBaseHeight(floorName) 
+        : getFloorBaseHeight(floorName) + ceilingHeight + floorDeckThickness
+    }
+  }))
+});
+3. En RoomSketchPro, usar exactamente estos datos de posición:
+javascript// En la función processStairsFromCanvas3D de RoomSketchPro
+const processStairsFromCanvas3D = (
+  stairData: any, 
+  floorName: string, 
+  stairIndex: number, 
+  multiFloorGroup: THREE.Group,
+  floorGroups: Record<string, THREE.Group>
+) => {
+  console.log(`🪜 Procesando escalera: ${stairData.id} en piso ${floorName}`);
+  
+  // CLAVE: Usar directamente la posición 3D si está disponible
+  let bottomZ, topZ;
+  if (stairData.position3D) {
+    // Usar datos precalculados
+    console.log(`🪜 Usando posición 3D precalculada: ${JSON.stringify(stairData.position3D)}`);
+    bottomZ = stairData.position3D.bottomZ;
+    topZ = stairData.position3D.topZ;
+  } else {
+    // Cálculo fallback (debe coincidir con Canvas3D para ser consistente)
+    console.warn(`⚠️ No hay datos de posición 3D para la escalera ${stairData.id}, calculando...`);
+    const baseHeight = getFloorBaseHeight(floorName);
+    if (stairData.direction === "down") {
+      bottomZ = baseHeight - floorDeckThickness;
+      topZ = baseHeight;
+    } else {
+      bottomZ = baseHeight + roomHeight; // roomHeight debe ser igual a ceilingHeight
+      topZ = baseHeight + roomHeight + floorDeckThickness;
+    }
+  }
+  
+  // Crear malla de escalera en posiciones exactas
+  const stairMesh = new THREE.Mesh(stairGeometry, stairMaterial);
+  stairMesh.position.z = bottomZ; // Usar la posición Z calculada o precalculada
+  
+  // Resto del código para crear paredes y otros elementos...
+}

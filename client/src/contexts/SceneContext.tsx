@@ -23,6 +23,31 @@ interface AirEntry {
   line: Line;
 }
 
+// Definir el tipo para StairPolygon
+interface StairPolygon {
+  id: string;
+  points: Point[];
+  floor: string;
+  direction?: "up" | "down";
+  connectsTo?: string;
+  isImported?: boolean;
+  // Añadir datos de posición 3D calculada
+  position3D?: {
+    baseHeight: number;
+    bottomZ: number;
+    topZ: number;
+  };
+}
+
+// Definir el tipo para FloorData
+interface FloorData {
+  lines: Line[];
+  airEntries: AirEntry[];
+  hasClosedContour: boolean;
+  name: string;
+  stairPolygons?: StairPolygon[];  // Ahora con tipo específico
+}
+
 interface SceneContextType {
   // Scene elements
   sceneData: {
@@ -41,11 +66,11 @@ interface SceneContextType {
     floorSize: number;
     gridSize: number;
     currentFloor: string;
-    floors: Record<string, any>;
+    floors: Record<string, FloorData>;  // Ahora con tipo FloorData
   };
   updateGeometryData: (data: Partial<SceneContextType['geometryData']>) => void;
   // New methods for multifloor handling
-  updateFloorData: (floorName: string, floorData: any) => void;
+  updateFloorData: (floorName: string, floorData: Partial<FloorData>) => void;
   setCurrentFloor: (floorName: string) => void;
 }
 
@@ -80,17 +105,21 @@ export const SceneProvider: React.FC<{children: React.ReactNode}> = ({ children 
   };
   
   // New function to update multifloor data synchronously
-  const updateFloorData = (floorName: string, floorData: any) => {
+  const updateFloorData = (floorName: string, floorData: Partial<FloorData>) => {
     console.log(`SceneContext - updateFloorData called for floor: ${floorName}`, floorData);
     setGeometryData(prev => {
-      const updatedFloors = { ...prev.floors, [floorName]: floorData };
+      // Merge with existing data for the floor if it exists
+      const existingFloorData = prev.floors[floorName] || {} as FloorData;
+      const mergedFloorData = { ...existingFloorData, ...floorData };
+      const updatedFloors = { ...prev.floors, [floorName]: mergedFloorData };
+
       return {
         ...prev,
         floors: updatedFloors,
         // If this is the current floor, also update the primary geometry data
         ...(floorName === prev.currentFloor ? {
-          lines: floorData.lines || [],
-          airEntries: floorData.airEntries || []
+          lines: mergedFloorData.lines || [],
+          airEntries: mergedFloorData.airEntries || []
         } : {})
       };
     });
