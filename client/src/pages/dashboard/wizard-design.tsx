@@ -20,6 +20,9 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
+import SimulationDataDialog from "@/components/sketch/SimulationDataDialog";
+import { generateSimulationData } from "@/lib/simulationDataConverter";
+import * as THREE from 'three';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
 import {
@@ -233,6 +236,10 @@ export default function WizardDesign() {
   const [floorDeckThickness, setFloorDeckThickness] = useState(35); // Default 35cm
   const [isMeasureMode, setIsMeasureMode] = useState(false);
   const [isEraserMode, setIsEraserMode] = useState(false);
+  
+  // Estado para el diálogo de datos de simulación
+  const [showSimulationDataDialog, setShowSimulationDataDialog] = useState(false);
+  const [simulationData, setSimulationData] = useState<object>({});
 
   // Use the global room store with updated selectors
   const {
@@ -1381,12 +1388,29 @@ export default function WizardDesign() {
   };
 
   const handleStartSimulation = () => {
-    if (lines.length > 0) {
-      setShowStartSimulationPrompt(true);
-    } else {
-      reset();
-      setLocation("/dashboard/wizard-design");
+    // Recopilar todos los datos para la simulación
+    const furnitureObjects: THREE.Object3D[] = [];
+    
+    // Intentar obtener elementos 3D de la escena
+    try {
+      // Buscar todos los objetos relevantes de mobiliario
+      document.querySelectorAll('[data-furniture]').forEach((elem: any) => {
+        if (elem.userData && elem.userData.type === 'furniture') {
+          furnitureObjects.push(elem);
+        }
+      });
+    } catch (err) {
+      console.log("No se pudieron encontrar objetos de mobiliario", err);
     }
+    
+    // Generar los datos de simulación completos
+    const exportData = generateSimulationData(floors, furnitureObjects, ceilingHeight / 100);
+    
+    // Guardar los datos para mostrarlos en el diálogo
+    setSimulationData(exportData);
+    
+    // Mostrar el diálogo con los datos para copiar/exportar
+    setShowSimulationDataDialog(true);
   };
 
   const handleConfirmNewSimulation = () => {
@@ -1713,6 +1737,13 @@ export default function WizardDesign() {
             return connectsToTargetFloor;
           }) || false
         }
+      />
+      
+      {/* Diálogo para mostrar los datos de simulación */}
+      <SimulationDataDialog
+        open={showSimulationDataDialog}
+        onOpenChange={setShowSimulationDataDialog}
+        simulationData={simulationData}
       />
     </DashboardLayout>
   );
