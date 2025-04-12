@@ -1073,7 +1073,7 @@ export default function WizardDesign() {
                   <Button 
                     variant="outline" 
                     className="w-full justify-start"
-                    onClick={() => handleSaveDesign("design_step1.json")}
+                    onClick={handleSaveDesign}
                   >
                     <Save className="mr-2 h-4 w-4" />
                     Save Design
@@ -1221,7 +1221,7 @@ export default function WizardDesign() {
                     <Button 
                       variant="outline" 
                       className="w-full flex items-center gap-2"
-                      onClick={() => handleSaveDesign("design_step2.json")}
+                      onClick={handleSaveDesign}
                     >
                       <Save className="h-4 w-4" />
                       Save Design
@@ -1428,13 +1428,15 @@ export default function WizardDesign() {
   };
   
   // Función para guardar el diseño localmente como archivo JSON
-  const handleSaveDesign = (defaultFilename = "simulation-design.json") => {
+  const handleSaveDesign = () => {
     const exportData = generateSimulationDataForExport();
     
-    // Crear un nombre de archivo que incluya el nombre de la simulación si existe
-    const filename = simulationName 
-      ? `${simulationName.replace(/[^\w-]/g, '_')}.json` 
-      : defaultFilename;
+    // Crear un nombre de archivo que incluya el nombre de la simulación seguido de "_FlowDeskModel"
+    const baseName = simulationName 
+      ? `${simulationName.replace(/[^\w-]/g, '_')}_FlowDeskModel` 
+      : "FlowDeskModel";
+    
+    const filename = `${baseName}.json`;
     
     // Crear y descargar el archivo
     const jsonString = JSON.stringify(exportData, null, 2);
