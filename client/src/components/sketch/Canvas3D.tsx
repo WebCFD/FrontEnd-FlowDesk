@@ -34,6 +34,13 @@ interface StairPolygon {
   floor: string;
   direction?: "up" | "down";
   connectsTo?: string;
+  isImported?: boolean;
+  // Add position3D data for sharing with RoomSketchPro
+  position3D?: {
+    baseHeight: number;
+    bottomZ: number;
+    topZ: number;
+  };
 }
 
 // Update FloorData to include stair polygons
