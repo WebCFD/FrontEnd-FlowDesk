@@ -1387,8 +1387,9 @@ export default function WizardDesign() {
     return Math.sqrt(dx * dx + dy * dy) < 15;
   };
 
-  const handleStartSimulation = () => {
-    // Recopilar todos los datos para la simulación
+  // Función central que genera los datos de simulación
+  const generateSimulationDataForExport = () => {
+    // Recopilar datos de mobiliario
     const furnitureObjects: THREE.Object3D[] = [];
     
     // Intentar obtener elementos 3D de la escena
@@ -1404,13 +1405,46 @@ export default function WizardDesign() {
     }
     
     // Generar los datos de simulación completos
-    const exportData = generateSimulationData(floors, furnitureObjects, ceilingHeight / 100);
+    return generateSimulationData(floors, furnitureObjects, ceilingHeight / 100);
+  };
+  
+  // Función para mostrar el diálogo con los datos de simulación
+  const handleStartSimulation = () => {
+    const exportData = generateSimulationDataForExport();
     
     // Guardar los datos para mostrarlos en el diálogo
     setSimulationData(exportData);
     
     // Mostrar el diálogo con los datos para copiar/exportar
     setShowSimulationDataDialog(true);
+  };
+  
+  // Función para guardar el diseño localmente como archivo JSON
+  const handleSaveDesign = (defaultFilename = "simulation-design.json") => {
+    const exportData = generateSimulationDataForExport();
+    
+    // Crear un nombre de archivo que incluya el nombre de la simulación si existe
+    const filename = simulationName 
+      ? `${simulationName.replace(/[^\w-]/g, '_')}.json` 
+      : defaultFilename;
+    
+    // Crear y descargar el archivo
+    const jsonString = JSON.stringify(exportData, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    toast({
+      title: "Diseño guardado",
+      description: `El diseño ha sido exportado como ${filename}`,
+    });
   };
 
   const handleConfirmNewSimulation = () => {
