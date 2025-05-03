@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
-import { BadgeCheck, Award, CircleAlert } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 // Tipos de certificaciones
 interface CertificationItem {
-  icon: React.ReactNode;
+  logoSrc: string;
   title: string;
   description: string;
   category: string;
@@ -19,7 +19,7 @@ export default function Certifications() {
   // Datos de certificaciones
   const certifications: CertificationItem[] = [
     {
-      icon: <CircleAlert className="h-10 w-10 text-teal-600" />,
+      logoSrc: "/assets/certification-logos/well-logo.jpeg",
       title: "WELL T01 VERIFICATION",
       description: "Performance-verified environmental conditions for optimal thermal comfort compliance.",
       category: "Engineering Letter of Assurance",
@@ -34,7 +34,7 @@ export default function Certifications() {
       color: "border-l-4 border-l-teal-500"
     },
     {
-      icon: <BadgeCheck className="h-10 w-10 text-green-600" />,
+      logoSrc: "/assets/certification-logos/leed-logo.png",
       title: "LEED ENERGY & ATMOSPHERE",
       description: "Expert verification services for LEED v4.1's energy performance requirements.",
       category: "Energy Modeling Documentation",
@@ -49,7 +49,7 @@ export default function Certifications() {
       color: "border-l-4 border-l-green-500"
     },
     {
-      icon: <Award className="h-10 w-10 text-blue-600" />,
+      logoSrc: "/assets/certification-logos/passive-house-logo.jpeg",
       title: "PASSIVE HOUSE VERIFICATION",
       description: "Specialized thermal bridge analysis for Passive House certification requirements.",
       category: "Thermal Bridge Calculation",
@@ -88,8 +88,16 @@ export default function Certifications() {
             >
               <Card className={`h-full ${cert.color}`}>
                 <CardContent className="p-6">
-                  <div className="mb-5">{cert.icon}</div>
-                  <h3 className="text-xl font-bold mb-2">{cert.title}</h3>
+                  <div className="mb-5 w-16 h-16 overflow-hidden rounded-full mx-auto">
+                    <AspectRatio ratio={1/1}>
+                      <img 
+                        src={cert.logoSrc} 
+                        alt={`${cert.title} Logo`}
+                        className="object-cover w-full h-full"
+                      />
+                    </AspectRatio>
+                  </div>
+                  <h3 className="text-xl font-bold mb-2 text-center">{cert.title}</h3>
                   <p className="text-muted-foreground mb-6">{cert.description}</p>
                   
                   <h4 className={`font-medium mb-4 ${cert.categoryColor}`}>{cert.category}</h4>
