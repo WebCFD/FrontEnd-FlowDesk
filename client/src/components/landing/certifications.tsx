@@ -2,11 +2,12 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { BadgeCheck, Award, CircleAlert } from "lucide-react";
+import { BadgeCheck, Award, CircleAlert, Leaf } from "lucide-react";
 
 // Importar las imágenes directamente
 import wellLogo from "../../assets/certification-logos/well-logo.jpeg";
 import leedLogo from "../../assets/certification-logos/leed-logo.png";
+import verdeLogo from "../../assets/certification-logos/verde-logo.png";
 import passiveHouseLogo from "../../assets/certification-logos/passive-house-logo.jpeg";
 
 // Tipos de certificaciones
@@ -58,16 +59,32 @@ export default function Certifications() {
       color: "border-l-4 border-l-blue-500"
     },
     {
+      logo: verdeLogo,
+      fallbackIcon: <Leaf className="h-10 w-10 text-blue-600" />,
+      title: "VERDE CERTIFICATION",
+      description: "Specific CFD advantages for achieving VERDE certification standards.",
+      category: "Environmental Performance Analysis",
+      categoryColor: "text-blue-600",
+      items: [
+        "Ventilation system optimization",
+        "Thermal comfort analysis",
+        "Regulatory compliance verification",
+        "Passive strategy evaluation"
+      ],
+      badge: "GBCe Compliant",
+      color: "border-l-4 border-l-blue-500"
+    },
+    {
       logo: passiveHouseLogo,
       fallbackIcon: <Award className="h-10 w-10 text-blue-600" />,
       title: "PASSIVE HOUSE VERIFICATION",
       description: "Specialized thermal bridge analysis for Passive House certification requirements.",
-      category: "Thermal Bridge Calculation",
+      category: "Thermal Comfort Verification",
       categoryColor: "text-blue-600",
       items: [
-        "Psi-value calculations for all junctions",
-        "Thermal imaging analysis",
-        "Heat loss quantification",
+        "Evaluate insulation and impact on energy efficiency",
+        "Maintaining temperature within range",
+        "Verify air velocity remains in comfort ranges",
         "PHPP integration documentation"
       ],
       badge: "PHI Compliant",
@@ -80,14 +97,14 @@ export default function Certifications() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold mb-4">
-            Certification Standards
+            Certification Obtainment Experts
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Our platform supports compliance with industry-leading certification standards for sustainable building design
+            Our platform helps clients to secure industry-leading green building certifications through our comprehensive verification services
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {certifications.map((cert, index) => (
             <motion.div
               key={index}
