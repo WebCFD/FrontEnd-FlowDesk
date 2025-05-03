@@ -27,11 +27,11 @@ export default function Certifications() {
   const certifications: CertificationItem[] = [
     {
       logo: wellLogo,
-      fallbackIcon: <CircleAlert className="h-10 w-10 text-teal-600" />,
+      fallbackIcon: <CircleAlert className="h-10 w-10 text-blue-600" />,
       title: "WELL T01 VERIFICATION",
       description: "Performance-verified environmental conditions for optimal thermal comfort compliance.",
       category: "Engineering Letter of Assurance",
-      categoryColor: "text-teal-600",
+      categoryColor: "text-blue-600",
       items: [
         "Comprehensive HVAC and thermal envelope analysis",
         "Thermal condition modeling and simulation",
@@ -39,15 +39,15 @@ export default function Certifications() {
         "WELL-specific documentation"
       ],
       badge: "WELL v2 Compliant",
-      color: "border-l-4 border-l-teal-500"
+      color: "border-l-4 border-l-blue-500"
     },
     {
       logo: leedLogo,
-      fallbackIcon: <BadgeCheck className="h-10 w-10 text-green-600" />,
+      fallbackIcon: <BadgeCheck className="h-10 w-10 text-blue-600" />,
       title: "LEED ENERGY & ATMOSPHERE",
       description: "Expert verification services for LEED v4.1's energy performance requirements.",
       category: "Energy Modeling Documentation",
-      categoryColor: "text-green-600",
+      categoryColor: "text-blue-600",
       items: [
         "Building energy simulation reports",
         "Energy consumption baseline comparison",
@@ -55,7 +55,7 @@ export default function Certifications() {
         "ASHRAE 90.1 compliance documentation"
       ],
       badge: "USGBC Certified",
-      color: "border-l-4 border-l-green-500"
+      color: "border-l-4 border-l-blue-500"
     },
     {
       logo: passiveHouseLogo,
@@ -98,24 +98,24 @@ export default function Certifications() {
             >
               <Card className={`h-full ${cert.color}`}>
                 <CardContent className="p-6">
-                  <div className="mb-5 w-16 h-16 overflow-hidden rounded-full mx-auto">
-                    <AspectRatio ratio={1/1}>
+                  <div className="mb-5 w-20 h-16 overflow-hidden rounded-md mx-auto border border-blue-100 p-2 bg-white">
+                    <AspectRatio ratio={4/3}>
                       {cert.logo ? (
                         <img 
                           src={cert.logo} 
                           alt={`${cert.title} Logo`}
-                          className="object-cover w-full h-full"
+                          className="object-contain w-full h-full"
                           onError={(e) => {
                             // Si la imagen no se carga, mostramos el icono alternativo
                             e.currentTarget.style.display = 'none';
-                            e.currentTarget.parentElement?.classList.add('flex', 'justify-center', 'items-center', 'bg-slate-100');
+                            e.currentTarget.parentElement?.classList.add('flex', 'justify-center', 'items-center', 'bg-blue-50');
                             const iconContainer = document.createElement('div');
                             iconContainer.className = 'fallback-icon';
                             e.currentTarget.parentElement?.appendChild(iconContainer);
                           }}
                         />
                       ) : (
-                        <div className="flex justify-center items-center bg-slate-100 w-full h-full">
+                        <div className="flex justify-center items-center bg-blue-50 w-full h-full">
                           {cert.fallbackIcon}
                         </div>
                       )}
