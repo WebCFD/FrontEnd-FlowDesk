@@ -98,7 +98,7 @@ export default function Certifications() {
             >
               <Card className={`h-full ${cert.color}`}>
                 <CardContent className="p-6">
-                  <div className="mb-5 w-20 h-16 overflow-hidden rounded-md mx-auto border border-blue-100 p-2 bg-white">
+                  <div className="mb-5 w-24 h-20 overflow-hidden mx-auto p-1 bg-white">
                     <AspectRatio ratio={4/3}>
                       {cert.logo ? (
                         <img 
