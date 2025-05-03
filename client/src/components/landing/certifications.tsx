@@ -1,79 +1,70 @@
 import { motion } from "framer-motion";
-import { BadgeCheck, Award, CheckSquare } from "lucide-react";
+import { BadgeCheck, Award, CircleAlert } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-const certifications = [
-  {
-    icon: <Badge className="h-10 w-10 text-teal-600" />,
-    title: "WELL T01 VERIFICATION",
-    description: "Performance-verified environmental conditions for optimal thermal comfort compliance.",
-    category: "Engineering Letter of Assurance",
-    categoryColor: "text-teal-600",
-    items: [
-      "Comprehensive HVAC and thermal envelope analysis",
-      "Thermal condition modeling and simulation",
-      "PMV/PPD compliance certification",
-      "WELL-specific documentation"
-    ],
-    badge: "WELL v2 Compliant",
-    color: "border-l-4 border-l-teal-500"
-  },
-  {
-    icon: <BadgeCheck className="h-10 w-10 text-green-600" />,
-    title: "LEED ENERGY & ATMOSPHERE",
-    description: "Expert verification services for LEED v4.1's energy performance requirements.",
-    category: "Energy Modeling Documentation",
-    categoryColor: "text-green-600",
-    items: [
-      "Building energy simulation reports",
-      "Energy consumption baseline comparison",
-      "Cost savings calculations",
-      "ASHRAE 90.1 compliance documentation"
-    ],
-    badge: "USGBC Certified",
-    color: "border-l-4 border-l-green-500"
-  },
-  {
-    icon: <Award className="h-10 w-10 text-blue-600" />,
-    title: "PASSIVE HOUSE VERIFICATION",
-    description: "Specialized thermal bridge analysis for Passive House certification requirements.",
-    category: "Thermal Bridge Calculation",
-    categoryColor: "text-blue-600",
-    items: [
-      "Psi-value calculations for all junctions",
-      "Thermal imaging analysis",
-      "Heat loss quantification",
-      "PHPP integration documentation"
-    ],
-    badge: "PHI Compliant",
-    color: "border-l-4 border-l-blue-500"
-  },
-];
-
-// Custom badge icon component
-function Badge(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
-      <path d="M12 8v4" />
-      <path d="M12 16h.01" />
-    </svg>
-  );
+// Tipos de certificaciones
+interface CertificationItem {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  category: string;
+  categoryColor: string;
+  items: string[];
+  badge: string;
+  color: string;
 }
 
 export default function Certifications() {
+  // Datos de certificaciones
+  const certifications: CertificationItem[] = [
+    {
+      icon: <CircleAlert className="h-10 w-10 text-teal-600" />,
+      title: "WELL T01 VERIFICATION",
+      description: "Performance-verified environmental conditions for optimal thermal comfort compliance.",
+      category: "Engineering Letter of Assurance",
+      categoryColor: "text-teal-600",
+      items: [
+        "Comprehensive HVAC and thermal envelope analysis",
+        "Thermal condition modeling and simulation",
+        "PMV/PPD compliance certification",
+        "WELL-specific documentation"
+      ],
+      badge: "WELL v2 Compliant",
+      color: "border-l-4 border-l-teal-500"
+    },
+    {
+      icon: <BadgeCheck className="h-10 w-10 text-green-600" />,
+      title: "LEED ENERGY & ATMOSPHERE",
+      description: "Expert verification services for LEED v4.1's energy performance requirements.",
+      category: "Energy Modeling Documentation",
+      categoryColor: "text-green-600",
+      items: [
+        "Building energy simulation reports",
+        "Energy consumption baseline comparison",
+        "Cost savings calculations",
+        "ASHRAE 90.1 compliance documentation"
+      ],
+      badge: "USGBC Certified",
+      color: "border-l-4 border-l-green-500"
+    },
+    {
+      icon: <Award className="h-10 w-10 text-blue-600" />,
+      title: "PASSIVE HOUSE VERIFICATION",
+      description: "Specialized thermal bridge analysis for Passive House certification requirements.",
+      category: "Thermal Bridge Calculation",
+      categoryColor: "text-blue-600",
+      items: [
+        "Psi-value calculations for all junctions",
+        "Thermal imaging analysis",
+        "Heat loss quantification",
+        "PHPP integration documentation"
+      ],
+      badge: "PHI Compliant",
+      color: "border-l-4 border-l-blue-500"
+    },
+  ];
+
   return (
     <section id="certifications" className="py-20 bg-slate-50">
       <div className="container mx-auto px-4">
