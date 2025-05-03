@@ -2,10 +2,17 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { BadgeCheck, Award, CircleAlert } from "lucide-react";
+
+// Importar las imágenes directamente
+import wellLogo from "../../assets/certification-logos/well-logo.jpeg";
+import leedLogo from "../../assets/certification-logos/leed-logo.png";
+import passiveHouseLogo from "../../assets/certification-logos/passive-house-logo.jpeg";
 
 // Tipos de certificaciones
 interface CertificationItem {
-  logoSrc: string;
+  logo: string;
+  fallbackIcon: React.ReactNode;
   title: string;
   description: string;
   category: string;
@@ -19,7 +26,8 @@ export default function Certifications() {
   // Datos de certificaciones
   const certifications: CertificationItem[] = [
     {
-      logoSrc: "/assets/certification-logos/well-logo.jpeg",
+      logo: wellLogo,
+      fallbackIcon: <CircleAlert className="h-10 w-10 text-teal-600" />,
       title: "WELL T01 VERIFICATION",
       description: "Performance-verified environmental conditions for optimal thermal comfort compliance.",
       category: "Engineering Letter of Assurance",
@@ -34,7 +42,8 @@ export default function Certifications() {
       color: "border-l-4 border-l-teal-500"
     },
     {
-      logoSrc: "/assets/certification-logos/leed-logo.png",
+      logo: leedLogo,
+      fallbackIcon: <BadgeCheck className="h-10 w-10 text-green-600" />,
       title: "LEED ENERGY & ATMOSPHERE",
       description: "Expert verification services for LEED v4.1's energy performance requirements.",
       category: "Energy Modeling Documentation",
@@ -49,7 +58,8 @@ export default function Certifications() {
       color: "border-l-4 border-l-green-500"
     },
     {
-      logoSrc: "/assets/certification-logos/passive-house-logo.jpeg",
+      logo: passiveHouseLogo,
+      fallbackIcon: <Award className="h-10 w-10 text-blue-600" />,
       title: "PASSIVE HOUSE VERIFICATION",
       description: "Specialized thermal bridge analysis for Passive House certification requirements.",
       category: "Thermal Bridge Calculation",
@@ -90,11 +100,25 @@ export default function Certifications() {
                 <CardContent className="p-6">
                   <div className="mb-5 w-16 h-16 overflow-hidden rounded-full mx-auto">
                     <AspectRatio ratio={1/1}>
-                      <img 
-                        src={cert.logoSrc} 
-                        alt={`${cert.title} Logo`}
-                        className="object-cover w-full h-full"
-                      />
+                      {cert.logo ? (
+                        <img 
+                          src={cert.logo} 
+                          alt={`${cert.title} Logo`}
+                          className="object-cover w-full h-full"
+                          onError={(e) => {
+                            // Si la imagen no se carga, mostramos el icono alternativo
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.parentElement?.classList.add('flex', 'justify-center', 'items-center', 'bg-slate-100');
+                            const iconContainer = document.createElement('div');
+                            iconContainer.className = 'fallback-icon';
+                            e.currentTarget.parentElement?.appendChild(iconContainer);
+                          }}
+                        />
+                      ) : (
+                        <div className="flex justify-center items-center bg-slate-100 w-full h-full">
+                          {cert.fallbackIcon}
+                        </div>
+                      )}
                     </AspectRatio>
                   </div>
                   <h3 className="text-xl font-bold mb-2 text-center">{cert.title}</h3>
