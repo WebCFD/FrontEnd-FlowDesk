@@ -1,60 +1,34 @@
 import { ButtonHTMLAttributes, forwardRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { trackEvent } from '../../lib/analytics';
+import { trackEvent } from '@/lib/analytics';
 
+/**
+ * Props para el componente AnalyticsButton
+ */
 interface AnalyticsButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  // Propiedades de evento de Google Analytics
-  analyticsCategory: string;
-  analyticsAction: string;
-  analyticsLabel?: string;
-  analyticsValue?: number;
-  
-  // Propiedad para deshabilitar el seguimiento
-  disableTracking?: boolean;
-  
-  // Props estándar de botón shadcn
-  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
-  size?: 'default' | 'sm' | 'lg' | 'icon';
+  category: string;        // Categoría del evento para Google Analytics
+  action: string;          // Acción del evento para Google Analytics
+  label?: string;          // Etiqueta opcional del evento
+  value?: number;          // Valor opcional del evento
+  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link'; // Variante del botón
+  size?: 'default' | 'sm' | 'lg' | 'icon'; // Tamaño del botón
 }
 
 /**
- * Componente de botón que registra eventos en Google Analytics cuando se hace clic
+ * Componente Button que registra un evento en Google Analytics cuando se hace clic
  */
 export const AnalyticsButton = forwardRef<HTMLButtonElement, AnalyticsButtonProps>(
-  (
-    {
-      analyticsCategory,
-      analyticsAction,
-      analyticsLabel,
-      analyticsValue,
-      disableTracking = false,
-      onClick,
-      children,
-      ...props
-    },
-    ref
-  ) => {
-    // Manejador de clic que registra el evento y luego ejecuta el manejador original
-    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-      // Registra el evento si el seguimiento está habilitado
-      if (!disableTracking) {
-        trackEvent(analyticsCategory, analyticsAction, analyticsLabel, analyticsValue);
-      }
+  ({ category, action, label, value, onClick, ...props }, ref) => {
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+      // Registrar el evento en Google Analytics
+      trackEvent(category, action, label, value);
       
-      // Ejecuta el manejador original si existe
-      if (onClick) {
-        onClick(e);
-      }
+      // Llamar al manejador de clic original si existe
+      onClick && onClick(event);
     };
     
-    return (
-      <Button
-        ref={ref}
-        onClick={handleClick}
-        {...props}
-      >
-        {children}
-      </Button>
-    );
+    return <Button ref={ref} onClick={handleClick} {...props} />;
   }
 );
+
+AnalyticsButton.displayName = 'AnalyticsButton';

@@ -14,7 +14,6 @@ import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { ProtectedRoute } from "@/lib/protected-route";
 import { AnalyticsProvider } from "./components/common/AnalyticsProvider";
-import { PageViewTracker } from "./components/common/PageViewTracker";
 
 function Router() {
   return (
