@@ -1,6 +1,8 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Box, Square } from "lucide-react";
+import { trackEvent } from "@/lib/analytics";
+import { AnalyticsCategories, AnalyticsActions } from "@/lib/analyticsEvents";
 
 interface ToolbarToggleProps {
   mode: "2d-editor" | "3d-preview";
