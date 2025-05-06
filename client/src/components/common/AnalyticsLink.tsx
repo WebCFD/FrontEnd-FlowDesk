@@ -1,61 +1,82 @@
-import { ReactNode } from 'react';
+import { AnchorHTMLAttributes } from 'react';
 import { Link } from 'wouter';
-import { trackEvent } from '../../lib/analytics';
+import { trackEvent } from '@/lib/analytics';
 
-interface AnalyticsLinkProps {
-  // Propiedades específicas de wouter Link
-  href: string;
-  
-  // Propiedades de evento de Google Analytics
-  analyticsCategory: string;
-  analyticsAction: string;
-  analyticsLabel?: string;
-  analyticsValue?: number;
-  
-  // Propiedad para deshabilitar el seguimiento
-  disableTracking?: boolean;
-  
-  // Otras props
-  children: ReactNode;
-  className?: string;
-  onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+/**
+ * Props para AnalyticsExternalLink
+ */
+interface AnalyticsExternalLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
+  category: string; // Categoría del evento para Google Analytics
+  action: string;   // Acción del evento para Google Analytics
+  label?: string;   // Etiqueta opcional del evento
+  value?: number;   // Valor opcional del evento
 }
 
 /**
- * Componente de enlace que registra eventos en Google Analytics cuando se hace clic
+ * Enlace externo (a) que registra un evento en Google Analytics cuando se hace clic
  */
-export function AnalyticsLink({
-  href,
-  analyticsCategory,
-  analyticsAction,
-  analyticsLabel,
-  analyticsValue,
-  disableTracking = false,
+export function AnalyticsExternalLink({
+  category,
+  action,
+  label,
+  value,
   onClick,
   children,
   ...props
-}: AnalyticsLinkProps) {
-  // Manejador de clic que registra el evento y luego ejecuta el manejador original
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    // Registra el evento si el seguimiento está habilitado
-    if (!disableTracking) {
-      trackEvent(analyticsCategory, analyticsAction, analyticsLabel, analyticsValue);
-    }
+}: AnalyticsExternalLinkProps) {
+  const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    // Registrar el evento en Google Analytics
+    trackEvent(category, action, label || props.href, value);
     
-    // Ejecuta el manejador original si existe
-    if (onClick) {
-      onClick(e);
-    }
+    // Llamar al manejador de clic original si existe
+    onClick && onClick(event);
   };
   
   return (
-    <Link href={href}>
-      <a
-        onClick={handleClick}
-        {...props}
-      >
-        {children}
-      </a>
+    <a onClick={handleClick} {...props}>
+      {children}
+    </a>
+  );
+}
+
+/**
+ * Props para AnalyticsInternalLink
+ */
+interface AnalyticsInternalLinkProps {
+  category: string;     // Categoría del evento para Google Analytics
+  action: string;       // Acción del evento para Google Analytics
+  label?: string;       // Etiqueta opcional del evento
+  value?: number;       // Valor opcional del evento
+  to: string;           // Ruta de destino
+  onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void; // Manejador de clic opcional
+  className?: string;   // Clase CSS
+  children: React.ReactNode; // Contenido del enlace
+}
+
+/**
+ * Enlace interno (Link de wouter) que registra un evento en Google Analytics cuando se hace clic
+ */
+export function AnalyticsInternalLink({
+  category,
+  action,
+  label,
+  value,
+  to,
+  onClick,
+  children,
+  ...props
+}: AnalyticsInternalLinkProps) {
+  const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    // Registrar el evento en Google Analytics
+    trackEvent(category, action, label || to, value);
+    
+    // Llamar al manejador de clic original si existe
+    onClick && onClick(event);
+  };
+  
+  return (
+    <Link to={to} onClick={handleClick} {...props}>
+      {children}
     </Link>
   );
 }

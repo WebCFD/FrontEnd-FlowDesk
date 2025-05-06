@@ -10,12 +10,22 @@ import {
 } from "@/components/ui/navigation-menu";
 import RegisterModal from "@/components/auth/register-modal";
 import LoginModal from "@/components/auth/login-modal";
+import { AnalyticsButton } from "@/components/common/AnalyticsButton";
+import { AnalyticsCategories, AnalyticsActions } from "@/lib/analyticsEvents";
+import { trackEvent } from "@/lib/analytics";
 
 export default function Navbar() {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   const scrollToSection = (sectionId: string) => {
+    // Rastrear el clic en enlaces de navegación
+    trackEvent(
+      AnalyticsCategories.NAVIGATION,
+      'section_navigation',
+      `scroll_to_${sectionId}`
+    );
+    
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
