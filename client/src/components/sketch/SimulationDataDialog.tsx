@@ -10,6 +10,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Copy, Play } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { trackEvent } from '../../lib/analytics';
+import { AnalyticsCategories, AnalyticsActions } from '../../lib/analyticsEvents';
 
 interface SimulationDataDialogProps {
   open: boolean;
@@ -26,6 +28,14 @@ const SimulationDataDialog: React.FC<SimulationDataDialogProps> = ({
   const jsonData = JSON.stringify(simulationData, null, 2);
 
   const handleCopy = () => {
+    // Registrar el evento de copia de datos
+    trackEvent(
+      AnalyticsCategories.SIMULATION,
+      AnalyticsActions.EXPORT_SIMULATION,
+      'copy_to_clipboard',
+      Object.keys(simulationData).length
+    );
+    
     navigator.clipboard.writeText(jsonData)
       .then(() => {
         toast({
@@ -44,12 +54,30 @@ const SimulationDataDialog: React.FC<SimulationDataDialogProps> = ({
   };
 
   const handleRunSimulation = () => {
+    // Registrar el evento de inicio de simulación
+    trackEvent(
+      AnalyticsCategories.SIMULATION,
+      AnalyticsActions.START_SIMULATION,
+      'dialog_button'
+    );
+    
     // Este botón no hace nada por ahora, como solicitado
     toast({
       title: "Simulation",
       description: "Run Simulation functionality will be implemented in the future.",
     });
   };
+  
+  // Registrar el evento de apertura del diálogo cuando se muestra
+  React.useEffect(() => {
+    if (open) {
+      trackEvent(
+        AnalyticsCategories.UI,
+        AnalyticsActions.OPEN_PANEL,
+        'simulation_data_dialog'
+      );
+    }
+  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
