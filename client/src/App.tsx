@@ -13,6 +13,8 @@ import WizardDesign from "@/pages/dashboard/wizard-design";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { ProtectedRoute } from "@/lib/protected-route";
+import { AnalyticsProvider } from "./components/common/AnalyticsProvider";
+import { PageViewTracker } from "./components/common/PageViewTracker";
 
 function Router() {
   return (
@@ -53,21 +55,24 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="min-h-screen flex flex-col">
-        <Route path="/dashboard*">
-          <Router />
-        </Route>
-        <Route path="*">
-          <>
-            <Navbar />
-            <main className="flex-1">
-              <Router />
-            </main>
-            <Footer />
-          </>
-        </Route>
-      </div>
-      <Toaster />
+      <AnalyticsProvider>
+        <PageViewTracker />
+        <div className="min-h-screen flex flex-col">
+          <Route path="/dashboard*">
+            <Router />
+          </Route>
+          <Route path="*">
+            <>
+              <Navbar />
+              <main className="flex-1">
+                <Router />
+              </main>
+              <Footer />
+            </>
+          </Route>
+        </div>
+        <Toaster />
+      </AnalyticsProvider>
     </QueryClientProvider>
   );
 }
