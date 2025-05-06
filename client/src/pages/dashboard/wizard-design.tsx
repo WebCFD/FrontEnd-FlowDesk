@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import {
@@ -8,6 +8,8 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
+import { trackEvent } from "@/lib/analytics";
+import { AnalyticsCategories, AnalyticsActions } from "@/lib/analyticsEvents";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -447,11 +449,29 @@ export default function WizardDesign() {
   };
 
   const handleToolSelect = (tool: "wall" | "eraser" | "measure" | "stairs") => {
+    // Rastrear cambio de herramienta
+    trackEvent(
+      AnalyticsCategories.DESIGN,
+      tool === "wall" ? AnalyticsActions.ADD_WALL :
+      tool === "eraser" ? AnalyticsActions.DELETE_ELEMENT :
+      tool === "measure" ? "measure_tool" :
+      tool === "stairs" ? AnalyticsActions.ADD_STAIR : "unknown_tool",
+      `select_${tool}_tool`
+    );
+    
     setCurrentTool(tool);
     setCurrentAirEntry(null);
   };
 
   const handleAirEntrySelect = (entry: "vent" | "door" | "window") => {
+    // Rastrear selección de tipo de air entry
+    trackEvent(
+      AnalyticsCategories.DESIGN,
+      entry === "window" ? AnalyticsActions.ADD_WINDOW :
+      entry === "door" ? AnalyticsActions.ADD_DOOR : "add_vent",
+      `select_${entry}_tool`
+    );
+    
     if (currentAirEntry === entry) {
       setCurrentAirEntry(null);
     } else {
@@ -600,6 +620,14 @@ export default function WizardDesign() {
   // This function is called by the dropdown menu items
   const changeViewDirection = (direction: ViewDirection) => {
     console.log(`Changing view to: ${direction}`);
+    
+    // Rastrear cambios de dirección de vista
+    trackEvent(
+      AnalyticsCategories.UI,
+      AnalyticsActions.TOGGLE_VIEW,
+      `view_${direction}`
+    );
+    
     if (viewChangeFunction) {
       viewChangeFunction(direction);
     } else {
@@ -1420,6 +1448,14 @@ export default function WizardDesign() {
   const handleStartSimulation = () => {
     const exportData = generateSimulationDataForExport();
     
+    // Rastrear evento de inicio de simulación
+    trackEvent(
+      AnalyticsCategories.SIMULATION, 
+      AnalyticsActions.START_SIMULATION, 
+      'wizard_button', 
+      Object.keys(exportData).length
+    );
+    
     // Guardar los datos para mostrarlos en el diálogo
     setSimulationData(exportData);
     
@@ -1430,6 +1466,14 @@ export default function WizardDesign() {
   // Función para guardar el diseño localmente como archivo JSON
   const handleSaveDesign = () => {
     const exportData = generateSimulationDataForExport();
+    
+    // Rastrear evento de guardar simulación
+    trackEvent(
+      AnalyticsCategories.SIMULATION, 
+      AnalyticsActions.SAVE_SIMULATION, 
+      'file_download',
+      Object.keys(exportData).length
+    );
     
     // Crear un nombre de archivo que incluya el nombre de la simulación seguido de "_FlowDeskModel"
     const baseName = simulationName 
