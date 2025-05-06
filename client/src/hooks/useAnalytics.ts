@@ -7,6 +7,9 @@ interface AnalyticsHookResult {
   loading: boolean;
   initialized: boolean;
   error: Error | null;
+  config?: {
+    googleAnalyticsId: string;
+  };
 }
 
 // Variable global para mantener el estado de inicialización
@@ -50,7 +53,8 @@ export function useAnalytics(): AnalyticsHookResult {
             setState({
               loading: false,
               initialized: true,
-              error: null
+              error: null,
+              config
             });
             console.log('Google Analytics initialized successfully');
           }
@@ -60,7 +64,8 @@ export function useAnalytics(): AnalyticsHookResult {
             setState({
               loading: false,
               initialized: false,
-              error: null
+              error: null,
+              config
             });
           }
         }

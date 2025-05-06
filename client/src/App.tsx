@@ -55,8 +55,7 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AnalyticsProvider>
-        <PageViewTracker />
+      <AnalyticsProvider debug={process.env.NODE_ENV === 'development'}>
         <div className="min-h-screen flex flex-col">
           <Route path="/dashboard*">
             <Router />
