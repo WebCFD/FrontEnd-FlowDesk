@@ -33,7 +33,7 @@ export const initializeAnalytics = (forceMeasurementId?: string): void => {
  */
 export const trackPageView = (path: string, title?: string): void => {
   if (!isInitialized) {
-    console.warn('Google Analytics no está inicializado. La vista de página no será registrada.');
+    // Modo silencioso, no mostramos warnings ya que PageViewTracker manejará la espera
     return;
   }
 
@@ -57,11 +57,23 @@ export const trackEvent = (
   label?: string,
   value?: number
 ): void => {
+  // Siempre logueamos en desarrollo para debugging
+  if (process.env.NODE_ENV === 'development') {
+    console.debug('📊 Analytics Event:', { 
+      category, 
+      action, 
+      label, 
+      value,
+      status: isInitialized ? 'sent' : 'pending' 
+    });
+  }
+  
+  // Si no está inicializado, no enviamos el evento a GA
   if (!isInitialized) {
-    console.warn('Google Analytics no está inicializado. El evento no será registrado.');
     return;
   }
 
+  // Envía el evento a Google Analytics
   ReactGA.event({
     category,
     action,
