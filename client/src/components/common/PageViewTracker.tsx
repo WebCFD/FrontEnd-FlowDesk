@@ -12,9 +12,11 @@ export function PageViewTracker() {
   // Registra una vista de página cada vez que cambia la ubicación
   useEffect(() => {
     // Espera un momento para que el título de la página se actualice
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       trackPageView(location, document.title);
-    }, 100);
+    }, 300);
+    
+    return () => clearTimeout(timer);
   }, [location]);
 
   // Este componente no renderiza nada
