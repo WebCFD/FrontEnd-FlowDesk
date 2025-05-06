@@ -86,8 +86,22 @@ export default function Navbar() {
         </NavigationMenu>
 
         <div className="flex items-center gap-4">
-          <Button variant="outline" onClick={() => setIsLoginOpen(true)}>Log in</Button>
-          <Button onClick={() => setIsRegisterOpen(true)}>Sign Up</Button>
+          <AnalyticsButton 
+            category={AnalyticsCategories.ACCOUNT} 
+            action={AnalyticsActions.LOGIN}
+            variant="outline" 
+            onClick={() => setIsLoginOpen(true)}
+          >
+            Log in
+          </AnalyticsButton>
+          
+          <AnalyticsButton 
+            category={AnalyticsCategories.ACCOUNT} 
+            action={AnalyticsActions.SIGNUP}
+            onClick={() => setIsRegisterOpen(true)}
+          >
+            Sign Up
+          </AnalyticsButton>
         </div>
       </div>
 
