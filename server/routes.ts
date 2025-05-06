@@ -17,6 +17,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(401).json({ authenticated: false });
     }
   });
+  
+  // Endpoint para obtener configuración del cliente, incluyendo claves API
+  app.get("/api/config", (req, res) => {
+    res.json({
+      googleAnalyticsId: process.env.GOOGLE_ANALYTICS_ID || ''
+    });
+  });
 
   const httpServer = createServer(app);
   return httpServer;
