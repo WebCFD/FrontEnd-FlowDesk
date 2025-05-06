@@ -61,7 +61,7 @@ export default function Certifications() {
     {
       logo: verdeLogo,
       fallbackIcon: <Leaf className="h-10 w-10 text-blue-600" />,
-      title: "VERDE CERTIFICATION",
+      title: "VERDE CERTIFICATE GBCE",
       description: "Specific CFD advantages for achieving VERDE certification standards.",
       category: "Environmental Performance Analysis",
       categoryColor: "text-blue-600",
