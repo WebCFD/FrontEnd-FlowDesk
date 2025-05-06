@@ -1,15 +1,24 @@
 import ReactGA from 'react-ga4';
+import { getConfig } from '../env';
 
 // Se inicializará con el ID de tracking cuando se llame a initialize
 let isInitialized = false;
 
 /**
  * Inicializa Google Analytics
- * @param measurementId - El ID de medición de Google Analytics (G-XXXXXXXXXX)
+ * @param forceMeasurementId - ID de medición opcional para forzar su uso en lugar del de la configuración
  */
-export const initializeAnalytics = (measurementId: string): void => {
+export const initializeAnalytics = (forceMeasurementId?: string): void => {
   // Solo inicializa una vez
   if (isInitialized) return;
+  
+  const measurementId = forceMeasurementId || getConfig().googleAnalyticsId;
+  
+  // No inicializa si no hay ID
+  if (!measurementId) {
+    console.warn('No Google Analytics ID provided. Analytics not initialized.');
+    return;
+  }
 
   ReactGA.initialize(measurementId);
   isInitialized = true;
