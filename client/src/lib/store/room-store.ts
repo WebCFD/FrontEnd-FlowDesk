@@ -37,9 +37,22 @@ interface StairPolygon {
   isImported?: boolean; // Whether this stair was imported from another floor
 }
 
+interface Wall {
+  id: string;
+  uuid: string;
+  floor: string;
+  lineRef: string;
+  startPoint: Point;
+  endPoint: Point;
+  properties: {
+    temperature: number;
+  };
+}
+
 interface FloorData {
   lines: Line[];
   airEntries: AirEntry[];
+  walls: Wall[];
   measurements: Measurement[];
   stairPolygons: StairPolygon[]; // Add stairs to floor data
   hasClosedContour: boolean;
@@ -76,6 +89,7 @@ export const useRoomStore = create<RoomState>()(
           ground: {
             lines: [],
             airEntries: [],
+            walls: [],
             measurements: [],
             stairPolygons: [], // Add empty stair polygons array
             hasClosedContour: false,
@@ -135,6 +149,7 @@ export const useRoomStore = create<RoomState>()(
             : {
                 lines: [],
                 airEntries: [],
+                walls: [],
                 measurements: [],
                 stairPolygons: [], // Include empty stairPolygons array
                 hasClosedContour: false,

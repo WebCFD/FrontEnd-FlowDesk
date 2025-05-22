@@ -106,6 +106,18 @@ interface StairPolygon {
   isImported?: boolean;
 }
 
+interface Wall {
+  id: string;
+  uuid: string;
+  floor: string;
+  lineRef: string;
+  startPoint: Point;
+  endPoint: Point;
+  properties: {
+    temperature: number;
+  };
+}
+
 interface FloorLoadDialogProps {
   isOpen: boolean;
   onClose: () => void;
