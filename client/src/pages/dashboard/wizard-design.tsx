@@ -253,6 +253,47 @@ export default function WizardDesign() {
   const [floorParameters, setFloorParameters] = useState<Record<string, { ceilingHeight: number; floorDeck: number }>>({
     ground: { ceilingHeight: 220, floorDeck: 35 }
   });
+
+  // Funciones auxiliares para manejo de parámetros por planta
+  const getCurrentFloorParameters = () => {
+    return floorParameters[selectedFloor] || { ceilingHeight: 220, floorDeck: 35 };
+  };
+
+  const updateFloorParameter = (floor: string, parameter: 'ceilingHeight' | 'floorDeck', value: number) => {
+    setFloorParameters(prev => ({
+      ...prev,
+      [floor]: {
+        ...prev[floor] || { ceilingHeight: 220, floorDeck: 35 },
+        [parameter]: value
+      }
+    }));
+  };
+
+  const ensureFloorParametersExist = (floor: string) => {
+    if (!floorParameters[floor]) {
+      setFloorParameters(prev => ({
+        ...prev,
+        [floor]: { ceilingHeight: 220, floorDeck: 35 }
+      }));
+    }
+  };
+
+  // Getter para compatibilidad con código existente
+  const getCurrentCeilingHeight = () => {
+    if (isMultifloor) {
+      return getCurrentFloorParameters().ceilingHeight;
+    } else {
+      return ceilingHeight;
+    }
+  };
+
+  const getCurrentFloorDeckThickness = () => {
+    if (isMultifloor) {
+      return getCurrentFloorParameters().floorDeck;
+    } else {
+      return floorDeckThickness;
+    }
+  };
   const [isMeasureMode, setIsMeasureMode] = useState(false);
   const [isEraserMode, setIsEraserMode] = useState(false);
 
@@ -1757,6 +1798,121 @@ export default function WizardDesign() {
             </div>
           </div>
         )}
+
+        {/* Ceiling Height y Floor Deck Parameters */}
+        <div className="space-y-4 pt-4 border-t">
+          <h4 className="font-medium text-sm text-gray-700">Building Parameters</h4>
+          
+          {!isMultifloor ? (
+            // Modo single floor: controles únicos
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="ceiling-height">Ceiling Height</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="ceiling-height"
+                    type="number"
+                    value={ceilingHeight}
+                    min={200}
+                    max={500}
+                    step={10}
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value);
+                      if (!isNaN(value) && value >= 200 && value <= 500) {
+                        setCeilingHeight(value);
+                      }
+                    }}
+                    className="w-24"
+                  />
+                  <span className="text-sm text-gray-500">cm</span>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="floor-deck">Floor Deck Thickness</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="floor-deck"
+                    type="number"
+                    value={floorDeckThickness}
+                    min={5}
+                    max={150}
+                    step={5}
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value);
+                      if (!isNaN(value) && value >= 5 && value <= 150) {
+                        setFloorDeckThickness(value);
+                      }
+                    }}
+                    className="w-24"
+                  />
+                  <span className="text-sm text-gray-500">cm</span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            // Modo multifloor: controles por planta
+            <div className="space-y-4">
+              {Object.keys(floors).filter(floorName => floors[floorName]?.hasClosedContour).map((floorName) => {
+                const floorParams = floorParameters[floorName] || { ceilingHeight: 220, floorDeck: 35 };
+                const isCurrentFloor = floorName === currentFloor;
+                
+                return (
+                  <div key={floorName} className={cn(
+                    "p-3 rounded-lg border",
+                    isCurrentFloor ? "bg-blue-50 border-blue-200" : "bg-gray-50 border-gray-200"
+                  )}>
+                    <h5 className="font-medium text-sm mb-3 flex items-center gap-2">
+                      {formatFloorText(floorName)}
+                      {isCurrentFloor && <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Current</span>}
+                    </h5>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <Label className="text-xs">Ceiling Height</Label>
+                        <div className="flex items-center gap-1">
+                          <Input
+                            type="number"
+                            value={floorParams.ceilingHeight}
+                            min={200}
+                            max={500}
+                            step={10}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value);
+                              if (!isNaN(value) && value >= 200 && value <= 500) {
+                                updateFloorParameter(floorName, 'ceilingHeight', value);
+                              }
+                            }}
+                            className="w-16 h-8 text-xs"
+                          />
+                          <span className="text-xs text-gray-500">cm</span>
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Floor Deck</Label>
+                        <div className="flex items-center gap-1">
+                          <Input
+                            type="number"
+                            value={floorParams.floorDeck}
+                            min={5}
+                            max={150}
+                            step={5}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value);
+                              if (!isNaN(value) && value >= 5 && value <= 150) {
+                                updateFloorParameter(floorName, 'floorDeck', value);
+                              }
+                            }}
+                            className="w-16 h-8 text-xs"
+                          />
+                          <span className="text-xs text-gray-500">cm</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -1781,7 +1937,7 @@ export default function WizardDesign() {
               lines={floors[currentFloor]?.lines || lines} // Use the floor-specific lines directly
               airEntries={floors[currentFloor]?.airEntries || airEntries} // Use the floor-specific air entries directly
               wallTransparency={wallTransparency}
-              roomHeight={ceilingHeight}
+              roomHeight={getCurrentCeilingHeight()}
               currentFloor={currentFloor} // Pass the current floor explicitly
               floors={floors} // Pass the entire floors object directly
               onWallTransparencyChange={(value) => {
@@ -1853,8 +2009,8 @@ export default function WizardDesign() {
             <Canvas3D
               floors={floors}
               currentFloor={currentFloor}
-              ceilingHeight={ceilingHeight}
-              floorDeckThickness={floorDeckThickness}
+              ceilingHeight={getCurrentCeilingHeight()}
+              floorDeckThickness={getCurrentFloorDeckThickness()}
               wallTransparency={wallTransparency}
               isMeasureMode={isMeasureMode}
               isEraserMode={isEraserMode}
