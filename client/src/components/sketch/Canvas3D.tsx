@@ -3578,10 +3578,25 @@ export default function Canvas3D({
     Object.entries(floors).forEach(([floorName, floorData]) => {
       if (floorData.hasClosedContour || floorName === currentFloor) {
         const baseHeight = getFloorBaseHeight(floorName);
+        
+        // Get specific parameters for this floor
+        let floorCeilingHeight, floorDeckThickness;
+        if (isMultifloor && floorParameters[floorName]) {
+          // Use multifloor parameters specific to this floor
+          floorCeilingHeight = floorParameters[floorName].ceilingHeight;
+          floorDeckThickness = floorParameters[floorName].floorDeck;
+        } else {
+          // Use global parameters for single-floor mode
+          floorCeilingHeight = ceilingHeight;
+          floorDeckThickness = floorDeckThickness;
+        }
+        
         const objects = createFloorObjects(
           floorData,
           baseHeight,
           floorName === currentFloor,
+          floorCeilingHeight,
+          floorDeckThickness,
         );
         objects.forEach((obj) => sceneRef.current?.add(obj));
       }
