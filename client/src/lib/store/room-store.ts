@@ -270,6 +270,28 @@ export const useRoomStore = create<RoomState>()(
             [floorName]: floorData
           }
         })),
+
+        syncWallsForCurrentFloor: () => set((state) => {
+          const currentFloorData = state.floors[state.currentFloor];
+          const floorName = currentFloorData.name || state.currentFloor;
+          
+          // Synchronize walls with current lines
+          const synchronizedWalls = syncWallsWithLines(
+            currentFloorData.lines || [], 
+            currentFloorData.walls || [], 
+            floorName
+          );
+          
+          return {
+            floors: {
+              ...state.floors,
+              [state.currentFloor]: {
+                ...currentFloorData,
+                walls: synchronizedWalls
+              }
+            }
+          };
+        }),
         
         reset: () => set({
           floors: {
