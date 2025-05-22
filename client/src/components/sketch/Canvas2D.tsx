@@ -285,11 +285,13 @@ export default function Canvas2D({
   currentAirEntry,
   airEntries = [],
   lines = [],
+  walls = [],
   measurements = [],
   stairPolygons = [],
   floorText,
   isMultifloor,
   onLinesUpdate,
+  onWallsUpdate,
   onAirEntriesUpdate,
   onMeasurementsUpdate,
   onStairPolygonsUpdate,
@@ -1480,6 +1482,13 @@ export default function Canvas2D({
       ) {
         const newLines = [...lines, currentLine];
         onLinesUpdate?.(newLines);
+
+        // Create wall automatically when line is completed
+        if (onWallsUpdate) {
+          const newWall = createWallFromLine(currentLine, floorText);
+          const newWalls = [...(walls || []), newWall];
+          onWallsUpdate(newWalls);
+        }
       }
       setCurrentLine(null);
       setIsDrawing(false);

@@ -1823,8 +1823,10 @@ export default function WizardDesign() {
               airEntries={airEntries}
               measurements={measurements}
               stairPolygons={stairPolygons}
+              walls={walls}
               onMeasurementsUpdate={setMeasurements}
               onStairPolygonsUpdate={setStairPolygons}
+              onWallsUpdate={setWalls}
               lines={lines}
               floorText={formatFloorText(currentFloor)}
               isMultifloor={isMultifloor}
