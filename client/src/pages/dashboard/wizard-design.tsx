@@ -1644,10 +1644,20 @@ export default function WizardDesign() {
   };
 
   const handleEraseDesign = () => {
-    // Resetear el store usando la función reset del store (esto ya limpia todas las plantas)
+    // PASO 1: LIMPIAR PRIMERO floorParameters para evitar recreación de plantas
+    setFloorParameters({
+      ground: { ceilingHeight: 220, floorDeck: 35 }
+    });
+    
+    // PASO 2: Desactivar multifloor inmediatamente
+    setIsMultifloor(false);
+    setSelectedFloor("ground");
+    setLoadFromFloor("ground");
+    
+    // PASO 3: Resetear el store (esto borra todas las plantas del store)
     reset();
     
-    // Resetear estados locales del wizard
+    // PASO 4: Resetear todos los estados locales del wizard
     setSimulationName("");
     setSimulationType("comfort");
     setGridSize(20);
@@ -1661,30 +1671,20 @@ export default function WizardDesign() {
     setCeilingHeight(220);
     setFloorDeckThickness(35);
     
-    // IMPORTANTE: Resetear multifloor ANTES de resetear floorParameters
-    setIsMultifloor(false);
-    setSelectedFloor("ground");
-    setLoadFromFloor("ground");
-    
-    // IMPORTANTE: Resetear COMPLETAMENTE parámetros de plantas a solo ground
-    setFloorParameters({
-      ground: { ceilingHeight: 220, floorDeck: 35 }
-    });
-    
-    // También limpiar las mediciones y escalones locales
+    // PASO 5: Limpiar mediciones y escalones locales
     setMeasurements([]);
     setStairPolygons([]);
     
-    // Cerrar el diálogo
+    // PASO 6: Cerrar el diálogo
     setShowEraseDesignDialog(false);
     
-    // Mostrar mensaje de confirmación
+    // PASO 7: Mostrar mensaje de confirmación
     toast({
       title: "Diseño borrado",
       description: "Se ha iniciado un nuevo diseño desde cero",
     });
 
-    // Rastrear evento de borrar diseño
+    // PASO 8: Rastrear evento de borrar diseño
     trackEvent(
       AnalyticsCategories.SIMULATION,
       AnalyticsActions.SAVE_SIMULATION,
