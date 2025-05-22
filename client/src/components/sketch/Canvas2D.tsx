@@ -13,6 +13,12 @@ import AirEntryDialog from "./AirEntryDialog";
 import { cn } from "@/lib/utils";
 import { useSketchStore } from "@/lib/stores/sketch-store";
 import CoordinateEditorDialog from "./CoordinateEditorDialog";
+import { 
+  createWallFromLine, 
+  findWallForLine, 
+  findWallsForDeletedLines,
+  arePointsEqual as wallPointsEqual
+} from "@/lib/simulationDataConverter";
 
 interface HighlightState {
   lines: Line[];
@@ -241,17 +247,32 @@ const getPointAtRelativePosition = (line: Line, relativePos: number): Point => {
   };
 };
 
+// Add Wall interface for temperature properties
+interface Wall {
+  id: string;
+  uuid: string;
+  floor: string;
+  lineRef: string;
+  startPoint: Point;
+  endPoint: Point;
+  properties: {
+    temperature: number;
+  };
+}
+
 interface Canvas2DProps {
   gridSize: number;
   currentTool: "wall" | "eraser" | "measure" | "stairs" | null;
   currentAirEntry: "window" | "door" | "vent" | null;
   airEntries: AirEntry[];
   lines: Line[];
+  walls: Wall[];
   measurements: Measurement[];
   stairPolygons?: StairPolygon[];
   floorText: string;
   isMultifloor: boolean;
   onLinesUpdate?: (lines: Line[]) => void;
+  onWallsUpdate?: (walls: Wall[]) => void;
   onAirEntriesUpdate?: (airEntries: AirEntry[]) => void;
   onMeasurementsUpdate?: (measurements: Measurement[]) => void;
   onStairPolygonsUpdate?: (stairPolygons: StairPolygon[]) => void;
