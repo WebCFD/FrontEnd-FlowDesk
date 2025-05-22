@@ -1657,6 +1657,9 @@ export default function WizardDesign() {
     // PASO 3: Resetear el store (esto borra todas las plantas del store)
     reset();
     
+    // PASO 4: CRÍTICO - Sincronizar currentFloor del store con ground
+    setCurrentFloor("ground");
+    
     // PASO 4: Resetear todos los estados locales del wizard
     setSimulationName("");
     setSimulationType("comfort");
