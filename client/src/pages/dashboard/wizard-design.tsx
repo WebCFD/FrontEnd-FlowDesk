@@ -1644,7 +1644,7 @@ export default function WizardDesign() {
   };
 
   const handleEraseDesign = () => {
-    // Resetear el store usando la función reset del store
+    // Resetear el store usando la función reset del store (esto ya limpia todas las plantas)
     reset();
     
     // Resetear estados locales del wizard
@@ -1661,15 +1661,19 @@ export default function WizardDesign() {
     setCeilingHeight(220);
     setFloorDeckThickness(35);
     
-    // Resetear multifloor y volver al ground floor
+    // IMPORTANTE: Resetear multifloor ANTES de resetear floorParameters
     setIsMultifloor(false);
     setSelectedFloor("ground");
     setLoadFromFloor("ground");
     
-    // Resetear parámetros de plantas a valores por defecto
+    // IMPORTANTE: Resetear COMPLETAMENTE parámetros de plantas a solo ground
     setFloorParameters({
       ground: { ceilingHeight: 220, floorDeck: 35 }
     });
+    
+    // También limpiar las mediciones y escalones locales
+    setMeasurements([]);
+    setStairPolygons([]);
     
     // Cerrar el diálogo
     setShowEraseDesignDialog(false);
