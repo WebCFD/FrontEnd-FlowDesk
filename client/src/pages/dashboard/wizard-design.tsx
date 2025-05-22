@@ -1649,16 +1649,16 @@ export default function WizardDesign() {
       ground: { ceilingHeight: 220, floorDeck: 35 }
     });
     
-    // PASO 2: Desactivar multifloor inmediatamente
+    // PASO 2: Resetear el store ANTES de cambiar isMultifloor (evita useEffect con datos intermedios)
+    reset();
+    
+    // PASO 3: CRÍTICO - Sincronizar currentFloor del store con ground
+    setCurrentFloor("ground");
+    
+    // PASO 4: Desactivar multifloor DESPUÉS del reset para evitar efectos intermedios
     setIsMultifloor(false);
     setSelectedFloor("ground");
     setLoadFromFloor("ground");
-    
-    // PASO 3: Resetear el store (esto borra todas las plantas del store)
-    reset();
-    
-    // PASO 4: CRÍTICO - Sincronizar currentFloor del store con ground
-    setCurrentFloor("ground");
     
     // PASO 4: Resetear todos los estados locales del wizard
     setSimulationName("");
