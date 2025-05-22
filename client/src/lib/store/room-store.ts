@@ -68,6 +68,7 @@ interface RoomState {
   // Current floor operations
   setLines: (lines: Line[]) => void;
   setAirEntries: (entries: AirEntry[]) => void;
+  setWalls: (walls: Wall[]) => void;
   setMeasurements: (measurements: Measurement[]) => void;
   setStairPolygons: (polygons: StairPolygon[]) => void;
   addStairPolygon: (polygon: StairPolygon) => void;
@@ -118,6 +119,16 @@ export const useRoomStore = create<RoomState>()(
             [state.currentFloor]: {
               ...state.floors[state.currentFloor],
               airEntries
+            }
+          }
+        })),
+
+        setWalls: (walls) => set((state) => ({
+          floors: {
+            ...state.floors,
+            [state.currentFloor]: {
+              ...state.floors[state.currentFloor],
+              walls
             }
           }
         })),
@@ -183,6 +194,7 @@ export const useRoomStore = create<RoomState>()(
             templateSource: sourceName,
             lines: [...sourceData.lines],
             airEntries: [...sourceData.airEntries],
+            walls: [...(sourceData.walls || [])],
             measurements: [...sourceData.measurements],
             hasClosedContour: sourceData.hasClosedContour,
             // Handle stairs with special logic
@@ -249,6 +261,7 @@ export const useRoomStore = create<RoomState>()(
             ground: {
               lines: [],
               airEntries: [],
+              walls: [],
               measurements: [],
               stairPolygons: [],
               hasClosedContour: false,
