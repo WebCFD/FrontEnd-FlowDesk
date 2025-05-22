@@ -24,7 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import SimulationDataDialog from "@/components/sketch/SimulationDataDialog";
 import { generateSimulationData } from "@/lib/simulationDataConverter";
-import * as THREE from 'three';
+import * as THREE from "three";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
 import {
@@ -54,7 +54,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
@@ -238,9 +238,10 @@ export default function WizardDesign() {
   const [floorDeckThickness, setFloorDeckThickness] = useState(35); // Default 35cm
   const [isMeasureMode, setIsMeasureMode] = useState(false);
   const [isEraserMode, setIsEraserMode] = useState(false);
-  
+
   // Estado para el diálogo de datos de simulación
-  const [showSimulationDataDialog, setShowSimulationDataDialog] = useState(false);
+  const [showSimulationDataDialog, setShowSimulationDataDialog] =
+    useState(false);
   const [simulationData, setSimulationData] = useState<object>({});
 
   // Use the global room store with updated selectors
@@ -452,13 +453,18 @@ export default function WizardDesign() {
     // Rastrear cambio de herramienta
     trackEvent(
       AnalyticsCategories.DESIGN,
-      tool === "wall" ? AnalyticsActions.ADD_WALL :
-      tool === "eraser" ? AnalyticsActions.DELETE_ELEMENT :
-      tool === "measure" ? "measure_tool" :
-      tool === "stairs" ? AnalyticsActions.ADD_STAIR : "unknown_tool",
-      `select_${tool}_tool`
+      tool === "wall"
+        ? AnalyticsActions.ADD_WALL
+        : tool === "eraser"
+          ? AnalyticsActions.DELETE_ELEMENT
+          : tool === "measure"
+            ? "measure_tool"
+            : tool === "stairs"
+              ? AnalyticsActions.ADD_STAIR
+              : "unknown_tool",
+      `select_${tool}_tool`,
     );
-    
+
     setCurrentTool(tool);
     setCurrentAirEntry(null);
   };
@@ -467,11 +473,14 @@ export default function WizardDesign() {
     // Rastrear selección de tipo de air entry
     trackEvent(
       AnalyticsCategories.DESIGN,
-      entry === "window" ? AnalyticsActions.ADD_WINDOW :
-      entry === "door" ? AnalyticsActions.ADD_DOOR : "add_vent",
-      `select_${entry}_tool`
+      entry === "window"
+        ? AnalyticsActions.ADD_WINDOW
+        : entry === "door"
+          ? AnalyticsActions.ADD_DOOR
+          : "add_vent",
+      `select_${entry}_tool`,
     );
-    
+
     if (currentAirEntry === entry) {
       setCurrentAirEntry(null);
     } else {
@@ -560,7 +569,6 @@ export default function WizardDesign() {
 
   // Handle view direction changes is defined below
 
-
   // Add these functions:
   // Toggle 3D measurement mode
   const handleToggleMeasureMode = () => {
@@ -570,24 +578,33 @@ export default function WizardDesign() {
       setIsEraserMode(false);
     }
     toast({
-      title: isMeasureMode ? "Measurement Mode Disabled" : "Measurement Mode Enabled",
-      description: isMeasureMode 
-        ? "Exited measurement mode" 
+      title: isMeasureMode
+        ? "Measurement Mode Disabled"
+        : "Measurement Mode Enabled",
+      description: isMeasureMode
+        ? "Exited measurement mode"
         : "Click to place start point, click again for end point",
     });
   };
-  
+
   // Toggle 3D eraser mode
   const handleToggleEraserMode = () => {
     const newEraserMode = !isEraserMode;
-    console.log("🔴 ERASER TOGGLE - Toggling eraser mode, current:", isEraserMode, "new:", newEraserMode);
-    
+    console.log(
+      "🔴 ERASER TOGGLE - Toggling eraser mode, current:",
+      isEraserMode,
+      "new:",
+      newEraserMode,
+    );
+
     // Disable measurement mode when enabling eraser mode
     if (newEraserMode) {
-      console.log("🔴 ERASER TOGGLE - Disabling measure mode because eraser mode was enabled");
+      console.log(
+        "🔴 ERASER TOGGLE - Disabling measure mode because eraser mode was enabled",
+      );
       setIsMeasureMode(false);
     }
-    
+
     // Use the new value for toast notifications instead of the current state
     // which hasn't been updated yet
     toast({
@@ -596,38 +613,38 @@ export default function WizardDesign() {
         ? "Click on a window, door, or vent to delete it"
         : "Exited eraser mode",
     });
-    
+
     // Set the state after preparing the toast notification
     setIsEraserMode(newEraserMode);
-    
+
     // Log for debugging
     console.log("🔴 ERASER TOGGLE - Set isEraserMode to:", newEraserMode);
   };
-  
+
   // Handle view direction changes
   // Store the camera view change callback function provided by Canvas3D
   const [viewChangeFunction, setViewChangeFunction] = useState<
     ((direction: ViewDirection) => void) | null
   >(null);
-  
-  // This function receives the callback from Canvas3D 
+
+  // This function receives the callback from Canvas3D
   // It will be passed to Canvas3D as the onViewChange prop
   const handleViewChange = (callback: (direction: ViewDirection) => void) => {
     console.log("Received camera control callback from Canvas3D");
     setViewChangeFunction(() => callback);
   };
-  
+
   // This function is called by the dropdown menu items
   const changeViewDirection = (direction: ViewDirection) => {
     console.log(`Changing view to: ${direction}`);
-    
+
     // Rastrear cambios de dirección de vista
     trackEvent(
       AnalyticsCategories.UI,
       AnalyticsActions.TOGGLE_VIEW,
-      `view_${direction}`
+      `view_${direction}`,
     );
-    
+
     if (viewChangeFunction) {
       viewChangeFunction(direction);
     } else {
@@ -635,122 +652,133 @@ export default function WizardDesign() {
     }
   };
 
-  const handleDeleteAirEntryFrom3D = (
-    floorName: string,
-    index: number
-  ) => {
+  const handleDeleteAirEntryFrom3D = (floorName: string, index: number) => {
     // Create a copy of the floors data
     console.log(`Deleting air entry in floor ${floorName}, index ${index}`);
-    
+
     // Use the store's setAirEntries function when updating the current floor
     if (floorName === currentFloor) {
       // Create a deep copy of the air entries array
       const updatedAirEntries = airEntries.filter((_, i) => i !== index);
-      
+
       // Set the air entries with the filtered array
       setAirEntries(updatedAirEntries);
-      
+
       // Also update the floors data to keep everything in sync
       const updatedFloors = { ...floors };
       if (updatedFloors[floorName]) {
         updatedFloors[floorName] = {
           ...updatedFloors[floorName],
-          airEntries: [...updatedAirEntries]
+          airEntries: [...updatedAirEntries],
         };
         // Update floor data in the store
         useRoomStore.getState().setFloors(updatedFloors);
       }
-      
+
       toast({
         title: "Air Entry Deleted",
         description: `Deleted air entry from ${formatFloorText(floorName)}`,
       });
       return;
     }
-    
+
     // For other floors, create a deep copy of the floors object
     const updatedFloors = { ...floors };
-    
+
     // Check if the floor and its air entries exist
     if (updatedFloors[floorName]?.airEntries) {
       // Create a filtered copy of the air entries array
-      const floorAirEntries = updatedFloors[floorName].airEntries.filter((_, i) => i !== index);
-      
+      const floorAirEntries = updatedFloors[floorName].airEntries.filter(
+        (_, i) => i !== index,
+      );
+
       // Create a copy of the floor data with the updated air entries
       updatedFloors[floorName] = {
         ...updatedFloors[floorName],
-        airEntries: floorAirEntries
+        airEntries: floorAirEntries,
       };
-      
+
       // Update the room store with the updated floors data
       useRoomStore.getState().setFloors(updatedFloors);
-      
+
       // Update the specific floor in the store
       useRoomStore.getState().updateFloor(floorName, updatedFloors[floorName]);
-      
+
       toast({
         title: "Air Entry Deleted",
         description: `Deleted air entry from ${formatFloorText(floorName)}`,
       });
     }
   };
-  
+
   const handleUpdateAirEntryFrom3D = (
     floorName: string,
-    index: number, 
-    updatedEntry: AirEntry
+    index: number,
+    updatedEntry: AirEntry,
   ) => {
     // Create a copy of the floors data
     console.log(`Updating air entry in floor ${floorName}, index ${index}`);
-    
+
     // Log all entries before updating
     console.log("PARENT COMPONENT DEBUG - BEFORE UPDATE:", {
       updateRequestedFor: {
         floorName,
         index,
         entryType: updatedEntry.type,
-        oldPosition: floorName === currentFloor ? airEntries[index]?.position : floors[floorName]?.airEntries[index]?.position,
-        newPosition: updatedEntry.position
+        oldPosition:
+          floorName === currentFloor
+            ? airEntries[index]?.position
+            : floors[floorName]?.airEntries[index]?.position,
+        newPosition: updatedEntry.position,
       },
       currentFloor,
-      allEntries: floorName === currentFloor 
-        ? airEntries.map((entry, i) => ({ index: i, type: entry.type, position: entry.position }))
-        : floors[floorName]?.airEntries.map((entry, i) => ({ index: i, type: entry.type, position: entry.position }))
+      allEntries:
+        floorName === currentFloor
+          ? airEntries.map((entry, i) => ({
+              index: i,
+              type: entry.type,
+              position: entry.position,
+            }))
+          : floors[floorName]?.airEntries.map((entry, i) => ({
+              index: i,
+              type: entry.type,
+              position: entry.position,
+            })),
     });
 
     // Create a deep clone of the updated entry to prevent reference issues
     const deepClonedEntry = JSON.parse(JSON.stringify(updatedEntry));
-    
+
     // Use the store's setAirEntries function when updating the current floor
     if (floorName === currentFloor) {
       // Create a deep copy of the air entries array with structuredClone
-      const updatedAirEntries = airEntries.map((entry, i) => 
-        i === index ? deepClonedEntry : { ...entry }
+      const updatedAirEntries = airEntries.map((entry, i) =>
+        i === index ? deepClonedEntry : { ...entry },
       );
-      
+
       // Set the air entries with the deep copy
       setAirEntries(updatedAirEntries);
-      
+
       // Also update the floors data to keep everything in sync
       const updatedFloors = { ...floors };
       if (updatedFloors[floorName]) {
         updatedFloors[floorName] = {
           ...updatedFloors[floorName],
-          airEntries: [...updatedAirEntries]
+          airEntries: [...updatedAirEntries],
         };
         // Update floor data in the store
         useRoomStore.getState().setFloors(updatedFloors);
       }
-      
+
       // Log entries after updating
       console.log("PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR):", {
         updatedIndex: index,
-        allEntries: updatedAirEntries.map((entry, i) => ({ 
-          index: i, 
-          type: entry.type, 
+        allEntries: updatedAirEntries.map((entry, i) => ({
+          index: i,
+          type: entry.type,
           position: entry.position,
-          isUpdated: i === index
-        }))
+          isUpdated: i === index,
+        })),
       });
 
       toast({
@@ -769,39 +797,45 @@ export default function WizardDesign() {
       const floorAirEntries = [...updatedFloors[floorName].airEntries];
 
       // Log the floor air entries before updating
-      console.log("PARENT COMPONENT DEBUG - BEFORE UPDATE (NON-CURRENT FLOOR):", {
-        floor: floorName,
-        allEntries: floorAirEntries.map((entry, i) => ({
-          index: i,
-          type: entry.type,
-          position: entry.position,
-          isTargeted: i === index
-        }))
-      });
+      console.log(
+        "PARENT COMPONENT DEBUG - BEFORE UPDATE (NON-CURRENT FLOOR):",
+        {
+          floor: floorName,
+          allEntries: floorAirEntries.map((entry, i) => ({
+            index: i,
+            type: entry.type,
+            position: entry.position,
+            isTargeted: i === index,
+          })),
+        },
+      );
 
       // Create a deep clone of the updated entry to prevent reference issues
       const deepClonedEntry = JSON.parse(JSON.stringify(updatedEntry));
-      
+
       // Update the specific air entry with deep cloned data
       floorAirEntries[index] = deepClonedEntry;
 
       // Log the floor air entries after updating
-      console.log("PARENT COMPONENT DEBUG - AFTER UPDATE (NON-CURRENT FLOOR):", {
-        floor: floorName,
-        allEntries: floorAirEntries.map((entry, i) => ({
-          index: i,
-          type: entry.type,
-          position: entry.position,
-          isUpdated: i === index
-        }))
-      });
+      console.log(
+        "PARENT COMPONENT DEBUG - AFTER UPDATE (NON-CURRENT FLOOR):",
+        {
+          floor: floorName,
+          allEntries: floorAirEntries.map((entry, i) => ({
+            index: i,
+            type: entry.type,
+            position: entry.position,
+            isUpdated: i === index,
+          })),
+        },
+      );
 
       // Create a copy of the floor data with the updated air entries
       updatedFloors[floorName] = {
         ...updatedFloors[floorName],
-        airEntries: floorAirEntries
+        airEntries: floorAirEntries,
       };
-      
+
       // Make sure we also update the "floors" state variable completely
       // to ensure it's consistent across the component
       useRoomStore.getState().setFloors(updatedFloors);
@@ -822,9 +856,6 @@ export default function WizardDesign() {
     }
   };
 
-
-
-  
   const renderStepIndicator = () => (
     <div className="w-full">
       <div className="relative h-16 bg-muted/10 border rounded-lg">
@@ -854,7 +885,6 @@ export default function WizardDesign() {
 
   const renderStep1 = () => (
     <>
-
       <Card className="mt-4">
         <CardContent className="p-4">
           <ToolbarToggle
@@ -991,22 +1021,34 @@ export default function WizardDesign() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="start">
-                        <DropdownMenuItem onClick={() => changeViewDirection("+X")}>
+                        <DropdownMenuItem
+                          onClick={() => changeViewDirection("+X")}
+                        >
                           +X View
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => changeViewDirection("-X")}>
+                        <DropdownMenuItem
+                          onClick={() => changeViewDirection("-X")}
+                        >
                           -X View
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => changeViewDirection("+Y")}>
+                        <DropdownMenuItem
+                          onClick={() => changeViewDirection("+Y")}
+                        >
                           +Y View
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => changeViewDirection("-Y")}>
+                        <DropdownMenuItem
+                          onClick={() => changeViewDirection("-Y")}
+                        >
                           -Y View
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => changeViewDirection("+Z")}>
+                        <DropdownMenuItem
+                          onClick={() => changeViewDirection("+Z")}
+                        >
                           +Z View (Top)
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => changeViewDirection("-Z")}>
+                        <DropdownMenuItem
+                          onClick={() => changeViewDirection("-Z")}
+                        >
                           -Z View (Bottom)
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -1098,8 +1140,8 @@ export default function WizardDesign() {
               <div className="border rounded-lg p-4">
                 <h3 className="font-semibold text-lg mb-4">Files</h3>
                 <div className="space-y-2">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="w-full justify-start"
                     onClick={handleSaveDesign}
                   >
@@ -1163,7 +1205,7 @@ export default function WizardDesign() {
                 {/* Main options */}
                 <div className="border rounded-lg p-4">
                   <h3 className="font-semibold text-lg mb-4">3D Menu</h3>
-                  
+
                   {/* Wall Transparency */}
                   <div className="space-y-4 mt-4">
                     <h3 className="font-semibold">Wall Transparency</h3>
@@ -1171,7 +1213,10 @@ export default function WizardDesign() {
                       <Slider
                         value={[wallTransparency]}
                         onValueChange={(values: number[]) => {
-                          console.log("Wizard: Wall transparency changing to:", values[0]);
+                          console.log(
+                            "Wizard: Wall transparency changing to:",
+                            values[0],
+                          );
                           setWallTransparency(values[0]);
                         }}
                         min={0}
@@ -1184,16 +1229,56 @@ export default function WizardDesign() {
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Furniture */}
                   <div className="space-y-4 mt-4">
                     <h3 className="font-semibold">Furniture</h3>
                     <div className="grid grid-cols-3 gap-2">
                       {[
-                        { id: 'table', name: 'Table', icon: <rect x="4" y="14" width="16" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" /> },
-                        { id: 'person', name: 'Person', icon: <circle cx="12" cy="9" r="3" stroke="currentColor" strokeWidth="1.5" /> },
-                        { id: 'armchair', name: 'Armchair', icon: <rect x="4" y="12" width="16" height="8" rx="1" stroke="currentColor" strokeWidth="1.5" /> }
-                      ].map(item => (
+                        {
+                          id: "table",
+                          name: "Table",
+                          icon: (
+                            <rect
+                              x="4"
+                              y="14"
+                              width="16"
+                              height="6"
+                              rx="1"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                            />
+                          ),
+                        },
+                        {
+                          id: "person",
+                          name: "Person",
+                          icon: (
+                            <circle
+                              cx="12"
+                              cy="9"
+                              r="3"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                            />
+                          ),
+                        },
+                        {
+                          id: "armchair",
+                          name: "Armchair",
+                          icon: (
+                            <rect
+                              x="4"
+                              y="12"
+                              width="16"
+                              height="8"
+                              rx="1"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                            />
+                          ),
+                        },
+                      ].map((item) => (
                         <Button
                           key={item.id}
                           variant="outline"
@@ -1202,15 +1287,23 @@ export default function WizardDesign() {
                           onDragStart={(e) => {
                             console.log(`Starting drag for ${item.name}`);
                             // Only send the necessary data without React elements to avoid circular references
-                            const serializable = { 
-                              id: item.id, 
-                              name: item.name 
+                            const serializable = {
+                              id: item.id,
+                              name: item.name,
                             };
-                            e.dataTransfer.setData('application/json', JSON.stringify(serializable));
-                            e.dataTransfer.effectAllowed = 'copy';
+                            e.dataTransfer.setData(
+                              "application/json",
+                              JSON.stringify(serializable),
+                            );
+                            e.dataTransfer.effectAllowed = "copy";
                           }}
                         >
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                          <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                          >
                             {item.icon}
                           </svg>
                           <span className="text-xs">{item.name}</span>
@@ -1246,15 +1339,18 @@ export default function WizardDesign() {
                 <div className="border rounded-lg p-4">
                   <h3 className="font-semibold text-lg mb-4">Files</h3>
                   <div className="space-y-2">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       className="w-full flex items-center gap-2"
                       onClick={handleSaveDesign}
                     >
                       <Save className="h-4 w-4" />
                       Save Design
                     </Button>
-                    <Button variant="outline" className="w-full flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      className="w-full flex items-center gap-2"
+                    >
                       <FileText className="h-4 w-4" />
                       Load Design
                     </Button>
@@ -1427,74 +1523,78 @@ export default function WizardDesign() {
   const generateSimulationDataForExport = () => {
     // Recopilar datos de mobiliario
     const furnitureObjects: THREE.Object3D[] = [];
-    
+
     // Intentar obtener elementos 3D de la escena
     try {
       // Buscar todos los objetos relevantes de mobiliario
-      document.querySelectorAll('[data-furniture]').forEach((elem: any) => {
-        if (elem.userData && elem.userData.type === 'furniture') {
+      document.querySelectorAll("[data-furniture]").forEach((elem: any) => {
+        if (elem.userData && elem.userData.type === "furniture") {
           furnitureObjects.push(elem);
         }
       });
     } catch (err) {
       console.log("No se pudieron encontrar objetos de mobiliario", err);
     }
-    
+
     // Generar los datos de simulación completos
-    return generateSimulationData(floors, furnitureObjects, ceilingHeight / 100);
+    return generateSimulationData(
+      floors,
+      furnitureObjects,
+      ceilingHeight / 100,
+    );
   };
-  
+
   // Función para mostrar el diálogo con los datos de simulación
   const handleStartSimulation = () => {
     const exportData = generateSimulationDataForExport();
-    
+
     // Rastrear evento de inicio de simulación
     trackEvent(
-      AnalyticsCategories.SIMULATION, 
-      AnalyticsActions.START_SIMULATION, 
-      'wizard_button', 
-      Object.keys(exportData).length
+      AnalyticsCategories.SIMULATION,
+      AnalyticsActions.START_SIMULATION,
+      "wizard_button",
+      Object.keys(exportData).length,
     );
-    
+
     // Guardar los datos para mostrarlos en el diálogo
     setSimulationData(exportData);
-    
+
     // Mostrar el diálogo con los datos para copiar/exportar
     setShowSimulationDataDialog(true);
   };
-  
+
   // Función para guardar el diseño localmente como archivo JSON
   const handleSaveDesign = () => {
     const exportData = generateSimulationDataForExport();
-    
+
     // Rastrear evento de guardar simulación
     trackEvent(
-      AnalyticsCategories.SIMULATION, 
-      AnalyticsActions.SAVE_SIMULATION, 
-      'file_download',
-      Object.keys(exportData).length
+      AnalyticsCategories.SIMULATION,
+      AnalyticsActions.SAVE_SIMULATION,
+      "file_download",
+      Object.keys(exportData).length,
     );
-    
+
     // Crear un nombre de archivo que incluya el nombre de la simulación seguido de "_FlowDeskModel"
-    const baseName = simulationName 
-      ? `${simulationName.replace(/[^\w-]/g, '_')}_FlowDeskModel` 
+    const baseName = simulationName
+      ? `${simulationName.replace(/[^\w-]/g, "_")}_FlowDeskModel`
       : "FlowDeskModel";
-    
+
     const filename = `${baseName}.json`;
-    
+
     // Crear y descargar el archivo
     const jsonString = JSON.stringify(exportData, null, 2);
-    const blob = new Blob([jsonString], { type: 'application/json' });
+    const blob = new Blob([jsonString], { type: "application/json" });
     const url = URL.createObjectURL(blob);
-    
-    const a = document.createElement('a');
+
+    const a = document.createElement("a");
     a.href = url;
     a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    
+
     toast({
       title: "Diseño guardado",
       description: `El diseño ha sido exportado como ${filename}`,
@@ -1673,25 +1773,28 @@ export default function WizardDesign() {
                   currentFloor,
                   floorCount: Object.keys(floors).length,
                   floorNames: Object.keys(floors),
-                  hasMultipleFloors: Object.keys(floors).length > 1
+                  hasMultipleFloors: Object.keys(floors).length > 1,
                 });
-                
+
                 // Log which floor is active in Canvas3D for comparison
-                console.log("⚠️ IMPORTANT: RoomSketchPro should EXACTLY mirror Canvas3D view", {
-                  currentFloorName: currentFloor,
-                  sendingMultifloorData: true,
-                  note: "Canvas3D displays a specific floor, RSP should show exactly the same"
-                });
-                
+                console.log(
+                  "⚠️ IMPORTANT: RoomSketchPro should EXACTLY mirror Canvas3D view",
+                  {
+                    currentFloorName: currentFloor,
+                    sendingMultifloorData: true,
+                    note: "Canvas3D displays a specific floor, RSP should show exactly the same",
+                  },
+                );
+
                 // Log specific floor contents that will be displayed in Canvas3D vs RSP
-                Object.keys(floors).forEach(floorName => {
+                Object.keys(floors).forEach((floorName) => {
                   console.log(`📊 FLOOR DATA FOR [${floorName}]:`, {
                     lineCount: floors[floorName]?.lines?.length || 0,
                     airEntryCount: floors[floorName]?.airEntries?.length || 0,
                     hasStairs: !!floors[floorName]?.stairPolygons?.length,
                     stairCount: floors[floorName]?.stairPolygons?.length || 0,
                     isCurrentFloor: floorName === currentFloor,
-                    shouldBeVisibleInRSP: floorName === currentFloor // Only current floor should be visible in RSP
+                    shouldBeVisibleInRSP: floorName === currentFloor, // Only current floor should be visible in RSP
                   });
                 });
               }}
@@ -1733,7 +1836,11 @@ export default function WizardDesign() {
               isMeasureMode={isMeasureMode}
               isEraserMode={isEraserMode}
               simulationName={simulationName}
-              simulationType={simulationType === "comfort" ? "Comfort Simulation (steady run)" : "Air Renovation Convection Simulation (transient run)"}
+              simulationType={
+                simulationType === "comfort"
+                  ? "Ensure Thermal Comfort (Steady Equilibrium Simulation)"
+                  : "Thermal Comfort + Air Renovation (Transient Simulation)"
+              }
               onUpdateAirEntry={handleUpdateAirEntryFrom3D}
               onDeleteAirEntry={handleDeleteAirEntryFrom3D}
               onViewChange={handleViewChange}
@@ -1764,10 +1871,10 @@ export default function WizardDesign() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="comfort">
-              Comfort Simulation (steady run)
+              Ensure Thermal Comfort (Steady Equilibrium Simulation)
             </SelectItem>
             <SelectItem value="renovation">
-              Air Renovation Convection Simulation (transient run)
+              Thermal Comfort + Air Renovation (Transient Simulation)
             </SelectItem>
           </SelectContent>
         </Select>
@@ -1826,7 +1933,7 @@ export default function WizardDesign() {
           }) || false
         }
       />
-      
+
       {/* Diálogo para mostrar los datos de simulación */}
       <SimulationDataDialog
         open={showSimulationDataDialog}

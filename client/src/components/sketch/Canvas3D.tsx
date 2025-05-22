@@ -1450,8 +1450,41 @@ export default function Canvas3D({
     camera.lookAt(0, 0, 0);
     cameraRef.current = camera;
 
-    // Initialize renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    // Initialize renderer with error handling
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+    } catch (error) {
+      console.error('Failed to create WebGL renderer:', error);
+      // Try without antialias as fallback
+      try {
+        renderer = new THREE.WebGLRenderer({ antialias: false });
+      } catch (fallbackError) {
+        console.error('Failed to create WebGL renderer even without antialias:', fallbackError);
+        // Show error message to user
+        if (containerRef.current) {
+          containerRef.current.innerHTML = `
+            <div style="
+              display: flex; 
+              flex-direction: column; 
+              align-items: center; 
+              justify-content: center; 
+              height: 100%; 
+              background: #f3f4f6; 
+              color: #374151;
+              text-align: center;
+              padding: 20px;
+            ">
+              <h3 style="margin-bottom: 10px;">3D Visualization Unavailable</h3>
+              <p>Your browser doesn't support WebGL, which is required for 3D rendering.</p>
+              <p style="font-size: 14px; margin-top: 10px;">Please try using a modern browser like Chrome, Firefox, or Safari.</p>
+            </div>
+          `;
+        }
+        return;
+      }
+    }
+    
     renderer.setSize(
       containerRef.current.clientWidth,
       containerRef.current.clientHeight,
