@@ -1789,11 +1789,24 @@ export default function WizardDesign() {
                     <SelectValue placeholder="Select floor to load from" />
                   </SelectTrigger>
                   <SelectContent>
-                    {Object.entries(floors).map(([floorName, floor]) => (
-                      <SelectItem key={floorName} value={floorName}>
-                        {formatFloorText(floorName)}
-                      </SelectItem>
-                    ))}
+                    {(() => {
+                      // Define floor hierarchy order
+                      const floorOrder = ["ground", "first", "second", "third", "fourth", "fifth"];
+                      const currentFloorIndex = floorOrder.indexOf(currentFloor);
+                      
+                      // Filter to only show floors that are "below" current floor
+                      return Object.entries(floors)
+                        .filter(([floorName]) => {
+                          const floorIndex = floorOrder.indexOf(floorName);
+                          // Only include floors that are lower in hierarchy and exist
+                          return floorIndex !== -1 && floorIndex < currentFloorIndex;
+                        })
+                        .map(([floorName, floor]) => (
+                          <SelectItem key={floorName} value={floorName}>
+                            {formatFloorText(floorName)}
+                          </SelectItem>
+                        ));
+                    })()}
                   </SelectContent>
                 </Select>
                 <Button
