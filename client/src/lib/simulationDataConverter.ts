@@ -22,6 +22,18 @@ interface AirEntry {
   line: Line;
 }
 
+interface Wall {
+  id: string; // Formato: "0F_wall1", "1F_wall3", etc.
+  uuid: string; // UUID único para trazabilidad
+  floor: string; // "Planta Baja", "Primera Planta", etc.
+  lineRef: string; // Referencia única a la línea asociada
+  startPoint: Point2D;
+  endPoint: Point2D;
+  properties: {
+    temperature: number; // En grados Celsius
+  };
+}
+
 interface StairPolygon {
   id: string;
   points: Point2D[];
@@ -35,6 +47,7 @@ interface StairPolygon {
 interface FloorData {
   lines: Line[];
   airEntries: AirEntry[];
+  walls: Wall[];
   hasClosedContour: boolean;
   name?: string;
   stairPolygons?: StairPolygon[];
