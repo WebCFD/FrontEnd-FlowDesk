@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState, useEffect, useRef } from "react";
 
+// Props para entrada de aire (compatibilidad hacia atrás)
 interface AirEntryDialogProps {
   type: 'window' | 'door' | 'vent';
   isOpen: boolean;
@@ -27,6 +28,21 @@ interface AirEntryDialogProps {
     distanceToFloor?: number;
   };
 }
+
+// Props para propiedades de pared
+interface WallPropertiesDialogProps {
+  type: 'wall';
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: (temperature: number) => void;
+  isEditing?: boolean;
+  initialValues?: {
+    temperature: number;
+  };
+}
+
+// Tipo unión para ambos casos
+type PropertyDialogProps = AirEntryDialogProps | WallPropertiesDialogProps;
 
 const windowDefaults = {
   width: 50,
@@ -45,15 +61,15 @@ const ventDefaults = {
   distanceToFloor: 120
 };
 
-export default function AirEntryDialog({ 
-  type, 
-  isOpen, 
-  onClose, 
-  onConfirm,
-  isEditing = false,
-  initialValues 
-}: AirEntryDialogProps) {
-  const [dimensions, setDimensions] = useState(getDefaultValues());
+const wallDefaults = {
+  temperature: 20
+};
+
+export default function AirEntryDialog(props: PropertyDialogProps) {
+  const { type, isOpen, onClose, isEditing = false } = props;
+  
+  // Estado unificado para manejar tanto dimensiones como temperatura
+  const [values, setValues] = useState(getDefaultValues());
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [hasBeenDragged, setHasBeenDragged] = useState(false);
@@ -61,6 +77,11 @@ export default function AirEntryDialog({
   
 
   function getDefaultValues() {
+    // Obtener valores iniciales según el tipo de props
+    const initialValues = props.type === 'wall' 
+      ? props.initialValues 
+      : props.initialValues;
+
     if (initialValues) return initialValues;
 
     switch (type) {
@@ -70,34 +91,42 @@ export default function AirEntryDialog({
         return { ...doorDefaults };
       case 'vent':
         return { ...ventDefaults };
+      case 'wall':
+        return { ...wallDefaults };
       default:
         return { ...windowDefaults };
     }
   }
 
-  // Reset dimensions when dialog opens with new type or initialValues
+  // Reset values when dialog opens with new type or initialValues
   useEffect(() => {
     if (isOpen) {
-      setDimensions(getDefaultValues());
+      setValues(getDefaultValues());
     }
-  }, [isOpen, type, initialValues]);
+  }, [isOpen, type, props]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onConfirm(dimensions);
+    if (props.type === 'wall') {
+      props.onConfirm((values as { temperature: number }).temperature);
+    } else {
+      props.onConfirm(values as { width: number; height: number; distanceToFloor?: number });
+    }
     onClose();
   };
 
   const titles = {
     window: isEditing ? "Edit Window" : "Window Dimensions",
     door: isEditing ? "Edit Door" : "Door Dimensions",
-    vent: isEditing ? "Edit Vent" : "Vent Grid Dimensions"
+    vent: isEditing ? "Edit Vent" : "Vent Grid Dimensions",
+    wall: isEditing ? "Edit Wall Properties" : "Wall Properties"
   };
 
   const descriptions = {
     window: isEditing ? "Modify the dimensions for this window" : "Set the dimensions for the window",
     door: isEditing ? "Modify the dimensions for this door" : "Set the dimensions for the door",
-    vent: isEditing ? "Modify the dimensions for this vent" : "Set the dimensions for the ventilation grid"
+    vent: isEditing ? "Modify the dimensions for this vent" : "Set the dimensions for the ventilation grid",
+    wall: isEditing ? "Modify the temperature for this wall" : "Set the temperature for the wall"
   };
 
   // Handle dragging start
@@ -196,46 +225,66 @@ export default function AirEntryDialog({
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="width" className="text-right">
-                Width
-              </Label>
-              <Input
-                id="width"
-                type="number"
-                value={dimensions.width}
-                onChange={(e) => setDimensions(prev => ({ ...prev, width: Number(e.target.value) }))}
-                className="col-span-3"
-              />
-              <span className="text-sm">cm</span>
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="height" className="text-right">
-                Height
-              </Label>
-              <Input
-                id="height"
-                type="number"
-                value={dimensions.height}
-                onChange={(e) => setDimensions(prev => ({ ...prev, height: Number(e.target.value) }))}
-                className="col-span-3"
-              />
-              <span className="text-sm">cm</span>
-            </div>
-            {type !== 'door' && (
+            {type === 'wall' ? (
+              // Campos para propiedades de pared
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="distance" className="text-right">
-                  Distance to Floor
+                <Label htmlFor="temperature" className="text-right">
+                  Temperature
                 </Label>
                 <Input
-                  id="distance"
+                  id="temperature"
                   type="number"
-                  value={dimensions.distanceToFloor || 0}
-                  onChange={(e) => setDimensions(prev => ({ ...prev, distanceToFloor: Number(e.target.value) }))}
+                  value={(values as { temperature: number }).temperature}
+                  onChange={(e) => setValues(prev => ({ ...prev, temperature: Number(e.target.value) }))}
                   className="col-span-3"
                 />
-                <span className="text-sm">cm</span>
+                <span className="text-sm">°C</span>
               </div>
+            ) : (
+              // Campos existentes para entradas de aire
+              <>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="width" className="text-right">
+                    Width
+                  </Label>
+                  <Input
+                    id="width"
+                    type="number"
+                    value={(values as { width: number }).width}
+                    onChange={(e) => setValues(prev => ({ ...prev, width: Number(e.target.value) }))}
+                    className="col-span-3"
+                  />
+                  <span className="text-sm">cm</span>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="height" className="text-right">
+                    Height
+                  </Label>
+                  <Input
+                    id="height"
+                    type="number"
+                    value={(values as { height: number }).height}
+                    onChange={(e) => setValues(prev => ({ ...prev, height: Number(e.target.value) }))}
+                    className="col-span-3"
+                  />
+                  <span className="text-sm">cm</span>
+                </div>
+                {type !== 'door' && (
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="distance" className="text-right">
+                      Distance to Floor
+                    </Label>
+                    <Input
+                      id="distance"
+                      type="number"
+                      value={(values as { distanceToFloor?: number }).distanceToFloor || 0}
+                      onChange={(e) => setValues(prev => ({ ...prev, distanceToFloor: Number(e.target.value) }))}
+                      className="col-span-3"
+                    />
+                    <span className="text-sm">cm</span>
+                  </div>
+                )}
+              </>
             )}
           </div>
           <DialogFooter>
