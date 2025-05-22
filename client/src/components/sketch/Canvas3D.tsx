@@ -88,6 +88,8 @@ interface Canvas3DProps {
   isEraserMode?: boolean;
   simulationName?: string;
   simulationType?: string;
+  isMultifloor?: boolean;
+  floorParameters?: Record<string, { ceilingHeight: number; floorDeck: number }>;
   onUpdateAirEntry?: (
     floorName: string,
     index: number,
@@ -381,6 +383,8 @@ export default function Canvas3D({
   isEraserMode, // Removed default value to ensure external state is always respected
   simulationName = "",
   simulationType = "Comfort Simulation (steady run)",
+  isMultifloor = false,
+  floorParameters = {},
   onUpdateAirEntry,
   onDeleteAirEntry,
   onViewChange,
@@ -3580,15 +3584,15 @@ export default function Canvas3D({
         const baseHeight = getFloorBaseHeight(floorName);
         
         // Get specific parameters for this floor
-        let floorCeilingHeight, floorDeckThickness;
+        let floorCeilingHeight, currentFloorDeckThickness;
         if (isMultifloor && floorParameters[floorName]) {
           // Use multifloor parameters specific to this floor
           floorCeilingHeight = floorParameters[floorName].ceilingHeight;
-          floorDeckThickness = floorParameters[floorName].floorDeck;
+          currentFloorDeckThickness = floorParameters[floorName].floorDeck;
         } else {
           // Use global parameters for single-floor mode
           floorCeilingHeight = ceilingHeight;
-          floorDeckThickness = floorDeckThickness;
+          currentFloorDeckThickness = floorDeckThickness;
         }
         
         const objects = createFloorObjects(
@@ -3596,7 +3600,7 @@ export default function Canvas3D({
           baseHeight,
           floorName === currentFloor,
           floorCeilingHeight,
-          floorDeckThickness,
+          currentFloorDeckThickness,
         );
         objects.forEach((obj) => sceneRef.current?.add(obj));
       }
