@@ -3108,6 +3108,17 @@ export default function Canvas2D({
           relativeCoordinates={getRelativeCoordinates(editingPoint.point)}
         />
       )}
+
+      {/* Wall Properties Dialog */}
+      <WallPropertiesDialog
+        isOpen={wallPropertiesDialogOpen}
+        onClose={() => {
+          setWallPropertiesDialogOpen(false);
+          setEditingWall(null);
+        }}
+        wall={editingWall}
+        onSave={handleWallPropertiesSave}
+      />
     </div>
   );
 }
