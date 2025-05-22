@@ -1185,6 +1185,14 @@ export default function WizardDesign() {
                     <Upload className="mr-2 h-4 w-4" />
                     Load Design
                   </Button>
+                  <Button 
+                    variant="destructive" 
+                    className="w-full justify-start"
+                    onClick={() => setShowEraseDesignDialog(true)}
+                  >
+                    <Eraser className="mr-2 h-4 w-4" />
+                    Erase Design
+                  </Button>
                 </div>
               </div>
             </div>
@@ -1632,6 +1640,52 @@ export default function WizardDesign() {
       title: "Diseño guardado",
       description: `El diseño ha sido exportado como ${filename}`,
     });
+  };
+
+  const handleEraseDesign = () => {
+    // Resetear el store usando la función reset del store
+    reset();
+    
+    // Resetear estados locales del wizard
+    setSimulationName("");
+    setSimulationType("comfort");
+    setGridSize(20);
+    setCurrentTool("wall");
+    setCurrentAirEntry(null);
+    setSelectedLine(null);
+    setClickedPoint(null);
+    setTab("2d-editor");
+    setShowStartSimulationPrompt(false);
+    setWallTransparency(0.2);
+    setCeilingHeight(220);
+    setFloorDeckThickness(35);
+    
+    // Resetear multifloor y volver al ground floor
+    setIsMultifloor(false);
+    setSelectedFloor("ground");
+    setLoadFromFloor("ground");
+    
+    // Resetear parámetros de plantas a valores por defecto
+    setFloorParameters({
+      ground: { ceilingHeight: 220, floorDeck: 35 }
+    });
+    
+    // Cerrar el diálogo
+    setShowEraseDesignDialog(false);
+    
+    // Mostrar mensaje de confirmación
+    toast({
+      title: "Diseño borrado",
+      description: "Se ha iniciado un nuevo diseño desde cero",
+    });
+
+    // Rastrear evento de borrar diseño
+    trackEvent(
+      AnalyticsCategories.SIMULATION,
+      AnalyticsActions.SAVE_SIMULATION,
+      "design_erased",
+      1,
+    );
   };
 
   const handleConfirmNewSimulation = () => {
@@ -2090,6 +2144,34 @@ export default function WizardDesign() {
         onOpenChange={setShowSimulationDataDialog}
         simulationData={simulationData}
       />
+
+      {/* Diálogo de confirmación para borrar el diseño */}
+      <AlertDialog open={showEraseDesignDialog} onOpenChange={setShowEraseDesignDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Borrar diseño actual?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción eliminará permanentemente todo el diseño actual, incluyendo:
+              <br />• Todas las paredes y líneas
+              <br />• Ventanas, puertas y ventilaciones
+              <br />• Escaleras y medidas
+              <br />• Configuraciones de todas las plantas
+              <br />• Parámetros personalizados
+              <br /><br />
+              Esta acción no se puede deshacer. ¿Estás seguro de que quieres continuar?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleEraseDesign}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Sí, borrar diseño
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </DashboardLayout>
   );
 }
