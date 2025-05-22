@@ -2149,25 +2149,20 @@ export default function WizardDesign() {
       <AlertDialog open={showEraseDesignDialog} onOpenChange={setShowEraseDesignDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Borrar diseño actual?</AlertDialogTitle>
+            <AlertDialogTitle>Erase Current Design?</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción eliminará permanentemente todo el diseño actual, incluyendo:
-              <br />• Todas las paredes y líneas
-              <br />• Ventanas, puertas y ventilaciones
-              <br />• Escaleras y medidas
-              <br />• Configuraciones de todas las plantas
-              <br />• Parámetros personalizados
+              This action will permanently delete all current design data including walls, air entries, stairs, measurements, and multi-floor configurations.
               <br /><br />
-              Esta acción no se puede deshacer. ¿Estás seguro de que quieres continuar?
+              This action cannot be undone. Are you sure you want to continue?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleEraseDesign}
               className="bg-red-600 hover:bg-red-700"
             >
-              Sí, borrar diseño
+              Yes, erase design
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

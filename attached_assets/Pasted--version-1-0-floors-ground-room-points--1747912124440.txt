@@ -1,0 +1,265 @@
+{
+  "version": "1.0",
+  "floors": {
+    "ground": {
+      "room": {
+        "points": [
+          {
+            "x": 400,
+            "z": 300
+          },
+          {
+            "x": 720,
+            "z": 300
+          }
+        ],
+        "height": 2.2
+      },
+      "airEntries": [],
+      "stairs": [],
+      "walls": [
+        {
+          "id": "0F_wall1",
+          "floor": "Ground Floor",
+          "startPoint": {
+            "x": 248,
+            "z": 396
+          },
+          "endPoint": {
+            "x": 556,
+            "z": 404
+          },
+          "properties": {
+            "temperature": 20
+          }
+        },
+        {
+          "id": "0F_wall2",
+          "floor": "Ground Floor",
+          "startPoint": {
+            "x": 556,
+            "z": 404
+          },
+          "endPoint": {
+            "x": 640,
+            "z": 184
+          },
+          "properties": {
+            "temperature": 20
+          }
+        },
+        {
+          "id": "0F_wall3",
+          "floor": "Ground Floor",
+          "startPoint": {
+            "x": 640,
+            "z": 184
+          },
+          "endPoint": {
+            "x": 400,
+            "z": 56
+          },
+          "properties": {
+            "temperature": 20
+          }
+        },
+        {
+          "id": "0F_wall4",
+          "floor": "Ground Floor",
+          "startPoint": {
+            "x": 400,
+            "z": 56
+          },
+          "endPoint": {
+            "x": 144,
+            "z": 200
+          },
+          "properties": {
+            "temperature": 20
+          }
+        },
+        {
+          "id": "0F_wall5",
+          "floor": "Ground Floor",
+          "startPoint": {
+            "x": 144,
+            "z": 200
+          },
+          "endPoint": {
+            "x": 156,
+            "z": 316
+          },
+          "properties": {
+            "temperature": 20
+          }
+        },
+        {
+          "id": "0F_wall6",
+          "floor": "Ground Floor",
+          "startPoint": {
+            "x": 156,
+            "z": 316
+          },
+          "endPoint": {
+            "x": 144,
+            "z": 416
+          },
+          "properties": {
+            "temperature": 20
+          }
+        },
+        {
+          "id": "0F_wall7",
+          "floor": "Ground Floor",
+          "startPoint": {
+            "x": 144,
+            "z": 416
+          },
+          "endPoint": {
+            "x": 248,
+            "z": 396
+          },
+          "properties": {
+            "temperature": 20
+          }
+        },
+        {
+          "id": "0F_wall8",
+          "floor": "Ground Floor",
+          "startPoint": {
+            "x": 208,
+            "z": 436
+          },
+          "endPoint": {
+            "x": 644,
+            "z": 444
+          },
+          "properties": {
+            "temperature": 20
+          }
+        },
+        {
+          "id": "0F_wall9",
+          "floor": "Ground Floor",
+          "startPoint": {
+            "x": 644,
+            "z": 444
+          },
+          "endPoint": {
+            "x": 728,
+            "z": 140
+          },
+          "properties": {
+            "temperature": 20
+          }
+        },
+        {
+          "id": "0F_wall10",
+          "floor": "Ground Floor",
+          "startPoint": {
+            "x": 728,
+            "z": 140
+          },
+          "endPoint": {
+            "x": 268,
+            "z": 40
+          },
+          "properties": {
+            "temperature": 20
+          }
+        },
+        {
+          "id": "0F_wall11",
+          "floor": "Ground Floor",
+          "startPoint": {
+            "x": 268,
+            "z": 40
+          },
+          "endPoint": {
+            "x": 208,
+            "z": 436
+          },
+          "properties": {
+            "temperature": 20
+          }
+        },
+        {
+          "id": "0F_wall12",
+          "floor": "Ground Floor",
+          "startPoint": {
+            "x": 120,
+            "z": 480
+          },
+          "endPoint": {
+            "x": 724,
+            "z": 480
+          },
+          "properties": {
+            "temperature": 20
+          }
+        },
+        {
+          "id": "0F_wall13",
+          "floor": "Ground Floor",
+          "startPoint": {
+            "x": 724,
+            "z": 480
+          },
+          "endPoint": {
+            "x": 724,
+            "z": 60
+          },
+          "properties": {
+            "temperature": 20
+          }
+        },
+        {
+          "id": "0F_wall14",
+          "floor": "Ground Floor",
+          "startPoint": {
+            "x": 724,
+            "z": 60
+          },
+          "endPoint": {
+            "x": 116,
+            "z": 60
+          },
+          "properties": {
+            "temperature": 20
+          }
+        },
+        {
+          "id": "0F_wall15",
+          "floor": "Ground Floor",
+          "startPoint": {
+            "x": 116,
+            "z": 60
+          },
+          "endPoint": {
+            "x": 120,
+            "z": 480
+          },
+          "properties": {
+            "temperature": 20
+          }
+        },
+        {
+          "id": "0F_wall16",
+          "floor": "Ground Floor",
+          "startPoint": {
+            "x": 400,
+            "z": 300
+          },
+          "endPoint": {
+            "x": 720,
+            "z": 300
+          },
+          "properties": {
+            "temperature": 20
+          }
+        }
+      ],
+      "furniture": []
+    }
+  }
+}
