@@ -1598,11 +1598,12 @@ export default function WizardDesign() {
       console.log("No se pudieron encontrar objetos de mobiliario", err);
     }
 
-    // Generar los datos de simulación completos
+    // Generar los datos de simulación completos con parámetros por planta
     return generateSimulationData(
       floors,
       furnitureObjects,
-      ceilingHeight / 100,
+      getCurrentCeilingHeight() / 100,
+      isMultifloor ? floorParameters : undefined
     );
   };
 
