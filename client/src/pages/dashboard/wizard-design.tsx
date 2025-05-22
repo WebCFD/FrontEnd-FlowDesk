@@ -317,6 +317,7 @@ export default function WizardDesign() {
     addFloor,
     removeFloor,
     copyFloorAs,
+    syncWallsForCurrentFloor,
   } = useRoomStore();
 
   // Get current floor data
