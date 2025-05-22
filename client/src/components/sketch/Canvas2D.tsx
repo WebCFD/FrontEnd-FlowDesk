@@ -13,6 +13,7 @@ import AirEntryDialog from "./AirEntryDialog";
 import { cn } from "@/lib/utils";
 import { useSketchStore } from "@/lib/stores/sketch-store";
 import CoordinateEditorDialog from "./CoordinateEditorDialog";
+import WallPropertiesDialog from "./WallPropertiesDialog";
 import { 
   createWallFromLine, 
   findWallForLine, 
@@ -357,6 +358,8 @@ export default function Canvas2D({
     position: Point;
     line: Line;
   } | null>(null);
+  const [editingWall, setEditingWall] = useState<Wall | null>(null);
+  const [wallPropertiesDialogOpen, setWallPropertiesDialogOpen] = useState(false);
   const [hoveredEndpoint, setHoveredEndpoint] = useState<{
     point: Point;
     lines: Line[];
@@ -1071,6 +1074,42 @@ export default function Canvas2D({
       setCursorPoint(endPoint);
       // If snapping to a point, set the snap source for visual feedback
       setSnapSource(nearestPoint ? source : "grid");
+    }
+  };
+
+  // Handle double click for wall properties editing - updated version
+  const handleDoubleClickNew = (e: ReactMouseEvent<HTMLCanvasElement, MouseEvent>) => {
+    debugLog("Double-click detected - checking for wall properties");
+    const point = getCanvasPoint(e.nativeEvent);
+    
+    // Set flag to ignore the next click
+    setIgnoreNextClick(true);
+    
+    // First check for wall properties editing
+    const nearbyLines = findLinesNearPoint(point);
+    if (nearbyLines.length > 0) {
+      const associatedWall = findWallForLine(walls, nearbyLines[0]);
+      if (associatedWall) {
+        setEditingWall(associatedWall);
+        setWallPropertiesDialogOpen(true);
+        debugLog(`Opening wall properties for wall: ${associatedWall.id}`);
+        return;
+      }
+    }
+    
+    // Fall back to existing functionality
+    handleDoubleClickLegacy(e.nativeEvent);
+  };
+
+  // Handle wall properties save
+  const handleWallPropertiesSave = (wallId: string, temperature: number) => {
+    if (onWallsUpdate) {
+      const updatedWalls = walls.map(wall => 
+        wall.id === wallId 
+          ? { ...wall, properties: { ...wall.properties, temperature } }
+          : wall
+      );
+      onWallsUpdate(updatedWalls);
     }
   };
 
@@ -2613,8 +2652,8 @@ export default function Canvas2D({
     return point;
   };
 
-  // Add this handler function inside the Canvas2D component
-  const handleDoubleClick = (e: MouseEvent) => {
+  // Updated double-click handler that includes wall properties editing
+  const handleDoubleClickLegacy = (e: MouseEvent) => {
     debugLog("Double-click detected");
     debugLog(
       `Current tool: ${currentTool}, isDrawingStairs: ${isDrawingStairs}`,
@@ -2787,7 +2826,7 @@ export default function Canvas2D({
   };
 
   const handleDOMDoubleClick = (e: MouseEvent) => {
-    handleDoubleClick(e);
+    handleDoubleClickLegacy(e);
   };
 
   const handleDOMContextMenu = (e: Event) => {
@@ -2989,6 +3028,7 @@ export default function Canvas2D({
         onMouseDown={handleMouseDown}
         onMouseMove={handleReactMouseMove}
         onMouseUp={handleReactMouseUp}
+        onDoubleClick={handleDoubleClickNew}
         onContextMenu={(e) => e.preventDefault()}
       />
       <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-white/80 p-2 rounded-lg shadow-sm">
