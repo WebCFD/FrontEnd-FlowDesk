@@ -1830,7 +1830,7 @@ export default function WizardDesign() {
           <h4 className="font-medium text-sm text-gray-700">Building Parameters</h4>
           
           {!isMultifloor ? (
-            // Modo single floor: controles únicos
+            // Modo single floor: solo control de ceiling height
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="ceiling-height">Ceiling Height</Label>
@@ -1846,27 +1846,6 @@ export default function WizardDesign() {
                       const value = parseInt(e.target.value);
                       if (!isNaN(value) && value >= 200 && value <= 500) {
                         setCeilingHeight(value);
-                      }
-                    }}
-                    className="w-24"
-                  />
-                  <span className="text-sm text-gray-500">cm</span>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="floor-deck">Floor Deck Thickness</Label>
-                <div className="flex items-center gap-2">
-                  <Input
-                    id="floor-deck"
-                    type="number"
-                    value={floorDeckThickness}
-                    min={5}
-                    max={150}
-                    step={5}
-                    onChange={(e) => {
-                      const value = parseInt(e.target.value);
-                      if (!isNaN(value) && value >= 5 && value <= 150) {
-                        setFloorDeckThickness(value);
                       }
                     }}
                     className="w-24"
