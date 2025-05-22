@@ -1360,6 +1360,15 @@ export default function Canvas2D({
                 ),
             );
             onLinesUpdate?.(newLines);
+
+            // Remove walls associated with deleted lines
+            if (onWallsUpdate && nearbyLines.length > 0) {
+              const wallsToDelete = findWallsForDeletedLines(walls, nearbyLines);
+              const newWalls = walls.filter(wall => 
+                !wallsToDelete.some(deleteWall => deleteWall.id === wall.id)
+              );
+              onWallsUpdate(newWalls);
+            }
           }
         }
         setHighlightState({
@@ -1485,7 +1494,7 @@ export default function Canvas2D({
 
         // Create wall automatically when line is completed
         if (onWallsUpdate) {
-          const newWall = createWallFromLine(currentLine, floorText);
+          const newWall = createWallFromLine(currentLine, floorText, walls, 20.0);
           const newWalls = [...(walls || []), newWall];
           onWallsUpdate(newWalls);
         }
