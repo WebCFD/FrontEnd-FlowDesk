@@ -1161,48 +1161,7 @@ export default function WizardDesign() {
                     </div>
                   </div>
 
-                  {/* Add the height parameters here */}
-                  <div className="space-y-4">
-                    <h3 className="font-semibold">Ceiling Height</h3>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        type="number"
-                        value={ceilingHeight}
-                        min={20}
-                        max={500}
-                        step={10}
-                        onChange={(e) => {
-                          const value = parseInt(e.target.value);
-                          if (!isNaN(value) && value >= 20 && value <= 500) {
-                            setCeilingHeight(value);
-                          }
-                        }}
-                        className="w-24"
-                      />
-                      <span>cm</span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="font-semibold">Floor Deck Thickness</h3>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        type="number"
-                        value={floorDeckThickness}
-                        min={5}
-                        max={150}
-                        step={5}
-                        onChange={(e) => {
-                          const value = parseInt(e.target.value);
-                          if (!isNaN(value) && value >= 5 && value <= 150) {
-                            setFloorDeckThickness(value);
-                          }
-                        }}
-                        className="w-24"
-                      />
-                      <span>cm</span>
-                    </div>
-                  </div>
+                  {/* Height parameters moved to Parameters section */}
                 </div>
               </div>
 
