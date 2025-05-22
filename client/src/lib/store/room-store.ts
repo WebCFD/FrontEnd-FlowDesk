@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
+import { syncWallsWithLines } from '../simulationDataConverter';
 
 interface Point {
   x: number;
@@ -79,6 +80,7 @@ interface RoomState {
   removeFloor: (name: string) => void;
   copyFloorAs: (sourceName: string, targetName: string) => void;
   updateFloor: (floorName: string, floorData: FloorData) => void;
+  syncWallsForCurrentFloor: () => void;
   reset: () => void;
 }
 
@@ -103,15 +105,28 @@ export const useRoomStore = create<RoomState>()(
         setCurrentFloor: (floorName) => set({ currentFloor: floorName }),
 
         // Current floor operations
-        setLines: (lines) => set((state) => ({
-          floors: {
-            ...state.floors,
-            [state.currentFloor]: {
-              ...state.floors[state.currentFloor],
-              lines
+        setLines: (lines) => set((state) => {
+          const currentFloorData = state.floors[state.currentFloor];
+          const floorName = currentFloorData.name || state.currentFloor;
+          
+          // Synchronize walls with the new lines
+          const synchronizedWalls = syncWallsWithLines(
+            lines, 
+            currentFloorData.walls || [], 
+            floorName
+          );
+          
+          return {
+            floors: {
+              ...state.floors,
+              [state.currentFloor]: {
+                ...currentFloorData,
+                lines,
+                walls: synchronizedWalls
+              }
             }
-          }
-        })),
+          };
+        }),
 
         setAirEntries: (airEntries) => set((state) => ({
           floors: {

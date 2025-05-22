@@ -189,8 +189,14 @@ export function generateSimulationData(
       };
     });
 
-    // Convertir paredes
-    const walls: WallExport[] = (floorData.walls || []).map((wall) => {
+    // Convertir paredes - usar sincronización para asegurar datos limpios
+    const synchronizedWalls = prepareSynchronizedWalls(
+      floorData.lines, 
+      floorData.walls || [], 
+      floorData.name || floorName
+    );
+    
+    const walls: WallExport[] = synchronizedWalls.map((wall) => {
       return {
         id: wall.id,
         floor: wall.floor,
@@ -411,4 +417,71 @@ export function findWallForLine(walls: Wall[], line: Line): Wall | undefined {
     arePointsEqual(wall.startPoint, line.start) &&
     arePointsEqual(wall.endPoint, line.end)
   );
+}
+
+// ================== WALL SYNCHRONIZATION SYSTEM ==================
+
+/**
+ * Synchronizes walls with current lines - removes orphaned walls and adds missing walls
+ */
+export function syncWallsWithLines(
+  lines: Line[], 
+  existingWalls: Wall[], 
+  floorName: string
+): Wall[] {
+  // Step 1: Remove orphaned walls (walls that don't have corresponding lines)
+  const validWalls = removeOrphanedWalls(existingWalls, lines);
+  
+  // Step 2: Add missing walls (lines that don't have corresponding walls)
+  const syncedWalls = addMissingWalls(lines, validWalls, floorName);
+  
+  return syncedWalls;
+}
+
+/**
+ * Removes walls that don't have corresponding lines
+ */
+export function removeOrphanedWalls(walls: Wall[], currentLines: Line[]): Wall[] {
+  return walls.filter(wall => 
+    currentLines.some(line => 
+      arePointsEqual(wall.startPoint, line.start) &&
+      arePointsEqual(wall.endPoint, line.end)
+    )
+  );
+}
+
+/**
+ * Adds walls for lines that don't have corresponding walls
+ */
+export function addMissingWalls(
+  lines: Line[], 
+  existingWalls: Wall[], 
+  floorName: string,
+  defaultTemperature: number = 20.0
+): Wall[] {
+  const wallsToAdd: Wall[] = [];
+  
+  lines.forEach(line => {
+    // Check if this line already has a corresponding wall
+    const existingWall = findWallForLine(existingWalls, line);
+    
+    if (!existingWall) {
+      // Create a new wall for this line
+      const newWall = createWallFromLine(line, floorName, existingWalls.concat(wallsToAdd), defaultTemperature);
+      wallsToAdd.push(newWall);
+    }
+  });
+  
+  return [...existingWalls, ...wallsToAdd];
+}
+
+/**
+ * Ensures walls array is clean and synchronized with lines before export
+ */
+export function prepareSynchronizedWalls(
+  lines: Line[], 
+  walls: Wall[], 
+  floorName: string
+): Wall[] {
+  return syncWallsWithLines(lines, walls, floorName);
 }
