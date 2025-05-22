@@ -643,7 +643,7 @@ export default function Canvas3D({
           floorCeilingHeight = ceilingHeight;
           currentFloorDeck = floorDeckThickness;
         }
-        baseHeight += floorCeilingHeight + floorDeckThickness;
+        baseHeight += floorCeilingHeight + currentFloorDeck;
       }
     }
     return baseHeight;
