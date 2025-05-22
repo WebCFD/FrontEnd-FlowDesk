@@ -3109,16 +3109,20 @@ export default function Canvas2D({
         />
       )}
 
-      {/* Wall Properties Dialog */}
-      <WallPropertiesDialog
-        isOpen={wallPropertiesDialogOpen}
-        onClose={() => {
-          setWallPropertiesDialogOpen(false);
-          setEditingWall(null);
-        }}
-        wall={editingWall}
-        onSave={handleWallPropertiesSave}
-      />
+      {/* Wall Properties Dialog usando el diálogo unificado */}
+      {editingWall && (
+        <AirEntryDialog
+          type="wall"
+          isOpen={wallPropertiesDialogOpen}
+          onClose={() => {
+            setWallPropertiesDialogOpen(false);
+            setEditingWall(null);
+          }}
+          onConfirm={(temperature) => handleWallPropertiesSave(editingWall.id, temperature)}
+          isEditing={true}
+          initialValues={{ temperature: editingWall.properties.temperature }}
+        />
+      )}
     </div>
   );
 }
