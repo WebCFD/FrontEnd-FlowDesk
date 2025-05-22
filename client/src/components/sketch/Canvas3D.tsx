@@ -1477,7 +1477,7 @@ export default function Canvas3D({
             ">
               <h3 style="margin-bottom: 10px;">3D Visualization Unavailable</h3>
               <p>Your browser doesn't support WebGL, which is required for 3D rendering.</p>
-              <p style="font-size: 14px; margin-top: 10px;">Please try using a modern browser like Chrome, Firefox, or Safari.</p>
+              <p style="font-size: 14px; margin-top: 10px;">Please try to refresh the page.</p>
             </div>
           `;
         }
