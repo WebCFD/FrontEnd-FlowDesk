@@ -309,14 +309,16 @@ function extractRoomPointsFromLines(lines: any[]): PointXZ[] {
       if (isPointNear(currentPoint, line.start)) {
         processedLines.add(i);
         currentPoint = { x: line.end.x, y: line.end.y };
-        points.push({ x: currentPoint.x, z: currentPoint.y });
+        const normalizedPoint = normalizeCoordinates({ x: currentPoint.x, y: currentPoint.y });
+        points.push(normalizedPoint);
         foundNext = true;
         break;
       } 
       else if (isPointNear(currentPoint, line.end)) {
         processedLines.add(i);
         currentPoint = { x: line.start.x, y: line.start.y };
-        points.push({ x: currentPoint.x, z: currentPoint.y });
+        const normalizedPoint = normalizeCoordinates({ x: currentPoint.x, y: currentPoint.y });
+        points.push(normalizedPoint);
         foundNext = true;
         break;
       }
