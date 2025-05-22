@@ -144,6 +144,37 @@ interface SimulationExport {
   floors: Record<string, FloorExport>;
 }
 
+// Constantes para la normalización de coordenadas
+const PIXELS_TO_CM = 25 / 20; // 1.25 - misma constante que Canvas2D
+const CANVAS_CENTER_X = 400; // Centro del canvas en X
+const CANVAS_CENTER_Y = 300; // Centro del canvas en Y
+
+/**
+ * Normaliza coordenadas internas del canvas a coordenadas centradas en centímetros
+ */
+function normalizeCoordinates(internalPoint: Point2D): PointXZ {
+  // Restar el offset del centro y convertir a centímetros
+  const normalizedX = (internalPoint.x - CANVAS_CENTER_X) * PIXELS_TO_CM;
+  const normalizedZ = (internalPoint.y - CANVAS_CENTER_Y) * PIXELS_TO_CM;
+  
+  return {
+    x: normalizedX,
+    z: normalizedZ
+  };
+}
+
+/**
+ * Normaliza una posición 2D a 3D con coordenadas centradas
+ */
+function normalizePosition2DTo3D(point2D: Point2D, yValue: number = 0): Position {
+  const normalized = normalizeCoordinates(point2D);
+  return {
+    x: normalized.x,
+    y: yValue,
+    z: normalized.z
+  };
+}
+
 /**
  * Convierte los datos del diseño en un formato JSON exportable para simulación
  */
@@ -159,31 +190,32 @@ export function generateSimulationData(
 
   // Procesar cada piso
   Object.entries(floors).forEach(([floorName, floorData]) => {
-    // Crear los puntos de la habitación a partir de las líneas
+    // Crear los puntos de la habitación a partir de las líneas usando coordenadas normalizadas
     const roomPoints: PointXZ[] = extractRoomPointsFromLines(floorData.lines);
 
-    // Convertir air entries (ventanas, puertas, etc.)
+    // Convertir air entries (ventanas, puertas, etc.) con coordenadas normalizadas
     const airEntries: AirEntryExport[] = floorData.airEntries.map((entry, index) => {
+      const normalizedPosition = normalizePosition2DTo3D(
+        entry.position, 
+        (entry.dimensions.distanceToFloor || 1) * PIXELS_TO_CM
+      );
+      
       return {
         id: `${entry.type}_${index}`,
         type: entry.type,
         size: {
-          width: entry.dimensions.width,
-          height: entry.dimensions.height
+          width: entry.dimensions.width * PIXELS_TO_CM,
+          height: entry.dimensions.height * PIXELS_TO_CM
         },
-        position: {
-          x: entry.position.x,
-          y: entry.dimensions.distanceToFloor || 1,
-          z: entry.position.y // En el contexto 2D, y se mapea a z en 3D
-        }
+        position: normalizedPosition
       };
     });
 
-    // Convertir escaleras
+    // Convertir escaleras con coordenadas normalizadas
     const stairs: StairExport[] = (floorData.stairPolygons || []).map((stair, index) => {
       return {
         id: stair.id || `stair_${index}`,
-        points: stair.points.map(p => ({ x: p.x, z: p.y })),
+        points: stair.points.map(p => normalizeCoordinates({ x: p.x, y: p.y })),
         connectsTo: stair.connectsTo,
         direction: stair.direction
       };
@@ -200,23 +232,25 @@ export function generateSimulationData(
       return {
         id: wall.id,
         floor: wall.floor,
-        startPoint: { x: wall.startPoint.x, z: wall.startPoint.y },
-        endPoint: { x: wall.endPoint.x, z: wall.endPoint.y },
+        startPoint: normalizeCoordinates({ x: wall.startPoint.x, y: wall.startPoint.y }),
+        endPoint: normalizeCoordinates({ x: wall.endPoint.x, y: wall.endPoint.y }),
         properties: {
           temperature: wall.properties.temperature
         }
       };
     });
 
-    // Filtrar el mobiliario que pertenece a este piso
+    // Filtrar el mobiliario que pertenece a este piso con coordenadas normalizadas
     const floorFurniture: FurnitureExport[] = furniture
       .filter(obj => obj.userData?.floor === floorName && obj.userData?.type === 'furniture')
       .map((obj, index) => {
+        // Normalizar posición del mobiliario (Three.js ya usa coordenadas 3D)
+        const normalizedPos = normalizeCoordinates({ x: obj.position.x, y: obj.position.z });
         return {
           id: obj.userData?.id || `furniture_${index}`,
           position: {
-            x: obj.position.x,
-            z: obj.position.z
+            x: normalizedPos.x,
+            z: normalizedPos.z
           },
           rotation: obj.rotation.y
         };
@@ -249,12 +283,14 @@ function extractRoomPointsFromLines(lines: any[]): PointXZ[] {
   const points: PointXZ[] = [];
   const startLine = lines[0];
   
-  // Añadir el primer punto
-  points.push({ x: startLine.start.x, z: startLine.start.y });
+  // Añadir el primer punto normalizado
+  const normalizedStart = normalizeCoordinates(startLine.start);
+  points.push(normalizedStart);
   
   // Punto actual para buscar la siguiente línea
   let currentPoint = { x: startLine.end.x, y: startLine.end.y };
-  points.push({ x: currentPoint.x, z: currentPoint.y });
+  const normalizedEnd = normalizeCoordinates({ x: currentPoint.x, y: currentPoint.y });
+  points.push(normalizedEnd);
   
   // Puntos ya procesados para evitar duplicados
   const processedLines = new Set([0]);
