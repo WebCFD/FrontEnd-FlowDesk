@@ -263,6 +263,7 @@ export default function WizardDesign() {
     setCurrentFloor,
     setLines,
     setAirEntries,
+    setWalls,
     setMeasurements,
     setStairPolygons,
     setHasClosedContour,
@@ -273,7 +274,7 @@ export default function WizardDesign() {
 
   // Get current floor data
   const currentFloorData = floors[currentFloor];
-  const { lines, airEntries, measurements, hasClosedContour, stairPolygons } =
+  const { lines, airEntries, walls, measurements, hasClosedContour, stairPolygons } =
     currentFloorData;
 
   // Handle loading floor template
@@ -321,6 +322,7 @@ export default function WizardDesign() {
     const targetFloorData = floors[currentFloor] || {
       lines: [],
       airEntries: [],
+      walls: [],
       measurements: [],
       stairPolygons: [],
       hasClosedContour: false,
@@ -329,6 +331,7 @@ export default function WizardDesign() {
     // Handle normal floor elements - copy as usual
     const newLines = [...sourceFloorData.lines];
     const newAirEntries = [...sourceFloorData.airEntries];
+    const newWalls = [...(sourceFloorData.walls || [])];
     const newMeasurements = [...sourceFloorData.measurements];
 
     // Special handling for stairs
@@ -389,6 +392,7 @@ export default function WizardDesign() {
     // Set new data for the current floor
     setLines(newLines);
     setAirEntries(newAirEntries);
+    setWalls(newWalls);
     setMeasurements(newMeasurements);
     setStairPolygons(newStairPolygons);
     setHasClosedContour(sourceFloorData.hasClosedContour);
