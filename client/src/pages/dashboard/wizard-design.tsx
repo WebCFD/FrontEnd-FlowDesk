@@ -323,6 +323,17 @@ export default function WizardDesign() {
   const { lines, airEntries, walls, measurements, hasClosedContour, stairPolygons } =
     currentFloorData;
 
+  // Auto-inicializar parámetros cuando se activa multifloor
+  useEffect(() => {
+    if (isMultifloor) {
+      Object.keys(floors).forEach(floorName => {
+        if (floors[floorName]?.hasClosedContour) {
+          ensureFloorParametersExist(floorName);
+        }
+      });
+    }
+  }, [isMultifloor, floors]);
+
   // Handle loading floor template
 
   const handleLoadTemplate = () => {
@@ -1598,12 +1609,11 @@ export default function WizardDesign() {
       console.log("No se pudieron encontrar objetos de mobiliario", err);
     }
 
-    // Generar los datos de simulación completos con parámetros por planta
+    // Generar los datos de simulación completos
     return generateSimulationData(
       floors,
       furnitureObjects,
-      getCurrentCeilingHeight() / 100,
-      isMultifloor ? floorParameters : undefined
+      getCurrentCeilingHeight() / 100
     );
   };
 
