@@ -2014,8 +2014,10 @@ export default function WizardDesign() {
             <Canvas3D
               floors={floors}
               currentFloor={currentFloor}
-              ceilingHeight={getCurrentCeilingHeight()}
-              floorDeckThickness={getCurrentFloorDeckThickness()}
+              ceilingHeight={ceilingHeight}
+              floorDeckThickness={floorDeckThickness}
+              isMultifloor={isMultifloor}
+              floorParameters={floorParameters}
               wallTransparency={wallTransparency}
               isMeasureMode={isMeasureMode}
               isEraserMode={isEraserMode}
