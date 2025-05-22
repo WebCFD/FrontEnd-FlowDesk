@@ -243,11 +243,16 @@ export default function WizardDesign() {
   const [showStartSimulationPrompt, setShowStartSimulationPrompt] =
     useState(false);
   const [wallTransparency, setWallTransparency] = useState(0.2);
-  const [ceilingHeight, setCeilingHeight] = useState(220); // Default 220cm
+  const [ceilingHeight, setCeilingHeight] = useState(220); // Default 220cm - deprecated, usar floorParameters
   const [isMultifloor, setIsMultifloor] = useState(false);
   const [selectedFloor, setSelectedFloor] = useState("ground");
   const [loadFromFloor, setLoadFromFloor] = useState("ground");
-  const [floorDeckThickness, setFloorDeckThickness] = useState(35); // Default 35cm
+  const [floorDeckThickness, setFloorDeckThickness] = useState(35); // Default 35cm - deprecated, usar floorParameters
+  
+  // Nuevos estados para parámetros por planta
+  const [floorParameters, setFloorParameters] = useState<Record<string, { ceilingHeight: number; floorDeck: number }>>({
+    ground: { ceilingHeight: 220, floorDeck: 35 }
+  });
   const [isMeasureMode, setIsMeasureMode] = useState(false);
   const [isEraserMode, setIsEraserMode] = useState(false);
 
