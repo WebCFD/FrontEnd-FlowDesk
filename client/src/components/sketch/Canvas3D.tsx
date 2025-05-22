@@ -634,7 +634,16 @@ export default function Canvas3D({
     for (let i = 0; i < index; i++) {
       const previousFloor = floorOrder[i];
       if (floors[previousFloor]?.hasClosedContour) {
-        baseHeight += ceilingHeight + floorDeckThickness;
+        // Use floor-specific parameters if multifloor is enabled
+        let floorCeilingHeight, currentFloorDeck;
+        if (isMultifloor && floorParameters[previousFloor]) {
+          floorCeilingHeight = floorParameters[previousFloor].ceilingHeight;
+          currentFloorDeck = floorParameters[previousFloor].floorDeck;
+        } else {
+          floorCeilingHeight = ceilingHeight;
+          currentFloorDeck = floorDeckThickness;
+        }
+        baseHeight += floorCeilingHeight + floorDeckThickness;
       }
     }
     return baseHeight;
