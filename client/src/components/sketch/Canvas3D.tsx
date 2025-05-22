@@ -763,8 +763,8 @@ export default function Canvas3D({
       topZ = baseHeight;
     } else {
       // Stair going up (default): connects current floor to the floor above
-      bottomZ = baseHeight + ceilingHeight;
-      topZ = baseHeight + ceilingHeight + floorDeckThickness;
+      bottomZ = baseHeight + floorCeilingHeight;
+      topZ = baseHeight + floorCeilingHeight + floorDeckThickness;
     }
     
     // Enrich the stairPolygon with 3D position data to share with RoomSketchPro
@@ -902,6 +902,8 @@ export default function Canvas3D({
     floorData: FloorData,
     baseHeight: number,
     isCurrentFloor: boolean,
+    floorCeilingHeight: number,
+    floorDeckThickness: number,
   ) => {
     const objects: THREE.Object3D[] = [];
     const perimeterPoints = createRoomPerimeter(floorData.lines);
@@ -957,7 +959,7 @@ export default function Canvas3D({
         side: THREE.DoubleSide,
       });
       const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
-      ceiling.position.z = baseHeight + ceilingHeight;
+      ceiling.position.z = baseHeight + floorCeilingHeight;
       objects.push(ceiling);
     }
 
@@ -965,8 +967,8 @@ export default function Canvas3D({
     floorData.lines.forEach((line) => {
       const start_bottom = transform2DTo3D(line.start, baseHeight);
       const end_bottom = transform2DTo3D(line.end, baseHeight);
-      const start_top = transform2DTo3D(line.start, baseHeight + ceilingHeight);
-      const end_top = transform2DTo3D(line.end, baseHeight + ceilingHeight);
+      const start_top = transform2DTo3D(line.start, baseHeight + floorCeilingHeight);
+      const end_top = transform2DTo3D(line.end, baseHeight + floorCeilingHeight);
 
       const vertices = new Float32Array([
         start_bottom.x,
