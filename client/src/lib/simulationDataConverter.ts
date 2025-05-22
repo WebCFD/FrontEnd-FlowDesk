@@ -108,6 +108,17 @@ interface StairExport {
   direction?: string;
 }
 
+interface WallExport {
+  id: string;
+  uuid: string;
+  floor: string;
+  startPoint: PointXZ;
+  endPoint: PointXZ;
+  properties: {
+    temperature: number;
+  };
+}
+
 interface FurnitureExport {
   id: string;
   position: Position;
@@ -125,6 +136,7 @@ interface FloorExport {
   room: RoomExport;
   airEntries: AirEntryExport[];
   stairs: StairExport[];
+  walls: WallExport[];
   furniture: FurnitureExport[];
 }
 
@@ -178,6 +190,20 @@ export function generateSimulationData(
       };
     });
 
+    // Convertir paredes
+    const walls: WallExport[] = (floorData.walls || []).map((wall) => {
+      return {
+        id: wall.id,
+        uuid: wall.uuid,
+        floor: wall.floor,
+        startPoint: { x: wall.startPoint.x, z: wall.startPoint.y },
+        endPoint: { x: wall.endPoint.x, z: wall.endPoint.y },
+        properties: {
+          temperature: wall.properties.temperature
+        }
+      };
+    });
+
     // Filtrar el mobiliario que pertenece a este piso
     const floorFurniture: FurnitureExport[] = furniture
       .filter(obj => obj.userData?.floor === floorName && obj.userData?.type === 'furniture')
@@ -200,6 +226,7 @@ export function generateSimulationData(
       },
       airEntries: airEntries,
       stairs: stairs,
+      walls: walls,
       furniture: floorFurniture
     };
   });
@@ -276,4 +303,114 @@ function isPointNear(p1: { x: number, y: number }, p2: { x: number, y: number },
   const dx = p1.x - p2.x;
   const dy = p1.y - p2.y;
   return Math.sqrt(dx * dx + dy * dy) < tolerance;
+}
+
+// ================== FUNCIONES PARA GESTIÓN DE PAREDES ==================
+
+/**
+ * Genera un UUID simple para identificar paredes de forma única
+ */
+export function generateUUID(): string {
+  return 'xxxx-xxxx-xxxx'.replace(/[x]/g, () => {
+    return (Math.random() * 16 | 0).toString(16);
+  });
+}
+
+/**
+ * Genera un ID único para una línea basado en sus puntos
+ */
+export function lineToUniqueId(line: Line): string {
+  return `${line.start.x},${line.start.y}_${line.end.x},${line.end.y}`;
+}
+
+/**
+ * Obtiene el índice de planta basado en el nombre del piso
+ */
+export function getFloorIndex(floorName: string): number {
+  // Mapeo de nombres comunes a índices
+  const floorMap: Record<string, number> = {
+    'Planta Baja': 0,
+    'Ground Floor': 0,
+    'Primera Planta': 1,
+    'First Floor': 1,
+    'Segunda Planta': 2,
+    'Second Floor': 2,
+    'Tercera Planta': 3,
+    'Third Floor': 3
+  };
+  
+  return floorMap[floorName] || 0;
+}
+
+/**
+ * Genera el siguiente número de pared para una planta específica
+ */
+export function getNextWallNumber(walls: Wall[], floorIndex: number): number {
+  const floorPrefix = `${floorIndex}F_wall`;
+  
+  // Encontrar todos los números de pared existentes para esta planta
+  const existingNumbers = walls
+    .filter(wall => wall.id.startsWith(floorPrefix))
+    .map(wall => {
+      const match = wall.id.match(/(\d+)$/);
+      return match ? parseInt(match[1]) : 0;
+    })
+    .filter(num => !isNaN(num));
+  
+  // Retornar el siguiente número disponible
+  return existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1;
+}
+
+/**
+ * Crea un objeto Wall a partir de una línea
+ */
+export function createWallFromLine(
+  line: Line, 
+  floorName: string, 
+  existingWalls: Wall[], 
+  temperature: number = 20.0
+): Wall {
+  const floorIndex = getFloorIndex(floorName);
+  const wallNumber = getNextWallNumber(existingWalls, floorIndex);
+  
+  return {
+    id: `${floorIndex}F_wall${wallNumber}`,
+    uuid: generateUUID(),
+    floor: floorName,
+    lineRef: lineToUniqueId(line),
+    startPoint: { x: line.start.x, y: line.start.y },
+    endPoint: { x: line.end.x, y: line.end.y },
+    properties: {
+      temperature: temperature
+    }
+  };
+}
+
+/**
+ * Verifica si dos puntos son aproximadamente iguales
+ */
+export function arePointsEqual(p1: Point2D, p2: Point2D, tolerance: number = 0.01): boolean {
+  return Math.abs(p1.x - p2.x) < tolerance && Math.abs(p1.y - p2.y) < tolerance;
+}
+
+/**
+ * Encuentra las paredes que corresponden a líneas que van a ser eliminadas
+ */
+export function findWallsForDeletedLines(walls: Wall[], deletedLines: Line[]): Wall[] {
+  return walls.filter(wall => 
+    deletedLines.some(line => 
+      arePointsEqual(wall.startPoint, line.start) &&
+      arePointsEqual(wall.endPoint, line.end)
+    )
+  );
+}
+
+/**
+ * Encuentra la pared asociada a una línea específica
+ */
+export function findWallForLine(walls: Wall[], line: Line): Wall | undefined {
+  return walls.find(wall => 
+    arePointsEqual(wall.startPoint, line.start) &&
+    arePointsEqual(wall.endPoint, line.end)
+  );
 }
