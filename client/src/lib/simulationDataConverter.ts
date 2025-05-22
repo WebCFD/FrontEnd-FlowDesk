@@ -110,7 +110,6 @@ interface StairExport {
 
 interface WallExport {
   id: string;
-  uuid: string;
   floor: string;
   startPoint: PointXZ;
   endPoint: PointXZ;
@@ -194,7 +193,6 @@ export function generateSimulationData(
     const walls: WallExport[] = (floorData.walls || []).map((wall) => {
       return {
         id: wall.id,
-        uuid: wall.uuid,
         floor: wall.floor,
         startPoint: { x: wall.startPoint.x, z: wall.startPoint.y },
         endPoint: { x: wall.endPoint.x, z: wall.endPoint.y },
