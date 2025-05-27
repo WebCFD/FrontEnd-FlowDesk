@@ -152,7 +152,7 @@ const CANVAS_CENTER_Y = 300; // Centro del canvas en Y
 /**
  * Normaliza coordenadas internas del canvas a coordenadas centradas en centímetros
  */
-function normalizeCoordinates(internalPoint: Point2D): PointXY {
+export function normalizeCoordinates(internalPoint: Point2D): PointXY {
   // Restar el offset del centro y convertir a centímetros
   const normalizedX = (internalPoint.x - CANVAS_CENTER_X) * PIXELS_TO_CM;
   const normalizedY = -(internalPoint.y - CANVAS_CENTER_Y) * PIXELS_TO_CM;

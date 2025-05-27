@@ -19,7 +19,8 @@ import {
   findWallForLine, 
   findWallsForDeletedLines,
   arePointsEqual as wallPointsEqual,
-  denormalizeCoordinates
+  denormalizeCoordinates,
+  normalizeCoordinates
 } from "@/lib/simulationDataConverter";
 
 interface HighlightState {
@@ -753,6 +754,16 @@ export default function Canvas2D({
     return {
       x: Math.round(pixelsToCm(relativeX)),
       y: Math.round(pixelsToCm(relativeY)),
+    };
+  };
+
+  // Nueva función para obtener coordenadas en el sistema JSON
+  const getJSONCoordinates = (point: Point): { x: number; y: number } => {
+    // Convertir coordenadas internas del canvas al sistema JSON
+    const normalizedCoords = normalizeCoordinates({ x: point.x, y: point.y });
+    return {
+      x: parseFloat(normalizedCoords.x.toFixed(1)),
+      y: parseFloat(normalizedCoords.y.toFixed(1)),
     };
   };
 
