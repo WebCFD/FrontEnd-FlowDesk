@@ -58,10 +58,19 @@ export default function Navbar() {
             <NavigationMenuItem>
               <NavigationMenuLink 
                 className={navigationMenuTriggerStyle()}
-                onClick={() => scrollToSection('features')}
+                onClick={() => scrollToSection('certifications')}
                 style={{ cursor: 'pointer' }}
               >
-                Features
+                Certifications
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuLink 
+                className={navigationMenuTriggerStyle()}
+                onClick={() => scrollToSection('hvac-solutions')}
+                style={{ cursor: 'pointer' }}
+              >
+                HVAC Solutions
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
