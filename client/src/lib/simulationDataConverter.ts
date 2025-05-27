@@ -54,15 +54,15 @@ interface FloorData {
 }
 
 // Interfaces para el formato de exportación
-interface PointXZ {
+interface PointXY {
   x: number;
-  z: number;
+  y: number;
 }
 
 interface Position {
   x: number;
-  y?: number;
-  z: number;
+  y: number;
+  z?: number;
 }
 
 interface Position3D {
@@ -103,7 +103,7 @@ interface AirEntryExport {
 
 interface StairExport {
   id: string;
-  points: PointXZ[];
+  points: PointXY[];
   connectsTo?: string;
   direction?: string;
 }
@@ -111,8 +111,8 @@ interface StairExport {
 interface WallExport {
   id: string;
   floor: string;
-  startPoint: PointXZ;
-  endPoint: PointXZ;
+  startPoint: PointXY;
+  endPoint: PointXY;
   properties: {
     temperature: number;
   };
@@ -126,7 +126,7 @@ interface FurnitureExport {
 }
 
 interface RoomExport {
-  points: PointXZ[];
+  points: PointXY[];
   height: number;
   duration?: number;
 }
