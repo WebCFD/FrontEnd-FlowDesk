@@ -18,7 +18,8 @@ import {
   createWallFromLine, 
   findWallForLine, 
   findWallsForDeletedLines,
-  arePointsEqual as wallPointsEqual
+  arePointsEqual as wallPointsEqual,
+  denormalizeCoordinates
 } from "@/lib/simulationDataConverter";
 
 interface HighlightState {
