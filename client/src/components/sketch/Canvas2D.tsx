@@ -2857,14 +2857,14 @@ export default function Canvas2D({
   };
 
   // Add this handler function inside the Canvas2D component
-  const handleCoordinateEdit = (relativeCoordinates: Point) => {
+  const handleCoordinateEdit = (jsonCoordinates: Point) => {
     if (!editingPoint) return;
 
-    // Convert the user input (in cm) to canvas coordinates
-    const newPoint = cmToCanvasCoordinates(
-      relativeCoordinates.x,
-      relativeCoordinates.y,
-    );
+    // Convert the user input (JSON coordinates) to canvas coordinates
+    const newPoint = denormalizeCoordinates({
+      x: jsonCoordinates.x,
+      y: jsonCoordinates.y,
+    });
 
     if (
       editingPoint.isStairPoint &&
@@ -3117,7 +3117,7 @@ export default function Canvas2D({
           onClose={() => setEditingPoint(null)}
           onConfirm={handleCoordinateEdit}
           initialCoordinates={editingPoint.point}
-          relativeCoordinates={getRelativeCoordinates(editingPoint.point)}
+          relativeCoordinates={getJSONCoordinates(editingPoint.point)}
         />
       )}
 
