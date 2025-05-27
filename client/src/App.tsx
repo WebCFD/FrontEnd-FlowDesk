@@ -62,7 +62,7 @@ function App() {
           <Route path="*">
             <>
               <Navbar />
-              <main className="flex-1">
+              <main className="flex-1 pt-16">
                 <Router />
               </main>
               <Footer />
