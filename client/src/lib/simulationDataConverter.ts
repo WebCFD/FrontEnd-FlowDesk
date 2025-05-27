@@ -164,6 +164,20 @@ function normalizeCoordinates(internalPoint: Point2D): PointXY {
 }
 
 /**
+ * Convierte coordenadas JSON de vuelta a coordenadas internas del canvas
+ */
+export function denormalizeCoordinates(jsonPoint: PointXY): Point2D {
+  // Convertir de centímetros a píxeles y añadir el offset del centro
+  const internalX = (jsonPoint.x / PIXELS_TO_CM) + CANVAS_CENTER_X;
+  const internalY = (-jsonPoint.y / PIXELS_TO_CM) + CANVAS_CENTER_Y;
+  
+  return {
+    x: internalX,
+    y: internalY
+  };
+}
+
+/**
  * Normaliza una posición 2D a 3D con coordenadas centradas
  */
 function normalizePosition2DTo3D(point2D: Point2D, zValue: number = 0): Position {
