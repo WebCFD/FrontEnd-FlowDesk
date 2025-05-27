@@ -1,9 +1,6 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import LoginModal from "@/components/auth/login-modal";
 
 // Importar las imágenes
 import hvacDesign from "@/assets/hvac-images/hvac-design.png";
@@ -29,8 +26,6 @@ const hvacSolutions = [
 ];
 
 export default function HvacSolutions() {
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
-
   return (
     <section id="hvac-solutions" className="py-20">
       <div className="container mx-auto px-4">
@@ -67,17 +62,7 @@ export default function HvacSolutions() {
           ))}
         </div>
 
-        <div className="mt-12 text-center">
-          <Button size="lg" onClick={() => setIsLoginOpen(true)}>
-            Start Your HVAC Analysis
-          </Button>
-        </div>
       </div>
-
-      <LoginModal
-        isOpen={isLoginOpen}
-        onClose={() => setIsLoginOpen(false)}
-      />
     </section>
   );
 }
