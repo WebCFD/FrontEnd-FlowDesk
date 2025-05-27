@@ -152,26 +152,26 @@ const CANVAS_CENTER_Y = 300; // Centro del canvas en Y
 /**
  * Normaliza coordenadas internas del canvas a coordenadas centradas en centímetros
  */
-function normalizeCoordinates(internalPoint: Point2D): PointXZ {
+function normalizeCoordinates(internalPoint: Point2D): PointXY {
   // Restar el offset del centro y convertir a centímetros
   const normalizedX = (internalPoint.x - CANVAS_CENTER_X) * PIXELS_TO_CM;
-  const normalizedZ = (internalPoint.y - CANVAS_CENTER_Y) * PIXELS_TO_CM;
+  const normalizedY = -(internalPoint.y - CANVAS_CENTER_Y) * PIXELS_TO_CM;
   
   return {
     x: normalizedX,
-    z: normalizedZ
+    y: normalizedY
   };
 }
 
 /**
  * Normaliza una posición 2D a 3D con coordenadas centradas
  */
-function normalizePosition2DTo3D(point2D: Point2D, yValue: number = 0): Position {
+function normalizePosition2DTo3D(point2D: Point2D, zValue: number = 0): Position {
   const normalized = normalizeCoordinates(point2D);
   return {
     x: normalized.x,
-    y: yValue,
-    z: normalized.z
+    y: normalized.y,
+    z: zValue
   };
 }
 
@@ -191,7 +191,7 @@ export function generateSimulationData(
   // Procesar cada piso
   Object.entries(floors).forEach(([floorName, floorData]) => {
     // Crear los puntos de la habitación a partir de las líneas usando coordenadas normalizadas
-    const roomPoints: PointXZ[] = extractRoomPointsFromLines(floorData.lines);
+    const roomPoints: PointXY[] = extractRoomPointsFromLines(floorData.lines);
 
     // Convertir air entries (ventanas, puertas, etc.) con coordenadas normalizadas
     const airEntries: AirEntryExport[] = floorData.airEntries.map((entry, index) => {
@@ -250,7 +250,7 @@ export function generateSimulationData(
           id: obj.userData?.id || `furniture_${index}`,
           position: {
             x: normalizedPos.x,
-            z: normalizedPos.z
+            y: normalizedPos.y
           },
           rotation: obj.rotation.y
         };
@@ -275,12 +275,12 @@ export function generateSimulationData(
 /**
  * Extrae puntos únicos y ordenados de un conjunto de líneas
  */
-function extractRoomPointsFromLines(lines: any[]): PointXZ[] {
+function extractRoomPointsFromLines(lines: any[]): PointXY[] {
   // Si no hay líneas, retornar un arreglo vacío
   if (!lines || lines.length === 0) return [];
 
   // Intentar construir un polígono ordenado a partir de las líneas
-  const points: PointXZ[] = [];
+  const points: PointXY[] = [];
   const startLine = lines[0];
   
   // Añadir el primer punto normalizado
@@ -330,8 +330,8 @@ function extractRoomPointsFromLines(lines: any[]): PointXZ[] {
   
   // Eliminar el último punto si es igual al primero (cerrar el polígono)
   if (points.length > 1 && 
-      isPointNear({ x: points[0].x, y: points[0].z }, 
-                { x: points[points.length - 1].x, y: points[points.length - 1].z })) {
+      isPointNear({ x: points[0].x, y: points[0].y }, 
+                { x: points[points.length - 1].x, y: points[points.length - 1].y })) {
     points.pop();
   }
   
