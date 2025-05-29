@@ -1773,7 +1773,18 @@ export default function WizardDesign() {
       
       // Cargar datos en el store
       Object.entries(convertedFloors).forEach(([floorName, floorData]) => {
-        addFloor(floorName, floorData);
+        // Primero agregar el piso vacío
+        addFloor(floorName);
+        
+        // Luego cargar los datos específicos del piso
+        setCurrentFloor(floorName);
+        setLines(floorData.lines);
+        setAirEntries(floorData.airEntries);
+        setStairPolygons(floorData.stairPolygons || []);
+        setHasClosedContour(floorData.hasClosedContour);
+        
+        // Sincronizar las paredes
+        syncWallsForCurrentFloor();
       });
       
       // Configurar el estado adicional
@@ -2259,6 +2270,13 @@ export default function WizardDesign() {
         open={showSimulationDataDialog}
         onOpenChange={setShowSimulationDataDialog}
         simulationData={simulationData}
+      />
+
+      {/* Diálogo para cargar diseño */}
+      <LoadDesignDialog
+        isOpen={showLoadDesignDialog}
+        onClose={() => setShowLoadDesignDialog(false)}
+        onLoad={handleLoadDesign}
       />
 
       {/* Diálogo de confirmación para borrar el diseño */}
