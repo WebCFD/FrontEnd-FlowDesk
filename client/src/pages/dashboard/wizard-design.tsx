@@ -24,7 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import SimulationDataDialog from "@/components/sketch/SimulationDataDialog";
 import LoadDesignDialog from "@/components/sketch/LoadDesignDialog";
-import { generateSimulationData } from "@/lib/simulationDataConverter";
+import { generateSimulationData, denormalizeCoordinates } from "@/lib/simulationDataConverter";
 import * as THREE from "three";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
@@ -1727,26 +1727,29 @@ export default function WizardDesign() {
       Object.entries(designData.floors).forEach(([floorNumber, floorData]: [string, any]) => {
         const floorName = floorNameMap[floorNumber] || `floor_${floorNumber}`;
         
-        // Convertir coordenadas del JSON de vuelta al sistema interno
+        // Convertir coordenadas del JSON de vuelta al sistema interno usando denormalizeCoordinates
         const convertedLines = floorData.walls.map((wall: any) => ({
-          start: { x: wall.start.x, y: wall.start.y },
-          end: { x: wall.end.x, y: wall.end.y }
+          start: denormalizeCoordinates({ x: wall.start.x, y: wall.start.y }),
+          end: denormalizeCoordinates({ x: wall.end.x, y: wall.end.y })
         }));
         
-        const convertedAirEntries = floorData.airEntries.map((entry: any) => ({
-          type: entry.type,
-          position: { x: entry.position.x, y: entry.position.y },
-          dimensions: {
-            width: entry.size.width / 1.25, // Convertir de vuelta de cm a píxeles
-            height: entry.size.height / 1.25,
-            distanceToFloor: entry.position.z / 1.25
-          },
-          line: { start: { x: 0, y: 0 }, end: { x: 0, y: 0 } } // Se calculará automáticamente
-        }));
+        const convertedAirEntries = floorData.airEntries.map((entry: any) => {
+          const denormalizedPosition = denormalizeCoordinates({ x: entry.position.x, y: entry.position.y });
+          return {
+            type: entry.type,
+            position: denormalizedPosition,
+            dimensions: {
+              width: entry.size.width / 1.25, // Convertir de cm a píxeles
+              height: entry.size.height / 1.25,
+              distanceToFloor: entry.position.z / 1.25
+            },
+            line: { start: { x: 0, y: 0 }, end: { x: 0, y: 0 } } // Se calculará automáticamente
+          };
+        });
         
         const convertedStairs = (floorData.stairs || []).map((stair: any) => ({
           id: stair.id,
-          points: stair.points.map((p: any) => ({ x: p.x, y: p.y })),
+          points: stair.points.map((p: any) => denormalizeCoordinates({ x: p.x, y: p.y })),
           floor: floorName,
           direction: stair.direction,
           connectsTo: stair.connectsTo,
