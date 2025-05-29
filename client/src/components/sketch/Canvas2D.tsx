@@ -772,15 +772,79 @@ export default function Canvas2D({
     };
   };
 
+  // Function to calculate label bounds for overlap detection
+  const getLabelBounds = (point: Point, offset: { x: number; y: number }, text: string, ctx: CanvasRenderingContext2D) => {
+    const textMetrics = ctx.measureText(text);
+    const textHeight = 12 / zoom; // Approximate text height
+    return {
+      x: point.x + offset.x,
+      y: point.y + offset.y - textHeight,
+      width: textMetrics.width,
+      height: textHeight,
+    };
+  };
+
+  // Function to check if two rectangles overlap
+  const rectanglesOverlap = (rect1: any, rect2: any) => {
+    return !(rect1.x + rect1.width < rect2.x || 
+             rect2.x + rect2.width < rect1.x || 
+             rect1.y + rect1.height < rect2.y || 
+             rect2.y + rect2.height < rect1.y);
+  };
+
+  // Function to find non-overlapping position for a label
+  const findNonOverlappingPosition = (
+    point: Point, 
+    text: string, 
+    ctx: CanvasRenderingContext2D, 
+    existingLabels: any[]
+  ) => {
+    const baseDistance = 4 / zoom;
+    
+    // Try different positions around the point
+    const positions = [
+      { x: baseDistance, y: -baseDistance },     // top-right (default)
+      { x: baseDistance, y: baseDistance * 2 },  // bottom-right
+      { x: -baseDistance * 8, y: -baseDistance }, // top-left (wider for text)
+      { x: -baseDistance * 8, y: baseDistance * 2 }, // bottom-left
+      { x: baseDistance, y: -baseDistance * 3 }, // higher top-right
+      { x: baseDistance, y: baseDistance * 4 },  // lower bottom-right
+    ];
+
+    for (const offset of positions) {
+      const bounds = getLabelBounds(point, offset, text, ctx);
+      
+      // Check if this position overlaps with any existing label
+      const hasOverlap = existingLabels.some(existing => 
+        rectanglesOverlap(bounds, existing)
+      );
+      
+      if (!hasOverlap) {
+        return { offset, bounds };
+      }
+    }
+    
+    // If all positions overlap, use the default with a larger vertical offset
+    const fallbackOffset = { x: baseDistance, y: -baseDistance * (existingLabels.length + 1) };
+    const bounds = getLabelBounds(point, fallbackOffset, text, ctx);
+    return { offset: fallbackOffset, bounds };
+  };
+
   const drawCoordinateLabel = (
     ctx: CanvasRenderingContext2D,
     point: Point,
     color: string,
+    offset?: { x: number; y: number },
   ) => {
     const coords = getRelativeCoordinates(point);
     ctx.fillStyle = color;
     ctx.textAlign = "left";
-    ctx.fillText(`(${coords.x}, ${coords.y})`, point.x + 8, point.y - 8);
+    
+    // Use provided offset or default closer positioning
+    const offsetX = offset?.x ?? 4 / zoom;
+    const offsetY = offset?.y ?? -4 / zoom;
+    
+    ctx.fillText(`(${coords.x}, ${coords.y})`, point.x + offsetX, point.y + offsetY);
   };
 
   const drawAirEntry = (
@@ -2357,8 +2421,16 @@ export default function Canvas2D({
         ctx.fill();
 
         ctx.font = getScaledFont(12, 'sans-serif');
+        
+        // Use smart positioning to prevent label overlaps
+        const existingLabels: any[] = [];
         points.forEach((point) => {
-          drawCoordinateLabel(ctx, point, color);
+          const coords = getRelativeCoordinates(point);
+          const text = `(${coords.x}, ${coords.y})`;
+          const { offset, bounds } = findNonOverlappingPosition(point, text, ctx, existingLabels);
+          
+          drawCoordinateLabel(ctx, point, color, offset);
+          existingLabels.push(bounds);
         });
       });
 
