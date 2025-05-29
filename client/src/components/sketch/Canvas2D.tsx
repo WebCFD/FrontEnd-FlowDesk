@@ -2467,8 +2467,7 @@ export default function Canvas2D({
           ctx.textAlign = "center";
           ctx.fillText("SNAP (0,0)", originPoint.x, originPoint.y - 12 / zoom);
 
-          // Also draw the regular coordinate label
-          drawCoordinateLabel(ctx, cursorPoint, "#ef4444");
+          // Coordinate label is already drawn by the smart positioning system
         }
         // Special handling for endpoint pre-drawing snap
         else if (
@@ -2476,8 +2475,7 @@ export default function Canvas2D({
           !isDrawing &&
           snapSource === "endpoint"
         ) {
-          // Show endpoint snap indicator
-          drawCoordinateLabel(ctx, cursorPoint, "#ef4444");
+          // Endpoint snap indicator (coordinate label handled by smart positioning)
         }
         // Special handling for stair point pre-drawing snap
         else if (
@@ -2485,18 +2483,17 @@ export default function Canvas2D({
           !isDrawing &&
           snapSource === "stair"
         ) {
-          // Show stair point snap indicator
-          drawCoordinateLabel(ctx, cursorPoint, "#ef4444");
+          // Stair point snap indicator (coordinate label handled by smart positioning)
         }
-        // Regular drawing indicator
+        // Regular drawing indicator (coordinate label handled by smart positioning)
         else if (isDrawing) {
-          drawCoordinateLabel(ctx, cursorPoint, "#fb923c");
+          // Drawing state handled by smart positioning system
         }
       }
 
       if (hoverPoint && !isDrawing && !isPanning && showCursorCoordinates) {
         ctx.font = getScaledFont(12);
-        drawCoordinateLabel(ctx, hoverPoint, "#718096");
+        // Hover point coordinate label handled by smart positioning system
         drawCrosshair(ctx, hoverPoint);
       }
 
