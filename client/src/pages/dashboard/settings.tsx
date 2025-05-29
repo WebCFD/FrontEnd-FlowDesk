@@ -24,7 +24,7 @@ export default function Settings() {
     radius: 0.5
   });
 
-  const { snapDistance, setSnapDistance } = useSketchStore();
+  const { snapDistance, setSnapDistance, showCursorCoordinates, setShowCursorCoordinates } = useSketchStore();
 
   const variants = [
     { value: 'professional', label: 'Professional' },
@@ -51,6 +51,14 @@ export default function Settings() {
     toast({
       title: "Drawing Resolution updated",
       description: "Your sketching resolution has been updated successfully."
+    });
+  };
+
+  const handleCursorCoordinatesChange = (checked: boolean) => {
+    setShowCursorCoordinates(checked);
+    toast({
+      title: "Cursor Coordinates updated",
+      description: `Cursor coordinates ${checked ? 'enabled' : 'disabled'} successfully.`
     });
   };
 
@@ -163,6 +171,20 @@ export default function Settings() {
                     {snapDistance.toFixed(1)}
                   </span>
                 </div>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label htmlFor="cursor-coordinates">Show Cursor Coordinates</Label>
+                  <div className="text-sm text-muted-foreground">
+                    Display real-time coordinates while drawing
+                  </div>
+                </div>
+                <Switch
+                  id="cursor-coordinates"
+                  checked={showCursorCoordinates}
+                  onCheckedChange={handleCursorCoordinatesChange}
+                />
               </div>
             </div>
           </CardContent>
