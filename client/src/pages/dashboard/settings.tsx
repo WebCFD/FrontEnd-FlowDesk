@@ -24,7 +24,7 @@ export default function Settings() {
     radius: 0.5
   });
 
-  const { snapDistance, setSnapDistance, showCursorCoordinates, setShowCursorCoordinates } = useSketchStore();
+  const { snapDistance, setSnapDistance, showCursorCoordinates, setShowCursorCoordinates, fontScale, setFontScale } = useSketchStore();
 
   const variants = [
     { value: 'professional', label: 'Professional' },
@@ -59,6 +59,14 @@ export default function Settings() {
     toast({
       title: "Cursor Coordinates updated",
       description: `Cursor coordinates ${checked ? 'enabled' : 'disabled'} successfully.`
+    });
+  };
+
+  const handleFontScaleChange = (value: number[]) => {
+    setFontScale(value[0]);
+    toast({
+      title: "Text Size updated",
+      description: `Text size set to ${Math.round(value[0] * 100)}% successfully.`
     });
   };
 
@@ -170,6 +178,28 @@ export default function Settings() {
                   <span className="text-sm text-muted-foreground w-12 text-right">
                     {snapDistance.toFixed(1)}
                   </span>
+                </div>
+              </div>
+              
+              <div>
+                <Label>Text Size</Label>
+                <div className="flex items-center gap-4 mt-2">
+                  <div className="flex-1">
+                    <Slider
+                      value={[fontScale]}
+                      onValueChange={handleFontScaleChange}
+                      min={0.5}
+                      max={2.0}
+                      step={0.1}
+                      className="w-full"
+                    />
+                  </div>
+                  <span className="text-sm text-muted-foreground w-16 text-right">
+                    {Math.round(fontScale * 100)}%
+                  </span>
+                </div>
+                <div className="text-sm text-muted-foreground mt-1">
+                  Scale all text elements in the floor plan
                 </div>
               </div>
               

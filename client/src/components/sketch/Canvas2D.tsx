@@ -386,7 +386,12 @@ export default function Canvas2D({
     "grid" | "endpoint" | "stair" | "origin" | null
   >(null);
 
-  const { snapDistance, showCursorCoordinates } = useSketchStore();
+  const { snapDistance, showCursorCoordinates, fontScale } = useSketchStore();
+
+  // Helper function to get scaled font size that responds to zoom and font scale
+  const getScaledFont = (baseSize: number): string => {
+    return `${(baseSize * fontScale) / zoom}px sans-serif`;
+  };
 
   const getCoordinateSystemParams = () => {
     return {
@@ -2358,7 +2363,7 @@ export default function Canvas2D({
       });
 
       if (cursorPoint && showCursorCoordinates) {
-        ctx.font = `${12 / zoom}px sans-serif`;
+        ctx.font = getScaledFont(12);
 
         // Special handling for the origin point pre-drawing snap
         const originPoint = {
@@ -2418,7 +2423,7 @@ export default function Canvas2D({
       }
 
       if (hoverPoint && !isDrawing && !isPanning && showCursorCoordinates) {
-        ctx.font = `${12 / zoom}px sans-serif`;
+        ctx.font = getScaledFont(12);
         drawCoordinateLabel(ctx, hoverPoint, "#718096");
         drawCrosshair(ctx, hoverPoint);
       }
