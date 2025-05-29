@@ -188,9 +188,9 @@ export default function Settings() {
                     <Slider
                       value={[fontScale]}
                       onValueChange={handleFontScaleChange}
-                      min={0.5}
-                      max={2.0}
-                      step={0.1}
+                      min={0.1}
+                      max={3.0}
+                      step={0.05}
                       className="w-full"
                     />
                   </div>
