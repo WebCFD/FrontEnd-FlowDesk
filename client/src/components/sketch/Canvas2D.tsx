@@ -2058,7 +2058,7 @@ export default function Canvas2D({
         y: (start.y + end.y) / 2,
       };
 
-      ctx.font = `${(14 * 3) / zoom}px Arial`;
+      ctx.font = `${14 / zoom}px Arial`;
       ctx.fillStyle = "rgba(75, 85, 99, 0.8)";
       ctx.textAlign = "center";
       ctx.textBaseline = "bottom";
@@ -2088,7 +2088,7 @@ export default function Canvas2D({
 
       // Draw the measurement
       ctx.save();
-      ctx.font = `${12 / zoom}px Arial`;
+      ctx.font = `${(12 * 3) / zoom}px Arial`;
       ctx.fillStyle = "#6b7280"; // Gray color
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
