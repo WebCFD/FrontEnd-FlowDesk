@@ -389,8 +389,8 @@ export default function Canvas2D({
   const { snapDistance, showCursorCoordinates, fontScale } = useSketchStore();
 
   // Helper function to get scaled font size that responds to zoom and font scale
-  const getScaledFont = (baseSize: number): string => {
-    return `${(baseSize * fontScale) / zoom}px sans-serif`;
+  const getScaledFont = (baseSize: number, fontFamily: string = 'sans-serif'): string => {
+    return `${(baseSize * fontScale) / zoom}px ${fontFamily}`;
   };
 
   const getCoordinateSystemParams = () => {
@@ -862,7 +862,7 @@ export default function Canvas2D({
 
     // Add a "double-click to edit" tooltip when hovered
     if (isHovered) {
-      ctx.font = `${12 / zoom}px Arial`;
+      ctx.font = getScaledFont(12, 'Arial');
       ctx.fillStyle = color;
       ctx.textAlign = "center";
       ctx.fillText(
@@ -2058,7 +2058,7 @@ export default function Canvas2D({
         y: (start.y + end.y) / 2,
       };
 
-      ctx.font = `${14 / zoom}px Arial`;
+      ctx.font = getScaledFont(14, 'Arial');
       ctx.fillStyle = "rgba(75, 85, 99, 0.8)";
       ctx.textAlign = "center";
       ctx.textBaseline = "bottom";
@@ -2162,7 +2162,7 @@ export default function Canvas2D({
         ctx.stroke();
       });
 
-      ctx.font = `${14 / zoom}px Arial`;
+      ctx.font = getScaledFont(14, 'Arial');
       ctx.fillStyle = "#ef4444"; // Red for X-axis
       ctx.textAlign = "left";
       ctx.textBaseline = "top";
@@ -2560,7 +2560,7 @@ export default function Canvas2D({
         const midX = (measureStart.x + measureEnd.x) / 2;
         const midY = (measureStart.y + measureEnd.y) / 2;
 
-        ctx.font = `${14 / zoom}px Arial`;
+        ctx.font = getScaledFont(14, 'Arial');
         ctx.fillStyle = "#000000";
         ctx.textAlign = "center";
         ctx.fillText(`${distance} cm`, midX, midY - 10 / zoom);
