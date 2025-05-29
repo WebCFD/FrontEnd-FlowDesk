@@ -1582,7 +1582,8 @@ export default function WizardDesign() {
     return generateSimulationData(
       floors,
       furnitureObjects,
-      getCurrentCeilingHeight() / 100
+      getCurrentCeilingHeight() / 100,
+      floorParameters
     );
   };
 
