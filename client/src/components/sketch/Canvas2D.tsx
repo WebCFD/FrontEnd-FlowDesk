@@ -1008,16 +1008,12 @@ export default function Canvas2D({
     if (!isDrawing && !isPanning && currentTool === "wall") {
       const { point: nearestPoint, source } = findNearestEndpoint(point);
       if (nearestPoint) {
-        // Set cursor point for showing snap indicator before drawing starts (only if cursor coordinates enabled)
-        if (showCursorCoordinates) {
-          setCursorPoint(nearestPoint);
-        }
+        // Set cursor point for showing snap indicator before drawing starts
+        setCursorPoint(nearestPoint);
         setSnapSource(source); // Store the source for visual indication
       } else {
-        // If not near a snap point, use grid snap and reset snap source (only if cursor coordinates enabled)
-        if (showCursorCoordinates) {
-          setCursorPoint(snapToGrid(point));
-        }
+        // If not near a snap point, use grid snap and reset snap source
+        setCursorPoint(snapToGrid(point));
         setSnapSource("grid");
       }
     }
@@ -2366,7 +2362,7 @@ export default function Canvas2D({
         });
       });
 
-      if (cursorPoint && false) { // TEST: Force disabled to see if coordinates disappear
+      if (cursorPoint && showCursorCoordinates) {
         ctx.font = `${12 / zoom}px sans-serif`;
 
         // Special handling for the origin point pre-drawing snap
@@ -2426,7 +2422,7 @@ export default function Canvas2D({
         }
       }
 
-      if (hoverPoint && !isDrawing && !isPanning) {
+      if (hoverPoint && !isDrawing && !isPanning && false) { // TEST: Force disabled to see if coordinates disappear
         ctx.font = `${12 / zoom}px sans-serif`;
         drawCoordinateLabel(ctx, hoverPoint, "#718096");
         drawCrosshair(ctx, hoverPoint);
