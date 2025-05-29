@@ -387,6 +387,11 @@ export default function Canvas2D({
   >(null);
 
   const { snapDistance, showCursorCoordinates } = useSketchStore();
+  
+  // Debug log to check if state is updating
+  useEffect(() => {
+    console.log('[CURSOR-DEBUG] showCursorCoordinates changed:', showCursorCoordinates);
+  }, [showCursorCoordinates]);
 
   const getCoordinateSystemParams = () => {
     return {
