@@ -2058,7 +2058,7 @@ export default function Canvas2D({
         y: (start.y + end.y) / 2,
       };
 
-      ctx.font = getScaledFont(14, 'Arial');
+      ctx.font = `${(14 * 3) / zoom}px Arial`;
       ctx.fillStyle = "rgba(75, 85, 99, 0.8)";
       ctx.textAlign = "center";
       ctx.textBaseline = "bottom";
@@ -2162,7 +2162,7 @@ export default function Canvas2D({
         ctx.stroke();
       });
 
-      ctx.font = getScaledFont(14, 'Arial');
+      ctx.font = `${14 / zoom}px Arial`;
       ctx.fillStyle = "#ef4444"; // Red for X-axis
       ctx.textAlign = "left";
       ctx.textBaseline = "top";
@@ -2560,7 +2560,7 @@ export default function Canvas2D({
         const midX = (measureStart.x + measureEnd.x) / 2;
         const midY = (measureStart.y + measureEnd.y) / 2;
 
-        ctx.font = getScaledFont(14, 'Arial');
+        ctx.font = `${14 / zoom}px Arial`;
         ctx.fillStyle = "#000000";
         ctx.textAlign = "center";
         ctx.fillText(`${distance} cm`, midX, midY - 10 / zoom);
