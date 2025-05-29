@@ -698,6 +698,7 @@ export default function Canvas3D({
     stairPolygon: StairPolygon,
     baseHeight: number,
     isCurrentFloor: boolean,
+    floorCeilingHeight: number,
   ): THREE.Object3D[] => {
     const objects: THREE.Object3D[] = [];
 
@@ -1321,6 +1322,7 @@ export default function Canvas3D({
           stairPolygon,
           baseHeight,
           isCurrentFloor,
+          floorCeilingHeight,
         );
         objects.push(...stairObjects);
       });
