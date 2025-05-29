@@ -2366,7 +2366,7 @@ export default function Canvas2D({
         });
       });
 
-      if (cursorPoint && showCursorCoordinates) {
+      if (cursorPoint && false) { // TEST: Force disabled to see if coordinates disappear
         ctx.font = `${12 / zoom}px sans-serif`;
 
         // Special handling for the origin point pre-drawing snap
