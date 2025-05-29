@@ -187,7 +187,8 @@ function normalizePosition2DTo3D(point2D: Point2D, zValue: number = 0): Position
 export function generateSimulationData(
   floors: Record<string, FloorData>,
   furniture: THREE.Object3D[] = [],
-  roomHeight: number = 2.5
+  roomHeight: number = 2.5,
+  floorParameters?: Record<string, { ceilingHeight: number; floorDeck: number }>
 ): SimulationExport {
   const exportData: SimulationExport = {
     version: "1.0",
@@ -259,10 +260,15 @@ export function generateSimulationData(
         };
       });
 
+    // Obtener los parámetros específicos del piso actual
+    const currentFloorParams = floorParameters?.[floorName] || { ceilingHeight: 220, floorDeck: 0 };
+    const floorHeight = (currentFloorParams.ceilingHeight || roomHeight * 100) / 100;
+    const floorDeckValue = (currentFloorParams.floorDeck || 0) / 100; // Convertir de cm a metros
+    
     // Agregar los datos del piso al objeto de exportación usando número
     exportData.floors[floorNumber] = {
-      height: roomHeight,
-      floorDeck: 0, // Por defecto 0, podría ser configurable en el futuro
+      height: floorHeight,
+      floorDeck: floorDeckValue,
       walls: walls,
       airEntries: airEntries,
       stairs: stairs,
