@@ -55,6 +55,7 @@ export default function Settings() {
   };
 
   const handleCursorCoordinatesChange = (checked: boolean) => {
+    console.log('[SETTINGS-DEBUG] Cursor coordinates toggle:', checked);
     setShowCursorCoordinates(checked);
     toast({
       title: "Cursor Coordinates updated",
