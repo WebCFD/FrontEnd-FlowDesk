@@ -387,11 +387,6 @@ export default function Canvas2D({
   >(null);
 
   const { snapDistance, showCursorCoordinates } = useSketchStore();
-  
-  // Debug log to check if state is updating
-  useEffect(() => {
-    console.log('[CURSOR-DEBUG] showCursorCoordinates changed:', showCursorCoordinates);
-  }, [showCursorCoordinates]);
 
   const getCoordinateSystemParams = () => {
     return {
@@ -2422,7 +2417,7 @@ export default function Canvas2D({
         }
       }
 
-      if (hoverPoint && !isDrawing && !isPanning && false) { // TEST: Force disabled to see if coordinates disappear
+      if (hoverPoint && !isDrawing && !isPanning && showCursorCoordinates) {
         ctx.font = `${12 / zoom}px sans-serif`;
         drawCoordinateLabel(ctx, hoverPoint, "#718096");
         drawCrosshair(ctx, hoverPoint);
