@@ -111,11 +111,9 @@ interface StairExport {
 interface WallExport {
   id: string;
   floor: string;
-  startPoint: PointXY;
-  endPoint: PointXY;
-  properties: {
-    temperature: number;
-  };
+  start: PointXY;
+  end: PointXY;
+  temp: number;
 }
 
 interface FurnitureExport {
@@ -243,11 +241,9 @@ export function generateSimulationData(
       return {
         id: wall.id,
         floor: wall.floor,
-        startPoint: normalizeCoordinates({ x: wall.startPoint.x, y: wall.startPoint.y }),
-        endPoint: normalizeCoordinates({ x: wall.endPoint.x, y: wall.endPoint.y }),
-        properties: {
-          temperature: wall.properties.temperature
-        }
+        start: normalizeCoordinates({ x: wall.startPoint.x, y: wall.startPoint.y }),
+        end: normalizeCoordinates({ x: wall.endPoint.x, y: wall.endPoint.y }),
+        temp: wall.properties.temperature
       };
     });
 
