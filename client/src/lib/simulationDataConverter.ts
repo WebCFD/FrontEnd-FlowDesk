@@ -126,7 +126,6 @@ interface FurnitureExport {
 }
 
 interface RoomExport {
-  points: PointXY[];
   height: number;
   duration?: number;
 }
@@ -204,8 +203,6 @@ export function generateSimulationData(
 
   // Procesar cada piso
   Object.entries(floors).forEach(([floorName, floorData]) => {
-    // Crear los puntos de la habitación a partir de las líneas usando coordenadas normalizadas
-    const roomPoints: PointXY[] = extractRoomPointsFromLines(floorData.lines);
 
     // Convertir air entries (ventanas, puertas, etc.) con coordenadas normalizadas
     const airEntries: AirEntryExport[] = floorData.airEntries.map((entry, index) => {
@@ -273,7 +270,6 @@ export function generateSimulationData(
     // Agregar los datos del piso al objeto de exportación
     exportData.floors[floorName] = {
       room: {
-        points: roomPoints,
         height: roomHeight
       },
       airEntries: airEntries,
