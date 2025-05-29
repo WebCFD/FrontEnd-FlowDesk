@@ -23,6 +23,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import SimulationDataDialog from "@/components/sketch/SimulationDataDialog";
+import LoadDesignDialog from "@/components/sketch/LoadDesignDialog";
 import { generateSimulationData } from "@/lib/simulationDataConverter";
 import * as THREE from "three";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -302,6 +303,9 @@ export default function WizardDesign() {
   const [showSimulationDataDialog, setShowSimulationDataDialog] =
     useState(false);
   const [simulationData, setSimulationData] = useState<object>({});
+
+  // Estado para el diálogo de carga de diseño
+  const [showLoadDesignDialog, setShowLoadDesignDialog] = useState(false);
 
   // Use the global room store with updated selectors
   const {
@@ -1182,7 +1186,11 @@ export default function WizardDesign() {
                     <Save className="mr-2 h-4 w-4" />
                     Save Design
                   </Button>
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start"
+                    onClick={() => setShowLoadDesignDialog(true)}
+                  >
                     <Upload className="mr-2 h-4 w-4" />
                     Load Design
                   </Button>
@@ -1392,8 +1400,9 @@ export default function WizardDesign() {
                     <Button
                       variant="outline"
                       className="w-full flex items-center gap-2"
+                      onClick={() => setShowLoadDesignDialog(true)}
                     >
-                      <FileText className="h-4 w-4" />
+                      <Upload className="h-4 w-4" />
                       Load Design
                     </Button>
                   </div>
@@ -1695,6 +1704,110 @@ export default function WizardDesign() {
       "design_erased",
       1,
     );
+  };
+
+  // Función para manejar la carga de un diseño desde JSON
+  const handleLoadDesign = (designData: any) => {
+    try {
+      // Primero limpiar el estado actual
+      reset();
+      
+      // Convertir datos del JSON al formato interno
+      const convertedFloors: Record<string, any> = {};
+      const newFloorParameters: Record<string, { ceilingHeight: number; floorDeck: number }> = {};
+      
+      // Convertir plantas numeradas de vuelta a nombres
+      const floorNameMap: Record<string, string> = {
+        '0': 'ground',
+        '1': 'first', 
+        '2': 'second',
+        '3': 'third'
+      };
+      
+      Object.entries(designData.floors).forEach(([floorNumber, floorData]: [string, any]) => {
+        const floorName = floorNameMap[floorNumber] || `floor_${floorNumber}`;
+        
+        // Convertir coordenadas del JSON de vuelta al sistema interno
+        const convertedLines = floorData.walls.map((wall: any) => ({
+          start: { x: wall.start.x, y: wall.start.y },
+          end: { x: wall.end.x, y: wall.end.y }
+        }));
+        
+        const convertedAirEntries = floorData.airEntries.map((entry: any) => ({
+          type: entry.type,
+          position: { x: entry.position.x, y: entry.position.y },
+          dimensions: {
+            width: entry.size.width / 1.25, // Convertir de vuelta de cm a píxeles
+            height: entry.size.height / 1.25,
+            distanceToFloor: entry.position.z / 1.25
+          },
+          line: { start: { x: 0, y: 0 }, end: { x: 0, y: 0 } } // Se calculará automáticamente
+        }));
+        
+        const convertedStairs = (floorData.stairs || []).map((stair: any) => ({
+          id: stair.id,
+          points: stair.points.map((p: any) => ({ x: p.x, y: p.y })),
+          floor: floorName,
+          direction: stair.direction,
+          connectsTo: stair.connectsTo,
+          isImported: !!stair.connectsTo
+        }));
+        
+        convertedFloors[floorName] = {
+          lines: convertedLines,
+          airEntries: convertedAirEntries,
+          hasClosedContour: convertedLines.length > 2,
+          name: floorName,
+          stairPolygons: convertedStairs
+        };
+        
+        // Configurar parámetros del piso
+        newFloorParameters[floorName] = {
+          ceilingHeight: (floorData.height || 2.2) * 100, // Convertir metros a cm
+          floorDeck: (floorData.floorDeck || 0) * 100 // Convertir metros a cm
+        };
+      });
+      
+      // Actualizar el estado con los datos convertidos
+      setFloorParameters(newFloorParameters);
+      
+      // Cargar datos en el store
+      Object.entries(convertedFloors).forEach(([floorName, floorData]) => {
+        addFloor(floorName, floorData);
+      });
+      
+      // Configurar el estado adicional
+      if (Object.keys(convertedFloors).length > 1) {
+        setIsMultifloor(true);
+      }
+      
+      // Cambiar al primer piso disponible
+      const firstFloor = Object.keys(convertedFloors)[0];
+      if (firstFloor) {
+        setCurrentFloor(firstFloor);
+      }
+      
+      toast({
+        title: "Diseño cargado exitosamente",
+        description: `Se cargaron ${Object.keys(convertedFloors).length} plantas`,
+      });
+      
+      // Rastrear evento
+      trackEvent(
+        AnalyticsCategories.SIMULATION,
+        AnalyticsActions.START_SIMULATION,
+        "design_loaded",
+        Object.keys(convertedFloors).length,
+      );
+      
+    } catch (error) {
+      console.error("Error cargando diseño:", error);
+      toast({
+        title: "Error al cargar diseño",
+        description: "Ha ocurrido un error al procesar el archivo",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleConfirmNewSimulation = () => {
