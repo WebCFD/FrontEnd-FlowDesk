@@ -386,7 +386,7 @@ export default function Canvas2D({
     "grid" | "endpoint" | "stair" | "origin" | null
   >(null);
 
-  const { snapDistance } = useSketchStore();
+  const { snapDistance, showCursorCoordinates } = useSketchStore();
 
   const getCoordinateSystemParams = () => {
     return {
@@ -1003,12 +1003,16 @@ export default function Canvas2D({
     if (!isDrawing && !isPanning && currentTool === "wall") {
       const { point: nearestPoint, source } = findNearestEndpoint(point);
       if (nearestPoint) {
-        // Set cursor point for showing snap indicator before drawing starts
-        setCursorPoint(nearestPoint);
+        // Set cursor point for showing snap indicator before drawing starts (only if cursor coordinates enabled)
+        if (showCursorCoordinates) {
+          setCursorPoint(nearestPoint);
+        }
         setSnapSource(source); // Store the source for visual indication
       } else {
-        // If not near a snap point, use grid snap and reset snap source
-        setCursorPoint(snapToGrid(point));
+        // If not near a snap point, use grid snap and reset snap source (only if cursor coordinates enabled)
+        if (showCursorCoordinates) {
+          setCursorPoint(snapToGrid(point));
+        }
         setSnapSource("grid");
       }
     }
@@ -2357,7 +2361,7 @@ export default function Canvas2D({
         });
       });
 
-      if (cursorPoint) {
+      if (cursorPoint && showCursorCoordinates) {
         ctx.font = `${12 / zoom}px sans-serif`;
 
         // Special handling for the origin point pre-drawing snap
