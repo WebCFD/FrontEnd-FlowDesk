@@ -110,7 +110,6 @@ interface StairExport {
 
 interface WallExport {
   id: string;
-  floor: string;
   start: PointXY;
   end: PointXY;
   temp: number;
@@ -123,16 +122,12 @@ interface FurnitureExport {
   state?: string;
 }
 
-interface RoomExport {
-  height: number;
-  duration?: number;
-}
-
 interface FloorExport {
-  room: RoomExport;
+  height: number;
+  floorDeck: number;
+  walls: WallExport[];
   airEntries: AirEntryExport[];
   stairs: StairExport[];
-  walls: WallExport[];
   furniture: FurnitureExport[];
 }
 
@@ -199,8 +194,10 @@ export function generateSimulationData(
     floors: {}
   };
 
-  // Procesar cada piso
-  Object.entries(floors).forEach(([floorName, floorData]) => {
+  // Procesar cada piso - convertir nombres a números
+  Object.entries(floors).forEach(([floorName, floorData], index) => {
+    // Convertir nombre de piso a número (ground=0, first=1, etc.)
+    const floorNumber = index.toString();
 
     // Convertir air entries (ventanas, puertas, etc.) con coordenadas normalizadas
     const airEntries: AirEntryExport[] = floorData.airEntries.map((entry, index) => {
@@ -240,7 +237,6 @@ export function generateSimulationData(
     const walls: WallExport[] = synchronizedWalls.map((wall) => {
       return {
         id: wall.id,
-        floor: wall.floor,
         start: normalizeCoordinates({ x: wall.startPoint.x, y: wall.startPoint.y }),
         end: normalizeCoordinates({ x: wall.endPoint.x, y: wall.endPoint.y }),
         temp: wall.properties.temperature
@@ -263,14 +259,13 @@ export function generateSimulationData(
         };
       });
 
-    // Agregar los datos del piso al objeto de exportación
-    exportData.floors[floorName] = {
-      room: {
-        height: roomHeight
-      },
+    // Agregar los datos del piso al objeto de exportación usando número
+    exportData.floors[floorNumber] = {
+      height: roomHeight,
+      floorDeck: 0, // Por defecto 0, podría ser configurable en el futuro
+      walls: walls,
       airEntries: airEntries,
       stairs: stairs,
-      walls: walls,
       furniture: floorFurniture
     };
   });
