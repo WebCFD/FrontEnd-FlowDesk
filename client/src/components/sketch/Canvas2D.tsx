@@ -2088,7 +2088,7 @@ export default function Canvas2D({
 
       // Draw the measurement
       ctx.save();
-      ctx.font = `${(12 * 3) / zoom}px Arial`;
+      ctx.font = getScaledFont(12, 'Arial');
       ctx.fillStyle = "#6b7280"; // Gray color
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
@@ -2356,7 +2356,7 @@ export default function Canvas2D({
 
         ctx.fill();
 
-        ctx.font = `${12 / zoom}px sans-serif`;
+        ctx.font = getScaledFont(12, 'sans-serif');
         points.forEach((point) => {
           drawCoordinateLabel(ctx, point, color);
         });
