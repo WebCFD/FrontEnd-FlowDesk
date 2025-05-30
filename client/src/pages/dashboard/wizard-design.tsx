@@ -729,7 +729,14 @@ export default function WizardDesign() {
       existingEntries.forEach(entry => {
         const anyEntry = entry as any;
         if (anyEntry.id) {
-          const match = anyEntry.id.match(new RegExp(`^(window|door|vent)_${floorPrefix}_(\\d+)$`));
+          // Buscar formato nuevo: window_0F_1
+          let match = anyEntry.id.match(new RegExp(`^(window|door|vent)_${floorPrefix}_(\\d+)$`));
+          
+          // Si no encuentra, buscar formato antiguo: window_1 (para compatibilidad)
+          if (!match) {
+            match = anyEntry.id.match(/^(window|door|vent)_(\d+)$/);
+          }
+          
           if (match) {
             const type = match[1] as keyof typeof typeCounters;
             const num = parseInt(match[2]);
