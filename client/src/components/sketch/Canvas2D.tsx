@@ -3321,7 +3321,7 @@ export default function Canvas2D({
           type={newAirEntryDetails.type}
           isOpen={true}
           onClose={() => setNewAirEntryDetails(null)}
-          onConfirm={handleNewAirEntryConfirm}
+          onConfirm={handleNewAirEntryConfirm as any}
           wallContext={newAirEntryDetails.wallContext}
         />
       )}
