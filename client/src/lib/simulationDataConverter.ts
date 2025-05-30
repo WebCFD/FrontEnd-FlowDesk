@@ -365,7 +365,8 @@ export function generateSimulationData(
             airEntryBase.simulation = {
               flowType: (() => {
                 const flowType = entryProps?.flowType || "Air Mass Flow";
-                return flowType.replace(/\s+/g, ''); // Quitar espacios
+                // Convertir a camelCase
+                return flowType.replace(/\s+(.)/g, (_, char) => char.toLowerCase());
               })(),
               airDirection: (entryProps?.airOrientation as "inflow" | "outflow") || "inflow",
               flowIntensity: entryProps?.flowIntensity || "medium"
