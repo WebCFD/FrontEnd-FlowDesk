@@ -257,6 +257,9 @@ export function generateSimulationData(
       floorData.name || floorName
     );
     
+    // Contadores globales por tipo para todo el piso
+    const globalTypeCounts = { window: 0, door: 0, vent: 0 };
+    
     const walls: WallExport[] = synchronizedWalls.map((wall) => {
       // Encontrar air entries que pertenecen a esta pared
       const wallAirEntries: AirEntryExport[] = [];
@@ -275,6 +278,8 @@ export function generateSimulationData(
         
         // Si el air entry está cerca de esta pared (tolerancia de 50 píxeles)
         if (distance < 50) {
+          // Incrementar contador para este tipo
+          globalTypeCounts[entry.type as keyof typeof globalTypeCounts]++;
           // Usar el mismo sistema de normalización que las paredes para X,Y
           const normalizedXY = normalizeCoordinates({ 
             x: entry.position.x, 
@@ -306,7 +311,7 @@ export function generateSimulationData(
           
           // Crear objeto base
           const airEntryBase = {
-            id: `${entry.type}_${index + 1}`,
+            id: `${entry.type}_${globalTypeCounts[entry.type as keyof typeof globalTypeCounts]}`,
             type: entry.type as "window" | "door" | "vent",
             position: {
               x: parseFloat(cmToM(normalizedXY.x).toFixed(5)),
