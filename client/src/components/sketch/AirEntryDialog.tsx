@@ -497,21 +497,13 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           type="number"
                           min="0"
                           max="100"
-                          step="1"
-                          value={wallPosition}
+                          step="0.1"
+                          value={parseFloat(wallPosition.toFixed(1))}
                           onChange={(e) => {
                             const value = parseFloat(e.target.value);
                             if (!isNaN(value)) {
-                              // Permitir visualización completa durante edición
-                              setWallPosition(value);
-                            }
-                          }}
-                          onBlur={(e) => {
-                            // Al salir del campo, redondear a 1 decimal y actualizar posición
-                            const value = parseFloat(e.target.value);
-                            if (!isNaN(value)) {
+                              // Permitir hasta 2 decimales en entrada, pero redondear a 1 decimal para almacenamiento
                               const roundedValue = Math.round(value * 10) / 10;
-                              setWallPosition(roundedValue);
                               handleWallPositionChange(roundedValue);
                             }
                           }}
