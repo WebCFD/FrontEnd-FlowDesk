@@ -420,12 +420,14 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         distanceToFloor: distanceToFloor,
         shape: shapeType,
         properties: {
-          state: (type === 'window' || type === 'door') ? (isElementOpen ? 'open' : 'closed') : undefined,
-          temperature: (type === 'window' || type === 'door') ? elementTemperature : undefined,
-          flowType: type === 'vent' ? ventMeasurementType : undefined,
-          flowValue: type === 'vent' ? customIntensity : undefined,
-          flowIntensity: type === 'vent' ? (intensityLevel === 'custom' ? 'medium' : intensityLevel) : undefined,
-          airOrientation: type === 'vent' ? airDirection : undefined,
+          state: (isElementOpen ? 'open' : 'closed') as 'open' | 'closed',
+          temperature: elementTemperature,
+          flowIntensity: (intensityLevel === 'custom' ? 'medium' : intensityLevel) as 'low' | 'medium' | 'high',
+          airOrientation: airDirection as 'inflow' | 'outflow',
+          ...(type === 'vent' && {
+            flowType: (ventMeasurementType === 'massflow' ? 'Air Mass Flow' : ventMeasurementType === 'velocity' ? 'Air Velocity' : 'Pressure') as 'Air Mass Flow' | 'Air Velocity' | 'Pressure',
+            flowValue: customIntensity,
+          })
         }
       };
       
