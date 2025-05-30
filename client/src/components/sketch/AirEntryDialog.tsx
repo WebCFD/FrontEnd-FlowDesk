@@ -733,7 +733,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                       <div className="space-y-1">
                         <Label className="text-sm font-medium text-slate-700">Element Status</Label>
                         <p className="text-xs text-slate-500">
-                          {isElementOpen ? 'Element is open and allows airflow' : 'Element is closed, no airflow'}
+                          {isElementOpen 
+                            ? `${type === 'window' ? 'Window' : type === 'door' ? 'Door' : 'Vent'} is open and allows airflow` 
+                            : `${type === 'window' ? 'Window' : type === 'door' ? 'Door' : 'Vent'} is closed, no airflow`
+                          }
                         </p>
                       </div>
                       <Switch
