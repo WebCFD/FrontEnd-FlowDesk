@@ -130,14 +130,15 @@ interface AirEntryExport {
     shape: "rectangular" | "circular";
   };
   simulation: {
-    // Propiedades comunes
+    // Propiedades comunes para todos los tipos
     state?: "open" | "closed";
     temperature?: number;
+    flowIntensity?: "low" | "medium" | "high" | "custom";
+    airOrientation?: "inflow" | "outflow";
+    customFlowValue?: number;
     // Propiedades específicas para vents
     flowType?: "Air Mass Flow" | "Air Velocity" | "Pressure";
     flowValue?: number;
-    flowIntensity?: "low" | "medium" | "high";
-    airOrientation?: "inflow" | "outflow";
   };
 }
 
@@ -323,8 +324,15 @@ export function generateSimulationData(
           if (entry.type === "window" || entry.type === "door") {
             airEntryBase.simulation = {
               state: (entryProps?.state as "open" | "closed") || "closed",
-              temperature: entryProps?.temperature || 20
+              temperature: entryProps?.temperature || 20,
+              flowIntensity: entryProps?.flowIntensity || "low",
+              airOrientation: (entryProps?.airOrientation as "inflow" | "outflow") || "inflow"
             };
+            
+            // Agregar valor custom si aplica
+            if (entryProps?.flowIntensity === "custom" && entryProps?.customIntensityValue !== undefined) {
+              airEntryBase.simulation.customFlowValue = entryProps.customIntensityValue;
+            }
             
             // Las puertas solo pueden ser rectangulares
             if (entry.type === "door") {
@@ -334,9 +342,14 @@ export function generateSimulationData(
             airEntryBase.simulation = {
               flowType: (entryProps?.flowType as "Air Mass Flow" | "Air Velocity" | "Pressure") || "Air Mass Flow",
               flowValue: entryProps?.flowValue || 50,
-              flowIntensity: (entryProps?.flowIntensity as "low" | "medium" | "high") || "medium",
+              flowIntensity: entryProps?.flowIntensity || "medium",
               airOrientation: (entryProps?.airOrientation as "inflow" | "outflow") || "inflow"
             };
+            
+            // Agregar valor custom si aplica para vents también
+            if (entryProps?.flowIntensity === "custom" && entryProps?.customIntensityValue !== undefined) {
+              airEntryBase.simulation.customFlowValue = entryProps.customIntensityValue;
+            }
           }
 
           wallAirEntries.push(airEntryBase);
