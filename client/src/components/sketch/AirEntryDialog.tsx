@@ -606,22 +606,30 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                         <div className="p-2 bg-gray-100 rounded text-xs text-gray-600">
                           <div>Floor: {wallContext.floorName}</div>
                           <div>{type === 'window' ? 'Window' : type === 'door' ? 'Door' : 'Vent'} ID: {(() => {
-                            // Calcular el índice por tipo
+                            // Usar el ID real del elemento si existe
                             if (!airEntryProps.currentFloor) return `${type}_1`;
                             
                             // Obtener todas las air entries del piso actual
                             const currentFloorData = floors[airEntryProps.currentFloor];
                             if (!currentFloorData) return `${type}_1`;
                             
-                            // Contar elementos del mismo tipo hasta el índice actual
-                            let typeCount = 0;
-                            for (let i = 0; i <= (airEntryProps.airEntryIndex || 0); i++) {
-                              if (currentFloorData.airEntries[i]?.type === type) {
-                                typeCount++;
-                              }
-                            }
+                            // Obtener el elemento actual
+                            const currentEntry = currentFloorData.airEntries[airEntryProps.airEntryIndex || 0];
+                            const entryWithId = currentEntry as any;
                             
-                            return `${type}_${typeCount}`;
+                            // Si el elemento tiene ID, usarlo; si no, calcularlo
+                            if (entryWithId?.id) {
+                              return entryWithId.id;
+                            } else {
+                              // Fallback: calcular índice por tipo
+                              let typeCount = 0;
+                              for (let i = 0; i <= (airEntryProps.airEntryIndex || 0); i++) {
+                                if (currentFloorData.airEntries[i]?.type === type) {
+                                  typeCount++;
+                                }
+                              }
+                              return `${type}_${typeCount}`;
+                            }
                           })()}</div>
                           <div>Wall ID: {wallContext.wallId}</div>
                           {(() => {
