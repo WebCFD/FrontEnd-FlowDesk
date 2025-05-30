@@ -348,9 +348,9 @@ export function generateSimulationData(
               flowIntensity: entryProps?.flowIntensity || "low"
             };
             
-            // Agregar valor custom si aplica
+            // Agregar customValue si el usuario eligió "custom"
             if (entryProps?.flowIntensity === "custom" && entryProps?.customIntensityValue !== undefined) {
-              airEntryBase.simulation.customFlowValue = entryProps.customIntensityValue;
+              airEntryBase.simulation.customValue = entryProps.customIntensityValue;
             }
             
             // Las puertas solo pueden ser rectangulares
@@ -360,14 +360,13 @@ export function generateSimulationData(
           } else if (entry.type === "vent") {
             airEntryBase.simulation = {
               flowType: (entryProps?.flowType as "Air Mass Flow" | "Air Velocity" | "Pressure") || "Air Mass Flow",
-              flowValue: entryProps?.flowValue || 50,
               airDirection: (entryProps?.airOrientation as "inflow" | "outflow") || "inflow",
               flowIntensity: entryProps?.flowIntensity || "medium"
             };
             
-            // Agregar valor custom si aplica para vents también
+            // Agregar customValue si el usuario eligió "custom"
             if (entryProps?.flowIntensity === "custom" && entryProps?.customIntensityValue !== undefined) {
-              airEntryBase.simulation.customFlowValue = entryProps.customIntensityValue;
+              airEntryBase.simulation.customValue = entryProps.customIntensityValue;
             }
           }
 
