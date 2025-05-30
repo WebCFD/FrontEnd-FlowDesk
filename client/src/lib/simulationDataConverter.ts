@@ -363,7 +363,10 @@ export function generateSimulationData(
             }
           } else if (entry.type === "vent") {
             airEntryBase.simulation = {
-              flowType: (entryProps?.flowType as "Air Mass Flow" | "Air Velocity" | "Pressure") || "Air Mass Flow",
+              flowType: (() => {
+                const flowType = entryProps?.flowType || "Air Mass Flow";
+                return flowType.replace(/\s+/g, ''); // Quitar espacios
+              })(),
               airDirection: (entryProps?.airOrientation as "inflow" | "outflow") || "inflow",
               flowIntensity: entryProps?.flowIntensity || "medium"
             };
