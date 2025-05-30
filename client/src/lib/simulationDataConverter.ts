@@ -53,13 +53,25 @@ interface FloorData {
   stairPolygons?: StairPolygon[];
 }
 
-// Interfaces para el formato de exportación
+// Interfaces para el formato de exportación JSON
 interface PointXY {
+  x: string; // En metros, ejemplo: "2.5m"
+  y: string; // En metros, ejemplo: "3.2m"
+}
+
+interface Position {
+  x: string; // En metros, ejemplo: "2.5m"
+  y: string; // En metros, ejemplo: "3.2m"
+  z?: number;
+}
+
+// Interfaces internas para cálculos (sin unidades)
+interface PointXYNumeric {
   x: number;
   y: number;
 }
 
-interface Position {
+interface PositionNumeric {
   x: number;
   y: number;
   z?: number;
@@ -103,7 +115,7 @@ interface AirEntryExport {
 
 interface StairExport {
   id: string;
-  points: PointXY[];
+  points: PointXYNumeric[];
   connectsTo?: string;
   direction?: string;
 }
@@ -144,10 +156,23 @@ const CANVAS_CENTER_Y = 300; // Centro del canvas en Y
 /**
  * Normaliza coordenadas internas del canvas a coordenadas centradas en centímetros
  */
+// Función que devuelve coordenadas con unidades para JSON
 export function normalizeCoordinates(internalPoint: Point2D): PointXY {
-  // Restar el offset del centro y convertir a centímetros
-  const normalizedX = (internalPoint.x - CANVAS_CENTER_X) * PIXELS_TO_CM;
-  const normalizedY = -(internalPoint.y - CANVAS_CENTER_Y) * PIXELS_TO_CM;
+  // Restar el offset del centro y convertir a centímetros, luego a metros
+  const normalizedX = (internalPoint.x - CANVAS_CENTER_X) * PIXELS_TO_CM / 100;
+  const normalizedY = -(internalPoint.y - CANVAS_CENTER_Y) * PIXELS_TO_CM / 100;
+  
+  return {
+    x: `${normalizedX.toFixed(2)}m`,
+    y: `${normalizedY.toFixed(2)}m`
+  };
+}
+
+// Función auxiliar que devuelve coordenadas numéricas para arrays de puntos
+export function normalizeCoordinatesNumeric(internalPoint: Point2D): PointXYNumeric {
+  // Restar el offset del centro y convertir a centímetros, luego a metros
+  const normalizedX = (internalPoint.x - CANVAS_CENTER_X) * PIXELS_TO_CM / 100;
+  const normalizedY = -(internalPoint.y - CANVAS_CENTER_Y) * PIXELS_TO_CM / 100;
   
   return {
     x: normalizedX,
@@ -159,9 +184,13 @@ export function normalizeCoordinates(internalPoint: Point2D): PointXY {
  * Convierte coordenadas JSON de vuelta a coordenadas internas del canvas
  */
 export function denormalizeCoordinates(jsonPoint: PointXY): Point2D {
+  // Extraer números de las strings con unidades (ej: "2.5m" -> 2.5)
+  const xValue = parseFloat(jsonPoint.x.replace('m', '')) * 100; // Convertir metros a cm
+  const yValue = parseFloat(jsonPoint.y.replace('m', '')) * 100; // Convertir metros a cm
+  
   // Convertir de centímetros a píxeles y añadir el offset del centro
-  const internalX = (jsonPoint.x / PIXELS_TO_CM) + CANVAS_CENTER_X;
-  const internalY = (-jsonPoint.y / PIXELS_TO_CM) + CANVAS_CENTER_Y;
+  const internalX = (xValue / PIXELS_TO_CM) + CANVAS_CENTER_X;
+  const internalY = (-yValue / PIXELS_TO_CM) + CANVAS_CENTER_Y;
   
   return {
     x: internalX,
