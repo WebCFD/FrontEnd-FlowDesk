@@ -141,6 +141,9 @@ const PIXELS_TO_CM = 25 / 20; // 1.25 - misma constante que Canvas2D
 const CANVAS_CENTER_X = 400; // Centro del canvas en X
 const CANVAS_CENTER_Y = 300; // Centro del canvas en Y
 
+// Función simple para convertir centímetros a metros
+const cmToM = (cm: number): number => cm / 100;
+
 /**
  * Normaliza coordenadas internas del canvas a coordenadas centradas en centímetros
  */
@@ -252,10 +255,13 @@ export function generateSimulationData(
         }
       });
       
+      const startCoords = normalizeCoordinates({ x: wall.startPoint.x, y: wall.startPoint.y });
+      const endCoords = normalizeCoordinates({ x: wall.endPoint.x, y: wall.endPoint.y });
+      
       return {
         id: wall.id,
-        start: normalizeCoordinates({ x: wall.startPoint.x, y: wall.startPoint.y }),
-        end: normalizeCoordinates({ x: wall.endPoint.x, y: wall.endPoint.y }),
+        start: { x: cmToM(startCoords.x), y: cmToM(startCoords.y) },
+        end: { x: cmToM(endCoords.x), y: cmToM(endCoords.y) },
         temp: wall.properties.temperature,
         airEntries: wallAirEntries
       };
@@ -270,8 +276,8 @@ export function generateSimulationData(
         return {
           id: obj.userData?.id || `furniture_${index}`,
           position: {
-            x: normalizedPos.x,
-            y: normalizedPos.y
+            x: cmToM(normalizedPos.x),
+            y: cmToM(normalizedPos.y)
           },
           rotation: obj.rotation.y
         };
