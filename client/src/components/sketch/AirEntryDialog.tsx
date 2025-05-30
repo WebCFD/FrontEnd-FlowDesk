@@ -423,7 +423,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
               <>
                 {/* 1. POSITION SECTION */}
                 <div className="border rounded-lg p-4 bg-slate-50/50">
-                  <h4 className="font-medium text-sm mb-3 text-slate-700">Position</h4>
+                  <h4 className="font-medium text-sm mb-4 text-slate-700 border-b border-slate-200 pb-2">Position</h4>
                   
                   {/* Información del wall (solo lectura) */}
                   {(() => {
@@ -543,7 +543,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
                 {/* 2. DIMENSIONS SECTION */}
                 <div className="border rounded-lg p-4 bg-slate-50/50">
-                  <h4 className="font-medium text-sm mb-3 text-slate-700">Dimensions</h4>
+                  <h4 className="font-medium text-sm mb-4 text-slate-700 border-b border-slate-200 pb-2">Dimensions</h4>
                   <div className="space-y-3">
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-2">
@@ -578,7 +578,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
                 {/* 3. SIMULATION CONDITIONS SECTION */}
                 <div className="border rounded-lg p-4 bg-slate-50/50">
-                  <h4 className="font-medium text-sm mb-3 text-slate-700">Simulation Conditions</h4>
+                  <h4 className="font-medium text-sm mb-4 text-slate-700 border-b border-slate-200 pb-2">Simulation Conditions</h4>
                   <div className="space-y-4">
                     
                     {/* Estado del elemento: Abierto/Cerrado */}
