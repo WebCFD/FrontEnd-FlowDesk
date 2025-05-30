@@ -11,6 +11,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { HelpCircle } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
 // Props para entrada de aire (compatibilidad hacia atrás)
@@ -494,9 +501,23 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                   <div className="space-y-3">
                     {/* Distancia al suelo */}
                     <div className="space-y-2">
-                      <Label htmlFor="distance-floor" className="text-xs text-slate-600">
-                        Distance to Floor
-                      </Label>
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="distance-floor" className="text-xs text-slate-600">
+                          Vertical Distance
+                        </Label>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <HelpCircle className="h-3 w-3 text-slate-400 hover:text-slate-600 cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="text-xs max-w-48">
+                                Height from floor to the center of the element in the vertical axis of the space
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
                       <div className="flex items-center space-x-2">
                         <Input
                           id="distance-floor"
