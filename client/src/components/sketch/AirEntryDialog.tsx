@@ -27,6 +27,15 @@ interface AirEntryDialogProps {
     height: number;
     distanceToFloor?: number;
   };
+  // Nuevos campos para información del wall
+  wallContext?: {
+    wallId: string;
+    floorName: string;
+    wallStart: { x: number; y: number };
+    wallEnd: { x: number; y: number };
+    clickPosition: { x: number; y: number };
+    ceilingHeight: number;
+  };
 }
 
 // Props para propiedades de pared
@@ -83,6 +92,52 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   // Estado para las coordenadas del elemento en el canvas
   const [elementPosition, setElementPosition] = useState({ x: 0, y: 0 });
   
+  // Estado para la posición a lo largo del wall (0-100%)
+  const [wallPosition, setWallPosition] = useState(50);
+  
+  // Estado para la distancia al suelo
+  const [distanceToFloor, setDistanceToFloor] = useState(0);
+
+  // Función para calcular la posición inicial a lo largo del wall basada en el clic
+  const calculateInitialWallPosition = () => {
+    if (!props.wallContext || props.type === 'wall') return 50;
+    
+    const { wallStart, wallEnd, clickPosition } = props.wallContext;
+    const wallLength = Math.sqrt(
+      Math.pow(wallEnd.x - wallStart.x, 2) + Math.pow(wallEnd.y - wallStart.y, 2)
+    );
+    
+    const clickDistance = Math.sqrt(
+      Math.pow(clickPosition.x - wallStart.x, 2) + Math.pow(clickPosition.y - wallStart.y, 2)
+    );
+    
+    const percentage = Math.min(100, Math.max(0, (clickDistance / wallLength) * 100));
+    return percentage;
+  };
+
+  // Función para calcular la distancia inicial al suelo
+  const calculateInitialDistanceToFloor = () => {
+    if (!props.wallContext || props.type === 'wall') return 0;
+    
+    const ceilingHeight = props.wallContext.ceilingHeight;
+    
+    // Para puertas, distancia = 0 (van al suelo)
+    if (type === 'door') return 0;
+    
+    // Para ventanas y vents, distancia = mitad de altura del wall
+    return ceilingHeight / 2;
+  };
+
+  // Inicializar valores cuando se abre el diálogo
+  useEffect(() => {
+    if (isOpen && props.type !== 'wall') {
+      const initialWallPos = calculateInitialWallPosition();
+      const initialDistToFloor = calculateInitialDistanceToFloor();
+      
+      setWallPosition(initialWallPos);
+      setDistanceToFloor(initialDistToFloor);
+    }
+  }, [isOpen, props.wallContext]);
 
   function getDefaultValues() {
     // Obtener valores iniciales según el tipo de props
