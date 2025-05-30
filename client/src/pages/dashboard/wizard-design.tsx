@@ -29,6 +29,11 @@ import * as THREE from "three";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   Save,
   Upload,
   Eraser,
@@ -41,6 +46,7 @@ import {
   Share2,
   ChevronDown,
   FileText,
+  Info,
 } from "lucide-react";
 import Canvas2D from "@/components/sketch/Canvas2D";
 import { RoomSketchPro } from "@/components/sketch/RoomSketchPro";
@@ -1027,10 +1033,10 @@ export default function WizardDesign() {
                     </Button>
                   </div>
                   
-                  {/* Default Wall Temperature */}
+                  {/* Wall Temperature */}
                   <div className="space-y-2 mt-4">
                     <Label htmlFor="default-wall-temp" className="text-sm font-medium">
-                      Default Wall Temperature
+                      Wall Temperature
                     </Label>
                     <div className="flex items-center gap-2">
                       <Input
@@ -1048,11 +1054,12 @@ export default function WizardDesign() {
                         max={100}
                         step={0.5}
                         placeholder="20"
+                        title="Default temperature assigned to new walls when created. You can change individual wall temperatures by double-clicking on any wall."
                       />
                       <span className="text-sm text-gray-500">°C</span>
                     </div>
                     <p className="text-xs text-gray-400">
-                      Temperature assigned to new walls when created
+                      Double-click any wall to change its temperature
                     </p>
                   </div>
                 </div>
