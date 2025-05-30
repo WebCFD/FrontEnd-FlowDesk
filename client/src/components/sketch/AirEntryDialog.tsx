@@ -840,7 +840,24 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
                         {/* Intensidad del flujo */}
                         <div className="space-y-2">
-                          <Label className="text-xs text-slate-600">Flow Intensity</Label>
+                          <div className="flex items-center space-x-1">
+                            <Label className="text-xs text-slate-600">Flow Intensity</Label>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <HelpCircle className="h-3 w-3 text-slate-400 hover:text-slate-600 cursor-help" />
+                                </TooltipTrigger>
+                                <TooltipContent side="right" sideOffset={5}>
+                                  <p className="text-xs max-w-48">
+                                    {type === 'vent' 
+                                      ? "Low, Medium, and High provide general airflow values. For accurate results, use Custom with manufacturer specifications from device (pump, air conditioner, fans, etc.) documentation."
+                                      : "Use Low for typical conditions. Medium, High, and Custom options are available for specific flow studies and detailed analysis."
+                                    }
+                                  </p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </div>
                           <Select value={intensityLevel} onValueChange={(value: 'high' | 'medium' | 'low' | 'custom') => setIntensityLevel(value)}>
                             <SelectTrigger className="h-8 text-sm">
                               <SelectValue placeholder="Select intensity" />
