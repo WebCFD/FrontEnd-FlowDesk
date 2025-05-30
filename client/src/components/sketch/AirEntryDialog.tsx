@@ -309,8 +309,48 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   useEffect(() => {
     if (dialogOpen) {
       setValues(getDefaultValues());
+      
+      // Load saved simulation properties when editing
+      if (isEditing && props.type !== 'wall' && 'initialValues' in props && props.initialValues?.properties) {
+        const savedProps = props.initialValues.properties;
+        
+        // Load shape
+        if (props.initialValues.shape) {
+          setShapeType(props.initialValues.shape);
+        }
+        
+        // Load common properties
+        if (savedProps.state !== undefined) {
+          setIsElementOpen(savedProps.state === 'open');
+        }
+        if (savedProps.temperature !== undefined) {
+          setElementTemperature(savedProps.temperature);
+        }
+        
+        // Load vent-specific properties
+        if (props.type === 'vent') {
+          if (savedProps.flowType) {
+            // Map stored values to dialog internal values
+            const flowTypeMapping: Record<string, 'massflow' | 'velocity' | 'pressure'> = {
+              'Air Mass Flow': 'massflow',
+              'Air Velocity': 'velocity', 
+              'Pressure': 'pressure'
+            };
+            setVentMeasurementType(flowTypeMapping[savedProps.flowType] || 'massflow');
+          }
+          if (savedProps.flowValue !== undefined) {
+            setCustomIntensity(savedProps.flowValue);
+          }
+          if (savedProps.flowIntensity) {
+            setIntensityLevel(savedProps.flowIntensity);
+          }
+          if (savedProps.airOrientation) {
+            setAirDirection(savedProps.airOrientation);
+          }
+        }
+      }
     }
-  }, [dialogOpen, type, props]);
+  }, [dialogOpen, type, props, isEditing]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

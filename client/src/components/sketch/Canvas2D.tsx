@@ -274,6 +274,7 @@ interface Canvas2DProps {
   measurements: Measurement[];
   stairPolygons?: StairPolygon[];
   floorText: string;
+  currentFloor: string;
   isMultifloor: boolean;
   ceilingHeight?: number;
   defaultWallTemperature?: number;
@@ -3236,7 +3237,13 @@ export default function Canvas2D({
           onConfirm={(dimensions) =>
             handleAirEntryEdit(editingAirEntry.index, dimensions)
           }
-          initialValues={editingAirEntry.entry.dimensions}
+          initialValues={{
+            ...editingAirEntry.entry.dimensions,
+            shape: (editingAirEntry.entry.dimensions as any).shape,
+            properties: (editingAirEntry.entry as any).properties
+          }}
+          airEntryIndex={editingAirEntry.index}
+          currentFloor={floorText}
           isEditing={true}
           wallContext={{
             wallId: (() => {
