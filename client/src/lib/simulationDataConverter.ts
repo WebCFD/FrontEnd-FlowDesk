@@ -65,18 +65,6 @@ interface Position {
   z?: number;
 }
 
-// Interfaces internas para cálculos (sin unidades)
-interface PointXYNumeric {
-  x: number;
-  y: number;
-}
-
-interface PositionNumeric {
-  x: number;
-  y: number;
-  z?: number;
-}
-
 interface Position3D {
   x: number;
   y: number;
@@ -115,7 +103,7 @@ interface AirEntryExport {
 
 interface StairExport {
   id: string;
-  points: PointXYNumeric[];
+  points: PointXY[];
   connectsTo?: string;
   direction?: string;
 }
@@ -168,17 +156,7 @@ export function normalizeCoordinates(internalPoint: Point2D): PointXY {
   };
 }
 
-// Función auxiliar que devuelve coordenadas numéricas para arrays de puntos
-export function normalizeCoordinatesNumeric(internalPoint: Point2D): PointXYNumeric {
-  // Restar el offset del centro y convertir a centímetros, luego a metros
-  const normalizedX = (internalPoint.x - CANVAS_CENTER_X) * PIXELS_TO_CM / 100;
-  const normalizedY = -(internalPoint.y - CANVAS_CENTER_Y) * PIXELS_TO_CM / 100;
-  
-  return {
-    x: normalizedX,
-    y: normalizedY
-  };
-}
+
 
 /**
  * Convierte coordenadas JSON de vuelta a coordenadas internas del canvas
