@@ -749,7 +749,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                         <Label htmlFor="element-temperature" className="text-xs text-slate-600">
                           {isElementOpen 
                             ? "Air Inflow Temperature"
-                            : `${element.type === 'window' ? 'Window' : element.type === 'door' ? 'Door' : 'Vent'} Temperature`
+                            : `${type === 'window' ? 'Window' : type === 'door' ? 'Door' : 'Vent'} Temperature`
                           }
                         </Label>
                         <TooltipProvider>
