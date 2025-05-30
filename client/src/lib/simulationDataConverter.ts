@@ -169,17 +169,7 @@ export function denormalizeCoordinates(jsonPoint: PointXY): Point2D {
   };
 }
 
-/**
- * Normaliza una posición 2D a 3D con coordenadas centradas
- */
-function normalizePosition2DTo3D(point2D: Point2D, zValue: number = 0): Position {
-  const normalized = normalizeCoordinates(point2D);
-  return {
-    x: normalized.x,
-    y: normalized.y,
-    z: zValue
-  };
-}
+
 
 
 
@@ -237,19 +227,27 @@ export function generateSimulationData(
         
         // Si el air entry está cerca de esta pared (tolerancia de 50 píxeles)
         if (distance < 50) {
-          const normalizedPosition = normalizePosition2DTo3D(
-            entry.position, 
-            (entry.dimensions.distanceToFloor || 1) * PIXELS_TO_CM
-          );
+          // Usar el mismo sistema de normalización que las paredes para X,Y
+          const normalizedXY = normalizeCoordinates({ 
+            x: entry.position.x, 
+            y: entry.position.y 
+          });
+          
+          // Calcular la altura Z directamente en metros
+          const heightInMeters = (entry.dimensions.distanceToFloor || 100) / 100; // Convertir cm a metros
           
           wallAirEntries.push({
             id: `${entry.type}_${index}`,
             type: entry.type,
             size: {
-              width: entry.dimensions.width * PIXELS_TO_CM,
-              height: entry.dimensions.height * PIXELS_TO_CM
+              width: entry.dimensions.width / 100, // Convertir cm a metros
+              height: entry.dimensions.height / 100 // Convertir cm a metros
             },
-            position: normalizedPosition
+            position: {
+              x: normalizedXY.x,
+              y: normalizedXY.y,
+              z: heightInMeters
+            }
           });
         }
       });
