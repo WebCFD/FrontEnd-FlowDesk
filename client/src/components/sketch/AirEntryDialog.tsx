@@ -373,7 +373,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         }
       }
     }
-  }, [dialogOpen, type, isEditing, props.initialValues]);
+  }, [dialogOpen, type, isEditing]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
