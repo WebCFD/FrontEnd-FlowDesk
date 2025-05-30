@@ -632,13 +632,13 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               <SelectItem value="inflow">
                                 <div className="flex items-center space-x-2">
                                   <span className="text-green-600 text-lg font-bold">→</span>
-                                  <span className="text-gray-500 text-xs">🏠</span>
+                                  <span className="text-gray-500 text-sm">▢</span>
                                   <span>Inflow (Air enters)</span>
                                 </div>
                               </SelectItem>
                               <SelectItem value="outflow">
                                 <div className="flex items-center space-x-2">
-                                  <span className="text-gray-500 text-xs">🏠</span>
+                                  <span className="text-gray-500 text-sm">▢</span>
                                   <span className="text-red-600 text-lg font-bold">→</span>
                                   <span>Outflow (Air exits)</span>
                                 </div>
