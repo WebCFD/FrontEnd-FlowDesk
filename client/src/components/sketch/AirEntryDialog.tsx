@@ -508,9 +508,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <HelpCircle className="h-3 w-3 text-slate-400 hover:text-slate-600 cursor-help" />
+                              <HelpCircle className="h-3 w-3 text-slate-400 hover:text-slate-600 cursor-pointer" />
                             </TooltipTrigger>
-                            <TooltipContent>
+                            <TooltipContent side="right" sideOffset={5}>
                               <p className="text-xs max-w-48">
                                 Height from floor to the center of the element in the vertical axis of the space
                               </p>
