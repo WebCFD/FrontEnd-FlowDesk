@@ -53,15 +53,15 @@ interface FloorData {
   stairPolygons?: StairPolygon[];
 }
 
-// Interfaces para el formato de exportación JSON
+// Interfaces para el formato de exportación
 interface PointXY {
-  x: number; // En metros
-  y: number; // En metros
+  x: number;
+  y: number;
 }
 
 interface Position {
-  x: number; // En metros
-  y: number; // En metros
+  x: number;
+  y: number;
   z?: number;
 }
 
@@ -144,31 +144,24 @@ const CANVAS_CENTER_Y = 300; // Centro del canvas en Y
 /**
  * Normaliza coordenadas internas del canvas a coordenadas centradas en centímetros
  */
-// Función que devuelve coordenadas con unidades para JSON
 export function normalizeCoordinates(internalPoint: Point2D): PointXY {
-  // Restar el offset del centro y convertir a centímetros, luego a metros
-  const normalizedX = (internalPoint.x - CANVAS_CENTER_X) * PIXELS_TO_CM / 100;
-  const normalizedY = -(internalPoint.y - CANVAS_CENTER_Y) * PIXELS_TO_CM / 100;
+  // Restar el offset del centro y convertir a centímetros
+  const normalizedX = (internalPoint.x - CANVAS_CENTER_X) * PIXELS_TO_CM;
+  const normalizedY = -(internalPoint.y - CANVAS_CENTER_Y) * PIXELS_TO_CM;
   
   return {
-    x: parseFloat(normalizedX.toFixed(2)),
-    y: parseFloat(normalizedY.toFixed(2))
+    x: normalizedX,
+    y: normalizedY
   };
 }
-
-
 
 /**
  * Convierte coordenadas JSON de vuelta a coordenadas internas del canvas
  */
 export function denormalizeCoordinates(jsonPoint: PointXY): Point2D {
-  // Extraer números de las strings con unidades (ej: "2.5m" -> 2.5)
-  const xValue = parseFloat(jsonPoint.x.replace('m', '')) * 100; // Convertir metros a cm
-  const yValue = parseFloat(jsonPoint.y.replace('m', '')) * 100; // Convertir metros a cm
-  
   // Convertir de centímetros a píxeles y añadir el offset del centro
-  const internalX = (xValue / PIXELS_TO_CM) + CANVAS_CENTER_X;
-  const internalY = (-yValue / PIXELS_TO_CM) + CANVAS_CENTER_Y;
+  const internalX = (jsonPoint.x / PIXELS_TO_CM) + CANVAS_CENTER_X;
+  const internalY = (-jsonPoint.y / PIXELS_TO_CM) + CANVAS_CENTER_Y;
   
   return {
     x: internalX,
@@ -359,15 +352,10 @@ function extractRoomPointsFromLines(lines: any[]): PointXY[] {
   }
   
   // Eliminar el último punto si es igual al primero (cerrar el polígono)
-  if (points.length > 1) {
-    const firstX = parseFloat(points[0].x.replace('m', ''));
-    const firstY = parseFloat(points[0].y.replace('m', ''));
-    const lastX = parseFloat(points[points.length - 1].x.replace('m', ''));
-    const lastY = parseFloat(points[points.length - 1].y.replace('m', ''));
-    
-    if (isPointNear({ x: firstX, y: firstY }, { x: lastX, y: lastY })) {
-      points.pop();
-    }
+  if (points.length > 1 && 
+      isPointNear({ x: points[0].x, y: points[0].y }, 
+                { x: points[points.length - 1].x, y: points[points.length - 1].y })) {
+    points.pop();
   }
   
   return points;
