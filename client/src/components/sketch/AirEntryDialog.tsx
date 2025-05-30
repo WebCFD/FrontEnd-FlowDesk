@@ -70,7 +70,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   
   // Estado unificado para manejar tanto dimensiones como temperatura
   const [values, setValues] = useState(getDefaultValues());
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [position, setPosition] = useState({ x: 0, y: 40 }); // Posición inicial cerca del borde superior
   const [isDragging, setIsDragging] = useState(false);
   const [hasBeenDragged, setHasBeenDragged] = useState(false);
   const draggingRef = useRef(false);
@@ -102,6 +102,11 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   useEffect(() => {
     if (isOpen) {
       setValues(getDefaultValues());
+      // Calcular posición centrada horizontalmente en la parte superior
+      const dialogWidth = 425; // Ancho aproximado del diálogo
+      const centerX = (window.innerWidth - dialogWidth) / 2;
+      setPosition({ x: centerX, y: 40 });
+      setHasBeenDragged(true); // Activar posicionamiento personalizado desde el inicio
     }
   }, [isOpen, type, props]);
 
