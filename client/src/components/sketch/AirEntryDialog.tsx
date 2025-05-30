@@ -636,7 +636,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                                 </TooltipTrigger>
                                 <TooltipContent side="right" sideOffset={5}>
                                   <p className="text-xs max-w-48">
-                                    Horizontal dimension of the element opening.
+                                    Width of the element's open area for airflow calculations. If the element is partially open, enter the effective width.
                                   </p>
                                 </TooltipContent>
                               </Tooltip>
@@ -663,7 +663,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                                 </TooltipTrigger>
                                 <TooltipContent side="right" sideOffset={5}>
                                   <p className="text-xs max-w-48">
-                                    Vertical dimension of the element opening.
+                                    Height of the element's open area for airflow calculations. If the element is partially open, enter the effective height.
                                   </p>
                                 </TooltipContent>
                               </Tooltip>
@@ -695,7 +695,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               </TooltipTrigger>
                               <TooltipContent side="right" sideOffset={5}>
                                 <p className="text-xs max-w-48">
-                                  Diameter of the circular element opening.
+                                  Diameter of the element's open area for airflow calculations. If the element is partially open, enter the effective diameter.
                                 </p>
                               </TooltipContent>
                             </Tooltip>
