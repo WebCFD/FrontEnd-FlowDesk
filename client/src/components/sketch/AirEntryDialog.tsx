@@ -546,7 +546,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                             </TooltipTrigger>
                             <TooltipContent side="right" sideOffset={5}>
                               <p className="text-xs max-w-48">
-                                Horizontal position relative to the wall length of the element center. 0% = start of wall, 100% = end of wall.
+                                Horizontal position of the element center relative to the wall total length. 0% = start of wall, 100% = end of wall.
                               </p>
                             </TooltipContent>
                           </Tooltip>
