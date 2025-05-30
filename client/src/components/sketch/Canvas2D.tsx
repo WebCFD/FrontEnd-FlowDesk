@@ -1170,13 +1170,24 @@ export default function Canvas2D({
 
   // Handle double click for wall properties editing - updated version
   const handleDoubleClickNew = (e: ReactMouseEvent<HTMLCanvasElement, MouseEvent>) => {
-    debugLog("Double-click detected - checking for point coordinates or wall properties");
+    debugLog("Double-click detected - checking for air entries, points, or wall properties");
     const point = getCanvasPoint(e.nativeEvent);
     
     // Set flag to ignore the next click
     setIgnoreNextClick(true);
     
-    // FIRST: Check for exact point (endpoint) double-click - HIGHEST PRIORITY
+    // FIRST: Check for air entries - HIGHEST PRIORITY
+    const airEntryInfo = findAirEntryAtLocation(point);
+    if (airEntryInfo) {
+      debugLog(`Double-click detected on air entry - opening air entry editor`);
+      setEditingAirEntry({
+        index: airEntryInfo.index,
+        entry: airEntryInfo.entry,
+      });
+      return;
+    }
+    
+    // SECOND: Check for exact point (endpoint) double-click
     const pointInfo = findPointAtLocation(point);
     if (pointInfo) {
       debugLog(`Double-click detected on point coordinates - opening coordinate editor`);
@@ -1189,7 +1200,7 @@ export default function Canvas2D({
       return;
     }
     
-    // SECOND: Check for wall properties editing (lines but not endpoints)
+    // THIRD: Check for wall properties editing (lines but not endpoints)
     const nearbyLines = findLinesNearPoint(point);
     if (nearbyLines.length > 0) {
       const associatedWall = findWallForLine(walls, nearbyLines[0]);
@@ -1201,7 +1212,7 @@ export default function Canvas2D({
       }
     }
     
-    // THIRD: Fall back to existing functionality (air entries, etc.)
+    // FOURTH: Fall back to existing functionality (stairs, etc.)
     handleDoubleClickLegacy(e.nativeEvent);
   };
 
