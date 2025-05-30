@@ -2144,6 +2144,7 @@ export default function WizardDesign() {
               lines={lines}
               floorText={formatFloorText(currentFloor)}
               isMultifloor={isMultifloor}
+              ceilingHeight={isMultifloor ? (floorParameters[currentFloor]?.ceilingHeight || 220) / 100 : ceilingHeight / 100}
               onLinesUpdate={(newLines) => {
                 setLines(newLines);
                 const hasClosedContour =

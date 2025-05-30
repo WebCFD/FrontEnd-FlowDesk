@@ -274,6 +274,7 @@ interface Canvas2DProps {
   stairPolygons?: StairPolygon[];
   floorText: string;
   isMultifloor: boolean;
+  ceilingHeight?: number;
   onLinesUpdate?: (lines: Line[]) => void;
   onWallsUpdate?: (walls: Wall[]) => void;
   onAirEntriesUpdate?: (airEntries: AirEntry[]) => void;
@@ -293,6 +294,7 @@ export default function Canvas2D({
   stairPolygons = [],
   floorText,
   isMultifloor,
+  ceilingHeight = 2.4,
   onLinesUpdate,
   onWallsUpdate,
   onAirEntriesUpdate,
@@ -1530,9 +1532,10 @@ export default function Canvas2D({
 
           // Instead of creating the air entry immediately, store the details and show dialog
           // Find the wall associated with this line to get wall ID and ceiling height
-          const associatedWall = walls?.find(wall => wall.lineId === selectedLine.id);
-          const wallId = associatedWall?.id || `${floorText}_wall_${selectedLine.id}`;
-          const currentCeilingHeight = floorHeights?.[floorText] || 2.4; // Default 2.4m
+          const lineId = selectedLine.id?.toString() || '';
+          const associatedWall = walls?.find(wall => wall.lineRef === lineId);
+          const wallId = associatedWall?.id || `${floorText}_wall_${lineId}`;
+          const currentCeilingHeight = ceilingHeight; // Use the prop value
           
           setNewAirEntryDetails({
             type: currentAirEntry,
