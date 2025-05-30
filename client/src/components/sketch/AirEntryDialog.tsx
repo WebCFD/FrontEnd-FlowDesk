@@ -121,6 +121,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   const [airDirection, setAirDirection] = useState<'inflow' | 'outflow'>('inflow');
   const [intensityLevel, setIntensityLevel] = useState<'high' | 'medium' | 'low' | 'custom'>('medium');
   const [customIntensity, setCustomIntensity] = useState(0.5);
+  
+  // Estados específicos para vents
+  const [ventMeasurementType, setVentMeasurementType] = useState<'massflow' | 'velocity' | 'pressure'>('massflow');
 
   // Función para calcular la nueva posición basada en el porcentaje del wall
   const calculatePositionFromPercentage = (percentage: number) => {
@@ -838,6 +841,23 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           </Select>
                         </div>
 
+                        {/* Tipo de medición para vents */}
+                        {type === 'vent' && (
+                          <div className="space-y-2">
+                            <Label className="text-xs text-slate-600">Measurement Type</Label>
+                            <Select value={ventMeasurementType} onValueChange={(value: 'massflow' | 'velocity' | 'pressure') => setVentMeasurementType(value)}>
+                              <SelectTrigger className="h-8 text-sm">
+                                <SelectValue placeholder="Select measurement type" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="massflow">Air Mass Flow</SelectItem>
+                                <SelectItem value="velocity">Air Velocity</SelectItem>
+                                <SelectItem value="pressure">Pressure</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+
                         {/* Intensidad del flujo */}
                         <div className="space-y-2">
                           <div className="flex items-center space-x-1">
@@ -863,27 +883,111 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               <SelectValue placeholder="Select intensity" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="high">
-                                <div className="flex items-center justify-between w-full">
-                                  <span>High</span>
-                                  <span className="text-xs text-gray-500 ml-2">ΔP: 25 Pa, 5-10+ m/s</span>
-                                </div>
-                              </SelectItem>
-                              <SelectItem value="medium">
-                                <div className="flex items-center justify-between w-full">
-                                  <span>Medium</span>
-                                  <span className="text-xs text-gray-500 ml-2">ΔP: 5 Pa, 2-5 m/s</span>
-                                </div>
-                              </SelectItem>
-                              <SelectItem value="low">
-                                <div className="flex items-center justify-between w-full">
-                                  <span>Low</span>
-                                  <span className="text-xs text-gray-500 ml-2">ΔP: 0.3 Pa, 0.5-1 m/s</span>
-                                </div>
-                              </SelectItem>
-                              <SelectItem value="custom">
-                                <span>Custom</span>
-                              </SelectItem>
+                              {type === 'vent' ? (
+                                // Opciones específicas para vents basadas en el tipo de medición
+                                <>
+                                  {ventMeasurementType === 'massflow' && (
+                                    <>
+                                      <SelectItem value="high">
+                                        <div className="flex items-center justify-between w-full">
+                                          <span>High</span>
+                                          <span className="text-xs text-gray-500 ml-2">400 m³/h</span>
+                                        </div>
+                                      </SelectItem>
+                                      <SelectItem value="medium">
+                                        <div className="flex items-center justify-between w-full">
+                                          <span>Medium</span>
+                                          <span className="text-xs text-gray-500 ml-2">250 m³/h</span>
+                                        </div>
+                                      </SelectItem>
+                                      <SelectItem value="low">
+                                        <div className="flex items-center justify-between w-full">
+                                          <span>Low</span>
+                                          <span className="text-xs text-gray-500 ml-2">150 m³/h</span>
+                                        </div>
+                                      </SelectItem>
+                                      <SelectItem value="custom">
+                                        <span>Custom m³/h</span>
+                                      </SelectItem>
+                                    </>
+                                  )}
+                                  {ventMeasurementType === 'velocity' && (
+                                    <>
+                                      <SelectItem value="high">
+                                        <div className="flex items-center justify-between w-full">
+                                          <span>High</span>
+                                          <span className="text-xs text-gray-500 ml-2">5 m/s</span>
+                                        </div>
+                                      </SelectItem>
+                                      <SelectItem value="medium">
+                                        <div className="flex items-center justify-between w-full">
+                                          <span>Medium</span>
+                                          <span className="text-xs text-gray-500 ml-2">2.5 m/s</span>
+                                        </div>
+                                      </SelectItem>
+                                      <SelectItem value="low">
+                                        <div className="flex items-center justify-between w-full">
+                                          <span>Low</span>
+                                          <span className="text-xs text-gray-500 ml-2">1 m/s</span>
+                                        </div>
+                                      </SelectItem>
+                                      <SelectItem value="custom">
+                                        <span>Custom m/s</span>
+                                      </SelectItem>
+                                    </>
+                                  )}
+                                  {ventMeasurementType === 'pressure' && (
+                                    <>
+                                      <SelectItem value="high">
+                                        <div className="flex items-center justify-between w-full">
+                                          <span>High</span>
+                                          <span className="text-xs text-gray-500 ml-2">25 Pa</span>
+                                        </div>
+                                      </SelectItem>
+                                      <SelectItem value="medium">
+                                        <div className="flex items-center justify-between w-full">
+                                          <span>Medium</span>
+                                          <span className="text-xs text-gray-500 ml-2">5 Pa</span>
+                                        </div>
+                                      </SelectItem>
+                                      <SelectItem value="low">
+                                        <div className="flex items-center justify-between w-full">
+                                          <span>Low</span>
+                                          <span className="text-xs text-gray-500 ml-2">0.5 Pa</span>
+                                        </div>
+                                      </SelectItem>
+                                      <SelectItem value="custom">
+                                        <span>Custom Pa</span>
+                                      </SelectItem>
+                                    </>
+                                  )}
+                                </>
+                              ) : (
+                                // Opciones originales para windows y doors
+                                <>
+                                  <SelectItem value="high">
+                                    <div className="flex items-center justify-between w-full">
+                                      <span>High</span>
+                                      <span className="text-xs text-gray-500 ml-2">ΔP: 25 Pa, 5-10+ m/s</span>
+                                    </div>
+                                  </SelectItem>
+                                  <SelectItem value="medium">
+                                    <div className="flex items-center justify-between w-full">
+                                      <span>Medium</span>
+                                      <span className="text-xs text-gray-500 ml-2">ΔP: 5 Pa, 2-5 m/s</span>
+                                    </div>
+                                  </SelectItem>
+                                  <SelectItem value="low">
+                                    <div className="flex items-center justify-between w-full">
+                                      <span>Low</span>
+                                      <span className="text-xs text-gray-500 ml-2">ΔP: 0.3 Pa, 0.5-1 m/s</span>
+                                    </div>
+                                  </SelectItem>
+                                  <SelectItem value="custom">
+                                    <span>Custom</span>
+                                  </SelectItem>
+                                </>
+                              )}
                             </SelectContent>
                           </Select>
                           
@@ -899,7 +1003,16 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                                 className="h-8 text-sm"
                                 placeholder="0.5"
                               />
-                              <span className="text-xs text-slate-500">m³/s</span>
+                              <span className="text-xs text-slate-500">
+                                {type === 'vent' 
+                                  ? ventMeasurementType === 'massflow' 
+                                    ? 'm³/h' 
+                                    : ventMeasurementType === 'velocity' 
+                                      ? 'm/s' 
+                                      : 'Pa'
+                                  : 'm³/s'
+                                }
+                              </span>
                             </div>
                           )}
                         </div>
