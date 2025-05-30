@@ -140,10 +140,9 @@ interface AirEntryExport {
     temperature?: number;
     flowIntensity?: "low" | "medium" | "high" | "custom";
     airDirection?: "inflow" | "outflow";
-    customFlowValue?: number;
+    customValue?: number;
     // Propiedades específicas para vents
     flowType?: "Air Mass Flow" | "Air Velocity" | "Pressure";
-    flowValue?: number;
   };
 }
 
