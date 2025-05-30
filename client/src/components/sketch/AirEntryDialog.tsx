@@ -558,7 +558,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           <DialogDescription>{descriptions[type]}</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
-          <div className="space-y-6 py-4">
+          <div className="space-y-6 py-4 max-h-[70vh] overflow-y-auto pr-2">
             {type === 'wall' ? (
               // Campos para propiedades de pared
               <div className="space-y-4">
