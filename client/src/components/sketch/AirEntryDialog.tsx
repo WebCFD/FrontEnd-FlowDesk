@@ -292,16 +292,16 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   };
 
   const titles = {
-    window: isEditing ? "Edit Window" : "Window Dimensions",
-    door: isEditing ? "Edit Door" : "Door Dimensions",
-    vent: isEditing ? "Edit Vent" : "Vent Grid Dimensions",
+    window: isEditing ? "Edit Window" : "Window Properties",
+    door: isEditing ? "Edit Door" : "Door Properties",
+    vent: isEditing ? "Edit Vent" : "Vent Properties",
     wall: isEditing ? "Edit Wall Properties" : "Wall Properties"
   };
 
   const descriptions = {
-    window: isEditing ? "Modify the dimensions for this window" : "Set the dimensions for the window",
-    door: isEditing ? "Modify the dimensions for this door" : "Set the dimensions for the door",
-    vent: isEditing ? "Modify the dimensions for this vent" : "Set the dimensions for the ventilation grid",
+    window: isEditing ? "Modify the properties for this window" : "Set the properties for the window",
+    door: isEditing ? "Modify the properties for this door" : "Set the properties for the door",
+    vent: isEditing ? "Modify the properties for this vent" : "Set the properties for the ventilation grid",
     wall: isEditing ? "Modify the temperature for this wall" : "Set the temperature for the wall"
   };
 
