@@ -461,13 +461,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                     </div>
                   </div>
                   
-                  <button
-                    type="button"
-                    onClick={() => handleWallPositionChange(50)}
-                    className="mt-2 text-xs text-blue-600 hover:text-blue-700 underline"
-                  >
-                    Auto-center on wall
-                  </button>
+
                 </div>
 
                 {/* 2. DIMENSIONS SECTION */}
