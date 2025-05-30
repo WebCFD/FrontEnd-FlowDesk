@@ -417,19 +417,20 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                         {(() => {
                           // Calcular coordenadas actuales basadas en wallPosition
                           const { wallStart, wallEnd } = wallContext;
-                          const wallLength = Math.sqrt(
-                            Math.pow(wallEnd.x - wallStart.x, 2) + Math.pow(wallEnd.y - wallStart.y, 2)
-                          );
                           
                           // Calcular posición actual en píxeles
                           const positionRatio = wallPosition / 100;
                           const currentX = wallStart.x + (wallEnd.x - wallStart.x) * positionRatio;
                           const currentY = wallStart.y + (wallEnd.y - wallStart.y) * positionRatio;
                           
-                          // Convertir a coordenadas de usuario (centrar en 400,300 y escalar)
-                          const PIXELS_TO_CM = 1.25;
-                          const userX = ((currentX - 400) / PIXELS_TO_CM).toFixed(1);
-                          const userY = (-(currentY - 300) / PIXELS_TO_CM).toFixed(1); // Invertir Y para coordenadas normales
+                          // Usar el mismo sistema de coordenadas que Canvas2D
+                          const PIXELS_TO_CM = 25 / 20; // 1.25 - misma constante que Canvas2D
+                          const CANVAS_CENTER_X = 400;
+                          const CANVAS_CENTER_Y = 300;
+                          
+                          // Convertir a coordenadas normalizadas (igual que normalizeCoordinates)
+                          const userX = ((currentX - CANVAS_CENTER_X) * PIXELS_TO_CM).toFixed(1);
+                          const userY = (-(currentY - CANVAS_CENTER_Y) * PIXELS_TO_CM).toFixed(1);
                           
                           return (
                             <div className="text-gray-500">
