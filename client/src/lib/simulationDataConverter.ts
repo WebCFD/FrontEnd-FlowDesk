@@ -368,7 +368,7 @@ export function generateUUID(): string {
 /**
  * Genera un ID único para una línea basado en sus puntos
  */
-export function lineToUniqueId(line: Line): string {
+export export function lineToUniqueId(line: Line): string {
   return `${line.start.x},${line.start.y}_${line.end.x},${line.end.y}`;
 }
 
