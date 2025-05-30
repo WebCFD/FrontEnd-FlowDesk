@@ -541,7 +541,7 @@ export function getFloorIndex(floorName: string): number {
  * Genera el siguiente número de pared para una planta específica
  */
 export function getNextWallNumber(walls: Wall[], floorIndex: number): number {
-  const floorPrefix = `${floorIndex}F_wall`;
+  const floorPrefix = `wall_${floorIndex}F_`;
   
   // Encontrar todos los números de pared existentes para esta planta
   const existingNumbers = walls
@@ -569,7 +569,7 @@ export function createWallFromLine(
   const wallNumber = getNextWallNumber(existingWalls, floorIndex);
   
   return {
-    id: `${floorIndex}F_wall${wallNumber}`,
+    id: `wall_${floorIndex}F_${wallNumber}`,
     uuid: generateUUID(),
     floor: floorName,
     lineRef: lineToUniqueId(line),
