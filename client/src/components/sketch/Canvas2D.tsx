@@ -3266,13 +3266,13 @@ export default function Canvas2D({
           isOpen={true}
           onClose={() => setEditingAirEntry(null)}
           onConfirm={(data) =>
-            handleAirEntryEdit(editingAirEntry.index, data)
+            handleAirEntryEdit(editingAirEntry.index, data as any)
           }
           initialValues={{
             ...editingAirEntry.entry.dimensions,
             shape: (editingAirEntry.entry.dimensions as any).shape,
             properties: (editingAirEntry.entry as any).properties
-          }}
+          } as any}
           airEntryIndex={editingAirEntry.index}
           currentFloor={currentFloor}
           isEditing={true}
