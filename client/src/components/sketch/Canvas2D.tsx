@@ -18,6 +18,7 @@ import {
   createWallFromLine, 
   findWallForLine, 
   findWallsForDeletedLines,
+  lineToUniqueId,
   arePointsEqual as wallPointsEqual,
   denormalizeCoordinates,
   normalizeCoordinates
@@ -1543,9 +1544,16 @@ export default function Canvas2D({
 
           // Instead of creating the air entry immediately, store the details and show dialog
           // Find the wall associated with this line to get wall ID and ceiling height
-          const lineId = selectedLine.id?.toString() || '';
-          const associatedWall = walls?.find(wall => wall.lineRef === lineId);
-          const wallId = associatedWall?.id || `${floorText}_wall_${lineId}`;
+          const lineId = selectedLine.id?.toString() || lineToUniqueId(selectedLine);
+          const associatedWall = walls?.find(wall => 
+            wall.lineRef === lineId || 
+            wall.lineRef === lineToUniqueId(selectedLine) ||
+            (wall.startPoint.x === selectedLine.start.x && 
+             wall.startPoint.y === selectedLine.start.y &&
+             wall.endPoint.x === selectedLine.end.x && 
+             wall.endPoint.y === selectedLine.end.y)
+          );
+          const wallId = associatedWall?.id || `${floorText}_wall_unknown`;
           const currentCeilingHeight = ceilingHeight; // Use the prop value
           
           setNewAirEntryDetails({
@@ -1657,12 +1665,18 @@ export default function Canvas2D({
         currentLine.start.x !== currentLine.end.x ||
         currentLine.start.y !== currentLine.end.y
       ) {
-        const newLines = [...lines, currentLine];
+        // Asignar un ID único a la línea antes de crear el wall
+        const lineWithId = {
+          ...currentLine,
+          id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+        };
+        
+        const newLines = [...lines, lineWithId];
         onLinesUpdate?.(newLines);
 
         // Create wall automatically when line is completed
         if (onWallsUpdate) {
-          const newWall = createWallFromLine(currentLine, floorText, walls, 20.0);
+          const newWall = createWallFromLine(lineWithId, floorText, walls, 20.0);
           const newWalls = [...(walls || []), newWall];
           onWallsUpdate(newWalls);
         }
@@ -3223,7 +3237,18 @@ export default function Canvas2D({
           initialValues={editingAirEntry.entry.dimensions}
           isEditing={true}
           wallContext={{
-            wallId: walls?.find(wall => wall.lineRef === editingAirEntry.entry.line.id?.toString())?.id || `${floorText}_wall_${editingAirEntry.entry.line.id}`,
+            wallId: (() => {
+              const lineId = editingAirEntry.entry.line.id?.toString() || lineToUniqueId(editingAirEntry.entry.line);
+              const associatedWall = walls?.find(wall => 
+                wall.lineRef === lineId || 
+                wall.lineRef === lineToUniqueId(editingAirEntry.entry.line) ||
+                (wall.startPoint.x === editingAirEntry.entry.line.start.x && 
+                 wall.startPoint.y === editingAirEntry.entry.line.start.y &&
+                 wall.endPoint.x === editingAirEntry.entry.line.end.x && 
+                 wall.endPoint.y === editingAirEntry.entry.line.end.y)
+              );
+              return associatedWall?.id || `${floorText}_wall_unknown`;
+            })(),
             floorName: floorText,
             wallStart: { x: editingAirEntry.entry.line.start.x, y: editingAirEntry.entry.line.start.y },
             wallEnd: { x: editingAirEntry.entry.line.end.x, y: editingAirEntry.entry.line.end.y },
