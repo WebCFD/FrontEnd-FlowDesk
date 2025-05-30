@@ -366,7 +366,7 @@ export function generateSimulationData(
               flowType: (() => {
                 const flowType = entryProps?.flowType || "Air Mass Flow";
                 // Convertir a camelCase
-                return flowType.replace(/\s+(.)/g, (_, char) => char.toLowerCase());
+                return flowType.replace(/\s+(.)/g, (_: string, char: string) => char.toLowerCase());
               })(),
               airDirection: (entryProps?.airOrientation as "inflow" | "outflow") || "inflow",
               flowIntensity: entryProps?.flowIntensity || "medium"
