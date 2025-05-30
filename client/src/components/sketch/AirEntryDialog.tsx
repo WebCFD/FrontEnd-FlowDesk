@@ -193,7 +193,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
   // Función para calcular la distancia inicial al suelo
   const calculateInitialDistanceToFloor = () => {
-    if (props.type === 'wall') return 0;
+    if (!('wallContext' in props)) return 0;
     
     const airEntryProps = props as AirEntryDialogProps;
     if (!airEntryProps.wallContext) return 0;
@@ -246,6 +246,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         setWallPosition(initialWallPos);
         setDistanceToFloor(initialDistToFloor);
       }
+      
+      // Inicializar temperatura del elemento
+      setElementTemperature(getInitialWallTemperature());
     }
   }, [dialogOpen, props.type, isEditing]);
 
@@ -573,32 +576,125 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                   </div>
                 </div>
 
-                {/* 3. SIMULATION CONDITIONS SECTION (Placeholder) */}
+                {/* 3. SIMULATION CONDITIONS SECTION */}
                 <div className="border rounded-lg p-4 bg-slate-50/50">
                   <h4 className="font-medium text-sm mb-3 text-slate-700">Simulation Conditions</h4>
-                  <div className="space-y-3">
-                    <div className="space-y-2">
-                      <Label className="text-xs text-slate-600">Flow Rate</Label>
-                      <div className="flex items-center space-x-2">
-                        <Input
-                          type="number"
-                          placeholder="0.5"
-                          className="h-8 text-sm"
-                        />
-                        <span className="text-xs text-slate-500">m³/s</span>
+                  <div className="space-y-4">
+                    
+                    {/* Estado del elemento: Abierto/Cerrado */}
+                    <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
+                      <div className="space-y-1">
+                        <Label className="text-sm font-medium text-slate-700">Element Status</Label>
+                        <p className="text-xs text-slate-500">
+                          {isElementOpen ? 'Element is open and allows airflow' : 'Element is closed, no airflow'}
+                        </p>
                       </div>
+                      <Switch
+                        checked={isElementOpen}
+                        onCheckedChange={setIsElementOpen}
+                        className="ml-4"
+                      />
                     </div>
+
+                    {/* Temperatura del elemento */}
                     <div className="space-y-2">
-                      <Label className="text-xs text-slate-600">Temperature Differential</Label>
+                      <Label htmlFor="element-temperature" className="text-xs text-slate-600">
+                        Element Temperature
+                      </Label>
                       <div className="flex items-center space-x-2">
                         <Input
+                          id="element-temperature"
                           type="number"
-                          placeholder="2"
+                          step="0.1"
+                          value={elementTemperature}
+                          onChange={(e) => setElementTemperature(Number(e.target.value))}
                           className="h-8 text-sm"
+                          placeholder="20.0"
                         />
                         <span className="text-xs text-slate-500">°C</span>
                       </div>
+                      <p className="text-xs text-gray-500">
+                        Temperature at the element interface
+                      </p>
                     </div>
+
+                    {/* Campos condicionales que aparecen solo cuando está abierto */}
+                    {isElementOpen && (
+                      <div className="space-y-4 border-t pt-4">
+                        {/* Dirección del flujo de aire */}
+                        <div className="space-y-2">
+                          <Label className="text-xs text-slate-600">Air Direction</Label>
+                          <Select value={airDirection} onValueChange={(value: 'inflow' | 'outflow') => setAirDirection(value)}>
+                            <SelectTrigger className="h-8 text-sm">
+                              <SelectValue placeholder="Select direction" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="inflow">
+                                <div className="flex items-center space-x-2">
+                                  <span className="text-green-600">→</span>
+                                  <span>Inflow (Air enters)</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="outflow">
+                                <div className="flex items-center space-x-2">
+                                  <span className="text-red-600">←</span>
+                                  <span>Outflow (Air exits)</span>
+                                </div>
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {/* Intensidad del flujo */}
+                        <div className="space-y-2">
+                          <Label className="text-xs text-slate-600">Flow Intensity</Label>
+                          <Select value={intensityLevel} onValueChange={(value: 'high' | 'medium' | 'low' | 'custom') => setIntensityLevel(value)}>
+                            <SelectTrigger className="h-8 text-sm">
+                              <SelectValue placeholder="Select intensity" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="high">
+                                <div className="flex items-center justify-between w-full">
+                                  <span>High</span>
+                                  <span className="text-xs text-gray-500 ml-2">2.0 m³/s</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="medium">
+                                <div className="flex items-center justify-between w-full">
+                                  <span>Medium</span>
+                                  <span className="text-xs text-gray-500 ml-2">1.0 m³/s</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="low">
+                                <div className="flex items-center justify-between w-full">
+                                  <span>Low</span>
+                                  <span className="text-xs text-gray-500 ml-2">0.5 m³/s</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="custom">
+                                <span>Custom</span>
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          
+                          {/* Campo personalizado que aparece solo cuando se selecciona Custom */}
+                          {intensityLevel === 'custom' && (
+                            <div className="flex items-center space-x-2 mt-2">
+                              <Input
+                                type="number"
+                                step="0.1"
+                                min="0"
+                                value={customIntensity}
+                                onChange={(e) => setCustomIntensity(Number(e.target.value))}
+                                className="h-8 text-sm"
+                                placeholder="0.5"
+                              />
+                              <span className="text-xs text-slate-500">m³/s</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </>
