@@ -1,0 +1,102 @@
+🔍 AirEntryDialog useEffect triggered: Object
+analytics.ts:26 Google Analytics initialized with ID: G-XZYY9DVVHW
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+AnalyticsProvider.tsx:21 Analytics initialized: true
+AirEntryDialog.tsx:319 🔍 AirEntryDialog useEffect triggered: Object
+AirEntryDialog.tsx:329 🔄 Resetting values in useEffect
+AirEntryDialog.tsx:351 🔄 Loading saved flowIntensity: high
+AirEntryDialog.tsx:355 🔄 Loading saved airOrientation: outflow
+AirEntryDialog.tsx:319 🔍 AirEntryDialog useEffect triggered: Object
+AirEntryDialog.tsx:329 🔄 Resetting values in useEffect
+AirEntryDialog.tsx:351 🔄 Loading saved flowIntensity: high
+AirEntryDialog.tsx:355 🔄 Loading saved airOrientation: outflow
+AirEntryDialog.tsx:319 🔍 AirEntryDialog useEffect triggered: Object
+AirEntryDialog.tsx:329 🔄 Resetting values in useEffect
+AirEntryDialog.tsx:351 🔄 Loading saved flowIntensity: high
+AirEntryDialog.tsx:355 🔄 Loading saved airOrientation: outflow
+AirEntryDialog.tsx:961 ✅ User changed Air Direction to: inflow
+AirEntryDialog.tsx:319 🔍 AirEntryDialog useEffect triggered: Object
+AirEntryDialog.tsx:329 🔄 Resetting values in useEffect
+AirEntryDialog.tsx:351 🔄 Loading saved flowIntensity: high
+AirEntryDialog.tsx:355 🔄 Loading saved airOrientation: outflow
+AirEntryDialog.tsx:1139 ✅ User changed Flow Intensity to: medium
+AirEntryDialog.tsx:319 🔍 AirEntryDialog useEffect triggered: Object
+AirEntryDialog.tsx:329 🔄 Resetting values in useEffect
+AirEntryDialog.tsx:351 🔄 Loading saved flowIntensity: high
+AirEntryDialog.tsx:355 🔄 Loading saved airOrientation: outflow
+AirEntryDialog.tsx:319 🔍 AirEntryDialog useEffect triggered: Object
+AirEntryDialog.tsx:329 🔄 Resetting values in useEffect
+AirEntryDialog.tsx:351 🔄 Loading saved flowIntensity: high
+AirEntryDialog.tsx:355 🔄 Loading saved airOrientation: outflow
+AirEntryDialog.tsx:319 🔍 AirEntryDialog useEffect triggered: Object
+AirEntryDialog.tsx:329 🔄 Resetting values in useEffect
+AirEntryDialog.tsx:351 🔄 Loading saved flowIntensity: high
+AirEntryDialog.tsx:355 🔄 Loading saved airOrientation: outflow
+AirEntryDialog.tsx:319 🔍 AirEntryDialog useEffect triggered: Object
+AirEntryDialog.tsx:329 🔄 Resetting values in useEffect
+AirEntryDialog.tsx:351 🔄 Loading saved flowIntensity: high
+AirEntryDialog.tsx:355 🔄 Loading saved airOrientation: outflow
+AirEntryDialog.tsx:961 ✅ User changed Air Direction to: inflow
+AirEntryDialog.tsx:319 🔍 AirEntryDialog useEffect triggered: Object
+AirEntryDialog.tsx:329 🔄 Resetting values in useEffect
+AirEntryDialog.tsx:351 🔄 Loading saved flowIntensity: high
+AirEntryDialog.tsx:355 🔄 Loading saved airOrientation: outflow
+AirEntryDialog.tsx:1139 ✅ User changed Flow Intensity to: low
+AirEntryDialog.tsx:319 🔍 AirEntryDialog useEffect triggered: Object
+AirEntryDialog.tsx:329 🔄 Resetting values in useEffect
+AirEntryDialog.tsx:351 🔄 Loading saved flowIntensity: high
+AirEntryDialog.tsx:355 🔄 Loading saved airOrientation: outflow
+AirEntryDialog.tsx:319 🔍 AirEntryDialog useEffect triggered: Object
+AirEntryDialog.tsx:329 🔄 Resetting values in useEffect
+AirEntryDialog.tsx:351 🔄 Loading saved flowIntensity: high
+AirEntryDialog.tsx:355 🔄 Loading saved airOrientation: outflow
+AirEntryDialog.tsx:319 🔍 AirEntryDialog useEffect triggered: Object
+AirEntryDialog.tsx:329 🔄 Resetting values in useEffect
+AirEntryDialog.tsx:351 🔄 Loading saved flowIntensity: high
+AirEntryDialog.tsx:355 🔄 Loading saved airOrientation: outflow
+AirEntryDialog.tsx:319 🔍 AirEntryDialog useEffect triggered: Object
+AirEntryDialog.tsx:329 🔄 Resetting values in useEffect
+AirEntryDialog.tsx:351 🔄 Loading saved flowIntensity: high
+AirEntryDialog.tsx:355 🔄 Loading saved airOrientation: outflow
+AirEntryDialog.tsx:319 🔍 AirEntryDialog useEffect triggered: Object
+AirEntryDialog.tsx:329 🔄 Resetting values in useEffect
+AirEntryDialog.tsx:351 🔄 Loading saved flowIntensity: high
+AirEntryDialog.tsx:355 🔄 Loading saved airOrientation: outflow
+AirEntryDialog.tsx:319 🔍 AirEntryDialog useEffect triggered: Object
+AirEntryDialog.tsx:329 🔄 Resetting values in useEffect
+AirEntryDialog.tsx:351 🔄 Loading saved flowIntensity: high
+AirEntryDialog.tsx:355 🔄 Loading saved airOrientation: outflow
+AirEntryDialog.tsx:319 🔍 AirEntryDialog useEffect triggered: Object
+AirEntryDialog.tsx:329 🔄 Resetting values in useEffect
+AirEntryDialog.tsx:351 🔄 Loading saved flowIntensity: high
+AirEntryDialog.tsx:355 🔄 Loading saved airOrientation: outflow
+AirEntryDialog.tsx:319 🔍 AirEntryDialog useEffect triggered: Object
+AirEntryDialog.tsx:329 🔄 Resetting values in useEffect
+AirEntryDialog.tsx:351 🔄 Loading saved flowIntensity: high
+AirEntryDialog.tsx:355 🔄 Loading saved airOrientation: outflow
+AirEntryDialog.tsx:319 🔍 AirEntryDialog useEffect triggered: Object
+AirEntryDialog.tsx:329 🔄 Resetting values in useEffect
+AirEntryDialog.tsx:351 🔄 Loading saved flowIntensity: high
+AirEntryDialog.tsx:355 🔄 Loading saved airOrientation: outflow
+AirEntryDialog.tsx:319 🔍 AirEntryDialog useEffect triggered: Object
+AirEntryDialog.tsx:329 🔄 Resetting values in useEffect
+AirEntryDialog.tsx:351 🔄 Loading saved flowIntensity: high
+AirEntryDialog.tsx:355 🔄 Loading saved airOrientation: outflow
+AirEntryDialog.tsx:319 🔍 AirEntryDialog useEffect triggered: Object
+AirEntryDialog.tsx:329 🔄 Resetting values in useEffect
+AirEntryDialog.tsx:351 🔄 Loading saved flowIntensity: high
+AirEntryDialog.tsx:355 🔄 Loading saved airOrientation: outflow
+AirEntryDialog.tsx:319 🔍 AirEntryDialog useEffect triggered: Object
+AirEntryDialog.tsx:329 🔄 Resetting values in useEffect
+AirEntryDialog.tsx:351 🔄 Loading saved flowIntensity: high
+AirEntryDialog.tsx:355 🔄 Loading saved airOrientation: outflow
+AirEntryDialog.tsx:319 🔍 AirEntryDialog useEffect triggered: Object
+AirEntryDialog.tsx:329 🔄 Resetting values in useEffect
+AirEntryDialog.tsx:351 🔄 Loading saved flowIntensity: high
+AirEntryDialog.tsx:355 🔄 Loading saved airOrientation: outflow
+AirEntryDialog.tsx:319 🔍 AirEntryDialog useEffect triggered: Object
+AirEntryDialog.tsx:329 🔄 Resetting values in useEffect
+AirEntryDialog.tsx:351 🔄 Loading saved flowIntensity: high
+AirEntryDialog.tsx:355 🔄 Loading saved airOrientation: outflow
