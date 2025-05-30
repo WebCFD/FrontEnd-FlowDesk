@@ -2192,6 +2192,7 @@ export default function WizardDesign() {
               onWallsUpdate={setWalls}
               lines={lines}
               floorText={formatFloorText(currentFloor)}
+              currentFloor={currentFloor}
               isMultifloor={isMultifloor}
               ceilingHeight={isMultifloor ? (floorParameters[currentFloor]?.ceilingHeight || 220) / 100 : ceilingHeight / 100}
               defaultWallTemperature={defaultWallTemperature}
