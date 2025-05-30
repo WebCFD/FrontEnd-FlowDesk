@@ -383,6 +383,73 @@ export default function WizardDesign() {
 
   const [isFloorLoadDialogOpen, setIsFloorLoadDialogOpen] = useState(false);
 
+  // Helper functions for ID regeneration
+  const regenerateAirEntryIds = (airEntries: AirEntry[], floor: string): AirEntry[] => {
+    // Get existing air entries in target floor to avoid ID conflicts
+    const existingEntries = floors[currentFloor]?.airEntries || [];
+    const typeCounters = { window: 1, door: 1, vent: 1 };
+    
+    // Count existing entries to start numbering from the next available number
+    existingEntries.forEach(entry => {
+      const match = entry.id?.match(/^(window|door|vent)_(\d+)$/);
+      if (match) {
+        const type = match[1] as keyof typeof typeCounters;
+        const num = parseInt(match[2]);
+        if (typeCounters[type] <= num) {
+          typeCounters[type] = num + 1;
+        }
+      }
+    });
+    
+    return airEntries.map(entry => ({
+      ...entry,
+      id: `${entry.type}_${typeCounters[entry.type]++}`
+    }));
+  };
+
+  const regenerateWallIds = (walls: Wall[], floor: string): Wall[] => {
+    const floorPrefix = floor === 'ground' ? '0F' : 
+                       floor === 'first' ? '1F' :
+                       floor === 'second' ? '2F' :
+                       floor === 'third' ? '3F' :
+                       floor === 'fourth' ? '4F' :
+                       floor === 'fifth' ? '5F' : '0F';
+    
+    // Get existing walls in target floor to avoid ID conflicts
+    const existingWalls = floors[currentFloor]?.walls || [];
+    let wallCounter = 1;
+    
+    // Find the next available wall number
+    existingWalls.forEach(wall => {
+      const match = wall.id?.match(new RegExp(`^wall_${floorPrefix}_(\\d+)$`));
+      if (match) {
+        const num = parseInt(match[1]);
+        if (wallCounter <= num) {
+          wallCounter = num + 1;
+        }
+      }
+    });
+    
+    return walls.map(wall => ({
+      ...wall,
+      id: `wall_${floorPrefix}_${wallCounter++}`
+    }));
+  };
+
+  const regenerateLineIds = (lines: Line[]): Line[] => {
+    return lines.map((line, index) => ({
+      ...line,
+      id: `line_${index + 1}`
+    }));
+  };
+
+  const regenerateMeasurementIds = (measurements: any[]): any[] => {
+    return measurements.map((measurement, index) => ({
+      ...measurement,
+      id: `measurement_${index + 1}`
+    }));
+  };
+
   // Add this function after handleLoadTemplate
   const performFloorLoad = () => {
     // Close the dialog
@@ -399,11 +466,11 @@ export default function WizardDesign() {
       hasClosedContour: false,
     };
 
-    // Handle normal floor elements - copy as usual
-    const newLines = [...sourceFloorData.lines];
-    const newAirEntries = [...sourceFloorData.airEntries];
-    const newWalls = [...(sourceFloorData.walls || [])];
-    const newMeasurements = [...sourceFloorData.measurements];
+    // Regenerate IDs for all copied elements
+    const newLines = regenerateLineIds([...sourceFloorData.lines]);
+    const newAirEntries = regenerateAirEntryIds([...sourceFloorData.airEntries], currentFloor);
+    const newWalls = regenerateWallIds([...(sourceFloorData.walls || [])], currentFloor);
+    const newMeasurements = regenerateMeasurementIds([...sourceFloorData.measurements]);
 
     // Special handling for stairs
     let newStairPolygons: StairPolygon[] = [];
