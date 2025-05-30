@@ -745,9 +745,29 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
                     {/* Temperatura del elemento */}
                     <div className="space-y-2">
-                      <Label htmlFor="element-temperature" className="text-xs text-slate-600">
-                        Element Temperature
-                      </Label>
+                      <div className="flex items-center space-x-1">
+                        <Label htmlFor="element-temperature" className="text-xs text-slate-600">
+                          {isElementOpen 
+                            ? "Air Inflow Temperature"
+                            : `${element.type === 'window' ? 'Window' : element.type === 'door' ? 'Door' : 'Vent'} Temperature`
+                          }
+                        </Label>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <HelpCircle className="h-3 w-3 text-slate-400 hover:text-slate-600 cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent side="right" sideOffset={5}>
+                              <p className="text-xs max-w-48">
+                                {isElementOpen
+                                  ? "Valid for both inflow and backflow entering the interior domain. This temperature affects the comfort and energy balance when air passes through the opening."
+                                  : "Surface temperature used to calculate heat transfer to the interior domain. This affects comfort through temperature gain or loss through the closed element."
+                                }
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
                       <div className="flex items-center space-x-2">
                         <Input
                           id="element-temperature"
@@ -761,7 +781,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                         <span className="text-xs text-slate-500">°C</span>
                       </div>
                       <p className="text-xs text-gray-500">
-                        Temperature at the element interface
+                        {isElementOpen 
+                          ? "Temperature of air entering the room"
+                          : "Temperature on the element surface"
+                        }
                       </p>
                     </div>
 
