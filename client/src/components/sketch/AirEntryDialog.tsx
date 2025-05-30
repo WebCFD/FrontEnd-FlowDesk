@@ -662,19 +662,19 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               <SelectItem value="high">
                                 <div className="flex items-center justify-between w-full">
                                   <span>High</span>
-                                  <span className="text-xs text-gray-500 ml-2">2.0 m³/s</span>
+                                  <span className="text-xs text-gray-500 ml-2">ΔP: 25 Pa, 5-10+ m/s</span>
                                 </div>
                               </SelectItem>
                               <SelectItem value="medium">
                                 <div className="flex items-center justify-between w-full">
                                   <span>Medium</span>
-                                  <span className="text-xs text-gray-500 ml-2">1.0 m³/s</span>
+                                  <span className="text-xs text-gray-500 ml-2">ΔP: 5 Pa, 2-5 m/s</span>
                                 </div>
                               </SelectItem>
                               <SelectItem value="low">
                                 <div className="flex items-center justify-between w-full">
                                   <span>Low</span>
-                                  <span className="text-xs text-gray-500 ml-2">0.5 m³/s</span>
+                                  <span className="text-xs text-gray-500 ml-2">ΔP: 0.3 Pa, 0.5-1 m/s</span>
                                 </div>
                               </SelectItem>
                               <SelectItem value="custom">
