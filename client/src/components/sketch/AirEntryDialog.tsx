@@ -316,7 +316,17 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
   // Reset values when dialog opens with new type or initialValues
   useEffect(() => {
+    console.log('🔍 AirEntryDialog useEffect triggered:', { 
+      dialogOpen, 
+      type, 
+      isEditing, 
+      initialValuesChanged: !!props.initialValues,
+      airDirection: airDirection,
+      intensityLevel: intensityLevel
+    });
+    
     if (dialogOpen) {
+      console.log('🔄 Resetting values in useEffect');
       setValues(getDefaultValues());
       
       // Load saved simulation properties when editing
@@ -338,9 +348,11 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         
         // Load flow properties for all types
         if (savedProps.flowIntensity) {
+          console.log('🔄 Loading saved flowIntensity:', savedProps.flowIntensity);
           setIntensityLevel(savedProps.flowIntensity);
         }
         if (savedProps.airOrientation) {
+          console.log('🔄 Loading saved airOrientation:', savedProps.airOrientation);
           setAirDirection(savedProps.airOrientation);
         }
         
@@ -945,7 +957,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               </Tooltip>
                             </TooltipProvider>
                           </div>
-                          <Select value={airDirection} onValueChange={(value: 'inflow' | 'outflow') => setAirDirection(value)}>
+                          <Select value={airDirection} onValueChange={(value: 'inflow' | 'outflow') => {
+                            console.log('✅ User changed Air Direction to:', value);
+                            setAirDirection(value);
+                          }}>
                             <SelectTrigger className="h-8 text-sm">
                               <SelectValue placeholder="Select direction" />
                             </SelectTrigger>
@@ -1120,7 +1135,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               </Tooltip>
                             </TooltipProvider>
                           </div>
-                          <Select value={intensityLevel} onValueChange={(value: 'high' | 'medium' | 'low' | 'custom') => setIntensityLevel(value)}>
+                          <Select value={intensityLevel} onValueChange={(value: 'high' | 'medium' | 'low' | 'custom') => {
+                            console.log('✅ User changed Flow Intensity to:', value);
+                            setIntensityLevel(value);
+                          }}>
                             <SelectTrigger className="h-8 text-sm">
                               <SelectValue placeholder="Select intensity" />
                             </SelectTrigger>
