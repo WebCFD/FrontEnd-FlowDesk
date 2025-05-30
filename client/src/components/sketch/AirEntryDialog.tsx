@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/tooltip";
 import { HelpCircle } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import { useRoomStore } from "@/lib/store/room-store";
 
 // Props para entrada de aire (compatibilidad hacia atrás)
 interface AirEntryDialogProps {
@@ -35,6 +36,15 @@ interface AirEntryDialogProps {
     width: number;
     height: number;
     distanceToFloor?: number;
+    shape?: 'rectangular' | 'circular';
+    properties?: {
+      state?: 'open' | 'closed';
+      temperature?: number;
+      flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
+      flowValue?: number;
+      flowIntensity?: 'low' | 'medium' | 'high';
+      airOrientation?: 'inflow' | 'outflow';
+    };
   };
   // Nuevos campos para información del wall
   wallContext?: {
@@ -47,7 +57,9 @@ interface AirEntryDialogProps {
   };
   // Callback para actualización en tiempo real
   onPositionUpdate?: (newPosition: { x: number; y: number }) => void;
-
+  // Campos necesarios para persistir propiedades
+  airEntryIndex?: number;
+  currentFloor?: string;
 }
 
 // Props para propiedades de pared
@@ -88,6 +100,7 @@ const wallDefaults = {
 
 export default function AirEntryDialog(props: PropertyDialogProps) {
   const { type, isOpen: dialogOpen, onClose, isEditing = false } = props;
+  const { updateAirEntryProperties } = useRoomStore();
   
   // Estado unificado para manejar tanto dimensiones como temperatura
   const [values, setValues] = useState(getDefaultValues());
@@ -328,6 +341,28 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         // Position data will be calculated by parent component
         wallPosition: wallPosition
       };
+      
+      // Persist simulation properties in the store if we have the necessary info
+      if ((props.type === 'window' || props.type === 'door' || props.type === 'vent') && 'airEntryIndex' in props && props.airEntryIndex !== undefined && props.currentFloor) {
+        const simulationProperties: any = {};
+        
+        // Properties for windows and doors
+        if (props.type === 'window' || props.type === 'door') {
+          simulationProperties.state = isElementOpen ? 'open' : 'closed';
+          simulationProperties.temperature = elementTemperature;
+        }
+        
+        // Properties for vents  
+        if (props.type === 'vent') {
+          simulationProperties.flowType = ventMeasurementType;
+          simulationProperties.flowValue = customIntensity;
+          simulationProperties.flowIntensity = intensityLevel === 'custom' ? 'medium' : intensityLevel;
+          simulationProperties.airOrientation = airDirection;
+        }
+        
+        // Store the properties
+        updateAirEntryProperties(props.currentFloor, props.airEntryIndex, simulationProperties);
+      }
       
       props.onConfirm(airEntryData);
     }

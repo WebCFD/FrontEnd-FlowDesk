@@ -100,6 +100,7 @@ interface RoomState {
   copyFloorAs: (sourceName: string, targetName: string) => void;
   updateFloor: (floorName: string, floorData: FloorData) => void;
   syncWallsForCurrentFloor: () => void;
+  updateAirEntryProperties: (floorName: string, index: number, properties: SimulationProperties) => void;
   reset: () => void;
 }
 
