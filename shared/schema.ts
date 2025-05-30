@@ -54,6 +54,62 @@ export const contactMessageSchema = createInsertSchema(contactMessages)
     message: true,
   });
 
+// Simulation data schemas
+export const airOrientationSchema = z.object({
+  verticalAngle: z.number().min(-45).max(45),
+  horizontalAngle: z.number().min(-45).max(45),
+}).nullable();
+
+export const airEntrySchema = z.object({
+  id: z.string(),
+  type: z.enum(['window', 'door', 'vent']),
+  position: z.object({
+    x: z.number(),
+    y: z.number(),
+    centerHeight: z.number(),
+  }),
+  normal: z.object({
+    x: z.number(),
+    y: z.number(),
+  }),
+  shape: z.enum(['rectangular', 'circular']),
+  width: z.number().nullable(),
+  height: z.number().nullable(),
+  diameter: z.number().nullable(),
+  isOpen: z.boolean(),
+  temperature: z.number(),
+  airDirection: z.enum(['inflow', 'outflow']),
+  flowIntensity: z.enum(['low', 'medium', 'high', 'custom']),
+  customIntensityValue: z.number().nullable(),
+  ventFlowType: z.enum(['massflow', 'velocity', 'pressure']).nullable(),
+  airOrientation: airOrientationSchema,
+});
+
+export const wallSchema = z.object({
+  id: z.string(),
+  start: z.object({
+    x: z.number(),
+    y: z.number(),
+  }),
+  end: z.object({
+    x: z.number(),
+    y: z.number(),
+  }),
+  airEntries: z.array(airEntrySchema),
+});
+
+export const floorSchema = z.object({
+  id: z.number(),
+  height: z.number(),
+  floorDeck: z.number(),
+  walls: z.array(wallSchema),
+});
+
+export const simulationDataSchema = z.object({
+  version: z.string(),
+  floors: z.array(floorSchema),
+});
+
 // Export types
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -61,3 +117,10 @@ export type Simulation = typeof simulations.$inferSelect;
 export type InsertSimulation = z.infer<typeof simulationSchema>;
 export type ContactMessage = typeof contactMessages.$inferSelect;
 export type InsertContactMessage = z.infer<typeof contactMessageSchema>;
+
+// Simulation data types
+export type AirOrientation = z.infer<typeof airOrientationSchema>;
+export type AirEntry = z.infer<typeof airEntrySchema>;
+export type Wall = z.infer<typeof wallSchema>;
+export type Floor = z.infer<typeof floorSchema>;
+export type SimulationData = z.infer<typeof simulationDataSchema>;

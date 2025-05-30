@@ -304,7 +304,32 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     if (props.type === 'wall') {
       props.onConfirm((values as { temperature: number }).temperature);
     } else {
-      props.onConfirm(values as { width: number; height: number; distanceToFloor?: number });
+      // Collect all air entry data for JSON structure
+      const airEntryData = {
+        // Basic dimensions
+        width: shapeType === 'rectangular' ? (values as any).width : null,
+        height: shapeType === 'rectangular' ? (values as any).height : null,
+        diameter: shapeType === 'circular' ? (values as any).width : null,
+        distanceToFloor: distanceToFloor,
+        
+        // Extended properties for JSON
+        shape: shapeType,
+        isOpen: isElementOpen,
+        temperature: elementTemperature,
+        airDirection: airDirection,
+        flowIntensity: intensityLevel,
+        customIntensityValue: intensityLevel === 'custom' ? customIntensity : null,
+        ventFlowType: type === 'vent' ? ventMeasurementType : null,
+        airOrientation: (type === 'vent' && isElementOpen && airDirection === 'inflow') ? {
+          verticalAngle: verticalAngle,
+          horizontalAngle: horizontalAngle
+        } : null,
+        
+        // Position data will be calculated by parent component
+        wallPosition: wallPosition
+      };
+      
+      props.onConfirm(airEntryData);
     }
     onClose();
   };
