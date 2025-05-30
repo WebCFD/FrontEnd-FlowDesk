@@ -705,12 +705,32 @@ export default function WizardDesign() {
         `Wall normal: (${normal.x.toFixed(3)}, ${normal.y.toFixed(3)})`,
       );
 
-      const newAirEntry: AirEntry = {
+      // Generar ID único para el nuevo elemento
+      const existingEntries = airEntries || [];
+      const typeCounters = { window: 1, door: 1, vent: 1 };
+      
+      // Contar elementos existentes del mismo tipo
+      existingEntries.forEach(entry => {
+        const anyEntry = entry as any;
+        if (anyEntry.id) {
+          const match = anyEntry.id.match(/^(window|door|vent)_(\d+)$/);
+          if (match) {
+            const type = match[1] as keyof typeof typeCounters;
+            const num = parseInt(match[2]);
+            if (typeCounters[type] <= num) {
+              typeCounters[type] = num + 1;
+            }
+          }
+        }
+      });
+      
+      const newAirEntry = {
         type: currentAirEntry,
         position: clickedPoint,
         dimensions,
         line: selectedLine,
-      };
+        id: `${currentAirEntry}_${typeCounters[currentAirEntry]}`
+      } as any;
 
       const newAirEntries = [...airEntries, newAirEntry];
       setAirEntries(newAirEntries);

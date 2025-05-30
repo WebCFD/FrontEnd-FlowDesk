@@ -257,8 +257,23 @@ export function generateSimulationData(
       floorData.name || floorName
     );
     
-    // Contadores globales por tipo para todo el piso
+    // Contadores globales por tipo para todo el piso - inicializar desde IDs existentes
     const globalTypeCounts = { window: 0, door: 0, vent: 0 };
+    
+    // Buscar los números más altos existentes en este piso
+    floorData.airEntries.forEach(entry => {
+      const anyEntry = entry as any;
+      if (anyEntry.id) {
+        const match = anyEntry.id.match(/^(window|door|vent)_(\d+)$/);
+        if (match) {
+          const type = match[1] as keyof typeof globalTypeCounts;
+          const num = parseInt(match[2]);
+          if (globalTypeCounts[type] < num) {
+            globalTypeCounts[type] = num;
+          }
+        }
+      }
+    });
     
     const walls: WallExport[] = synchronizedWalls.map((wall) => {
       // Encontrar air entries que pertenecen a esta pared
@@ -278,8 +293,19 @@ export function generateSimulationData(
         
         // Si el air entry está cerca de esta pared (tolerancia de 50 píxeles)
         if (distance < 50) {
-          // Incrementar contador para este tipo
-          globalTypeCounts[entry.type as keyof typeof globalTypeCounts]++;
+          // Determinar ID: usar existente o crear nuevo
+          const anyEntry = entry as any;
+          let airEntryId: string;
+          
+          if (anyEntry.id) {
+            // Usar ID existente
+            airEntryId = anyEntry.id;
+          } else {
+            // Crear nuevo ID incrementando contador
+            globalTypeCounts[entry.type as keyof typeof globalTypeCounts]++;
+            airEntryId = `${entry.type}_${globalTypeCounts[entry.type as keyof typeof globalTypeCounts]}`;
+          }
+          
           // Usar el mismo sistema de normalización que las paredes para X,Y
           const normalizedXY = normalizeCoordinates({ 
             x: entry.position.x, 
@@ -311,7 +337,7 @@ export function generateSimulationData(
           
           // Crear objeto base
           const airEntryBase = {
-            id: `${entry.type}_${globalTypeCounts[entry.type as keyof typeof globalTypeCounts]}`,
+            id: airEntryId,
             type: entry.type as "window" | "door" | "vent",
             position: {
               x: parseFloat(cmToM(normalizedXY.x).toFixed(5)),
