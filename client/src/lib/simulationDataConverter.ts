@@ -264,7 +264,8 @@ export function generateSimulationData(
     floorData.airEntries.forEach(entry => {
       const anyEntry = entry as any;
       if (anyEntry.id) {
-        const match = anyEntry.id.match(/^(window|door|vent)_(\d+)$/);
+        // Actualizado para reconocer el nuevo formato: window_0F_1, door_1F_2, etc.
+        const match = anyEntry.id.match(/^(window|door|vent)_\d+F_(\d+)$/);
         if (match) {
           const type = match[1] as keyof typeof globalTypeCounts;
           const num = parseInt(match[2]);
@@ -301,9 +302,10 @@ export function generateSimulationData(
             // Usar ID existente
             airEntryId = anyEntry.id;
           } else {
-            // Crear nuevo ID incrementando contador
+            // Crear nuevo ID incrementando contador con formato de piso
+            const floorPrefix = index === 0 ? '0F' : `${index}F`;
             globalTypeCounts[entry.type as keyof typeof globalTypeCounts]++;
-            airEntryId = `${entry.type}_${globalTypeCounts[entry.type as keyof typeof globalTypeCounts]}`;
+            airEntryId = `${entry.type}_${floorPrefix}_${globalTypeCounts[entry.type as keyof typeof globalTypeCounts]}`;
           }
           
           // Usar el mismo sistema de normalización que las paredes para X,Y

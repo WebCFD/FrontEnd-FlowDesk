@@ -387,6 +387,14 @@ export default function WizardDesign() {
 
   // Helper functions for ID regeneration
   const regenerateAirEntryIds = (airEntries: AirEntry[], floor: string) => {
+    // Get floor prefix same as walls
+    const floorPrefix = floor === 'ground' ? '0F' : 
+                       floor === 'first' ? '1F' :
+                       floor === 'second' ? '2F' :
+                       floor === 'third' ? '3F' :
+                       floor === 'fourth' ? '4F' :
+                       floor === 'fifth' ? '5F' : '0F';
+    
     // Get existing air entries in target floor to avoid ID conflicts
     const existingEntries = floors[currentFloor]?.airEntries || [];
     const typeCounters = { window: 1, door: 1, vent: 1 };
@@ -395,7 +403,8 @@ export default function WizardDesign() {
     existingEntries.forEach(entry => {
       const anyEntry = entry as any;
       if (anyEntry.id) {
-        const match = anyEntry.id.match(/^(window|door|vent)_(\d+)$/);
+        // Updated regex to match new format: window_0F_1, door_1F_2, etc.
+        const match = anyEntry.id.match(new RegExp(`^(window|door|vent)_${floorPrefix}_(\\d+)$`));
         if (match) {
           const type = match[1] as keyof typeof typeCounters;
           const num = parseInt(match[2]);
@@ -408,7 +417,7 @@ export default function WizardDesign() {
     
     return airEntries.map(entry => ({
       ...entry,
-      id: `${entry.type}_${typeCounters[entry.type]++}`
+      id: `${entry.type}_${floorPrefix}_${typeCounters[entry.type]++}`
     } as any));
   };
 
@@ -705,15 +714,22 @@ export default function WizardDesign() {
         `Wall normal: (${normal.x.toFixed(3)}, ${normal.y.toFixed(3)})`,
       );
 
-      // Generar ID único para el nuevo elemento
+      // Generar ID único para el nuevo elemento con formato de piso
+      const floorPrefix = currentFloor === 'ground' ? '0F' : 
+                         currentFloor === 'first' ? '1F' :
+                         currentFloor === 'second' ? '2F' :
+                         currentFloor === 'third' ? '3F' :
+                         currentFloor === 'fourth' ? '4F' :
+                         currentFloor === 'fifth' ? '5F' : '0F';
+      
       const existingEntries = airEntries || [];
       const typeCounters = { window: 1, door: 1, vent: 1 };
       
-      // Contar elementos existentes del mismo tipo
+      // Contar elementos existentes del mismo tipo en el piso actual
       existingEntries.forEach(entry => {
         const anyEntry = entry as any;
         if (anyEntry.id) {
-          const match = anyEntry.id.match(/^(window|door|vent)_(\d+)$/);
+          const match = anyEntry.id.match(new RegExp(`^(window|door|vent)_${floorPrefix}_(\\d+)$`));
           if (match) {
             const type = match[1] as keyof typeof typeCounters;
             const num = parseInt(match[2]);
@@ -729,7 +745,7 @@ export default function WizardDesign() {
         position: clickedPoint,
         dimensions,
         line: selectedLine,
-        id: `${currentAirEntry}_${typeCounters[currentAirEntry]}`
+        id: `${currentAirEntry}_${floorPrefix}_${typeCounters[currentAirEntry]}`
       } as any;
 
       const newAirEntries = [...airEntries, newAirEntry];
