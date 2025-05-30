@@ -97,7 +97,7 @@ interface AirEntryExport {
   type: string;
   size: Size;
   position: Position;
-  normal?: Normal;
+  normal: Normal;
   state?: string;
 }
 
@@ -239,6 +239,26 @@ export function generateSimulationData(
           // Calcular la altura Z directamente en metros
           const heightInMeters = (entry.dimensions.distanceToFloor || 100) / 100; // Convertir cm a metros
           
+          // Calcular la normal a la superficie de la pared
+          const wallVector = {
+            x: wall.endPoint.x - wall.startPoint.x,
+            y: wall.endPoint.y - wall.startPoint.y
+          };
+          
+          // Normalizar el vector de la pared
+          const wallLength = Math.sqrt(wallVector.x * wallVector.x + wallVector.y * wallVector.y);
+          const normalizedWallVector = {
+            x: wallVector.x / wallLength,
+            y: wallVector.y / wallLength
+          };
+          
+          // La normal es perpendicular al vector de la pared (rotar 90 grados)
+          const wallNormal = {
+            x: -normalizedWallVector.y, // Rotar 90 grados en sentido horario
+            y: normalizedWallVector.x,
+            z: 0 // Normal en el plano XY
+          };
+          
           wallAirEntries.push({
             id: `${entry.type}_${index}`,
             type: entry.type,
@@ -250,7 +270,8 @@ export function generateSimulationData(
               x: cmToM(normalizedXY.x), // Convertir coordenadas X,Y a metros
               y: cmToM(normalizedXY.y), // Convertir coordenadas X,Y a metros
               z: heightInMeters
-            }
+            },
+            normal: wallNormal // Vector normal a la superficie de la pared
           });
         }
       });
