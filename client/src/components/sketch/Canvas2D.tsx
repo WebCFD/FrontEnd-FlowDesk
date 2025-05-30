@@ -3063,10 +3063,19 @@ export default function Canvas2D({
 
   const handleAirEntryEdit = (
     index: number,
-    dimensions: {
+    data: {
       width: number;
       height: number;
       distanceToFloor?: number;
+      shape?: 'rectangular' | 'circular';
+      properties?: {
+        state?: 'open' | 'closed';
+        temperature?: number;
+        flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
+        flowValue?: number;
+        flowIntensity?: 'low' | 'medium' | 'high';
+        airOrientation?: 'inflow' | 'outflow';
+      };
     },
   ) => {
     if (!editingAirEntry) return;
@@ -3074,7 +3083,13 @@ export default function Canvas2D({
     const updatedAirEntries = [...airEntries];
     updatedAirEntries[index] = {
       ...editingAirEntry.entry,
-      dimensions: dimensions, // Store original cm values
+      dimensions: {
+        width: data.width,
+        height: data.height,
+        distanceToFloor: data.distanceToFloor,
+        ...(data.shape && { shape: data.shape }),
+      },
+      ...(data.properties && { properties: data.properties }),
     };
 
     onAirEntriesUpdate?.(updatedAirEntries);
@@ -3235,8 +3250,8 @@ export default function Canvas2D({
           type={editingAirEntry.entry.type}
           isOpen={true}
           onClose={() => setEditingAirEntry(null)}
-          onConfirm={(dimensions) =>
-            handleAirEntryEdit(editingAirEntry.index, dimensions)
+          onConfirm={(data) =>
+            handleAirEntryEdit(editingAirEntry.index, data)
           }
           initialValues={{
             ...editingAirEntry.entry.dimensions,
