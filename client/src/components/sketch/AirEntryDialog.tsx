@@ -36,8 +36,9 @@ interface AirEntryDialogProps {
       temperature?: number;
       flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
       flowValue?: number;
-      flowIntensity?: 'low' | 'medium' | 'high';
+      flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
       airOrientation?: 'inflow' | 'outflow';
+      customIntensityValue?: number;
     };
   }) => void;
   isEditing?: boolean;
@@ -51,8 +52,9 @@ interface AirEntryDialogProps {
       temperature?: number;
       flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
       flowValue?: number;
-      flowIntensity?: 'low' | 'medium' | 'high';
+      flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
       airOrientation?: 'inflow' | 'outflow';
+      customIntensityValue?: number;
     };
   };
   // Nuevos campos para información del wall
@@ -345,8 +347,8 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         }
         
         // Load custom intensity value for all element types
-        if (savedProps.customIntensityValue !== undefined) {
-          setCustomIntensity(savedProps.customIntensityValue);
+        if ((savedProps as any).customIntensityValue !== undefined) {
+          setCustomIntensity((savedProps as any).customIntensityValue);
         }
         
         // Load vent-specific properties
@@ -430,8 +432,11 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         properties: {
           state: (isElementOpen ? 'open' : 'closed') as 'open' | 'closed',
           temperature: elementTemperature,
-          flowIntensity: (intensityLevel === 'custom' ? 'medium' : intensityLevel) as 'low' | 'medium' | 'high',
+          flowIntensity: intensityLevel as 'low' | 'medium' | 'high' | 'custom',
           airOrientation: airDirection as 'inflow' | 'outflow',
+          ...(intensityLevel === 'custom' && {
+            customIntensityValue: customIntensity,
+          }),
           ...(type === 'vent' && {
             flowType: (ventMeasurementType === 'massflow' ? 'Air Mass Flow' : ventMeasurementType === 'velocity' ? 'Air Velocity' : 'Pressure') as 'Air Mass Flow' | 'Air Velocity' | 'Pressure',
             flowValue: customIntensity,
