@@ -124,11 +124,16 @@ interface AirEntryExport {
       z: number;
     };
   };
-  dimensions: {
-    width: number;
-    height: number;
-    shape: "rectangular" | "circular";
-  };
+  dimensions: 
+    | {
+        width: number;
+        height: number;
+        shape: "rectangular";
+      }
+    | {
+        diameter: number;
+        shape: "circular";
+      };
   simulation: {
     // Propiedades comunes para todos los tipos
     state?: "open" | "closed";
@@ -310,11 +315,21 @@ export function generateSimulationData(
               z: heightInMeters,
               normal: wallNormal
             },
-            dimensions: {
-              width: entry.dimensions.width / 100,
-              height: entry.dimensions.height / 100,
-              shape: ((entry.dimensions as any).shape || "rectangular") as "rectangular" | "circular"
-            },
+            dimensions: (() => {
+              const shape = ((entry.dimensions as any).shape || "rectangular") as "rectangular" | "circular";
+              if (shape === "circular") {
+                return {
+                  diameter: entry.dimensions.width / 100,
+                  shape: "circular" as const
+                };
+              } else {
+                return {
+                  width: entry.dimensions.width / 100,
+                  height: entry.dimensions.height / 100,
+                  shape: "rectangular" as const
+                };
+              }
+            })(),
             simulation: {} as any
           };
 
@@ -352,7 +367,7 @@ export function generateSimulationData(
             }
           }
 
-          wallAirEntries.push(airEntryBase);
+          wallAirEntries.push(airEntryBase as AirEntryExport);
         }
       });
       
