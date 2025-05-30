@@ -134,7 +134,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     const { wallStart, wallEnd } = props.wallContext;
     
     // Obtener el ancho del elemento (solo para Air Entries)
-    const elementWidth = props.type !== 'wall' ? (values as any).width || 50 : 50; // Default 50cm
+    const elementWidth = props.type === 'window' || props.type === 'door' || props.type === 'vent' ? (values as any).width || 50 : 50; // Default 50cm
     
     // Calcular la longitud total del wall
     const wallLength = Math.sqrt(
