@@ -3096,19 +3096,28 @@ export default function Canvas2D({
     setEditingAirEntry(null);
   };
 
-  const handleNewAirEntryConfirm = (dimensions: {
+  const handleNewAirEntryConfirm = (data: {
     width: number;
     height: number;
     distanceToFloor?: number;
+    shape?: 'rectangular' | 'circular';
+    properties?: {
+      state?: 'open' | 'closed';
+      temperature?: number;
+      flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
+      flowValue?: number;
+      flowIntensity?: 'low' | 'medium' | 'high';
+      airOrientation?: 'inflow' | 'outflow';
+    };
   }) => {
     if (!newAirEntryDetails || !currentAirEntry) return;
 
     // Convert dimensions from cm to pixels
     const pixelDimensions = {
-      width: dimensions.width / PIXELS_TO_CM,
-      height: dimensions.height / PIXELS_TO_CM,
-      distanceToFloor: dimensions.distanceToFloor
-        ? dimensions.distanceToFloor / PIXELS_TO_CM
+      width: data.width / PIXELS_TO_CM,
+      height: data.height / PIXELS_TO_CM,
+      distanceToFloor: data.distanceToFloor
+        ? data.distanceToFloor / PIXELS_TO_CM
         : undefined,
     };
 
@@ -3118,9 +3127,15 @@ export default function Canvas2D({
         newAirEntryDetails.line,
         newAirEntryDetails.position,
       ),
-      dimensions: dimensions, // Store original cm values
+      dimensions: {
+        width: data.width,
+        height: data.height,
+        distanceToFloor: data.distanceToFloor,
+        ...(data.shape && { shape: data.shape }),
+      },
       line: newAirEntryDetails.line,
       lineId: newAirEntryDetails.line.id,
+      ...(data.properties && { properties: data.properties }),
     };
 
     onAirEntriesUpdate?.([...airEntries, newAirEntry]);
