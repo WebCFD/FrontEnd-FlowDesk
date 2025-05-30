@@ -3221,6 +3221,15 @@ export default function Canvas2D({
             handleAirEntryEdit(editingAirEntry.index, dimensions)
           }
           initialValues={editingAirEntry.entry.dimensions}
+          isEditing={true}
+          wallContext={{
+            wallId: walls?.find(wall => wall.lineRef === editingAirEntry.entry.line.id?.toString())?.id || `${floorText}_wall_${editingAirEntry.entry.line.id}`,
+            floorName: floorText,
+            wallStart: { x: editingAirEntry.entry.line.start.x, y: editingAirEntry.entry.line.start.y },
+            wallEnd: { x: editingAirEntry.entry.line.end.x, y: editingAirEntry.entry.line.end.y },
+            clickPosition: { x: editingAirEntry.entry.position.x, y: editingAirEntry.entry.position.y },
+            ceilingHeight: ceilingHeight * 100 // Convert to cm
+          }}
         />
       )}
       {/* Add new dialog for creating air entries */}
