@@ -673,7 +673,8 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                         <Input
                           id="distance-floor"
                           type="number"
-                          value={distanceToFloor}
+                          step="0.01"
+                          value={Number(distanceToFloor).toFixed(2)}
                           onChange={(e) => setDistanceToFloor(Number(e.target.value))}
                           className="h-8 text-sm"
                           placeholder="0"
