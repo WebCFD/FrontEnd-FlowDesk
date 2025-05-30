@@ -296,6 +296,7 @@ export default function Canvas2D({
   measurements = [],
   stairPolygons = [],
   floorText,
+  currentFloor,
   isMultifloor,
   ceilingHeight = 2.4,
   defaultWallTemperature = 20,
@@ -3243,7 +3244,7 @@ export default function Canvas2D({
             properties: (editingAirEntry.entry as any).properties
           }}
           airEntryIndex={editingAirEntry.index}
-          currentFloor={floorText}
+          currentFloor={currentFloor}
           isEditing={true}
           wallContext={{
             wallId: (() => {
