@@ -630,14 +630,14 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="inflow">
-                                <div className="flex items-center space-x-2">
-                                  <span className="text-green-600 text-lg font-bold">→</span>
+                                <div className="flex items-center space-x-3">
+                                  <span className="text-green-600 text-2xl font-bold">➤</span>
                                   <span>Inflow (Air enters)</span>
                                 </div>
                               </SelectItem>
                               <SelectItem value="outflow">
-                                <div className="flex items-center space-x-2">
-                                  <span className="text-red-600 text-lg font-bold">←</span>
+                                <div className="flex items-center space-x-3">
+                                  <span className="text-red-600 text-2xl font-bold">◄</span>
                                   <span>Outflow (Air exits)</span>
                                 </div>
                               </SelectItem>
