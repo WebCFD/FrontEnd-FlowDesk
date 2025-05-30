@@ -793,7 +793,21 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                       <div className="space-y-4 border-t pt-4">
                         {/* Dirección del flujo de aire */}
                         <div className="space-y-2">
-                          <Label className="text-xs text-slate-600">Air Direction</Label>
+                          <div className="flex items-center space-x-1">
+                            <Label className="text-xs text-slate-600">Air Direction</Label>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <HelpCircle className="h-3 w-3 text-slate-400 hover:text-slate-600 cursor-help" />
+                                </TooltipTrigger>
+                                <TooltipContent side="right" sideOffset={5}>
+                                  <p className="text-xs max-w-48">
+                                    Set whether air enters or exits through this element. For proper airflow simulation, you need at least one inflow and one outflow element to create continuous air circulation.
+                                  </p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </div>
                           <Select value={airDirection} onValueChange={(value: 'inflow' | 'outflow') => setAirDirection(value)}>
                             <SelectTrigger className="h-8 text-sm">
                               <SelectValue placeholder="Select direction" />
