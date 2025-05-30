@@ -415,13 +415,38 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                         <div>Floor: {wallContext.floorName}</div>
                         <div>Wall: {wallContext.wallId}</div>
                         {(() => {
-                          // Calcular coordenadas actuales basadas en wallPosition
+                          // Calcular coordenadas del centro de la ventana
                           const { wallStart, wallEnd } = wallContext;
                           
-                          // Calcular posición actual en píxeles
-                          const positionRatio = wallPosition / 100;
-                          const currentX = wallStart.x + (wallEnd.x - wallStart.x) * positionRatio;
-                          const currentY = wallStart.y + (wallEnd.y - wallStart.y) * positionRatio;
+                          // Obtener el ancho del elemento
+                          const elementWidth = (values as any).width || 50; // Default 50cm
+                          const PIXELS_TO_CM_CONVERSION = 25 / 20; // 1.25 - para convertir cm a pixels
+                          const elementWidthPixels = elementWidth / PIXELS_TO_CM_CONVERSION;
+                          const halfElementWidth = elementWidthPixels / 2;
+                          
+                          // Calcular la longitud del wall
+                          const wallLength = Math.sqrt(
+                            Math.pow(wallEnd.x - wallStart.x, 2) + Math.pow(wallEnd.y - wallStart.y, 2)
+                          );
+                          
+                          // Calcular la longitud efectiva disponible para posicionamiento
+                          const effectiveLength = Math.max(0, wallLength - elementWidthPixels);
+                          
+                          // Calcular posición del centro del elemento
+                          let centerX, centerY;
+                          if (effectiveLength > 0) {
+                            const effectiveRatio = wallPosition / 100;
+                            const effectiveDistance = effectiveRatio * effectiveLength;
+                            const actualDistance = effectiveDistance + halfElementWidth;
+                            const actualRatio = actualDistance / wallLength;
+                            
+                            centerX = wallStart.x + (wallEnd.x - wallStart.x) * actualRatio;
+                            centerY = wallStart.y + (wallEnd.y - wallStart.y) * actualRatio;
+                          } else {
+                            // Si el elemento es más grande que el wall, centrar
+                            centerX = (wallStart.x + wallEnd.x) / 2;
+                            centerY = (wallStart.y + wallEnd.y) / 2;
+                          }
                           
                           // Usar el mismo sistema de coordenadas que Canvas2D
                           const PIXELS_TO_CM = 25 / 20; // 1.25 - misma constante que Canvas2D
@@ -429,8 +454,8 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           const CANVAS_CENTER_Y = 300;
                           
                           // Convertir a coordenadas normalizadas (igual que normalizeCoordinates)
-                          const userX = ((currentX - CANVAS_CENTER_X) * PIXELS_TO_CM).toFixed(1);
-                          const userY = (-(currentY - CANVAS_CENTER_Y) * PIXELS_TO_CM).toFixed(1);
+                          const userX = ((centerX - CANVAS_CENTER_X) * PIXELS_TO_CM).toFixed(1);
+                          const userY = (-(centerY - CANVAS_CENTER_Y) * PIXELS_TO_CM).toFixed(1);
                           
                           return (
                             <div className="text-gray-500">
