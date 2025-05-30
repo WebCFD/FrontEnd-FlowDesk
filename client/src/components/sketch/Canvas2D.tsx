@@ -1529,10 +1529,23 @@ export default function Canvas2D({
           const exactPoint = getPointOnLine(selectedLine, point);
 
           // Instead of creating the air entry immediately, store the details and show dialog
+          // Find the wall associated with this line to get wall ID and ceiling height
+          const associatedWall = walls?.find(wall => wall.lineId === selectedLine.id);
+          const wallId = associatedWall?.id || `${floorText}_wall_${selectedLine.id}`;
+          const currentCeilingHeight = floorHeights?.[floorText] || 2.4; // Default 2.4m
+          
           setNewAirEntryDetails({
             type: currentAirEntry,
             position: exactPoint,
             line: selectedLine,
+            wallContext: {
+              wallId: wallId,
+              floorName: floorText,
+              wallStart: { x: selectedLine.start.x, y: selectedLine.start.y },
+              wallEnd: { x: selectedLine.end.x, y: selectedLine.end.y },
+              clickPosition: { x: point.x, y: point.y },
+              ceilingHeight: currentCeilingHeight * 100 // Convert to cm
+            }
           });
         }
         return;
@@ -3203,6 +3216,7 @@ export default function Canvas2D({
           isOpen={true}
           onClose={() => setNewAirEntryDetails(null)}
           onConfirm={handleNewAirEntryConfirm}
+          wallContext={newAirEntryDetails.wallContext}
         />
       )}
 
