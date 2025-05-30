@@ -722,14 +722,8 @@ export default function WizardDesign() {
                          currentFloor === 'fourth' ? '4F' :
                          currentFloor === 'fifth' ? '5F' : '0F';
       
-      console.log('DEBUG: Creating new air entry');
-      console.log('Current floor:', currentFloor);
-      console.log('Floor prefix:', floorPrefix);
-      
       const existingEntries = airEntries || [];
       const typeCounters = { window: 1, door: 1, vent: 1 };
-      
-      console.log('Existing entries:', existingEntries.map(e => (e as any).id));
       
       // Contar elementos existentes del mismo tipo en el piso actual
       existingEntries.forEach(entry => {
@@ -749,13 +743,11 @@ export default function WizardDesign() {
             if (typeCounters[type] <= num) {
               typeCounters[type] = num + 1;
             }
-            console.log(`Found existing ${type}_${num}, updated counter to ${typeCounters[type]}`);
           }
         }
       });
       
       const generatedId = `${currentAirEntry}_${floorPrefix}_${typeCounters[currentAirEntry]}`;
-      console.log('Generated ID:', generatedId);
       
       const newAirEntry = {
         type: currentAirEntry,
