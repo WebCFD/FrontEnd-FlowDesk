@@ -414,6 +414,29 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                       <div className="mb-3 p-2 bg-gray-100 rounded text-xs text-gray-600">
                         <div>Floor: {wallContext.floorName}</div>
                         <div>Wall: {wallContext.wallId}</div>
+                        {(() => {
+                          // Calcular coordenadas actuales basadas en wallPosition
+                          const { wallStart, wallEnd } = wallContext;
+                          const wallLength = Math.sqrt(
+                            Math.pow(wallEnd.x - wallStart.x, 2) + Math.pow(wallEnd.y - wallStart.y, 2)
+                          );
+                          
+                          // Calcular posición actual en píxeles
+                          const positionRatio = wallPosition / 100;
+                          const currentX = wallStart.x + (wallEnd.x - wallStart.x) * positionRatio;
+                          const currentY = wallStart.y + (wallEnd.y - wallStart.y) * positionRatio;
+                          
+                          // Convertir a coordenadas de usuario (centrar en 400,300 y escalar)
+                          const PIXELS_TO_CM = 1.25;
+                          const userX = ((currentX - 400) / PIXELS_TO_CM).toFixed(1);
+                          const userY = (-(currentY - 300) / PIXELS_TO_CM).toFixed(1); // Invertir Y para coordenadas normales
+                          
+                          return (
+                            <div className="text-gray-500">
+                              Position: ({userX}, {userY}) cm
+                            </div>
+                          );
+                        })()}
                       </div>
                     ) : null;
                   })()}
