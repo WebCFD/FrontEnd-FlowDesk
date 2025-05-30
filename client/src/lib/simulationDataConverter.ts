@@ -55,13 +55,13 @@ interface FloorData {
 
 // Interfaces para el formato de exportación JSON
 interface PointXY {
-  x: string; // En metros, ejemplo: "2.5m"
-  y: string; // En metros, ejemplo: "3.2m"
+  x: number; // En metros
+  y: number; // En metros
 }
 
 interface Position {
-  x: string; // En metros, ejemplo: "2.5m"
-  y: string; // En metros, ejemplo: "3.2m"
+  x: number; // En metros
+  y: number; // En metros
   z?: number;
 }
 
@@ -151,8 +151,8 @@ export function normalizeCoordinates(internalPoint: Point2D): PointXY {
   const normalizedY = -(internalPoint.y - CANVAS_CENTER_Y) * PIXELS_TO_CM / 100;
   
   return {
-    x: `${normalizedX.toFixed(2)}m`,
-    y: `${normalizedY.toFixed(2)}m`
+    x: parseFloat(normalizedX.toFixed(2)),
+    y: parseFloat(normalizedY.toFixed(2))
   };
 }
 
@@ -359,10 +359,15 @@ function extractRoomPointsFromLines(lines: any[]): PointXY[] {
   }
   
   // Eliminar el último punto si es igual al primero (cerrar el polígono)
-  if (points.length > 1 && 
-      isPointNear({ x: points[0].x, y: points[0].y }, 
-                { x: points[points.length - 1].x, y: points[points.length - 1].y })) {
-    points.pop();
+  if (points.length > 1) {
+    const firstX = parseFloat(points[0].x.replace('m', ''));
+    const firstY = parseFloat(points[0].y.replace('m', ''));
+    const lastX = parseFloat(points[points.length - 1].x.replace('m', ''));
+    const lastY = parseFloat(points[points.length - 1].y.replace('m', ''));
+    
+    if (isPointNear({ x: firstX, y: firstY }, { x: lastX, y: lastY })) {
+      points.pop();
+    }
   }
   
   return points;
