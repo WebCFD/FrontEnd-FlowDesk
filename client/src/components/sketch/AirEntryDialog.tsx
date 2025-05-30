@@ -105,11 +105,33 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     if (props.type === 'wall' || !('wallContext' in props) || !props.wallContext) return null;
     
     const { wallStart, wallEnd } = props.wallContext;
+    
+    // Obtener el ancho del elemento (solo para Air Entries)
+    const elementWidth = props.type !== 'wall' ? (values as any).width || 50 : 50; // Default 50cm
+    
+    // Calcular la longitud total del wall
+    const wallLength = Math.sqrt(
+      Math.pow(wallEnd.x - wallStart.x, 2) + Math.pow(wallEnd.y - wallStart.y, 2)
+    );
+    
+    // Convertir ancho del elemento de cm a pixels (asumiendo PIXELS_TO_CM = 1.25)
+    const PIXELS_TO_CM = 1.25;
+    const elementWidthPixels = elementWidth / PIXELS_TO_CM;
+    const halfElementWidth = elementWidthPixels / 2;
+    
+    // Calcular la longitud efectiva disponible (wall length - element width)
+    const effectiveLength = Math.max(0, wallLength - elementWidthPixels);
+    
+    // Calcular la posición real: desde halfElementWidth hasta (wallLength - halfElementWidth)
     const t = percentage / 100;
+    const actualDistance = halfElementWidth + (effectiveLength * t);
+    
+    // Normalizar la distancia respecto a la longitud total del wall
+    const normalizedT = actualDistance / wallLength;
     
     return {
-      x: wallStart.x + (wallEnd.x - wallStart.x) * t,
-      y: wallStart.y + (wallEnd.y - wallStart.y) * t
+      x: wallStart.x + (wallEnd.x - wallStart.x) * normalizedT,
+      y: wallStart.y + (wallEnd.y - wallStart.y) * normalizedT
     };
   };
 
@@ -132,6 +154,13 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     if (!airEntryProps.wallContext) return 50;
     
     const { wallStart, wallEnd, clickPosition } = airEntryProps.wallContext;
+    
+    // Obtener el ancho del elemento para los cálculos
+    const elementWidth = (values as any).width || 50; // Default 50cm
+    const PIXELS_TO_CM = 1.25;
+    const elementWidthPixels = elementWidth / PIXELS_TO_CM;
+    const halfElementWidth = elementWidthPixels / 2;
+    
     const wallLength = Math.sqrt(
       Math.pow(wallEnd.x - wallStart.x, 2) + Math.pow(wallEnd.y - wallStart.y, 2)
     );
@@ -140,8 +169,17 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
       Math.pow(clickPosition.x - wallStart.x, 2) + Math.pow(clickPosition.y - wallStart.y, 2)
     );
     
-    const percentage = Math.min(100, Math.max(0, (clickDistance / wallLength) * 100));
-    return percentage;
+    // Calcular la longitud efectiva disponible para el elemento
+    const effectiveLength = Math.max(0, wallLength - elementWidthPixels);
+    
+    // Ajustar la distancia del clic para que esté dentro de los límites válidos
+    const adjustedClickDistance = Math.max(halfElementWidth, Math.min(wallLength - halfElementWidth, clickDistance));
+    
+    // Convertir a porcentaje basado en la posición efectiva
+    const effectiveDistance = adjustedClickDistance - halfElementWidth;
+    const percentage = effectiveLength > 0 ? (effectiveDistance / effectiveLength) * 100 : 50;
+    
+    return Math.min(100, Math.max(0, percentage));
   };
 
   // Función para calcular la distancia inicial al suelo
