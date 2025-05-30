@@ -245,8 +245,8 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     // Para puertas, distancia = 0 (van al suelo)
     if (type === 'door') return 0;
     
-    // Para ventanas y vents, distancia = mitad de altura del wall
-    return ceilingHeight / 2;
+    // Para ventanas y vents, distancia = mitad de altura del wall, redondeado a 2 decimales
+    return Math.round((ceilingHeight / 2) * 100) / 100;
   };
 
   // Función para obtener la temperatura inicial de la pared
