@@ -564,7 +564,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           type="number"
                           min="0"
                           max="100"
-                          step="1"
+                          step="0.01"
                           value={parseFloat(wallPosition.toFixed(2))}
                           onChange={(e) => {
                             const value = parseFloat(e.target.value);
@@ -573,10 +573,6 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               const roundedValue = Math.round(value * 100) / 100;
                               handleWallPositionChange(roundedValue);
                             }
-                          }}
-                          onInvalid={(e) => {
-                            // Prevenir que aparezca el mensaje de validación del navegador
-                            e.preventDefault();
                           }}
                           className="h-8 text-sm"
                           placeholder="50.00"
