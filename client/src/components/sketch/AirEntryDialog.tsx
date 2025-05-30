@@ -107,8 +107,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   // Estado para la posición a lo largo del wall (0-100%)
   const [wallPosition, setWallPosition] = useState(50);
   
-  // Estado para controlar la visibilidad del tooltip
-  const [showVerticalTooltip, setShowVerticalTooltip] = useState(false);
+
   
   // Estado para la distancia al suelo
   const [distanceToFloor, setDistanceToFloor] = useState(0);
@@ -509,12 +508,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           Vertical Distance
                         </Label>
                         <TooltipProvider>
-                          <Tooltip open={showVerticalTooltip} onOpenChange={setShowVerticalTooltip}>
+                          <Tooltip>
                             <TooltipTrigger asChild>
-                              <HelpCircle 
-                                className="h-3 w-3 text-slate-400 hover:text-slate-600 cursor-pointer" 
-                                onClick={() => setShowVerticalTooltip(!showVerticalTooltip)}
-                              />
+                              <HelpCircle className="h-3 w-3 text-slate-400 hover:text-slate-600 cursor-help" />
                             </TooltipTrigger>
                             <TooltipContent side="right" sideOffset={5}>
                               <p className="text-xs max-w-48">
