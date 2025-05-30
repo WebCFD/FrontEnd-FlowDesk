@@ -247,8 +247,8 @@ export function generateSimulationData(
               height: entry.dimensions.height / 100 // Convertir cm a metros
             },
             position: {
-              x: normalizedXY.x,
-              y: normalizedXY.y,
+              x: cmToM(normalizedXY.x), // Convertir coordenadas X,Y a metros
+              y: cmToM(normalizedXY.y), // Convertir coordenadas X,Y a metros
               z: heightInMeters
             }
           });
