@@ -111,7 +111,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
   // Función para calcular la nueva posición basada en el porcentaje del wall
   const calculatePositionFromPercentage = (percentage: number) => {
-    if (props.type === 'wall' || !('wallContext' in props) || !props.wallContext) return null;
+    if (!('wallContext' in props) || !props.wallContext) return null;
     
     const { wallStart, wallEnd } = props.wallContext;
     
@@ -157,7 +157,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
   // Función para calcular la posición inicial a lo largo del wall basada en el clic
   const calculateInitialWallPosition = () => {
-    if (props.type === 'wall') return 50;
+    if (!('wallContext' in props)) return 50;
     
     const airEntryProps = props as AirEntryDialogProps;
     if (!airEntryProps.wallContext) return 50;
@@ -209,9 +209,6 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
   // Función para obtener la temperatura inicial de la pared
   const getInitialWallTemperature = () => {
-    if (props.type === 'wall') {
-      return (props as WallPropertiesDialogProps).initialValues?.temperature || 20;
-    }
     // Para air entries, intentar obtener la temperatura de la pared asociada
     // Por ahora retornamos un valor por defecto, pero esto se puede mejorar
     // cuando tengamos acceso a los datos de las paredes
@@ -220,8 +217,8 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
   // Inicializar valores cuando se abre el diálogo
   useEffect(() => {
-    if (dialogOpen && props.type !== 'wall') {
-      if (isEditing && props.type !== 'wall') {
+    if (dialogOpen) {
+      if (isEditing) {
         // En modo edición, usar los valores actuales del elemento
         const airEntryProps = props as AirEntryDialogProps;
         if (airEntryProps.initialValues) {
@@ -276,10 +273,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
   // Reset values when dialog opens with new type or initialValues
   useEffect(() => {
-    if (isOpen) {
+    if (dialogOpen) {
       setValues(getDefaultValues());
     }
-  }, [isOpen, type, props]);
+  }, [dialogOpen, type, props]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -371,7 +368,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose} modal={false}>
+    <Dialog open={dialogOpen} onOpenChange={onClose} modal={false}>
       <DialogContent 
         className="sm:max-w-[425px]"
         style={{
