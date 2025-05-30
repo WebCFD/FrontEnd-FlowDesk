@@ -103,6 +103,8 @@ interface AirEntry {
     distanceToFloor?: number;
   };
   line: Line;
+  lineId?: string; // Optional reference to the id of the line this entry is attached to
+  id?: string; // Unique identifier for the air entry (e.g., "window_1", "door_2")
 }
 
 interface StairPolygon {
@@ -384,19 +386,22 @@ export default function WizardDesign() {
   const [isFloorLoadDialogOpen, setIsFloorLoadDialogOpen] = useState(false);
 
   // Helper functions for ID regeneration
-  const regenerateAirEntryIds = (airEntries: AirEntry[], floor: string): AirEntry[] => {
+  const regenerateAirEntryIds = (airEntries: AirEntry[], floor: string) => {
     // Get existing air entries in target floor to avoid ID conflicts
     const existingEntries = floors[currentFloor]?.airEntries || [];
     const typeCounters = { window: 1, door: 1, vent: 1 };
     
     // Count existing entries to start numbering from the next available number
     existingEntries.forEach(entry => {
-      const match = entry.id?.match(/^(window|door|vent)_(\d+)$/);
-      if (match) {
-        const type = match[1] as keyof typeof typeCounters;
-        const num = parseInt(match[2]);
-        if (typeCounters[type] <= num) {
-          typeCounters[type] = num + 1;
+      const anyEntry = entry as any;
+      if (anyEntry.id) {
+        const match = anyEntry.id.match(/^(window|door|vent)_(\d+)$/);
+        if (match) {
+          const type = match[1] as keyof typeof typeCounters;
+          const num = parseInt(match[2]);
+          if (typeCounters[type] <= num) {
+            typeCounters[type] = num + 1;
+          }
         }
       }
     });
@@ -404,7 +409,7 @@ export default function WizardDesign() {
     return airEntries.map(entry => ({
       ...entry,
       id: `${entry.type}_${typeCounters[entry.type]++}`
-    }));
+    } as any));
   };
 
   const regenerateWallIds = (walls: Wall[], floor: string): Wall[] => {
@@ -421,11 +426,14 @@ export default function WizardDesign() {
     
     // Find the next available wall number
     existingWalls.forEach(wall => {
-      const match = wall.id?.match(new RegExp(`^wall_${floorPrefix}_(\\d+)$`));
-      if (match) {
-        const num = parseInt(match[1]);
-        if (wallCounter <= num) {
-          wallCounter = num + 1;
+      const anyWall = wall as any;
+      if (anyWall.id) {
+        const match = anyWall.id.match(new RegExp(`^wall_${floorPrefix}_(\\d+)$`));
+        if (match) {
+          const num = parseInt(match[1]);
+          if (wallCounter <= num) {
+            wallCounter = num + 1;
+          }
         }
       }
     });
