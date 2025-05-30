@@ -40,8 +40,7 @@ interface AirEntryDialogProps {
   };
   // Callback para actualización en tiempo real
   onPositionUpdate?: (newPosition: { x: number; y: number }) => void;
-  // Entry index for identification
-  entryIndex?: number;
+
 }
 
 // Props para propiedades de pared
@@ -437,7 +436,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                       return wallContext ? (
                         <div className="p-2 bg-gray-100 rounded text-xs text-gray-600">
                           <div>Floor: {wallContext.floorName}</div>
-                          <div>{type === 'window' ? 'Window' : type === 'door' ? 'Door' : 'Vent'} ID: {(props as AirEntryDialogProps).entryIndex !== undefined ? `${type}_${(props as AirEntryDialogProps).entryIndex}` : `${type}_new`}</div>
+                          <div>{type === 'window' ? 'Window' : type === 'door' ? 'Door' : 'Vent'} ID: {wallContext.wallId}</div>
                           {(() => {
                             // Calcular coordenadas del centro de la ventana
                             const { wallStart, wallEnd } = wallContext;
