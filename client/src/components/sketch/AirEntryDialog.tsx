@@ -336,6 +336,14 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           setElementTemperature(savedProps.temperature);
         }
         
+        // Load flow properties for all types
+        if (savedProps.flowIntensity) {
+          setIntensityLevel(savedProps.flowIntensity);
+        }
+        if (savedProps.airOrientation) {
+          setAirDirection(savedProps.airOrientation);
+        }
+        
         // Load vent-specific properties
         if (props.type === 'vent') {
           if (savedProps.flowType) {
@@ -349,12 +357,6 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           }
           if (savedProps.flowValue !== undefined) {
             setCustomIntensity(savedProps.flowValue);
-          }
-          if (savedProps.flowIntensity) {
-            setIntensityLevel(savedProps.flowIntensity);
-          }
-          if (savedProps.airOrientation) {
-            setAirDirection(savedProps.airOrientation);
           }
         }
       }
