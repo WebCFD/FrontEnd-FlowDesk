@@ -427,7 +427,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                   
                   {/* Information subsection */}
                   <div className="mb-4">
-                    <h5 className="font-medium text-xs mb-2 text-slate-600 uppercase tracking-wide">Information</h5>
+                    <h5 className="font-medium text-xs mb-2 text-slate-600">Information</h5>
                     {(() => {
                       const airEntryProps = props as AirEntryDialogProps;
                       const wallContext = airEntryProps.wallContext;
