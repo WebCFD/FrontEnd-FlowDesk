@@ -505,7 +505,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <Label htmlFor="distance-floor" className="text-xs text-slate-600">
-                          Vertical Distance
+                          Center Height
                         </Label>
                         <TooltipProvider>
                           <Tooltip>
@@ -514,7 +514,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                             </TooltipTrigger>
                             <TooltipContent side="right" sideOffset={5}>
                               <p className="text-xs max-w-48">
-                                Height from floor to the center of the element in the vertical axis of the space
+                                Height from floor to the center of the element in the vertical axis of the space. Mounting height = Sill height + half element height.
                               </p>
                             </TooltipContent>
                           </Tooltip>
