@@ -242,8 +242,11 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     
     const ceilingHeight = airEntryProps.wallContext.ceilingHeight;
     
-    // Para puertas, distancia = 0 (van al suelo)
-    if (type === 'door') return 0;
+    // Para puertas, distancia = altura de la puerta / 2 (centro de la puerta)
+    if (type === 'door') {
+      const doorHeight = (values as any).height || 200; // Default 200cm
+      return Math.round((doorHeight / 2) * 100) / 100;
+    }
     
     // Para ventanas y vents, distancia = mitad de altura del wall, redondeado a 2 decimales
     return Math.round((ceilingHeight / 2) * 100) / 100;
@@ -293,6 +296,15 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
       setElementTemperature(getInitialWallTemperature());
     }
   }, [dialogOpen, props.type, isEditing]);
+
+  // Actualizar automáticamente Center Height para puertas cuando cambie la altura
+  useEffect(() => {
+    if (type === 'door' && (values as any).height !== undefined) {
+      const doorHeight = (values as any).height;
+      const newCenterHeight = Math.round((doorHeight / 2) * 100) / 100;
+      setDistanceToFloor(newCenterHeight);
+    }
+  }, [(values as any).height, type]);
 
   function getDefaultValues() {
     // Obtener valores iniciales según el tipo de props
@@ -663,7 +675,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                             </TooltipTrigger>
                             <TooltipContent side="right" sideOffset={5}>
                               <p className="text-xs max-w-48">
-                                Height from floor to the center of the element in the vertical axis of the space. Mounting height = Sill height + half element height.
+                                {type === 'door' 
+                                  ? "For doors, center height is automatically calculated as half the door height."
+                                  : "Height from floor to the center of the element in the vertical axis of the space. Mounting height = Sill height + half element height."
+                                }
                               </p>
                             </TooltipContent>
                           </Tooltip>
@@ -676,16 +691,25 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           step="0.01"
                           value={distanceToFloor}
                           onChange={(e) => {
-                            const value = Number(e.target.value);
-                            // Redondear a 2 decimales máximo
-                            const rounded = Math.round(value * 100) / 100;
-                            setDistanceToFloor(rounded);
+                            if (type !== 'door') {
+                              const value = Number(e.target.value);
+                              // Redondear a 2 decimales máximo
+                              const rounded = Math.round(value * 100) / 100;
+                              setDistanceToFloor(rounded);
+                            }
                           }}
-                          className="h-8 text-sm"
+                          className={`h-8 text-sm ${type === 'door' ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
                           placeholder="0"
+                          disabled={type === 'door'}
+                          readOnly={type === 'door'}
                         />
                         <span className="text-xs text-slate-500">cm</span>
                       </div>
+                      {type === 'door' && (
+                        <p className="text-xs text-gray-500 mt-1">
+                          Half of the door height
+                        </p>
+                      )}
                     </div>
                     
                     {/* Posición a lo largo del wall */}
