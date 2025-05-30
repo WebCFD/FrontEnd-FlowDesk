@@ -12,6 +12,23 @@ interface Line {
   end: Point;
 }
 
+// Propiedades base compartidas
+interface BaseSimulationProperties {
+  state?: 'open' | 'closed';
+  temperature?: number;
+}
+
+// Propiedades específicas para vents
+interface VentSimulationProperties {
+  flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
+  flowValue?: number;
+  flowIntensity?: 'low' | 'medium' | 'high';
+  airOrientation?: 'inflow' | 'outflow';
+}
+
+// Propiedades unificadas que incluyen todos los campos posibles
+interface SimulationProperties extends BaseSimulationProperties, VentSimulationProperties {}
+
 interface AirEntry {
   type: 'window' | 'door' | 'vent';
   position: Point;
@@ -19,7 +36,9 @@ interface AirEntry {
     width: number;
     height: number;
     distanceToFloor?: number;
+    shape?: 'rectangular' | 'circular';
   };
+  properties?: SimulationProperties;
   line: Line;
 }
 
@@ -292,6 +311,26 @@ export const useRoomStore = create<RoomState>()(
               }
             }
           };
+        }),
+
+        // Function to update air entry properties
+        updateAirEntryProperties: (floorName: string, index: number, properties: SimulationProperties) => set((state) => {
+          const currentFloors = { ...state.floors };
+          
+          if (currentFloors[floorName]?.airEntries && currentFloors[floorName].airEntries[index]) {
+            const updatedAirEntries = [...currentFloors[floorName].airEntries];
+            updatedAirEntries[index] = {
+              ...updatedAirEntries[index],
+              properties: properties
+            };
+            
+            currentFloors[floorName] = {
+              ...currentFloors[floorName],
+              airEntries: updatedAirEntries
+            };
+          }
+          
+          return { floors: currentFloors };
         }),
         
         reset: () => set({
