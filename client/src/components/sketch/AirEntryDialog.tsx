@@ -124,6 +124,8 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   
   // Estados específicos para vents
   const [ventMeasurementType, setVentMeasurementType] = useState<'massflow' | 'velocity' | 'pressure'>('massflow');
+  const [verticalAngle, setVerticalAngle] = useState(0);
+  const [horizontalAngle, setHorizontalAngle] = useState(0);
 
   // Función para calcular la nueva posición basada en el porcentaje del wall
   const calculatePositionFromPercentage = (percentage: number) => {
@@ -882,6 +884,89 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                                 />
                                 <Label htmlFor="pressure" className="text-xs">Pressure</Label>
                               </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Air Orientation - Solo para vents con inflow */}
+                        {type === 'vent' && isElementOpen && airDirection === 'inflow' && (
+                          <div className="space-y-2 border-t pt-4">
+                            <Label className="text-xs text-slate-600">Air Orientation</Label>
+                            
+                            {/* Vertical Angle */}
+                            <div className="space-y-2">
+                              <div className="flex items-center space-x-1">
+                                <Label htmlFor="vertical-angle" className="text-xs text-slate-600">
+                                  Vertical Angle
+                                </Label>
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <HelpCircle className="h-3 w-3 text-slate-400 hover:text-slate-600 cursor-help" />
+                                    </TooltipTrigger>
+                                    <TooltipContent side="right" sideOffset={5}>
+                                      <p className="text-xs max-w-48">
+                                        Vertical airflow direction: positive values for upward flow (+45°), negative for downward flow (-45°).
+                                      </p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <Input
+                                  id="vertical-angle"
+                                  type="number"
+                                  min="-45"
+                                  max="45"
+                                  step="1"
+                                  value={verticalAngle}
+                                  onChange={(e) => setVerticalAngle(Number(e.target.value))}
+                                  className="h-8 text-sm"
+                                  placeholder="0"
+                                />
+                                <span className="text-xs text-slate-500">degrees</span>
+                              </div>
+                              <p className="text-xs text-gray-500">
+                                Up +45° to Down -45°
+                              </p>
+                            </div>
+
+                            {/* Horizontal Angle */}
+                            <div className="space-y-2">
+                              <div className="flex items-center space-x-1">
+                                <Label htmlFor="horizontal-angle" className="text-xs text-slate-600">
+                                  Horizontal Angle
+                                </Label>
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <HelpCircle className="h-3 w-3 text-slate-400 hover:text-slate-600 cursor-help" />
+                                    </TooltipTrigger>
+                                    <TooltipContent side="right" sideOffset={5}>
+                                      <p className="text-xs max-w-48">
+                                        Horizontal airflow direction: negative values for left flow (-45°), positive for right flow (+45°).
+                                      </p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <Input
+                                  id="horizontal-angle"
+                                  type="number"
+                                  min="-45"
+                                  max="45"
+                                  step="1"
+                                  value={horizontalAngle}
+                                  onChange={(e) => setHorizontalAngle(Number(e.target.value))}
+                                  className="h-8 text-sm"
+                                  placeholder="0"
+                                />
+                                <span className="text-xs text-slate-500">degrees</span>
+                              </div>
+                              <p className="text-xs text-gray-500">
+                                Left -45° to Right +45°
+                              </p>
                             </div>
                           </div>
                         )}
