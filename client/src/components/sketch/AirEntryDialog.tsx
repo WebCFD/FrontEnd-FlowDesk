@@ -631,7 +631,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                             <SelectContent>
                               <SelectItem value="inflow">
                                 <div className="flex items-center space-x-2">
-                                  <div className="flex items-center space-x-1">
+                                  <div className="flex items-center space-x-0.5">
                                     <span className="text-green-600 text-lg font-bold">→</span>
                                     <span style={{ fontSize: '12px', filter: 'grayscale(100%)' }}>🏠</span>
                                   </div>
@@ -640,7 +640,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               </SelectItem>
                               <SelectItem value="outflow">
                                 <div className="flex items-center space-x-2">
-                                  <div className="flex items-center space-x-1">
+                                  <div className="flex items-center space-x-0.5">
                                     <span style={{ fontSize: '12px', filter: 'grayscale(100%)' }}>🏠</span>
                                     <span className="text-red-600 text-lg font-bold">→</span>
                                   </div>
