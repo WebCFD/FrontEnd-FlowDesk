@@ -553,21 +553,6 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                         </div>
                       </div>
                     </div>
-                    {type !== 'door' && (
-                      <div className="space-y-2">
-                        <Label htmlFor="distance" className="text-xs text-slate-600">Distance to Floor</Label>
-                        <div className="flex items-center space-x-2">
-                          <Input
-                            id="distance"
-                            type="number"
-                            value={(values as { distanceToFloor?: number }).distanceToFloor || 0}
-                            onChange={(e) => setValues(prev => ({ ...prev, distanceToFloor: Number(e.target.value) }))}
-                            className="h-8 text-sm w-full"
-                          />
-                          <span className="text-xs text-slate-500">cm</span>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
 
