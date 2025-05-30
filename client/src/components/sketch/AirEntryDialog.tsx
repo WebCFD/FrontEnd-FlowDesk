@@ -20,7 +20,6 @@ import {
 import { HelpCircle } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useRoomStore } from "@/lib/store/room-store";
-import { store } from "@/lib/store/room-store";
 
 // Props para entrada de aire (compatibilidad hacia atrás)
 interface AirEntryDialogProps {
@@ -112,7 +111,7 @@ const wallDefaults = {
 
 export default function AirEntryDialog(props: PropertyDialogProps) {
   const { type, isOpen: dialogOpen, onClose, isEditing = false } = props;
-  const { updateAirEntryProperties } = useRoomStore();
+  const { updateAirEntryProperties, floors } = useRoomStore();
   
   // Estado unificado para manejar tanto dimensiones como temperatura
   const [values, setValues] = useState(getDefaultValues());
@@ -611,7 +610,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                             if (!airEntryProps.currentFloor) return `${type}_1`;
                             
                             // Obtener todas las air entries del piso actual
-                            const currentFloorData = store.getState().floors[airEntryProps.currentFloor];
+                            const currentFloorData = floors[airEntryProps.currentFloor];
                             if (!currentFloorData) return `${type}_1`;
                             
                             // Contar elementos del mismo tipo hasta el índice actual
