@@ -3121,6 +3121,38 @@ export default function Canvas2D({
         : undefined,
     };
 
+    // Generate unique ID with floor format
+    const floorPrefix = currentFloor === 'ground' ? '0F' : 
+                       currentFloor === 'first' ? '1F' :
+                       currentFloor === 'second' ? '2F' :
+                       currentFloor === 'third' ? '3F' :
+                       currentFloor === 'fourth' ? '4F' :
+                       currentFloor === 'fifth' ? '5F' : '0F';
+    
+    const typeCounters = { window: 1, door: 1, vent: 1 };
+    
+    // Count existing entries to get next available number
+    airEntries.forEach(entry => {
+      const anyEntry = entry as any;
+      if (anyEntry.id) {
+        // Look for new format: window_0F_1
+        let match = anyEntry.id.match(new RegExp(`^(window|door|vent)_${floorPrefix}_(\\d+)$`));
+        
+        // If not found, look for old format: window_1 (for compatibility)
+        if (!match) {
+          match = anyEntry.id.match(/^(window|door|vent)_(\d+)$/);
+        }
+        
+        if (match) {
+          const type = match[1] as keyof typeof typeCounters;
+          const num = parseInt(match[2]);
+          if (typeCounters[type] <= num) {
+            typeCounters[type] = num + 1;
+          }
+        }
+      }
+    });
+
     const newAirEntry: AirEntry = {
       type: currentAirEntry,
       position: calculatePositionAlongWall(
@@ -3136,7 +3168,8 @@ export default function Canvas2D({
       line: newAirEntryDetails.line,
       lineId: newAirEntryDetails.line.id,
       ...(data.properties && { properties: data.properties }),
-    };
+      id: `${currentAirEntry}_${floorPrefix}_${typeCounters[currentAirEntry]}`,
+    } as any;
 
     onAirEntriesUpdate?.([...airEntries, newAirEntry]);
     setNewAirEntryDetails(null);
