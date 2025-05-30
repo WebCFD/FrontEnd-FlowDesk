@@ -593,7 +593,8 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                       return wallContext ? (
                         <div className="p-2 bg-gray-100 rounded text-xs text-gray-600">
                           <div>Floor: {wallContext.floorName}</div>
-                          <div>{type === 'window' ? 'Window' : type === 'door' ? 'Door' : 'Vent'} ID: {wallContext.wallId}</div>
+                          <div>{type === 'window' ? 'Window' : type === 'door' ? 'Door' : 'Vent'} ID: {type}_{((airEntryProps.airEntryIndex || 0) + 1)}</div>
+                          <div>Wall ID: {wallContext.wallId}</div>
                           {(() => {
                             // Calcular coordenadas del centro de la ventana
                             const { wallStart, wallEnd } = wallContext;
