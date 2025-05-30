@@ -80,6 +80,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   const [hasBeenDragged, setHasBeenDragged] = useState(true); // Activar desde el inicio
   const draggingRef = useRef(false);
   
+  // Estado para las coordenadas del elemento en el canvas
+  const [elementPosition, setElementPosition] = useState({ x: 0, y: 0 });
+  
 
   function getDefaultValues() {
     // Obtener valores iniciales según el tipo de props
