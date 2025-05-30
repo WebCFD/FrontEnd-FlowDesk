@@ -276,6 +276,7 @@ interface Canvas2DProps {
   floorText: string;
   isMultifloor: boolean;
   ceilingHeight?: number;
+  defaultWallTemperature?: number;
   onLinesUpdate?: (lines: Line[]) => void;
   onWallsUpdate?: (walls: Wall[]) => void;
   onAirEntriesUpdate?: (airEntries: AirEntry[]) => void;
@@ -296,6 +297,7 @@ export default function Canvas2D({
   floorText,
   isMultifloor,
   ceilingHeight = 2.4,
+  defaultWallTemperature = 20,
   onLinesUpdate,
   onWallsUpdate,
   onAirEntriesUpdate,
@@ -1676,7 +1678,7 @@ export default function Canvas2D({
 
         // Create wall automatically when line is completed
         if (onWallsUpdate) {
-          const newWall = createWallFromLine(lineWithId, floorText, walls, 20.0);
+          const newWall = createWallFromLine(lineWithId, floorText, walls, defaultWallTemperature);
           const newWalls = [...(walls || []), newWall];
           onWallsUpdate(newWalls);
         }

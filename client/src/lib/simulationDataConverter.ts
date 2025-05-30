@@ -472,13 +472,14 @@ export function findWallForLine(walls: Wall[], line: Line): Wall | undefined {
 export function syncWallsWithLines(
   lines: Line[], 
   existingWalls: Wall[], 
-  floorName: string
+  floorName: string,
+  defaultTemperature: number = 20
 ): Wall[] {
   // Step 1: Remove orphaned walls (walls that don't have corresponding lines)
   const validWalls = removeOrphanedWalls(existingWalls, lines);
   
   // Step 2: Add missing walls (lines that don't have corresponding walls)
-  const syncedWalls = addMissingWalls(lines, validWalls, floorName);
+  const syncedWalls = addMissingWalls(lines, validWalls, floorName, defaultTemperature);
   
   return syncedWalls;
 }

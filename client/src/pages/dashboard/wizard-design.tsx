@@ -1836,7 +1836,7 @@ export default function WizardDesign() {
         setHasClosedContour(floorData.hasClosedContour);
         
         // Sincronizar las paredes
-        syncWallsForCurrentFloor();
+        syncWallsForCurrentFloor(defaultWallTemperature);
       });
       
       // Configurar el estado adicional
