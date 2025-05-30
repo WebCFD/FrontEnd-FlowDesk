@@ -181,95 +181,7 @@ function normalizePosition2DTo3D(point2D: Point2D, zValue: number = 0): Position
   };
 }
 
-/**
- * Asigna air entries a sus paredes correspondientes basándose en la posición
- */
-function assignAirEntriesToWalls(
-  airEntries: AirEntry[],
-  walls: Wall[]
-): Map<string, AirEntryExport[]> {
-  const wallAirEntries = new Map<string, AirEntryExport[]>();
 
-  // Inicializar mapa con arrays vacíos para cada pared
-  walls.forEach(wall => {
-    wallAirEntries.set(wall.id, []);
-  });
-
-  // Asignar cada air entry a la pared más cercana
-  airEntries.forEach((entry, index) => {
-    let closestWall: Wall | null = null;
-    let minDistance = Infinity;
-
-    // Encontrar la pared más cercana al air entry
-    walls.forEach(wall => {
-      const distance = distancePointToLine(
-        entry.position,
-        { start: wall.startPoint, end: wall.endPoint }
-      );
-
-      if (distance < minDistance) {
-        minDistance = distance;
-        closestWall = wall;
-      }
-    });
-
-    if (closestWall && minDistance < 50) { // Tolerancia de 50 píxeles
-      const normalizedPosition = normalizePosition2DTo3D(
-        entry.position, 
-        (entry.dimensions.distanceToFloor || 1) * PIXELS_TO_CM
-      );
-
-      const airEntryExport: AirEntryExport = {
-        id: `${entry.type}_${index}`,
-        type: entry.type,
-        size: {
-          width: entry.dimensions.width * PIXELS_TO_CM,
-          height: entry.dimensions.height * PIXELS_TO_CM
-        },
-        position: normalizedPosition
-      };
-
-      const wallId = closestWall.id;
-      const existingEntries = wallAirEntries.get(wallId) || [];
-      wallAirEntries.set(wallId, [...existingEntries, airEntryExport]);
-    }
-  });
-
-  return wallAirEntries;
-}
-
-/**
- * Calcula la distancia de un punto a una línea
- */
-function distancePointToLine(point: Point2D, line: { start: Point2D; end: Point2D }): number {
-  const A = point.x - line.start.x;
-  const B = point.y - line.start.y;
-  const C = line.end.x - line.start.x;
-  const D = line.end.y - line.start.y;
-
-  const dot = A * C + B * D;
-  const lenSq = C * C + D * D;
-  let param = -1;
-  if (lenSq !== 0) {
-    param = dot / lenSq;
-  }
-
-  let xx, yy;
-  if (param < 0) {
-    xx = line.start.x;
-    yy = line.start.y;
-  } else if (param > 1) {
-    xx = line.end.x;
-    yy = line.end.y;
-  } else {
-    xx = line.start.x + param * C;
-    yy = line.start.y + param * D;
-  }
-
-  const dx = point.x - xx;
-  const dy = point.y - yy;
-  return Math.sqrt(dx * dx + dy * dy);
-}
 
 /**
  * Convierte los datos del diseño en un formato JSON exportable para simulación
@@ -307,16 +219,47 @@ export function generateSimulationData(
       floorData.name || floorName
     );
     
-    // Asignar air entries a sus paredes correspondientes
-    const wallAirEntriesMap = assignAirEntriesToWalls(floorData.airEntries, synchronizedWalls);
-    
     const walls: WallExport[] = synchronizedWalls.map((wall) => {
+      // Encontrar air entries que pertenecen a esta pared
+      const wallAirEntries: AirEntryExport[] = [];
+      
+      floorData.airEntries.forEach((entry, index) => {
+        // Calcular distancia del air entry a esta pared
+        const distance = Math.abs(
+          ((wall.endPoint.y - wall.startPoint.y) * entry.position.x) -
+          ((wall.endPoint.x - wall.startPoint.x) * entry.position.y) +
+          (wall.endPoint.x * wall.startPoint.y) -
+          (wall.endPoint.y * wall.startPoint.x)
+        ) / Math.sqrt(
+          Math.pow(wall.endPoint.y - wall.startPoint.y, 2) +
+          Math.pow(wall.endPoint.x - wall.startPoint.x, 2)
+        );
+        
+        // Si el air entry está cerca de esta pared (tolerancia de 50 píxeles)
+        if (distance < 50) {
+          const normalizedPosition = normalizePosition2DTo3D(
+            entry.position, 
+            (entry.dimensions.distanceToFloor || 1) * PIXELS_TO_CM
+          );
+          
+          wallAirEntries.push({
+            id: `${entry.type}_${index}`,
+            type: entry.type,
+            size: {
+              width: entry.dimensions.width * PIXELS_TO_CM,
+              height: entry.dimensions.height * PIXELS_TO_CM
+            },
+            position: normalizedPosition
+          });
+        }
+      });
+      
       return {
         id: wall.id,
         start: normalizeCoordinates({ x: wall.startPoint.x, y: wall.startPoint.y }),
         end: normalizeCoordinates({ x: wall.endPoint.x, y: wall.endPoint.y }),
         temp: wall.properties.temperature,
-        airEntries: wallAirEntriesMap.get(wall.id) || []
+        airEntries: wallAirEntries
       };
     });
 
