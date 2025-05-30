@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState, useEffect, useRef } from "react";
 
 // Props para entrada de aire (compatibilidad hacia atrás)
@@ -77,7 +79,7 @@ const wallDefaults = {
 };
 
 export default function AirEntryDialog(props: PropertyDialogProps) {
-  const { type, isOpen, onClose, isEditing = false } = props;
+  const { type, isOpen: dialogOpen, onClose, isEditing = false } = props;
   
   // Estado unificado para manejar tanto dimensiones como temperatura
   const [values, setValues] = useState(getDefaultValues());
@@ -99,6 +101,13 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   
   // Estado para la distancia al suelo
   const [distanceToFloor, setDistanceToFloor] = useState(0);
+  
+  // Estados para condiciones de simulación
+  const [isElementOpen, setIsElementOpen] = useState(true);
+  const [elementTemperature, setElementTemperature] = useState(20);
+  const [airDirection, setAirDirection] = useState<'inflow' | 'outflow'>('inflow');
+  const [intensityLevel, setIntensityLevel] = useState<'high' | 'medium' | 'low' | 'custom'>('medium');
+  const [customIntensity, setCustomIntensity] = useState(0.5);
 
   // Función para calcular la nueva posición basada en el porcentaje del wall
   const calculatePositionFromPercentage = (percentage: number) => {
@@ -198,9 +207,20 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     return ceilingHeight / 2;
   };
 
+  // Función para obtener la temperatura inicial de la pared
+  const getInitialWallTemperature = () => {
+    if (props.type === 'wall') {
+      return (props as WallPropertiesDialogProps).initialValues?.temperature || 20;
+    }
+    // Para air entries, intentar obtener la temperatura de la pared asociada
+    // Por ahora retornamos un valor por defecto, pero esto se puede mejorar
+    // cuando tengamos acceso a los datos de las paredes
+    return 20;
+  };
+
   // Inicializar valores cuando se abre el diálogo
   useEffect(() => {
-    if (isOpen && props.type !== 'wall') {
+    if (dialogOpen && props.type !== 'wall') {
       if (isEditing && props.type !== 'wall') {
         // En modo edición, usar los valores actuales del elemento
         const airEntryProps = props as AirEntryDialogProps;
@@ -230,7 +250,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         setDistanceToFloor(initialDistToFloor);
       }
     }
-  }, [isOpen, props.type, isEditing]);
+  }, [dialogOpen, props.type, isEditing]);
 
   function getDefaultValues() {
     // Obtener valores iniciales según el tipo de props
