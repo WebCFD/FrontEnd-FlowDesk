@@ -786,7 +786,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                       <p className="text-xs text-gray-500">
                         {isElementOpen 
                           ? "Temperature of air entering the room"
-                          : "Temperature on the element surface"
+                          : `Temperature on the ${type === 'window' ? 'window' : type === 'door' ? 'door' : 'vent'} surface`
                         }
                       </p>
                     </div>
