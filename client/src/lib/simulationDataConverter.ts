@@ -306,7 +306,7 @@ export function generateSimulationData(
           
           // Crear objeto base
           const airEntryBase = {
-            id: `${entry.type}_${index}`,
+            id: `${entry.type}_${index + 1}`,
             type: entry.type as "window" | "door" | "vent",
             position: {
               x: parseFloat(cmToM(normalizedXY.x).toFixed(5)),
