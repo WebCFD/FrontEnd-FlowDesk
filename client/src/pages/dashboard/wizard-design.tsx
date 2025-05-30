@@ -31,6 +31,7 @@ import { Slider } from "@/components/ui/slider";
 import {
   Tooltip,
   TooltipContent,
+  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
@@ -1035,9 +1036,24 @@ export default function WizardDesign() {
                   
                   {/* Wall Temperature */}
                   <div className="space-y-2 mt-4">
-                    <Label htmlFor="default-wall-temp" className="text-sm font-medium">
-                      Wall Temperature
-                    </Label>
+                    <TooltipProvider>
+                      <div className="flex items-center gap-1">
+                        <Label htmlFor="default-wall-temp" className="text-sm font-medium">
+                          Wall Temperature
+                        </Label>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Info className="w-3 h-3 text-gray-400" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="max-w-64">
+                              Default temperature assigned to new walls when created. 
+                              You can change individual wall temperatures by double-clicking on any wall.
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                    </TooltipProvider>
                     <div className="flex items-center gap-2">
                       <Input
                         id="default-wall-temp"
@@ -1054,13 +1070,9 @@ export default function WizardDesign() {
                         max={100}
                         step={0.5}
                         placeholder="20"
-                        title="Default temperature assigned to new walls when created. You can change individual wall temperatures by double-clicking on any wall."
                       />
                       <span className="text-sm text-gray-500">°C</span>
                     </div>
-                    <p className="text-xs text-gray-400">
-                      Double-click any wall to change its temperature
-                    </p>
                   </div>
                 </div>
 
