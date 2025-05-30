@@ -325,8 +325,8 @@ export function generateSimulationData(
             airEntryBase.simulation = {
               state: (entryProps?.state as "open" | "closed") || "closed",
               temperature: entryProps?.temperature || 20,
-              flowIntensity: entryProps?.flowIntensity || "low",
-              airDirection: (entryProps?.airOrientation as "inflow" | "outflow") || "inflow"
+              airDirection: (entryProps?.airOrientation as "inflow" | "outflow") || "inflow",
+              flowIntensity: entryProps?.flowIntensity || "low"
             };
             
             // Agregar valor custom si aplica
@@ -342,8 +342,8 @@ export function generateSimulationData(
             airEntryBase.simulation = {
               flowType: (entryProps?.flowType as "Air Mass Flow" | "Air Velocity" | "Pressure") || "Air Mass Flow",
               flowValue: entryProps?.flowValue || 50,
-              flowIntensity: entryProps?.flowIntensity || "medium",
-              airDirection: (entryProps?.airOrientation as "inflow" | "outflow") || "inflow"
+              airDirection: (entryProps?.airOrientation as "inflow" | "outflow") || "inflow",
+              flowIntensity: entryProps?.flowIntensity || "medium"
             };
             
             // Agregar valor custom si aplica para vents también
