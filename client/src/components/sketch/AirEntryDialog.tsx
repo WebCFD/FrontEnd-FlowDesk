@@ -36,6 +36,8 @@ interface AirEntryDialogProps {
     clickPosition: { x: number; y: number };
     ceilingHeight: number;
   };
+  // Callback para actualización en tiempo real
+  onPositionUpdate?: (newPosition: { x: number; y: number }) => void;
 }
 
 // Props para propiedades de pared
@@ -97,6 +99,30 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   
   // Estado para la distancia al suelo
   const [distanceToFloor, setDistanceToFloor] = useState(0);
+
+  // Función para calcular la nueva posición basada en el porcentaje del wall
+  const calculatePositionFromPercentage = (percentage: number) => {
+    if (props.type === 'wall' || !('wallContext' in props) || !props.wallContext) return null;
+    
+    const { wallStart, wallEnd } = props.wallContext;
+    const t = percentage / 100;
+    
+    return {
+      x: wallStart.x + (wallEnd.x - wallStart.x) * t,
+      y: wallStart.y + (wallEnd.y - wallStart.y) * t
+    };
+  };
+
+  // Función para manejar el cambio de posición a lo largo del wall
+  const handleWallPositionChange = (newPercentage: number) => {
+    setWallPosition(newPercentage);
+    
+    // Calcular la nueva posición y actualizar en tiempo real
+    const newPosition = calculatePositionFromPercentage(newPercentage);
+    if (newPosition && props.type !== 'wall' && 'onPositionUpdate' in props && props.onPositionUpdate) {
+      props.onPositionUpdate(newPosition);
+    }
+  };
 
   // Función para calcular la posición inicial a lo largo del wall basada en el clic
   const calculateInitialWallPosition = () => {
@@ -385,7 +411,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           min="0"
                           max="100"
                           value={wallPosition}
-                          onChange={(e) => setWallPosition(Number(e.target.value))}
+                          onChange={(e) => handleWallPositionChange(Number(e.target.value))}
                           className="h-8 text-sm"
                           placeholder="50"
                         />
@@ -399,7 +425,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                   
                   <button
                     type="button"
-                    onClick={() => setWallPosition(50)}
+                    onClick={() => handleWallPositionChange(50)}
                     className="mt-2 text-xs text-blue-600 hover:text-blue-700 underline"
                   >
                     Auto-center on wall

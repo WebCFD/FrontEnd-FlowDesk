@@ -3230,6 +3230,24 @@ export default function Canvas2D({
             clickPosition: { x: editingAirEntry.entry.position.x, y: editingAirEntry.entry.position.y },
             ceilingHeight: ceilingHeight * 100 // Convert to cm
           }}
+          onPositionUpdate={(newPosition) => {
+            // Actualizar la posición del Air Entry en tiempo real
+            const updatedAirEntries = [...airEntries];
+            updatedAirEntries[editingAirEntry.index] = {
+              ...editingAirEntry.entry,
+              position: newPosition
+            };
+            onAirEntriesUpdate?.(updatedAirEntries);
+            
+            // También actualizar el estado local para que el diálogo mantenga la referencia correcta
+            setEditingAirEntry({
+              ...editingAirEntry,
+              entry: {
+                ...editingAirEntry.entry,
+                position: newPosition
+              }
+            });
+          }}
         />
       )}
       {/* Add new dialog for creating air entries */}
