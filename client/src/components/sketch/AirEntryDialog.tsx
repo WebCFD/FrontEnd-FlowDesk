@@ -497,18 +497,18 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           type="number"
                           min="0"
                           max="100"
-                          step="0.1"
-                          value={parseFloat(wallPosition.toFixed(1))}
+                          step="1"
+                          value={parseFloat(wallPosition.toFixed(2))}
                           onChange={(e) => {
                             const value = parseFloat(e.target.value);
                             if (!isNaN(value)) {
-                              // Permitir hasta 2 decimales en entrada, pero redondear a 1 decimal para almacenamiento
-                              const roundedValue = Math.round(value * 10) / 10;
+                              // Permitir hasta 3 decimales en entrada, pero redondear a 2 decimales para almacenamiento
+                              const roundedValue = Math.round(value * 100) / 100;
                               handleWallPositionChange(roundedValue);
                             }
                           }}
                           className="h-8 text-sm"
-                          placeholder="50.0"
+                          placeholder="50.00"
                         />
                         <span className="text-xs text-slate-500">%</span>
                       </div>
