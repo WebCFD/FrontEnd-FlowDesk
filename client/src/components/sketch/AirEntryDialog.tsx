@@ -107,6 +107,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   // Estado para la posición a lo largo del wall (0-100%)
   const [wallPosition, setWallPosition] = useState(50);
   
+  // Estado para el tipo de forma (rectangular/circular)
+  const [shapeType, setShapeType] = useState<'rectangular' | 'circular'>('rectangular');
+  
 
   
   // Estado para la distancia al suelo
@@ -585,35 +588,138 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                 {/* 2. DIMENSIONS SECTION */}
                 <div className="border rounded-lg p-4 bg-slate-50/50">
                   <h4 className="font-medium text-sm mb-4 text-slate-700 border-b border-slate-200 pb-2">Dimensions</h4>
-                  <div className="space-y-3">
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-2">
-                        <Label htmlFor="width" className="text-xs text-slate-600">Width</Label>
-                        <div className="flex items-center space-x-2">
-                          <Input
-                            id="width"
-                            type="number"
-                            value={(values as { width: number }).width}
-                            onChange={(e) => setValues(prev => ({ ...prev, width: Number(e.target.value) }))}
-                            className="h-8 text-sm"
-                          />
-                          <span className="text-xs text-slate-500">cm</span>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="height" className="text-xs text-slate-600">Height</Label>
-                        <div className="flex items-center space-x-2">
-                          <Input
-                            id="height"
-                            type="number"
-                            value={(values as { height: number }).height}
-                            onChange={(e) => setValues(prev => ({ ...prev, height: Number(e.target.value) }))}
-                            className="h-8 text-sm"
-                          />
-                          <span className="text-xs text-slate-500">cm</span>
+                  
+                  {/* Shape selector - only for windows and vents, not doors */}
+                  {type !== 'door' && (
+                    <div className="mb-4">
+                      <div className="flex items-center gap-4">
+                        <span className="text-xs text-slate-600">Shape:</span>
+                        <div className="flex items-center gap-4">
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="shape"
+                              value="rectangular"
+                              checked={shapeType === 'rectangular'}
+                              onChange={() => setShapeType('rectangular')}
+                              className="text-blue-600"
+                            />
+                            <span className="text-xs text-slate-600">Rectangular</span>
+                          </label>
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="shape"
+                              value="circular"
+                              checked={shapeType === 'circular'}
+                              onChange={() => setShapeType('circular')}
+                              className="text-blue-600"
+                            />
+                            <span className="text-xs text-slate-600">Circular</span>
+                          </label>
                         </div>
                       </div>
                     </div>
+                  )}
+                  
+                  <div className="space-y-3">
+                    {/* Rectangular dimensions */}
+                    {(type === 'door' || shapeType === 'rectangular') && (
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Label htmlFor="width" className="text-xs text-slate-600">Width</Label>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <HelpCircle className="h-3 w-3 text-slate-400 hover:text-slate-600 cursor-help" />
+                                </TooltipTrigger>
+                                <TooltipContent side="right" sideOffset={5}>
+                                  <p className="text-xs max-w-48">
+                                    Horizontal dimension of the element opening.
+                                  </p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Input
+                              id="width"
+                              type="number"
+                              value={(values as { width: number }).width}
+                              onChange={(e) => setValues(prev => ({ ...prev, width: Number(e.target.value) }))}
+                              className="h-8 text-sm"
+                            />
+                            <span className="text-xs text-slate-500">cm</span>
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Label htmlFor="height" className="text-xs text-slate-600">Height</Label>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <HelpCircle className="h-3 w-3 text-slate-400 hover:text-slate-600 cursor-help" />
+                                </TooltipTrigger>
+                                <TooltipContent side="right" sideOffset={5}>
+                                  <p className="text-xs max-w-48">
+                                    Vertical dimension of the element opening.
+                                  </p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Input
+                              id="height"
+                              type="number"
+                              value={(values as { height: number }).height}
+                              onChange={(e) => setValues(prev => ({ ...prev, height: Number(e.target.value) }))}
+                              className="h-8 text-sm"
+                            />
+                            <span className="text-xs text-slate-500">cm</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Circular dimensions */}
+                    {type !== 'door' && shapeType === 'circular' && (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="diameter" className="text-xs text-slate-600">Diameter</Label>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <HelpCircle className="h-3 w-3 text-slate-400 hover:text-slate-600 cursor-help" />
+                              </TooltipTrigger>
+                              <TooltipContent side="right" sideOffset={5}>
+                                <p className="text-xs max-w-48">
+                                  Diameter of the circular element opening.
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Input
+                            id="diameter"
+                            type="number"
+                            value={(values as { width: number }).width}
+                            onChange={(e) => {
+                              const diameter = Number(e.target.value);
+                              setValues(prev => ({
+                                ...prev,
+                                width: diameter,
+                                height: diameter // Set height equal to width for circular elements
+                              }));
+                            }}
+                            className="h-8 text-sm"
+                          />
+                          <span className="text-xs text-slate-500">cm</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
