@@ -94,11 +94,32 @@ interface Surface {
 
 interface AirEntryExport {
   id: string;
-  type: string;
-  size: Size;
-  position: Position;
-  normal: Normal;
-  state?: string;
+  type: "window" | "door" | "vent";
+  position: {
+    x: number;
+    y: number;
+    z: number;
+    normal: {
+      x: number;
+      y: number;
+      z: number;
+    };
+  };
+  dimensions: {
+    width: number;
+    height: number;
+    shape: "rectangular" | "circular";
+  };
+  simulation: {
+    // Propiedades comunes
+    state?: "open" | "closed";
+    temperature?: number;
+    // Propiedades específicas para vents
+    flowType?: "Air Mass Flow" | "Air Velocity" | "Pressure";
+    flowValue?: number;
+    flowIntensity?: "low" | "medium" | "high";
+    airOrientation?: "inflow" | "outflow";
+  };
 }
 
 interface StairExport {
@@ -259,20 +280,45 @@ export function generateSimulationData(
             z: 0 // Normal en el plano XY
           };
           
-          wallAirEntries.push({
+          // Crear objeto base
+          const airEntryBase = {
             id: `${entry.type}_${index}`,
-            type: entry.type,
-            size: {
-              width: entry.dimensions.width / 100, // Convertir cm a metros
-              height: entry.dimensions.height / 100 // Convertir cm a metros
-            },
+            type: entry.type as "window" | "door" | "vent",
             position: {
-              x: cmToM(normalizedXY.x), // Convertir coordenadas X,Y a metros
-              y: cmToM(normalizedXY.y), // Convertir coordenadas X,Y a metros
-              z: heightInMeters
+              x: cmToM(normalizedXY.x),
+              y: cmToM(normalizedXY.y),
+              z: heightInMeters,
+              normal: wallNormal
             },
-            normal: wallNormal // Vector normal a la superficie de la pared
-          });
+            dimensions: {
+              width: entry.dimensions.width / 100,
+              height: entry.dimensions.height / 100,
+              shape: (entry.dimensions.shape || "rectangular") as "rectangular" | "circular"
+            },
+            simulation: {} as any
+          };
+
+          // Agregar propiedades específicas por tipo
+          if (entry.type === "window" || entry.type === "door") {
+            airEntryBase.simulation = {
+              state: (entry.properties?.state as "open" | "closed") || "closed",
+              temperature: entry.properties?.temperature || 20
+            };
+            
+            // Las puertas solo pueden ser rectangulares
+            if (entry.type === "door") {
+              airEntryBase.dimensions.shape = "rectangular";
+            }
+          } else if (entry.type === "vent") {
+            airEntryBase.simulation = {
+              flowType: (entry.properties?.flowType as "Air Mass Flow" | "Air Velocity" | "Pressure") || "Air Mass Flow",
+              flowValue: entry.properties?.flowValue || 50,
+              flowIntensity: (entry.properties?.flowIntensity as "low" | "medium" | "high") || "medium",
+              airOrientation: (entry.properties?.airOrientation as "inflow" | "outflow") || "inflow"
+            };
+          }
+
+          wallAirEntries.push(airEntryBase);
         }
       });
       
