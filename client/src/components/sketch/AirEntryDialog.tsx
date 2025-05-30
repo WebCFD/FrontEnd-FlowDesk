@@ -137,13 +137,36 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   // Inicializar valores cuando se abre el diálogo
   useEffect(() => {
     if (isOpen && props.type !== 'wall') {
-      const initialWallPos = calculateInitialWallPosition();
-      const initialDistToFloor = calculateInitialDistanceToFloor();
-      
-      setWallPosition(initialWallPos);
-      setDistanceToFloor(initialDistToFloor);
+      if (isEditing && props.type !== 'wall') {
+        // En modo edición, usar los valores actuales del elemento
+        const airEntryProps = props as AirEntryDialogProps;
+        if (airEntryProps.initialValues) {
+          setDistanceToFloor(airEntryProps.initialValues.distanceToFloor || 0);
+          // Para calcular la posición en el wall basada en la posición actual
+          if (airEntryProps.wallContext) {
+            const { wallStart, wallEnd, clickPosition } = airEntryProps.wallContext;
+            const wallLength = Math.sqrt(
+              Math.pow(wallEnd.x - wallStart.x, 2) + Math.pow(wallEnd.y - wallStart.y, 2)
+            );
+            const clickDistance = Math.sqrt(
+              Math.pow(clickPosition.x - wallStart.x, 2) + Math.pow(clickPosition.y - wallStart.y, 2)
+            );
+            const percentage = Math.min(100, Math.max(0, (clickDistance / wallLength) * 100));
+            setWallPosition(percentage);
+          } else {
+            setWallPosition(50); // Default center
+          }
+        }
+      } else {
+        // En modo creación, calcular valores iniciales
+        const initialWallPos = calculateInitialWallPosition();
+        const initialDistToFloor = calculateInitialDistanceToFloor();
+        
+        setWallPosition(initialWallPos);
+        setDistanceToFloor(initialDistToFloor);
+      }
     }
-  }, [isOpen, props.type]);
+  }, [isOpen, props.type, isEditing]);
 
   function getDefaultValues() {
     // Obtener valores iniciales según el tipo de props
