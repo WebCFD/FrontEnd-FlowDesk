@@ -359,6 +359,14 @@ export default function Canvas2D({
     type: "window" | "door" | "vent";
     position: Point;
     line: Line;
+    wallContext?: {
+      wallId: string;
+      floorName: string;
+      wallStart: { x: number; y: number };
+      wallEnd: { x: number; y: number };
+      clickPosition: { x: number; y: number };
+      ceilingHeight: number;
+    };
   } | null>(null);
   const [editingWall, setEditingWall] = useState<Wall | null>(null);
   const [wallPropertiesDialogOpen, setWallPropertiesDialogOpen] = useState(false);

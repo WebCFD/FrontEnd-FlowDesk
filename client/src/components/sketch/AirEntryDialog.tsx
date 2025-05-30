@@ -100,9 +100,12 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
   // Función para calcular la posición inicial a lo largo del wall basada en el clic
   const calculateInitialWallPosition = () => {
-    if (!props.wallContext || props.type === 'wall') return 50;
+    if (props.type === 'wall') return 50;
     
-    const { wallStart, wallEnd, clickPosition } = props.wallContext;
+    const airEntryProps = props as AirEntryDialogProps;
+    if (!airEntryProps.wallContext) return 50;
+    
+    const { wallStart, wallEnd, clickPosition } = airEntryProps.wallContext;
     const wallLength = Math.sqrt(
       Math.pow(wallEnd.x - wallStart.x, 2) + Math.pow(wallEnd.y - wallStart.y, 2)
     );
@@ -117,9 +120,12 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
   // Función para calcular la distancia inicial al suelo
   const calculateInitialDistanceToFloor = () => {
-    if (!props.wallContext || props.type === 'wall') return 0;
+    if (props.type === 'wall') return 0;
     
-    const ceilingHeight = props.wallContext.ceilingHeight;
+    const airEntryProps = props as AirEntryDialogProps;
+    if (!airEntryProps.wallContext) return 0;
+    
+    const ceilingHeight = airEntryProps.wallContext.ceilingHeight;
     
     // Para puertas, distancia = 0 (van al suelo)
     if (type === 'door') return 0;
@@ -137,7 +143,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
       setWallPosition(initialWallPos);
       setDistanceToFloor(initialDistToFloor);
     }
-  }, [isOpen, props.wallContext]);
+  }, [isOpen, props.type]);
 
   function getDefaultValues() {
     // Obtener valores iniciales según el tipo de props
@@ -311,36 +317,66 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                 {/* 1. POSITION SECTION */}
                 <div className="border rounded-lg p-4 bg-slate-50/50">
                   <h4 className="font-medium text-sm mb-3 text-slate-700">Position</h4>
-                  <div className="grid grid-cols-2 gap-3">
+                  
+                  {/* Información del wall (solo lectura) */}
+                  {(() => {
+                    const airEntryProps = props as AirEntryDialogProps;
+                    const wallContext = airEntryProps.wallContext;
+                    
+                    return wallContext ? (
+                      <div className="mb-3 p-2 bg-gray-100 rounded text-xs text-gray-600">
+                        <div>Floor: {wallContext.floorName}</div>
+                        <div>Wall: {wallContext.wallId}</div>
+                      </div>
+                    ) : null;
+                  })()}
+                  
+                  <div className="space-y-3">
+                    {/* Distancia al suelo */}
                     <div className="space-y-2">
-                      <Label htmlFor="pos-x" className="text-xs text-slate-600">X Coordinate</Label>
+                      <Label htmlFor="distance-floor" className="text-xs text-slate-600">
+                        Distance to Floor
+                      </Label>
                       <div className="flex items-center space-x-2">
                         <Input
-                          id="pos-x"
+                          id="distance-floor"
                           type="number"
-                          value={0}
+                          value={distanceToFloor}
+                          onChange={(e) => setDistanceToFloor(Number(e.target.value))}
                           className="h-8 text-sm"
                           placeholder="0"
                         />
                         <span className="text-xs text-slate-500">cm</span>
                       </div>
                     </div>
+                    
+                    {/* Posición a lo largo del wall */}
                     <div className="space-y-2">
-                      <Label htmlFor="pos-y" className="text-xs text-slate-600">Y Coordinate</Label>
+                      <Label htmlFor="wall-position" className="text-xs text-slate-600">
+                        Position along Wall
+                      </Label>
                       <div className="flex items-center space-x-2">
                         <Input
-                          id="pos-y"
+                          id="wall-position"
                           type="number"
-                          value={0}
+                          min="0"
+                          max="100"
+                          value={wallPosition}
+                          onChange={(e) => setWallPosition(Number(e.target.value))}
                           className="h-8 text-sm"
-                          placeholder="0"
+                          placeholder="50"
                         />
-                        <span className="text-xs text-slate-500">cm</span>
+                        <span className="text-xs text-slate-500">%</span>
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        0% = start of wall, 100% = end of wall
                       </div>
                     </div>
                   </div>
+                  
                   <button
                     type="button"
+                    onClick={() => setWallPosition(50)}
                     className="mt-2 text-xs text-blue-600 hover:text-blue-700 underline"
                   >
                     Auto-center on wall
