@@ -303,7 +303,12 @@ export function generateSimulationData(
             airEntryId = anyEntry.id;
           } else {
             // Crear nuevo ID incrementando contador con formato de piso
-            const floorPrefix = index === 0 ? '0F' : `${index}F`;
+            const floorPrefix = floorName === 'ground' ? '0F' : 
+                               floorName === 'first' ? '1F' :
+                               floorName === 'second' ? '2F' :
+                               floorName === 'third' ? '3F' :
+                               floorName === 'fourth' ? '4F' :
+                               floorName === 'fifth' ? '5F' : '0F';
             globalTypeCounts[entry.type as keyof typeof globalTypeCounts]++;
             airEntryId = `${entry.type}_${floorPrefix}_${globalTypeCounts[entry.type as keyof typeof globalTypeCounts]}`;
           }
