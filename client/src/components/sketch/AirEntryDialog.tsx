@@ -535,9 +535,23 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                     
                     {/* Posición a lo largo del wall */}
                     <div className="space-y-2">
-                      <Label htmlFor="wall-position" className="text-xs text-slate-600">
-                        Position along Wall
-                      </Label>
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="wall-position" className="text-xs text-slate-600">
+                          Position along Wall
+                        </Label>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <HelpCircle className="h-3 w-3 text-slate-400 hover:text-slate-600 cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent side="right" sideOffset={5}>
+                              <p className="text-xs max-w-48">
+                                Horizontal position relative to the wall length of the element center. 0% = start of wall, 100% = end of wall.
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
                       <div className="flex items-center space-x-2">
                         <Input
                           id="wall-position"
