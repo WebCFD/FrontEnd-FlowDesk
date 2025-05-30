@@ -843,51 +843,6 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           </Select>
                         </div>
 
-                        {/* Tipo de flujo para vents */}
-                        {type === 'vent' && (
-                          <div className="space-y-2">
-                            <Label className="text-xs text-slate-600">Flow Type</Label>
-                            <div className="flex space-x-4">
-                              <div className="flex items-center space-x-2">
-                                <input
-                                  type="radio"
-                                  id="massflow"
-                                  name="ventMeasurementType"
-                                  value="massflow"
-                                  checked={ventMeasurementType === 'massflow'}
-                                  onChange={(e) => setVentMeasurementType(e.target.value as 'massflow' | 'velocity' | 'pressure')}
-                                  className="w-4 h-4 text-blue-600"
-                                />
-                                <Label htmlFor="massflow" className="text-xs">Mass Flow</Label>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <input
-                                  type="radio"
-                                  id="velocity"
-                                  name="ventMeasurementType"
-                                  value="velocity"
-                                  checked={ventMeasurementType === 'velocity'}
-                                  onChange={(e) => setVentMeasurementType(e.target.value as 'massflow' | 'velocity' | 'pressure')}
-                                  className="w-4 h-4 text-blue-600"
-                                />
-                                <Label htmlFor="velocity" className="text-xs">Velocity</Label>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <input
-                                  type="radio"
-                                  id="pressure"
-                                  name="ventMeasurementType"
-                                  value="pressure"
-                                  checked={ventMeasurementType === 'pressure'}
-                                  onChange={(e) => setVentMeasurementType(e.target.value as 'massflow' | 'velocity' | 'pressure')}
-                                  className="w-4 h-4 text-blue-600"
-                                />
-                                <Label htmlFor="pressure" className="text-xs">Pressure</Label>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
                         {/* Air Orientation - Solo para vents con inflow */}
                         {type === 'vent' && isElementOpen && airDirection === 'inflow' && (
                           <div className="space-y-2 border-t pt-4">
@@ -967,6 +922,51 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               <p className="text-xs text-gray-500">
                                 Left -45° to Right +45°
                               </p>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Tipo de flujo para vents */}
+                        {type === 'vent' && (
+                          <div className="space-y-2">
+                            <Label className="text-xs text-slate-600">Flow Type</Label>
+                            <div className="flex space-x-4">
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="radio"
+                                  id="massflow"
+                                  name="ventMeasurementType"
+                                  value="massflow"
+                                  checked={ventMeasurementType === 'massflow'}
+                                  onChange={(e) => setVentMeasurementType(e.target.value as 'massflow' | 'velocity' | 'pressure')}
+                                  className="w-4 h-4 text-blue-600"
+                                />
+                                <Label htmlFor="massflow" className="text-xs">Mass Flow</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="radio"
+                                  id="velocity"
+                                  name="ventMeasurementType"
+                                  value="velocity"
+                                  checked={ventMeasurementType === 'velocity'}
+                                  onChange={(e) => setVentMeasurementType(e.target.value as 'massflow' | 'velocity' | 'pressure')}
+                                  className="w-4 h-4 text-blue-600"
+                                />
+                                <Label htmlFor="velocity" className="text-xs">Velocity</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="radio"
+                                  id="pressure"
+                                  name="ventMeasurementType"
+                                  value="pressure"
+                                  checked={ventMeasurementType === 'pressure'}
+                                  onChange={(e) => setVentMeasurementType(e.target.value as 'massflow' | 'velocity' | 'pressure')}
+                                  className="w-4 h-4 text-blue-600"
+                                />
+                                <Label htmlFor="pressure" className="text-xs">Pressure</Label>
+                              </div>
                             </div>
                           </div>
                         )}
