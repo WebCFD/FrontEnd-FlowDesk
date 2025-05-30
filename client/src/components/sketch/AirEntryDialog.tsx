@@ -316,17 +316,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
   // Reset values when dialog opens with new type or initialValues
   useEffect(() => {
-    console.log('🔍 AirEntryDialog useEffect triggered:', { 
-      dialogOpen, 
-      type, 
-      isEditing, 
-      initialValuesChanged: !!props.initialValues,
-      airDirection: airDirection,
-      intensityLevel: intensityLevel
-    });
-    
     if (dialogOpen) {
-      console.log('🔄 Resetting values in useEffect');
       setValues(getDefaultValues());
       
       // Load saved simulation properties when editing
@@ -348,12 +338,15 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         
         // Load flow properties for all types
         if (savedProps.flowIntensity) {
-          console.log('🔄 Loading saved flowIntensity:', savedProps.flowIntensity);
           setIntensityLevel(savedProps.flowIntensity);
         }
         if (savedProps.airOrientation) {
-          console.log('🔄 Loading saved airOrientation:', savedProps.airOrientation);
           setAirDirection(savedProps.airOrientation);
+        }
+        
+        // Load custom intensity value for all element types
+        if (savedProps.customIntensityValue !== undefined) {
+          setCustomIntensity(savedProps.customIntensityValue);
         }
         
         // Load vent-specific properties
@@ -367,7 +360,8 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
             };
             setVentMeasurementType(flowTypeMapping[savedProps.flowType] || 'massflow');
           }
-          if (savedProps.flowValue !== undefined) {
+          // For vents, also check flowValue as fallback
+          if (savedProps.flowValue !== undefined && savedProps.customIntensityValue === undefined) {
             setCustomIntensity(savedProps.flowValue);
           }
         }
@@ -957,10 +951,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               </Tooltip>
                             </TooltipProvider>
                           </div>
-                          <Select value={airDirection} onValueChange={(value: 'inflow' | 'outflow') => {
-                            console.log('✅ User changed Air Direction to:', value);
-                            setAirDirection(value);
-                          }}>
+                          <Select value={airDirection} onValueChange={(value: 'inflow' | 'outflow') => setAirDirection(value)}>
                             <SelectTrigger className="h-8 text-sm">
                               <SelectValue placeholder="Select direction" />
                             </SelectTrigger>
@@ -1135,10 +1126,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               </Tooltip>
                             </TooltipProvider>
                           </div>
-                          <Select value={intensityLevel} onValueChange={(value: 'high' | 'medium' | 'low' | 'custom') => {
-                            console.log('✅ User changed Flow Intensity to:', value);
-                            setIntensityLevel(value);
-                          }}>
+                          <Select value={intensityLevel} onValueChange={(value: 'high' | 'medium' | 'low' | 'custom') => setIntensityLevel(value)}>
                             <SelectTrigger className="h-8 text-sm">
                               <SelectValue placeholder="Select intensity" />
                             </SelectTrigger>
