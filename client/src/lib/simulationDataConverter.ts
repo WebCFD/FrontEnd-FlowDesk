@@ -310,22 +310,26 @@ export function generateSimulationData(
             id: `${entry.type}_${index}`,
             type: entry.type as "window" | "door" | "vent",
             position: {
-              x: cmToM(normalizedXY.x),
-              y: cmToM(normalizedXY.y),
-              z: heightInMeters,
-              normal: wallNormal
+              x: parseFloat(cmToM(normalizedXY.x).toFixed(5)),
+              y: parseFloat(cmToM(normalizedXY.y).toFixed(5)),
+              z: parseFloat(heightInMeters.toFixed(5)),
+              normal: {
+                x: parseFloat(wallNormal.x.toFixed(5)),
+                y: parseFloat(wallNormal.y.toFixed(5)),
+                z: parseFloat(wallNormal.z.toFixed(5))
+              }
             },
             dimensions: (() => {
               const shape = ((entry.dimensions as any).shape || "rectangular") as "rectangular" | "circular";
               if (shape === "circular") {
                 return {
-                  diameter: entry.dimensions.width / 100,
+                  diameter: parseFloat((entry.dimensions.width / 100).toFixed(5)),
                   shape: "circular" as const
                 };
               } else {
                 return {
-                  width: entry.dimensions.width / 100,
-                  height: entry.dimensions.height / 100,
+                  width: parseFloat((entry.dimensions.width / 100).toFixed(5)),
+                  height: parseFloat((entry.dimensions.height / 100).toFixed(5)),
                   shape: "rectangular" as const
                 };
               }
@@ -376,8 +380,14 @@ export function generateSimulationData(
       
       return {
         id: wall.id,
-        start: { x: cmToM(startCoords.x), y: cmToM(startCoords.y) },
-        end: { x: cmToM(endCoords.x), y: cmToM(endCoords.y) },
+        start: { 
+          x: parseFloat(cmToM(startCoords.x).toFixed(5)), 
+          y: parseFloat(cmToM(startCoords.y).toFixed(5)) 
+        },
+        end: { 
+          x: parseFloat(cmToM(endCoords.x).toFixed(5)), 
+          y: parseFloat(cmToM(endCoords.y).toFixed(5)) 
+        },
         temp: wall.properties.temperature,
         airEntries: wallAirEntries
       };
