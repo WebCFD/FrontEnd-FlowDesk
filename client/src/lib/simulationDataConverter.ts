@@ -134,7 +134,7 @@ interface AirEntryExport {
     state?: "open" | "closed";
     temperature?: number;
     flowIntensity?: "low" | "medium" | "high" | "custom";
-    airOrientation?: "inflow" | "outflow";
+    airDirection?: "inflow" | "outflow";
     customFlowValue?: number;
     // Propiedades específicas para vents
     flowType?: "Air Mass Flow" | "Air Velocity" | "Pressure";
@@ -326,7 +326,7 @@ export function generateSimulationData(
               state: (entryProps?.state as "open" | "closed") || "closed",
               temperature: entryProps?.temperature || 20,
               flowIntensity: entryProps?.flowIntensity || "low",
-              airOrientation: (entryProps?.airOrientation as "inflow" | "outflow") || "inflow"
+              airDirection: (entryProps?.airOrientation as "inflow" | "outflow") || "inflow"
             };
             
             // Agregar valor custom si aplica
@@ -343,7 +343,7 @@ export function generateSimulationData(
               flowType: (entryProps?.flowType as "Air Mass Flow" | "Air Velocity" | "Pressure") || "Air Mass Flow",
               flowValue: entryProps?.flowValue || 50,
               flowIntensity: entryProps?.flowIntensity || "medium",
-              airOrientation: (entryProps?.airOrientation as "inflow" | "outflow") || "inflow"
+              airDirection: (entryProps?.airOrientation as "inflow" | "outflow") || "inflow"
             };
             
             // Agregar valor custom si aplica para vents también
