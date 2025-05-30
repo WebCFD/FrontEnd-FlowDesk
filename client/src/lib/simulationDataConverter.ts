@@ -11,6 +11,23 @@ interface Line {
   end: Point2D;
 }
 
+// Propiedades base compartidas
+interface BaseSimulationProperties {
+  state?: 'open' | 'closed';
+  temperature?: number;
+}
+
+// Propiedades específicas para vents
+interface VentSimulationProperties {
+  flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
+  flowValue?: number;
+  flowIntensity?: 'low' | 'medium' | 'high';
+  airOrientation?: 'inflow' | 'outflow';
+}
+
+// Propiedades unificadas que incluyen todos los campos posibles
+interface SimulationProperties extends BaseSimulationProperties, VentSimulationProperties {}
+
 interface AirEntry {
   type: "window" | "door" | "vent";
   position: Point2D;
@@ -18,7 +35,9 @@ interface AirEntry {
     width: number;
     height: number;
     distanceToFloor?: number;
+    shape?: 'rectangular' | 'circular';
   };
+  properties?: SimulationProperties;
   line: Line;
 }
 
@@ -293,16 +312,18 @@ export function generateSimulationData(
             dimensions: {
               width: entry.dimensions.width / 100,
               height: entry.dimensions.height / 100,
-              shape: (entry.dimensions.shape || "rectangular") as "rectangular" | "circular"
+              shape: ((entry.dimensions as any).shape || "rectangular") as "rectangular" | "circular"
             },
             simulation: {} as any
           };
 
           // Agregar propiedades específicas por tipo
+          const entryProps = (entry as any).properties;
+          
           if (entry.type === "window" || entry.type === "door") {
             airEntryBase.simulation = {
-              state: (entry.properties?.state as "open" | "closed") || "closed",
-              temperature: entry.properties?.temperature || 20
+              state: (entryProps?.state as "open" | "closed") || "closed",
+              temperature: entryProps?.temperature || 20
             };
             
             // Las puertas solo pueden ser rectangulares
@@ -311,10 +332,10 @@ export function generateSimulationData(
             }
           } else if (entry.type === "vent") {
             airEntryBase.simulation = {
-              flowType: (entry.properties?.flowType as "Air Mass Flow" | "Air Velocity" | "Pressure") || "Air Mass Flow",
-              flowValue: entry.properties?.flowValue || 50,
-              flowIntensity: (entry.properties?.flowIntensity as "low" | "medium" | "high") || "medium",
-              airOrientation: (entry.properties?.airOrientation as "inflow" | "outflow") || "inflow"
+              flowType: (entryProps?.flowType as "Air Mass Flow" | "Air Velocity" | "Pressure") || "Air Mass Flow",
+              flowValue: entryProps?.flowValue || 50,
+              flowIntensity: (entryProps?.flowIntensity as "low" | "medium" | "high") || "medium",
+              airOrientation: (entryProps?.airOrientation as "inflow" | "outflow") || "inflow"
             };
           }
 
