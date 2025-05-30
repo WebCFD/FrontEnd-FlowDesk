@@ -229,71 +229,151 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           <DialogDescription>{descriptions[type]}</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
-          <div className="grid gap-4 py-4">
+          <div className="space-y-6 py-4">
             {type === 'wall' ? (
               // Campos para propiedades de pared
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="temperature" className="text-right">
-                  Temperature
-                </Label>
-                <Input
-                  id="temperature"
-                  type="number"
-                  value={(values as { temperature: number }).temperature}
-                  onChange={(e) => setValues(prev => ({ ...prev, temperature: Number(e.target.value) }))}
-                  className="col-span-3"
-                />
-                <span className="text-sm">°C</span>
+              <div className="space-y-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="temperature" className="text-right">
+                    Temperature
+                  </Label>
+                  <Input
+                    id="temperature"
+                    type="number"
+                    value={(values as { temperature: number }).temperature}
+                    onChange={(e) => setValues(prev => ({ ...prev, temperature: Number(e.target.value) }))}
+                    className="col-span-3"
+                  />
+                  <span className="text-sm">°C</span>
+                </div>
               </div>
             ) : (
-              // Campos existentes para entradas de aire
+              // Nueva estructura con 3 secciones para entradas de aire
               <>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="width" className="text-right">
-                    Width
-                  </Label>
-                  <Input
-                    id="width"
-                    type="number"
-                    value={(values as { width: number }).width}
-                    onChange={(e) => setValues(prev => ({ ...prev, width: Number(e.target.value) }))}
-                    className="col-span-3"
-                  />
-                  <span className="text-sm">cm</span>
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="height" className="text-right">
-                    Height
-                  </Label>
-                  <Input
-                    id="height"
-                    type="number"
-                    value={(values as { height: number }).height}
-                    onChange={(e) => setValues(prev => ({ ...prev, height: Number(e.target.value) }))}
-                    className="col-span-3"
-                  />
-                  <span className="text-sm">cm</span>
-                </div>
-                {type !== 'door' && (
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="distance" className="text-right">
-                      Distance to Floor
-                    </Label>
-                    <Input
-                      id="distance"
-                      type="number"
-                      value={(values as { distanceToFloor?: number }).distanceToFloor || 0}
-                      onChange={(e) => setValues(prev => ({ ...prev, distanceToFloor: Number(e.target.value) }))}
-                      className="col-span-3"
-                    />
-                    <span className="text-sm">cm</span>
+                {/* 1. POSITION SECTION */}
+                <div className="border rounded-lg p-4 bg-slate-50/50">
+                  <h4 className="font-medium text-sm mb-3 text-slate-700">Position</h4>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <Label htmlFor="pos-x" className="text-xs text-slate-600">X Coordinate</Label>
+                      <div className="flex items-center space-x-2">
+                        <Input
+                          id="pos-x"
+                          type="number"
+                          value={0}
+                          className="h-8 text-sm"
+                          placeholder="0"
+                        />
+                        <span className="text-xs text-slate-500">cm</span>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="pos-y" className="text-xs text-slate-600">Y Coordinate</Label>
+                      <div className="flex items-center space-x-2">
+                        <Input
+                          id="pos-y"
+                          type="number"
+                          value={0}
+                          className="h-8 text-sm"
+                          placeholder="0"
+                        />
+                        <span className="text-xs text-slate-500">cm</span>
+                      </div>
+                    </div>
                   </div>
-                )}
+                  <button
+                    type="button"
+                    className="mt-2 text-xs text-blue-600 hover:text-blue-700 underline"
+                  >
+                    Auto-center on wall
+                  </button>
+                </div>
+
+                {/* 2. DIMENSIONS SECTION */}
+                <div className="border rounded-lg p-4 bg-slate-50/50">
+                  <h4 className="font-medium text-sm mb-3 text-slate-700">Dimensions</h4>
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-2">
+                        <Label htmlFor="width" className="text-xs text-slate-600">Width</Label>
+                        <div className="flex items-center space-x-2">
+                          <Input
+                            id="width"
+                            type="number"
+                            value={(values as { width: number }).width}
+                            onChange={(e) => setValues(prev => ({ ...prev, width: Number(e.target.value) }))}
+                            className="h-8 text-sm"
+                          />
+                          <span className="text-xs text-slate-500">cm</span>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="height" className="text-xs text-slate-600">Height</Label>
+                        <div className="flex items-center space-x-2">
+                          <Input
+                            id="height"
+                            type="number"
+                            value={(values as { height: number }).height}
+                            onChange={(e) => setValues(prev => ({ ...prev, height: Number(e.target.value) }))}
+                            className="h-8 text-sm"
+                          />
+                          <span className="text-xs text-slate-500">cm</span>
+                        </div>
+                      </div>
+                    </div>
+                    {type !== 'door' && (
+                      <div className="space-y-2">
+                        <Label htmlFor="distance" className="text-xs text-slate-600">Distance to Floor</Label>
+                        <div className="flex items-center space-x-2">
+                          <Input
+                            id="distance"
+                            type="number"
+                            value={(values as { distanceToFloor?: number }).distanceToFloor || 0}
+                            onChange={(e) => setValues(prev => ({ ...prev, distanceToFloor: Number(e.target.value) }))}
+                            className="h-8 text-sm w-full"
+                          />
+                          <span className="text-xs text-slate-500">cm</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* 3. SIMULATION CONDITIONS SECTION (Placeholder) */}
+                <div className="border rounded-lg p-4 bg-slate-50/50">
+                  <h4 className="font-medium text-sm mb-3 text-slate-700">Simulation Conditions</h4>
+                  <div className="space-y-3">
+                    <div className="space-y-2">
+                      <Label className="text-xs text-slate-600">Flow Rate</Label>
+                      <div className="flex items-center space-x-2">
+                        <Input
+                          type="number"
+                          placeholder="0.5"
+                          className="h-8 text-sm"
+                        />
+                        <span className="text-xs text-slate-500">m³/s</span>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs text-slate-600">Temperature Differential</Label>
+                      <div className="flex items-center space-x-2">
+                        <Input
+                          type="number"
+                          placeholder="2"
+                          className="h-8 text-sm"
+                        />
+                        <span className="text-xs text-slate-500">°C</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </>
             )}
           </div>
-          <DialogFooter>
-            <Button type="submit">{isEditing ? 'Save Changes' : 'Create'}</Button>
+          <DialogFooter className="pt-4 border-t">
+            <Button type="submit" className="w-full">
+              {isEditing ? 'Save Changes' : 'Create'}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
