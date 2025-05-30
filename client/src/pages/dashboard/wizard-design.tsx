@@ -250,6 +250,7 @@ export default function WizardDesign() {
   const [selectedFloor, setSelectedFloor] = useState("ground");
   const [loadFromFloor, setLoadFromFloor] = useState("ground");
   const [floorDeckThickness, setFloorDeckThickness] = useState(35); // Default 35cm - deprecated, usar floorParameters
+  const [defaultWallTemperature, setDefaultWallTemperature] = useState(20); // Default wall temperature in °C
   
   // Nuevos estados para parámetros por planta
   const [floorParameters, setFloorParameters] = useState<Record<string, { ceilingHeight: number; floorDeck: number }>>({
@@ -1024,6 +1025,35 @@ export default function WizardDesign() {
                       <Ruler className="w-6 h-6" />
                       <span className="text-xs">Measure</span>
                     </Button>
+                  </div>
+                  
+                  {/* Default Wall Temperature */}
+                  <div className="space-y-2 mt-4">
+                    <Label htmlFor="default-wall-temp" className="text-sm font-medium">
+                      Default Wall Temperature
+                    </Label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        id="default-wall-temp"
+                        type="number"
+                        value={defaultWallTemperature}
+                        onChange={(e) => {
+                          const value = parseFloat(e.target.value);
+                          if (!isNaN(value) && value >= -50 && value <= 100) {
+                            setDefaultWallTemperature(value);
+                          }
+                        }}
+                        className="w-20 h-8"
+                        min={-50}
+                        max={100}
+                        step={0.5}
+                        placeholder="20"
+                      />
+                      <span className="text-sm text-gray-500">°C</span>
+                    </div>
+                    <p className="text-xs text-gray-400">
+                      Temperature assigned to new walls when created
+                    </p>
                   </div>
                 </div>
 
