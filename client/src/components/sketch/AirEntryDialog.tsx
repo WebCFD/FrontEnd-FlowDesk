@@ -674,8 +674,13 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           id="distance-floor"
                           type="number"
                           step="0.01"
-                          value={Number(distanceToFloor).toFixed(2)}
-                          onChange={(e) => setDistanceToFloor(Number(e.target.value))}
+                          value={distanceToFloor}
+                          onChange={(e) => {
+                            const value = Number(e.target.value);
+                            // Redondear a 2 decimales máximo
+                            const rounded = Math.round(value * 100) / 100;
+                            setDistanceToFloor(rounded);
+                          }}
                           className="h-8 text-sm"
                           placeholder="0"
                         />
