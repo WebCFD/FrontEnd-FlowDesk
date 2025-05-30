@@ -26,10 +26,19 @@ interface AirEntryDialogProps {
   type: 'window' | 'door' | 'vent';
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (dimensions: {
+  onConfirm: (data: {
     width: number;
     height: number;
     distanceToFloor?: number;
+    shape?: 'rectangular' | 'circular';
+    properties?: {
+      state?: 'open' | 'closed';
+      temperature?: number;
+      flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
+      flowValue?: number;
+      flowIntensity?: 'low' | 'medium' | 'high';
+      airOrientation?: 'inflow' | 'outflow';
+    };
   }) => void;
   isEditing?: boolean;
   initialValues?: {
@@ -404,7 +413,23 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         updateAirEntryProperties(props.currentFloor, props.airEntryIndex, simulationProperties);
       }
       
-      props.onConfirm(airEntryData);
+      // Transform data to match Canvas2D expectations
+      const canvasData = {
+        width: shapeType === 'rectangular' ? (values as any).width : (values as any).width, // For circular, width = diameter
+        height: shapeType === 'rectangular' ? (values as any).height : (values as any).width, // For circular, height = diameter
+        distanceToFloor: distanceToFloor,
+        shape: shapeType,
+        properties: {
+          state: (type === 'window' || type === 'door') ? (isElementOpen ? 'open' : 'closed') : undefined,
+          temperature: (type === 'window' || type === 'door') ? elementTemperature : undefined,
+          flowType: type === 'vent' ? ventMeasurementType : undefined,
+          flowValue: type === 'vent' ? customIntensity : undefined,
+          flowIntensity: type === 'vent' ? (intensityLevel === 'custom' ? 'medium' : intensityLevel) : undefined,
+          airOrientation: type === 'vent' ? airDirection : undefined,
+        }
+      };
+      
+      props.onConfirm(canvasData);
     }
     onClose();
   };
