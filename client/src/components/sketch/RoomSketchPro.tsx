@@ -323,17 +323,15 @@ export function RoomSketchPro({
       const positionAttribute = geometry.attributes.position;
       const uvs = [];
       
-      // Generate UV coordinates using world coordinates for consistent horizontal orientation
+      // Generate UV coordinates with planar projection for consistent horizontal orientation
       for (let i = 0; i < positionAttribute.count; i++) {
         const x = positionAttribute.getX(i);
         const y = positionAttribute.getY(i);
-        const z = positionAttribute.getZ(i);
         
-        // Use horizontal distance (combining X and Z) and height Y for UV mapping
-        // This ensures horizontal brick orientation regardless of wall direction
-        const horizontalDistance = Math.sqrt(x * x + z * z);
-        const u = horizontalDistance * 0.3; // Scale factor for brick size
-        const v = y * 0.3; // Vertical scaling based on height
+        // Use only X and Y coordinates for planar projection
+        // This ensures consistent horizontal orientation
+        const u = x * 0.8; // Horizontal scaling
+        const v = y * 0.8; // Vertical scaling
         
         uvs.push(u, v);
       }
