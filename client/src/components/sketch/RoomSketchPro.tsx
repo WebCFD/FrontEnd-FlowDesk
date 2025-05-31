@@ -241,36 +241,53 @@ export function RoomSketchPro({
 
   const createDoorTexture = () => {
     const canvas = document.createElement('canvas');
-    canvas.width = 128;
-    canvas.height = 256;
+    canvas.width = 256;
+    canvas.height = 512;
     const ctx = canvas.getContext('2d')!;
 
-    // Base door color - madera oscura
-    ctx.fillStyle = '#8B4513';
-    ctx.fillRect(0, 0, 128, 256);
+    // Base door color - madera más contrastante
+    ctx.fillStyle = '#6B3410';
+    ctx.fillRect(0, 0, 256, 512);
 
-    // Paneles de puerta
-    const panelWidth = 100;
-    const panelHeight = 60;
-    const marginX = 14;
-    const marginY = 20;
+    // Vetas de madera
+    ctx.strokeStyle = '#5A2D0A';
+    ctx.lineWidth = 2;
+    for (let i = 0; i < 10; i++) {
+      ctx.beginPath();
+      ctx.moveTo(0, i * 51.2);
+      ctx.lineTo(256, i * 51.2 + 20);
+      ctx.stroke();
+    }
+
+    // Paneles de puerta más grandes y visibles
+    const panelWidth = 200;
+    const panelHeight = 120;
+    const marginX = 28;
+    const marginY = 40;
 
     // Panel superior
-    ctx.strokeStyle = '#654321';
-    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#4A1F05';
+    ctx.lineWidth = 8;
     ctx.strokeRect(marginX, marginY, panelWidth, panelHeight);
+    ctx.fillStyle = '#7A3612';
+    ctx.fillRect(marginX + 4, marginY + 4, panelWidth - 8, panelHeight - 8);
 
     // Panel medio
-    ctx.strokeRect(marginX, marginY + 80, panelWidth, panelHeight);
+    ctx.strokeRect(marginX, marginY + 160, panelWidth, panelHeight);
+    ctx.fillRect(marginX + 4, marginY + 164, panelWidth - 8, panelHeight - 8);
 
     // Panel inferior
-    ctx.strokeRect(marginX, marginY + 160, panelWidth, panelHeight);
+    ctx.strokeRect(marginX, marginY + 320, panelWidth, panelHeight);
+    ctx.fillRect(marginX + 4, marginY + 324, panelWidth - 8, panelHeight - 8);
 
-    // Manija de puerta
-    ctx.fillStyle = '#C0C0C0';
+    // Manija de puerta más grande
+    ctx.fillStyle = '#FFD700';
     ctx.beginPath();
-    ctx.arc(100, 128, 6, 0, 2 * Math.PI);
+    ctx.arc(200, 256, 12, 0, 2 * Math.PI);
     ctx.fill();
+    ctx.strokeStyle = '#B8860B';
+    ctx.lineWidth = 2;
+    ctx.stroke();
 
     const texture = new THREE.CanvasTexture(canvas);
     texture.wrapS = THREE.RepeatWrapping;
@@ -280,30 +297,44 @@ export function RoomSketchPro({
 
   const createWindowTexture = () => {
     const canvas = document.createElement('canvas');
-    canvas.width = 128;
-    canvas.height = 128;
+    canvas.width = 256;
+    canvas.height = 256;
     const ctx = canvas.getContext('2d')!;
 
-    // Fondo de ventana - cristal azul claro
-    ctx.fillStyle = '#E6F3FF';
-    ctx.fillRect(0, 0, 128, 128);
+    // Fondo de ventana - cristal azul más visible
+    ctx.fillStyle = '#B3D9FF';
+    ctx.fillRect(0, 0, 256, 256);
 
-    // Marco de ventana
-    ctx.strokeStyle = '#FFFFFF';
-    ctx.lineWidth = 6;
-    ctx.strokeRect(3, 3, 122, 122);
+    // Marco de ventana más grueso
+    ctx.strokeStyle = '#E0E0E0';
+    ctx.lineWidth = 12;
+    ctx.strokeRect(6, 6, 244, 244);
 
-    // Cruz central
+    // Marco interior
+    ctx.strokeStyle = '#C0C0C0';
+    ctx.lineWidth = 8;
+    ctx.strokeRect(12, 12, 232, 232);
+
+    // Cruz central más visible
+    ctx.strokeStyle = '#D0D0D0';
+    ctx.lineWidth = 8;
     ctx.beginPath();
-    ctx.moveTo(64, 6);
-    ctx.lineTo(64, 122);
-    ctx.moveTo(6, 64);
-    ctx.lineTo(122, 64);
+    ctx.moveTo(128, 12);
+    ctx.lineTo(128, 244);
+    ctx.moveTo(12, 128);
+    ctx.lineTo(244, 128);
     ctx.stroke();
 
-    // Reflejo sutil
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-    ctx.fillRect(10, 10, 50, 50);
+    // Reflejo más pronunciado
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+    ctx.fillRect(20, 20, 100, 100);
+
+    // Gradiente de cristal
+    const gradient = ctx.createLinearGradient(0, 0, 256, 256);
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.3)');
+    gradient.addColorStop(1, 'rgba(135, 206, 250, 0.3)');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(16, 16, 224, 224);
 
     const texture = new THREE.CanvasTexture(canvas);
     texture.wrapS = THREE.RepeatWrapping;
@@ -313,48 +344,61 @@ export function RoomSketchPro({
 
   const createVentTexture = () => {
     const canvas = document.createElement('canvas');
-    canvas.width = 128;
-    canvas.height = 128;
+    canvas.width = 256;
+    canvas.height = 256;
     const ctx = canvas.getContext('2d')!;
 
-    // Fondo de rejilla - aluminio
-    ctx.fillStyle = '#B8B8B8';
-    ctx.fillRect(0, 0, 128, 128);
+    // Fondo de rejilla - aluminio más claro
+    ctx.fillStyle = '#D0D0D0';
+    ctx.fillRect(0, 0, 256, 256);
 
-    // Marco exterior
-    ctx.strokeStyle = '#808080';
+    // Marco exterior grueso
+    ctx.strokeStyle = '#606060';
+    ctx.lineWidth = 8;
+    ctx.strokeRect(4, 4, 248, 248);
+
+    // Marco interior
+    ctx.strokeStyle = '#909090';
     ctx.lineWidth = 4;
-    ctx.strokeRect(2, 2, 124, 124);
+    ctx.strokeRect(12, 12, 232, 232);
 
-    // Láminas horizontales de rejilla
-    ctx.strokeStyle = '#A0A0A0';
-    ctx.lineWidth = 2;
-    
-    for (let y = 15; y < 120; y += 8) {
-      // Lámina principal
-      ctx.beginPath();
-      ctx.moveTo(10, y);
-      ctx.lineTo(118, y);
-      ctx.stroke();
+    // Láminas horizontales de rejilla más dramáticas
+    for (let y = 25; y < 240; y += 12) {
+      // Sombra profunda debajo de cada lámina
+      ctx.fillStyle = '#707070';
+      ctx.fillRect(20, y + 4, 216, 4);
       
-      // Sombra de lámina
-      ctx.strokeStyle = '#888888';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(10, y + 2);
-      ctx.lineTo(118, y + 2);
-      ctx.stroke();
+      // Lámina principal de aluminio
+      ctx.fillStyle = '#E8E8E8';
+      ctx.fillRect(20, y, 216, 8);
       
-      // Highlight
-      ctx.strokeStyle = '#D0D0D0';
-      ctx.beginPath();
-      ctx.moveTo(10, y - 1);
-      ctx.lineTo(118, y - 1);
-      ctx.stroke();
+      // Highlight superior brillante
+      ctx.fillStyle = '#F8F8F8';
+      ctx.fillRect(20, y, 216, 2);
       
-      ctx.strokeStyle = '#A0A0A0';
-      ctx.lineWidth = 2;
+      // Borde lateral izquierdo y derecho para efecto 3D
+      ctx.fillStyle = '#C0C0C0';
+      ctx.fillRect(20, y, 2, 8);
+      ctx.fillRect(234, y, 2, 8);
     }
+
+    // Tornillos en las esquinas
+    const screwPositions = [[30, 30], [226, 30], [30, 226], [226, 226]];
+    screwPositions.forEach(([x, y]) => {
+      ctx.fillStyle = '#808080';
+      ctx.beginPath();
+      ctx.arc(x, y, 6, 0, 2 * Math.PI);
+      ctx.fill();
+      
+      ctx.strokeStyle = '#606060';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x - 4, y);
+      ctx.lineTo(x + 4, y);
+      ctx.moveTo(x, y - 4);
+      ctx.lineTo(x, y + 4);
+      ctx.stroke();
+    });
 
     const texture = new THREE.CanvasTexture(canvas);
     texture.wrapS = THREE.RepeatWrapping;
@@ -505,21 +549,7 @@ export function RoomSketchPro({
       console.log(`RSP: Applied ${selectedTheme} texture to wall ${index}`);
     });
 
-    // Debug: Log all objects in scene
-    if (sceneRef.current) {
-      let totalMeshes = 0;
-      let meshesWithUserData = 0;
-      sceneRef.current.traverse((object) => {
-        if (object instanceof THREE.Mesh) {
-          totalMeshes++;
-          if (object.userData && Object.keys(object.userData).length > 0) {
-            meshesWithUserData++;
-            console.log(`RSP Debug: Mesh with userData:`, object.userData);
-          }
-        }
-      });
-      console.log(`RSP Debug: Total meshes: ${totalMeshes}, with userData: ${meshesWithUserData}`);
-    }
+
 
     // Apply textures to air entries (doors, windows, vents)
     const airEntryMeshes: THREE.Mesh[] = [];
@@ -533,17 +563,10 @@ export function RoomSketchPro({
     }
 
     console.log(`RSP: Found ${airEntryMeshes.length} air entry meshes to texture`);
-    
-    // Debug: Log all found air entries
-    airEntryMeshes.forEach((mesh, i) => {
-      console.log(`RSP: Air entry ${i}: type=${mesh.userData.type}, userData=`, mesh.userData);
-    });
 
     airEntryMeshes.forEach((airEntryMesh, index) => {
       const airEntryType = airEntryMesh.userData.type;
       const originalMaterial = airEntryMesh.material as THREE.MeshPhongMaterial;
-      
-      console.log(`RSP: Processing air entry ${index} of type ${airEntryType}`);
       
       let texture: THREE.Texture | undefined;
       let materialColor = 0xffffff;
