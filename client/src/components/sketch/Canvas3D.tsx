@@ -5,51 +5,23 @@ import { makeTextSprite } from "@/lib/three-utils";
 import AirEntryDialog from "./AirEntryDialog";
 import { ViewDirection } from "./Toolbar3D";
 import { useSceneContext } from "../../contexts/SceneContext";
+import {
+  PIXELS_TO_CM,
+  CANVAS_CONFIG,
+  transform2DTo3D,
+  createRoomPerimeter,
+  normalizeFloorName,
+  createStairMesh,
+  positionAirEntry,
+  type Point,
+  type Line,
+  type AirEntry,
+  type StairPolygon,
+  type FloorData
+} from "./shared-geometry-utils";
 
-interface Point {
-  x: number;
-  y: number;
-}
-
-interface Line {
-  start: Point;
-  end: Point;
-}
-interface AirEntry {
-  type: "window" | "door" | "vent";
-  position: Point;
-  dimensions: {
-    width: number;
-    height: number;
-    distanceToFloor?: number;
-  };
-  line: Line;
-}
-
-// Add StairPolygon interface
-interface StairPolygon {
-  id: string;
-  points: Point[];
-  floor: string;
-  direction?: "up" | "down";
-  connectsTo?: string;
-  isImported?: boolean;
-  // Add position3D data for sharing with RoomSketchPro
-  position3D?: {
-    baseHeight: number;
-    bottomZ: number;
-    topZ: number;
-  };
-}
-
-// Update FloorData to include stair polygons
-interface FloorData {
-  lines: Line[];
-  airEntries: AirEntry[];
-  hasClosedContour: boolean;
-  name: string;
-  stairPolygons?: StairPolygon[]; // Add stair polygons to floor data
-}
+// Core interfaces now imported from shared-geometry-utils
+// Only Canvas3D-specific interfaces remain here
 
 // Define a mesh interface for air entries to help with TypeScript type checking
 interface AirEntryMesh extends THREE.Mesh {
@@ -96,23 +68,9 @@ interface Canvas3DProps {
 }
 
 
-// Constants
-const PIXELS_TO_CM = 25 / 20;
+// Local constants (PIXELS_TO_CM and CANVAS_CONFIG now imported from shared-geometry-utils)
 const GRID_SIZE = 1000;
 const GRID_DIVISIONS = 40;
-
-// Centralized dimensions configuration
-const CANVAS_CONFIG = {
-  dimensions: { width: 800, height: 600 },
-  get centerX() { return this.dimensions.width / 2; },
-  get centerY() { return this.dimensions.height / 2; },
-  get aspectRatio() { return this.dimensions.width / this.dimensions.height; },
-  // Helper methods for common calculations
-  getRelativeX: (pointX: number) => pointX - (800 / 2),
-  getRelativeY: (pointY: number) => (600 / 2) - pointY,
-  reverseTransformX: (relativeX: number) => relativeX / PIXELS_TO_CM + (800 / 2),
-  reverseTransformY: (relativeY: number) => (600 / 2) - relativeY / PIXELS_TO_CM
-};
 
 // Centralized raycaster configuration
 const RAYCASTER_CONFIG = {
@@ -151,32 +109,9 @@ const DEBUG_CONFIG = {
 // CORE UTILITY FUNCTIONS (Independent of component state)
 // ========================================
 
-/**
- * Normalizes floor names for consistent storage and retrieval
- * Dependencies: None
- * Used by: Canvas3D, RoomSketchPro, storage operations
- */
-const normalizeFloorName = (floorName: string): string => {
-  // Convert to lowercase and remove spaces - ensure consistent keys for storage/retrieval
-  return floorName.toLowerCase().replace(/\s+/g, '');
-};
+// normalizeFloorName now imported from shared-geometry-utils
 
-/**
- * Core coordinate transformation function: converts 2D canvas points to 3D world space
- * Dependencies: CANVAS_CONFIG, PIXELS_TO_CM
- * Used by: All 3D geometry generation, air entry positioning, wall creation
- * Critical for: Maintaining consistent coordinate system between Canvas3D and RoomSketchPro
- */
-const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
-  const relativeX = point.x - CANVAS_CONFIG.centerX;
-  const relativeY = CANVAS_CONFIG.centerY - point.y;
-
-  return new THREE.Vector3(
-    relativeX * PIXELS_TO_CM,
-    relativeY * PIXELS_TO_CM,
-    height,
-  );
-};
+// transform2DTo3D now imported from shared-geometry-utils
 
 /**
  * Applies raycaster configuration consistently
