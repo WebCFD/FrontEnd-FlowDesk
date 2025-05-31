@@ -323,17 +323,18 @@ export function RoomSketchPro({
       const positionAttribute = geometry.attributes.position;
       const uvs = [];
       
-      // Generate UV coordinates with planar projection for consistent horizontal orientation
-      for (let i = 0; i < positionAttribute.count; i++) {
-        const x = positionAttribute.getX(i);
-        const y = positionAttribute.getY(i);
-        
-        // Use only X and Y coordinates for planar projection
-        // This ensures consistent horizontal orientation
-        const u = x * 0.8; // Horizontal scaling
-        const v = y * 0.8; // Vertical scaling
-        
-        uvs.push(u, v);
+      // Generate UV coordinates with simple triangle mapping that worked before
+      for (let i = 0; i < positionAttribute.count; i += 3) {
+        // Standard triangle UV mapping
+        uvs.push(0, 0);   // First vertex
+        uvs.push(1, 0);   // Second vertex  
+        uvs.push(0, 1);   // Third vertex
+      }
+      
+      // Handle any remaining vertices
+      const remaining = positionAttribute.count % 3;
+      for (let i = 0; i < remaining; i++) {
+        uvs.push(0, 0);
       }
       
       geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
