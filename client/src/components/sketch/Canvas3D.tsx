@@ -133,6 +133,20 @@ const RAYCASTER_CONFIG = {
   }
 };
 
+// Debug configuration - centralized control for console output
+const DEBUG_CONFIG = {
+  enabled: false, // Set to true for development, false for production
+  categories: {
+    mouseEvents: false,
+    airEntryCreation: false,
+    positionTracking: false,
+    measurementMode: false,
+    eraserMode: false,
+    intersections: false,
+    floorState: false
+  }
+};
+
 // ========================================
 // CORE UTILITY FUNCTIONS (Independent of component state)
 // ========================================
@@ -173,6 +187,17 @@ const applyRaycasterConfig = (raycaster: THREE.Raycaster, configType: keyof type
   const config = RAYCASTER_CONFIG[configType];
   raycaster.params.Line = config.Line;
   raycaster.params.Points = config.Points;
+};
+
+/**
+ * Conditional debug logging - only logs when debug is enabled
+ * Dependencies: DEBUG_CONFIG
+ * Used by: All debug statements for controlled console output
+ */
+const debugLog = (category: keyof typeof DEBUG_CONFIG.categories, message: string, ...args: any[]) => {
+  if (DEBUG_CONFIG.enabled && DEBUG_CONFIG.categories[category]) {
+    console.log(`[${category.toUpperCase()}] ${message}`, ...args);
+  }
 };
 
 /**
@@ -1118,15 +1143,14 @@ export default function Canvas3D({
       // MUST BE IDENTICAL in RoomSketchPro for consistent visualization
       // Key functions: transform2DTo3D, wall normal calculations, positioning logic
       
-      console.log(
-        `Creating ${floorData.airEntries.length} air entries for floor ${floorData.name}`,
-      );
+      debugLog('airEntryCreation', `Creating ${floorData.airEntries.length} air entries for floor ${floorData.name}`);
+      
       floorData.airEntries.forEach((entry, index) => {
-        console.log(`Creating air entry ${index} of type ${entry.type}`);
+        debugLog('airEntryCreation', `Creating air entry ${index} of type ${entry.type}`);
         
         // Check if we have stored data for this entry (position and/or dimensions)
         const updatedEntryData = updatedPositions[index];
-        console.log(`[ENTRY DATA LOADING] Checking for stored entry data for entry ${index}:`, {
+        debugLog('positionTracking', `Checking for stored entry data for entry ${index}:`, {
           updatedPositionsExists: !!updatedPositions,
           haveUpdatedData: !!updatedEntryData,
           updatedEntryData: updatedEntryData,
@@ -2469,7 +2493,7 @@ export default function Canvas3D({
       const directionX = dx > 0 ? "RIGHT" : dx < 0 ? "LEFT" : "";
       const directionY = dy > 0 ? "DOWN" : dy < 0 ? "UP" : "";
       
-      console.log(`🖱️ MOUSE DIRECTION: ${directionX}${directionY} (dx=${dx.toFixed(1)}, dy=${dy.toFixed(1)})`);
+      debugLog('mouseEvents', `MOUSE DIRECTION: ${directionX}${directionY} (dx=${dx.toFixed(1)}, dy=${dy.toFixed(1)})`);
       
       // Update the last position
       lastMousePositionRef.current = { x: event.clientX, y: event.clientY };
