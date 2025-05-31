@@ -71,15 +71,6 @@ interface Measurement3D {
   label?: THREE.Sprite;
 }
 
-interface MaterialConfig {
-  wall?: THREE.Material;
-  floor?: THREE.Material;
-  ceiling?: THREE.Material;
-  door?: THREE.Material;
-  window?: THREE.Material;
-  stairs?: THREE.Material;
-}
-
 interface Canvas3DProps {
   floors: Record<string, FloorData>;
   currentFloor: string;
@@ -102,10 +93,6 @@ interface Canvas3DProps {
     index: number
   ) => void;
   onViewChange?: (callback: (direction: ViewDirection) => void) => void;
-  // Nuevas props para modo presentación
-  presentationMode?: boolean;
-  customMaterials?: MaterialConfig;
-  onMaterialsReady?: (applyMaterials: (materials: MaterialConfig) => void) => void;
 }
 
 
@@ -482,9 +469,6 @@ export default function Canvas3D({
   onUpdateAirEntry,
   onDeleteAirEntry,
   onViewChange,
-  presentationMode = false,
-  customMaterials,
-  onMaterialsReady,
 }: Canvas3DProps) {
   // Access the SceneContext to share data with RoomSketchPro
   const { updateGeometryData, updateSceneData, updateFloorData, setCurrentFloor: setContextCurrentFloor } = useSceneContext();
@@ -506,28 +490,28 @@ export default function Canvas3D({
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<TrackballControls | null>(null);
   const needsRenderRef = useRef<boolean>(true);
-  // State for editing air entries (disabled in presentation mode)
+  // State for editing air entries
   const [editingAirEntry, setEditingAirEntry] = useState<{
     index: number;
     entry: AirEntry;
-  } | null>(presentationMode ? null : null);
+  } | null>(null);
   const [ignoreNextClick, setIgnoreNextClick] = useState<boolean>(false);
-  // Track the selected air entry element for dragging (disabled in presentation mode)
+  // Track the selected air entry element for dragging
   const [selectedAirEntry, setSelectedAirEntry] = useState<{
     index: number;
     entry: AirEntry;
     object: THREE.Mesh | null;
-  } | null>(presentationMode ? null : null);
+  } | null>(null);
 
-  // Track which axis is selected for movement (x, y, or z) (disabled in presentation mode)
-  const [selectedAxis, setSelectedAxis] = useState<"x" | "y" | "z" | null>(presentationMode ? null : null);
+  // Track which axis is selected for movement (x, y, or z)
+  const [selectedAxis, setSelectedAxis] = useState<"x" | "y" | "z" | null>(null);
 
-  // Track if currently dragging (disabled in presentation mode)
-  const [isDragging, setIsDragging] = useState<boolean>(presentationMode ? false : false);
+  // Track if currently dragging
+  const [isDragging, setIsDragging] = useState<boolean>(false);
 
-  // Store the original position for reference (disabled in presentation mode)
+  // Store the original position for reference
   const [dragStartPosition, setDragStartPosition] =
-    useState<THREE.Vector3 | null>(presentationMode ? null : null);
+    useState<THREE.Vector3 | null>(null);
     
   // For eraser mode - track what element is being hovered and its original material
   const [hoveredEraseTarget, setHoveredEraseTarget] = useState<{
@@ -1148,7 +1132,7 @@ export default function Canvas3D({
           if ('x' in updatedEntryData && 'y' in updatedEntryData) {
             // Old format - just position data
 
-            entryPosition = { x: updatedEntryData.x as number, y: updatedEntryData.y as number };
+            entryPosition = { x: updatedEntryData.x, y: updatedEntryData.y };
           } else if (updatedEntryData.position) {
             // New format - has position and maybe dimensions
 
@@ -1586,43 +1570,21 @@ export default function Canvas3D({
 
     // Initialize controls
     const controls = new TrackballControls(camera, renderer.domElement);
-    
-    // Configure controls based on mode
-    if (presentationMode) {
-      // Presentation mode: smoother, more cinematic controls
-      controls.rotateSpeed = 1.0;
-      controls.zoomSpeed = 0.8;
-      controls.panSpeed = 0.5;
-      controls.noZoom = false;
-      controls.noPan = false;
-      controls.staticMoving = true;
-      controls.dynamicDampingFactor = 0.1; // Smoother damping
-    } else {
-      // Edit mode: responsive controls for precision work
-      controls.rotateSpeed = 2.0;
-      controls.zoomSpeed = 1.2;
-      controls.panSpeed = 0.8;
-      controls.noZoom = false;
-      controls.noPan = false;
-      controls.staticMoving = true;
-      controls.dynamicDampingFactor = 0.2;
-    }
+    controls.rotateSpeed = 2.0;
+    controls.zoomSpeed = 1.2;
+    controls.panSpeed = 0.8;
+    controls.noZoom = false;
+    controls.noPan = false;
+    controls.staticMoving = true;
+    controls.dynamicDampingFactor = 0.2;
 
-    // Configure mouse buttons - don't use right button for controls in edit mode
-    if (presentationMode) {
-      controls.mouseButtons = {
-        LEFT: THREE.MOUSE.ROTATE,
-        MIDDLE: THREE.MOUSE.DOLLY,
-        RIGHT: THREE.MOUSE.PAN
-      };
-    } else {
-      controls.mouseButtons = {
-        LEFT: THREE.MOUSE.ROTATE,
-        MIDDLE: THREE.MOUSE.DOLLY,
-        RIGHT: THREE.MOUSE.PAN
-      };
-    }
-    
+    // Configure mouse buttons - don't use right button for controls
+    controls.mouseButtons = {
+      LEFT: THREE.MOUSE.ROTATE,
+      MIDDLE: THREE.MOUSE.DOLLY, // THREE.MOUSE.DOLLY instead of ZOOM for TrackballControls
+      RIGHT: THREE.MOUSE.PAN // Enable right mouse panning in controls
+    };
+    // Add mechanism to disable controls during dragging
     controls.enabled = true;
 
     console.log("TrackballControls buttons configured:", controls.mouseButtons);
@@ -3418,6 +3380,8 @@ export default function Canvas3D({
       }
     };
 
+    canvas.addEventListener("mousedown", mouseDownWrapper);
+
     // Create named handlers for event tracking
     const mouseMoveHandler = (e: MouseEvent) => {
       handleMouseMove(e);
@@ -3427,14 +3391,9 @@ export default function Canvas3D({
       handleMouseUp(e);
     };
 
-    // Only add interaction event listeners if not in presentation mode
-    if (!presentationMode) {
-      canvas.addEventListener("mousedown", mouseDownWrapper);
-
-      // Use document instead of window for more reliable event capture
-      document.addEventListener("mousemove", mouseMoveHandler);
-      document.addEventListener("mouseup", mouseUpHandler);
-    }
+    // Use document instead of window for more reliable event capture
+    document.addEventListener("mousemove", mouseMoveHandler);
+    document.addEventListener("mouseup", mouseUpHandler);
 
     // We don't need periodic checking anymore since we're preventatively recreating controls after each drag
 
@@ -3544,10 +3503,8 @@ export default function Canvas3D({
       }
     };
 
-    // Add the double-click event listener (only if not in presentation mode)
-    if (!presentationMode) {
-      canvas.addEventListener("dblclick", handleDoubleClick);
-    }
+    // Add the double-click event listener
+    canvas.addEventListener("dblclick", handleDoubleClick);
 
     return () => {
       window.removeEventListener("resize", handleResize);
@@ -3576,55 +3533,11 @@ export default function Canvas3D({
         }
       }
 
-      // Remove global event listeners (only if they were added)
-      if (!presentationMode) {
-        document.removeEventListener("mousemove", mouseMoveHandler);
-        document.removeEventListener("mouseup", mouseUpHandler);
-      }
+      // Remove global event listeners
+      document.removeEventListener("mousemove", mouseMoveHandler);
+      document.removeEventListener("mouseup", mouseUpHandler);
     };
   }, []);
-
-  // Function to apply custom materials (for presentation mode)
-  const applyCustomMaterials = useCallback((materials: MaterialConfig) => {
-    if (!sceneRef.current) return;
-
-    sceneRef.current.traverse((child) => {
-      if (child instanceof THREE.Mesh && child.userData) {
-        const type = child.userData.type;
-        
-        switch (type) {
-          case 'wall':
-            if (materials.wall) child.material = materials.wall;
-            break;
-          case 'floor':
-            if (materials.floor) child.material = materials.floor;
-            break;
-          case 'ceiling':
-            if (materials.ceiling) child.material = materials.ceiling;
-            break;
-          case 'door':
-            if (materials.door) child.material = materials.door;
-            break;
-          case 'window':
-            if (materials.window) child.material = materials.window;
-            break;
-          case 'stairs':
-            if (materials.stairs) child.material = materials.stairs;
-            break;
-        }
-      }
-    });
-
-    // Force re-render
-    needsRenderRef.current = true;
-  }, []);
-
-  // Expose material application function to parent (RSP)
-  useEffect(() => {
-    if (onMaterialsReady && presentationMode) {
-      onMaterialsReady(applyCustomMaterials);
-    }
-  }, [onMaterialsReady, presentationMode, applyCustomMaterials]);
 
   useEffect(() => {
 
