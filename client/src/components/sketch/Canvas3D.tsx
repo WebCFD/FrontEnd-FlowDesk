@@ -557,14 +557,14 @@ export default function Canvas3D({
   useEffect(() => {
     // First update the ref to match the current state
     isEraserModeRef.current = isEraserMode;
-    console.log("📌 isEraserModeRef synchronized to:", isEraserModeRef.current);
+    debugLog('eraserMode', 'isEraserModeRef synchronized to:', isEraserModeRef.current);
   }, [isEraserMode]);
   
   // Handle cleanup when exiting eraser mode
   useEffect(() => {
     // Only perform cleanup when turning off eraser mode
     if (isEraserMode === false) {
-      console.log("🔄 Eraser mode turned off - performing comprehensive cleanup");
+      debugLog('eraserMode', 'Eraser mode turned off - performing comprehensive cleanup');
       
       // Clean up highlighted element if it exists
       if (hoveredEraseTarget) {
@@ -1968,7 +1968,7 @@ export default function Canvas3D({
 
     const handleMeasurementMouseDown = (event: MouseEvent) => {
       // Add detailed logging about current state
-      console.log("==== MEASUREMENT DEBUG ====");
+      debugLog('measurementMode', '==== MEASUREMENT DEBUG ====');
       console.log("Measurement mode active (ref):", isMeasureModeRef.current);
       console.log("Current measurementStateRef:", measurementStateRef.current);
       console.log("Mouse button:", event.button);
@@ -2631,7 +2631,7 @@ export default function Canvas3D({
         
         // Reset previously highlighted element if any
         if (hoveredEraseTarget) {
-          console.log("🔄 Resetting previously highlighted element");
+          debugLog('eraserMode', 'Resetting previously highlighted element');
           // Restore original material
           hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
           setHoveredEraseTarget(null);
@@ -2709,17 +2709,17 @@ export default function Canvas3D({
             // Raycaster configuration is now handled centrally
             
             // Enhanced debugging for air entry intersections
-            console.log(`Found ${meshIntersects.length} intersections with air entries`);
+            debugLog('eraserMode', `Found ${meshIntersects.length} intersections with air entries`);
+            debugLog('eraserMode', `Eraser mode hover detection - ${airEntryMeshes.length} air entries in scene`);
             
-            // Log detailed info about available air entry meshes
-            console.log(`DEBUG: Eraser mode hover detection - ${airEntryMeshes.length} air entries in scene`);
-            airEntryMeshes.forEach((mesh, i) => {
-              console.log(`Air Entry #${i}: type=${mesh.userData.type}, position=${JSON.stringify(mesh.position)}, worldPosition=${JSON.stringify(mesh.getWorldPosition(new THREE.Vector3()))}`);
-              
-              // Output mesh bounding box for debugging
-              const boundingBox = new THREE.Box3().setFromObject(mesh);
-              console.log(`  Bounding box: min=(${boundingBox.min.x.toFixed(2)}, ${boundingBox.min.y.toFixed(2)}, ${boundingBox.min.z.toFixed(2)}), max=(${boundingBox.max.x.toFixed(2)}, ${boundingBox.max.y.toFixed(2)}, ${boundingBox.max.z.toFixed(2)})`);
-            });
+            if (DEBUG_CONFIG.enabled && DEBUG_CONFIG.categories.eraserMode) {
+              airEntryMeshes.forEach((mesh, i) => {
+                debugLog('eraserMode', `Air Entry #${i}: type=${mesh.userData.type}, position=${JSON.stringify(mesh.position)}`);
+                
+                const boundingBox = new THREE.Box3().setFromObject(mesh);
+                debugLog('eraserMode', `  Bounding box: min=(${boundingBox.min.x.toFixed(2)}, ${boundingBox.min.y.toFixed(2)}, ${boundingBox.min.z.toFixed(2)}), max=(${boundingBox.max.x.toFixed(2)}, ${boundingBox.max.y.toFixed(2)}, ${boundingBox.max.z.toFixed(2)})`);
+              });
+            }
             
             // Update debug info whether we have intersections or not
             const hasIntersections = meshIntersects.length > 0;
@@ -2730,9 +2730,9 @@ export default function Canvas3D({
               const screenX = (screenPos.x + 1) / 2 * window.innerWidth;
               const screenY = -(screenPos.y - 1) / 2 * window.innerHeight;
               
-              console.log(`📌 Highlighted object screen position: (${screenX.toFixed(0)}, ${screenY.toFixed(0)})`);
-              console.log(`📌 Mouse position: (${event.clientX}, ${event.clientY})`);
-              console.log(`📌 Distance: ${Math.sqrt(Math.pow(screenX - event.clientX, 2) + Math.pow(screenY - event.clientY, 2)).toFixed(1)}px`);
+              debugLog('positionTracking', `Highlighted object screen position: (${screenX.toFixed(0)}, ${screenY.toFixed(0)})`);
+              debugLog('positionTracking', `Mouse position: (${event.clientX}, ${event.clientY})`);
+              debugLog('positionTracking', `Distance: ${Math.sqrt(Math.pow(screenX - event.clientX, 2) + Math.pow(screenY - event.clientY, 2)).toFixed(1)}px`);
             }
             
             setDebugInfo(prev => ({
@@ -2745,7 +2745,7 @@ export default function Canvas3D({
             
             // If there are no intersections and we have a previously hovered target, reset it
             if (!hasIntersections && hoveredEraseTarget) {
-              console.log("🔄 Clearing previous highlight - no intersection found");
+              debugLog('eraserMode', 'Clearing previous highlight - no intersection found');
               
               try {
                 // Restore original material if it exists
@@ -2813,7 +2813,7 @@ export default function Canvas3D({
               
               // If we're already hovering over a different object, restore it first
               if (hoveredEraseTarget && hoveredEraseTarget.object !== mesh) {
-                console.log("🔄 Switching hover target to new element");
+                debugLog('eraserMode', 'Switching hover target to new element');
                 
                 try {
                   // Restore original material if it exists
