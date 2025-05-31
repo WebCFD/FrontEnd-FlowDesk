@@ -4,6 +4,7 @@ import { TrackballControls } from "three/addons/controls/TrackballControls.js";
 import { makeTextSprite } from "@/lib/three-utils";
 import { createTableModel, createPersonModel, createArmchairModel } from "./furniture-models";
 import { useSceneContext } from "../../contexts/SceneContext";
+import { generateSharedFloorGeometry } from "./Canvas3D";
 
 // Types
 interface Point {
@@ -676,7 +677,7 @@ export function RoomSketchPro({
     };
   }, [width, height, geometryData?.floors, currentFloor, floors, roomHeight, onComponentMount]);
   
-  // Function to create multifloor visualization
+  // Function to create multifloor visualization using shared geometry from Canvas3D
   const createMultiFloorVisualization = (scene: THREE.Scene, renderer: THREE.WebGLRenderer, camera: THREE.PerspectiveCamera) => {
     console.log("RoomSketchPro - Creating multifloor visualization - SIMPLIFIED");
     
