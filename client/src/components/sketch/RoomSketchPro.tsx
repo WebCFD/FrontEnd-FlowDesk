@@ -348,31 +348,20 @@ export function RoomSketchPro({
       // Ensure the geometry has UV coordinates for texture mapping
       const geometry = wallMesh.geometry as THREE.BufferGeometry;
       if (!geometry.attributes.uv) {
-        console.log(`RSP: Adding proper UV coordinates to wall ${index}`);
+        console.log(`RSP: Adding UV coordinates to wall ${index}`);
         const positionAttribute = geometry.attributes.position;
         const uvs = [];
         
-        // Calculate UV coordinates based on actual wall dimensions
-        // Get bounding box to understand the wall size
-        geometry.computeBoundingBox();
-        const bbox = geometry.boundingBox!;
-        const width = bbox.max.x - bbox.min.x;
-        const height = bbox.max.y - bbox.min.y;
-        
-        // Scale factor for brick pattern (each brick unit = 120x40 in texture space)
-        const brickWidth = 1.2; // meters
-        const brickHeight = 0.4; // meters
-        const uScale = width / brickWidth;
-        const vScale = height / brickHeight;
-        
-        // Generate UV coordinates for each vertex
+        // Simple planar UV mapping
         for (let i = 0; i < positionAttribute.count; i++) {
           const x = positionAttribute.getX(i);
           const y = positionAttribute.getY(i);
+          const z = positionAttribute.getZ(i);
           
-          // Normalize coordinates based on bounding box
-          const u = ((x - bbox.min.x) / width) * uScale;
-          const v = ((y - bbox.min.y) / height) * vScale;
+          // Use X and Y coordinates for UV mapping (planar projection)
+          // Scale down to reasonable texture coordinates
+          const u = x * 0.5;
+          const v = y * 0.5;
           
           uvs.push(u, v);
         }
