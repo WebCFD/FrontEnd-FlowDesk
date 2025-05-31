@@ -51,12 +51,6 @@ interface FloorData {
   stairPolygons?: StairPolygon[]; // Add stair polygons to floor data
 }
 
-// Utility function to normalize floor names consistently across the application
-const normalizeFloorName = (floorName: string): string => {
-  // Convert to lowercase and remove spaces - ensure consistent keys for storage/retrieval
-  return floorName.toLowerCase().replace(/\s+/g, '');
-};
-
 // Define a mesh interface for air entries to help with TypeScript type checking
 interface AirEntryMesh extends THREE.Mesh {
   userData: {
@@ -102,9 +96,16 @@ interface Canvas3DProps {
 }
 
 
+// Constants
 const PIXELS_TO_CM = 25 / 20;
 const GRID_SIZE = 1000;
 const GRID_DIVISIONS = 40;
+
+// Helper functions (independent of component state)
+const normalizeFloorName = (floorName: string): string => {
+  // Convert to lowercase and remove spaces - ensure consistent keys for storage/retrieval
+  return floorName.toLowerCase().replace(/\s+/g, '');
+};
 
 const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
   const dimensions = { width: 800, height: 600 };
@@ -119,6 +120,54 @@ const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
     relativeY * PIXELS_TO_CM,
     height,
   );
+};
+
+const createRoomPerimeter = (lines: Line[]): Point[] => {
+  if (lines.length === 0) return [];
+
+  const perimeter: Point[] = [];
+  const visited = new Set<string>();
+  const pointToString = (p: Point) => `${p.x},${p.y}`;
+
+  // Create a map of points to their connected lines
+  const connections = new Map<string, Point[]>();
+  lines.forEach((line) => {
+    const startKey = pointToString(line.start);
+    const endKey = pointToString(line.end);
+
+    if (!connections.has(startKey)) connections.set(startKey, []);
+    if (!connections.has(endKey)) connections.set(endKey, []);
+
+    connections.get(startKey)!.push(line.end);
+    connections.get(endKey)!.push(line.start);
+  });
+
+  // Start from the first point and traverse
+  let currentPoint = lines[0].start;
+  perimeter.push(currentPoint);
+  visited.add(pointToString(currentPoint));
+
+  while (perimeter.length < lines.length) {
+    const currentKey = pointToString(currentPoint);
+    const connectedPoints = connections.get(currentKey) || [];
+    
+    let nextPoint: Point | null = null;
+    for (const point of connectedPoints) {
+      const pointKey = pointToString(point);
+      if (!visited.has(pointKey)) {
+        nextPoint = point;
+        break;
+      }
+    }
+
+    if (!nextPoint) break;
+    
+    perimeter.push(nextPoint);
+    visited.add(pointToString(nextPoint));
+    currentPoint = nextPoint;
+  }
+
+  return perimeter;
 };
 
 // Add these utility functions after the existing transform2DTo3D function or other utility functions
@@ -309,49 +358,7 @@ const highlightSelectedAirEntry = (
   }
 };
 
-// Utility function to find connected points and create a perimeter
-const createRoomPerimeter = (lines: Line[]): Point[] => {
-  if (lines.length === 0) return [];
 
-  const perimeter: Point[] = [];
-  const visited = new Set<string>();
-  const pointToString = (p: Point) => `${p.x},${p.y}`;
-
-  // Create a map of points to their connected lines
-  const connections = new Map<string, Point[]>();
-  lines.forEach((line) => {
-    const startKey = pointToString(line.start);
-    const endKey = pointToString(line.end);
-
-    if (!connections.has(startKey)) connections.set(startKey, []);
-    if (!connections.has(endKey)) connections.set(endKey, []);
-
-    connections.get(startKey)!.push(line.end);
-    connections.get(endKey)!.push(line.start);
-  });
-
-  // Start with the first point
-  const startPoint = lines[0].start;
-  perimeter.push(startPoint);
-  visited.add(pointToString(startPoint));
-
-  // Find connected points
-  let currentPoint = startPoint;
-  while (true) {
-    const connectedPoints = connections.get(pointToString(currentPoint)) || [];
-    const nextPoint = connectedPoints.find(
-      (p) => !visited.has(pointToString(p)),
-    );
-
-    if (!nextPoint) break;
-
-    perimeter.push(nextPoint);
-    visited.add(pointToString(nextPoint));
-    currentPoint = nextPoint;
-  }
-
-  return perimeter;
-};
 
 // Add function to get the connected floor name
 const getConnectedFloorName = (
