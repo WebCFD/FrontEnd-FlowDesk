@@ -80,6 +80,8 @@ export function RoomSketchPro({
   const [selectedTheme, setSelectedTheme] = useState(materialTheme);
   const canvas3DRef = useRef<any>(null);
   const appliedTexturesRef = useRef<boolean>(false);
+  const sceneRef = useRef<THREE.Scene | null>(null);
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
 
   // Convert props to Canvas3D format
   const canvas3DFloors = floors || {
@@ -94,19 +96,94 @@ export function RoomSketchPro({
   // Convert roomHeight from cm to Canvas3D format (which expects cm)
   const ceilingHeightCm = roomHeight;
 
+  // Callback when Canvas3D scene is ready
+  const handleSceneReady = (scene: THREE.Scene, renderer: THREE.WebGLRenderer) => {
+    console.log('RSP: Scene ready, storing references');
+    sceneRef.current = scene;
+    rendererRef.current = renderer;
+    
+    // Apply textures immediately when scene is ready
+    applyThemeTextures();
+  };
+
   // Function to apply textures to Canvas3D scene materials
   const applyThemeTextures = () => {
-    // This will be our main function to modify Three.js materials
-    // We'll implement this step by step
-    console.log('RSP: Preparing to apply textures for theme:', selectedTheme);
+    if (!sceneRef.current) {
+      console.log('RSP: Scene not ready yet, skipping texture application');
+      return;
+    }
+
+    console.log('RSP: Applying textures for theme:', selectedTheme);
+    
+    // Find all wall meshes in the scene
+    const wallMeshes: THREE.Mesh[] = [];
+    sceneRef.current.traverse((object) => {
+      if (object instanceof THREE.Mesh && object.userData?.type === 'wall') {
+        wallMeshes.push(object);
+      }
+    });
+
+    console.log(`RSP: Found ${wallMeshes.length} wall meshes to texture`);
+
+    // Apply theme-specific materials to walls
+    wallMeshes.forEach((wallMesh, index) => {
+      const originalMaterial = wallMesh.material as THREE.MeshPhongMaterial;
+      
+      // Create new material based on theme
+      let newMaterial: THREE.MeshPhongMaterial;
+      
+      switch (selectedTheme) {
+        case "modern":
+          newMaterial = new THREE.MeshPhongMaterial({
+            color: 0xd4a574, // Brick color
+            opacity: originalMaterial.opacity,
+            transparent: originalMaterial.transparent,
+            side: originalMaterial.side
+          });
+          break;
+        case "classic":
+          newMaterial = new THREE.MeshPhongMaterial({
+            color: 0x8b4513, // Wood color
+            opacity: originalMaterial.opacity,
+            transparent: originalMaterial.transparent,
+            side: originalMaterial.side
+          });
+          break;
+        case "industrial":
+          newMaterial = new THREE.MeshPhongMaterial({
+            color: 0x708090, // Steel color
+            opacity: originalMaterial.opacity,
+            transparent: originalMaterial.transparent,
+            side: originalMaterial.side
+          });
+          break;
+        default:
+          return; // Keep original material
+      }
+      
+      wallMesh.material = newMaterial;
+      console.log(`RSP: Applied ${selectedTheme} material to wall ${index}`);
+    });
+
+    // Mark that textures have been applied
+    appliedTexturesRef.current = true;
+    
+    // Force a render update
+    if (rendererRef.current && sceneRef.current) {
+      rendererRef.current.render(sceneRef.current, rendererRef.current.domElement as any);
+    }
   };
 
   useEffect(() => {
     if (onComponentMount) {
       onComponentMount();
     }
+  }, [onComponentMount]);
+
+  // Apply textures when theme changes
+  useEffect(() => {
     applyThemeTextures();
-  }, [onComponentMount, selectedTheme]);
+  }, [selectedTheme]);
 
   // Theme configurations with different Canvas3D parameters
   const themeConfig = {
@@ -163,6 +240,7 @@ export function RoomSketchPro({
         isEraserMode={false}
         onUpdateAirEntry={undefined}
         onDeleteAirEntry={undefined}
+        onSceneReady={handleSceneReady}
       />
       
       {/* Controles específicos de RSP */}
