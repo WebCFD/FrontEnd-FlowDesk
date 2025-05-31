@@ -1233,7 +1233,7 @@ export default function Canvas3D({
       // Z axis should point perpendicular to the wall (normal to the surface)
       // This is the "forward" vector in the mesh's orientation
       const zDirection = forward.clone();
-      console.log(`Air Entry ${index} - Z-axis vector:`, zDirection);
+
       
       // Y axis is always vertical
       const verticalDirection = new THREE.Vector3(0, 0, 1);
@@ -1244,11 +1244,11 @@ export default function Canvas3D({
       const xDirection = zDirection.clone()
         .applyAxisAngle(rotationAxis, Math.PI/2)
         .normalize();
-      console.log(`Air Entry ${index} - X-axis vector after 90° rotation:`, xDirection);
+
       
       // Verify perpendicularity - dot product should be close to 0
       const dotProduct = xDirection.dot(zDirection);
-      console.log(`Air Entry ${index} - Dot product X·Z: ${dotProduct.toFixed(6)} (should be close to 0 if perpendicular)`);
+
       
       // X axis - Red (Perpendicular to both Y and Z axes)
       const xAxisGeometry = new THREE.CylinderGeometry(3, 3, axisLength, 8); // Increased thickness for visibility
@@ -1260,8 +1260,8 @@ export default function Canvas3D({
       const axisOrigin = new THREE.Vector3(position.x, position.y, zPosition);
       
       // Debug the axis origin and direction vectors
-      console.log(`X-axis origin: ${axisOrigin.x}, ${axisOrigin.y}, ${axisOrigin.z}`);
-      console.log(`X-axis direction vector: ${xDirection.x}, ${xDirection.y}, ${xDirection.z}`);
+
+
       
       // Calculate the endpoint of the axis
       const xAxisEndPoint = new THREE.Vector3(
@@ -1329,7 +1329,7 @@ export default function Canvas3D({
       const zAxis = new THREE.Mesh(zAxisGeometry, zAxisMaterial);
       
       // Debug the Z axis direction vector
-      console.log(`Z-axis direction vector: ${zDirection.x}, ${zDirection.y}, ${zDirection.z}`);
+
       
       // Calculate the endpoint of the Z axis
       const zAxisEndPoint = new THREE.Vector3(
@@ -3614,7 +3614,7 @@ export default function Canvas3D({
     });
     
     // Update SceneContext with ALL floors data for comprehensive sharing with RoomSketchPro
-    console.log("Canvas3D - Updating SceneContext with all floors data");
+
     
     // First, update the entire floors object in the context
     updateGeometryData({
@@ -3626,7 +3626,7 @@ export default function Canvas3D({
     
     // Then set current floor data for immediate use
     const currentFloorData = floors[currentFloor];
-    console.log("Canvas3D - Current floor data:", currentFloorData);
+
     
     if (currentFloorData) {
       console.log(`Canvas3D - Updating current floor geometry with ${currentFloorData.lines?.length || 0} lines and ${currentFloorData.airEntries?.length || 0} airEntries`);
