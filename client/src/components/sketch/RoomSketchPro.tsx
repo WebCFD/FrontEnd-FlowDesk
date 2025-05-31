@@ -504,15 +504,49 @@ export function RoomSketchPro({
 
     // Generate textures (force regeneration for development)
     console.log('🔄 RSP: Generating textures...');
-    texturesRef.current.brick = TextureGenerator.createBrickTexture(); // Use your real brick texture
+    
+    // Load your brick texture and apply it when ready
+    TextureGenerator.createBrickTexture().then((brickTexture) => {
+      console.log('✅ RSP: Your brick texture loaded, applying to walls');
+      texturesRef.current.brick = brickTexture;
+      
+      // Re-apply textures to walls now that brick is loaded
+      if (sceneRef.current) {
+        const wallMeshes: THREE.Mesh[] = [];
+        sceneRef.current.traverse((object) => {
+          if (object instanceof THREE.Mesh && object.userData?.type === 'wall') {
+            wallMeshes.push(object);
+          }
+        });
+        
+        wallMeshes.forEach((wallMesh, index) => {
+          if (selectedTheme === "modern") {
+            const originalMaterial = wallMesh.material as THREE.MeshPhongMaterial;
+            const newMaterial = new THREE.MeshPhongMaterial({
+              map: brickTexture,
+              opacity: originalMaterial.opacity,
+              transparent: originalMaterial.transparent,
+              side: originalMaterial.side
+            });
+            wallMesh.material = newMaterial;
+            console.log(`✅ RSP: Applied your brick texture to wall ${index}`);
+          }
+        });
+      }
+    }).catch((error) => {
+      console.error('❌ RSP: Failed to load your brick texture, using fallback');
+      texturesRef.current.brick = createBrickTexture();
+    });
+    
+    // Generate other textures immediately
     texturesRef.current.wood = createWoodTexture();
     texturesRef.current.metal = createMetalTexture();
     texturesRef.current.door = createDoorTexture();
     texturesRef.current.window = createWindowTexture();
     texturesRef.current.vent = createVentTexture();
-    console.log('✅ RSP: Generated textures including your brick texture:', texturesRef.current.brick);
+    console.log('✅ RSP: Generated procedural textures');
 
-    // Apply theme-specific materials to walls
+    // Apply theme-specific materials to walls (only non-modern themes since modern waits for brick texture)
     wallMeshes.forEach((wallMesh, index) => {
       const originalMaterial = wallMesh.material as THREE.MeshPhongMaterial;
       
@@ -525,15 +559,9 @@ export function RoomSketchPro({
       
       switch (selectedTheme) {
         case "modern":
-          console.log('RSP: Applying modern theme with brick texture:', texturesRef.current.brick);
-          newMaterial = new THREE.MeshPhongMaterial({
-            map: texturesRef.current.brick, // Use brick texture
-            opacity: originalMaterial.opacity,
-            transparent: originalMaterial.transparent,
-            side: originalMaterial.side
-          });
-          console.log('RSP: Created modern material:', newMaterial);
-          break;
+          // Skip modern theme here - handled in brick texture promise above
+          console.log('RSP: Modern theme will be applied when brick texture loads');
+          return;
         case "classic":
           newMaterial = new THREE.MeshPhongMaterial({
             map: texturesRef.current.wood, // Use wood texture

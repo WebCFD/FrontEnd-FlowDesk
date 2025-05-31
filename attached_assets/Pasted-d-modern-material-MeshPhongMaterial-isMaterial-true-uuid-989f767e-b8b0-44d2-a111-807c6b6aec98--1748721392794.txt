@@ -1,0 +1,457 @@
+d modern material: MeshPhongMaterial {isMaterial: true, uuid: '989f767e-b8b0-44d2-a111-807c6b6aec98', name: '', type: 'MeshPhongMaterial', blending: 1, …}
+RoomSketchPro.tsx:558 RSP: Applied modern texture to wall 7
+RoomSketchPro.tsx:574 RSP: Found 3 air entry meshes to texture
+RoomSketchPro.tsx:629 RSP: Applied door texture to air entry 0 with opacity 1
+RoomSketchPro.tsx:629 RSP: Applied vent texture to air entry 1 with opacity 1
+RoomSketchPro.tsx:629 RSP: Applied window texture to air entry 2 with opacity 1
+RoomSketchPro.tsx:638 THREE.WebGLRenderer: Texture marked for update but no image data found.
+setTexture2D @ chunk-DWCBFINY.js?v=46cbfa49:27653
+setValueT1 @ chunk-DWCBFINY.js?v=46cbfa49:24308
+upload @ chunk-DWCBFINY.js?v=46cbfa49:24634
+setProgram @ chunk-DWCBFINY.js?v=46cbfa49:30767
+WebGLRenderer.renderBufferDirect @ chunk-DWCBFINY.js?v=46cbfa49:30060
+renderObject @ chunk-DWCBFINY.js?v=46cbfa49:30494
+renderObjects @ chunk-DWCBFINY.js?v=46cbfa49:30482
+renderScene @ chunk-DWCBFINY.js?v=46cbfa49:30403
+WebGLRenderer.render @ chunk-DWCBFINY.js?v=46cbfa49:30312
+applyThemeTextures @ RoomSketchPro.tsx:638
+tryApplyTextures @ RoomSketchPro.tsx:459
+(anonymous) @ RoomSketchPro.tsx:465
+setTimeout
+handleSceneReady @ RoomSketchPro.tsx:465
+(anonymous) @ Canvas3D.tsx:1877
+commitHookEffectListMount @ chunk-WERSD76P.js?v=46cbfa49:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=46cbfa49:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=46cbfa49:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=46cbfa49:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=46cbfa49:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=46cbfa49:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=46cbfa49:19447
+commitRootImpl @ chunk-WERSD76P.js?v=46cbfa49:19416
+commitRoot @ chunk-WERSD76P.js?v=46cbfa49:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=46cbfa49:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=46cbfa49:9119
+(anonymous) @ chunk-WERSD76P.js?v=46cbfa49:18627Understand this warningAI
+RoomSketchPro.tsx:638 THREE.WebGLRenderer: Texture marked for update but no image data found.
+setTexture2D @ chunk-DWCBFINY.js?v=46cbfa49:27653
+setValueT1 @ chunk-DWCBFINY.js?v=46cbfa49:24308
+upload @ chunk-DWCBFINY.js?v=46cbfa49:24634
+setProgram @ chunk-DWCBFINY.js?v=46cbfa49:30767
+WebGLRenderer.renderBufferDirect @ chunk-DWCBFINY.js?v=46cbfa49:30060
+renderObject @ chunk-DWCBFINY.js?v=46cbfa49:30497
+renderObjects @ chunk-DWCBFINY.js?v=46cbfa49:30482
+renderScene @ chunk-DWCBFINY.js?v=46cbfa49:30403
+WebGLRenderer.render @ chunk-DWCBFINY.js?v=46cbfa49:30312
+applyThemeTextures @ RoomSketchPro.tsx:638
+tryApplyTextures @ RoomSketchPro.tsx:459
+(anonymous) @ RoomSketchPro.tsx:465
+setTimeout
+handleSceneReady @ RoomSketchPro.tsx:465
+(anonymous) @ Canvas3D.tsx:1877
+commitHookEffectListMount @ chunk-WERSD76P.js?v=46cbfa49:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=46cbfa49:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=46cbfa49:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=46cbfa49:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=46cbfa49:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=46cbfa49:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=46cbfa49:19447
+commitRootImpl @ chunk-WERSD76P.js?v=46cbfa49:19416
+commitRoot @ chunk-WERSD76P.js?v=46cbfa49:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=46cbfa49:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=46cbfa49:9119
+(anonymous) @ chunk-WERSD76P.js?v=46cbfa49:18627Understand this warningAI
+RoomSketchPro.tsx:638 THREE.WebGLRenderer: Texture marked for update but no image data found.
+setTexture2D @ chunk-DWCBFINY.js?v=46cbfa49:27653
+setValueT1 @ chunk-DWCBFINY.js?v=46cbfa49:24308
+upload @ chunk-DWCBFINY.js?v=46cbfa49:24634
+setProgram @ chunk-DWCBFINY.js?v=46cbfa49:30767
+WebGLRenderer.renderBufferDirect @ chunk-DWCBFINY.js?v=46cbfa49:30060
+renderObject @ chunk-DWCBFINY.js?v=46cbfa49:30494
+renderObjects @ chunk-DWCBFINY.js?v=46cbfa49:30482
+renderScene @ chunk-DWCBFINY.js?v=46cbfa49:30403
+WebGLRenderer.render @ chunk-DWCBFINY.js?v=46cbfa49:30312
+applyThemeTextures @ RoomSketchPro.tsx:638
+tryApplyTextures @ RoomSketchPro.tsx:459
+(anonymous) @ RoomSketchPro.tsx:465
+setTimeout
+handleSceneReady @ RoomSketchPro.tsx:465
+(anonymous) @ Canvas3D.tsx:1877
+commitHookEffectListMount @ chunk-WERSD76P.js?v=46cbfa49:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=46cbfa49:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=46cbfa49:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=46cbfa49:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=46cbfa49:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=46cbfa49:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=46cbfa49:19447
+commitRootImpl @ chunk-WERSD76P.js?v=46cbfa49:19416
+commitRoot @ chunk-WERSD76P.js?v=46cbfa49:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=46cbfa49:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=46cbfa49:9119
+(anonymous) @ chunk-WERSD76P.js?v=46cbfa49:18627Understand this warningAI
+RoomSketchPro.tsx:638 THREE.WebGLRenderer: Texture marked for update but no image data found.
+setTexture2D @ chunk-DWCBFINY.js?v=46cbfa49:27653
+setValueT1 @ chunk-DWCBFINY.js?v=46cbfa49:24308
+upload @ chunk-DWCBFINY.js?v=46cbfa49:24634
+setProgram @ chunk-DWCBFINY.js?v=46cbfa49:30767
+WebGLRenderer.renderBufferDirect @ chunk-DWCBFINY.js?v=46cbfa49:30060
+renderObject @ chunk-DWCBFINY.js?v=46cbfa49:30497
+renderObjects @ chunk-DWCBFINY.js?v=46cbfa49:30482
+renderScene @ chunk-DWCBFINY.js?v=46cbfa49:30403
+WebGLRenderer.render @ chunk-DWCBFINY.js?v=46cbfa49:30312
+applyThemeTextures @ RoomSketchPro.tsx:638
+tryApplyTextures @ RoomSketchPro.tsx:459
+(anonymous) @ RoomSketchPro.tsx:465
+setTimeout
+handleSceneReady @ RoomSketchPro.tsx:465
+(anonymous) @ Canvas3D.tsx:1877
+commitHookEffectListMount @ chunk-WERSD76P.js?v=46cbfa49:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=46cbfa49:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=46cbfa49:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=46cbfa49:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=46cbfa49:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=46cbfa49:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=46cbfa49:19447
+commitRootImpl @ chunk-WERSD76P.js?v=46cbfa49:19416
+commitRoot @ chunk-WERSD76P.js?v=46cbfa49:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=46cbfa49:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=46cbfa49:9119
+(anonymous) @ chunk-WERSD76P.js?v=46cbfa49:18627Understand this warningAI
+RoomSketchPro.tsx:638 THREE.WebGLRenderer: Texture marked for update but no image data found.
+setTexture2D @ chunk-DWCBFINY.js?v=46cbfa49:27653
+setValueT1 @ chunk-DWCBFINY.js?v=46cbfa49:24308
+upload @ chunk-DWCBFINY.js?v=46cbfa49:24634
+setProgram @ chunk-DWCBFINY.js?v=46cbfa49:30767
+WebGLRenderer.renderBufferDirect @ chunk-DWCBFINY.js?v=46cbfa49:30060
+renderObject @ chunk-DWCBFINY.js?v=46cbfa49:30494
+renderObjects @ chunk-DWCBFINY.js?v=46cbfa49:30482
+renderScene @ chunk-DWCBFINY.js?v=46cbfa49:30403
+WebGLRenderer.render @ chunk-DWCBFINY.js?v=46cbfa49:30312
+applyThemeTextures @ RoomSketchPro.tsx:638
+tryApplyTextures @ RoomSketchPro.tsx:459
+(anonymous) @ RoomSketchPro.tsx:465
+setTimeout
+handleSceneReady @ RoomSketchPro.tsx:465
+(anonymous) @ Canvas3D.tsx:1877
+commitHookEffectListMount @ chunk-WERSD76P.js?v=46cbfa49:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=46cbfa49:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=46cbfa49:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=46cbfa49:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=46cbfa49:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=46cbfa49:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=46cbfa49:19447
+commitRootImpl @ chunk-WERSD76P.js?v=46cbfa49:19416
+commitRoot @ chunk-WERSD76P.js?v=46cbfa49:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=46cbfa49:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=46cbfa49:9119
+(anonymous) @ chunk-WERSD76P.js?v=46cbfa49:18627Understand this warningAI
+RoomSketchPro.tsx:638 THREE.WebGLRenderer: Texture marked for update but no image data found.
+setTexture2D @ chunk-DWCBFINY.js?v=46cbfa49:27653
+setValueT1 @ chunk-DWCBFINY.js?v=46cbfa49:24308
+upload @ chunk-DWCBFINY.js?v=46cbfa49:24634
+setProgram @ chunk-DWCBFINY.js?v=46cbfa49:30767
+WebGLRenderer.renderBufferDirect @ chunk-DWCBFINY.js?v=46cbfa49:30060
+renderObject @ chunk-DWCBFINY.js?v=46cbfa49:30497
+renderObjects @ chunk-DWCBFINY.js?v=46cbfa49:30482
+renderScene @ chunk-DWCBFINY.js?v=46cbfa49:30403
+WebGLRenderer.render @ chunk-DWCBFINY.js?v=46cbfa49:30312
+applyThemeTextures @ RoomSketchPro.tsx:638
+tryApplyTextures @ RoomSketchPro.tsx:459
+(anonymous) @ RoomSketchPro.tsx:465
+setTimeout
+handleSceneReady @ RoomSketchPro.tsx:465
+(anonymous) @ Canvas3D.tsx:1877
+commitHookEffectListMount @ chunk-WERSD76P.js?v=46cbfa49:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=46cbfa49:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=46cbfa49:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=46cbfa49:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=46cbfa49:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=46cbfa49:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=46cbfa49:19447
+commitRootImpl @ chunk-WERSD76P.js?v=46cbfa49:19416
+commitRoot @ chunk-WERSD76P.js?v=46cbfa49:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=46cbfa49:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=46cbfa49:9119
+(anonymous) @ chunk-WERSD76P.js?v=46cbfa49:18627Understand this warningAI
+RoomSketchPro.tsx:638 THREE.WebGLRenderer: Texture marked for update but no image data found.
+setTexture2D @ chunk-DWCBFINY.js?v=46cbfa49:27653
+setValueT1 @ chunk-DWCBFINY.js?v=46cbfa49:24308
+upload @ chunk-DWCBFINY.js?v=46cbfa49:24634
+setProgram @ chunk-DWCBFINY.js?v=46cbfa49:30767
+WebGLRenderer.renderBufferDirect @ chunk-DWCBFINY.js?v=46cbfa49:30060
+renderObject @ chunk-DWCBFINY.js?v=46cbfa49:30494
+renderObjects @ chunk-DWCBFINY.js?v=46cbfa49:30482
+renderScene @ chunk-DWCBFINY.js?v=46cbfa49:30403
+WebGLRenderer.render @ chunk-DWCBFINY.js?v=46cbfa49:30312
+applyThemeTextures @ RoomSketchPro.tsx:638
+tryApplyTextures @ RoomSketchPro.tsx:459
+(anonymous) @ RoomSketchPro.tsx:465
+setTimeout
+handleSceneReady @ RoomSketchPro.tsx:465
+(anonymous) @ Canvas3D.tsx:1877
+commitHookEffectListMount @ chunk-WERSD76P.js?v=46cbfa49:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=46cbfa49:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=46cbfa49:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=46cbfa49:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=46cbfa49:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=46cbfa49:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=46cbfa49:19447
+commitRootImpl @ chunk-WERSD76P.js?v=46cbfa49:19416
+commitRoot @ chunk-WERSD76P.js?v=46cbfa49:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=46cbfa49:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=46cbfa49:9119
+(anonymous) @ chunk-WERSD76P.js?v=46cbfa49:18627Understand this warningAI
+RoomSketchPro.tsx:638 THREE.WebGLRenderer: Texture marked for update but no image data found.
+setTexture2D @ chunk-DWCBFINY.js?v=46cbfa49:27653
+setValueT1 @ chunk-DWCBFINY.js?v=46cbfa49:24308
+upload @ chunk-DWCBFINY.js?v=46cbfa49:24634
+setProgram @ chunk-DWCBFINY.js?v=46cbfa49:30767
+WebGLRenderer.renderBufferDirect @ chunk-DWCBFINY.js?v=46cbfa49:30060
+renderObject @ chunk-DWCBFINY.js?v=46cbfa49:30497
+renderObjects @ chunk-DWCBFINY.js?v=46cbfa49:30482
+renderScene @ chunk-DWCBFINY.js?v=46cbfa49:30403
+WebGLRenderer.render @ chunk-DWCBFINY.js?v=46cbfa49:30312
+applyThemeTextures @ RoomSketchPro.tsx:638
+tryApplyTextures @ RoomSketchPro.tsx:459
+(anonymous) @ RoomSketchPro.tsx:465
+setTimeout
+handleSceneReady @ RoomSketchPro.tsx:465
+(anonymous) @ Canvas3D.tsx:1877
+commitHookEffectListMount @ chunk-WERSD76P.js?v=46cbfa49:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=46cbfa49:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=46cbfa49:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=46cbfa49:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=46cbfa49:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=46cbfa49:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=46cbfa49:19447
+commitRootImpl @ chunk-WERSD76P.js?v=46cbfa49:19416
+commitRoot @ chunk-WERSD76P.js?v=46cbfa49:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=46cbfa49:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=46cbfa49:9119
+(anonymous) @ chunk-WERSD76P.js?v=46cbfa49:18627Understand this warningAI
+RoomSketchPro.tsx:638 THREE.WebGLRenderer: Texture marked for update but no image data found.
+setTexture2D @ chunk-DWCBFINY.js?v=46cbfa49:27653
+setValueT1 @ chunk-DWCBFINY.js?v=46cbfa49:24308
+upload @ chunk-DWCBFINY.js?v=46cbfa49:24634
+setProgram @ chunk-DWCBFINY.js?v=46cbfa49:30767
+WebGLRenderer.renderBufferDirect @ chunk-DWCBFINY.js?v=46cbfa49:30060
+renderObject @ chunk-DWCBFINY.js?v=46cbfa49:30494
+renderObjects @ chunk-DWCBFINY.js?v=46cbfa49:30482
+renderScene @ chunk-DWCBFINY.js?v=46cbfa49:30403
+WebGLRenderer.render @ chunk-DWCBFINY.js?v=46cbfa49:30312
+applyThemeTextures @ RoomSketchPro.tsx:638
+tryApplyTextures @ RoomSketchPro.tsx:459
+(anonymous) @ RoomSketchPro.tsx:465
+setTimeout
+handleSceneReady @ RoomSketchPro.tsx:465
+(anonymous) @ Canvas3D.tsx:1877
+commitHookEffectListMount @ chunk-WERSD76P.js?v=46cbfa49:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=46cbfa49:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=46cbfa49:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=46cbfa49:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=46cbfa49:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=46cbfa49:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=46cbfa49:19447
+commitRootImpl @ chunk-WERSD76P.js?v=46cbfa49:19416
+commitRoot @ chunk-WERSD76P.js?v=46cbfa49:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=46cbfa49:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=46cbfa49:9119
+(anonymous) @ chunk-WERSD76P.js?v=46cbfa49:18627Understand this warningAI
+RoomSketchPro.tsx:638 THREE.WebGLRenderer: Texture marked for update but no image data found.
+setTexture2D @ chunk-DWCBFINY.js?v=46cbfa49:27653
+setValueT1 @ chunk-DWCBFINY.js?v=46cbfa49:24308
+upload @ chunk-DWCBFINY.js?v=46cbfa49:24634
+setProgram @ chunk-DWCBFINY.js?v=46cbfa49:30767
+WebGLRenderer.renderBufferDirect @ chunk-DWCBFINY.js?v=46cbfa49:30060
+renderObject @ chunk-DWCBFINY.js?v=46cbfa49:30497
+renderObjects @ chunk-DWCBFINY.js?v=46cbfa49:30482
+renderScene @ chunk-DWCBFINY.js?v=46cbfa49:30403
+WebGLRenderer.render @ chunk-DWCBFINY.js?v=46cbfa49:30312
+applyThemeTextures @ RoomSketchPro.tsx:638
+tryApplyTextures @ RoomSketchPro.tsx:459
+(anonymous) @ RoomSketchPro.tsx:465
+setTimeout
+handleSceneReady @ RoomSketchPro.tsx:465
+(anonymous) @ Canvas3D.tsx:1877
+commitHookEffectListMount @ chunk-WERSD76P.js?v=46cbfa49:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=46cbfa49:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=46cbfa49:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=46cbfa49:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=46cbfa49:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=46cbfa49:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=46cbfa49:19447
+commitRootImpl @ chunk-WERSD76P.js?v=46cbfa49:19416
+commitRoot @ chunk-WERSD76P.js?v=46cbfa49:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=46cbfa49:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=46cbfa49:9119
+(anonymous) @ chunk-WERSD76P.js?v=46cbfa49:18627Understand this warningAI
+RoomSketchPro.tsx:638 THREE.WebGLRenderer: Texture marked for update but no image data found.
+setTexture2D @ chunk-DWCBFINY.js?v=46cbfa49:27653
+setValueT1 @ chunk-DWCBFINY.js?v=46cbfa49:24308
+upload @ chunk-DWCBFINY.js?v=46cbfa49:24634
+setProgram @ chunk-DWCBFINY.js?v=46cbfa49:30767
+WebGLRenderer.renderBufferDirect @ chunk-DWCBFINY.js?v=46cbfa49:30060
+renderObject @ chunk-DWCBFINY.js?v=46cbfa49:30494
+renderObjects @ chunk-DWCBFINY.js?v=46cbfa49:30482
+renderScene @ chunk-DWCBFINY.js?v=46cbfa49:30403
+WebGLRenderer.render @ chunk-DWCBFINY.js?v=46cbfa49:30312
+applyThemeTextures @ RoomSketchPro.tsx:638
+tryApplyTextures @ RoomSketchPro.tsx:459
+(anonymous) @ RoomSketchPro.tsx:465
+setTimeout
+handleSceneReady @ RoomSketchPro.tsx:465
+(anonymous) @ Canvas3D.tsx:1877
+commitHookEffectListMount @ chunk-WERSD76P.js?v=46cbfa49:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=46cbfa49:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=46cbfa49:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=46cbfa49:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=46cbfa49:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=46cbfa49:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=46cbfa49:19447
+commitRootImpl @ chunk-WERSD76P.js?v=46cbfa49:19416
+commitRoot @ chunk-WERSD76P.js?v=46cbfa49:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=46cbfa49:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=46cbfa49:9119
+(anonymous) @ chunk-WERSD76P.js?v=46cbfa49:18627Understand this warningAI
+RoomSketchPro.tsx:638 THREE.WebGLRenderer: Texture marked for update but no image data found.
+setTexture2D @ chunk-DWCBFINY.js?v=46cbfa49:27653
+setValueT1 @ chunk-DWCBFINY.js?v=46cbfa49:24308
+upload @ chunk-DWCBFINY.js?v=46cbfa49:24634
+setProgram @ chunk-DWCBFINY.js?v=46cbfa49:30767
+WebGLRenderer.renderBufferDirect @ chunk-DWCBFINY.js?v=46cbfa49:30060
+renderObject @ chunk-DWCBFINY.js?v=46cbfa49:30497
+renderObjects @ chunk-DWCBFINY.js?v=46cbfa49:30482
+renderScene @ chunk-DWCBFINY.js?v=46cbfa49:30403
+WebGLRenderer.render @ chunk-DWCBFINY.js?v=46cbfa49:30312
+applyThemeTextures @ RoomSketchPro.tsx:638
+tryApplyTextures @ RoomSketchPro.tsx:459
+(anonymous) @ RoomSketchPro.tsx:465
+setTimeout
+handleSceneReady @ RoomSketchPro.tsx:465
+(anonymous) @ Canvas3D.tsx:1877
+commitHookEffectListMount @ chunk-WERSD76P.js?v=46cbfa49:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=46cbfa49:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=46cbfa49:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=46cbfa49:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=46cbfa49:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=46cbfa49:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=46cbfa49:19447
+commitRootImpl @ chunk-WERSD76P.js?v=46cbfa49:19416
+commitRoot @ chunk-WERSD76P.js?v=46cbfa49:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=46cbfa49:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=46cbfa49:9119
+(anonymous) @ chunk-WERSD76P.js?v=46cbfa49:18627Understand this warningAI
+RoomSketchPro.tsx:638 THREE.WebGLRenderer: Texture marked for update but no image data found.
+setTexture2D @ chunk-DWCBFINY.js?v=46cbfa49:27653
+setValueT1 @ chunk-DWCBFINY.js?v=46cbfa49:24308
+upload @ chunk-DWCBFINY.js?v=46cbfa49:24634
+setProgram @ chunk-DWCBFINY.js?v=46cbfa49:30767
+WebGLRenderer.renderBufferDirect @ chunk-DWCBFINY.js?v=46cbfa49:30060
+renderObject @ chunk-DWCBFINY.js?v=46cbfa49:30494
+renderObjects @ chunk-DWCBFINY.js?v=46cbfa49:30482
+renderScene @ chunk-DWCBFINY.js?v=46cbfa49:30403
+WebGLRenderer.render @ chunk-DWCBFINY.js?v=46cbfa49:30312
+applyThemeTextures @ RoomSketchPro.tsx:638
+tryApplyTextures @ RoomSketchPro.tsx:459
+(anonymous) @ RoomSketchPro.tsx:465
+setTimeout
+handleSceneReady @ RoomSketchPro.tsx:465
+(anonymous) @ Canvas3D.tsx:1877
+commitHookEffectListMount @ chunk-WERSD76P.js?v=46cbfa49:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=46cbfa49:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=46cbfa49:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=46cbfa49:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=46cbfa49:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=46cbfa49:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=46cbfa49:19447
+commitRootImpl @ chunk-WERSD76P.js?v=46cbfa49:19416
+commitRoot @ chunk-WERSD76P.js?v=46cbfa49:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=46cbfa49:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=46cbfa49:9119
+(anonymous) @ chunk-WERSD76P.js?v=46cbfa49:18627Understand this warningAI
+RoomSketchPro.tsx:638 THREE.WebGLRenderer: Texture marked for update but no image data found.
+setTexture2D @ chunk-DWCBFINY.js?v=46cbfa49:27653
+setValueT1 @ chunk-DWCBFINY.js?v=46cbfa49:24308
+upload @ chunk-DWCBFINY.js?v=46cbfa49:24634
+setProgram @ chunk-DWCBFINY.js?v=46cbfa49:30767
+WebGLRenderer.renderBufferDirect @ chunk-DWCBFINY.js?v=46cbfa49:30060
+renderObject @ chunk-DWCBFINY.js?v=46cbfa49:30497
+renderObjects @ chunk-DWCBFINY.js?v=46cbfa49:30482
+renderScene @ chunk-DWCBFINY.js?v=46cbfa49:30403
+WebGLRenderer.render @ chunk-DWCBFINY.js?v=46cbfa49:30312
+applyThemeTextures @ RoomSketchPro.tsx:638
+tryApplyTextures @ RoomSketchPro.tsx:459
+(anonymous) @ RoomSketchPro.tsx:465
+setTimeout
+handleSceneReady @ RoomSketchPro.tsx:465
+(anonymous) @ Canvas3D.tsx:1877
+commitHookEffectListMount @ chunk-WERSD76P.js?v=46cbfa49:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=46cbfa49:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=46cbfa49:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=46cbfa49:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=46cbfa49:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=46cbfa49:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=46cbfa49:19447
+commitRootImpl @ chunk-WERSD76P.js?v=46cbfa49:19416
+commitRoot @ chunk-WERSD76P.js?v=46cbfa49:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=46cbfa49:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=46cbfa49:9119
+(anonymous) @ chunk-WERSD76P.js?v=46cbfa49:18627Understand this warningAI
+RoomSketchPro.tsx:638 THREE.WebGLRenderer: Texture marked for update but no image data found.
+setTexture2D @ chunk-DWCBFINY.js?v=46cbfa49:27653
+setValueT1 @ chunk-DWCBFINY.js?v=46cbfa49:24308
+upload @ chunk-DWCBFINY.js?v=46cbfa49:24634
+setProgram @ chunk-DWCBFINY.js?v=46cbfa49:30767
+WebGLRenderer.renderBufferDirect @ chunk-DWCBFINY.js?v=46cbfa49:30060
+renderObject @ chunk-DWCBFINY.js?v=46cbfa49:30494
+renderObjects @ chunk-DWCBFINY.js?v=46cbfa49:30482
+renderScene @ chunk-DWCBFINY.js?v=46cbfa49:30403
+WebGLRenderer.render @ chunk-DWCBFINY.js?v=46cbfa49:30312
+applyThemeTextures @ RoomSketchPro.tsx:638
+tryApplyTextures @ RoomSketchPro.tsx:459
+(anonymous) @ RoomSketchPro.tsx:465
+setTimeout
+handleSceneReady @ RoomSketchPro.tsx:465
+(anonymous) @ Canvas3D.tsx:1877
+commitHookEffectListMount @ chunk-WERSD76P.js?v=46cbfa49:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=46cbfa49:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=46cbfa49:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=46cbfa49:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=46cbfa49:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=46cbfa49:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=46cbfa49:19447
+commitRootImpl @ chunk-WERSD76P.js?v=46cbfa49:19416
+commitRoot @ chunk-WERSD76P.js?v=46cbfa49:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=46cbfa49:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=46cbfa49:9119
+(anonymous) @ chunk-WERSD76P.js?v=46cbfa49:18627Understand this warningAI
+RoomSketchPro.tsx:638 THREE.WebGLRenderer: Texture marked for update but no image data found.
+setTexture2D @ chunk-DWCBFINY.js?v=46cbfa49:27653
+setValueT1 @ chunk-DWCBFINY.js?v=46cbfa49:24308
+upload @ chunk-DWCBFINY.js?v=46cbfa49:24634
+setProgram @ chunk-DWCBFINY.js?v=46cbfa49:30767
+WebGLRenderer.renderBufferDirect @ chunk-DWCBFINY.js?v=46cbfa49:30060
+renderObject @ chunk-DWCBFINY.js?v=46cbfa49:30497
+renderObjects @ chunk-DWCBFINY.js?v=46cbfa49:30482
+renderScene @ chunk-DWCBFINY.js?v=46cbfa49:30403
+WebGLRenderer.render @ chunk-DWCBFINY.js?v=46cbfa49:30312
+applyThemeTextures @ RoomSketchPro.tsx:638
+tryApplyTextures @ RoomSketchPro.tsx:459
+(anonymous) @ RoomSketchPro.tsx:465
+setTimeout
+handleSceneReady @ RoomSketchPro.tsx:465
+(anonymous) @ Canvas3D.tsx:1877
+commitHookEffectListMount @ chunk-WERSD76P.js?v=46cbfa49:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=46cbfa49:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=46cbfa49:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=46cbfa49:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=46cbfa49:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=46cbfa49:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=46cbfa49:19447
+commitRootImpl @ chunk-WERSD76P.js?v=46cbfa49:19416
+commitRoot @ chunk-WERSD76P.js?v=46cbfa49:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=46cbfa49:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=46cbfa49:9119
+(anonymous) @ chunk-WERSD76P.js?v=46cbfa49:18627Understand this warningAI
+textureGenerator.ts:16 🧱 TextureGenerator: Your brick texture loaded successfully! 218 x 219
+textureGenerator.ts:17 🧱 TextureGenerator: Texture object: _Texture {isTexture: true, uuid: 'e71a671e-ddf4-410d-9dfc-f53d1a36f83d', name: '', source: Source, mipmaps: Array(0), …}
+textureGenerator.ts:21 🧱 TextureGenerator: Forced texture update
