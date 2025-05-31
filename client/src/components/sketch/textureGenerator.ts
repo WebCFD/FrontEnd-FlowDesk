@@ -5,28 +5,22 @@ import * as THREE from "three";
  */
 export class TextureGenerator {
   /**
-   * Carga tu textura de ladrillos real con Promise
+   * Carga la textura de ladrillos real
    */
   static createBrickTexture(): Promise<THREE.Texture> {
-    console.log('🧱 TextureGenerator: Starting to load your brick texture');
     return new Promise((resolve, reject) => {
       const loader = new THREE.TextureLoader();
       const texture = loader.load(
         '/brick_texture.png',
         (loadedTexture) => {
-          console.log('🧱 TextureGenerator: Your brick texture loaded successfully!', loadedTexture.image.width, 'x', loadedTexture.image.height);
           loadedTexture.wrapS = THREE.RepeatWrapping;
           loadedTexture.wrapT = THREE.RepeatWrapping;
-          loadedTexture.repeat.set(1, 1); // Test with no repeat first
+          loadedTexture.repeat.set(2, 2);
           loadedTexture.needsUpdate = true;
-          console.log('🧱 TextureGenerator: Texture ready to use');
           resolve(loadedTexture);
         },
-        (progress) => {
-          console.log('🧱 TextureGenerator: Loading progress:', progress);
-        },
+        undefined,
         (error) => {
-          console.error('🧱 TextureGenerator: Failed to load your brick texture:', error);
           reject(error);
         }
       );

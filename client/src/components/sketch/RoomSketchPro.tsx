@@ -500,29 +500,16 @@ export function RoomSketchPro({
       }
     });
 
-    console.log(`RSP: Found ${wallMeshes.length} wall meshes to texture`);
 
-    // Generate textures (force regeneration for development)
-    console.log('🔄 RSP: Generating textures...');
-    
-    // Simple test: Create an HTML img element to verify image loading
-    console.log('🧪 SIMPLE TEST: Testing image loading with HTML img element');
-    const testImg = new Image();
-    testImg.onload = () => {
-      console.log('✅ SIMPLE TEST: Image loaded successfully via HTML img', testImg.width, 'x', testImg.height);
-    };
-    testImg.onerror = (error) => {
-      console.error('❌ SIMPLE TEST: Image failed to load via HTML img', error);
-    };
-    testImg.src = '/brick_texture.png';
+
+    // Generate textures
     
     // Load your brick texture and apply it when ready
     TextureGenerator.createBrickTexture().then((brickTexture) => {
-      console.log('✅ RSP: Your brick texture loaded, applying to walls');
       texturesRef.current.brick = brickTexture;
       
-      // Re-apply textures to walls now that brick is loaded
-      if (sceneRef.current) {
+      // Apply texture to walls for modern theme
+      if (sceneRef.current && selectedTheme === "modern") {
         const wallMeshes: THREE.Mesh[] = [];
         sceneRef.current.traverse((object) => {
           if (object instanceof THREE.Mesh && object.userData?.type === 'wall') {
@@ -530,95 +517,39 @@ export function RoomSketchPro({
           }
         });
         
-        wallMeshes.forEach((wallMesh, index) => {
-          if (selectedTheme === "modern") {
-            const originalMaterial = wallMesh.material as THREE.MeshPhongMaterial;
+        wallMeshes.forEach((wallMesh) => {
+          const originalMaterial = wallMesh.material as THREE.MeshPhongMaterial;
+          const geometry = wallMesh.geometry as THREE.BufferGeometry;
+          
+          // Generate UV coordinates if missing
+          const uvAttribute = geometry.getAttribute('uv');
+          if (!uvAttribute) {
+            const positions = geometry.getAttribute('position');
+            const uvs = new Float32Array(positions.count * 2);
             
-            // Test: Create a bright colored material first to verify the wall can change
-            console.log(`🧪 TEST: Creating test material for wall ${index}`);
-            const testMaterial = new THREE.MeshPhongMaterial({
-              color: 0xff0000, // Bright red
-              opacity: originalMaterial.opacity,
-              transparent: originalMaterial.transparent,
-              side: originalMaterial.side
-            });
-            wallMesh.material = testMaterial;
-            console.log(`🔴 TEST: Applied red material to wall ${index}`);
+            for (let i = 0; i < positions.count; i++) {
+              const u = (i % 2);
+              const v = Math.floor(i / 2) % 2;
+              uvs[i * 2] = u;
+              uvs[i * 2 + 1] = v;
+            }
             
-            // Wait 2 seconds then apply the brick texture
-            setTimeout(() => {
-              console.log(`🧱 TEST: About to apply brick texture to wall ${index}`);
-              console.log(`🧱 TEST: Brick texture object:`, brickTexture);
-              console.log(`🧱 TEST: Brick texture image:`, brickTexture.image);
-              console.log(`🧱 TEST: Texture loaded:`, brickTexture.image?.complete);
-              
-              const newMaterial = new THREE.MeshPhongMaterial({
-                map: brickTexture,
-                opacity: originalMaterial.opacity,
-                transparent: originalMaterial.transparent,
-                side: originalMaterial.side
-              });
-              
-              // Test: Apply bright green first to see if material changes
-              const greenMaterial = new THREE.MeshPhongMaterial({
-                color: 0x00ff00, // Bright green
-                opacity: originalMaterial.opacity,
-                transparent: originalMaterial.transparent,
-                side: originalMaterial.side
-              });
-              wallMesh.material = greenMaterial;
-              console.log(`🟢 TEST: Applied green material to wall ${index}`);
-              
-              // Wait 1 second then apply texture
-              setTimeout(() => {
-                // Check UV coordinates
-                const geometry = wallMesh.geometry as THREE.BufferGeometry;
-                const uvAttribute = geometry.getAttribute('uv');
-                console.log(`🔍 UV Check wall ${index}:`, {
-                  hasUV: !!uvAttribute,
-                  uvCount: uvAttribute?.count,
-                  uvArray: uvAttribute?.array?.slice(0, 16) // First 8 UV pairs
-                });
-                
-                // SOLUTION: Generate UV coordinates if missing
-                if (!uvAttribute) {
-                  console.log(`🔧 FIXING: Generating UV coordinates for wall ${index}`);
-                  const positions = geometry.getAttribute('position');
-                  const uvs = new Float32Array(positions.count * 2);
-                  
-                  // Generate simple UV mapping for each vertex
-                  for (let i = 0; i < positions.count; i++) {
-                    const u = (i % 2); // Simple 0 or 1 pattern
-                    const v = Math.floor(i / 2) % 2; // Simple 0 or 1 pattern
-                    uvs[i * 2] = u;
-                    uvs[i * 2 + 1] = v;
-                  }
-                  
-                  geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
-                  console.log(`✅ FIXED: Generated UV coordinates for wall ${index}`);
-                }
-                
-                wallMesh.material = newMaterial;
-                wallMesh.material.needsUpdate = true;
-                console.log(`🧱 TEST: Applied brick texture material to wall ${index}`);
-                console.log(`🧱 TEST: Material map:`, newMaterial.map);
-                
-                // Force geometry update
-                geometry.computeBoundingBox();
-                geometry.computeBoundingSphere();
-              }, 1000);
-            }, 2000);
+            geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
           }
+          
+          const newMaterial = new THREE.MeshPhongMaterial({
+            map: brickTexture,
+            opacity: originalMaterial.opacity,
+            transparent: originalMaterial.transparent,
+            side: originalMaterial.side
+          });
+          
+          wallMesh.material = newMaterial;
+          wallMesh.material.needsUpdate = true;
         });
-        
-        // Force renderer update
-        if (rendererRef.current) {
-          rendererRef.current.render(sceneRef.current, cameraRef.current!);
-          console.log('🔄 RSP: Forced renderer update after applying brick texture');
-        }
       }
     }).catch((error) => {
-      console.error('❌ RSP: Failed to load your brick texture, using fallback');
+      console.error('Failed to load brick texture, using fallback');
       texturesRef.current.brick = createBrickTexture();
     });
     
@@ -628,15 +559,28 @@ export function RoomSketchPro({
     texturesRef.current.door = createDoorTexture();
     texturesRef.current.window = createWindowTexture();
     texturesRef.current.vent = createVentTexture();
-    console.log('✅ RSP: Generated procedural textures');
+
 
     // Apply theme-specific materials to walls (only non-modern themes since modern waits for brick texture)
     wallMeshes.forEach((wallMesh, index) => {
       const originalMaterial = wallMesh.material as THREE.MeshPhongMaterial;
-      
-      // Keep existing UV coordinates and just apply the material
       const geometry = wallMesh.geometry as THREE.BufferGeometry;
-      console.log(`RSP: Using existing UV coordinates for wall ${index}`);
+      
+      // Generate UV coordinates if missing
+      const uvAttribute = geometry.getAttribute('uv');
+      if (!uvAttribute) {
+        const positions = geometry.getAttribute('position');
+        const uvs = new Float32Array(positions.count * 2);
+        
+        for (let i = 0; i < positions.count; i++) {
+          const u = (i % 2);
+          const v = Math.floor(i / 2) % 2;
+          uvs[i * 2] = u;
+          uvs[i * 2 + 1] = v;
+        }
+        
+        geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+      }
       
       // Create new material based on theme
       let newMaterial: THREE.MeshPhongMaterial;
@@ -644,11 +588,10 @@ export function RoomSketchPro({
       switch (selectedTheme) {
         case "modern":
           // Skip modern theme here - handled in brick texture promise above
-          console.log('RSP: Modern theme will be applied when brick texture loads');
           return;
         case "classic":
           newMaterial = new THREE.MeshPhongMaterial({
-            map: texturesRef.current.wood, // Use wood texture
+            map: texturesRef.current.wood,
             opacity: originalMaterial.opacity,
             transparent: originalMaterial.transparent,
             side: originalMaterial.side
@@ -656,18 +599,17 @@ export function RoomSketchPro({
           break;
         case "industrial":
           newMaterial = new THREE.MeshPhongMaterial({
-            map: texturesRef.current.metal, // Use metal texture
+            map: texturesRef.current.metal,
             opacity: originalMaterial.opacity,
             transparent: originalMaterial.transparent,
             side: originalMaterial.side
           });
           break;
         default:
-          return; // Keep original material
+          return;
       }
       
       wallMesh.material = newMaterial;
-      console.log(`RSP: Applied ${selectedTheme} texture to wall ${index}`);
     });
 
 
@@ -843,14 +785,7 @@ export function RoomSketchPro({
     <div 
       ref={containerRef}
       className={`relative w-full h-full ${getThemeBackground()}`}
-      style={{ 
-        width, 
-        height, 
-        minHeight: '400px',
-        backgroundImage: selectedTheme === 'modern' ? 'url(/brick_texture.png)' : undefined,
-        backgroundSize: 'repeat',
-        backgroundPosition: 'top left'
-      }}
+      style={{ width, height, minHeight: '400px' }}
     >
       <Canvas3D
         floors={canvas3DFloors}
