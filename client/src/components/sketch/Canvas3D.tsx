@@ -4190,3 +4190,220 @@ export default function Canvas3D({
     </>
   );
 }
+
+// Static function for RoomSketchPro to generate identical geometry
+export const generateSharedFloorGeometry = (
+  floors: Record<string, FloorData>,
+  config: {
+    currentFloor: string;
+    floorParameters?: Record<string, { ceilingHeight: number; floorDeck: number }>;
+    wallTransparency: number;
+    isMultifloor?: boolean;
+    defaultCeilingHeight?: number;
+    defaultFloorDeck?: number;
+  }
+): THREE.Object3D[] => {
+  const objects: THREE.Object3D[] = [];
+  
+  // Helper functions (identical to Canvas3D implementation)
+  const localTransform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
+    const dimensions = { width: 800, height: 600 };
+    const centerX = dimensions.width / 2;
+    const centerY = dimensions.height / 2;
+    const PIXELS_TO_CM = 25 / 20;
+
+    const relativeX = point.x - centerX;
+    const relativeY = centerY - point.y;
+
+    return new THREE.Vector3(
+      relativeX * PIXELS_TO_CM,
+      relativeY * PIXELS_TO_CM,
+      height,
+    );
+  };
+
+  const localCreateRoomPerimeter = (lines: Line[]): Point[] => {
+    if (lines.length === 0) return [];
+    
+    const pointGraph = new Map<string, Point[]>();
+    const pointToString = (p: Point) => `${p.x},${p.y}`;
+    const arePointsEqual = (p1: Point, p2: Point, tolerance = 0.1) =>
+      Math.abs(p1.x - p2.x) < tolerance && Math.abs(p1.y - p2.y) < tolerance;
+    
+    lines.forEach((line) => {
+      const startKey = pointToString(line.start);
+      const endKey = pointToString(line.end);
+
+      if (!pointGraph.has(startKey)) pointGraph.set(startKey, []);
+      if (!pointGraph.has(endKey)) pointGraph.set(endKey, []);
+
+      pointGraph.get(startKey)!.push(line.end);
+      pointGraph.get(endKey)!.push(line.start);
+    });
+
+    const perimeter: Point[] = [lines[0].start];
+    const visited = new Set<string>([pointToString(lines[0].start)]);
+    let currentPoint = lines[0].start;
+
+    while (true) {
+      const currentKey = pointToString(currentPoint);
+      const neighbors = pointGraph.get(currentKey) || [];
+      const nextPoint = neighbors.find((p) => !visited.has(pointToString(p)));
+
+      if (!nextPoint) break;
+
+      if (arePointsEqual(nextPoint, perimeter[0])) break;
+
+      perimeter.push(nextPoint);
+      visited.add(pointToString(nextPoint));
+      currentPoint = nextPoint;
+    }
+
+    return perimeter;
+  };
+
+  const getFloorBaseHeight = (floorName: string): number => {
+    const FLOOR_ORDER = ["ground", "first", "second", "third", "fourth", "fifth"];
+    const floorIndex = FLOOR_ORDER.indexOf(floorName.toLowerCase());
+    
+    if (floorIndex === -1) return 0;
+    if (floorIndex === 0) return 0;
+
+    let totalHeight = 0;
+    for (let i = 0; i < floorIndex; i++) {
+      const currentFloorName = FLOOR_ORDER[i];
+      let floorHeight;
+      
+      if (config.isMultifloor && config.floorParameters?.[currentFloorName]) {
+        floorHeight = config.floorParameters[currentFloorName].ceilingHeight + 
+                     config.floorParameters[currentFloorName].floorDeck;
+      } else {
+        floorHeight = (config.defaultCeilingHeight || 250) + (config.defaultFloorDeck || 20);
+      }
+      
+      totalHeight += floorHeight;
+    }
+    
+    return totalHeight;
+  };
+
+  // Generate geometry for each floor (identical logic to Canvas3D)
+  Object.entries(floors).forEach(([floorName, floorData]) => {
+    if (floorData.hasClosedContour || floorName === config.currentFloor) {
+      const baseHeight = getFloorBaseHeight(floorName);
+      
+      let floorCeilingHeight, currentFloorDeckThickness;
+      if (config.isMultifloor && config.floorParameters?.[floorName]) {
+        floorCeilingHeight = config.floorParameters[floorName].ceilingHeight;
+        currentFloorDeckThickness = config.floorParameters[floorName].floorDeck;
+      } else {
+        floorCeilingHeight = config.defaultCeilingHeight || 250;
+        currentFloorDeckThickness = config.defaultFloorDeck || 20;
+      }
+
+      const perimeterPoints = localCreateRoomPerimeter(floorData.lines);
+      const isCurrentFloor = floorName === config.currentFloor;
+
+      // Create floor and ceiling surfaces
+      if (perimeterPoints.length > 2) {
+        const shape = new THREE.Shape();
+        const firstPoint = localTransform2DTo3D(perimeterPoints[0]);
+        shape.moveTo(firstPoint.x, firstPoint.y);
+
+        for (let i = 1; i < perimeterPoints.length; i++) {
+          const point = localTransform2DTo3D(perimeterPoints[i]);
+          shape.lineTo(point.x, point.y);
+        }
+
+        // Floor surface
+        const floorGeometry = new THREE.ShapeGeometry(shape);
+        const floorMaterial = new THREE.MeshPhongMaterial({
+          color: isCurrentFloor ? 0x808080 : 0xa0a0a0,
+          opacity: isCurrentFloor ? 0.3 : 0.2,
+          transparent: true,
+          side: THREE.DoubleSide,
+        });
+        const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+        floor.position.z = baseHeight;
+        floor.userData = { type: 'floor', floorName };
+        objects.push(floor);
+
+        // Ceiling surface
+        const ceilingGeometry = new THREE.ShapeGeometry(shape);
+        const ceilingMaterial = new THREE.MeshPhongMaterial({
+          color: isCurrentFloor ? 0xe0e0e0 : 0xf0f0f0,
+          opacity: isCurrentFloor ? 0.2 : 0.1,
+          transparent: true,
+          side: THREE.DoubleSide,
+        });
+        const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
+        ceiling.position.z = baseHeight + floorCeilingHeight;
+        ceiling.userData = { type: 'ceiling', floorName };
+        objects.push(ceiling);
+      }
+
+      // Create walls
+      floorData.lines.forEach((line: Line) => {
+        const start_bottom = localTransform2DTo3D(line.start, baseHeight);
+        const end_bottom = localTransform2DTo3D(line.end, baseHeight);
+        const start_top = localTransform2DTo3D(line.start, baseHeight + floorCeilingHeight);
+        const end_top = localTransform2DTo3D(line.end, baseHeight + floorCeilingHeight);
+
+        const vertices = new Float32Array([
+          start_bottom.x, start_bottom.y, start_bottom.z,
+          end_bottom.x, end_bottom.y, end_bottom.z,
+          start_top.x, start_top.y, start_top.z,
+          end_top.x, end_top.y, end_top.z,
+        ]);
+
+        const indices = new Uint16Array([0, 1, 2, 1, 3, 2]);
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+        geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+        geometry.computeVertexNormals();
+
+        const wallMaterial = new THREE.MeshPhongMaterial({
+          color: isCurrentFloor ? 0x3b82f6 : 0x4b92f6,
+          opacity: config.wallTransparency,
+          transparent: true,
+          side: THREE.DoubleSide,
+        });
+
+        const wall = new THREE.Mesh(geometry, wallMaterial);
+        wall.userData = { type: 'wall', floorName };
+        objects.push(wall);
+      });
+
+      // Create air entries
+      if (floorData.airEntries) {
+        floorData.airEntries.forEach((entry: AirEntry, index: number) => {
+          const width = entry.dimensions.width;
+          const height = entry.dimensions.height;
+          const distanceToFloor = entry.dimensions.distanceToFloor || 0;
+          const zPosition = baseHeight + (entry.type === "door" ? height / 2 : distanceToFloor + height / 2);
+
+          const geometry = new THREE.PlaneGeometry(width, height);
+          const material = new THREE.MeshPhongMaterial({
+            color: entry.type === "window" ? 0x3b82f6 : entry.type === "door" ? 0xb45309 : 0x22c55e,
+            opacity: 0.7,
+            transparent: true,
+            side: THREE.DoubleSide,
+          });
+
+          const mesh = new THREE.Mesh(geometry, material);
+          const position = localTransform2DTo3D(entry.position);
+          mesh.position.set(position.x, position.y, zPosition);
+          mesh.userData = { 
+            type: entry.type, 
+            entryIndex: index, 
+            position: entry.position,
+            floorName 
+          };
+          objects.push(mesh);
+        });
+      }
+    }
+  });
+
+  return objects;
+};
