@@ -110,25 +110,60 @@ export function RoomSketchPro({
   // Convert roomHeight from cm to Canvas3D format (which expects cm)
   const ceilingHeightCm = roomHeight;
 
-  // Load optimized brick texture for modern style
+  // Create realistic brick texture inspired by the uploaded image
   const createBrickTexture = () => {
-    console.log('RSP: Loading optimized brick texture');
-    const loader = new THREE.TextureLoader();
-    const texture = loader.load(
-      '/red_brick_texture.jpg',
-      (texture) => {
-        console.log('RSP: Brick texture loaded successfully', texture);
-      },
-      (progress) => {
-        console.log('RSP: Brick texture loading progress:', progress);
-      },
-      (error) => {
-        console.error('RSP: Error loading brick texture:', error);
+    console.log('RSP: Creating realistic brick texture');
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d')!;
+
+    // Background mortar color (grayish)
+    ctx.fillStyle = '#a8a0a0';
+    ctx.fillRect(0, 0, 512, 512);
+
+    // Brick dimensions similar to the real texture
+    const brickWidth = 85;
+    const brickHeight = 28;
+    const mortarThickness = 3;
+
+    // Create realistic brick pattern with alternating rows
+    let rowIndex = 0;
+    for (let y = 0; y < 512; y += brickHeight + mortarThickness) {
+      const offsetX = (rowIndex % 2) * (brickWidth / 2);
+      
+      for (let x = -brickWidth; x < 512 + brickWidth; x += brickWidth + mortarThickness) {
+        const brickX = x + offsetX;
+        
+        if (brickX + brickWidth > 0 && brickX < 512) {
+          // Random brick color variations (red/orange tones)
+          const baseRed = 140 + Math.random() * 40;
+          const baseGreen = 60 + Math.random() * 30;
+          const baseBlue = 40 + Math.random() * 20;
+          
+          ctx.fillStyle = `rgb(${baseRed}, ${baseGreen}, ${baseBlue})`;
+          ctx.fillRect(brickX, y, Math.min(brickWidth, 512 - brickX), brickHeight);
+          
+          // Add subtle texture to each brick
+          for (let i = 0; i < 5; i++) {
+            const spotX = brickX + Math.random() * brickWidth;
+            const spotY = y + Math.random() * brickHeight;
+            const spotSize = 1 + Math.random() * 2;
+            ctx.fillStyle = `rgba(${baseRed + 20}, ${baseGreen + 10}, ${baseBlue + 10}, 0.3)`;
+            ctx.beginPath();
+            ctx.arc(spotX, spotY, spotSize, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
       }
-    );
+      rowIndex++;
+    }
+
+    const texture = new THREE.CanvasTexture(canvas);
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(3, 3);
+    texture.repeat.set(2, 2);
+    console.log('RSP: Realistic brick texture created successfully');
     return texture;
   };
 
