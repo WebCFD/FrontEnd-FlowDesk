@@ -17,7 +17,7 @@ export class TextureGenerator {
           console.log('🧱 TextureGenerator: Your brick texture loaded successfully!', loadedTexture.image.width, 'x', loadedTexture.image.height);
           loadedTexture.wrapS = THREE.RepeatWrapping;
           loadedTexture.wrapT = THREE.RepeatWrapping;
-          loadedTexture.repeat.set(2, 2);
+          loadedTexture.repeat.set(1, 1); // Test with no repeat first
           loadedTexture.needsUpdate = true;
           console.log('🧱 TextureGenerator: Texture ready to use');
           resolve(loadedTexture);

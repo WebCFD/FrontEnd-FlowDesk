@@ -1,0 +1,44 @@
+🧱 TEST: Texture loaded: true
+RoomSketchPro.tsx:559 🟢 TEST: Applied green material to wall 5
+RoomSketchPro.tsx:539 🧱 TEST: About to apply brick texture to wall 6
+RoomSketchPro.tsx:540 🧱 TEST: Brick texture object: _Texture {isTexture: true, uuid: '8a2ce857-cf8b-4ae5-aa8c-2fa7d28108ab', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:541 🧱 TEST: Brick texture image: <img crossorigin=​"anonymous" src=​"/​brick_texture.png">​
+RoomSketchPro.tsx:542 🧱 TEST: Texture loaded: true
+RoomSketchPro.tsx:559 🟢 TEST: Applied green material to wall 6
+RoomSketchPro.tsx:539 🧱 TEST: About to apply brick texture to wall 7
+RoomSketchPro.tsx:540 🧱 TEST: Brick texture object: _Texture {isTexture: true, uuid: '8a2ce857-cf8b-4ae5-aa8c-2fa7d28108ab', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:541 🧱 TEST: Brick texture image: <img crossorigin=​"anonymous" src=​"/​brick_texture.png">​
+RoomSketchPro.tsx:542 🧱 TEST: Texture loaded: true
+RoomSketchPro.tsx:559 🟢 TEST: Applied green material to wall 7
+RoomSketchPro.tsx:565 🧱 TEST: Applied brick texture material to wall 0
+RoomSketchPro.tsx:566 🧱 TEST: Material map: _Texture {isTexture: true, uuid: 'c2b4886c-0f6b-4295-95df-4232085e73eb', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:565 🧱 TEST: Applied brick texture material to wall 1
+RoomSketchPro.tsx:566 🧱 TEST: Material map: _Texture {isTexture: true, uuid: 'c2b4886c-0f6b-4295-95df-4232085e73eb', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:565 🧱 TEST: Applied brick texture material to wall 2
+RoomSketchPro.tsx:566 🧱 TEST: Material map: _Texture {isTexture: true, uuid: 'c2b4886c-0f6b-4295-95df-4232085e73eb', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:565 🧱 TEST: Applied brick texture material to wall 3
+RoomSketchPro.tsx:566 🧱 TEST: Material map: _Texture {isTexture: true, uuid: 'c2b4886c-0f6b-4295-95df-4232085e73eb', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:565 🧱 TEST: Applied brick texture material to wall 4
+RoomSketchPro.tsx:566 🧱 TEST: Material map: _Texture {isTexture: true, uuid: 'c2b4886c-0f6b-4295-95df-4232085e73eb', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:565 🧱 TEST: Applied brick texture material to wall 5
+RoomSketchPro.tsx:566 🧱 TEST: Material map: _Texture {isTexture: true, uuid: 'c2b4886c-0f6b-4295-95df-4232085e73eb', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:565 🧱 TEST: Applied brick texture material to wall 6
+RoomSketchPro.tsx:566 🧱 TEST: Material map: _Texture {isTexture: true, uuid: 'c2b4886c-0f6b-4295-95df-4232085e73eb', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:565 🧱 TEST: Applied brick texture material to wall 7
+RoomSketchPro.tsx:566 🧱 TEST: Material map: _Texture {isTexture: true, uuid: 'c2b4886c-0f6b-4295-95df-4232085e73eb', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:565 🧱 TEST: Applied brick texture material to wall 0
+RoomSketchPro.tsx:566 🧱 TEST: Material map: _Texture {isTexture: true, uuid: '8a2ce857-cf8b-4ae5-aa8c-2fa7d28108ab', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:565 🧱 TEST: Applied brick texture material to wall 1
+RoomSketchPro.tsx:566 🧱 TEST: Material map: _Texture {isTexture: true, uuid: '8a2ce857-cf8b-4ae5-aa8c-2fa7d28108ab', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:565 🧱 TEST: Applied brick texture material to wall 2
+RoomSketchPro.tsx:566 🧱 TEST: Material map: _Texture {isTexture: true, uuid: '8a2ce857-cf8b-4ae5-aa8c-2fa7d28108ab', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:565 🧱 TEST: Applied brick texture material to wall 3
+RoomSketchPro.tsx:566 🧱 TEST: Material map: _Texture {isTexture: true, uuid: '8a2ce857-cf8b-4ae5-aa8c-2fa7d28108ab', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:565 🧱 TEST: Applied brick texture material to wall 4
+RoomSketchPro.tsx:566 🧱 TEST: Material map: _Texture {isTexture: true, uuid: '8a2ce857-cf8b-4ae5-aa8c-2fa7d28108ab', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:565 🧱 TEST: Applied brick texture material to wall 5
+RoomSketchPro.tsx:566 🧱 TEST: Material map: _Texture {isTexture: true, uuid: '8a2ce857-cf8b-4ae5-aa8c-2fa7d28108ab', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:565 🧱 TEST: Applied brick texture material to wall 6
+RoomSketchPro.tsx:566 🧱 TEST: Material map: _Texture {isTexture: true, uuid: '8a2ce857-cf8b-4ae5-aa8c-2fa7d28108ab', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:565 🧱 TEST: Applied brick texture material to wall 7
+RoomSketchPro.tsx:566 🧱 TEST: Material map: _Texture {isTexture: true, uuid: '8a2ce857-cf8b-4ae5-aa8c-2fa7d28108ab', name: '', source: Source, mipmaps: Array(0), …}
