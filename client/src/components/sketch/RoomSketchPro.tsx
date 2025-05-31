@@ -113,10 +113,10 @@ export function RoomSketchPro({
     ctx.fillStyle = '#e8e0d8';
     ctx.fillRect(0, 0, 512, 256);
 
-    // Dimensiones más pequeñas y realistas de ladrillos
-    const brickWidth = 64;
-    const brickHeight = 24;
-    const mortarWidth = 4;
+    // Dimensiones aún más pequeñas y proporcionales de ladrillos
+    const brickWidth = 48;
+    const brickHeight = 18;
+    const mortarWidth = 3;
 
     // Colores base más uniformes para ladrillos
     const brickColors = [
@@ -126,8 +126,8 @@ export function RoomSketchPro({
       { r: 158, g: 86, b: 71 },   // Variación sutil 3
     ];
 
-    for (let row = 0; row < 12; row++) {
-      for (let col = 0; col < 9; col++) {
+    for (let row = 0; row < 15; row++) {
+      for (let col = 0; col < 12; col++) {
         // Patrón de desplazamiento alternado (típico de ladrillos)
         const offsetX = (row % 2) * (brickWidth / 2);
         const x = col * brickWidth + offsetX + mortarWidth;
