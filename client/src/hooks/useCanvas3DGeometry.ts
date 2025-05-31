@@ -15,6 +15,7 @@ export interface UseCanvas3DGeometryOptions {
   width?: number;
   height?: number;
   presentationMode?: boolean;
+  lightingIntensity?: number;
 }
 
 export interface Canvas3DGeometryReturn {
@@ -40,7 +41,8 @@ export function useCanvas3DGeometry(
     containerRef,
     width = 800,
     height = 600,
-    presentationMode = false
+    presentationMode = false,
+    lightingIntensity = 0.9
   } = options;
 
   // Three.js refs
@@ -69,21 +71,21 @@ export function useCanvas3DGeometry(
     // Add lighting - different setup for presentation mode
     if (presentationMode) {
       // RSP: More homogeneous, bright lighting without harsh shadows
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.9); // Much brighter ambient
+      const ambientLight = new THREE.AmbientLight(0xffffff, lightingIntensity); // Adjustable ambient
       scene.add(ambientLight);
 
       // Multiple soft directional lights for even illumination
-      const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.3);
+      const directionalLight1 = new THREE.DirectionalLight(0xffffff, lightingIntensity * 0.33);
       directionalLight1.position.set(10, 10, 5);
       directionalLight1.castShadow = false; // No shadows
       scene.add(directionalLight1);
 
-      const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.2);
+      const directionalLight2 = new THREE.DirectionalLight(0xffffff, lightingIntensity * 0.22);
       directionalLight2.position.set(-10, 10, -5);
       directionalLight2.castShadow = false; // No shadows
       scene.add(directionalLight2);
 
-      const directionalLight3 = new THREE.DirectionalLight(0xffffff, 0.2);
+      const directionalLight3 = new THREE.DirectionalLight(0xffffff, lightingIntensity * 0.22);
       directionalLight3.position.set(0, 15, 10);
       directionalLight3.castShadow = false; // No shadows
       scene.add(directionalLight3);
