@@ -135,7 +135,7 @@ const RAYCASTER_CONFIG = {
 
 // Debug configuration - centralized control for console output
 const DEBUG_CONFIG = {
-  enabled: false, // Set to true for development, false for production
+  enabled: false, // Disabled for production - cleaner console output
   categories: {
     mouseEvents: false,
     airEntryCreation: false,
