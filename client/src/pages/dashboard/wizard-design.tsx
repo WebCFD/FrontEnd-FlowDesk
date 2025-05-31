@@ -837,7 +837,7 @@ export default function WizardDesign() {
   // This function receives the callback from Canvas3D
   // It will be passed to Canvas3D as the onViewChange prop
   const handleViewChange = (callback: (direction: ViewDirection) => void) => {
-    console.log("Received camera control callback from Canvas3D");
+
     setViewChangeFunction(() => callback);
   };
 
@@ -2242,11 +2242,8 @@ export default function WizardDesign() {
   const renderCanvasSection = (mode = "tabs") => {
     // Add these debug statements for 3D preview
     if (tab === "3d-preview" && mode === "tabs") {
-      console.log("Rendering 3D view with floors data:", floors);
-      console.log(
-        `Current floor '${currentFloor}' stair polygons:`,
-        floors[currentFloor]?.stairPolygons || [],
-      );
+
+
     }
 
     return (
