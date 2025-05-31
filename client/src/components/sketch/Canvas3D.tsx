@@ -4197,7 +4197,7 @@ export default function Canvas3D({
   
   // Complete event system reset function for debugging hover issues
   const resetHoveringCompletely = useCallback(() => {
-    console.log("🔄 COMPLETE EVENT SYSTEM RESET");
+    debugLog('floorState', 'COMPLETE EVENT SYSTEM RESET');
     
     // Re-enable controls
     if (controlsRef.current) {
@@ -4257,7 +4257,7 @@ export default function Canvas3D({
   
   // Add a useEffect to reset the system when entering/exiting eraser mode
   useEffect(() => {
-    console.log("🔄 Eraser mode changed, performing complete system reset");
+    debugLog('eraserMode', 'Eraser mode changed, performing complete system reset');
     resetHoveringCompletely();
   }, [isEraserMode, resetHoveringCompletely]);
 
