@@ -113,22 +113,21 @@ export function RoomSketchPro({
     ctx.fillStyle = '#e8e0d8';
     ctx.fillRect(0, 0, 512, 256);
 
-    // Dimensiones más realistas de ladrillos
-    const brickWidth = 120;
-    const brickHeight = 40;
-    const mortarWidth = 8;
+    // Dimensiones más pequeñas y realistas de ladrillos
+    const brickWidth = 64;
+    const brickHeight = 24;
+    const mortarWidth = 4;
 
-    // Colores base para ladrillos más realistas
+    // Colores base más uniformes para ladrillos
     const brickColors = [
-      { r: 165, g: 85, b: 65 },   // Rojo ladrillo clásico
-      { r: 150, g: 75, b: 55 },   // Más oscuro
-      { r: 180, g: 95, b: 75 },   // Más claro
-      { r: 140, g: 70, b: 50 },   // Oscuro
-      { r: 170, g: 90, b: 70 }    // Medio
+      { r: 155, g: 85, b: 70 },   // Rojo ladrillo principal
+      { r: 160, g: 88, b: 72 },   // Variación sutil 1
+      { r: 150, g: 82, b: 68 },   // Variación sutil 2
+      { r: 158, g: 86, b: 71 },   // Variación sutil 3
     ];
 
-    for (let row = 0; row < 7; row++) {
-      for (let col = 0; col < 5; col++) {
+    for (let row = 0; row < 12; row++) {
+      for (let col = 0; col < 9; col++) {
         // Patrón de desplazamiento alternado (típico de ladrillos)
         const offsetX = (row % 2) * (brickWidth / 2);
         const x = col * brickWidth + offsetX + mortarWidth;
@@ -140,8 +139,8 @@ export function RoomSketchPro({
         // Seleccionar color de ladrillo aleatoriamente
         const baseColor = brickColors[Math.floor(Math.random() * brickColors.length)];
         
-        // Añadir variación sutil al color
-        const variation = 15;
+        // Añadir variación muy sutil al color para uniformidad
+        const variation = 8;
         const red = Math.max(0, Math.min(255, baseColor.r + (Math.random() - 0.5) * variation));
         const green = Math.max(0, Math.min(255, baseColor.g + (Math.random() - 0.5) * variation));
         const blue = Math.max(0, Math.min(255, baseColor.b + (Math.random() - 0.5) * variation));
@@ -150,13 +149,13 @@ export function RoomSketchPro({
         ctx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
         ctx.fillRect(x, y, brickWidth - mortarWidth, brickHeight - mortarWidth);
 
-        // Añadir textura interna al ladrillo
-        for (let i = 0; i < 8; i++) {
+        // Añadir textura interna muy sutil al ladrillo
+        for (let i = 0; i < 3; i++) {
           const spotX = x + Math.random() * (brickWidth - mortarWidth);
           const spotY = y + Math.random() * (brickHeight - mortarWidth);
-          const spotSize = 1 + Math.random() * 2;
+          const spotSize = 1;
           
-          ctx.fillStyle = `rgba(${red + 20}, ${green + 20}, ${blue + 20}, 0.3)`;
+          ctx.fillStyle = `rgba(${red + 15}, ${green + 15}, ${blue + 15}, 0.2)`;
           ctx.fillRect(spotX, spotY, spotSize, spotSize);
         }
 
