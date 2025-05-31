@@ -539,16 +539,42 @@ export function RoomSketchPro({
       const positionAttribute = geometry.attributes.position;
       const uvs = [];
       
-      // Calculate proper UV coordinates based on world position to maintain texture orientation
+      // Calculate proper UV coordinates for consistent texture orientation per wall
+      // Get the wall direction to apply consistent UV mapping
+      const positions = positionAttribute.array;
+      const wallVertices = [];
+      
+      for (let i = 0; i < positions.length; i += 3) {
+        wallVertices.push({
+          x: positions[i],
+          y: positions[i + 1], 
+          z: positions[i + 2]
+        });
+      }
+      
+      // Calculate wall direction vector from first two vertices
+      let wallDirection = { x: 0, z: 0 };
+      if (wallVertices.length >= 2) {
+        wallDirection.x = wallVertices[1].x - wallVertices[0].x;
+        wallDirection.z = wallVertices[1].z - wallVertices[0].z;
+        
+        // Normalize the direction
+        const length = Math.sqrt(wallDirection.x * wallDirection.x + wallDirection.z * wallDirection.z);
+        if (length > 0) {
+          wallDirection.x /= length;
+          wallDirection.z /= length;
+        }
+      }
+      
+      // Apply UV mapping based on wall-local coordinates
       for (let i = 0; i < positionAttribute.count; i++) {
         const x = positionAttribute.getX(i);
         const y = positionAttribute.getY(i);
         const z = positionAttribute.getZ(i);
         
-        // Use world coordinates to calculate UV, ensuring horizontal texture alignment
-        // Map X and Z coordinates to U, Y coordinate to V for consistent orientation
-        const u = (x + z) * 0.03; // Combine X and Z for horizontal mapping, reduced scale for larger bricks
-        const v = y * 0.03; // Y for vertical mapping, reduced scale for larger bricks
+        // Project position onto wall direction for consistent U coordinate
+        const u = (x * wallDirection.x + z * wallDirection.z) * 0.03;
+        const v = y * 0.03; // Y for vertical mapping
         
         uvs.push(u, v);
       }
