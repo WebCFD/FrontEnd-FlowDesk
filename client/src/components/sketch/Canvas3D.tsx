@@ -94,7 +94,7 @@ interface Canvas3DProps {
     index: number
   ) => void;
   onViewChange?: (callback: (direction: ViewDirection) => void) => void;
-  onSceneReady?: (scene: THREE.Scene, renderer: THREE.WebGLRenderer) => void; // For RSP texture access
+  onSceneReady?: (scene: THREE.Scene, renderer: THREE.WebGLRenderer, camera: THREE.Camera) => void; // For RSP texture access
 }
 
 
@@ -1842,7 +1842,7 @@ export default function Canvas3D({
 
     // Notify RSP that scene is ready for texture modifications
     if (onSceneReady && presentationMode) {
-      onSceneReady(scene, renderer);
+      onSceneReady(scene, renderer, camera);
     }
 
     // Handle resize
