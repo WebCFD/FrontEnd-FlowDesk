@@ -1216,8 +1216,9 @@ export default function Canvas3D({
         const position = transform2DTo3D(entryPosition);
         mesh.position.set(position.x, position.y, zPosition);
         
-        // Set render order to ensure AirEntry elements appear on top of walls
+        // Set render order and disable depth test to ensure AirEntry elements appear on top
         mesh.renderOrder = 1;
+        material.depthTest = false;
 
         // Add userData for raycasting identification - include the actual entry index for easy mapping
         mesh.userData = {
@@ -1229,26 +1230,24 @@ export default function Canvas3D({
           entryIndex: index  // Add the actual index in the airEntries array
         };
 
+        // Calculate proper orientation
+        const wallDirection = new THREE.Vector3()
+          .subVectors(
+            transform2DTo3D(entry.line.end),
+            transform2DTo3D(entry.line.start),
+          )
+          .normalize();
+        const worldUpVector = new THREE.Vector3(0, 0, 1);
+        const wallNormalVector = new THREE.Vector3()
+          .crossVectors(wallDirection, worldUpVector)
+          .normalize();
 
-
-      // Calculate proper orientation
-      const wallDirection = new THREE.Vector3()
-        .subVectors(
-          transform2DTo3D(entry.line.end),
-          transform2DTo3D(entry.line.start),
-        )
-        .normalize();
-      const worldUpVector = new THREE.Vector3(0, 0, 1);
-      const wallNormalVector = new THREE.Vector3()
-        .crossVectors(wallDirection, worldUpVector)
-        .normalize();
-
-      const forward = wallNormalVector.clone();
-      const up = new THREE.Vector3(0, 0, 1);
-      const right = new THREE.Vector3().crossVectors(up, forward).normalize();
-      forward.crossVectors(right, up).normalize();
-      const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
-      mesh.setRotationFromMatrix(rotationMatrix);
+        const forward = wallNormalVector.clone();
+        const up = new THREE.Vector3(0, 0, 1);
+        const right = new THREE.Vector3().crossVectors(up, forward).normalize();
+        forward.crossVectors(right, up).normalize();
+        const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
+        mesh.setRotationFromMatrix(rotationMatrix);
 
       objects.push(mesh);
 
