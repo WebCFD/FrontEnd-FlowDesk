@@ -101,6 +101,19 @@ const PIXELS_TO_CM = 25 / 20;
 const GRID_SIZE = 1000;
 const GRID_DIVISIONS = 40;
 
+// Centralized dimensions configuration
+const CANVAS_CONFIG = {
+  dimensions: { width: 800, height: 600 },
+  get centerX() { return this.dimensions.width / 2; },
+  get centerY() { return this.dimensions.height / 2; },
+  get aspectRatio() { return this.dimensions.width / this.dimensions.height; },
+  // Helper methods for common calculations
+  getRelativeX: (pointX: number) => pointX - (800 / 2),
+  getRelativeY: (pointY: number) => (600 / 2) - pointY,
+  reverseTransformX: (relativeX: number) => relativeX / PIXELS_TO_CM + (800 / 2),
+  reverseTransformY: (relativeY: number) => (600 / 2) - relativeY / PIXELS_TO_CM
+};
+
 // Helper functions (independent of component state)
 const normalizeFloorName = (floorName: string): string => {
   // Convert to lowercase and remove spaces - ensure consistent keys for storage/retrieval
@@ -108,12 +121,8 @@ const normalizeFloorName = (floorName: string): string => {
 };
 
 const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
-  const dimensions = { width: 800, height: 600 };
-  const centerX = dimensions.width / 2;
-  const centerY = dimensions.height / 2;
-
-  const relativeX = point.x - centerX;
-  const relativeY = centerY - point.y;
+  const relativeX = point.x - CANVAS_CONFIG.centerX;
+  const relativeY = CANVAS_CONFIG.centerY - point.y;
 
   return new THREE.Vector3(
     relativeX * PIXELS_TO_CM,
@@ -2990,14 +2999,10 @@ export default function Canvas3D({
             // Convert the 3D position back to 2D
             const newPosition3D = dragStateRef.current.selectedObject.position;
 
-            // Update the air entry position
-            const dimensions = { width: 800, height: 600 };
-            const centerX = dimensions.width / 2;
-            const centerY = dimensions.height / 2;
-
+            // Update the air entry position using centralized config
             // Reverse the transform2DTo3D function
-            const newX = newPosition3D.x / PIXELS_TO_CM + centerX;
-            const newY = centerY - newPosition3D.y / PIXELS_TO_CM;
+            const newX = newPosition3D.x / PIXELS_TO_CM + CANVAS_CONFIG.centerX;
+            const newY = CANVAS_CONFIG.centerY - newPosition3D.y / PIXELS_TO_CM;
 
             // Create updated entry with new position
             const updatedEntry: AirEntry = {
@@ -4214,12 +4219,8 @@ export const generateSharedFloorGeometry = (
   
   // Helper functions (identical to Canvas3D implementation)
   const localTransform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
-    const dimensions = { width: 800, height: 600 };
-    const centerX = dimensions.width / 2;
-    const centerY = dimensions.height / 2;
-
-    const relativeX = point.x - centerX;
-    const relativeY = centerY - point.y;
+    const relativeX = point.x - CANVAS_CONFIG.centerX;
+    const relativeY = CANVAS_CONFIG.centerY - point.y;
 
     return new THREE.Vector3(
       relativeX * PIXELS_TO_CM,
