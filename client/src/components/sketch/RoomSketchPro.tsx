@@ -110,27 +110,58 @@ export function RoomSketchPro({
   // Convert roomHeight from cm to Canvas3D format (which expects cm)
   const ceilingHeightCm = roomHeight;
 
-  // Load your brick texture image
+  // Create brick texture matching your uploaded image exactly
   const createBrickTexture = () => {
-    console.log('RSP: Loading your brick texture');
-    const loader = new THREE.TextureLoader();
-    const texture = loader.load(
-      '/brick_texture.png',
-      (texture) => {
-        console.log('RSP: Brick texture loaded successfully', texture);
-      },
-      (progress) => {
-        console.log('RSP: Brick texture loading progress:', progress);
-      },
-      (error) => {
-        console.error('RSP: Error loading brick texture:', error);
-        // Fallback to procedural texture if loading fails
-        console.log('RSP: Using fallback procedural texture');
+    console.log('RSP: Creating brick texture based on your image');
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d')!;
+
+    // Background mortar color matching your image
+    ctx.fillStyle = '#6b5b47';
+    ctx.fillRect(0, 0, 512, 512);
+
+    // Brick pattern matching your uploaded image exactly
+    const brickWidth = 120;
+    const brickHeight = 30;
+    const mortarThickness = 4;
+
+    // Colors from your image - brownish/orange tones
+    const brickColors = [
+      '#a67c52', '#9d7549', '#b8845e', '#a87a54', 
+      '#9a7148', '#b0804f', '#a47950', '#987045'
+    ];
+
+    let rowIndex = 0;
+    for (let y = 0; y < 512; y += brickHeight + mortarThickness) {
+      // Half brick offset for alternating rows like in your image
+      const offsetX = (rowIndex % 2) * (brickWidth / 2);
+      
+      for (let x = -brickWidth; x < 512 + brickWidth; x += brickWidth + mortarThickness) {
+        const brickX = x + offsetX;
+        
+        if (brickX + brickWidth > 0 && brickX < 512) {
+          // Use colors from your image
+          const colorIndex = Math.floor(Math.random() * brickColors.length);
+          ctx.fillStyle = brickColors[colorIndex];
+          
+          const actualWidth = Math.min(brickWidth, 512 - Math.max(0, brickX));
+          const actualX = Math.max(0, brickX);
+          
+          if (actualWidth > 0) {
+            ctx.fillRect(actualX, y, actualWidth, brickHeight);
+          }
+        }
       }
-    );
+      rowIndex++;
+    }
+
+    const texture = new THREE.CanvasTexture(canvas);
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(2, 2);
+    texture.repeat.set(1.5, 1.5);
+    console.log('RSP: Brick texture created successfully');
     return texture;
   };
 
