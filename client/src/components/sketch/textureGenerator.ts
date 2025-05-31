@@ -5,50 +5,24 @@ import * as THREE from "three";
  */
 export class TextureGenerator {
   /**
-   * Genera una textura de ladrillos usando canvas
+   * Carga tu textura de ladrillos real
    */
   static createBrickTexture(): THREE.Texture {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d')!;
-    
-    // Configuración de la textura
-    canvas.width = 512;
-    canvas.height = 512;
-    
-    const brickWidth = 64;
-    const brickHeight = 32;
-    const mortarWidth = 4;
-    
-    // Color de fondo (mortero)
-    ctx.fillStyle = '#e8e8e8';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Dibujar ladrillos
-    ctx.fillStyle = '#d4a574';
-    
-    for (let y = 0; y < canvas.height; y += brickHeight + mortarWidth) {
-      for (let x = 0; x < canvas.width; x += brickWidth + mortarWidth) {
-        // Alternar filas para patrón de ladrillos
-        const offset = Math.floor(y / (brickHeight + mortarWidth)) % 2 === 0 ? 0 : (brickWidth + mortarWidth) / 2;
-        const brickX = x + offset;
-        
-        // Dibujar ladrillo si está dentro del canvas
-        if (brickX < canvas.width) {
-          ctx.fillRect(brickX, y, Math.min(brickWidth, canvas.width - brickX), brickHeight);
-          
-          // Añadir sombra para profundidad
-          ctx.fillStyle = '#c49660';
-          ctx.fillRect(brickX, y + brickHeight - 3, Math.min(brickWidth, canvas.width - brickX), 3);
-          ctx.fillStyle = '#d4a574';
-        }
+    console.log('TextureGenerator: Loading your brick texture');
+    const loader = new THREE.TextureLoader();
+    const texture = loader.load(
+      '/brick_texture.png',
+      (loadedTexture) => {
+        console.log('TextureGenerator: Your brick texture loaded successfully!', loadedTexture.image.width, 'x', loadedTexture.image.height);
+      },
+      undefined,
+      (error) => {
+        console.error('TextureGenerator: Failed to load your brick texture:', error);
       }
-    }
-    
-    const texture = new THREE.CanvasTexture(canvas);
+    );
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(4, 4);
-    
+    texture.repeat.set(2, 2);
     return texture;
   }
 
