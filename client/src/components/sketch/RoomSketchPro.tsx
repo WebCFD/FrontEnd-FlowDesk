@@ -82,6 +82,7 @@ export function RoomSketchPro({
   const appliedTexturesRef = useRef<boolean>(false);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const cameraRef = useRef<THREE.Camera | null>(null);
 
   // Convert props to Canvas3D format
   const canvas3DFloors = floors || {
@@ -97,13 +98,16 @@ export function RoomSketchPro({
   const ceilingHeightCm = roomHeight;
 
   // Callback when Canvas3D scene is ready
-  const handleSceneReady = (scene: THREE.Scene, renderer: THREE.WebGLRenderer) => {
+  const handleSceneReady = (scene: THREE.Scene, renderer: THREE.WebGLRenderer, camera: THREE.Camera) => {
     console.log('RSP: Scene ready, storing references');
     sceneRef.current = scene;
     rendererRef.current = renderer;
+    cameraRef.current = camera;
     
-    // Apply textures immediately when scene is ready
-    applyThemeTextures();
+    // Wait for walls to be generated before applying textures
+    setTimeout(() => {
+      applyThemeTextures();
+    }, 500);
   };
 
   // Function to apply textures to Canvas3D scene materials
@@ -169,8 +173,8 @@ export function RoomSketchPro({
     appliedTexturesRef.current = true;
     
     // Force a render update
-    if (rendererRef.current && sceneRef.current) {
-      rendererRef.current.render(sceneRef.current, rendererRef.current.domElement as any);
+    if (rendererRef.current && sceneRef.current && cameraRef.current) {
+      rendererRef.current.render(sceneRef.current, cameraRef.current);
     }
   };
 
