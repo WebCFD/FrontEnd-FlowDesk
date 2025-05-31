@@ -97,33 +97,56 @@ export function RoomSketchPro({
     }
   }, [onComponentMount]);
 
-  // Theme configurations for future material system
+  // Theme configurations with different Canvas3D parameters
   const themeConfig = {
     modern: {
       name: "Moderno",
-      description: "Estilo contemporáneo con materiales limpios"
+      description: "Estilo contemporáneo con materiales limpios",
+      wallTransparencyMultiplier: 1.0,
+      backgroundStyle: "light"
     },
     classic: {
       name: "Clásico", 
-      description: "Estilo tradicional con acabados cálidos"
+      description: "Estilo tradicional con acabados cálidos",
+      wallTransparencyMultiplier: 0.8,
+      backgroundStyle: "warm"
     },
     industrial: {
       name: "Industrial",
-      description: "Estilo urbano con acabados metálicos"
+      description: "Estilo urbano con acabados metálicos",
+      wallTransparencyMultiplier: 0.6,
+      backgroundStyle: "dark"
+    }
+  };
+
+  // Calculate theme-adjusted transparency
+  const themeAdjustedTransparency = wallTransparency * themeConfig[selectedTheme].wallTransparencyMultiplier;
+
+  // Theme background styles
+  const getThemeBackground = () => {
+    switch (selectedTheme) {
+      case "modern":
+        return "bg-gradient-to-br from-gray-50 to-blue-50";
+      case "classic":
+        return "bg-gradient-to-br from-amber-50 to-orange-50";
+      case "industrial":
+        return "bg-gradient-to-br from-gray-700 to-gray-900";
+      default:
+        return "bg-gray-100";
     }
   };
 
   return (
     <div 
       ref={containerRef}
-      className="relative w-full h-full bg-gray-100"
+      className={`relative w-full h-full ${getThemeBackground()}`}
       style={{ width, height, minHeight: '400px' }}
     >
       <Canvas3D
         floors={canvas3DFloors}
         currentFloor={currentFloor}
         ceilingHeight={ceilingHeightCm}
-        wallTransparency={wallTransparency}
+        wallTransparency={themeAdjustedTransparency}
         presentationMode={true} // Modo presentación para RSP
         isMeasureMode={false}
         isEraserMode={false}
