@@ -509,7 +509,8 @@ export function RoomSketchPro({
     const airEntryMeshes: THREE.Mesh[] = [];
     if (sceneRef.current) {
       sceneRef.current.traverse((object) => {
-        if (object instanceof THREE.Mesh && object.userData && object.userData.type === 'airEntry') {
+        if (object instanceof THREE.Mesh && object.userData && object.userData.type && 
+            ["door", "window", "vent"].includes(object.userData.type)) {
           airEntryMeshes.push(object);
         }
       });
@@ -518,7 +519,7 @@ export function RoomSketchPro({
     console.log(`RSP: Found ${airEntryMeshes.length} air entry meshes to texture`);
 
     airEntryMeshes.forEach((airEntryMesh, index) => {
-      const airEntryType = airEntryMesh.userData.airEntryType;
+      const airEntryType = airEntryMesh.userData.type;
       const originalMaterial = airEntryMesh.material as THREE.MeshPhongMaterial;
       
       let texture: THREE.Texture | undefined;
