@@ -1886,48 +1886,6 @@ export default function Canvas3D({
 
     window.addEventListener("resize", handleResize);
 
-    // Function to apply custom materials (for presentation mode)
-    const applyCustomMaterials = useCallback((materials: MaterialConfig) => {
-      if (!sceneRef.current) return;
-
-      sceneRef.current.traverse((child) => {
-        if (child instanceof THREE.Mesh && child.userData) {
-          const type = child.userData.type;
-          
-          switch (type) {
-            case 'wall':
-              if (materials.wall) child.material = materials.wall;
-              break;
-            case 'floor':
-              if (materials.floor) child.material = materials.floor;
-              break;
-            case 'ceiling':
-              if (materials.ceiling) child.material = materials.ceiling;
-              break;
-            case 'door':
-              if (materials.door) child.material = materials.door;
-              break;
-            case 'window':
-              if (materials.window) child.material = materials.window;
-              break;
-            case 'stairs':
-              if (materials.stairs) child.material = materials.stairs;
-              break;
-          }
-        }
-      });
-
-      // Force re-render
-      needsRenderRef.current = true;
-    }, []);
-
-    // Expose material application function to parent (RSP)
-    useEffect(() => {
-      if (onMaterialsReady && presentationMode) {
-        onMaterialsReady(applyCustomMaterials);
-      }
-    }, [onMaterialsReady, presentationMode, applyCustomMaterials]);
-
     // Handle right mouse button down
     // Helper function to get mouse coordinates for raycasting
     const getMouseCoordinates = (event: MouseEvent): THREE.Vector2 => {
@@ -3625,6 +3583,48 @@ export default function Canvas3D({
       }
     };
   }, []);
+
+  // Function to apply custom materials (for presentation mode)
+  const applyCustomMaterials = useCallback((materials: MaterialConfig) => {
+    if (!sceneRef.current) return;
+
+    sceneRef.current.traverse((child) => {
+      if (child instanceof THREE.Mesh && child.userData) {
+        const type = child.userData.type;
+        
+        switch (type) {
+          case 'wall':
+            if (materials.wall) child.material = materials.wall;
+            break;
+          case 'floor':
+            if (materials.floor) child.material = materials.floor;
+            break;
+          case 'ceiling':
+            if (materials.ceiling) child.material = materials.ceiling;
+            break;
+          case 'door':
+            if (materials.door) child.material = materials.door;
+            break;
+          case 'window':
+            if (materials.window) child.material = materials.window;
+            break;
+          case 'stairs':
+            if (materials.stairs) child.material = materials.stairs;
+            break;
+        }
+      }
+    });
+
+    // Force re-render
+    needsRenderRef.current = true;
+  }, []);
+
+  // Expose material application function to parent (RSP)
+  useEffect(() => {
+    if (onMaterialsReady && presentationMode) {
+      onMaterialsReady(applyCustomMaterials);
+    }
+  }, [onMaterialsReady, presentationMode, applyCustomMaterials]);
 
   useEffect(() => {
 

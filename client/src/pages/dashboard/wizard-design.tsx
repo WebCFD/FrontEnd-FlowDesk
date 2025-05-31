@@ -50,7 +50,7 @@ import {
   Info,
 } from "lucide-react";
 import Canvas2D from "@/components/sketch/Canvas2D";
-import { RoomSketchPro } from "@/components/sketch/RoomSketchPro";
+import RoomSketchPro from "@/components/sketch/RoomSketchPro";
 import { SceneProvider } from "@/contexts/SceneContext";
 import { cn } from "@/lib/utils";
 import AirEntryDialog from "@/components/sketch/AirEntryDialog";
@@ -2251,49 +2251,7 @@ export default function WizardDesign() {
         <SceneProvider>
           {mode === "step2" ? (
             <RoomSketchPro
-              key={`step2-view-${currentFloor}`} // Add the currentFloor to the key to force re-render on floor change
-              instanceId="step2-view"
-              lines={floors[currentFloor]?.lines || lines} // Use the floor-specific lines directly
-              airEntries={floors[currentFloor]?.airEntries || airEntries} // Use the floor-specific air entries directly
-              wallTransparency={wallTransparency}
-              roomHeight={getCurrentCeilingHeight()}
-              currentFloor={currentFloor} // Pass the current floor explicitly
-              floors={floors} // Pass the entire floors object directly
-              onWallTransparencyChange={(value) => {
-                console.log("Wizard: Wall transparency changing to:", value);
-                setWallTransparency(value);
-              }}
-              onComponentMount={() => {
-                // Add detailed logging of the data being passed to RoomSketchPro
-                console.log("🔄 DATA FLOW: wizard-design -> RoomSketchPro:", {
-                  currentFloor,
-                  floorCount: Object.keys(floors).length,
-                  floorNames: Object.keys(floors),
-                  hasMultipleFloors: Object.keys(floors).length > 1,
-                });
-
-                // Log which floor is active in Canvas3D for comparison
-                console.log(
-                  "⚠️ IMPORTANT: RoomSketchPro should EXACTLY mirror Canvas3D view",
-                  {
-                    currentFloorName: currentFloor,
-                    sendingMultifloorData: true,
-                    note: "Canvas3D displays a specific floor, RSP should show exactly the same",
-                  },
-                );
-
-                // Log specific floor contents that will be displayed in Canvas3D vs RSP
-                Object.keys(floors).forEach((floorName) => {
-                  console.log(`📊 FLOOR DATA FOR [${floorName}]:`, {
-                    lineCount: floors[floorName]?.lines?.length || 0,
-                    airEntryCount: floors[floorName]?.airEntries?.length || 0,
-                    hasStairs: !!floors[floorName]?.stairPolygons?.length,
-                    stairCount: floors[floorName]?.stairPolygons?.length || 0,
-                    isCurrentFloor: floorName === currentFloor,
-                    shouldBeVisibleInRSP: floorName === currentFloor, // Only current floor should be visible in RSP
-                  });
-                });
-              }}
+              key={`step2-view-${currentFloor}`}
             />
           ) : tab === "2d-editor" ? (
             <Canvas2D
