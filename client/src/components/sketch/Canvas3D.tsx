@@ -1210,6 +1210,7 @@ export default function Canvas3D({
           opacity: 0.7, // Fixed opacity at 70% regardless of current floor
           transparent: true,
           side: THREE.DoubleSide,
+          depthTest: false, // Disable depth testing to render on top
         });
 
         const mesh = new THREE.Mesh(geometry, material);
