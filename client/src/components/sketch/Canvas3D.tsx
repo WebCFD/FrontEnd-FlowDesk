@@ -469,6 +469,7 @@ export default function Canvas3D({
   simulationType = "Comfort Simulation (steady run)",
   isMultifloor = false,
   presentationMode = false,
+  lightingIntensity = 0.9,
   floorParameters = {},
   onUpdateAirEntry,
   onDeleteAirEntry,
@@ -477,6 +478,39 @@ export default function Canvas3D({
 }: Canvas3DProps) {
   // Access the SceneContext to share data with RoomSketchPro
   const { updateGeometryData, updateSceneData, updateFloorData, setCurrentFloor: setContextCurrentFloor } = useSceneContext();
+
+  // Function to setup lighting based on presentation mode
+  const setupLights = (scene: THREE.Scene) => {
+    if (presentationMode && lightingIntensity !== undefined) {
+      // RSP: More homogeneous, bright lighting without harsh shadows
+      const ambientLight = new THREE.AmbientLight(0xffffff, lightingIntensity);
+      scene.add(ambientLight);
+
+      // Multiple soft directional lights for even illumination
+      const directionalLight1 = new THREE.DirectionalLight(0xffffff, lightingIntensity * 0.33);
+      directionalLight1.position.set(10, 10, 5);
+      directionalLight1.castShadow = false;
+      scene.add(directionalLight1);
+
+      const directionalLight2 = new THREE.DirectionalLight(0xffffff, lightingIntensity * 0.22);
+      directionalLight2.position.set(-10, 10, -5);
+      directionalLight2.castShadow = false;
+      scene.add(directionalLight2);
+
+      const directionalLight3 = new THREE.DirectionalLight(0xffffff, lightingIntensity * 0.22);
+      directionalLight3.position.set(0, 15, 10);
+      directionalLight3.castShadow = false;
+      scene.add(directionalLight3);
+    } else {
+      // Normal Canvas3D: Standard lighting with shadows
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+      scene.add(ambientLight);
+
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      directionalLight.position.set(1, 1, 1);
+      scene.add(directionalLight);
+    }
+  };
   // Debug state for UI display
   const [debugInfo, setDebugInfo] = useState<{
     mousePosition: string;
@@ -1597,13 +1631,8 @@ export default function Canvas3D({
     console.log("TrackballControls buttons configured:", controls.mouseButtons);
     controlsRef.current = controls;
 
-    // Add lights
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-    scene.add(ambientLight);
-
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(1, 1, 1);
-    scene.add(directionalLight);
+    // Add lights using centralized function
+    setupLights(scene);
 
     // Add grid helper
     const gridHelper = new THREE.GridHelper(GRID_SIZE, GRID_DIVISIONS);
@@ -3859,6 +3888,34 @@ export default function Canvas3D({
       setSelectedAxis(null);
     }
   }, [editingAirEntry]);
+
+  // Update lighting intensity in real-time for presentation mode
+  useEffect(() => {
+    if (sceneRef.current && presentationMode && lightingIntensity !== undefined) {
+      // Find and update ambient light
+      const ambientLight = sceneRef.current.children.find(
+        child => child instanceof THREE.AmbientLight
+      ) as THREE.AmbientLight;
+      
+      if (ambientLight) {
+        ambientLight.intensity = lightingIntensity;
+      }
+
+      // Find and update directional lights
+      const directionalLights = sceneRef.current.children.filter(
+        child => child instanceof THREE.DirectionalLight
+      ) as THREE.DirectionalLight[];
+      
+      if (directionalLights.length >= 3) {
+        directionalLights[0].intensity = lightingIntensity * 0.33;
+        directionalLights[1].intensity = lightingIntensity * 0.22;
+        directionalLights[2].intensity = lightingIntensity * 0.22;
+      }
+
+      // Force render update
+      needsRenderRef.current = true;
+    }
+  }, [lightingIntensity, presentationMode]);
 
   // Effect to update wall transparency when the prop changes
   // Measurement utility functions
