@@ -604,7 +604,7 @@ export default function Canvas3D({
           
           // Also remove any debug hitbox visualizations that might be left
           if (object.userData?.type === 'debug-helper') {
-            console.log("  - Removing debug hitbox visualization during cleanup");
+
             sceneRef.current?.remove(object);
           }
         });
@@ -615,7 +615,7 @@ export default function Canvas3D({
       
       // Re-enable controls when exiting eraser mode
       if (controlsRef.current) {
-        console.log("  - Re-enabling TrackballControls for camera movement");
+
         controlsRef.current.enabled = true;
         
         // Force controls update
