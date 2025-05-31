@@ -110,47 +110,10 @@ export function RoomSketchPro({
   // Convert roomHeight from cm to Canvas3D format (which expects cm)
   const ceilingHeightCm = roomHeight;
 
-  // Create procedural textures with perfect horizontal orientation
+  // Load real brick texture for modern style
   const createBrickTexture = () => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 256;
-    canvas.height = 256;
-    const ctx = canvas.getContext('2d')!;
-
-    // Background mortar color
-    ctx.fillStyle = '#e0d8d0';
-    ctx.fillRect(0, 0, 256, 256);
-
-    // Crear una textura de ladrillos simple sin patrones complejos
-    const brickWidth = 180;
-    const brickHeight = 60;
-    const mortarThickness = 8;
-
-    // Color base de ladrillo
-    ctx.fillStyle = '#9b5546';
-    
-    // Crear grid completo de ladrillos con líneas horizontales y verticales
-    for (let y = 0; y < 256; y += brickHeight + mortarThickness) {
-      for (let x = 0; x < 256; x += brickWidth + mortarThickness) {
-        // Dibujar ladrillo individual
-        ctx.fillRect(x, y, brickWidth, brickHeight);
-      }
-    }
-    
-    // Dibujar todas las líneas de mortero por separado para mayor claridad
-    ctx.fillStyle = '#e0d8d0';
-    
-    // Líneas horizontales (mortero horizontal)
-    for (let y = brickHeight; y < 256; y += brickHeight + mortarThickness) {
-      ctx.fillRect(0, y, 256, mortarThickness);
-    }
-    
-    // Líneas verticales (mortero vertical)
-    for (let x = brickWidth; x < 256; x += brickWidth + mortarThickness) {
-      ctx.fillRect(x, 0, mortarThickness, 256);
-    }
-
-    const texture = new THREE.CanvasTexture(canvas);
+    const loader = new THREE.TextureLoader();
+    const texture = loader.load('/red_brick_diff_4k.jpg');
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
     texture.repeat.set(2, 2);
