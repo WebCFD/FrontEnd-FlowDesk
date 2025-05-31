@@ -87,6 +87,9 @@ export function RoomSketchPro({
     brick?: THREE.Texture;
     wood?: THREE.Texture;
     metal?: THREE.Texture;
+    door?: THREE.Texture;
+    window?: THREE.Texture;
+    vent?: THREE.Texture;
   }>({});
 
   // Convert props to Canvas3D format
@@ -236,6 +239,129 @@ export function RoomSketchPro({
     return texture;
   };
 
+  const createDoorTexture = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 128;
+    canvas.height = 256;
+    const ctx = canvas.getContext('2d')!;
+
+    // Base door color - madera oscura
+    ctx.fillStyle = '#8B4513';
+    ctx.fillRect(0, 0, 128, 256);
+
+    // Paneles de puerta
+    const panelWidth = 100;
+    const panelHeight = 60;
+    const marginX = 14;
+    const marginY = 20;
+
+    // Panel superior
+    ctx.strokeStyle = '#654321';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(marginX, marginY, panelWidth, panelHeight);
+
+    // Panel medio
+    ctx.strokeRect(marginX, marginY + 80, panelWidth, panelHeight);
+
+    // Panel inferior
+    ctx.strokeRect(marginX, marginY + 160, panelWidth, panelHeight);
+
+    // Manija de puerta
+    ctx.fillStyle = '#C0C0C0';
+    ctx.beginPath();
+    ctx.arc(100, 128, 6, 0, 2 * Math.PI);
+    ctx.fill();
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    return texture;
+  };
+
+  const createWindowTexture = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 128;
+    canvas.height = 128;
+    const ctx = canvas.getContext('2d')!;
+
+    // Fondo de ventana - cristal azul claro
+    ctx.fillStyle = '#E6F3FF';
+    ctx.fillRect(0, 0, 128, 128);
+
+    // Marco de ventana
+    ctx.strokeStyle = '#FFFFFF';
+    ctx.lineWidth = 6;
+    ctx.strokeRect(3, 3, 122, 122);
+
+    // Cruz central
+    ctx.beginPath();
+    ctx.moveTo(64, 6);
+    ctx.lineTo(64, 122);
+    ctx.moveTo(6, 64);
+    ctx.lineTo(122, 64);
+    ctx.stroke();
+
+    // Reflejo sutil
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+    ctx.fillRect(10, 10, 50, 50);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    return texture;
+  };
+
+  const createVentTexture = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 128;
+    canvas.height = 128;
+    const ctx = canvas.getContext('2d')!;
+
+    // Fondo de rejilla - aluminio
+    ctx.fillStyle = '#B8B8B8';
+    ctx.fillRect(0, 0, 128, 128);
+
+    // Marco exterior
+    ctx.strokeStyle = '#808080';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(2, 2, 124, 124);
+
+    // Láminas horizontales de rejilla
+    ctx.strokeStyle = '#A0A0A0';
+    ctx.lineWidth = 2;
+    
+    for (let y = 15; y < 120; y += 8) {
+      // Lámina principal
+      ctx.beginPath();
+      ctx.moveTo(10, y);
+      ctx.lineTo(118, y);
+      ctx.stroke();
+      
+      // Sombra de lámina
+      ctx.strokeStyle = '#888888';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(10, y + 2);
+      ctx.lineTo(118, y + 2);
+      ctx.stroke();
+      
+      // Highlight
+      ctx.strokeStyle = '#D0D0D0';
+      ctx.beginPath();
+      ctx.moveTo(10, y - 1);
+      ctx.lineTo(118, y - 1);
+      ctx.stroke();
+      
+      ctx.strokeStyle = '#A0A0A0';
+      ctx.lineWidth = 2;
+    }
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    return texture;
+  };
+
   // Callback when Canvas3D scene is ready
   const handleSceneReady = (scene: THREE.Scene, renderer: THREE.WebGLRenderer, camera: THREE.Camera) => {
     console.log('RSP: Scene ready, storing references');
@@ -310,7 +436,10 @@ export function RoomSketchPro({
       texturesRef.current.brick = createBrickTexture();
       texturesRef.current.wood = createWoodTexture();
       texturesRef.current.metal = createMetalTexture();
-      console.log('RSP: Generated procedural textures');
+      texturesRef.current.door = createDoorTexture();
+      texturesRef.current.window = createWindowTexture();
+      texturesRef.current.vent = createVentTexture();
+      console.log('RSP: Generated procedural textures including doors, windows, and vents');
     }
 
     // Apply theme-specific materials to walls
@@ -374,6 +503,73 @@ export function RoomSketchPro({
       
       wallMesh.material = newMaterial;
       console.log(`RSP: Applied ${selectedTheme} texture to wall ${index}`);
+    });
+
+    // Apply textures to air entries (doors, windows, vents)
+    const airEntryMeshes: THREE.Mesh[] = [];
+    scene.traverse((object) => {
+      if (object instanceof THREE.Mesh && object.userData && object.userData.type === 'airEntry') {
+        airEntryMeshes.push(object);
+      }
+    });
+
+    console.log(`RSP: Found ${airEntryMeshes.length} air entry meshes to texture`);
+
+    airEntryMeshes.forEach((airEntryMesh, index) => {
+      const airEntryType = airEntryMesh.userData.airEntryType;
+      const originalMaterial = airEntryMesh.material as THREE.MeshPhongMaterial;
+      
+      let texture: THREE.Texture | undefined;
+      let materialColor = 0xffffff;
+
+      switch (airEntryType) {
+        case "door":
+          texture = texturesRef.current.door;
+          materialColor = 0x8B4513; // Brown for doors
+          break;
+        case "window":
+          texture = texturesRef.current.window;
+          materialColor = 0xE6F3FF; // Light blue for windows
+          break;
+        case "vent":
+          texture = texturesRef.current.vent;
+          materialColor = 0xB8B8B8; // Aluminum for vents
+          break;
+        default:
+          return; // Skip unknown types
+      }
+
+      if (texture) {
+        // Add UV coordinates if missing
+        const geometry = airEntryMesh.geometry as THREE.BufferGeometry;
+        if (!geometry.attributes.uv) {
+          const positionAttribute = geometry.attributes.position;
+          const uvs = [];
+          
+          for (let i = 0; i < positionAttribute.count; i += 3) {
+            uvs.push(0, 0, 1, 0, 0, 1);
+          }
+          
+          const remaining = positionAttribute.count % 3;
+          for (let i = 0; i < remaining; i++) {
+            uvs.push(0, 0);
+          }
+          
+          geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+        }
+
+        // Create new material with texture
+        const newMaterial = new THREE.MeshPhongMaterial({
+          map: texture,
+          color: materialColor,
+          opacity: originalMaterial.opacity,
+          transparent: originalMaterial.transparent,
+          side: originalMaterial.side
+        });
+        
+        airEntryMesh.material = newMaterial;
+        console.log(`RSP: Applied ${airEntryType} texture to air entry ${index}`);
+      }
     });
 
     // Mark that textures have been applied
