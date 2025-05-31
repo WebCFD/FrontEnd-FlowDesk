@@ -71,6 +71,15 @@ interface Measurement3D {
   label?: THREE.Sprite;
 }
 
+interface MaterialConfig {
+  wall?: THREE.Material;
+  floor?: THREE.Material;
+  ceiling?: THREE.Material;
+  door?: THREE.Material;
+  window?: THREE.Material;
+  stairs?: THREE.Material;
+}
+
 interface Canvas3DProps {
   floors: Record<string, FloorData>;
   currentFloor: string;
@@ -93,6 +102,10 @@ interface Canvas3DProps {
     index: number
   ) => void;
   onViewChange?: (callback: (direction: ViewDirection) => void) => void;
+  // Nuevas props para modo presentación
+  presentationMode?: boolean;
+  customMaterials?: MaterialConfig;
+  onMaterialsReady?: (applyMaterials: (materials: MaterialConfig) => void) => void;
 }
 
 
@@ -469,6 +482,9 @@ export default function Canvas3D({
   onUpdateAirEntry,
   onDeleteAirEntry,
   onViewChange,
+  presentationMode = false,
+  customMaterials,
+  onMaterialsReady,
 }: Canvas3DProps) {
   // Access the SceneContext to share data with RoomSketchPro
   const { updateGeometryData, updateSceneData, updateFloorData, setCurrentFloor: setContextCurrentFloor } = useSceneContext();
@@ -490,28 +506,28 @@ export default function Canvas3D({
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<TrackballControls | null>(null);
   const needsRenderRef = useRef<boolean>(true);
-  // State for editing air entries
+  // State for editing air entries (disabled in presentation mode)
   const [editingAirEntry, setEditingAirEntry] = useState<{
     index: number;
     entry: AirEntry;
-  } | null>(null);
+  } | null>(presentationMode ? null : null);
   const [ignoreNextClick, setIgnoreNextClick] = useState<boolean>(false);
-  // Track the selected air entry element for dragging
+  // Track the selected air entry element for dragging (disabled in presentation mode)
   const [selectedAirEntry, setSelectedAirEntry] = useState<{
     index: number;
     entry: AirEntry;
     object: THREE.Mesh | null;
-  } | null>(null);
+  } | null>(presentationMode ? null : null);
 
-  // Track which axis is selected for movement (x, y, or z)
-  const [selectedAxis, setSelectedAxis] = useState<"x" | "y" | "z" | null>(null);
+  // Track which axis is selected for movement (x, y, or z) (disabled in presentation mode)
+  const [selectedAxis, setSelectedAxis] = useState<"x" | "y" | "z" | null>(presentationMode ? null : null);
 
-  // Track if currently dragging
-  const [isDragging, setIsDragging] = useState<boolean>(false);
+  // Track if currently dragging (disabled in presentation mode)
+  const [isDragging, setIsDragging] = useState<boolean>(presentationMode ? false : false);
 
-  // Store the original position for reference
+  // Store the original position for reference (disabled in presentation mode)
   const [dragStartPosition, setDragStartPosition] =
-    useState<THREE.Vector3 | null>(null);
+    useState<THREE.Vector3 | null>(presentationMode ? null : null);
     
   // For eraser mode - track what element is being hovered and its original material
   const [hoveredEraseTarget, setHoveredEraseTarget] = useState<{
@@ -3380,20 +3396,23 @@ export default function Canvas3D({
       }
     };
 
-    canvas.addEventListener("mousedown", mouseDownWrapper);
+    // Only add interaction event listeners if not in presentation mode
+    if (!presentationMode) {
+      canvas.addEventListener("mousedown", mouseDownWrapper);
 
-    // Create named handlers for event tracking
-    const mouseMoveHandler = (e: MouseEvent) => {
-      handleMouseMove(e);
-    };
+      // Create named handlers for event tracking
+      const mouseMoveHandler = (e: MouseEvent) => {
+        handleMouseMove(e);
+      };
 
-    const mouseUpHandler = (e: MouseEvent) => {
-      handleMouseUp(e);
-    };
+      const mouseUpHandler = (e: MouseEvent) => {
+        handleMouseUp(e);
+      };
 
-    // Use document instead of window for more reliable event capture
-    document.addEventListener("mousemove", mouseMoveHandler);
-    document.addEventListener("mouseup", mouseUpHandler);
+      // Use document instead of window for more reliable event capture
+      document.addEventListener("mousemove", mouseMoveHandler);
+      document.addEventListener("mouseup", mouseUpHandler);
+    }
 
     // We don't need periodic checking anymore since we're preventatively recreating controls after each drag
 
@@ -3503,8 +3522,10 @@ export default function Canvas3D({
       }
     };
 
-    // Add the double-click event listener
-    canvas.addEventListener("dblclick", handleDoubleClick);
+    // Add the double-click event listener (only if not in presentation mode)
+    if (!presentationMode) {
+      canvas.addEventListener("dblclick", handleDoubleClick);
+    }
 
     return () => {
       window.removeEventListener("resize", handleResize);
