@@ -304,9 +304,7 @@ const highlightSelectedAxis = (
       const colorHex = arrowLineMaterial.color.getHex();
 
       if (colorHex === targetColor) {
-        console.log(
-          `Found matching arrow to highlight with color ${colorHex.toString(16)}`,
-        );
+
 
         // Highlight this arrow by making it larger
         arrow.scale.set(2, 2, 2);
@@ -1943,10 +1941,7 @@ export default function Canvas3D({
 
 
     const handleMeasurementMouseDown = (event: MouseEvent) => {
-      // Add detailed logging about current state
-      console.log("==== MEASUREMENT DEBUG ====");
-      console.log("Measurement mode active (ref):", isMeasureModeRef.current);
-      console.log("Current measurementStateRef:", measurementStateRef.current);
+
 
 
       // Only process right mouse button (button code 2) when in measure mode (using ref)
@@ -1963,11 +1958,11 @@ export default function Canvas3D({
       const intersectionPoint = getRaycastPoint(mouseCoords);
 
       if (intersectionPoint) {
-        console.log("Got intersection point:", intersectionPoint);
+
 
         if (!measurementStateRef.current.inProgress) {
           // First click - set start point
-          console.log("FIRST CLICK - Setting start point");
+
           measurementStateRef.current.startPoint = intersectionPoint.clone();
           measurementStateRef.current.inProgress = true;
 
@@ -3221,7 +3216,7 @@ export default function Canvas3D({
     const handleEraserClick = (event: MouseEvent) => {
       // Only handle when in eraser mode - using ref for reliable state
       if (!isEraserModeRef.current || !onDeleteAirEntry) {
-        console.log("🚫 Eraser click ignored - isEraserMode:", isEraserModeRef.current, "onDeleteAirEntry:", !!onDeleteAirEntry);
+  
         return;
       }
       
@@ -3233,20 +3228,12 @@ export default function Canvas3D({
       
       // Check if controls are disabled - this is an indicator that we're hovering over an element
       const areControlsDisabled = controlsRef.current && !controlsRef.current.enabled;
-      console.log("🎮 Controls disabled:", areControlsDisabled);
+
       
-      // Log available air entries in the current floor
-      const floorData = floors[currentFloor];
-      if (floorData && floorData.airEntries) {
-        console.log(`🏠 Current floor ${currentFloor} has ${floorData.airEntries.length} air entries:`, 
-          floorData.airEntries.map((entry, idx) => 
-            `${idx}: ${entry.type} at (${entry.position.x}, ${entry.position.y})`
-          )
-        );
-      }
+
       
       // Debug what is hovered
-      console.log("🔍 hoveredEraseTarget state:", hoveredEraseTarget ? "Present" : "Null");
+
       
       // If we have a hovered target, use that directly rather than raycasting again
       if (hoveredEraseTarget) {
