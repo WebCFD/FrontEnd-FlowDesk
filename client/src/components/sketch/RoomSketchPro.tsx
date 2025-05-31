@@ -323,18 +323,19 @@ export function RoomSketchPro({
       const positionAttribute = geometry.attributes.position;
       const uvs = [];
       
-      // Generate UV coordinates with simple pattern for consistent textures
-      for (let i = 0; i < positionAttribute.count; i += 3) {
-        // Triangle vertices with consistent UV mapping
-        uvs.push(0, 0);   // First vertex
-        uvs.push(1, 0);   // Second vertex  
-        uvs.push(0, 1);   // Third vertex
-      }
-      
-      // Handle any remaining vertices
-      const remaining = positionAttribute.count % 3;
-      for (let i = 0; i < remaining; i++) {
-        uvs.push(0, 0);
+      // Generate UV coordinates using world coordinates for consistent horizontal orientation
+      for (let i = 0; i < positionAttribute.count; i++) {
+        const x = positionAttribute.getX(i);
+        const y = positionAttribute.getY(i);
+        const z = positionAttribute.getZ(i);
+        
+        // Use horizontal distance (combining X and Z) and height Y for UV mapping
+        // This ensures horizontal brick orientation regardless of wall direction
+        const horizontalDistance = Math.sqrt(x * x + z * z);
+        const u = horizontalDistance * 0.3; // Scale factor for brick size
+        const v = y * 0.3; // Vertical scaling based on height
+        
+        uvs.push(u, v);
       }
       
       geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
