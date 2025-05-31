@@ -3397,9 +3397,9 @@ export default function Canvas3D({
           const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
           const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
           
-          // Set up raycaster
+          // Set up raycaster with precision configuration
           const raycaster = new THREE.Raycaster();
-          raycaster.params.Line = { threshold: 0.5 }; // Use lower threshold for precise detection
+          applyRaycasterConfig(raycaster, 'precision');
           raycaster.setFromCamera(new THREE.Vector2(x, y), cameraRef.current!);
           
           // Check for intersections
