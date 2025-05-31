@@ -114,6 +114,25 @@ const CANVAS_CONFIG = {
   reverseTransformY: (relativeY: number) => (600 / 2) - relativeY / PIXELS_TO_CM
 };
 
+// Centralized raycaster configuration
+const RAYCASTER_CONFIG = {
+  // Default thresholds for different interaction types
+  default: {
+    Line: { threshold: 1.0 },
+    Points: { threshold: 1.0 }
+  },
+  // High precision for air entry detection
+  precision: {
+    Line: { threshold: 0.5 },
+    Points: { threshold: 0.5 }
+  },
+  // Hover detection thresholds
+  hover: {
+    Line: { threshold: 0.5 },
+    Points: { threshold: 0.5 }
+  }
+};
+
 // ========================================
 // CORE UTILITY FUNCTIONS (Independent of component state)
 // ========================================
@@ -143,6 +162,17 @@ const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
     relativeY * PIXELS_TO_CM,
     height,
   );
+};
+
+/**
+ * Applies raycaster configuration consistently
+ * Dependencies: RAYCASTER_CONFIG
+ * Used by: All raycaster operations for consistent thresholds
+ */
+const applyRaycasterConfig = (raycaster: THREE.Raycaster, configType: keyof typeof RAYCASTER_CONFIG = 'default') => {
+  const config = RAYCASTER_CONFIG[configType];
+  raycaster.params.Line = config.Line;
+  raycaster.params.Points = config.Points;
 };
 
 /**
@@ -2646,23 +2676,13 @@ export default function Canvas3D({
             const raycaster = new THREE.Raycaster();
             raycaster.setFromCamera(mouseCoords, cameraRef.current);
             
-            // IMPORTANT: We want to be precise when detecting intersections in eraser mode
-            // Use smaller thresholds to ensure we only highlight when directly over elements
-            // This prevents false positives that can prevent proper "mouse moved away" detection
-            const originalLineThreshold = raycaster.params.Line.threshold;
-            const originalPointsThreshold = raycaster.params.Points.threshold;
-            
-            // CRITICAL DEBUG: Use very small thresholds for maximum precision
-            // This ensures we only detect elements when directly hovering over them
-            raycaster.params.Line.threshold = 0.5;  
-            raycaster.params.Points.threshold = 0.5;
+            // Apply precision configuration for accurate eraser mode detection
+            applyRaycasterConfig(raycaster, 'precision');
             
             // Make sure we're using recursive flag = true to catch child objects too
             const meshIntersects = raycaster.intersectObjects(airEntryMeshes, true);
             
-            // Restore original thresholds when we're done
-            raycaster.params.Line.threshold = originalLineThreshold;
-            raycaster.params.Points.threshold = originalPointsThreshold;
+            // Raycaster configuration is now handled centrally
             
             // Enhanced debugging for air entry intersections
             console.log(`Found ${meshIntersects.length} intersections with air entries`);
