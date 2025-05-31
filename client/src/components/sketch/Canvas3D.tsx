@@ -1794,7 +1794,7 @@ export default function Canvas3D({
             newPosition.y += localXDir.y * localDisplacement;
             newPosition.z += localXDir.z * localDisplacement;
             
-            console.log(`Drag X along local axis: [${localXDir.x.toFixed(2)}, ${localXDir.y.toFixed(2)}, ${localXDir.z.toFixed(2)}], displacement: ${localDisplacement.toFixed(2)}`);
+
           } 
           else if (dragState.selectedAxis === "y") {
             // Y-axis: Always vertical in world space (along global Z)
