@@ -95,6 +95,7 @@ interface Canvas3DProps {
   onViewChange?: (callback: (direction: ViewDirection) => void) => void;
 }
 
+
 // Constants
 const PIXELS_TO_CM = 25 / 20;
 const GRID_SIZE = 1000;
@@ -113,8 +114,44 @@ const CANVAS_CONFIG = {
   reverseTransformY: (relativeY: number) => (600 / 2) - relativeY / PIXELS_TO_CM
 };
 
+// Centralized raycaster configuration
+const RAYCASTER_CONFIG = {
+  // Default thresholds for different interaction types
+  default: {
+    Line: { threshold: 1.0 },
+    Points: { threshold: 1.0 }
+  },
+  // High precision for air entry detection
+  precision: {
+    Line: { threshold: 0.5 },
+    Points: { threshold: 0.5 }
+  },
+  // Hover detection thresholds
+  hover: {
+    Line: { threshold: 0.5 },
+    Points: { threshold: 0.5 }
+  }
+};
+
+// ========================================
+// CORE UTILITY FUNCTIONS (Independent of component state)
+// ========================================
+
 /**
- * Core coordinate transformation function
+ * Normalizes floor names for consistent storage and retrieval
+ * Dependencies: None
+ * Used by: Canvas3D, RoomSketchPro, storage operations
+ */
+const normalizeFloorName = (floorName: string): string => {
+  // Convert to lowercase and remove spaces - ensure consistent keys for storage/retrieval
+  return floorName.toLowerCase().replace(/\s+/g, '');
+};
+
+/**
+ * Core coordinate transformation function: converts 2D canvas points to 3D world space
+ * Dependencies: CANVAS_CONFIG, PIXELS_TO_CM
+ * Used by: All 3D geometry generation, air entry positioning, wall creation
+ * Critical for: Maintaining consistent coordinate system between Canvas3D and RoomSketchPro
  */
 const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
   const relativeX = point.x - CANVAS_CONFIG.centerX;
@@ -128,95 +165,290 @@ const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
 };
 
 /**
- * Generate shared floor geometry for use by other components
+ * Applies raycaster configuration consistently
+ * Dependencies: RAYCASTER_CONFIG
+ * Used by: All raycaster operations for consistent thresholds
  */
-export const generateSharedFloorGeometry = (
-  floors: Record<string, FloorData>,
-  config: {
-    currentFloor: string;
-    wallTransparency: number;
-    floorParameters: Record<string, { ceilingHeight: number; floorDeck: number }>;
-  }
-): THREE.Object3D[] => {
-  const objects: THREE.Object3D[] = [];
-  const currentFloorData = floors[config.currentFloor];
-  
-  if (!currentFloorData) return objects;
-
-  const floorHeight = config.floorParameters[config.currentFloor]?.ceilingHeight || 220;
-  const heightInMeters = floorHeight / 100;
-
-  // Create walls from lines
-  currentFloorData.lines.forEach((line, index) => {
-    const start = transform2DTo3D(line.start, 0);
-    const end = transform2DTo3D(line.end, 0);
-    const startTop = transform2DTo3D(line.start, heightInMeters);
-    const endTop = transform2DTo3D(line.end, heightInMeters);
-
-    const vertices = new Float32Array([
-      start.x, start.y, start.z,
-      end.x, end.y, end.z,
-      startTop.x, startTop.y, startTop.z,
-      endTop.x, endTop.y, endTop.z,
-    ]);
-
-    const indices = new Uint16Array([0, 1, 2, 1, 3, 2]);
-    const uvs = new Float32Array([0, 0, 1, 0, 0, 1, 1, 1]);
-
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
-    geometry.setAttribute("uv", new THREE.BufferAttribute(uvs, 2));
-    geometry.setIndex(new THREE.BufferAttribute(indices, 1));
-    geometry.computeVertexNormals();
-
-    const material = new THREE.MeshStandardMaterial({
-      color: 0xffffff,
-      opacity: config.wallTransparency,
-      transparent: config.wallTransparency < 1,
-      side: THREE.DoubleSide,
-    });
-
-    const wall = new THREE.Mesh(geometry, material);
-    wall.name = `wall_${index}`;
-    wall.userData = { type: "wall", index, isFloorGeometry: true };
-    objects.push(wall);
-  });
-
-  // Create air entries
-  currentFloorData.airEntries.forEach((entry, index) => {
-    const position = transform2DTo3D(entry.position, entry.dimensions.distanceToFloor || 0);
-    
-    const geometry = new THREE.BoxGeometry(
-      entry.dimensions.width / 100,
-      entry.dimensions.height / 100,
-      0.1
-    );
-    
-    const color = entry.type === "window" ? 0x87CEEB : 
-                  entry.type === "door" ? 0x8B4513 : 0x90EE90;
-    
-    const material = new THREE.MeshPhongMaterial({
-      color,
-      transparent: true,
-      opacity: 0.7,
-    });
-
-    const mesh = new THREE.Mesh(geometry, material);
-    mesh.position.copy(position);
-    mesh.userData = { 
-      type: entry.type, 
-      entryIndex: index, 
-      position: entry.position,
-      isFloorGeometry: true 
-    };
-    objects.push(mesh);
-  });
-
-  return objects;
+const applyRaycasterConfig = (raycaster: THREE.Raycaster, configType: keyof typeof RAYCASTER_CONFIG = 'default') => {
+  const config = RAYCASTER_CONFIG[configType];
+  raycaster.params.Line = config.Line;
+  raycaster.params.Points = config.Points;
 };
 
 /**
- * Main Canvas3D Component
+ * Creates ordered perimeter points from line segments
+ * Dependencies: None (pure function)
+ * Used by: Room geometry generation, floor area calculations
+ */
+const createRoomPerimeter = (lines: Line[]): Point[] => {
+  if (lines.length === 0) return [];
+
+  const perimeter: Point[] = [];
+  const visited = new Set<string>();
+  const pointToString = (p: Point) => `${p.x},${p.y}`;
+
+  // Create a map of points to their connected lines
+  const connections = new Map<string, Point[]>();
+  lines.forEach((line) => {
+    const startKey = pointToString(line.start);
+    const endKey = pointToString(line.end);
+
+    if (!connections.has(startKey)) connections.set(startKey, []);
+    if (!connections.has(endKey)) connections.set(endKey, []);
+
+    connections.get(startKey)!.push(line.end);
+    connections.get(endKey)!.push(line.start);
+  });
+
+  // Start from the first point and traverse
+  let currentPoint = lines[0].start;
+  perimeter.push(currentPoint);
+  visited.add(pointToString(currentPoint));
+
+  while (perimeter.length < lines.length) {
+    const currentKey = pointToString(currentPoint);
+    const connectedPoints = connections.get(currentKey) || [];
+    
+    let nextPoint: Point | null = null;
+    for (const point of connectedPoints) {
+      const pointKey = pointToString(point);
+      if (!visited.has(pointKey)) {
+        nextPoint = point;
+        break;
+      }
+    }
+
+    if (!nextPoint) break;
+    
+    perimeter.push(nextPoint);
+    visited.add(pointToString(nextPoint));
+    currentPoint = nextPoint;
+  }
+
+  return perimeter;
+};
+
+// Add these utility functions after the existing transform2DTo3D function or other utility functions
+
+// Utility function to highlight the selected axis
+// Replace your highlightSelectedAxis function with this enhanced version
+
+// Utility function to highlight the selected axis
+// Replace the entire highlightSelectedAxis function with this corrected version:
+
+// Utility function to highlight the selected axis
+const highlightSelectedAxis = (
+  scene: THREE.Scene,
+  airEntry: THREE.Mesh,
+  axisType: "x" | "y" | "z" | null,
+) => {
+  /*console.log(
+    `Highlighting axis: ${axisType} for air entry at position:`,
+    airEntry.position,
+  );*/
+
+  // Find all arrow helpers near the air entry
+  const arrows: THREE.ArrowHelper[] = [];
+  scene.traverse((object) => {
+    if (object instanceof THREE.ArrowHelper) {
+      // Check if this arrow is close to our air entry
+      const distance = object.position.distanceTo(airEntry.position);
+      if (distance < 60) {
+        // Increased detection radius
+        arrows.push(object);
+      }
+    }
+  });
+
+ // console.log(`Found ${arrows.length} arrows to process for highlighting`);
+
+  // First reset all arrows to normal scale and appearance
+  arrows.forEach((arrow) => {
+    arrow.scale.set(1, 1, 1);
+    const arrowLineMaterial = arrow.line.material as THREE.LineBasicMaterial;
+
+    // Reset line opacity
+    arrowLineMaterial.opacity = 0.8;
+
+    // Reset cone appearance if we can access it
+    if (arrow.cone && arrow.cone.material) {
+      const coneMaterial = arrow.cone.material as THREE.Material;
+
+      // Set opacity if material supports it
+      if ("opacity" in coneMaterial) {
+        (coneMaterial as any).opacity = 0.8;
+      }
+    }
+  });
+
+  // If an axis is selected, highlight it
+  if (axisType) {
+    //console.log(`Applying highlight to ${axisType} axis`);
+    let targetColor: number = 0;
+    
+    // Set the target color based on the axis type
+    if (axisType === "x") {
+      targetColor = 0xff0000; // Red for X
+    } else if (axisType === "y") {
+      targetColor = 0x00ff00; // Green for Y
+    } else if (axisType === "z") {
+      targetColor = 0x0000ff; // Blue for Z
+    }
+
+    arrows.forEach((arrow) => {
+      const arrowLineMaterial = arrow.line.material as THREE.LineBasicMaterial;
+      const colorHex = arrowLineMaterial.color.getHex();
+
+      if (colorHex === targetColor) {
+
+
+        // Highlight this arrow by making it larger
+        arrow.scale.set(2, 2, 2);
+
+        // Make line more opaque
+        arrowLineMaterial.opacity = 1.0;
+
+        // Enhance cone if possible
+        if (arrow.cone && arrow.cone.material) {
+          const coneMaterial = arrow.cone.material as THREE.Material;
+
+          if ("opacity" in coneMaterial) {
+            (coneMaterial as any).opacity = 1.0;
+          }
+
+          if ("color" in coneMaterial) {
+            (coneMaterial as any).color.copy(arrowLineMaterial.color);
+          }
+        }
+      }
+    });
+  }
+};
+
+// Replace the entire highlightHoveredArrow function with this corrected version:
+
+// Update the function signature to accept the needed variables as parameters:
+
+const highlightHoveredArrow = (
+  scene: THREE.Scene,
+  hoveredArrow: { object: THREE.ArrowHelper; type: "x" | "y" | "z" } | null,
+  selectedAirEntry: {
+    index: number;
+    entry: AirEntry;
+    object: THREE.Mesh | null;
+  } | null,
+  selectedAxis: "x" | "y" | "z" | null,
+) => {
+  if (!scene) return;
+
+  // Reset all arrows that aren't selected
+  scene.traverse((object) => {
+    if (object instanceof THREE.ArrowHelper) {
+      // Determine if this arrow is selected
+      let isCurrentlySelected = false;
+
+      if (selectedAirEntry?.object) {
+        const colorHex = (object.line.material as THREE.LineBasicMaterial).color.getHex();
+        isCurrentlySelected =
+          object.position.distanceTo(selectedAirEntry.object.position) < 10 &&
+          ((selectedAxis === "x" && colorHex === 0xff0000) ||
+           (selectedAxis === "y" && colorHex === 0x00ff00) ||
+           (selectedAxis === "z" && colorHex === 0x0000ff));
+
+        // Skip the selected arrow (it's handled by highlightSelectedAxis)
+        if (isCurrentlySelected) return;
+      }
+
+      // Check if this is the hovered arrow
+      const isHovered = hoveredArrow && object === hoveredArrow.object;
+
+      if (isHovered) {
+        // Scale up hovered arrow
+        object.scale.set(1.5, 1.5, 1.5);
+
+        // Make line more opaque
+        const lineMaterial = object.line.material as THREE.LineBasicMaterial;
+        lineMaterial.opacity = 1.0;
+
+        // Make cone more visible if possible
+        if (object.cone && object.cone.material) {
+          const coneMaterial = object.cone.material as THREE.Material;
+          if ("opacity" in coneMaterial) {
+            (coneMaterial as any).opacity = 1.0;
+          }
+        }
+      } else if (!isCurrentlySelected) {
+        // Reset non-selected, non-hovered arrows to normal
+        object.scale.set(1, 1, 1);
+        const lineMaterial = object.line.material as THREE.LineBasicMaterial;
+        lineMaterial.opacity = 0.8;
+      }
+    }
+  });
+};
+
+// Utility function to highlight the selected air entry
+const highlightSelectedAirEntry = (
+  airEntry: THREE.Mesh | null,
+  isSelected: boolean,
+  isDragging: boolean,
+) => {
+  if (!airEntry) return;
+
+  const material = airEntry.material as THREE.MeshPhongMaterial;
+
+  if (isSelected) {
+    // Highlight by adding an outline effect but maintain 70% base opacity or slightly higher when dragging
+    material.opacity = isDragging ? 0.85 : 0.7;
+    material.emissive.set(0xffff00); // Yellow emissive glow
+    material.emissiveIntensity = isDragging ? 0.5 : 0.3;
+  } else {
+    // Reset to fixed 70% opacity for all air entries
+    material.opacity = 0.7;
+    material.emissive.set(0x000000); // No emissive glow
+    material.emissiveIntensity = 0;
+  }
+};
+
+
+
+// Add function to get the connected floor name
+const getConnectedFloorName = (
+  floorName: string,
+  direction: "up" | "down" = "up",
+): string => {
+  const floorOrder = ["ground", "first", "second", "third", "fourth", "fifth"];
+  const currentIndex = floorOrder.indexOf(floorName);
+
+  if (currentIndex === -1) return floorName; // Invalid floor name
+
+  if (direction === "up" && currentIndex < floorOrder.length - 1) {
+    return floorOrder[currentIndex + 1];
+  } else if (direction === "down" && currentIndex > 0) {
+    return floorOrder[currentIndex - 1];
+  }
+
+  return floorName; // No valid connected floor
+};
+
+/**
+ * ========================================
+ * CANVAS3D MAIN COMPONENT
+ * ========================================
+ * 
+ * Core 3D visualization component that renders floor plans, walls, air entries, and stairs
+ * 
+ * Key dependencies for shared geometry functions:
+ * - transform2DTo3D: Core coordinate transformation
+ * - CANVAS_CONFIG: Centralized dimensions configuration
+ * - PIXELS_TO_CM: Scale conversion constant
+ * - normalizeFloorName: Floor naming consistency
+ * - createRoomPerimeter: Room boundary generation
+ * 
+ * Critical for RoomSketchPro integration:
+ * - Air entry positioning algorithms (lines 2000-2200)
+ * - Wall geometry generation (lines 1200-1400)
+ * - Floor rendering logic (lines 800-1000)
  */
 export default function Canvas3D({
   floors,
@@ -225,7 +457,7 @@ export default function Canvas3D({
   floorDeckThickness = 35,
   wallTransparency = 0.7,
   isMeasureMode = false,
-  isEraserMode,
+  isEraserMode, // Removed default value to ensure external state is always respected
   simulationName = "",
   simulationType = "Comfort Simulation (steady run)",
   isMultifloor = false,
@@ -234,22 +466,1082 @@ export default function Canvas3D({
   onDeleteAirEntry,
   onViewChange,
 }: Canvas3DProps) {
+  // Access the SceneContext to share data with RoomSketchPro
   const { updateGeometryData, updateSceneData, updateFloorData, setCurrentFloor: setContextCurrentFloor } = useSceneContext();
-  
-  // State management
-  const [editingAirEntry, setEditingAirEntry] = useState<{
-    index: number;
-    entry: AirEntry;
-  } | null>(null);
-  
+  // Debug state for UI display
+  const [debugInfo, setDebugInfo] = useState<{
+    mousePosition: string;
+    eraserMode: boolean;
+    hovering: boolean;
+    lastIntersection: string;
+  }>({
+    mousePosition: "No data",
+    eraserMode: false,
+    hovering: false,
+    lastIntersection: "None",
+  });
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<TrackballControls | null>(null);
   const needsRenderRef = useRef<boolean>(true);
+  // State for editing air entries
+  const [editingAirEntry, setEditingAirEntry] = useState<{
+    index: number;
+    entry: AirEntry;
+  } | null>(null);
+  const [ignoreNextClick, setIgnoreNextClick] = useState<boolean>(false);
+  // Track the selected air entry element for dragging
+  const [selectedAirEntry, setSelectedAirEntry] = useState<{
+    index: number;
+    entry: AirEntry;
+    object: THREE.Mesh | null;
+  } | null>(null);
 
-  // Initialize 3D scene
+  // Track which axis is selected for movement (x, y, or z)
+  const [selectedAxis, setSelectedAxis] = useState<"x" | "y" | "z" | null>(null);
+
+  // Track if currently dragging
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+
+  // Store the original position for reference
+  const [dragStartPosition, setDragStartPosition] =
+    useState<THREE.Vector3 | null>(null);
+    
+  // For eraser mode - track what element is being hovered and its original material
+  const [hoveredEraseTarget, setHoveredEraseTarget] = useState<{
+    object: THREE.Mesh;
+    originalMaterial: THREE.Material | THREE.Material[];
+  } | null>(null);
+  
+  // Track last mouse position for directional debugging
+  const lastMousePositionRef = useRef<{ x: number, y: number }>({ x: 0, y: 0 });
+
+  // Create a ref to track the current isEraserMode value to ensure it's always up-to-date in event handlers
+  const isEraserModeRef = useRef(isEraserMode);
+  
+  // Synchronize the ref with isEraserMode state immediately
+  // This needs to happen in a separate useEffect to ensure proper sequence of operations
+  useEffect(() => {
+    // First update the ref to match the current state
+    isEraserModeRef.current = isEraserMode;
+    console.log("📌 isEraserModeRef synchronized to:", isEraserModeRef.current);
+  }, [isEraserMode]);
+  
+  // Handle cleanup when exiting eraser mode
+  useEffect(() => {
+    // Only perform cleanup when turning off eraser mode
+    if (isEraserMode === false) {
+      console.log("🔄 Eraser mode turned off - performing comprehensive cleanup");
+      
+      // Clean up highlighted element if it exists
+      if (hoveredEraseTarget) {
+        console.log("  - Restoring original material for highlighted element");
+        
+        try {
+          // Restore original material 
+          hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
+          
+          // Restore original scale if applicable
+          if (hoveredEraseTarget.object.userData?.originalScale) {
+            hoveredEraseTarget.object.scale.copy(hoveredEraseTarget.object.userData.originalScale);
+            
+            // Force update to the geometry
+            if (hoveredEraseTarget.object.geometry) {
+              hoveredEraseTarget.object.geometry.computeBoundingSphere();
+              hoveredEraseTarget.object.geometry.computeBoundingBox();
+            }
+            console.log("  - Restored original scale for highlighted element");
+          }
+          
+          // Remove any debug visualization helpers for this object
+          if (sceneRef.current && hoveredEraseTarget.object.uuid) {
+            sceneRef.current.traverse((obj) => {
+              if (obj.userData?.type === 'debug-helper' && 
+                  obj.userData?.target === hoveredEraseTarget.object.uuid) {
+                console.log("  - Removing debug hitbox visualization");
+                sceneRef.current?.remove(obj);
+              }
+            });
+          }
+        } catch (err) {
+          console.error("Error during eraser mode cleanup:", err);
+        }
+        
+        // Clear the hover target
+        setHoveredEraseTarget(null);
+      }
+      
+      // Additional cleanup - reset any mesh that might still have eraser state
+      if (sceneRef.current) {
+        sceneRef.current.traverse((object) => {
+          if (
+            object instanceof THREE.Mesh &&
+            object.userData?.originalScale &&
+            ["window", "door", "vent"].includes(object.userData?.type || "")
+          ) {
+            try {
+              // Restore the original scale
+              object.scale.copy(object.userData.originalScale);
+              delete object.userData.originalScale;
+              
+              // Update geometry
+              if (object.geometry) {
+                object.geometry.computeBoundingSphere();
+                object.geometry.computeBoundingBox();
+              }
+              
+              console.log(`  - Restored scale for ${object.userData?.type} that was missed`);
+            } catch (err) {
+              console.error("Error restoring scale for object during cleanup:", err);
+            }
+          }
+          
+          // Also remove any debug hitbox visualizations that might be left
+          if (object.userData?.type === 'debug-helper') {
+            console.log("  - Removing debug hitbox visualization during cleanup");
+            sceneRef.current?.remove(object);
+          }
+        });
+      }
+      
+      // IMPORTANT: Always do these cleanup steps regardless of whether we had a hovered target
+      // This ensures the system resets properly if eraser mode is turned off
+      
+      // Re-enable controls when exiting eraser mode
+      if (controlsRef.current) {
+        console.log("  - Re-enabling TrackballControls for camera movement");
+        controlsRef.current.enabled = true;
+        
+        // Force controls update
+        if (typeof controlsRef.current.update === 'function') {
+          controlsRef.current.update();
+        }
+      }
+      
+      // Reset cursor on container if it exists
+      if (containerRef.current) {
+        containerRef.current.style.cursor = 'auto';
+        console.log("  - Resetting cursor style to default");
+      }
+      
+      // Force render to update the appearance
+      needsRenderRef.current = true;
+      
+      // Force immediate render to update visuals
+      if (rendererRef.current && sceneRef.current && cameraRef.current) {
+        rendererRef.current.render(sceneRef.current, cameraRef.current);
+      }
+    }
+  }, [isEraserMode, hoveredEraseTarget]);
+
+  // Store the initial mouse position for calculating drag distance
+  const [initialMousePosition, setInitialMousePosition] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
+  const [hoveredArrow, setHoveredArrow] = useState<{
+    object: THREE.ArrowHelper;
+    type: "x" | "y" | "z";
+  } | null>(null);
+
+  // Measurement state variables
+  const [isMeasuring, setIsMeasuring] = useState(false);
+  const [measureStartPoint, setMeasureStartPoint] = useState<THREE.Vector3 | null>(null);
+  const [measureEndPoint, setMeasureEndPoint] = useState<THREE.Vector3 | null>(null);
+  const [measurements, setMeasurements] = useState<Measurement3D[]>([]);
+  const [activeMeasurementLine, setActiveMeasurementLine] = useState<THREE.Line | null>(null);
+  const [activeMeasurementLabel, setActiveMeasurementLabel] = useState<THREE.Sprite | null>(null);
+
+  const isMeasureModeRef = useRef(false);
+
+  // Store the positions and dimensions of air entries that have been updated
+  // This is used to ensure they keep their properties when the scene is rebuilt
+  // Format: { floorName: { entryIndex: { position: { x, y }, dimensions?: { width, height, distanceToFloor? } } } }
+  const updatedAirEntryPositionsRef = useRef<{
+    [floorName: string]: {
+      [entryIndex: number]: {
+        position: { x: number, y: number },
+        dimensions?: {
+          width: number,
+          height: number,
+          distanceToFloor?: number
+        }
+      }
+    }
+  }>({});
+  const dragStateRef = useRef({
+    isDragging: false,
+    selectedAxis: null as "x" | "y" | "z" | null,
+    startPosition: null as THREE.Vector3 | null,
+    initialMousePosition: null as {x: number, y: number} | null,
+    selectedObject: null as THREE.Mesh | null,
+    currentMousePosition: null as {x: number, y: number} | null,
+    entryIndex: -1,
+    // Direction vectors for local axis movement
+    axisDirectionVectors: {
+      x: null as THREE.Vector3 | null,
+      y: null as THREE.Vector3 | null,
+      z: null as THREE.Vector3 | null
+    }
+  });
+
+  // Add this ref to track measurement state
+  const measurementStateRef = useRef({
+    inProgress: false,
+    startPoint: null as THREE.Vector3 | null
+  });
+
+
+  // Calculate base height for each floor
+  const getFloorBaseHeight = (floorName: string): number => {
+    const floorOrder = [
+      "ground",
+      "first",
+      "second",
+      "third",
+      "fourth",
+      "fifth",
+    ];
+    const index = floorOrder.indexOf(floorName);
+    if (index === -1) return 0;
+
+    let baseHeight = 0;
+    for (let i = 0; i < index; i++) {
+      const previousFloor = floorOrder[i];
+      if (floors[previousFloor]?.hasClosedContour) {
+        // Use floor-specific parameters if multifloor is enabled
+        let floorCeilingHeight, currentFloorDeck;
+        if (isMultifloor && floorParameters[previousFloor]) {
+          floorCeilingHeight = floorParameters[previousFloor].ceilingHeight;
+          currentFloorDeck = floorParameters[previousFloor].floorDeck;
+        } else {
+          floorCeilingHeight = ceilingHeight;
+          currentFloorDeck = floorDeckThickness;
+        }
+        baseHeight += floorCeilingHeight + currentFloorDeck;
+      }
+    }
+    return baseHeight;
+  };
+
+  // Handler for updating air entries
+  const handleAirEntryEdit = (
+    index: number,
+    dimensions: {
+      width: number;
+      height: number;
+      distanceToFloor?: number;
+    },
+  ) => {
+    if (!editingAirEntry || !onUpdateAirEntry) return;
+
+    const updatedEntry = {
+      ...editingAirEntry.entry,
+      dimensions: dimensions,
+    };
+
+    // Store the dimensions in our ref to preserve them during scene rebuilds
+    const normalizedFloorName = normalizeFloorName(currentFloor);
+
+    // Initialize storage structure if needed
+    if (!updatedAirEntryPositionsRef.current[normalizedFloorName]) {
+      updatedAirEntryPositionsRef.current[normalizedFloorName] = {};
+    }
+
+    // Check if we already have position data for this entry
+    if (!updatedAirEntryPositionsRef.current[normalizedFloorName][index]) {
+      // If no position data exists yet, initialize with the current position
+      updatedAirEntryPositionsRef.current[normalizedFloorName][index] = {
+        position: { ...editingAirEntry.entry.position },
+        dimensions: dimensions
+      };
+    } else {
+      // If position data exists, just update the dimensions
+      updatedAirEntryPositionsRef.current[normalizedFloorName][index].dimensions = dimensions;
+    }
+
+    console.log(`[DIMENSION STORAGE] Stored dimensions for entry ${index}:`, 
+      JSON.stringify(updatedAirEntryPositionsRef.current[normalizedFloorName][index]));
+
+    // Call the parent component's handler
+    onUpdateAirEntry(currentFloor, index, updatedEntry);
+    setEditingAirEntry(null);
+  };
+
+  // New function to create stair mesh
+  // ========================================
+  // PURE RENDERING FUNCTIONS - GEOMETRY CREATION
+  // ========================================
+  // These functions are pure and can be extracted for shared use
+  
+  /**
+   * Pure function: Creates 3D stair mesh geometry
+   * Dependencies: transform2DTo3D, PIXELS_TO_CM
+   * No side effects, no state mutations
+   * Extractable for RoomSketchPro
+   */
+  const createStairMesh = (
+    stairPolygon: StairPolygon,
+    baseHeight: number,
+    isCurrentFloor: boolean,
+    floorCeilingHeight: number,
+  ): THREE.Object3D[] => {
+    const objects: THREE.Object3D[] = [];
+
+    // Get the destination floor name - MODIFY THIS SECTION
+    let destinationFloor =
+      stairPolygon.connectsTo ||
+      getConnectedFloorName(stairPolygon.floor, stairPolygon.direction || "up");
+
+    // For debugging, add this line to see what's happening
+    console.log(
+      `Creating stair from ${stairPolygon.floor} to ${destinationFloor}`,
+      `Direction: ${stairPolygon.direction}`,
+      stairPolygon,
+    );
+
+    // Format the floor names for display
+    const sourceFloorFormatted =
+      stairPolygon.floor.charAt(0).toUpperCase() +
+      stairPolygon.floor.slice(1) +
+      " Floor";
+    const destFloorFormatted =
+      destinationFloor.charAt(0).toUpperCase() +
+      destinationFloor.slice(1) +
+      " Floor";
+
+    // Create the label with the correct text
+    const stairInfo = `${sourceFloorFormatted} to ${destFloorFormatted}`;
+
+    // Make the text more visible with larger background
+    const labelSprite = makeTextSprite(stairInfo, {
+      fontsize: 24, // Adjust size if needed
+      fontface: "Arial",
+      textColor: { r: 124, g: 58, b: 237, a: 1.0 },
+      backgroundColor: { r: 255, g: 255, b: 255, a: 0.8 }, // More opaque background
+      borderColor: { r: 124, g: 58, b: 237, a: 1.0 },
+      borderThickness: 4,
+      padding: 10, // Add padding to ensure text is fully visible
+    });
+
+    // Convert from "Ground Floor" format to "ground" format if needed
+    if (destinationFloor.includes(" ")) {
+      // Extract just the first word and convert to lowercase
+      destinationFloor = destinationFloor.split(" ")[0].toLowerCase();
+    }
+
+    // Skip if we don't have valid floor data
+    if (!floors[destinationFloor]) {
+      console.warn(
+        `Cannot create stair: destination floor ${destinationFloor} not found. Available floors: ${Object.keys(floors).join(", ")}`,
+      );
+      return objects;
+    }
+
+    // Create a Three.js Shape from the stair polygon points
+    const shape = new THREE.Shape();
+    if (stairPolygon.points.length < 3) return objects;
+
+    // Start path at the first point
+    const firstPoint = transform2DTo3D(stairPolygon.points[0]);
+    shape.moveTo(firstPoint.x, firstPoint.y);
+
+    // Add all points to the shape
+    for (let i = 1; i < stairPolygon.points.length; i++) {
+      const point = transform2DTo3D(stairPolygon.points[i]);
+      shape.lineTo(point.x, point.y);
+    }
+
+    // Close the shape
+    shape.lineTo(firstPoint.x, firstPoint.y);
+
+    // Determine the z-positions
+    let bottomZ, topZ;
+    if (stairPolygon.direction === "down") {
+      // Stair going down: connects current floor to the floor below
+      bottomZ = baseHeight - floorDeckThickness;
+      topZ = baseHeight;
+    } else {
+      // Stair going up (default): connects current floor to the floor above
+      bottomZ = baseHeight + floorCeilingHeight;
+      topZ = baseHeight + floorCeilingHeight + floorDeckThickness;
+    }
+    
+    // Enrich the stairPolygon with 3D position data to share with RoomSketchPro
+    stairPolygon.position3D = {
+      baseHeight: baseHeight,
+      bottomZ: bottomZ,
+      topZ: topZ
+    };
+    
+    console.log(`🔢 STAIR 3D POSITION DATA: ${stairPolygon.id}`, {
+      baseHeight,
+      bottomZ,
+      topZ,
+      direction: stairPolygon.direction
+    });
+
+    // Create extruded geometry for the stair
+    const extrudeSettings = {
+      steps: 1,
+      depth: floorDeckThickness,
+      bevelEnabled: false,
+    };
+
+    const stairGeometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    const stairMaterial = new THREE.MeshPhongMaterial({
+      color: isCurrentFloor ? 0x7c3aed : 0x8b5cf6, // Violet color to match 2D view
+      opacity: isCurrentFloor ? 0.6 : 0.4,
+      transparent: true,
+      side: THREE.DoubleSide,
+    });
+
+    const stairMesh = new THREE.Mesh(stairGeometry, stairMaterial);
+
+    // Position the stair correctly in the z-axis
+    stairMesh.position.z = bottomZ;
+
+    // Add stair mesh to the objects array
+    objects.push(stairMesh);
+
+    // Create walls around the stair perimeter
+    const wallHeight = topZ - bottomZ;
+
+    // Create wall segments between each pair of points
+    for (let i = 0; i < stairPolygon.points.length; i++) {
+      const startPoint = stairPolygon.points[i];
+      const endPoint =
+        stairPolygon.points[(i + 1) % stairPolygon.points.length]; // Wrap around to first point
+
+      const start_bottom = transform2DTo3D(startPoint, bottomZ);
+      const end_bottom = transform2DTo3D(endPoint, bottomZ);
+      const start_top = transform2DTo3D(startPoint, topZ);
+      const end_top = transform2DTo3D(endPoint, topZ);
+
+      const vertices = new Float32Array([
+        start_bottom.x,
+        start_bottom.y,
+        start_bottom.z,
+        end_bottom.x,
+        end_bottom.y,
+        end_bottom.z,
+        start_top.x,
+        start_top.y,
+        start_top.z,
+        end_top.x,
+        end_top.y,
+        end_top.z,
+      ]);
+
+      const indices = new Uint16Array([0, 1, 2, 1, 3, 2]);
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+      geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+      geometry.computeVertexNormals();
+
+      const wallMaterial = new THREE.MeshPhongMaterial({
+        color: isCurrentFloor ? 0x7c3aed : 0x8b5cf6, // Match stair color
+        opacity: isCurrentFloor ? 0.4 : 0.3,
+        transparent: true,
+        side: THREE.DoubleSide,
+      });
+
+      const wall = new THREE.Mesh(geometry, wallMaterial);
+      objects.push(wall);
+    }
+
+    // Add a direction indicator (arrow) above the stair
+    const arrowHeight = 30; // Height of the arrow above the stair
+
+    // Calculate center point of the stair polygon
+    const centerPoint = stairPolygon.points.reduce(
+      (acc, point) => ({
+        x: acc.x + point.x / stairPolygon.points.length,
+        y: acc.y + point.y / stairPolygon.points.length,
+      }),
+      { x: 0, y: 0 },
+    );
+
+    const center3D = transform2DTo3D(centerPoint, topZ + arrowHeight);
+
+    // Create a cone pointing in the direction of travel
+    /* const coneGeometry = new THREE.ConeGeometry(15, 30, 16);
+    const coneMaterial = new THREE.MeshPhongMaterial({
+      color: isCurrentFloor ? 0x7c3aed : 0x8b5cf6,
+      opacity: isCurrentFloor ? 0.8 : 0.6,
+      transparent: true,
+    });
+
+    const cone = new THREE.Mesh(coneGeometry, coneMaterial);
+    cone.position.set(center3D.x, center3D.y, center3D.z);
+
+    // Rotate based on direction
+    if (stairPolygon.direction === "down") {
+      cone.rotation.x = Math.PI; // Point downward
+    } // Default is pointing up
+
+    objects.push(cone);
+
+    // Add label with stair information
+    const stairInfo = `STAIR: ${stairPolygon.floor.toUpperCase()} to ${destinationFloor.toUpperCase()}`;
+    const labelSprite = makeTextSprite(stairInfo, {
+      fontsize: 34,
+      fontface: "Arial",
+      textColor: { r: 124, g: 58, b: 237, a: 1.0 }, // Violet color
+      backgroundColor: { r: 255, g: 255, b: 255, a: 0.5 }, // Semi-transparent white
+    });*/
+
+    labelSprite.position.set(center3D.x, center3D.y, center3D.z + 20);
+    objects.push(labelSprite);
+
+    return objects;
+  };
+
+  // Create scene objects for a single floor
+  const createFloorObjects = (
+    floorData: FloorData,
+    baseHeight: number,
+    isCurrentFloor: boolean,
+    floorCeilingHeight: number,
+    floorDeckThickness: number,
+  ) => {
+    const objects: THREE.Object3D[] = [];
+    const perimeterPoints = createRoomPerimeter(floorData.lines);
+
+    // Check if we have stored updated positions for this floor - use the shared normalization function
+    const normalizedFloorName = normalizeFloorName(floorData.name);
+    console.log(`[POSITION RETRIEVAL] Checking for positions with floor key: '${normalizedFloorName}'`);
+    console.log(`[POSITION RETRIEVAL] Raw floor name: '${floorData.name}', Normalized to: '${normalizedFloorName}'`);
+    console.log(`[POSITION RETRIEVAL] All stored positions:`, JSON.stringify(updatedAirEntryPositionsRef.current));
+
+    // Try both possible keys for maximum compatibility during transition
+    let updatedPositions = updatedAirEntryPositionsRef.current[normalizedFloorName] || {};
+
+    // If nothing is found with the normalized name, try the original 'ground' key as fallback
+    // This handles the existing data during transition
+    if (Object.keys(updatedPositions).length === 0 && normalizedFloorName === 'groundfloor') {
+        console.log(`[POSITION RETRIEVAL] No positions found with '${normalizedFloorName}', trying 'ground' as fallback`);
+        updatedPositions = updatedAirEntryPositionsRef.current['ground'] || {};
+    }
+
+    console.log(`[POSITION RETRIEVAL] Retrieved positions for '${normalizedFloorName}':`, JSON.stringify(updatedPositions));
+
+    // Create floor and ceiling surfaces
+    if (perimeterPoints.length > 2) {
+      const shape = new THREE.Shape();
+      const firstPoint = transform2DTo3D(perimeterPoints[0]);
+      shape.moveTo(firstPoint.x, firstPoint.y);
+
+      for (let i = 1; i < perimeterPoints.length; i++) {
+        const point = transform2DTo3D(perimeterPoints[i]);
+        shape.lineTo(point.x, point.y);
+      }
+      shape.lineTo(firstPoint.x, firstPoint.y);
+
+      // Floor surface
+      const floorGeometry = new THREE.ShapeGeometry(shape);
+      const floorMaterial = new THREE.MeshPhongMaterial({
+        color: isCurrentFloor ? 0x808080 : 0xa0a0a0,
+        opacity: isCurrentFloor ? 0.3 : 0.2,
+        transparent: true,
+        side: THREE.DoubleSide,
+      });
+      const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+      floor.position.z = baseHeight;
+      objects.push(floor);
+
+      // Ceiling surface
+      const ceilingGeometry = new THREE.ShapeGeometry(shape);
+      const ceilingMaterial = new THREE.MeshPhongMaterial({
+        color: isCurrentFloor ? 0xe0e0e0 : 0xf0f0f0,
+        opacity: isCurrentFloor ? 0.2 : 0.1,
+        transparent: true,
+        side: THREE.DoubleSide,
+      });
+      const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
+      ceiling.position.z = baseHeight + floorCeilingHeight;
+      objects.push(ceiling);
+    }
+
+    // Create walls
+    floorData.lines.forEach((line) => {
+      const start_bottom = transform2DTo3D(line.start, baseHeight);
+      const end_bottom = transform2DTo3D(line.end, baseHeight);
+      const start_top = transform2DTo3D(line.start, baseHeight + floorCeilingHeight);
+      const end_top = transform2DTo3D(line.end, baseHeight + floorCeilingHeight);
+
+      const vertices = new Float32Array([
+        start_bottom.x,
+        start_bottom.y,
+        start_bottom.z,
+        end_bottom.x,
+        end_bottom.y,
+        end_bottom.z,
+        start_top.x,
+        start_top.y,
+        start_top.z,
+        end_top.x,
+        end_top.y,
+        end_top.z,
+      ]);
+
+      const indices = new Uint16Array([0, 1, 2, 1, 3, 2]);
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+      geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+      geometry.computeVertexNormals();
+
+      const wallMaterial = new THREE.MeshPhongMaterial({
+        color: isCurrentFloor ? 0x3b82f6 : 0x4b92f6,
+      // opacity: isCurrentFloor ? 0.5 : 0.3,
+        opacity: wallTransparency,
+        transparent: true,
+        side: THREE.DoubleSide,
+      });
+
+      const wall = new THREE.Mesh(geometry, wallMaterial);
+      objects.push(wall);
+    });
+
+      // ========================================
+      // CRITICAL: AIR ENTRY POSITIONING ALGORITHM
+      // ========================================
+      // This section contains the core logic for positioning air entries in 3D space
+      // MUST BE IDENTICAL in RoomSketchPro for consistent visualization
+      // Key functions: transform2DTo3D, wall normal calculations, positioning logic
+      
+      console.log(
+        `Creating ${floorData.airEntries.length} air entries for floor ${floorData.name}`,
+      );
+      floorData.airEntries.forEach((entry, index) => {
+        console.log(`Creating air entry ${index} of type ${entry.type}`);
+        
+        // Check if we have stored data for this entry (position and/or dimensions)
+        const updatedEntryData = updatedPositions[index];
+        console.log(`[ENTRY DATA LOADING] Checking for stored entry data for entry ${index}:`, {
+          updatedPositionsExists: !!updatedPositions,
+          haveUpdatedData: !!updatedEntryData,
+          updatedEntryData: updatedEntryData,
+          entryOriginalPosition: entry.position,
+          entryOriginalDimensions: entry.dimensions,
+          entryIndex: index,
+          floorName: floorData.name,
+          normalizedFloorName: normalizedFloorName,
+          allPositionsStoredForThisFloor: JSON.stringify(updatedPositions),
+          allFloorEntries: floorData.airEntries.length
+        });
+
+        // Create working copies of entry position and dimensions
+        let entryPosition = { ...entry.position };
+        let entryDimensions = { ...entry.dimensions };
+        
+        // Handle backward compatibility with old storage format
+        if (updatedEntryData) {
+          // Check if this is the old format (direct x/y properties) or new format (position/dimensions props)
+          if ('x' in updatedEntryData && 'y' in updatedEntryData) {
+            // Old format - just position data
+            console.log(`[ENTRY DATA LOADING] Found legacy position format for entry ${index}:`, {
+              from: entry.position,
+              to: updatedEntryData,
+              diffX: updatedEntryData.x - entry.position.x,
+              diffY: updatedEntryData.y - entry.position.y
+            });
+            entryPosition = { x: updatedEntryData.x, y: updatedEntryData.y };
+          } else if (updatedEntryData.position) {
+            // New format - has position and maybe dimensions
+            console.log(`[ENTRY DATA LOADING] Using stored position for entry ${index}:`, {
+              from: entry.position,
+              to: updatedEntryData.position,
+              diffX: updatedEntryData.position.x - entry.position.x,
+              diffY: updatedEntryData.position.y - entry.position.y
+            });
+            entryPosition = updatedEntryData.position;
+            
+            // If we also have dimensions, use those
+            if (updatedEntryData.dimensions) {
+              console.log(`[ENTRY DATA LOADING] Using stored dimensions for entry ${index}:`, {
+                from: entry.dimensions,
+                to: updatedEntryData.dimensions
+              });
+              entryDimensions = updatedEntryData.dimensions;
+            }
+          }
+        } else {
+          console.log(`[ENTRY DATA LOADING] No stored data found for entry ${index}, using original values:`, {
+            position: entry.position,
+            dimensions: entry.dimensions
+          });
+        }
+        
+        // Use dimensions directly as they are already in cm
+        // Now use our possibly updated dimensions
+        const width = entryDimensions.width;
+        const height = entryDimensions.height;
+        const zPosition =
+          baseHeight +
+          (entry.type === "door"
+            ? height / 2
+            : entryDimensions.distanceToFloor || 0);
+
+        const geometry = new THREE.PlaneGeometry(width, height);
+        const material = new THREE.MeshPhongMaterial({
+          color:
+            entry.type === "window"
+              ? 0x3b82f6
+              : entry.type === "door"
+                ? 0xb45309
+                : 0x22c55e,
+          opacity: 0.7, // Fixed opacity at 70% regardless of current floor
+          transparent: true,
+          side: THREE.DoubleSide,
+        });
+
+        const mesh = new THREE.Mesh(geometry, material);
+        const position = transform2DTo3D(entryPosition);
+        mesh.position.set(position.x, position.y, zPosition);
+
+        // Add userData for raycasting identification - include the actual entry index for easy mapping
+        mesh.userData = {
+          type: entry.type,
+          position: entryPosition, // Use the potentially updated position
+          dimensions: entryDimensions, // Use the potentially updated dimensions
+          line: entry.line,
+          index: objects.length,
+          entryIndex: index  // Add the actual index in the airEntries array
+        };
+
+        console.log(`AIR ENTRY userData for mesh at index ${index}:`, {
+          meshPosition3D: { x: position.x, y: position.y, z: zPosition },
+          userData: mesh.userData,
+          originalEntry: entry
+        });
+
+      // Calculate proper orientation
+      const wallDirection = new THREE.Vector3()
+        .subVectors(
+          transform2DTo3D(entry.line.end),
+          transform2DTo3D(entry.line.start),
+        )
+        .normalize();
+      const worldUpVector = new THREE.Vector3(0, 0, 1);
+      const wallNormalVector = new THREE.Vector3()
+        .crossVectors(wallDirection, worldUpVector)
+        .normalize();
+
+      const forward = wallNormalVector.clone();
+      const up = new THREE.Vector3(0, 0, 1);
+      const right = new THREE.Vector3().crossVectors(up, forward).normalize();
+      forward.crossVectors(right, up).normalize();
+      const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
+      mesh.setRotationFromMatrix(rotationMatrix);
+
+      objects.push(mesh);
+
+      // Add yellow sphere marker
+      const markerGeometry = new THREE.SphereGeometry(5, 16, 16);
+      const markerMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+      const marker = new THREE.Mesh(markerGeometry, markerMaterial);
+      marker.position.set(position.x, position.y, zPosition);
+      objects.push(marker);
+
+      // Add coordinate system axes
+      const axisLength = 50; // Length of the coordinate axes
+      console.log(`Creating custom axis arrows for entry at position ${position.x}, ${position.y}, ${zPosition}`);
+
+      // Store the entry's index in airEntries array for direct reference
+      const parentMeshIndex = objects.length - 1;
+      console.log("AXIS CREATION:", {
+        entryType: entry.type,
+        entryPosition: entry.position,
+        entryIndex: index,
+        parentMeshIndex: parentMeshIndex,
+        totalObjects: objects.length
+      });
+
+      // Create custom axis meshes that are better for intersection detection
+      
+      // Create the local coordinate system for this air entry:
+      // - Z axis (blue) is normal to the wall surface (using the 'forward' vector) 
+      // - Y axis (green) is vertical (pointing upward)
+      // - X axis (red) is horizontal and perpendicular to Z (using the 2D perpendicular vector technique)
+      
+      // Z axis should point perpendicular to the wall (normal to the surface)
+      // This is the "forward" vector in the mesh's orientation
+      const zDirection = forward.clone();
+      console.log(`Air Entry ${index} - Z-axis vector:`, zDirection);
+      
+      // Y axis is always vertical
+      const verticalDirection = new THREE.Vector3(0, 0, 1);
+      
+      // Create X direction by rotating the Z-axis 90 degrees around the vertical axis
+      // This ensures it's perpendicular to Z and in the floor plane
+      const rotationAxis = new THREE.Vector3(0, 0, 1); // Vertical axis
+      const xDirection = zDirection.clone()
+        .applyAxisAngle(rotationAxis, Math.PI/2)
+        .normalize();
+      console.log(`Air Entry ${index} - X-axis vector after 90° rotation:`, xDirection);
+      
+      // Verify perpendicularity - dot product should be close to 0
+      const dotProduct = xDirection.dot(zDirection);
+      console.log(`Air Entry ${index} - Dot product X·Z: ${dotProduct.toFixed(6)} (should be close to 0 if perpendicular)`);
+      
+      // X axis - Red (Perpendicular to both Y and Z axes)
+      const xAxisGeometry = new THREE.CylinderGeometry(3, 3, axisLength, 8); // Increased thickness for visibility
+      // We'll properly align the cylinder along its length instead of with rotation
+      const xAxisMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.8 }); // Increased opacity
+      const xAxis = new THREE.Mesh(xAxisGeometry, xAxisMaterial);
+      
+      // Get origin point at the air entry position
+      const axisOrigin = new THREE.Vector3(position.x, position.y, zPosition);
+      
+      // Debug the axis origin and direction vectors
+      console.log(`X-axis origin: ${axisOrigin.x}, ${axisOrigin.y}, ${axisOrigin.z}`);
+      console.log(`X-axis direction vector: ${xDirection.x}, ${xDirection.y}, ${xDirection.z}`);
+      
+      // Calculate the endpoint of the axis
+      const xAxisEndPoint = new THREE.Vector3(
+        axisOrigin.x + axisLength * xDirection.x,
+        axisOrigin.y + axisLength * xDirection.y,
+        axisOrigin.z + axisLength * xDirection.z
+      );
+      
+      // Calculate the midpoint between origin and endpoint
+      const xAxisMidPoint = new THREE.Vector3().addVectors(axisOrigin, xAxisEndPoint).multiplyScalar(0.5);
+      
+      // Position the axis at the midpoint
+      xAxis.position.copy(xAxisMidPoint);
+      
+      // Create direction vector from origin to endpoint
+      const xAxisDirectionVector = new THREE.Vector3().subVectors(xAxisEndPoint, axisOrigin).normalize();
+      
+      // Use quaternion to rotate cylinder to align with direction vector
+      // We need to align the cylinder's local Y-axis with our direction vector
+      const xAxisUp = new THREE.Vector3(0, 1, 0); // Cylinder's default axis
+      xAxis.quaternion.setFromUnitVectors(xAxisUp, xAxisDirectionVector);
+      
+      xAxis.userData = { 
+        type: 'axis', 
+        direction: 'x',
+        parentEntryIndex: parentMeshIndex, // Reference to the parent mesh
+        actualEntryIndex: index // Store the actual entry index from the floor data
+      };
+
+      // Y axis - Green (Vertical)
+      const yAxisGeometry = new THREE.CylinderGeometry(3, 3, axisLength, 8); // Same thickness as X axis
+      const yAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.8 }); // Increased opacity
+      const yAxis = new THREE.Mesh(yAxisGeometry, yAxisMaterial);
+      
+      // Calculate the endpoint of the Y axis (vertical)
+      const yAxisEndPoint = new THREE.Vector3(
+        axisOrigin.x,
+        axisOrigin.y,
+        axisOrigin.z + axisLength
+      );
+      
+      // Calculate the midpoint between origin and endpoint
+      const yAxisMidPoint = new THREE.Vector3().addVectors(axisOrigin, yAxisEndPoint).multiplyScalar(0.5);
+      
+      // Position the axis at the midpoint
+      yAxis.position.copy(yAxisMidPoint);
+      
+      // Create direction vector from origin to endpoint (vertical)
+      // Use local variable name to avoid collision
+      const yAxisDirection = new THREE.Vector3(0, 0, 1); // Always vertical
+      
+      // Use quaternion to rotate cylinder to align with Y direction
+      const yAxisUp = new THREE.Vector3(0, 1, 0); // Cylinder's default axis
+      yAxis.quaternion.setFromUnitVectors(yAxisUp, yAxisDirection);
+      yAxis.userData = { 
+        type: 'axis', 
+        direction: 'y',
+        parentEntryIndex: objects.length - 1
+      };
+
+      // Z axis - Blue (Normal to wall, pointing outward)
+      const zAxisGeometry = new THREE.CylinderGeometry(3, 3, axisLength, 12); // Same thickness as X axis
+      const zAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x0066ff, transparent: true, opacity: 0.3
+                                                        }); // Brighter blue
+      const zAxis = new THREE.Mesh(zAxisGeometry, zAxisMaterial);
+      
+      // Debug the Z axis direction vector
+      console.log(`Z-axis direction vector: ${zDirection.x}, ${zDirection.y}, ${zDirection.z}`);
+      
+      // Calculate the endpoint of the Z axis
+      const zAxisEndPoint = new THREE.Vector3(
+        axisOrigin.x + axisLength * zDirection.x,
+        axisOrigin.y + axisLength * zDirection.y,
+        axisOrigin.z + axisLength * zDirection.z
+      );
+      
+      // Calculate the midpoint between origin and endpoint
+      const zAxisMidPoint = new THREE.Vector3().addVectors(axisOrigin, zAxisEndPoint).multiplyScalar(0.5);
+      
+      // Position the axis at the midpoint
+      zAxis.position.copy(zAxisMidPoint);
+      
+      // Create direction vector from origin to endpoint
+      const zAxisDirectionVector = new THREE.Vector3().subVectors(zAxisEndPoint, axisOrigin).normalize();
+      
+      // Use quaternion to rotate cylinder to align with direction vector
+      const zAxisUp = new THREE.Vector3(0, 1, 0); // Cylinder's default axis
+      zAxis.quaternion.setFromUnitVectors(zAxisUp, zAxisDirectionVector);
+      
+      zAxis.userData = { 
+        type: 'axis', 
+        direction: 'z',
+        parentEntryIndex: objects.length - 1
+      };
+
+      // Add the axis meshes to the objects array
+      objects.push(xAxis, yAxis, zAxis);
+
+      // Add coordinate label
+      const coordText = `(${Math.round(position.x)}, ${Math.round(position.y)}, ${Math.round(zPosition)}) cm`;
+      const labelSprite = makeTextSprite(coordText, {
+        fontsize: 28,
+        fontface: "Arial",
+        textColor: { r: 160, g: 160, b: 160, a: 1.0 },
+        backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 },
+      });
+      labelSprite.position.set(position.x, position.y, zPosition + 15);
+      objects.push(labelSprite);
+    });
+
+    // Create stairs
+    if (floorData.stairPolygons && floorData.stairPolygons.length > 0) {
+      floorData.stairPolygons.forEach((stairPolygon) => {
+        const stairObjects = createStairMesh(
+          stairPolygon,
+          baseHeight,
+          isCurrentFloor,
+          floorCeilingHeight,
+        );
+        objects.push(...stairObjects);
+      });
+    }
+
+    return objects;
+  };
+  
+  // Handle camera view changes when requested via props
+  const handleViewChange = useCallback((direction: ViewDirection) => {
+    if (!cameraRef.current || !controlsRef.current || !sceneRef.current) {
+      console.log("Cannot change view - camera or controls not initialized");
+      return;
+    }
+    
+    // Get the center of the scene - use the current floor's base height
+    const baseHeight = getFloorBaseHeight(currentFloor);
+    const roomCenter = new THREE.Vector3(0, 0, baseHeight + (ceilingHeight / 2));
+    
+    // Calculate the bounding box of all visible objects to determine optimal view distance
+    const boundingBox = new THREE.Box3();
+    
+    // Add all meshes to the bounding box calculation
+    sceneRef.current.traverse((object) => {
+      if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
+        // Skip helpers and invisible objects
+        if (object.visible && 
+            !object.userData?.isHelper && 
+            !(object instanceof THREE.GridHelper) &&
+            !(object instanceof THREE.AxesHelper)) {
+          boundingBox.expandByObject(object);
+        }
+      }
+    });
+    
+    // Calculate the size of the bounding box
+    const size = new THREE.Vector3();
+    boundingBox.getSize(size);
+    
+    // Use the largest dimension to determine view distance
+    // Multiply by 2.2 to ensure everything is visible with a 10% margin
+    const objectSize = Math.max(size.x, size.y, size.z);
+    const distance = objectSize > 0 ? objectSize * 2.2 : 1000;
+    
+    console.log(`Changing camera view to ${direction}. Room center:`, roomCenter);
+    console.log(`View distance: ${distance}, Room size:`, size);
+    
+    // Position the camera and set up its view based on the selected direction
+    switch (direction) {
+      case "+X":
+        // Looking at X axis frontally with grid horizontal (looking from +X toward -X)
+        // For +X view: Position on +X axis, with Z up (grid is horizontal in XY plane)
+        cameraRef.current.position.set(distance, 0, roomCenter.z);
+        cameraRef.current.up.set(0, 0, 1); // Z is up to keep grid horizontal
+        break;
+        
+      case "-X":
+        // Looking at X axis from behind with grid horizontal (looking from -X toward +X)
+        // For -X view: Position on -X axis, with Z up (grid is horizontal in XY plane)
+        cameraRef.current.position.set(-distance, 0, roomCenter.z);
+        cameraRef.current.up.set(0, 0, 1); // Z is up to keep grid horizontal
+        break;
+        
+      case "+Y":
+        // Looking at Y axis frontally with grid horizontal (looking from +Y toward -Y)
+        // For +Y view: Position on +Y axis, with Z up (grid is horizontal in XY plane)
+        cameraRef.current.position.set(0, distance, roomCenter.z);
+        cameraRef.current.up.set(0, 0, 1); // Z is up to keep grid horizontal
+        break;
+        
+      case "-Y":
+        // Looking at Y axis from behind with grid horizontal (looking from -Y toward +Y)
+        // For -Y view: Position on -Y axis, with Z up (grid is horizontal in XY plane)
+        cameraRef.current.position.set(0, -distance, roomCenter.z);
+        cameraRef.current.up.set(0, 0, 1); // Z is up to keep grid horizontal
+        break;
+        
+      case "+Z":
+        // Top view - looking down from +Z toward -Z
+        // X horizontal, Y vertical in view
+        cameraRef.current.position.set(0, 0, roomCenter.z + distance);
+        cameraRef.current.up.set(0, 1, 0); // Y is up for top view
+        break;
+        
+      case "-Z":
+        // Bottom view - looking up from -Z toward +Z
+        // X horizontal, Y vertical in view
+        cameraRef.current.position.set(0, 0, roomCenter.z - distance);
+        cameraRef.current.up.set(0, -1, 0); // -Y is up (because we're looking from below)
+        break;
+    }
+    
+    // Look at the room center
+    cameraRef.current.lookAt(roomCenter);
+    
+    // Update camera properties
+    cameraRef.current.updateProjectionMatrix();
+    
+    // Reset the trackball controls to match this new camera view
+    controlsRef.current.target.copy(roomCenter);
+    controlsRef.current.update();
+    
+    // Force a render update
+    if (rendererRef.current) {
+      rendererRef.current.render(sceneRef.current, cameraRef.current);
+      // Set needs render flag to ensure the scene updates in the animation loop
+      needsRenderRef.current = true;
+    }
+    
+    console.log(`Camera view changed to ${direction}`);
+  }, [ceilingHeight, currentFloor, getFloorBaseHeight]);
+  
+  // Connect the handleViewChange function to the onViewChange prop
+  useEffect(() => {
+    if (onViewChange && typeof onViewChange === 'function') {
+      // Pass our local handleViewChange function to the parent component
+      try {
+        onViewChange(handleViewChange);
+        console.log("View change handler connected to parent component");
+      } catch (err) {
+        console.error("Error connecting view change handler:", err);
+      }
+    }
+  }, [onViewChange, handleViewChange]);
+
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -269,14 +1561,18 @@ export default function Canvas3D({
     camera.lookAt(0, 0, 0);
     cameraRef.current = camera;
 
-    // Initialize renderer
+    // Initialize renderer with error handling
     let renderer: THREE.WebGLRenderer;
     try {
       renderer = new THREE.WebGLRenderer({ antialias: true });
     } catch (error) {
+      console.error('Failed to create WebGL renderer:', error);
+      // Try without antialias as fallback
       try {
         renderer = new THREE.WebGLRenderer({ antialias: false });
       } catch (fallbackError) {
+        console.error('Failed to create WebGL renderer even without antialias:', fallbackError);
+        // Show error message to user
         if (containerRef.current) {
           containerRef.current.innerHTML = `
             <div style="
@@ -292,158 +1588,2899 @@ export default function Canvas3D({
             ">
               <h3 style="margin-bottom: 10px;">3D Visualization Unavailable</h3>
               <p>Your browser doesn't support WebGL, which is required for 3D rendering.</p>
-              <p style="font-size: 14px; margin-top: 10px;">Please try updating your browser or enabling WebGL support.</p>
+              <p style="font-size: 14px; margin-top: 10px;">Please try to refresh the page.</p>
             </div>
           `;
         }
         return;
       }
     }
-
-    renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
-    renderer.setClearColor(0xf8fafc);
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    
+    renderer.setSize(
+      containerRef.current.clientWidth,
+      containerRef.current.clientHeight,
+    );
+    containerRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    containerRef.current.appendChild(renderer.domElement);
+    const canvas = renderer.domElement;
 
     // Initialize controls
     const controls = new TrackballControls(camera, renderer.domElement);
     controls.rotateSpeed = 2.0;
     controls.zoomSpeed = 1.2;
     controls.panSpeed = 0.8;
+    controls.noZoom = false;
+    controls.noPan = false;
     controls.staticMoving = true;
     controls.dynamicDampingFactor = 0.2;
+
+    // Configure mouse buttons - don't use right button for controls
+    controls.mouseButtons = {
+      LEFT: THREE.MOUSE.ROTATE,
+      MIDDLE: THREE.MOUSE.DOLLY, // THREE.MOUSE.DOLLY instead of ZOOM for TrackballControls
+      RIGHT: THREE.MOUSE.PAN // Enable right mouse panning in controls
+    };
+    // Add mechanism to disable controls during dragging
+    controls.enabled = true;
+
+    console.log("TrackballControls buttons configured:", controls.mouseButtons);
     controlsRef.current = controls;
 
-    // Add lighting
+    // Add lights
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(ambientLight);
 
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(100, 100, 50);
-    directionalLight.castShadow = true;
-    directionalLight.shadow.mapSize.width = 2048;
-    directionalLight.shadow.mapSize.height = 2048;
+    directionalLight.position.set(1, 1, 1);
     scene.add(directionalLight);
 
-    // Add grid
-    const gridHelper = new THREE.GridHelper(GRID_SIZE, GRID_DIVISIONS, 0xcccccc, 0xeeeeee);
-    gridHelper.rotateX(Math.PI / 2);
+    // Add grid helper
+    const gridHelper = new THREE.GridHelper(GRID_SIZE, GRID_DIVISIONS);
+    gridHelper.rotation.x = -Math.PI / 2;
+    gridHelper.material.opacity = 0.2;
+    gridHelper.material.transparent = true;
     scene.add(gridHelper);
 
-    // Animation loop
-    const animate = () => {
-      requestAnimationFrame(animate);
-      
-      if (controls) {
-        controls.update();
+    // Check if axes helper already exists before adding a new one
+    let axesHelperExists = false;
+    let xLabelExists = false;
+    let yLabelExists = false;
+    let zLabelExists = false;
+    
+    // Check for existing axis elements to avoid duplicates
+    scene.traverse((object) => {
+      if (object instanceof THREE.AxesHelper) {
+        axesHelperExists = true;
       }
       
-      if (needsRenderRef.current && renderer && scene && camera) {
-        renderer.render(scene, camera);
-        needsRenderRef.current = false;
+      if (object.userData?.type === "axisLabel") {
+        if (object.userData.axis === "x") xLabelExists = true;
+        if (object.userData.axis === "y") yLabelExists = true;
+        if (object.userData.axis === "z") zLabelExists = true;
       }
+    });
+    
+    // Add coordinate axes only if they don't already exist
+    if (!axesHelperExists) {
+      console.log("Adding coordinate axes helper");
+      const axesHelper = new THREE.AxesHelper(200);
+      scene.add(axesHelper);
+    } else {
+      console.log("Axes helper already exists, skipping creation");
+    }
+    
+    // Add axis labels if they don't already exist
+    const labelDistance = 100; // Position closer to the origin
+    
+    // X-axis label (red) - only create if it doesn't exist
+    if (!xLabelExists) {
+      const xLabel = makeTextSprite("X", {
+        fontsize: 192, // Much larger font size
+        fontface: "Arial",
+        textColor: { r: 255, g: 0, b: 0, a: 1.0 },
+        backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 }, // No background
+        borderColor: { r: 255, g: 0, b: 0, a: 0.0 }, // No border
+        borderThickness: 0,
+        padding: 10
+      });
+      xLabel.position.set(labelDistance, 0, 0);
+      // Add userData so we can identify axis labels in the scene
+      xLabel.userData = { type: "axisLabel", axis: "x" };
+      scene.add(xLabel);
+    } else {
+      // Adjust position of existing label
+      scene.traverse((object) => {
+        if (object.userData?.type === "axisLabel" && object.userData.axis === "x") {
+          object.position.set(labelDistance, 0, 0);
+        }
+      });
+    }
+    
+    // Y-axis label (green) - only create if it doesn't exist
+    if (!yLabelExists) {
+      const yLabel = makeTextSprite("Y", {
+        fontsize: 192, // Much larger font size
+        fontface: "Arial",
+        textColor: { r: 0, g: 255, b: 0, a: 1.0 },
+        backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 }, // No background
+        borderColor: { r: 0, g: 255, b: 0, a: 0.0 }, // No border
+        borderThickness: 0,
+        padding: 10
+      });
+      yLabel.position.set(0, labelDistance, 0);
+      // Add userData so we can identify axis labels in the scene
+      yLabel.userData = { type: "axisLabel", axis: "y" };
+      scene.add(yLabel);
+    } else {
+      // Adjust position of existing label
+      scene.traverse((object) => {
+        if (object.userData?.type === "axisLabel" && object.userData.axis === "y") {
+          object.position.set(0, labelDistance, 0);
+        }
+      });
+    }
+    
+    // Z-axis label (blue) - only create if it doesn't exist
+    if (!zLabelExists) {
+      const zLabel = makeTextSprite("Z", {
+        fontsize: 192
+        , // Much larger font size
+        fontface: "Arial",
+        textColor: { r: 0, g: 0, b: 255, a: 1.0 },
+        backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 }, // No background
+        borderColor: { r: 0, g: 0, b: 255, a: 0.0 }, // No border
+        borderThickness: 0,
+        padding: 10
+      });
+      zLabel.position.set(0, 0, labelDistance);
+      // Add userData so we can identify axis labels in the scene
+      zLabel.userData = { type: "axisLabel", axis: "z" };
+      scene.add(zLabel);
+    } else {
+      // Adjust position of existing label
+      scene.traverse((object) => {
+        if (object.userData?.type === "axisLabel" && object.userData.axis === "z") {
+          object.position.set(0, 0, labelDistance);
+        }
+      });
+    }
+
+    // Find the animation loop in the initial scene setup useEffect
+    // Look for this code:
+    // const animate = () => {
+    //   requestAnimationFrame(animate);
+    //   controls.update();
+    //   renderer.render(scene, camera);
+    // };
+    // animate();
+
+      const animate = () => {
+        requestAnimationFrame(animate);
+
+        // Handle dragging with the ref-based approach
+        const dragState = dragStateRef.current;
+        if (dragState.isDragging && dragState.selectedObject && dragState.startPosition && 
+            dragState.initialMousePosition && dragState.currentMousePosition) {
+
+          // Calculate mouse delta in screen space
+          const mouseDeltaX = dragState.currentMousePosition.x - dragState.initialMousePosition.x;
+          const mouseDeltaY = dragState.currentMousePosition.y - dragState.initialMousePosition.y;
+          
+          // Determine drag magnitude - use the larger mouse movement component
+          // and preserve its sign for direction
+          const dragMagnitude = Math.abs(mouseDeltaX) > Math.abs(mouseDeltaY) ? 
+            mouseDeltaX : -mouseDeltaY;  // Note: Y is negated because screen Y increases downward
+          
+          // Scale factor to convert screen pixels to scene units
+          const scaleFactor = 4.0;
+          
+          // Calculate the displacement in the local axis
+          const localDisplacement = dragMagnitude * scaleFactor;
+          
+          // Start with the original position
+          const newPosition = dragState.startPosition.clone();
+          
+          // Apply movement based on selected axis in LOCAL coordinates,
+          // transforming the local displacement to global coordinates
+          if (dragState.selectedAxis === "x" && dragState.axisDirectionVectors.x) {
+            // X-axis: Apply displacement along local X direction vector
+            const localXDir = dragState.axisDirectionVectors.x;
+            newPosition.x += localXDir.x * localDisplacement;
+            newPosition.y += localXDir.y * localDisplacement;
+            newPosition.z += localXDir.z * localDisplacement;
+            
+            console.log(`Drag X along local axis: [${localXDir.x.toFixed(2)}, ${localXDir.y.toFixed(2)}, ${localXDir.z.toFixed(2)}], displacement: ${localDisplacement.toFixed(2)}`);
+          } 
+          else if (dragState.selectedAxis === "y") {
+            // Y-axis: Always vertical in world space (along global Z)
+            newPosition.z += localDisplacement;
+            console.log(`Drag Y: vertical displacement: ${localDisplacement.toFixed(2)}`);
+          } 
+          else if (dragState.selectedAxis === "z" && dragState.axisDirectionVectors.z) {
+            // Z-axis: Apply displacement along local Z direction vector
+            const localZDir = dragState.axisDirectionVectors.z;
+            newPosition.x += localZDir.x * localDisplacement;
+            newPosition.y += localZDir.y * localDisplacement;
+            newPosition.z += localZDir.z * localDisplacement;
+            
+            console.log(`Drag Z along local axis: [${localZDir.x.toFixed(2)}, ${localZDir.y.toFixed(2)}, ${localZDir.z.toFixed(2)}], displacement: ${localDisplacement.toFixed(2)}`);
+          }
+          
+          // Update the object's position
+          dragState.selectedObject.position.copy(newPosition);
+
+          // Always force a render during dragging
+          needsRenderRef.current = true;
+        }
+
+      // Only update controls and render when needed
+      if (controlsRef.current) {
+        controlsRef.current.update();
+        needsRenderRef.current = true; // Controls moving requires a render
+      }
+      // Apply visual feedback if selection state changed
+      if (selectedAirEntry?.object && sceneRef.current) {
+        highlightSelectedAirEntry(selectedAirEntry.object, true, isDragging);
+        highlightSelectedAxis(
+          sceneRef.current,
+          selectedAirEntry.object,
+          selectedAxis,
+        );
+        needsRenderRef.current = true; // Selection state changed, needs a render
+      }
+
+      // Apply hover effect
+      if (sceneRef.current) {
+        highlightHoveredArrow(
+          sceneRef.current,
+          hoveredArrow,
+          selectedAirEntry,
+          selectedAxis,
+        );
+        if (hoveredArrow) {
+          needsRenderRef.current = true;
+        }
+      }
+        // Render the scene if needed
+        if (
+          rendererRef.current &&
+          sceneRef.current &&
+          cameraRef.current &&
+          (needsRenderRef.current || isEraserMode) // Force render every frame in eraser mode
+        ) {
+          // Always render during drag operations or eraser mode for smooth feedback
+          const isDraggingNow = dragStateRef.current.isDragging;
+          
+        /*  // Log rendering reason
+          if (isDraggingNow) {
+            console.log("Rendering during drag operation");
+          } else if (isEraserMode) {
+            console.log("Force rendering in eraser mode for hover detection");
+          }*/
+
+          // Always render the scene
+          rendererRef.current.render(sceneRef.current, cameraRef.current);
+
+          // Only reset the needs render flag if we're not in a state that requires continuous rendering
+          if (!isDraggingNow && !isEraserMode) {
+            needsRenderRef.current = false;
+          } else {
+            // Make sure we keep rendering on the next frame
+            needsRenderRef.current = true;
+          }
+        }
     };
     animate();
 
-    // Handle window resize
+    // Handle resize
     const handleResize = () => {
       if (!containerRef.current || !camera || !renderer) return;
-      
-      camera.aspect = containerRef.current.clientWidth / containerRef.current.clientHeight;
+      const width = containerRef.current.clientWidth;
+      const height = containerRef.current.clientHeight;
+      camera.aspect = width / height;
       camera.updateProjectionMatrix();
-      renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
-      needsRenderRef.current = true;
+      renderer.setSize(width, height);
     };
 
     window.addEventListener("resize", handleResize);
 
+    // Handle right mouse button down
+    // Helper function to get mouse coordinates for raycasting
+    const getMouseCoordinates = (event: MouseEvent): THREE.Vector2 => {
+      const canvas = containerRef.current;
+      if (!canvas) return new THREE.Vector2(0, 0);
+
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      const mouseY = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      return new THREE.Vector2(mouseX, mouseY);
+    };
+
+    // Helper function to cast ray and find intersection point
+    const getRaycastPoint = (mouseCoords: THREE.Vector2): THREE.Vector3 | null => {
+      if (!cameraRef.current || !sceneRef.current) {
+        console.log("getRaycastPoint: Camera or scene is null");
+        return null;
+      }
+
+      const raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera(mouseCoords, cameraRef.current);
+
+      // Log all objects in the scene for raycasting
+      let objectCount = 0;
+      sceneRef.current.traverse((object) => {
+        if (object.visible && (object instanceof THREE.Mesh || object instanceof THREE.Line)) {
+          objectCount++;
+        }
+      });
+      console.log(`getRaycastPoint: ${objectCount} objects available for raycasting`);
+
+      // Intersect with all objects in the scene
+      const intersects = raycaster.intersectObjects(sceneRef.current.children, true);
+
+      console.log(`getRaycastPoint: Found ${intersects.length} intersections`);
+      if (intersects.length > 0) {
+        console.log(`getRaycastPoint: First intersection at point:`, intersects[0].point);
+        console.log(`getRaycastPoint: Object type:`, intersects[0].object.type);
+        if (intersects[0].object.userData) {
+          console.log(`getRaycastPoint: Object userData:`, intersects[0].object.userData);
+        }
+        return intersects[0].point;
+      }
+
+      console.log("getRaycastPoint: No intersections found");
+      return null;
+    };
+
+    // Renamed function to handle right clicks for measurements
+
+
+    const handleMeasurementMouseDown = (event: MouseEvent) => {
+      // Add detailed logging about current state
+      console.log("==== MEASUREMENT DEBUG ====");
+      console.log("Measurement mode active (ref):", isMeasureModeRef.current);
+      console.log("Current measurementStateRef:", measurementStateRef.current);
+      console.log("Mouse button:", event.button);
+
+      // Only process right mouse button (button code 2) when in measure mode (using ref)
+      if (event.button !== 2 || !isMeasureModeRef.current) return;
+
+      // Prevent default to avoid context menu during measurements
+      event.preventDefault();
+      event.stopPropagation();
+
+      // Get mouse coordinates for raycasting
+      const mouseCoords = getMouseCoordinates(event);
+
+      // Get the intersection point in 3D space
+      const intersectionPoint = getRaycastPoint(mouseCoords);
+
+      if (intersectionPoint) {
+        console.log("Got intersection point:", intersectionPoint);
+
+        if (!measurementStateRef.current.inProgress) {
+          // First click - set start point
+          console.log("FIRST CLICK - Setting start point");
+          measurementStateRef.current.startPoint = intersectionPoint.clone();
+          measurementStateRef.current.inProgress = true;
+
+          // Still update React state for UI rendering
+          setMeasureStartPoint(intersectionPoint);
+
+          console.log("Measurement start point set:", measurementStateRef.current.startPoint);
+        } else {
+          // Second click - complete the measurement
+          console.log("SECOND CLICK - Completing measurement");
+          console.log("Start point:", measurementStateRef.current.startPoint);
+          console.log("End point:", intersectionPoint);
+
+          if (measurementStateRef.current.startPoint) {
+            // Create the measurement using points from the ref
+            addMeasurement(measurementStateRef.current.startPoint, intersectionPoint);
+            console.log("Measurement completed");
+
+            // Reset measurement state
+            measurementStateRef.current.inProgress = false;
+            measurementStateRef.current.startPoint = null;
+
+            // Update React state as well (for UI consistency)
+            setMeasureStartPoint(null);
+            setMeasureEndPoint(null);
+          }
+        }
+      }
+    };
+
+    const handleRightMouseDown = (event: MouseEvent) => {
+      // Prevent the default context menu
+      event.preventDefault();
+
+      // Use the ref for reliable measure mode status
+      console.log("RIGHT MOUSE DOWN - Checking measure mode:", {
+        isMeasureModeRef: isMeasureModeRef.current,
+        isMeasureMode: isMeasureMode
+      });
+
+      // Log current selection and drag state
+      console.log("SELECTION STATE AT MOUSE DOWN:", {
+        selectedAirEntry: selectedAirEntry ? {
+          index: selectedAirEntry.index,
+          type: selectedAirEntry.entry.type,
+          position: selectedAirEntry.entry.position
+        } : null,
+        selectedAxis: selectedAxis,
+        isDragging: isDragging,
+        dragStateRef: {
+          isDragging: dragStateRef.current.isDragging,
+          selectedAxis: dragStateRef.current.selectedAxis,
+          entryIndex: dragStateRef.current.entryIndex
+        }
+      });
+
+      // Use the ref to determine if we're in measure mode
+      if (isMeasureModeRef.current) {
+        console.log("DIVERTING TO MEASUREMENT HANDLER");
+        handleMeasurementMouseDown(event);
+        return;
+      }
+
+      console.log("Right mouse down detected"); // This should NOT print in measure mode
+
+      // If we're in measure mode, handle measurement instead of regular operations
+      if (isMeasuring) {
+        handleMeasurementMouseDown(event);
+        return;
+      }
+
+      // Only process right mouse button (button code 2) for normal operations
+      if (event.button !== 2) return;
+
+      // Get mouse position for raycasting
+      const canvas = containerRef.current;
+      if (!canvas || !cameraRef.current || !sceneRef.current) return;
+
+      const mouseCoords = getMouseCoordinates(event);
+
+      // Set up raycaster
+      const raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera(mouseCoords, cameraRef.current);
+
+      // Find all meshes in the scene that represent air entries or their axes
+      const airEntryMeshes: THREE.Mesh[] = [];
+      const axesHelpers: THREE.Object3D[] = [];
+
+      // Debug logging for raycasting
+      console.log("Right mouse down detected");
+
+      console.log("Starting scene traversal for raycasting targets");
+      let meshCount = 0;
+      let arrowCount = 0;
+      let otherObjectCount = 0;
+
+      sceneRef.current.traverse((object) => {
+        meshCount++;
+
+        // Log object type and info
+        if (object instanceof THREE.Mesh) {
+          console.log(
+            `Found mesh: ${object.uuid.substring(0, 8)}`,
+            `userData:`,
+            object.userData,
+            `type:`,
+            object.userData?.type || "none",
+          );
+        } else if (object instanceof THREE.ArrowHelper) {
+          console.log(
+            `Found ArrowHelper: ${object.uuid.substring(0, 8)}`,
+            `userData:`,
+            object.userData,
+          );
+          arrowCount++;
+        } else {
+          otherObjectCount++;
+        }
+
+        // Collect air entry meshes
+        if (
+          object instanceof THREE.Mesh &&
+          object.userData &&
+          object.userData.type &&
+          ["window", "door", "vent"].includes(object.userData.type)
+        ) {
+          console.log("✅ Adding to airEntryMeshes");
+          airEntryMeshes.push(object as THREE.Mesh);
+        }
+
+        // Collect axis objects (either ArrowHelper or custom Mesh)
+        if (
+          (object instanceof THREE.ArrowHelper ||
+            (object instanceof THREE.Mesh &&
+              object.userData?.type === "axis")) &&
+          (object.userData?.direction === "x" ||
+            object.userData?.direction === "y" ||
+            object.userData?.direction === "z")
+        ) {
+          console.log("✅ Adding to axesHelpers");
+          axesHelpers.push(object);
+        }
+      });
+
+      console.log(
+        `Scene traversal complete - found: ${meshCount} meshes, ${arrowCount} arrows, ${otherObjectCount} other objects`,
+      );
+      console.log(
+        "After traversal - Air entry meshes found:",
+        airEntryMeshes.length,
+      );
+      console.log("After traversal - Axis helpers found:", axesHelpers.length);
+
+      // First check for intersections with axes
+      console.log('Testing intersection with', axesHelpers.length, 'axes');
+      const axesIntersects = raycaster.intersectObjects(axesHelpers, false);
+      console.log('Axes intersections found:', axesIntersects.length);
+
+      if (axesIntersects.length > 0) {
+        const axisObject = axesIntersects[0].object;
+        console.log('Axis clicked:', axisObject.userData);
+
+        // Get axis type from userData
+        const axisDirection = axisObject.userData?.direction;
+
+        if (axisDirection === 'x' || axisDirection === 'y' || axisDirection === 'z') {
+                  // Find the parent air entry for this axis
+                  let closestAirEntry: THREE.Mesh | null = null;
+                  let closestDistance = Infinity;
+
+                  // Find the closest air entry to this axis
+                  airEntryMeshes.forEach((mesh) => {
+                    const distance = mesh.position.distanceTo(axisObject.position);
+                    if (distance < closestDistance) {
+                      closestDistance = distance;
+                      closestAirEntry = mesh;
+                    }
+                  });
+
+                  // Ensure we found a close enough air entry
+                  if (!closestAirEntry || closestDistance > 60) {
+                    console.error("No air entry found near this axis, distance:", closestDistance);
+                    return;
+                  }
+
+                  console.log("Found closest air entry at distance:", closestDistance);
+
+                  // Set the axis for movement in the React state (for UI highlighting)
+                  setSelectedAxis(axisDirection as "x" | "y" | "z");
+
+                  // Cast to our mesh interface for more specific typing
+                  const typedAirEntry = closestAirEntry as AirEntryMesh;
+                  // Store which air entry we're manipulating with proper typing
+                  const airEntryData = typedAirEntry.userData;
+                  
+                  // Add type safety check
+                  if (!airEntryData || !airEntryData.position) {
+                    console.error("Missing position data in air entry");
+                    return;
+                  }
+
+                  const floorData = floors[currentFloor];
+
+                  if (floorData && floorData.airEntries) {
+                    // First try to use the entryIndex from userData if available
+                    let index = -1;
+
+                    if (airEntryData.entryIndex !== undefined) {
+                      // Use the stored index if it's valid
+                      if (airEntryData.entryIndex >= 0 && airEntryData.entryIndex < floorData.airEntries.length) {
+                        const storedEntry = floorData.airEntries[airEntryData.entryIndex];
+                        // Double-check by position
+                        if (storedEntry.position.x === airEntryData.position.x && 
+                            storedEntry.position.y === airEntryData.position.y) {
+                          index = airEntryData.entryIndex;
+                          console.log("Using stored entry index:", index);
+                        }
+                      }
+                    }
+
+                    // Fall back to position-based search if needed
+                    if (index === -1) {
+                      console.log("POSITION SEARCH - Looking for:", {
+                        airEntryType: airEntryData.type,
+                        airEntryDataPos: airEntryData.position,
+                        actualEntryIndex: axisObject.userData?.actualEntryIndex, // Try to use the actual entry index if stored
+                        parentEntryIndex: axisObject.userData?.parentEntryIndex,
+                        availableEntries: floorData.airEntries.map((entry, idx) => ({
+                          index: idx,
+                          position: entry.position,
+                          type: entry.type
+                        }))
+                      });
+
+                      // BETTER APPROACH 1: First try to use the actualEntryIndex from the axis userData if available
+                      // This is the most reliable way since it's explicitly set when creating the axis
+                      if (typeof axisObject.userData?.actualEntryIndex === 'number') {
+                        const entryIdx = axisObject.userData.actualEntryIndex;
+                        if (entryIdx >= 0 && entryIdx < floorData.airEntries.length) {
+                          // Verify it exists in the floorData
+                          index = entryIdx;
+                          console.log("Found air entry using actualEntryIndex:", index);
+                        }
+                      }
+
+                      // BETTER APPROACH 2: If actualEntryIndex fails, try using the parentEntryIndex to find the real parent mesh
+                      if (index === -1 && axisObject.userData?.parentEntryIndex !== undefined) {
+                        const parentObjIndex = axisObject.userData.parentEntryIndex;
+                        console.log("Looking for parent mesh with index:", parentObjIndex);
+
+                        // Find the parent mesh using our defined AirEntryMesh interface
+                        let parentMesh: AirEntryMesh | null = null;
+                        sceneRef.current?.traverse((object) => {
+                          if (object instanceof THREE.Mesh && 
+                              object.userData && 
+                              object.userData.type && 
+                              ["window", "door", "vent"].includes(object.userData.type as string)) {
+                            const meshAsAirEntry = object as AirEntryMesh;
+                            if (meshAsAirEntry.userData.index === parentObjIndex) {
+                              // Cast the object to our interface type
+                              parentMesh = meshAsAirEntry;
+                            }
+                          }
+                        });
+
+                        // Since we've defined AirEntryMesh interface, this should work properly
+                        if (parentMesh) {
+                          // Use the parent mesh's entryIndex
+                          const parentEntryIndex = parentMesh.userData.entryIndex;
+                          if (typeof parentEntryIndex === 'number' && 
+                              parentEntryIndex >= 0 && 
+                              parentEntryIndex < floorData.airEntries.length) {
+                            index = parentEntryIndex;
+                            console.log("Found entry using parent mesh:", index);
+                          }
+                        }
+                      }
+
+                      // FALLBACK APPROACH: Only if both direct methods fail, try position-based search
+                      // Log each entry's position to check for near matches
+                      if (index === -1) {
+                        floorData.airEntries.forEach((entry, idx) => {
+                          const xDiff = Math.abs(entry.position.x - airEntryData.position.x);
+                          const yDiff = Math.abs(entry.position.y - airEntryData.position.y);
+                          console.log(`Entry ${idx} position diff: x=${xDiff}, y=${yDiff}`, {
+                            entry: entry.position,
+                            toMatch: airEntryData.position,
+                            exactMatch: entry.position.x === airEntryData.position.x && entry.position.y === airEntryData.position.y,
+                            closeMatch: xDiff < 1 && yDiff < 1
+                          });
+                        });
+
+                        // Try exact match first
+                        index = floorData.airEntries.findIndex(
+                          (entry) =>
+                            entry.position.x === airEntryData.position.x &&
+                            entry.position.y === airEntryData.position.y,
+                        );
+                        console.log("Found entry index by exact position search:", index);
+
+                        // If exact match fails, try approximate match with a larger threshold
+                        if (index === -1) {
+                          // Increase the position tolerance to handle larger differences
+                          // This is much more forgiving than before (64 units in your case)
+                          const POSITION_TOLERANCE = 70; // Increased from 1 to handle large discrepancies
+
+                          index = floorData.airEntries.findIndex(
+                            (entry) =>
+                              Math.abs(entry.position.x - airEntryData.position.x) < POSITION_TOLERANCE &&
+                              Math.abs(entry.position.y - airEntryData.position.y) < POSITION_TOLERANCE
+                          );
+                          console.log("Found entry index by approximate position search (with higher tolerance):", index);
+                        }
+                      }
+                    }
+
+                    if (index !== -1) {
+                  // Update React state for UI
+                  setSelectedAirEntry({
+                    index: index,
+                    entry: floorData.airEntries[index],
+                    object: closestAirEntry,
+                  });
+
+                  // Update React state for UI
+                  setDragStartPosition(
+                    new THREE.Vector3(
+                      (closestAirEntry as THREE.Mesh).position.x,
+                      (closestAirEntry as THREE.Mesh).position.y,
+                      (closestAirEntry as THREE.Mesh).position.z,
+                    ),
+                  );
+
+                  // Update React state for UI
+                  setInitialMousePosition({
+                    x: event.clientX,
+                    y: event.clientY,
+                  });
+
+                  // Start dragging - update React state for UI
+                  setIsDragging(true);
+
+                  // Find the air entry object in the scene to get the local axis vectors
+                  // Need to use the actual entry index as the reference for finding axis objects
+                  const entryIndexForAxis = index; // Use the entry index we just found
+                  
+                  const meshes = scene.children.filter(child => 
+                    child instanceof THREE.Mesh && 
+                    child.userData && 
+                    child.userData.type === "axis" && 
+                    child.userData.actualEntryIndex === entryIndexForAxis
+                  ) as THREE.Mesh[];
+
+                  // Extract direction vectors from the mesh transforms
+                  let xAxisDirection = new THREE.Vector3(1, 0, 0);
+                  let yAxisDirection = new THREE.Vector3(0, 0, 1); // Y axis is vertical in our system
+                  let zAxisDirection = new THREE.Vector3(0, 1, 0);
+
+                  // Try to find the axis meshes and extract their direction vectors
+                  meshes.forEach(mesh => {
+                    if (mesh.userData.direction === "x") {
+                      // Extract world direction of X axis from mesh orientation
+                      const worldDirection = new THREE.Vector3();
+                      mesh.getWorldDirection(worldDirection);
+                      // The cylinder is along the Y axis by default, so we need the up vector
+                      xAxisDirection.set(worldDirection.x, worldDirection.y, 0).normalize();
+                      console.log("Found X axis mesh - direction vector:", xAxisDirection);
+                    }
+                    else if (mesh.userData.direction === "z") {
+                      // Extract world direction of Z axis from mesh orientation
+                      const worldDirection = new THREE.Vector3();
+                      mesh.getWorldDirection(worldDirection);
+                      zAxisDirection.set(worldDirection.x, worldDirection.y, 0).normalize();
+                      console.log("Found Z axis mesh - direction vector:", zAxisDirection);
+                    }
+                  });
+
+                  // IMPORTANT: Update the ref for actual dragging logic
+                  dragStateRef.current = {
+                    isDragging: true,
+                    selectedAxis: axisDirection as "x" | "y" | "z",
+                    startPosition: new THREE.Vector3(
+                      (closestAirEntry as THREE.Mesh).position.x,
+                      (closestAirEntry as THREE.Mesh).position.y,
+                      (closestAirEntry as THREE.Mesh).position.z
+                    ),
+                    initialMousePosition: {
+                      x: event.clientX,
+                      y: event.clientY
+                    },
+                    currentMousePosition: {
+                      x: event.clientX,
+                      y: event.clientY
+                    },
+                    selectedObject: closestAirEntry,
+                    entryIndex: index,
+                    axisDirectionVectors: {
+                      x: xAxisDirection,
+                      y: yAxisDirection,
+                      z: zAxisDirection
+                    }
+                  };
+
+                  // Immediately disable controls when dragging starts
+                  if (controlsRef.current) {
+                    controlsRef.current.enabled = false;
+                  }
+
+              console.log("Started dragging with axis:", axisDirection);
+              console.log("Started dragging", { axis: axisDirection });
+
+              // Log detailed drag state at drag start
+              console.log("DRAG STATE INITIALIZED:", {
+                axis: dragStateRef.current.selectedAxis,
+                isDragging: dragStateRef.current.isDragging,
+                entryIndex: dragStateRef.current.entryIndex,
+                selectedObject: dragStateRef.current.selectedObject ? "exists" : "null",
+                reactState: {
+                  selectedAirEntry: selectedAirEntry ? {
+                    index: selectedAirEntry.index,
+                    type: selectedAirEntry.entry.type,
+                  } : null,
+                  selectedAxis,
+                  isDragging
+                }
+              });
+            }
+            }
+            }
+            } else {
+            // Check for intersections with air entry meshes if no axis was clicked
+            console.log(
+            "Testing intersection with",
+            airEntryMeshes.length,
+            "air entries",
+            );
+            const meshIntersects = raycaster.intersectObjects(
+            airEntryMeshes,
+            false,
+            );
+
+
+      console.log("Mesh intersections found:", meshIntersects.length);
+
+      if (meshIntersects.length > 0) {
+        const mesh = meshIntersects[0].object as THREE.Mesh;
+        const airEntryData = mesh.userData;
+
+        // Just select the air entry but don't start dragging
+        const floorData = floors[currentFloor];
+
+        if (floorData && floorData.airEntries) {
+          const index = floorData.airEntries.findIndex(
+            (entry) =>
+              entry.position.x === airEntryData.position.x &&
+              entry.position.y === airEntryData.position.y,
+          );
+
+          if (index !== -1) {
+            setSelectedAirEntry({
+              index: index,
+              entry: floorData.airEntries[index],
+              object: mesh,
+            });
+
+            // We're selecting but not yet dragging
+            setSelectedAxis(null);
+
+            // Make sure controls are enabled when just selecting without dragging
+            if (controlsRef.current) {
+              controlsRef.current.enabled = true;
+            }
+          }
+        }
+      } else {
+        console.log("Mesh intersections:", meshIntersects.length);
+        // Clicked on empty space, clear selection
+        setSelectedAirEntry(null);
+        setSelectedAxis(null);
+
+        // Enable camera controls for panning with right-click
+        if (controlsRef.current) {
+          controlsRef.current.enabled = true;
+        }
+      }
+    }
+    };
+
+    // ========================================
+    // INTERACTION LOGIC - EVENT HANDLERS
+    // ========================================
+    // These functions handle user interactions and state mutations
+    // NOT extractable for shared use (contains side effects)
+    
+    const handleMouseMove = (event: MouseEvent) => {
+      // Track mouse direction movement for debugging
+      const dx = event.clientX - lastMousePositionRef.current.x;
+      const dy = event.clientY - lastMousePositionRef.current.y;
+      const directionX = dx > 0 ? "RIGHT" : dx < 0 ? "LEFT" : "";
+      const directionY = dy > 0 ? "DOWN" : dy < 0 ? "UP" : "";
+      
+      console.log(`🖱️ MOUSE DIRECTION: ${directionX}${directionY} (dx=${dx.toFixed(1)}, dy=${dy.toFixed(1)})`);
+      
+      // Update the last position
+      lastMousePositionRef.current = { x: event.clientX, y: event.clientY };
+      
+      // Update debug info for UI display
+      const mouseCoords = getMouseCoordinates(event);
+      
+      // Use the ref to get the current eraser mode value, which is always up-to-date
+      const currentEraserMode = isEraserModeRef.current;
+      
+      // Add more detailed debug logging
+      console.log(`🔍 MOUSE MOVE: coords=${mouseCoords.x.toFixed(2)},${mouseCoords.y.toFixed(2)}, isEraserMode=${currentEraserMode}, isEraserModeRef=${isEraserModeRef.current}`);
+      
+      setDebugInfo(prev => ({
+        ...prev,
+        mousePosition: `${event.clientX}, ${event.clientY} | Normalized: ${mouseCoords.x.toFixed(2)}, ${mouseCoords.y.toFixed(2)}`,
+        eraserMode: currentEraserMode || false // Ensure it's always a boolean value to fix type error
+      }));
+      
+      // Handle measurement preview if in measuring mode and we have a start point
+      if (isMeasuring && measureStartPoint) {
+        const intersectionPoint = getRaycastPoint(mouseCoords);
+
+        if (intersectionPoint) {
+          // Update the temporary measurement line
+          updateActiveMeasurement(measureStartPoint, intersectionPoint);
+        }
+
+        // Always force a render during measurement
+        needsRenderRef.current = true;
+        return;
+      }
+      
+      // Handle hover detection for eraser mode - using ref to ensure we have the current value
+      if (isEraserModeRef.current && !dragStateRef.current.isDragging) {
+        // Log TrackballControls state
+        const controlsState = controlsRef.current ? {
+          enabled: controlsRef.current.enabled,
+          // Use button state to determine if controls are being used
+          buttons: event.buttons // 0 = no buttons, 1 = left, 2 = right, 4 = middle
+        } : 'No controls';
+        
+        console.log(`🎮 TrackballControls state: ${JSON.stringify(controlsState)}`);
+        
+        // Skip hover detection if mouse buttons are being held down
+        if (event.buttons !== 0) {
+          console.log("⏩ Skipping hover detection during active mouse button press");
+          return;
+        }
+        
+        console.log("🔍 Eraser mode hover detection active - looking for air entries to highlight");
+        
+        // We already have mouseCoords from the beginning of handleMouseMove
+        console.log(`Mouse coordinates (normalized): ${mouseCoords.x.toFixed(2)}, ${mouseCoords.y.toFixed(2)}`);
+        
+        // Get detailed client info
+        const clientInfo = {
+          event: {
+            type: event.type,
+            clientX: event.clientX,
+            clientY: event.clientY,
+            button: event.button,
+            buttons: event.buttons,
+            ctrlKey: event.ctrlKey,
+            altKey: event.altKey
+          },
+          container: containerRef.current ? {
+            width: containerRef.current.clientWidth,
+            height: containerRef.current.clientHeight,
+            rect: containerRef.current.getBoundingClientRect()
+          } : null
+        };
+        console.log(`📱 Client info: ${JSON.stringify(clientInfo)}`);
+        
+        // Log some info about what's available
+        if (sceneRef.current) {
+          let airEntryCount = 0;
+          const airEntryDetails: string[] = [];
+          const airEntryBoundingBoxes: any[] = [];
+          
+          sceneRef.current.traverse((object) => {
+            if (
+              object instanceof THREE.Mesh &&
+              object.userData &&
+              object.userData.type &&
+              ["window", "door", "vent"].includes(object.userData.type)
+            ) {
+              airEntryCount++;
+              // Calculate screen position
+              const worldPos = object.position.clone();
+              const screenPos = worldPos.project(cameraRef.current!);
+              
+              // Convert to screen coordinates
+              const screenX = (screenPos.x + 1) / 2 * window.innerWidth;
+              const screenY = -(screenPos.y - 1) / 2 * window.innerHeight;
+              
+              // Get object bounding box
+              const boundingBox = new THREE.Box3().setFromObject(object);
+              const size = new THREE.Vector3();
+              boundingBox.getSize(size);
+              
+              airEntryDetails.push(`${object.userData.type} at screen position (${screenX.toFixed(0)}, ${screenY.toFixed(0)}), world position ${JSON.stringify(object.position)}`);
+              airEntryBoundingBoxes.push({
+                type: object.userData.type,
+                userData: object.userData,
+                position: object.position,
+                boundingBox: { 
+                  min: boundingBox.min,
+                  max: boundingBox.max,
+                  size: size
+                }
+              });
+            }
+          });
+          
+          console.log(`🏠 Scene contains ${airEntryCount} air entry meshes for highlighting`);
+          
+          if (airEntryCount > 0) {
+            console.log(`🏠 Air entries details: ${airEntryDetails.join('\n')}`);
+            console.log(`📦 Bounding boxes: `, airEntryBoundingBoxes);
+          }
+        }
+        
+        // Just log the mouse coordinates we already have
+        console.log(`🖱️ Mouse normalized coordinates: ${JSON.stringify(mouseCoords)}`);
+        
+        // Get raw client coordinates too
+        const canvas = containerRef.current;
+        if (canvas) {
+          const rect = canvas.getBoundingClientRect();
+          const rawX = event.clientX - rect.left;
+          const rawY = event.clientY - rect.top;
+          console.log(`🖱️ Mouse raw canvas coordinates: (${rawX}, ${rawY})`);
+        }
+        
+        // Reset previously highlighted element if any
+        if (hoveredEraseTarget) {
+          console.log("🔄 Resetting previously highlighted element");
+          // Restore original material
+          hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
+          setHoveredEraseTarget(null);
+          
+          // Re-enable controls when not hovering over an erasable element
+          if (controlsRef.current) {
+            controlsRef.current.enabled = true;
+          }
+          
+          // Force render to update the appearance
+          needsRenderRef.current = true;
+        }
+        
+        // Find potential erase targets
+        const airEntryMeshes: THREE.Mesh[] = [];
+        
+        if (sceneRef.current) {
+          sceneRef.current.traverse((object) => {
+            // Collect air entry meshes (windows, doors, vents)
+            if (
+              object instanceof THREE.Mesh &&
+              object.userData &&
+              object.userData.type &&
+              ["window", "door", "vent"].includes(object.userData.type)
+            ) {
+              // We won't automatically enlarge all objects now - we'll only enlarge them
+              // when they're actually under the mouse cursor
+              airEntryMeshes.push(object as THREE.Mesh);
+            }
+          });
+          
+          console.log(`Found ${airEntryMeshes.length} potential air entries for eraser hover detection`);
+          
+          // Detect when no air entries are available
+          if (airEntryMeshes.length === 0 && hoveredEraseTarget) {
+            console.log("⚠️ No air entries found in scene but we have a hovered target - cleaning up");
+            
+            // Restore original material
+            hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
+            
+            // Restore original scale if applicable
+            if (hoveredEraseTarget.object.userData?.originalScale) {
+              hoveredEraseTarget.object.scale.copy(hoveredEraseTarget.object.userData.originalScale);
+              
+              // Force update to the geometry
+              if (hoveredEraseTarget.object.geometry) {
+                hoveredEraseTarget.object.geometry.computeBoundingSphere();
+                hoveredEraseTarget.object.geometry.computeBoundingBox();
+              }
+            }
+            
+            // Clear the hover target
+            setHoveredEraseTarget(null);
+            
+            // Re-enable controls
+            if (controlsRef.current) {
+              console.log("🎮 Re-enabling TrackballControls after scene reset");
+              controlsRef.current.enabled = true;
+            }
+            
+            needsRenderRef.current = true;
+          }
+          
+          // Set up raycaster
+          if (cameraRef.current) {
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouseCoords, cameraRef.current);
+            
+            // Apply precision configuration for accurate eraser mode detection
+            applyRaycasterConfig(raycaster, 'precision');
+            
+            // Make sure we're using recursive flag = true to catch child objects too
+            const meshIntersects = raycaster.intersectObjects(airEntryMeshes, true);
+            
+            // Raycaster configuration is now handled centrally
+            
+            // Enhanced debugging for air entry intersections
+            console.log(`Found ${meshIntersects.length} intersections with air entries`);
+            
+            // Log detailed info about available air entry meshes
+            console.log(`DEBUG: Eraser mode hover detection - ${airEntryMeshes.length} air entries in scene`);
+            airEntryMeshes.forEach((mesh, i) => {
+              console.log(`Air Entry #${i}: type=${mesh.userData.type}, position=${JSON.stringify(mesh.position)}, worldPosition=${JSON.stringify(mesh.getWorldPosition(new THREE.Vector3()))}`);
+              
+              // Output mesh bounding box for debugging
+              const boundingBox = new THREE.Box3().setFromObject(mesh);
+              console.log(`  Bounding box: min=(${boundingBox.min.x.toFixed(2)}, ${boundingBox.min.y.toFixed(2)}, ${boundingBox.min.z.toFixed(2)}), max=(${boundingBox.max.x.toFixed(2)}, ${boundingBox.max.y.toFixed(2)}, ${boundingBox.max.z.toFixed(2)})`);
+            });
+            
+            // Update debug info whether we have intersections or not
+            const hasIntersections = meshIntersects.length > 0;
+            
+            // Add screen-space logging if we have a hoveredEraseTarget
+            if (hoveredEraseTarget && cameraRef.current) {
+              const screenPos = hoveredEraseTarget.object.position.clone().project(cameraRef.current);
+              const screenX = (screenPos.x + 1) / 2 * window.innerWidth;
+              const screenY = -(screenPos.y - 1) / 2 * window.innerHeight;
+              
+              console.log(`📌 Highlighted object screen position: (${screenX.toFixed(0)}, ${screenY.toFixed(0)})`);
+              console.log(`📌 Mouse position: (${event.clientX}, ${event.clientY})`);
+              console.log(`📌 Distance: ${Math.sqrt(Math.pow(screenX - event.clientX, 2) + Math.pow(screenY - event.clientY, 2)).toFixed(1)}px`);
+            }
+            
+            setDebugInfo(prev => ({
+              ...prev,
+              hovering: hasIntersections,
+              lastIntersection: hasIntersections
+                ? `${meshIntersects[0].object.userData.type} (entry ${meshIntersects[0].object.userData.entryIndex}) at ${Math.round(meshIntersects[0].distance)}` 
+                : 'None'
+            }));
+            
+            // If there are no intersections and we have a previously hovered target, reset it
+            if (!hasIntersections && hoveredEraseTarget) {
+              console.log("🔄 Clearing previous highlight - no intersection found");
+              
+              try {
+                // Restore original material if it exists
+                if (hoveredEraseTarget.originalMaterial) {
+                  hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
+                  console.log("  - Restored original material for element");
+                } else {
+                  console.log("⚠️ No original material found for object, can't restore");
+                }
+                
+                // Restore original scale if applicable
+                if (hoveredEraseTarget.object.userData?.originalScale) {
+                  hoveredEraseTarget.object.scale.copy(hoveredEraseTarget.object.userData.originalScale);
+                  
+                  // Force update to the geometry
+                  if (hoveredEraseTarget.object.geometry) {
+                    hoveredEraseTarget.object.geometry.computeBoundingSphere();
+                    hoveredEraseTarget.object.geometry.computeBoundingBox();
+                  }
+                  console.log("  - Restored original scale for element");
+                }
+                
+                // CRITICAL: Ensure controls are re-enabled immediately when hovering ends
+                if (controlsRef.current) {
+                  console.log("🎮 Re-enabling TrackballControls after cursor moved away from element");
+                  controlsRef.current.enabled = true;
+                  // Force controls update on the next frame
+                  if (typeof controlsRef.current.update === 'function') {
+                    controlsRef.current.update();
+                  }
+                }
+                
+                // Reset cursor to eraser mode cursor (not auto, since we're still in eraser mode)
+                if (containerRef.current) {
+                  containerRef.current.style.cursor = 'not-allowed'; // Keep eraser cursor
+                  console.log("  - Reset cursor to eraser mode style");
+                }
+                
+                needsRenderRef.current = true;
+                
+                // Force immediate render to update visuals
+                if (rendererRef.current && sceneRef.current && cameraRef.current) {
+                  rendererRef.current.render(sceneRef.current, cameraRef.current);
+                }
+              } catch (err) {
+                console.error("Error while clearing previous highlight:", err);
+              }
+              
+              // Clear the hover target - do this last after all other processing
+              setHoveredEraseTarget(null);
+              
+              // Force explicit verification of state update with callback
+              setTimeout(() => {
+                console.log("🔍 Verifying hover target cleared:", hoveredEraseTarget ? "STILL PRESENT" : "Successfully cleared");
+                if (hoveredEraseTarget) {
+                  console.error("CRITICAL ERROR: Hover target not cleared after setState call");
+                }
+              }, 0);
+            }
+            
+            if (hasIntersections) {
+              console.log("Intersection found! Highlighting element");
+              const mesh = meshIntersects[0].object as THREE.Mesh;
+              console.log("Mesh data for eraser hover:", mesh.userData);
+              
+              // If we're already hovering over a different object, restore it first
+              if (hoveredEraseTarget && hoveredEraseTarget.object !== mesh) {
+                console.log("🔄 Switching hover target to new element");
+                
+                try {
+                  // Restore original material if it exists
+                  if (hoveredEraseTarget.originalMaterial) {
+                    hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
+                    console.log("  - Restored original material for previous element");
+                  } else {
+                    console.log("⚠️ No original material found for previous object");
+                  }
+                  
+                  // Restore original scale if applicable
+                  if (hoveredEraseTarget.object.userData?.originalScale) {
+                    hoveredEraseTarget.object.scale.copy(hoveredEraseTarget.object.userData.originalScale);
+                    
+                    // Force update to the geometry
+                    if (hoveredEraseTarget.object.geometry) {
+                      hoveredEraseTarget.object.geometry.computeBoundingSphere();
+                      hoveredEraseTarget.object.geometry.computeBoundingBox();
+                    }
+                    
+                    console.log(`  - Restored scale for previously hovered ${hoveredEraseTarget.object.userData.type}`);
+                  }
+                } catch (err) {
+                  console.error("Error while cleaning up previous hover target:", err);
+                }
+              }
+              
+              // Store original material and apply highlight material
+              const originalMaterial = mesh.material;
+              
+              // Create new highlight material (uses a combination of techniques for maximum visibility)
+              // 1. Create a bright MeshBasicMaterial to ensure visibility regardless of lighting
+              const highlightMaterial = new THREE.MeshBasicMaterial({
+                color: 0xff0000,    // Bright red
+                wireframe: false,   // Solid material as base
+                transparent: true,
+                opacity: 0.9,       // Slightly transparent
+                side: THREE.DoubleSide,
+                depthTest: false,   // Ignore depth test - show through walls
+                depthWrite: false   // Don't write to depth buffer
+              });
+              
+              console.log("🎨 Created highlight material:", highlightMaterial);
+              
+              // Add extra logging to ensure the material is correctly applied
+              console.log("👁️ Current visibility of mesh:", mesh.visible);
+              mesh.visible = true; // Force visibility
+              
+              // Apply highlight material
+              mesh.material = highlightMaterial;
+              
+              // Store original scale if not already stored
+              if (!mesh.userData.originalScale) {
+                mesh.userData.originalScale = mesh.scale.clone();
+              }
+              
+              // Make the hovered mesh larger for better visibility but not too large
+              // Reduce from 3.0 to 2.0 to ensure better matching between visual and collision detection
+              // This helps prevent the case where cursor appears to be on element but raycaster detects it's not
+              mesh.scale.set(2.0, 2.0, 2.0);
+              
+              // Force update to the geometry
+              if (mesh.geometry) {
+                mesh.geometry.computeBoundingSphere();
+                mesh.geometry.computeBoundingBox();
+                
+                // Add debug visualization for hitbox
+                if (process.env.NODE_ENV === 'development') {
+                  try {
+                    // Create a visualization of the hitbox/bounding box for debugging
+                    const box = new THREE.Box3().setFromObject(mesh);
+                    const boxHelper = new THREE.Box3Helper(box, new THREE.Color(0xff00ff));
+                    boxHelper.userData = { type: 'debug-helper', target: mesh.uuid };
+                    
+                    // Remove any existing debug helpers for this object
+                    if (sceneRef.current) {
+                      sceneRef.current.traverse((obj) => {
+                        if (obj.userData?.type === 'debug-helper' && 
+                            obj.userData?.target === mesh.uuid) {
+                          sceneRef.current?.remove(obj);
+                        }
+                      });
+                      
+                      // Add the new helper
+                      sceneRef.current.add(boxHelper);
+                      console.log(`Added debug hitbox visualization for ${mesh.userData.type}`);
+                    }
+                  } catch (err) {
+                    console.error("Error creating debug hitbox visualization:", err);
+                  }
+                }
+              }
+              
+              console.log(`Made hovered ${mesh.userData.type} larger for better visibility`);
+              
+              // Store the highlighted object and its original material
+              setHoveredEraseTarget({
+                object: mesh,
+                originalMaterial: originalMaterial
+              });
+              
+              // CRITICAL: Disable controls when hovering over an erasable element
+              if (controlsRef.current) {
+                // Log control state before disabling
+                console.log("📊 TrackballControls state before disabling:", {
+                  enabled: controlsRef.current.enabled,
+                  position: controlsRef.current.object.position.clone(),
+                  target: controlsRef.current.target.clone()
+                });
+                
+                // Simply disable the controls - don't recreate them
+                // This preserves the control state and makes re-enabling easier
+                controlsRef.current.enabled = false;
+                
+                console.log("🎮 Disabled TrackballControls");
+                
+                // Force controls to update their state immediately
+                if (typeof controlsRef.current.update === 'function') {
+                  controlsRef.current.update();
+                }
+              }
+              
+              // Force render to update the appearance
+              needsRenderRef.current = true;
+            }
+          }
+        }
+      }
+
+      // Regular drag logic
+      if (dragStateRef.current.isDragging) {
+        // Store the current mouse position
+        dragStateRef.current.currentMousePosition = {
+          x: event.clientX,
+          y: event.clientY
+        };
+
+        // Make sure we need to render
+        needsRenderRef.current = true;
+
+        // No position updates here - let the animation loop handle it
+      }
+      // Add hover detection logic
+      else {
+        // Flag that we need to re-render
+        needsRenderRef.current = true;
+        // Force immediate render on drag movement
+        if (rendererRef.current && sceneRef.current && cameraRef.current) {
+          rendererRef.current.render(sceneRef.current, cameraRef.current);
+        }
+
+      // Add hover detection logic
+      else {
+        // Only do hover detection if we're not dragging
+        const canvas = containerRef.current;
+        if (!canvas || !cameraRef.current || !sceneRef.current) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        const mouseY = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+        // Set up raycaster
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(
+          new THREE.Vector2(mouseX, mouseY),
+          cameraRef.current,
+        );
+
+        // Find all axis objects in the scene (both ArrowHelpers and custom axis meshes)
+        const axisObjects: THREE.Object3D[] = [];
+        sceneRef.current.traverse((object) => {
+          if (
+            object instanceof THREE.ArrowHelper || 
+            (object instanceof THREE.Mesh && object.userData?.type === 'axis')
+          ) {
+            axisObjects.push(object);
+          }
+        });
+
+        // Check for intersections with all axis objects
+        const intersects = raycaster.intersectObjects(axisObjects, true);
+
+        if (intersects.length > 0) {
+          const hitObject = intersects[0].object;
+
+          // Handle mesh axes
+          if (hitObject instanceof THREE.Mesh && hitObject.userData?.type === 'axis') {
+            const axisDirection = hitObject.userData.direction;
+            if (axisDirection === 'x' || axisDirection === 'y' || axisDirection === 'z') {
+              console.log("Hovering over axis mesh:", axisDirection);
+              // Create a temporary ArrowHelper to use with existing hover logic
+              const dummyArrow = new THREE.ArrowHelper(
+                new THREE.Vector3(1, 0, 0),
+                hitObject.position,
+                1
+              );
+              dummyArrow.userData = hitObject.userData;
+
+              // Set hovered arrow
+              setHoveredArrow({ 
+                object: dummyArrow, 
+                type: axisDirection as "x" | "y" | "z" 
+              });
+
+              // Change cursor style
+              canvas.style.cursor = "pointer";
+              return;
+            }
+          }
+
+          // Handle regular ArrowHelper (keep your existing code)
+          let arrowObject = hitObject;
+          while (
+            arrowObject.parent &&
+            !(arrowObject instanceof THREE.ArrowHelper)
+          ) {
+            arrowObject = arrowObject.parent;
+          }
+
+          if (arrowObject instanceof THREE.ArrowHelper) {
+            // Your existing code for ArrowHelper
+            const arrowLine = arrowObject.line as THREE.Line;
+            const material = arrowLine.material as THREE.LineBasicMaterial;
+            const colorHex = material.color.getHex();
+
+            let arrowType: "x" | "y" | "z";
+            if (colorHex === 0xff0000) arrowType = "x";
+            else if (colorHex === 0x00ff00) arrowType = "y";
+            else if (colorHex === 0x0000ff) arrowType = "z";
+            else return;
+
+            // Set hovered arrow
+            setHoveredArrow({ object: arrowObject, type: arrowType });
+
+            // Change cursor style
+            canvas.style.cursor = "pointer";
+            return;
+          }
+        }
+
+        // No arrow under mouse
+        if (hoveredArrow) {
+          setHoveredArrow(null);
+          canvas.style.cursor = "auto";
+        }
+      }
+    };
+
+      const handleMouseUp = (event: MouseEvent) => {
+        // Only process right mouse button releases when we're dragging
+        if (event.button !== 2) {
+          return;  // Don't reset dragging for non-right clicks
+        }
+
+        // Check if we were dragging from the ref
+        if (!dragStateRef.current.isDragging || 
+            !dragStateRef.current.selectedObject || 
+            !dragStateRef.current.selectedAxis) {
+          // Clean up just in case
+          setIsDragging(false);
+          dragStateRef.current.isDragging = false;
+
+          // Re-enable controls
+          if (controlsRef.current) {
+            controlsRef.current.enabled = true;
+          }
+          return;
+        }
+
+        // Finalize the position change using ref values
+        if (dragStateRef.current.selectedObject && onUpdateAirEntry) {
+          // Get the current floor data
+          const floorData = floors[currentFloor];
+          const entryIndex = dragStateRef.current.entryIndex;
+
+          // Ensure we have valid index
+          if (floorData && floorData.airEntries && entryIndex >= 0 && entryIndex < floorData.airEntries.length) {
+            const currentEntry = floorData.airEntries[entryIndex];
+
+            // Convert the 3D position back to 2D
+            const newPosition3D = dragStateRef.current.selectedObject.position;
+
+            // Update the air entry position using centralized config
+            // Reverse the transform2DTo3D function
+            const newX = newPosition3D.x / PIXELS_TO_CM + CANVAS_CONFIG.centerX;
+            const newY = CANVAS_CONFIG.centerY - newPosition3D.y / PIXELS_TO_CM;
+
+            // Create updated entry with new position
+            const updatedEntry: AirEntry = {
+              ...currentEntry,
+              position: { x: newX, y: newY },
+            };
+
+            // If we moved vertically, update distance to floor
+            if (dragStateRef.current.selectedAxis === "z") {
+              const baseHeight = getFloorBaseHeight(currentFloor);
+              const newDistanceToFloor = newPosition3D.z - baseHeight;
+
+              if (updatedEntry.type !== "door") {
+                updatedEntry.dimensions = {
+                  ...updatedEntry.dimensions,
+                  distanceToFloor: newDistanceToFloor,
+                };
+              }
+            }
+
+            // Call the update callback
+            onUpdateAirEntry(currentFloor, entryIndex, updatedEntry);
+
+            // IMPORTANT: Keep track of the updated entries to prevent them from resetting
+            // We store a mapping of entryIndex -> position to check against when scene rebuilds
+
+            // Normalize the floor name using the shared function
+            const normalizedFloorName = normalizeFloorName(currentFloor);
+
+            // Create storage location with normalized key if it doesn't exist
+            if (!updatedAirEntryPositionsRef.current[normalizedFloorName]) {
+              updatedAirEntryPositionsRef.current[normalizedFloorName] = {};
+            }
+
+            // Store the latest position for this entry index under the normalized key (main storage)
+            // See if we already have an entry with dimensions
+            if (!updatedAirEntryPositionsRef.current[normalizedFloorName][entryIndex]) {
+              // Create a new entry with just the position
+              updatedAirEntryPositionsRef.current[normalizedFloorName][entryIndex] = {
+                position: {
+                  x: updatedEntry.position.x,
+                  y: updatedEntry.position.y
+                }
+              };
+            } else {
+              // Update just the position and preserve any existing dimensions
+              updatedAirEntryPositionsRef.current[normalizedFloorName][entryIndex].position = {
+                x: updatedEntry.position.x,
+                y: updatedEntry.position.y
+              };
+            }
+
+            // For backward compatibility with existing code, also store under 'ground' key 
+            // if this is the ground floor (transitional approach)
+            if (normalizedFloorName === 'groundfloor') {
+              if (!updatedAirEntryPositionsRef.current['ground']) {
+                updatedAirEntryPositionsRef.current['ground'] = {};
+              }
+              
+              // Legacy format for backward compatibility:
+              // Keep this simple format for backward compatibility
+              updatedAirEntryPositionsRef.current['ground'][entryIndex] = {
+                position: {
+                  x: updatedEntry.position.x,
+                  y: updatedEntry.position.y
+                }
+              };
+            }
+
+            // CRITICAL FIX: Update the userData with the new position
+            // This ensures that future position searches can find this object
+            if (dragStateRef.current.selectedObject) {
+              // Update the userData position immediately for the dragged object
+              dragStateRef.current.selectedObject.userData.position = { ...updatedEntry.position };
+
+              // Also update entryIndex to ensure it's correct for next time
+              dragStateRef.current.selectedObject.userData.entryIndex = entryIndex;
+            }
+          }
+        }
+
+        // Reset the React state for UI
+        setIsDragging(false);
+        setInitialMousePosition(null);
+        // Reset selection state after drag is complete
+        setSelectedAirEntry(null);
+        setSelectedAxis(null);
+
+        // Reset the drag state ref completely
+        dragStateRef.current = {
+          isDragging: false,
+          selectedAxis: null,
+          startPosition: null,
+          initialMousePosition: null,
+          currentMousePosition: null,
+          selectedObject: null,
+          entryIndex: -1,
+          axisDirectionVectors: {
+            x: null,
+            y: null,
+            z: null
+          }
+        };
+
+        // PREVENTATIVE CONTROL RECREATION
+        // Instead of just re-enabling controls, completely recreate them
+        if (controlsRef.current && cameraRef.current && containerRef.current) {
+          // Store current camera position and target
+          const position = controlsRef.current.object.position.clone();
+          const target = controlsRef.current.target.clone();
+
+          // Dispose of the old controls
+          controlsRef.current.dispose();
+
+          // Create new controls with the same camera and canvas
+          const newControls = new TrackballControls(cameraRef.current, containerRef.current.querySelector('canvas'));
+
+          // Copy all the properties from the initial setup
+          newControls.rotateSpeed = 2.0;
+          newControls.zoomSpeed = 1.2;
+          newControls.panSpeed = 0.8;
+          newControls.noZoom = false;
+          newControls.noPan = false;
+          newControls.staticMoving = true;
+          newControls.dynamicDampingFactor = 0.2;
+          newControls.mouseButtons = {
+            LEFT: THREE.MOUSE.ROTATE,
+            MIDDLE: THREE.MOUSE.DOLLY,
+            RIGHT: THREE.MOUSE.PAN
+          };
+
+          // Restore position and target
+          newControls.object.position.copy(position);
+          newControls.target.copy(target);
+
+          // Make sure controls are enabled
+          newControls.enabled = true;
+
+          // Update the reference
+          controlsRef.current = newControls;
+        } else {
+          // Fall back to just enabling the controls if recreation isn't possible
+          if (controlsRef.current) {
+            controlsRef.current.enabled = true;
+          }
+        }
+
+        // Dragging stopped, selection and states reset
+    };
+
+    // Now add the event listeners
+
+    // Clear and specific event binding
+    canvas.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+    });
+
+    // Handle eraser clicks
+    const handleEraserClick = (event: MouseEvent) => {
+      // Only handle when in eraser mode - using ref for reliable state
+      if (!isEraserModeRef.current || !onDeleteAirEntry) {
+        console.log("🚫 Eraser click ignored - isEraserMode:", isEraserModeRef.current, "onDeleteAirEntry:", !!onDeleteAirEntry);
+        return;
+      }
+      
+      console.log("🔴 Eraser click detected in Canvas3D");
+      setDebugInfo(prev => ({
+        ...prev,
+        lastIntersection: "Processing eraser click..."
+      }));
+      
+      // Check if controls are disabled - this is an indicator that we're hovering over an element
+      const areControlsDisabled = controlsRef.current && !controlsRef.current.enabled;
+      console.log("🎮 Controls disabled:", areControlsDisabled);
+      
+      // Log available air entries in the current floor
+      const floorData = floors[currentFloor];
+      if (floorData && floorData.airEntries) {
+        console.log(`🏠 Current floor ${currentFloor} has ${floorData.airEntries.length} air entries:`, 
+          floorData.airEntries.map((entry, idx) => 
+            `${idx}: ${entry.type} at (${entry.position.x}, ${entry.position.y})`
+          )
+        );
+      }
+      
+      // Debug what is hovered
+      console.log("🔍 hoveredEraseTarget state:", hoveredEraseTarget ? "Present" : "Null");
+      
+      // If we have a hovered target, use that directly rather than raycasting again
+      if (hoveredEraseTarget) {
+        const mesh = hoveredEraseTarget.object;
+        const airEntryData = mesh.userData;
+        
+        // Enlarged visuals didn't turn back to normal size automatically in the case of a click
+        // So we need to restore the scale here
+        if (mesh.userData.originalScale) {
+          // Store original scale for cleanup afterwards
+          const originalScale = mesh.userData.originalScale;
+          
+          // Schedule a cleanup after deletion
+          setTimeout(() => {
+            // We may still need to traverse the scene to find the enlarged meshes and restore them
+            if (sceneRef.current) {
+              sceneRef.current.traverse((object) => {
+                if (
+                  object instanceof THREE.Mesh &&
+                  object.userData?.originalScale
+                ) {
+                  // Restore original scale
+                  object.scale.copy(object.userData.originalScale);
+                  
+                  // Remove the originalScale property to reset state for next time
+                  delete object.userData.originalScale;
+                  
+                  // Update geometry after scaling back
+                  if (object.geometry) {
+                    object.geometry.computeBoundingSphere();
+                    object.geometry.computeBoundingBox();
+                  }
+                  
+                  console.log("Cleaned up scale for a mesh after eraser click");
+                }
+              });
+            }
+          }, 50); // Short timeout to let the deletion happen first
+        }
+        
+        console.log("✅ Using highlighted air entry for deletion:", airEntryData);
+        setDebugInfo(prev => ({
+          ...prev,
+          lastIntersection: `Deleting ${airEntryData.type} at entry index ${airEntryData.entryIndex}`
+        }));
+        
+        console.log("Air entry selected for deletion:", airEntryData);
+        
+        // Find the index of this air entry in the floors data
+        let foundIndex = -1;
+        const floorData = floors[currentFloor];
+        
+        if (floorData && floorData.airEntries) {
+          // First try to use the stored entryIndex if available (most reliable)
+          if (typeof airEntryData.entryIndex === 'number') {
+            if (airEntryData.entryIndex >= 0 && airEntryData.entryIndex < floorData.airEntries.length) {
+              foundIndex = airEntryData.entryIndex;
+              console.log("Found air entry using stored entryIndex:", foundIndex);
+            }
+          }
+          
+          // Fall back to position search if needed
+          if (foundIndex === -1 && airEntryData.position) {
+            // Try exact match first
+            foundIndex = floorData.airEntries.findIndex(
+              (entry) =>
+                entry.position.x === airEntryData.position.x &&
+                entry.position.y === airEntryData.position.y
+            );
+            
+            // If exact match fails, try approximate match with tolerance
+            if (foundIndex === -1) {
+              const POSITION_TOLERANCE = 70;
+              foundIndex = floorData.airEntries.findIndex(
+                (entry) =>
+                  Math.abs(entry.position.x - airEntryData.position.x) < POSITION_TOLERANCE &&
+                  Math.abs(entry.position.y - airEntryData.position.y) < POSITION_TOLERANCE
+              );
+              console.log("Found air entry by approximate position match:", foundIndex);
+            }
+          }
+          
+          if (foundIndex !== -1) {
+            console.log("Deleting air entry at index:", foundIndex);
+            onDeleteAirEntry(currentFloor, foundIndex);
+            
+            // Clean up any references in our state
+            if (selectedAirEntry && selectedAirEntry.index === foundIndex) {
+              setSelectedAirEntry(null);
+              setSelectedAxis(null);
+              setIsDragging(false);
+            }
+            
+            // Remove from updatedAirEntryPositionsRef if it exists
+            const normalizedFloorName = normalizeFloorName(currentFloor);
+            if (updatedAirEntryPositionsRef.current[normalizedFloorName]?.[foundIndex]) {
+              delete updatedAirEntryPositionsRef.current[normalizedFloorName][foundIndex];
+            }
+            
+            // Reset hover state after deletion
+            setHoveredEraseTarget(null);
+            
+            // Force a complete render
+            needsRenderRef.current = true;
+            if (rendererRef.current && sceneRef.current && cameraRef.current) {
+              rendererRef.current.render(sceneRef.current, cameraRef.current);
+            }
+            
+            // Re-enable controls after deletion
+            if (controlsRef.current) {
+              controlsRef.current.enabled = true;
+            }
+          }
+        }
+      } else {
+        // If no hover target is detected but controls are disabled, do a direct raycast to try to find something
+        if (areControlsDisabled) {
+          console.log("Controls disabled but no hover target, attempting direct raycast");
+          
+          // Extract mouse position from event
+          const rect = containerRef.current?.getBoundingClientRect();
+          if (!rect) return;
+          
+          const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+          const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+          
+          // Set up raycaster
+          const raycaster = new THREE.Raycaster();
+          raycaster.params.Line = { threshold: 0.5 }; // Use lower threshold for precise detection
+          raycaster.setFromCamera(new THREE.Vector2(x, y), cameraRef.current!);
+          
+          // Check for intersections
+          const intersects = raycaster.intersectObjects(sceneRef.current!.children, true);
+          
+          // Filter to only include air entries
+          const airEntryIntersects = intersects.filter(intersect => 
+            intersect.object.userData?.type === 'window' || 
+            intersect.object.userData?.type === 'door' || 
+            intersect.object.userData?.type === 'vent'
+          );
+          
+          if (airEntryIntersects.length > 0) {
+            const firstIntersect = airEntryIntersects[0];
+            console.log("Direct raycast found air entry to delete:", firstIntersect.object.userData);
+            
+            // Use the same code as above to handle deletion
+            const airEntryData = firstIntersect.object.userData;
+            let foundIndex = -1;
+            
+            if (typeof airEntryData.entryIndex === 'number') {
+              if (airEntryData.entryIndex >= 0 && airEntryData.entryIndex < floorData.airEntries.length) {
+                foundIndex = airEntryData.entryIndex;
+              }
+            }
+            
+            if (foundIndex !== -1) {
+              console.log("Deleting air entry at index:", foundIndex);
+              onDeleteAirEntry(currentFloor, foundIndex);
+              
+              // Clean up any references in our state
+              if (selectedAirEntry && selectedAirEntry.index === foundIndex) {
+                setSelectedAirEntry(null);
+                setSelectedAxis(null);
+                setIsDragging(false);
+              }
+              
+              // Re-enable controls after deletion
+              if (controlsRef.current) {
+                controlsRef.current.enabled = true;
+              }
+            }
+          }
+        }
+      }
+    };
+
+    // Handle mousedown events
+    const mouseDownWrapper = (e: MouseEvent) => {
+      if (e.button === 2) {
+        // Right mouse button for both measurements and context operations
+        handleRightMouseDown(e);
+      } else if (e.button === 0 && isEraserModeRef.current) {
+        // Left mouse button in eraser mode
+        handleEraserClick(e);
+      }
+    };
+
+    canvas.addEventListener("mousedown", mouseDownWrapper);
+
+    // Create named handlers for event tracking
+    const mouseMoveHandler = (e: MouseEvent) => {
+      handleMouseMove(e);
+    };
+
+    const mouseUpHandler = (e: MouseEvent) => {
+      handleMouseUp(e);
+    };
+
+    // Use document instead of window for more reliable event capture
+    document.addEventListener("mousemove", mouseMoveHandler);
+    document.addEventListener("mouseup", mouseUpHandler);
+
+    // We don't need periodic checking anymore since we're preventatively recreating controls after each drag
+
+    // All event listeners are now attached
+
+
+    // Add double-click handler for air entry editing
+    const handleDoubleClick = (event: MouseEvent) => {
+      // Set flag to ignore the next click (which is part of the double-click)
+      setIgnoreNextClick(true);
+
+      // Get mouse position for raycasting
+      const canvas = containerRef.current;
+      if (!canvas || !cameraRef.current || !sceneRef.current) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      const mouseY = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+      // Set up raycaster
+      const raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera(
+        new THREE.Vector2(mouseX, mouseY),
+        cameraRef.current,
+      );
+
+      // Find all meshes in the scene that represent air entries
+      const airEntryMeshes: THREE.Mesh[] = [];
+      sceneRef.current.traverse((object) => {
+        if (
+          object instanceof THREE.Mesh &&
+          object.userData &&
+          object.userData.type &&
+          ["window", "door", "vent"].includes(object.userData.type)
+        ) {
+          airEntryMeshes.push(object as THREE.Mesh);
+        }
+      });
+
+      // Check for intersections with air entry meshes
+      const intersects = raycaster.intersectObjects(airEntryMeshes, false);
+
+      if (intersects.length > 0) {
+        const mesh = intersects[0].object as THREE.Mesh;
+        const airEntryData = mesh.userData;
+
+        // Find the index of this air entry in the floors data
+        let foundIndex = -1;
+        const floorData = floors[currentFloor];
+
+        if (floorData && floorData.airEntries) {
+          console.log("Double-click position search:", {
+            airEntryData: airEntryData,
+            entryPosition: airEntryData.position,
+            storedEntryIndex: airEntryData.entryIndex
+          });
+
+          // First try to use the stored entryIndex if available (most reliable)
+          if (typeof airEntryData.entryIndex === 'number') {
+            if (airEntryData.entryIndex >= 0 && airEntryData.entryIndex < floorData.airEntries.length) {
+              foundIndex = airEntryData.entryIndex;
+              console.log("Double-click found entry using stored entryIndex:", foundIndex);
+            }
+          }
+
+          // Fall back to position search if needed
+          if (foundIndex === -1) {
+            // Try exact match first
+            foundIndex = floorData.airEntries.findIndex(
+              (entry) =>
+                entry.position.x === airEntryData.position.x &&
+                entry.position.y === airEntryData.position.y,
+            );
+
+            // If exact match fails, try approximate match with larger tolerance
+            if (foundIndex === -1) {
+              const POSITION_TOLERANCE = 70; // Match the value used in handleRightMouseDown
+              foundIndex = floorData.airEntries.findIndex(
+                (entry) =>
+                  Math.abs(entry.position.x - airEntryData.position.x) < POSITION_TOLERANCE &&
+                  Math.abs(entry.position.y - airEntryData.position.y) < POSITION_TOLERANCE
+              );
+              console.log("Double-click found entry by approximate position (with higher tolerance):", foundIndex);
+            }
+          }
+
+          if (foundIndex !== -1) {
+            // Get the base entry from floor data
+            const baseEntry = floorData.airEntries[foundIndex];
+            
+            // Check if we have updated dimensions for this entry in our ref
+            const normalizedFloorName = normalizeFloorName(currentFloor);
+            const updatedData = updatedAirEntryPositionsRef.current[normalizedFloorName]?.[foundIndex];
+            
+            // Create a merged entry with the latest dimensions
+            const mergedEntry = {
+              ...baseEntry,
+              dimensions: updatedData?.dimensions || baseEntry.dimensions
+            };
+            
+            setEditingAirEntry({
+              index: foundIndex,
+              entry: mergedEntry,
+            });
+          }
+        }
+      }
+    };
+
+    // Add the double-click event listener
+    canvas.addEventListener("dblclick", handleDoubleClick);
+
     return () => {
       window.removeEventListener("resize", handleResize);
-      
+
       if (controls) {
         controls.dispose();
       }
-      
+
       if (renderer) {
+        // Remove all event listeners
+        renderer.domElement.removeEventListener("contextmenu", (e) =>
+          e.preventDefault(),
+        );
+        renderer.domElement.removeEventListener(
+          "mousedown",
+          mouseDownWrapper,
+        );
+        renderer.domElement.removeEventListener("dblclick", handleDoubleClick);
+
+        // Dispose renderer
         renderer.dispose();
+
+        // Remove canvas
         if (containerRef.current) {
           containerRef.current.removeChild(renderer.domElement);
         }
       }
+
+      // Remove global event listeners
+      document.removeEventListener("mousemove", mouseMoveHandler);
+      document.removeEventListener("mouseup", mouseUpHandler);
     };
   }, []);
 
-  // Update scene when floors data changes
   useEffect(() => {
+    // Optimized: Reduced logging to prevent console message overflow
+    // console.log("Canvas3D received floors data:", floors, "Current eraser mode:", isEraserMode);
+
+    // Don't reset selection state here - we'll handle it after rebuilding the scene
+    // This prevents losing the selection when the scene is updated
+
+    // Check specifically for stair polygons
+    Object.entries(floors).forEach(([floorName, floorData]) => {
+      if (floorData.stairPolygons?.length) {
+        console.log(
+          `Floor ${floorName} has ${floorData.stairPolygons.length} stair polygons:`,
+          floorData.stairPolygons,
+        );
+      }
+    });
+
     if (!sceneRef.current) return;
 
-    // Clear existing geometry
-    const objectsToRemove: THREE.Object3D[] = [];
+    // Clear previous geometry (except lights, helpers, and axis labels)
+    const toRemove: THREE.Object3D[] = [];
     sceneRef.current.traverse((object) => {
-      if (object.userData.isFloorGeometry) {
-        objectsToRemove.push(object);
+      // Skip axis labels - we want to preserve them during scene rebuilds
+      if (object.userData?.type === "axisLabel") {
+        console.log("Preserving axis label during scene rebuild:", object.userData.axis);
+        return;
+      }
+      
+      // Skip axis helper
+      if (object instanceof THREE.AxesHelper) {
+        console.log("Preserving axes helper during scene rebuild");
+        return;
+      }
+      
+      // Remove all other meshes, sprites, and arrow helpers
+      if (
+        object instanceof THREE.Mesh ||
+        object instanceof THREE.Sprite ||
+        object instanceof THREE.ArrowHelper
+      ) {
+        toRemove.push(object);
       }
     });
     
-    objectsToRemove.forEach((object) => {
-      sceneRef.current?.remove(object);
+    // Log what we're about to remove
+    console.log(`Removing ${toRemove.length} objects during scene rebuild`);
+    toRemove.forEach((object) => sceneRef.current?.remove(object));
+
+    // Create and add objects for each floor
+    Object.entries(floors).forEach(([floorName, floorData]) => {
+      if (floorData.hasClosedContour || floorName === currentFloor) {
+        const baseHeight = getFloorBaseHeight(floorName);
+        
+        // Get specific parameters for this floor
+        let floorCeilingHeight, currentFloorDeckThickness;
+        if (isMultifloor && floorParameters[floorName]) {
+          // Use multifloor parameters specific to this floor
+          floorCeilingHeight = floorParameters[floorName].ceilingHeight;
+          currentFloorDeckThickness = floorParameters[floorName].floorDeck;
+        } else {
+          // Use global parameters for single-floor mode
+          floorCeilingHeight = ceilingHeight;
+          currentFloorDeckThickness = floorDeckThickness;
+        }
+        
+        const objects = createFloorObjects(
+          floorData,
+          baseHeight,
+          floorName === currentFloor,
+          floorCeilingHeight,
+          currentFloorDeckThickness,
+        );
+        objects.forEach((obj) => sceneRef.current?.add(obj));
+      }
     });
-
-    // Render current floor
+    
+    // Update SceneContext with ALL floors data for comprehensive sharing with RoomSketchPro
+    console.log("Canvas3D - Updating SceneContext with all floors data");
+    
+    // First, update the entire floors object in the context
+    updateGeometryData({
+      floors: floors,
+      currentFloor: currentFloor,
+      floorSize: GRID_SIZE,
+      gridSize: GRID_DIVISIONS
+    });
+    
+    // Then set current floor data for immediate use
     const currentFloorData = floors[currentFloor];
+    console.log("Canvas3D - Current floor data:", currentFloorData);
+    
     if (currentFloorData) {
-      // Create floor geometry here (simplified for optimization)
-      const floorHeight = isMultifloor ? 
-        (floorParameters[currentFloor]?.ceilingHeight || 220) / 100 : 
-        ceilingHeight / 100;
-
-      // Add walls, air entries, etc. (implementation details...)
-      // This is where the main 3D geometry creation would happen
+      console.log(`Canvas3D - Updating current floor geometry with ${currentFloorData.lines?.length || 0} lines and ${currentFloorData.airEntries?.length || 0} airEntries`);
+      
+      // Update current floor in context (this will trigger setCurrentFloor in the context)
+      setContextCurrentFloor(currentFloor);
+      
+      // Also individually update each floor to ensure proper synchronization
+      Object.entries(floors).forEach(([floorName, floorData]) => {
+        updateFloorData(floorName, floorData);
+      });
+      
+      // Update scene objects in context
+      if (sceneRef.current) {
+        // Find walls, floor, and air entries to expose in context
+        const walls: THREE.Object3D[] = [];
+        let floor: THREE.Object3D | undefined;
+        const airEntries: THREE.Object3D[] = [];
+        
+        sceneRef.current.traverse((object) => {
+          if (object instanceof THREE.Mesh && object.userData.type === 'floor') {
+            floor = object;
+          } else if (object instanceof THREE.Mesh && object.userData.type === 'wall') {
+            walls.push(object);
+          } else if (object instanceof THREE.Mesh && 
+                    (object.userData.type === 'window' || 
+                     object.userData.type === 'door' || 
+                     object.userData.type === 'vent')) {
+            airEntries.push(object);
+          }
+        });
+        
+        updateSceneData({
+          walls,
+          floor,
+          airEntries,
+          gridHelper: sceneRef.current.children.find(
+            (obj) => obj instanceof THREE.GridHelper
+          )
+        });
+      }
     }
 
-    needsRenderRef.current = true;
-  }, [floors, currentFloor, ceilingHeight, isMultifloor, floorParameters]);
+    // After rebuilding the scene, we need to restore or reset selection state
+    if (selectedAirEntry) {
+      // Try to find the new mesh object for our selected air entry
+      const currentFloorData = floors[currentFloor];
+      if (currentFloorData && currentFloorData.airEntries) {
+        const entryIndex = selectedAirEntry.index;
 
-  // Handle measure mode
+        // Only proceed if the entry index is still valid
+        if (entryIndex >= 0 && entryIndex < currentFloorData.airEntries.length) {
+          const entry = currentFloorData.airEntries[entryIndex];
+
+          // Try to find the corresponding mesh in the scene
+          let found = false;
+          let newMeshObject: THREE.Mesh | null = null;
+
+          // Search the scene for the mesh with matching position
+          if (sceneRef.current) {
+            sceneRef.current.traverse((object) => {
+              if (
+                object instanceof THREE.Mesh &&
+                object.userData &&
+                object.userData.type &&
+                ["window", "door", "vent"].includes(object.userData.type) &&
+                object.userData.position
+              ) {
+                // Compare positions to find our air entry
+                const entryPos = object.userData.position;
+                if (
+                  Math.abs(entryPos.x - entry.position.x) < 0.1 &&
+                  Math.abs(entryPos.y - entry.position.y) < 0.1
+                ) {
+                  newMeshObject = object;
+                  found = true;
+                  console.log("Found matching mesh for selected air entry after scene rebuild");
+                }
+              }
+            });
+          }
+
+          if (found && newMeshObject) {
+            // Update the selected air entry with the new mesh object
+            setSelectedAirEntry({
+              index: entryIndex,
+              entry: entry,
+              object: newMeshObject,
+            });
+
+            // Apply visual feedback
+            highlightSelectedAirEntry(newMeshObject, true, isDragging);
+
+            if (sceneRef.current && selectedAxis) {
+              highlightSelectedAxis(
+                sceneRef.current,
+                newMeshObject,
+                selectedAxis,
+              );
+            }
+          } else {
+            // If we couldn't find the matching object, reset selection
+            console.log("Could not find matching mesh for selected air entry, resetting selection");
+            setSelectedAirEntry(null);
+            setSelectedAxis(null);
+            setIsDragging(false);
+            dragStateRef.current = {
+              isDragging: false,
+              selectedAxis: null,
+              startPosition: null,
+              initialMousePosition: null,
+              currentMousePosition: null,
+              selectedObject: null,
+              entryIndex: -1,
+              axisDirectionVectors: {
+                x: null,
+                y: null,
+                z: null
+              }
+            };
+          }
+        } else {
+          // Entry no longer exists, reset selection
+          setSelectedAirEntry(null);
+          setSelectedAxis(null);
+          setIsDragging(false);
+          dragStateRef.current = {
+            isDragging: false,
+            selectedAxis: null,
+            startPosition: null,
+            initialMousePosition: null,
+            currentMousePosition: null,
+            selectedObject: null,
+            entryIndex: -1,
+            axisDirectionVectors: {
+              x: null,
+              y: null,
+              z: null
+            }
+          };
+        }
+      } else {
+        // Current floor data not found, reset selection
+        setSelectedAirEntry(null);
+        setSelectedAxis(null);
+        setIsDragging(false);
+        dragStateRef.current = {
+          isDragging: false,
+          selectedAxis: null,
+          startPosition: null,
+          initialMousePosition: null,
+          currentMousePosition: null,
+          selectedObject: null,
+          entryIndex: -1,
+          axisDirectionVectors: {
+            x: null,
+            y: null,
+            z: null
+          }
+        };
+      }
+    } else {
+      // No previous selection, make sure states are reset
+      setSelectedAxis(null);
+      setIsDragging(false);
+      setInitialMousePosition(null);
+      setDragStartPosition(null);
+      dragStateRef.current = {
+        isDragging: false,
+        selectedAxis: null,
+        startPosition: null,
+        initialMousePosition: null,
+        currentMousePosition: null,
+        selectedObject: null,
+        entryIndex: -1,
+        axisDirectionVectors: {
+          x: null,
+          y: null,
+          z: null
+        }
+      };
+    }
+  }, [floors, currentFloor, ceilingHeight, floorDeckThickness, updateGeometryData, updateSceneData]);
+
   useEffect(() => {
+    // Mark that rendering is needed when selection or dragging state changes
+    if (needsRenderRef.current !== undefined) {
+      needsRenderRef.current = true;
+      console.log("State changed - marking for render", { 
+        isDragging, 
+        selectedAxis,
+        hasSelectedEntry: !!selectedAirEntry
+      });
+
+      // Disable controls during dragging
+      if (controlsRef.current) {
+        controlsRef.current.enabled = !isDragging;
+      }
+    }
+  }, [selectedAirEntry, selectedAxis, isDragging]);
+
+  useEffect(() => {
+    // If dialog opens, cancel any dragging operation
+    if (editingAirEntry) {
+      setIsDragging(false);
+      setSelectedAxis(null);
+    }
+  }, [editingAirEntry]);
+
+  // Effect to update wall transparency when the prop changes
+  // Measurement utility functions
+
+  // Create a measurement line between two points
+  const createMeasurementLine = (start: THREE.Vector3, end: THREE.Vector3): THREE.Line => {
+    const geometry = new THREE.BufferGeometry().setFromPoints([start, end]);
+    const material = new THREE.LineBasicMaterial({ 
+      color: 0xff0000, // Red color for measurement lines
+      linewidth: 2,
+      depthTest: false, // Ensure line is visible through other objects
+    });
+    return new THREE.Line(geometry, material);
+  };
+
+  // Calculate the distance between two 3D points
+  const calculateDistance = (start: THREE.Vector3, end: THREE.Vector3): number => {
+    return start.distanceTo(end);
+  };
+
+  // Create a measurement label with distance info
+  const createMeasurementLabel = (start: THREE.Vector3, end: THREE.Vector3, distance: number): THREE.Sprite => {
+    // Position the label at the midpoint of the line
+    const midpoint = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
+
+    // Format the distance with 2 decimal places and add unit (cm)
+    const formattedDistance = `${distance.toFixed(2)} cm`;
+
+    // Create text sprite with white background for visibility
+    const label = makeTextSprite(formattedDistance, {
+      fontsize: 22,
+      fontface: "Arial",
+      textColor: { r: 255, g: 0, b: 0, a: 1.0 }, // Red text
+      backgroundColor: { r: 255, g: 255, b: 255, a: 0.8 }, // White background with 80% opacity
+      borderColor: { r: 255, g: 0, b: 0, a: 1.0 }, // Red border
+      borderThickness: 2,
+      padding: 6
+    });
+
+    label.position.copy(midpoint);
+    return label;
+  };
+
+  // Add a completed measurement to the scene and state
+  const addMeasurement = (start: THREE.Vector3, end: THREE.Vector3) => {
+    if (!sceneRef.current) return;
+
+    const distance = calculateDistance(start, end);
+    const line = createMeasurementLine(start, end);
+    const label = createMeasurementLabel(start, end, distance);
+
+    // Add both to the scene
+    sceneRef.current.add(line);
+    sceneRef.current.add(label);
+
+    // Store the measurement in state
+    const newMeasurement: Measurement3D = {
+      startPoint: start.clone(),
+      endPoint: end.clone(),
+      distance,
+      line,
+      label
+    };
+
+    setMeasurements([...measurements, newMeasurement]);
+
+    // Trigger a render
+    needsRenderRef.current = true;
+  };
+
+  // Clean up active measurement (when canceling or completing a measurement)
+  const cleanupActiveMeasurement = () => {
+    if (sceneRef.current) {
+      if (activeMeasurementLine) {
+        sceneRef.current.remove(activeMeasurementLine);
+        setActiveMeasurementLine(null);
+      }
+
+      if (activeMeasurementLabel) {
+        sceneRef.current.remove(activeMeasurementLabel);
+        setActiveMeasurementLabel(null);
+      }
+
+      // Also reset the measurement state ref
+      measurementStateRef.current.inProgress = false;
+      measurementStateRef.current.startPoint = null;
+
+      // Trigger a render to update the scene
+      needsRenderRef.current = true;
+    }
+  };
+
+  // Update active measurement line while dragging
+  const updateActiveMeasurement = (start: THREE.Vector3, end: THREE.Vector3) => {
+    if (!sceneRef.current) return;
+
+    // Clean up existing temporary measurement
+    cleanupActiveMeasurement();
+
+    // Create new temporary measurement
+    const line = createMeasurementLine(start, end);
+    const distance = calculateDistance(start, end);
+    const label = createMeasurementLabel(start, end, distance);
+
+    // Add to scene
+    sceneRef.current.add(line);
+    sceneRef.current.add(label);
+
+    // Update state
+    setActiveMeasurementLine(line);
+    setActiveMeasurementLabel(label);
+
+    // Trigger a render
+    needsRenderRef.current = true;
+  };
+
+  // Effect to handle measure mode changes
+  useEffect(() => {
+    console.log("isMeasureMode prop changed:", isMeasureMode);
+    console.log("Setting isMeasuring state to:", isMeasureMode);
+
+    // Update both state and ref
+    setIsMeasuring(isMeasureMode);
+    isMeasureModeRef.current = isMeasureMode;
+
+    // Also set the ref state to match
+    measurementStateRef.current.inProgress = false;
+    measurementStateRef.current.startPoint = null;
+
+    // Add visual indication of measure mode
     if (containerRef.current) {
-      containerRef.current.style.cursor = isMeasureMode ? "crosshair" : "auto";
+      if (isMeasureMode) {
+        containerRef.current.style.cursor = 'crosshair';
+        containerRef.current.title = 'Right-click to set measurement points, ESC to cancel';
+        console.log("Set cursor to crosshair - measure mode active");
+      } else {
+        containerRef.current.style.cursor = 'auto';
+        containerRef.current.title = '';
+        console.log("Set cursor to auto - measure mode inactive");
+      }
+    }
+
+    // Clear any active measurements when exiting measure mode
+    if (!isMeasureMode) {
+      cleanupActiveMeasurement();
+      setMeasureStartPoint(null);
+      setMeasureEndPoint(null);
+
+
+      // Reset measurement ref state
+      measurementStateRef.current.inProgress = false;
+      measurementStateRef.current.startPoint = null;
     }
   }, [isMeasureMode]);
 
-  // Handle eraser mode
+  // Effect to clean up measurements when changing floors
   useEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.style.cursor = isEraserMode ? "not-allowed" : "auto";
+    // Clean up any active measurement
+    cleanupActiveMeasurement();
+    setMeasureStartPoint(null);
+    setMeasureEndPoint(null);
+
+    // Clean up all existing measurements as they're specific to a floor
+    if (measurements.length > 0 && sceneRef.current) {
+      measurements.forEach(measure => {
+        if (measure.line) sceneRef.current?.remove(measure.line);
+        if (measure.label) sceneRef.current?.remove(measure.label);
+      });
+      setMeasurements([]);
     }
-  }, [isEraserMode]);
+  }, [currentFloor]);
+  
+  // Effect to handle eraser mode changes - UI updates only
+  useEffect(() => {
+    const eraserModeValue = isEraserMode === true; // Force a boolean value
+    console.log("Canvas3D isEraserMode prop changed:", isEraserMode, "- Applying UI changes", 
+                isEraserMode === undefined ? "👉 UNDEFINED VALUE!" : "");
+    
+    // Update debug info to reflect current eraser mode state
+    setDebugInfo(prev => ({
+      ...prev,
+      eraserMode: eraserModeValue
+    }));
+    
+    // Log how many air entry elements exist in the scene
+    if (sceneRef.current) {
+      console.log("Checking scene for air entries in useEffect:");
+      let airEntryCount = 0;
+      sceneRef.current.traverse((object) => {
+        if (
+          object instanceof THREE.Mesh &&
+          object.userData &&
+          object.userData.type &&
+          ["window", "door", "vent"].includes(object.userData.type)
+        ) {
+          airEntryCount++;
+          console.log(`Found air entry in scene: ${object.userData.type} at position:`, object.userData.position);
+        }
+      });
+      console.log(`Total air entries in scene for eraser mode: ${airEntryCount}`);
+    }
+    
+    // Add visual indication of eraser mode
+    if (containerRef.current) {
+      if (eraserModeValue) {
+        containerRef.current.style.cursor = 'not-allowed'; // Eraser cursor
+        containerRef.current.title = 'Left-click to erase air entries (windows, doors, vents)';
+        console.log("Set cursor to not-allowed - eraser mode active");
+      } else if (!isMeasureMode) { // Only reset if we're not in measure mode
+        containerRef.current.style.cursor = 'auto';
+        containerRef.current.title = '';
+        console.log("Set cursor to auto - eraser mode inactive");
+      }
+    }
+  }, [isEraserMode, isMeasureMode]);
+
+  useEffect(() => {
+    if (sceneRef.current) {
+      // Update the opacity of only wall materials in the scene, not air entries
+      sceneRef.current.traverse((object) => {
+        if (object instanceof THREE.Mesh && 
+            object.material instanceof THREE.MeshPhongMaterial &&
+            object.material.transparent) {
+
+          // Only update walls, not air entries (windows, doors, vents)
+          const isAirEntry = object.userData?.type && 
+                            ["window", "door", "vent"].includes(object.userData.type);
+
+          if (!isAirEntry) {
+            // This is a wall material that needs updating
+            object.material.opacity = wallTransparency;
+            object.material.needsUpdate = true;
+          }
+        }
+      });
+      // Trigger a re-render
+      needsRenderRef.current = true;
+    }
+  }, [wallTransparency]);
+  
+  // Complete event system reset function for debugging hover issues
+  const resetHoveringCompletely = useCallback(() => {
+    console.log("🔄 COMPLETE EVENT SYSTEM RESET");
+    
+    // Re-enable controls
+    if (controlsRef.current) {
+      controlsRef.current.enabled = true;
+      if (typeof controlsRef.current.update === 'function') {
+        controlsRef.current.update();
+      }
+    }
+    
+    // Clear hover target with proper cleanup
+    if (hoveredEraseTarget) {
+      try {
+        hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
+        if (hoveredEraseTarget.object.userData?.originalScale) {
+          hoveredEraseTarget.object.scale.copy(hoveredEraseTarget.object.userData.originalScale);
+          
+          if (hoveredEraseTarget.object.geometry) {
+            hoveredEraseTarget.object.geometry.computeBoundingSphere();
+            hoveredEraseTarget.object.geometry.computeBoundingBox();
+          }
+        }
+      } catch (err) {
+        console.error("Error during hover cleanup in reset:", err);
+      }
+    }
+    
+    // Clear all debug helpers
+    if (sceneRef.current) {
+      const helpersToRemove: THREE.Object3D[] = [];
+      sceneRef.current.traverse((obj) => {
+        if (obj.userData?.type === 'debug-helper') {
+          helpersToRemove.push(obj);
+        }
+      });
+      
+      helpersToRemove.forEach(helper => {
+        sceneRef.current?.remove(helper);
+      });
+    }
+    
+    // Force clear hover state
+    setHoveredEraseTarget(null);
+    
+    // Force a complete render
+    needsRenderRef.current = true;
+    if (rendererRef.current && sceneRef.current && cameraRef.current) {
+      rendererRef.current.render(sceneRef.current, cameraRef.current);
+    }
+    
+    // Reset cursor
+    if (containerRef.current) {
+      containerRef.current.style.cursor = isEraserMode ? 'not-allowed' : 'auto';
+    }
+    
+    console.log("✅ Complete event system reset finished");
+  }, [hoveredEraseTarget, isEraserMode]);
+  
+  // Add a useEffect to reset the system when entering/exiting eraser mode
+  useEffect(() => {
+    console.log("🔄 Eraser mode changed, performing complete system reset");
+    resetHoveringCompletely();
+  }, [isEraserMode, resetHoveringCompletely]);
 
   return (
     <>
+      {/* 3D Canvas container - simplified layout with just the canvas */}
       <div ref={containerRef} className="w-full h-full relative">
-        {/* Debug overlay removed to reduce console noise */}
+        {/* Debug overlay */}
+        <div 
+          style={{
+            position: 'absolute',
+            top: 10,
+            left: 10,
+            background: 'rgba(0,0,0,0.5)',
+            color: 'white',
+            padding: 10,
+            borderRadius: 5,
+            fontSize: 14,
+            zIndex: 1000,
+            pointerEvents: 'none', // Don't interfere with mouse events
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 4
+          }}
+        >
+          <div><strong>DEBUG INFO</strong></div>
+          <div>Mouse: {debugInfo.mousePosition}</div>
+          <div>Eraser Mode: {debugInfo.eraserMode ? 'Active' : 'Inactive'}</div>
+          <div>Hovering: {debugInfo.hovering ? 'YES' : 'no'}</div>
+          <div>Last Intersection: {debugInfo.lastIntersection}</div>
+        </div>
       </div>
 
+      {/* Dialog for editing air entries */}
       {editingAirEntry && (
         <AirEntryDialog
           type={editingAirEntry.entry.type}
           isOpen={true}
           onClose={() => setEditingAirEntry(null)}
-          onConfirm={(dimensions) => {
-            if (onUpdateAirEntry) {
-              onUpdateAirEntry(currentFloor, editingAirEntry.index, {
-                ...editingAirEntry.entry,
-                dimensions,
-              });
-            }
-            setEditingAirEntry(null);
-          }}
-          initialDimensions={editingAirEntry.entry.dimensions}
+          onConfirm={(dimensions) =>
+            handleAirEntryEdit(editingAirEntry.index, dimensions)
+          }
+          initialValues={editingAirEntry.entry.dimensions}
+          isEditing={true}
         />
       )}
     </>
   );
 }
+
+/**
+ * ========================================
+ * SHARED GEOMETRY GENERATION FUNCTION
+ * ========================================
+ * 
+ * Critical function for RoomSketchPro integration - generates identical 3D geometry
+ * 
+ * CURRENT LIMITATION: Uses local duplicate functions instead of shared utilities
+ * TODO: Replace localTransform2DTo3D with shared transform2DTo3D function
+ * TODO: Replace localCreateRoomPerimeter with shared createRoomPerimeter function
+ * 
+ * Dependencies:
+ * - CANVAS_CONFIG: Centralized dimensions (✓ already using)
+ * - PIXELS_TO_CM: Scale conversion (✓ already using)
+ * - Air entry positioning algorithms (needs extraction from Canvas3D)
+ * - Wall normal calculations (needs extraction from Canvas3D)
+ * 
+ * This function must produce identical results to Canvas3D's internal geometry generation
+ */
+export const generateSharedFloorGeometry = (
+  floors: Record<string, FloorData>,
+  config: {
+    currentFloor: string;
+    floorParameters?: Record<string, { ceilingHeight: number; floorDeck: number }>;
+    wallTransparency: number;
+    isMultifloor?: boolean;
+    defaultCeilingHeight?: number;
+    defaultFloorDeck?: number;
+  }
+): THREE.Object3D[] => {
+  const objects: THREE.Object3D[] = [];
+  
+  // TEMPORARY: Helper functions (identical to Canvas3D implementation)
+  // These should be replaced with shared utility functions
+  const localTransform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
+    const relativeX = point.x - CANVAS_CONFIG.centerX;
+    const relativeY = CANVAS_CONFIG.centerY - point.y;
+
+    return new THREE.Vector3(
+      relativeX * PIXELS_TO_CM,
+      relativeY * PIXELS_TO_CM,
+      height,
+    );
+  };
+
+  const localCreateRoomPerimeter = (lines: Line[]): Point[] => {
+    if (lines.length === 0) return [];
+    
+    const pointGraph = new Map<string, Point[]>();
+    const pointToString = (p: Point) => `${p.x},${p.y}`;
+    const arePointsEqual = (p1: Point, p2: Point, tolerance = 0.1) =>
+      Math.abs(p1.x - p2.x) < tolerance && Math.abs(p1.y - p2.y) < tolerance;
+    
+    lines.forEach((line) => {
+      const startKey = pointToString(line.start);
+      const endKey = pointToString(line.end);
+
+      if (!pointGraph.has(startKey)) pointGraph.set(startKey, []);
+      if (!pointGraph.has(endKey)) pointGraph.set(endKey, []);
+
+      pointGraph.get(startKey)!.push(line.end);
+      pointGraph.get(endKey)!.push(line.start);
+    });
+
+    const perimeter: Point[] = [lines[0].start];
+    const visited = new Set<string>([pointToString(lines[0].start)]);
+    let currentPoint = lines[0].start;
+
+    while (true) {
+      const currentKey = pointToString(currentPoint);
+      const neighbors = pointGraph.get(currentKey) || [];
+      const nextPoint = neighbors.find((p) => !visited.has(pointToString(p)));
+
+      if (!nextPoint) break;
+
+      if (arePointsEqual(nextPoint, perimeter[0])) break;
+
+      perimeter.push(nextPoint);
+      visited.add(pointToString(nextPoint));
+      currentPoint = nextPoint;
+    }
+
+    return perimeter;
+  };
+
+  const getFloorBaseHeight = (floorName: string): number => {
+    const FLOOR_ORDER = ["ground", "first", "second", "third", "fourth", "fifth"];
+    const floorIndex = FLOOR_ORDER.indexOf(floorName.toLowerCase());
+    
+    if (floorIndex === -1) return 0;
+    if (floorIndex === 0) return 0;
+
+    let totalHeight = 0;
+    for (let i = 0; i < floorIndex; i++) {
+      const currentFloorName = FLOOR_ORDER[i];
+      let floorHeight;
+      
+      if (config.isMultifloor && config.floorParameters?.[currentFloorName]) {
+        floorHeight = config.floorParameters[currentFloorName].ceilingHeight + 
+                     config.floorParameters[currentFloorName].floorDeck;
+      } else {
+        floorHeight = (config.defaultCeilingHeight || 250) + (config.defaultFloorDeck || 20);
+      }
+      
+      totalHeight += floorHeight;
+    }
+    
+    return totalHeight;
+  };
+
+  // Generate geometry for each floor (identical logic to Canvas3D)
+  Object.entries(floors).forEach(([floorName, floorData]) => {
+    if (floorData.hasClosedContour || floorName === config.currentFloor) {
+      const baseHeight = getFloorBaseHeight(floorName);
+      
+      let floorCeilingHeight, currentFloorDeckThickness;
+      if (config.isMultifloor && config.floorParameters?.[floorName]) {
+        floorCeilingHeight = config.floorParameters[floorName].ceilingHeight;
+        currentFloorDeckThickness = config.floorParameters[floorName].floorDeck;
+      } else {
+        floorCeilingHeight = config.defaultCeilingHeight || 250;
+        currentFloorDeckThickness = config.defaultFloorDeck || 20;
+      }
+
+      const perimeterPoints = localCreateRoomPerimeter(floorData.lines);
+      const isCurrentFloor = floorName === config.currentFloor;
+
+      // Create floor and ceiling surfaces
+      if (perimeterPoints.length > 2) {
+        const shape = new THREE.Shape();
+        const firstPoint = localTransform2DTo3D(perimeterPoints[0]);
+        shape.moveTo(firstPoint.x, firstPoint.y);
+
+        for (let i = 1; i < perimeterPoints.length; i++) {
+          const point = localTransform2DTo3D(perimeterPoints[i]);
+          shape.lineTo(point.x, point.y);
+        }
+
+        // Floor surface
+        const floorGeometry = new THREE.ShapeGeometry(shape);
+        const floorMaterial = new THREE.MeshPhongMaterial({
+          color: isCurrentFloor ? 0x808080 : 0xa0a0a0,
+          opacity: isCurrentFloor ? 0.3 : 0.2,
+          transparent: true,
+          side: THREE.DoubleSide,
+        });
+        const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+        floor.position.z = baseHeight;
+        floor.userData = { type: 'floor', floorName };
+        objects.push(floor);
+
+        // Ceiling surface
+        const ceilingGeometry = new THREE.ShapeGeometry(shape);
+        const ceilingMaterial = new THREE.MeshPhongMaterial({
+          color: isCurrentFloor ? 0xe0e0e0 : 0xf0f0f0,
+          opacity: isCurrentFloor ? 0.2 : 0.1,
+          transparent: true,
+          side: THREE.DoubleSide,
+        });
+        const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
+        ceiling.position.z = baseHeight + floorCeilingHeight;
+        ceiling.userData = { type: 'ceiling', floorName };
+        objects.push(ceiling);
+      }
+
+      // Create walls
+      floorData.lines.forEach((line: Line) => {
+        const start_bottom = localTransform2DTo3D(line.start, baseHeight);
+        const end_bottom = localTransform2DTo3D(line.end, baseHeight);
+        const start_top = localTransform2DTo3D(line.start, baseHeight + floorCeilingHeight);
+        const end_top = localTransform2DTo3D(line.end, baseHeight + floorCeilingHeight);
+
+        const vertices = new Float32Array([
+          start_bottom.x, start_bottom.y, start_bottom.z,
+          end_bottom.x, end_bottom.y, end_bottom.z,
+          start_top.x, start_top.y, start_top.z,
+          end_top.x, end_top.y, end_top.z,
+        ]);
+
+        const indices = new Uint16Array([0, 1, 2, 1, 3, 2]);
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+        geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+        geometry.computeVertexNormals();
+
+        const wallMaterial = new THREE.MeshPhongMaterial({
+          color: isCurrentFloor ? 0x3b82f6 : 0x4b92f6,
+          opacity: config.wallTransparency,
+          transparent: true,
+          side: THREE.DoubleSide,
+        });
+
+        const wall = new THREE.Mesh(geometry, wallMaterial);
+        wall.userData = { type: 'wall', floorName };
+        objects.push(wall);
+      });
+
+      // Create air entries
+      if (floorData.airEntries) {
+        floorData.airEntries.forEach((entry: AirEntry, index: number) => {
+          const width = entry.dimensions.width;
+          const height = entry.dimensions.height;
+          const distanceToFloor = entry.dimensions.distanceToFloor || 0;
+          const zPosition = baseHeight + (entry.type === "door" ? height / 2 : distanceToFloor + height / 2);
+
+          const geometry = new THREE.PlaneGeometry(width, height);
+          const material = new THREE.MeshPhongMaterial({
+            color: entry.type === "window" ? 0x3b82f6 : entry.type === "door" ? 0xb45309 : 0x22c55e,
+            opacity: 0.7,
+            transparent: true,
+            side: THREE.DoubleSide,
+          });
+
+          const mesh = new THREE.Mesh(geometry, material);
+          const position = localTransform2DTo3D(entry.position);
+          mesh.position.set(position.x, position.y, zPosition);
+          mesh.userData = { 
+            type: entry.type, 
+            entryIndex: index, 
+            position: entry.position,
+            floorName 
+          };
+          objects.push(mesh);
+        });
+      }
+    }
+  });
+
+  return objects;
+};
