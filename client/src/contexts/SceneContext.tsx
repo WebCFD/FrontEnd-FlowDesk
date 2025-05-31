@@ -104,10 +104,10 @@ export const SceneProvider: React.FC<{ children: React.ReactNode }> = ({
   const updateGeometryData = (
     data: Partial<SceneContextType["geometryData"]>,
   ) => {
-    console.log("SceneContext - updateGeometryData called with:", data);
+
     setGeometryData((prev) => {
       const newData = { ...prev, ...data };
-      console.log("SceneContext - geometryData updated to:", newData);
+
       return newData;
     });
   };
@@ -117,10 +117,7 @@ export const SceneProvider: React.FC<{ children: React.ReactNode }> = ({
     floorName: string,
     floorData: Partial<FloorData>,
   ) => {
-    console.log(
-      `SceneContext - updateFloorData called for floor: ${floorName}`,
-      floorData,
-    );
+
     setGeometryData((prev) => {
       // Merge with existing data for the floor if it exists
       const existingFloorData = prev.floors[floorName] || ({} as FloorData);
@@ -143,7 +140,7 @@ export const SceneProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // New function to set the current floor
   const setCurrentFloor = (floorName: string) => {
-    console.log(`SceneContext - setCurrentFloor: ${floorName}`);
+
     setGeometryData((prev) => {
       // Get floor data for the specified floor
       const floorData = prev.floors[floorName] || { lines: [], airEntries: [] };
