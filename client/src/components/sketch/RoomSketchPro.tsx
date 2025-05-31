@@ -131,7 +131,10 @@ export function RoomSketchPro({
       }
     });
     
-    console.log('RSP: All mesh objects in scene:', allObjects);
+    console.log('RSP: All mesh objects in scene:');
+    allObjects.forEach((obj, index) => {
+      console.log(`  ${index}: type=${obj.type}, userData=`, obj.userData, `material=${obj.material}`);
+    });
     
     // Find all wall meshes in the scene
     const wallMeshes: THREE.Mesh[] = [];
