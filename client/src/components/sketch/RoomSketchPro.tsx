@@ -113,9 +113,9 @@ export function RoomSketchPro({
     ctx.fillStyle = '#e0d8d0';
     ctx.fillRect(0, 0, 256, 128);
 
-    // Dimensiones de ladrillos horizontales perfectos
-    const brickWidth = 60;
-    const brickHeight = 20;
+    // Dimensiones de ladrillos más pequeños para mayor repetición
+    const brickWidth = 40;
+    const brickHeight = 12;
     const mortarThickness = 2;
 
     // Color uniforme de ladrillo
@@ -160,7 +160,7 @@ export function RoomSketchPro({
     const texture = new THREE.CanvasTexture(canvas);
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(1, 1);
+    texture.repeat.set(3, 3); // Repetir el patrón más veces
     return texture;
   };
 
