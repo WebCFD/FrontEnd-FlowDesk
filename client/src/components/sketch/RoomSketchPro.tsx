@@ -305,8 +305,8 @@ export function RoomSketchPro({
     canvas.height = 256;
     const ctx = canvas.getContext('2d')!;
 
-    // Fondo de ventana - cristal azul mucho más claro
-    ctx.fillStyle = '#E6F3FF';
+    // Fondo de ventana - cristal azul muy claro y brillante
+    ctx.fillStyle = '#F0F8FF';
     ctx.fillRect(0, 0, 256, 256);
 
     // Marco de ventana más grueso - casi blanco
