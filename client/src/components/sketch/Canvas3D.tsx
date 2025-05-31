@@ -1148,7 +1148,7 @@ export default function Canvas3D({
           if ('x' in updatedEntryData && 'y' in updatedEntryData) {
             // Old format - just position data
 
-            entryPosition = { x: updatedEntryData.x, y: updatedEntryData.y };
+            entryPosition = { x: updatedEntryData.x as number, y: updatedEntryData.y as number };
           } else if (updatedEntryData.position) {
             // New format - has position and maybe dimensions
 
