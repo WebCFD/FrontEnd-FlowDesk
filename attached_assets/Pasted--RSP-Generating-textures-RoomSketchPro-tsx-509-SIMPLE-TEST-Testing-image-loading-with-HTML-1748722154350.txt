@@ -1,0 +1,173 @@
+🔄 RSP: Generating textures...
+RoomSketchPro.tsx:509 🧪 SIMPLE TEST: Testing image loading with HTML img element
+textureGenerator.ts:11 🧱 TextureGenerator: Starting to load your brick texture
+RoomSketchPro.tsx:613 ✅ RSP: Generated procedural textures
+RoomSketchPro.tsx:621 RSP: Using existing UV coordinates for wall 0
+RoomSketchPro.tsx:629 RSP: Modern theme will be applied when brick texture loads
+RoomSketchPro.tsx:621 RSP: Using existing UV coordinates for wall 1
+RoomSketchPro.tsx:629 RSP: Modern theme will be applied when brick texture loads
+RoomSketchPro.tsx:621 RSP: Using existing UV coordinates for wall 2
+RoomSketchPro.tsx:629 RSP: Modern theme will be applied when brick texture loads
+RoomSketchPro.tsx:621 RSP: Using existing UV coordinates for wall 3
+RoomSketchPro.tsx:629 RSP: Modern theme will be applied when brick texture loads
+RoomSketchPro.tsx:621 RSP: Using existing UV coordinates for wall 4
+RoomSketchPro.tsx:629 RSP: Modern theme will be applied when brick texture loads
+RoomSketchPro.tsx:621 RSP: Using existing UV coordinates for wall 5
+RoomSketchPro.tsx:629 RSP: Modern theme will be applied when brick texture loads
+RoomSketchPro.tsx:621 RSP: Using existing UV coordinates for wall 6
+RoomSketchPro.tsx:629 RSP: Modern theme will be applied when brick texture loads
+RoomSketchPro.tsx:621 RSP: Using existing UV coordinates for wall 7
+RoomSketchPro.tsx:629 RSP: Modern theme will be applied when brick texture loads
+RoomSketchPro.tsx:668 RSP: Found 3 air entry meshes to texture
+RoomSketchPro.tsx:723 RSP: Applied door texture to air entry 0 with opacity 1
+RoomSketchPro.tsx:723 RSP: Applied vent texture to air entry 1 with opacity 1
+RoomSketchPro.tsx:723 RSP: Applied window texture to air entry 2 with opacity 1
+textureGenerator.ts:17 🧱 TextureGenerator: Your brick texture loaded successfully! 218 x 219
+textureGenerator.ts:22 🧱 TextureGenerator: Texture ready to use
+RoomSketchPro.tsx:521 ✅ RSP: Your brick texture loaded, applying to walls
+RoomSketchPro.tsx:538 🧪 TEST: Creating test material for wall 0
+RoomSketchPro.tsx:546 🔴 TEST: Applied red material to wall 0
+RoomSketchPro.tsx:538 🧪 TEST: Creating test material for wall 1
+RoomSketchPro.tsx:546 🔴 TEST: Applied red material to wall 1
+RoomSketchPro.tsx:538 🧪 TEST: Creating test material for wall 2
+RoomSketchPro.tsx:546 🔴 TEST: Applied red material to wall 2
+RoomSketchPro.tsx:538 🧪 TEST: Creating test material for wall 3
+RoomSketchPro.tsx:546 🔴 TEST: Applied red material to wall 3
+RoomSketchPro.tsx:538 🧪 TEST: Creating test material for wall 4
+RoomSketchPro.tsx:546 🔴 TEST: Applied red material to wall 4
+RoomSketchPro.tsx:538 🧪 TEST: Creating test material for wall 5
+RoomSketchPro.tsx:546 🔴 TEST: Applied red material to wall 5
+RoomSketchPro.tsx:538 🧪 TEST: Creating test material for wall 6
+RoomSketchPro.tsx:546 🔴 TEST: Applied red material to wall 6
+RoomSketchPro.tsx:538 🧪 TEST: Creating test material for wall 7
+RoomSketchPro.tsx:546 🔴 TEST: Applied red material to wall 7
+RoomSketchPro.tsx:599 🔄 RSP: Forced renderer update after applying brick texture
+RoomSketchPro.tsx:512 ✅ SIMPLE TEST: Image loaded successfully via HTML img 218 x 219
+RoomSketchPro.tsx:550 🧱 TEST: About to apply brick texture to wall 0
+RoomSketchPro.tsx:551 🧱 TEST: Brick texture object: _Texture {isTexture: true, uuid: 'a22ae3be-f620-4c0c-8946-37d7d567d5d1', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:552 🧱 TEST: Brick texture image: <img crossorigin=​"anonymous" src=​"/​brick_texture.png">​
+RoomSketchPro.tsx:553 🧱 TEST: Texture loaded: true
+RoomSketchPro.tsx:570 🟢 TEST: Applied green material to wall 0
+RoomSketchPro.tsx:550 🧱 TEST: About to apply brick texture to wall 1
+RoomSketchPro.tsx:551 🧱 TEST: Brick texture object: _Texture {isTexture: true, uuid: 'a22ae3be-f620-4c0c-8946-37d7d567d5d1', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:552 🧱 TEST: Brick texture image: <img crossorigin=​"anonymous" src=​"/​brick_texture.png">​
+RoomSketchPro.tsx:553 🧱 TEST: Texture loaded: true
+RoomSketchPro.tsx:570 🟢 TEST: Applied green material to wall 1
+RoomSketchPro.tsx:550 🧱 TEST: About to apply brick texture to wall 2
+RoomSketchPro.tsx:551 🧱 TEST: Brick texture object: _Texture {isTexture: true, uuid: 'a22ae3be-f620-4c0c-8946-37d7d567d5d1', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:552 🧱 TEST: Brick texture image: <img crossorigin=​"anonymous" src=​"/​brick_texture.png">​
+RoomSketchPro.tsx:553 🧱 TEST: Texture loaded: true
+RoomSketchPro.tsx:570 🟢 TEST: Applied green material to wall 2
+RoomSketchPro.tsx:550 🧱 TEST: About to apply brick texture to wall 3
+RoomSketchPro.tsx:551 🧱 TEST: Brick texture object: _Texture {isTexture: true, uuid: 'a22ae3be-f620-4c0c-8946-37d7d567d5d1', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:552 🧱 TEST: Brick texture image: <img crossorigin=​"anonymous" src=​"/​brick_texture.png">​
+RoomSketchPro.tsx:553 🧱 TEST: Texture loaded: true
+RoomSketchPro.tsx:570 🟢 TEST: Applied green material to wall 3
+RoomSketchPro.tsx:550 🧱 TEST: About to apply brick texture to wall 4
+RoomSketchPro.tsx:551 🧱 TEST: Brick texture object: _Texture {isTexture: true, uuid: 'a22ae3be-f620-4c0c-8946-37d7d567d5d1', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:552 🧱 TEST: Brick texture image: <img crossorigin=​"anonymous" src=​"/​brick_texture.png">​
+RoomSketchPro.tsx:553 🧱 TEST: Texture loaded: true
+RoomSketchPro.tsx:570 🟢 TEST: Applied green material to wall 4
+RoomSketchPro.tsx:550 🧱 TEST: About to apply brick texture to wall 5
+RoomSketchPro.tsx:551 🧱 TEST: Brick texture object: _Texture {isTexture: true, uuid: 'a22ae3be-f620-4c0c-8946-37d7d567d5d1', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:552 🧱 TEST: Brick texture image: <img crossorigin=​"anonymous" src=​"/​brick_texture.png">​
+RoomSketchPro.tsx:553 🧱 TEST: Texture loaded: true
+RoomSketchPro.tsx:570 🟢 TEST: Applied green material to wall 5
+RoomSketchPro.tsx:550 🧱 TEST: About to apply brick texture to wall 6
+RoomSketchPro.tsx:551 🧱 TEST: Brick texture object: _Texture {isTexture: true, uuid: 'a22ae3be-f620-4c0c-8946-37d7d567d5d1', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:552 🧱 TEST: Brick texture image: <img crossorigin=​"anonymous" src=​"/​brick_texture.png">​
+RoomSketchPro.tsx:553 🧱 TEST: Texture loaded: true
+RoomSketchPro.tsx:570 🟢 TEST: Applied green material to wall 6
+RoomSketchPro.tsx:550 🧱 TEST: About to apply brick texture to wall 7
+RoomSketchPro.tsx:551 🧱 TEST: Brick texture object: _Texture {isTexture: true, uuid: 'a22ae3be-f620-4c0c-8946-37d7d567d5d1', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:552 🧱 TEST: Brick texture image: <img crossorigin=​"anonymous" src=​"/​brick_texture.png">​
+RoomSketchPro.tsx:553 🧱 TEST: Texture loaded: true
+RoomSketchPro.tsx:570 🟢 TEST: Applied green material to wall 7
+RoomSketchPro.tsx:550 🧱 TEST: About to apply brick texture to wall 0
+RoomSketchPro.tsx:551 🧱 TEST: Brick texture object: _Texture {isTexture: true, uuid: '3438f09d-f8be-4381-9127-71b5b562fd6f', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:552 🧱 TEST: Brick texture image: <img crossorigin=​"anonymous" src=​"/​brick_texture.png">​
+RoomSketchPro.tsx:553 🧱 TEST: Texture loaded: true
+RoomSketchPro.tsx:570 🟢 TEST: Applied green material to wall 0
+RoomSketchPro.tsx:550 🧱 TEST: About to apply brick texture to wall 1
+RoomSketchPro.tsx:551 🧱 TEST: Brick texture object: _Texture {isTexture: true, uuid: '3438f09d-f8be-4381-9127-71b5b562fd6f', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:552 🧱 TEST: Brick texture image: <img crossorigin=​"anonymous" src=​"/​brick_texture.png">​
+RoomSketchPro.tsx:553 🧱 TEST: Texture loaded: true
+RoomSketchPro.tsx:570 🟢 TEST: Applied green material to wall 1
+RoomSketchPro.tsx:550 🧱 TEST: About to apply brick texture to wall 2
+RoomSketchPro.tsx:551 🧱 TEST: Brick texture object: _Texture {isTexture: true, uuid: '3438f09d-f8be-4381-9127-71b5b562fd6f', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:552 🧱 TEST: Brick texture image: <img crossorigin=​"anonymous" src=​"/​brick_texture.png">​
+RoomSketchPro.tsx:553 🧱 TEST: Texture loaded: true
+RoomSketchPro.tsx:570 🟢 TEST: Applied green material to wall 2
+RoomSketchPro.tsx:550 🧱 TEST: About to apply brick texture to wall 3
+RoomSketchPro.tsx:551 🧱 TEST: Brick texture object: _Texture {isTexture: true, uuid: '3438f09d-f8be-4381-9127-71b5b562fd6f', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:552 🧱 TEST: Brick texture image: <img crossorigin=​"anonymous" src=​"/​brick_texture.png">​
+RoomSketchPro.tsx:553 🧱 TEST: Texture loaded: true
+RoomSketchPro.tsx:570 🟢 TEST: Applied green material to wall 3
+RoomSketchPro.tsx:550 🧱 TEST: About to apply brick texture to wall 4
+RoomSketchPro.tsx:551 🧱 TEST: Brick texture object: _Texture {isTexture: true, uuid: '3438f09d-f8be-4381-9127-71b5b562fd6f', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:552 🧱 TEST: Brick texture image: <img crossorigin=​"anonymous" src=​"/​brick_texture.png">​
+RoomSketchPro.tsx:553 🧱 TEST: Texture loaded: true
+RoomSketchPro.tsx:570 🟢 TEST: Applied green material to wall 4
+RoomSketchPro.tsx:550 🧱 TEST: About to apply brick texture to wall 5
+RoomSketchPro.tsx:551 🧱 TEST: Brick texture object: _Texture {isTexture: true, uuid: '3438f09d-f8be-4381-9127-71b5b562fd6f', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:552 🧱 TEST: Brick texture image: <img crossorigin=​"anonymous" src=​"/​brick_texture.png">​
+RoomSketchPro.tsx:553 🧱 TEST: Texture loaded: true
+RoomSketchPro.tsx:570 🟢 TEST: Applied green material to wall 5
+RoomSketchPro.tsx:550 🧱 TEST: About to apply brick texture to wall 6
+RoomSketchPro.tsx:551 🧱 TEST: Brick texture object: _Texture {isTexture: true, uuid: '3438f09d-f8be-4381-9127-71b5b562fd6f', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:552 🧱 TEST: Brick texture image: <img crossorigin=​"anonymous" src=​"/​brick_texture.png">​
+RoomSketchPro.tsx:553 🧱 TEST: Texture loaded: true
+RoomSketchPro.tsx:570 🟢 TEST: Applied green material to wall 6
+RoomSketchPro.tsx:550 🧱 TEST: About to apply brick texture to wall 7
+RoomSketchPro.tsx:551 🧱 TEST: Brick texture object: _Texture {isTexture: true, uuid: '3438f09d-f8be-4381-9127-71b5b562fd6f', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:552 🧱 TEST: Brick texture image: <img crossorigin=​"anonymous" src=​"/​brick_texture.png">​
+RoomSketchPro.tsx:553 🧱 TEST: Texture loaded: true
+RoomSketchPro.tsx:570 🟢 TEST: Applied green material to wall 7
+RoomSketchPro.tsx:577 🔍 UV Check wall 0: {hasUV: false, uvCount: undefined, uvArray: undefined}
+RoomSketchPro.tsx:585 🧱 TEST: Applied brick texture material to wall 0
+RoomSketchPro.tsx:586 🧱 TEST: Material map: _Texture {isTexture: true, uuid: 'a22ae3be-f620-4c0c-8946-37d7d567d5d1', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:577 🔍 UV Check wall 1: {hasUV: false, uvCount: undefined, uvArray: undefined}
+RoomSketchPro.tsx:585 🧱 TEST: Applied brick texture material to wall 1
+RoomSketchPro.tsx:586 🧱 TEST: Material map: _Texture {isTexture: true, uuid: 'a22ae3be-f620-4c0c-8946-37d7d567d5d1', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:577 🔍 UV Check wall 2: {hasUV: false, uvCount: undefined, uvArray: undefined}
+RoomSketchPro.tsx:585 🧱 TEST: Applied brick texture material to wall 2
+RoomSketchPro.tsx:586 🧱 TEST: Material map: _Texture {isTexture: true, uuid: 'a22ae3be-f620-4c0c-8946-37d7d567d5d1', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:577 🔍 UV Check wall 3: {hasUV: false, uvCount: undefined, uvArray: undefined}
+RoomSketchPro.tsx:585 🧱 TEST: Applied brick texture material to wall 3
+RoomSketchPro.tsx:586 🧱 TEST: Material map: _Texture {isTexture: true, uuid: 'a22ae3be-f620-4c0c-8946-37d7d567d5d1', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:577 🔍 UV Check wall 4: {hasUV: false, uvCount: undefined, uvArray: undefined}
+RoomSketchPro.tsx:585 🧱 TEST: Applied brick texture material to wall 4
+RoomSketchPro.tsx:586 🧱 TEST: Material map: _Texture {isTexture: true, uuid: 'a22ae3be-f620-4c0c-8946-37d7d567d5d1', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:577 🔍 UV Check wall 5: {hasUV: false, uvCount: undefined, uvArray: undefined}
+RoomSketchPro.tsx:585 🧱 TEST: Applied brick texture material to wall 5
+RoomSketchPro.tsx:586 🧱 TEST: Material map: _Texture {isTexture: true, uuid: 'a22ae3be-f620-4c0c-8946-37d7d567d5d1', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:577 🔍 UV Check wall 6: {hasUV: false, uvCount: undefined, uvArray: undefined}
+RoomSketchPro.tsx:585 🧱 TEST: Applied brick texture material to wall 6
+RoomSketchPro.tsx:586 🧱 TEST: Material map: _Texture {isTexture: true, uuid: 'a22ae3be-f620-4c0c-8946-37d7d567d5d1', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:577 🔍 UV Check wall 7: {hasUV: false, uvCount: undefined, uvArray: undefined}
+RoomSketchPro.tsx:585 🧱 TEST: Applied brick texture material to wall 7
+RoomSketchPro.tsx:586 🧱 TEST: Material map: _Texture {isTexture: true, uuid: 'a22ae3be-f620-4c0c-8946-37d7d567d5d1', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:577 🔍 UV Check wall 0: {hasUV: false, uvCount: undefined, uvArray: undefined}
+RoomSketchPro.tsx:585 🧱 TEST: Applied brick texture material to wall 0
+RoomSketchPro.tsx:586 🧱 TEST: Material map: _Texture {isTexture: true, uuid: '3438f09d-f8be-4381-9127-71b5b562fd6f', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:577 🔍 UV Check wall 1: {hasUV: false, uvCount: undefined, uvArray: undefined}
+RoomSketchPro.tsx:585 🧱 TEST: Applied brick texture material to wall 1
+RoomSketchPro.tsx:586 🧱 TEST: Material map: _Texture {isTexture: true, uuid: '3438f09d-f8be-4381-9127-71b5b562fd6f', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:577 🔍 UV Check wall 2: {hasUV: false, uvCount: undefined, uvArray: undefined}
+RoomSketchPro.tsx:585 🧱 TEST: Applied brick texture material to wall 2
+RoomSketchPro.tsx:586 🧱 TEST: Material map: _Texture {isTexture: true, uuid: '3438f09d-f8be-4381-9127-71b5b562fd6f', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:577 🔍 UV Check wall 3: {hasUV: false, uvCount: undefined, uvArray: undefined}
+RoomSketchPro.tsx:585 🧱 TEST: Applied brick texture material to wall 3
+RoomSketchPro.tsx:586 🧱 TEST: Material map: _Texture {isTexture: true, uuid: '3438f09d-f8be-4381-9127-71b5b562fd6f', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:577 🔍 UV Check wall 4: {hasUV: false, uvCount: undefined, uvArray: undefined}
+RoomSketchPro.tsx:585 🧱 TEST: Applied brick texture material to wall 4
+RoomSketchPro.tsx:586 🧱 TEST: Material map: _Texture {isTexture: true, uuid: '3438f09d-f8be-4381-9127-71b5b562fd6f', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:577 🔍 UV Check wall 5: {hasUV: false, uvCount: undefined, uvArray: undefined}
+RoomSketchPro.tsx:585 🧱 TEST: Applied brick texture material to wall 5
+RoomSketchPro.tsx:586 🧱 TEST: Material map: _Texture {isTexture: true, uuid: '3438f09d-f8be-4381-9127-71b5b562fd6f', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:577 🔍 UV Check wall 6: {hasUV: false, uvCount: undefined, uvArray: undefined}
+RoomSketchPro.tsx:585 🧱 TEST: Applied brick texture material to wall 6
+RoomSketchPro.tsx:586 🧱 TEST: Material map: _Texture {isTexture: true, uuid: '3438f09d-f8be-4381-9127-71b5b562fd6f', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:577 🔍 UV Check wall 7: {hasUV: false, uvCount: undefined, uvArray: undefined}
+RoomSketchPro.tsx:585 🧱 TEST: Applied brick texture material to wall 7
+RoomSketchPro.tsx:586 🧱 TEST: Material map: _Texture {isTexture: true, uuid: '3438f09d-f8be-4381-9127-71b5b562fd6f', name: '', source: Source, mipmaps: Array(0), …}anisotropy: 1center: _Vector2 {x: 0, y: 0}channel: 0colorSpace: ""flipY: trueformat: 1023generateMipmaps: trueinternalFormat: nullisRenderTargetTexture: falseisTexture: truemagFilter: 1006mapping: 300matrix: _Matrix3 {elements: Array(9)}matrixAutoUpdate: trueminFilter: 1008mipmaps: []name: ""offset: _Vector2 {x: 0, y: 0}onUpdate: nullpmremVersion: 0premultiplyAlpha: falserenderTarget: nullrepeat: _Vector2 {x: 1, y: 1}rotation: 0source: Source {isSource: true, uuid: '5be498f4-3f63-4204-9b48-c6dddc69eb37', data: img, dataReady: true, version: 2, …}type: 1009unpackAlignment: 4userData: {}uuid: "3438f09d-f8be-4381-9127-71b5b562fd6f"version: 2wrapS: 1000wrapT: 1000_listeners: {dispose: Array(1)}id: 17image: (...)[[Prototype]]: EventDispatcher

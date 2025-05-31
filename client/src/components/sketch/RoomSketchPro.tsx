@@ -577,8 +577,26 @@ export function RoomSketchPro({
                 console.log(`🔍 UV Check wall ${index}:`, {
                   hasUV: !!uvAttribute,
                   uvCount: uvAttribute?.count,
-                  uvArray: uvAttribute?.array.slice(0, 16) // First 8 UV pairs
+                  uvArray: uvAttribute?.array?.slice(0, 16) // First 8 UV pairs
                 });
+                
+                // SOLUTION: Generate UV coordinates if missing
+                if (!uvAttribute) {
+                  console.log(`🔧 FIXING: Generating UV coordinates for wall ${index}`);
+                  const positions = geometry.getAttribute('position');
+                  const uvs = new Float32Array(positions.count * 2);
+                  
+                  // Generate simple UV mapping for each vertex
+                  for (let i = 0; i < positions.count; i++) {
+                    const u = (i % 2); // Simple 0 or 1 pattern
+                    const v = Math.floor(i / 2) % 2; // Simple 0 or 1 pattern
+                    uvs[i * 2] = u;
+                    uvs[i * 2 + 1] = v;
+                  }
+                  
+                  geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+                  console.log(`✅ FIXED: Generated UV coordinates for wall ${index}`);
+                }
                 
                 wallMesh.material = newMaterial;
                 wallMesh.material.needsUpdate = true;
