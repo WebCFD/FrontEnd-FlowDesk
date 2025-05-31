@@ -466,6 +466,7 @@ export default function Canvas3D({
   simulationName = "",
   simulationType = "Comfort Simulation (steady run)",
   isMultifloor = false,
+  presentationMode = false,
   floorParameters = {},
   onUpdateAirEntry,
   onDeleteAirEntry,
@@ -1905,7 +1906,7 @@ export default function Canvas3D({
 
 
       // Only process right mouse button (button code 2) when in measure mode (using ref)
-      if (event.button !== 2 || !isMeasureModeRef.current) return;
+      if (event.button !== 2 || !isMeasureModeRef.current || presentationMode) return;
 
       // Prevent default to avoid context menu during measurements
       event.preventDefault();
@@ -1954,6 +1955,9 @@ export default function Canvas3D({
     };
 
     const handleRightMouseDown = (event: MouseEvent) => {
+      // Disable right-click interactions in presentation mode
+      if (presentationMode) return;
+      
       // Prevent the default context menu
       event.preventDefault();
 
@@ -3174,6 +3178,9 @@ export default function Canvas3D({
 
     // Handle eraser clicks
     const handleEraserClick = (event: MouseEvent) => {
+      // Disable eraser in presentation mode
+      if (presentationMode) return;
+      
       // Only handle when in eraser mode - using ref for reliable state
       if (!isEraserModeRef.current || !onDeleteAirEntry) {
   
@@ -3370,8 +3377,10 @@ export default function Canvas3D({
       }
     };
 
-    // Handle mousedown events
+    // Handle mousedown events - only in interactive mode
     const mouseDownWrapper = (e: MouseEvent) => {
+      if (presentationMode) return; // Disable editing in presentation mode
+      
       if (e.button === 2) {
         // Right mouse button for both measurements and context operations
         handleRightMouseDown(e);
@@ -3383,12 +3392,14 @@ export default function Canvas3D({
 
     canvas.addEventListener("mousedown", mouseDownWrapper);
 
-    // Create named handlers for event tracking
+    // Create named handlers for event tracking - only in interactive mode
     const mouseMoveHandler = (e: MouseEvent) => {
+      if (presentationMode) return; // Disable editing in presentation mode
       handleMouseMove(e);
     };
 
     const mouseUpHandler = (e: MouseEvent) => {
+      if (presentationMode) return; // Disable editing in presentation mode
       handleMouseUp(e);
     };
 
@@ -3401,8 +3412,10 @@ export default function Canvas3D({
     // All event listeners are now attached
 
 
-    // Add double-click handler for air entry editing
+    // Add double-click handler for air entry editing - only in interactive mode
     const handleDoubleClick = (event: MouseEvent) => {
+      if (presentationMode) return; // Disable editing in presentation mode
+      
       // Set flag to ignore the next click (which is part of the double-click)
       setIgnoreNextClick(true);
 
