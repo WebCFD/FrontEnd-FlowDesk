@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import * as THREE from "three";
 import { TrackballControls } from "three/examples/jsm/controls/TrackballControls.js";
-import { Canvas3D } from "./Canvas3D";
+import Canvas3D, { generateSharedFloorGeometry } from "./Canvas3D";
 
 // Import types and constants
 interface Point {
@@ -145,77 +145,49 @@ export function RoomSketchPro({
 
     const { currentLines, currentAirEntries } = resolveGeometryData();
 
-    // Use Canvas3D's generateSharedFloorGeometry for identical representation
+    // Use shared geometry approach for identical representation to Canvas3D
     try {
-      const geometryData = Canvas3D.generateSharedFloorGeometry(currentLines, currentAirEntries, roomHeight);
+      // Create floor data structure expected by the shared function
+      const floorData = {
+        [currentFloor || 'default']: {
+          lines: currentLines,
+          airEntries: currentAirEntries,
+          hasClosedContour: currentLines.length > 2,
+          name: currentFloor || 'default'
+        }
+      };
       
-      // Create walls from geometry data
-      if (geometryData.walls) {
-        geometryData.walls.forEach((wallData, index) => {
-          const geometry = new THREE.BufferGeometry();
-          geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(wallData.vertices), 3));
-          geometry.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(wallData.uvs), 2));
-          geometry.setIndex(new THREE.BufferAttribute(new Uint16Array(wallData.indices), 1));
-          geometry.computeVertexNormals();
-
-          const material = new THREE.MeshStandardMaterial({
-            color: 0xffffff,
-            opacity: wallTransparency,
-            transparent: wallTransparency < 1,
-            side: THREE.DoubleSide,
-          });
-
+      const config = {
+        currentFloor: currentFloor || 'default',
+        wallTransparency: wallTransparency,
+        floorParameters: {
+          [currentFloor || 'default']: {
+            ceilingHeight: roomHeight,
+            floorDeck: 0
+          }
+        }
+      };
+      
+      // Get shared geometry objects from Canvas3D
+      const sharedObjects = generateSharedFloorGeometry(floorData, config);
+      
+      // Add shared objects to scene
+      sharedObjects.forEach(obj => {
+        // Update material transparency for walls
+        if (obj.userData?.type === 'wall' && obj instanceof THREE.Mesh) {
+          const material = obj.material as THREE.MeshStandardMaterial;
+          material.transparent = wallTransparency < 1;
+          material.opacity = wallTransparency;
+          
           if (!wallMaterialRef.current) {
             wallMaterialRef.current = material;
           }
-
-          const wall = new THREE.Mesh(geometry, wallMaterialRef.current);
-          wall.name = `wall_${index}`;
-          wall.userData = { type: "wall", index };
-          scene.add(wall);
-        });
-      }
-
-      // Create floor
-      if (geometryData.floor) {
-        const floorGeometry = new THREE.BufferGeometry();
-        floorGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(geometryData.floor.vertices), 3));
-        floorGeometry.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(geometryData.floor.uvs), 2));
-        floorGeometry.setIndex(new THREE.BufferAttribute(new Uint16Array(geometryData.floor.indices), 1));
-        floorGeometry.computeVertexNormals();
-
-        const floorMaterial = new THREE.MeshStandardMaterial({
-          color: 0xcccccc,
-          side: THREE.DoubleSide,
-        });
-
-        const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-        floor.name = 'floor';
-        floor.userData = { type: "floor" };
-        scene.add(floor);
-      }
-
-      // Create air entries
-      if (geometryData.airEntries) {
-        geometryData.airEntries.forEach((entryData, index) => {
-          const geometry = new THREE.BufferGeometry();
-          geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(entryData.vertices), 3));
-          geometry.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(entryData.uvs), 2));
-          geometry.setIndex(new THREE.BufferAttribute(new Uint16Array(entryData.indices), 1));
-          geometry.computeVertexNormals();
-
-          const material = new THREE.MeshStandardMaterial({
-            color: entryData.type === 'door' ? 0x8B4513 : entryData.type === 'window' ? 0x87CEEB : 0x808080,
-            opacity: entryData.type === 'window' ? 0.7 : 1.0,
-            transparent: entryData.type === 'window',
-          });
-
-          const airEntry = new THREE.Mesh(geometry, material);
-          airEntry.name = `${entryData.type}_${index}`;
-          airEntry.userData = { type: entryData.type, index };
-          scene.add(airEntry);
-        });
-      }
+        }
+        
+        scene.add(obj);
+      });
+      
+      console.log(`RoomSketchPro - Successfully created ${sharedObjects.length} shared geometry objects`);
 
     } catch (error) {
       console.warn('RoomSketchPro - Error creating walls with shared geometry:', error);
