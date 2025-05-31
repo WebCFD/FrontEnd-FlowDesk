@@ -2455,7 +2455,7 @@ export default function Canvas3D({
       const directionX = dx > 0 ? "RIGHT" : dx < 0 ? "LEFT" : "";
       const directionY = dy > 0 ? "DOWN" : dy < 0 ? "UP" : "";
       
-      console.log(`🖱️ MOUSE DIRECTION: ${directionX}${directionY} (dx=${dx.toFixed(1)}, dy=${dy.toFixed(1)})`);
+
       
       // Update the last position
       lastMousePositionRef.current = { x: event.clientX, y: event.clientY };
@@ -2528,7 +2528,7 @@ export default function Canvas3D({
             rect: containerRef.current.getBoundingClientRect()
           } : null
         };
-        console.log(`📱 Client info: ${JSON.stringify(clientInfo)}`);
+
         
         // Log some info about what's available
         if (sceneRef.current) {
@@ -3603,13 +3603,13 @@ export default function Canvas3D({
     sceneRef.current.traverse((object) => {
       // Skip axis labels - we want to preserve them during scene rebuilds
       if (object.userData?.type === "axisLabel") {
-        console.log("Preserving axis label during scene rebuild:", object.userData.axis);
+
         return;
       }
       
       // Skip axis helper
       if (object instanceof THREE.AxesHelper) {
-        console.log("Preserving axes helper during scene rebuild");
+
         return;
       }
       
@@ -3623,8 +3623,7 @@ export default function Canvas3D({
       }
     });
     
-    // Log what we're about to remove
-    console.log(`Removing ${toRemove.length} objects during scene rebuild`);
+
     toRemove.forEach((object) => sceneRef.current?.remove(object));
 
     // Create and add objects for each floor
