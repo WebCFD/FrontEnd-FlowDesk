@@ -560,10 +560,23 @@ export function RoomSketchPro({
               
               // Wait 1 second then apply texture
               setTimeout(() => {
+                // Check UV coordinates
+                const geometry = wallMesh.geometry as THREE.BufferGeometry;
+                const uvAttribute = geometry.getAttribute('uv');
+                console.log(`🔍 UV Check wall ${index}:`, {
+                  hasUV: !!uvAttribute,
+                  uvCount: uvAttribute?.count,
+                  uvArray: uvAttribute?.array.slice(0, 16) // First 8 UV pairs
+                });
+                
                 wallMesh.material = newMaterial;
                 wallMesh.material.needsUpdate = true;
                 console.log(`🧱 TEST: Applied brick texture material to wall ${index}`);
                 console.log(`🧱 TEST: Material map:`, newMaterial.map);
+                
+                // Force geometry update
+                geometry.computeBoundingBox();
+                geometry.computeBoundingSphere();
               }, 1000);
             }, 2000);
           }
