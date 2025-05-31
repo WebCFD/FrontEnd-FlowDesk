@@ -539,7 +539,6 @@ export function RoomSketchPro({
           
           const newMaterial = new THREE.MeshPhongMaterial({
             map: brickTexture,
-            color: 0x8B4513, // Brown color to blend with brick texture
             opacity: originalMaterial.opacity,
             transparent: originalMaterial.transparent,
             side: originalMaterial.side
