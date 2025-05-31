@@ -1,0 +1,37 @@
+chunk-WERSD76P.js?v=46cbfa49:521 Warning: validateDOMNesting(...): <a> cannot appear as a descendant of <a>.
+    at a
+    at a
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.d…/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=46cbfa49:337:18
+    at div
+    at div
+    at DashboardSidebar (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/layout/dashboard-sidebar.tsx:64:22)
+    at div
+    at DashboardLayout (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/layout/dashboard-layout.tsx:18:43)
+    at WizardDesign (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/pages/dashboard/wizard-design.tsx:206:27)
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.d…/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=46cbfa49:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.d…/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=46cbfa49:379:17)
+    at Router
+    at main
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.d…/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=46cbfa49:323:16)
+    at div
+    at AnalyticsProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/common/AnalyticsProvider.tsx:21:37)
+    at QueryClientProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.d…rkspace/node_modules/.vite/deps/@tanstack_react-query.js?v=46cbfa49:2805:3)
+    at App
+printWarning	@	chunk-WERSD76P.js?v=46cbfa49:521
+error	@	chunk-WERSD76P.js?v=46cbfa49:505
+validateDOMNesting	@	chunk-WERSD76P.js?v=46cbfa49:8256
+createInstance	@	chunk-WERSD76P.js?v=46cbfa49:8328
+completeWork	@	chunk-WERSD76P.js?v=46cbfa49:16290
+completeUnitOfWork	@	chunk-WERSD76P.js?v=46cbfa49:19224
+performUnitOfWork	@	chunk-WERSD76P.js?v=46cbfa49:19206
+workLoopSync	@	chunk-WERSD76P.js?v=46cbfa49:19137
+renderRootSync	@	chunk-WERSD76P.js?v=46cbfa49:19116
+performConcurrentWorkOnRoot	@	chunk-WERSD76P.js?v=46cbfa49:18678
+workLoop	@	chunk-WERSD76P.js?v=46cbfa49:197
+flushWork	@	chunk-WERSD76P.js?v=46cbfa49:176
+performWorkUntilDeadline	@	chunk-WERSD76P.js?v=46cbfa49:384
+
+dashboard-sidebar.tsx:64 
+ GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+fetchUserData	@	dashboard-sidebar.tsx:64
+(anonymous)	@	dashboard-sidebar.tsx:75
