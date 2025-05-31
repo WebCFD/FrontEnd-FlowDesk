@@ -83,6 +83,7 @@ interface Canvas3DProps {
   simulationType?: string;
   isMultifloor?: boolean;
   presentationMode?: boolean; // New: disables editing tools
+  lightingIntensity?: number; // New: lighting intensity control
   floorParameters?: Record<string, { ceilingHeight: number; floorDeck: number }>;
   onUpdateAirEntry?: (
     floorName: string,
