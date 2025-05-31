@@ -292,23 +292,22 @@ export function RoomSketchPro({
     canvas.height = 256;
     const ctx = canvas.getContext('2d')!;
 
-    // Fondo de ventana - varies by theme
-    let glassColor, frameColor;
+    // Cristal azulón para todos los temas
+    const glassColor = '#4682B4'; // Steel blue (azulón)
+    
+    // Color del marco según el tema
+    let frameColor;
     switch (theme) {
       case "modern":
-        glassColor = '#F0F8FF'; // Very light blue glass
         frameColor = '#FFFFFF'; // White frame
         break;
       case "classic":
-        glassColor = '#F5F5DC'; // Beige glass
         frameColor = '#8B4513'; // Brown frame
         break;
       case "industrial":
-        glassColor = '#E6E6FA'; // Lavender glass
         frameColor = '#696969'; // Dark gray frame
         break;
       default:
-        glassColor = '#F0F8FF';
         frameColor = '#FFFFFF';
     }
     
