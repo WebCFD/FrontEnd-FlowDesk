@@ -49,6 +49,8 @@ interface RoomSketchProProps {
   onFurnitureAdd?: (item: FurnitureItem) => void;
   wallTransparency: number;
   onWallTransparencyChange: (value: number) => void;
+  airEntryTransparency?: number;
+  onAirEntryTransparencyChange?: (value: number) => void;
   currentFloor?: string;
   floors?: Record<string, FloorData>;
   onComponentMount?: () => void;
@@ -71,6 +73,8 @@ export function RoomSketchPro({
   onFurnitureAdd,
   wallTransparency,
   onWallTransparencyChange,
+  airEntryTransparency = 1.0,
+  onAirEntryTransparencyChange,
   currentFloor = "ground",
   floors,
   onComponentMount,
@@ -607,17 +611,17 @@ export function RoomSketchPro({
           geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
         }
 
-        // Create new material with texture
+        // Create new material with texture and custom transparency
         const newMaterial = new THREE.MeshPhongMaterial({
           map: texture,
           color: materialColor,
-          opacity: originalMaterial.opacity,
-          transparent: originalMaterial.transparent,
+          opacity: airEntryTransparency,
+          transparent: airEntryTransparency < 1.0,
           side: originalMaterial.side
         });
         
         airEntryMesh.material = newMaterial;
-        console.log(`RSP: Applied ${airEntryType} texture to air entry ${index}`);
+        console.log(`RSP: Applied ${airEntryType} texture to air entry ${index} with opacity ${airEntryTransparency}`);
       }
     });
 
@@ -636,10 +640,46 @@ export function RoomSketchPro({
     }
   }, [onComponentMount]);
 
+  // Update air entry transparency when it changes
+  const updateAirEntryTransparency = () => {
+    if (!sceneRef.current) return;
+
+    const airEntryMeshes: THREE.Mesh[] = [];
+    sceneRef.current.traverse((object) => {
+      if (object instanceof THREE.Mesh && object.userData && object.userData.type && 
+          ["door", "window", "vent"].includes(object.userData.type)) {
+        airEntryMeshes.push(object);
+      }
+    });
+
+    airEntryMeshes.forEach((airEntryMesh) => {
+      const material = airEntryMesh.material as THREE.MeshPhongMaterial;
+      if (material) {
+        material.opacity = airEntryTransparency;
+        material.transparent = airEntryTransparency < 1.0;
+        material.needsUpdate = true;
+      }
+    });
+
+    // Force a render update
+    if (rendererRef.current && cameraRef.current) {
+      rendererRef.current.render(sceneRef.current, cameraRef.current);
+    }
+
+    console.log(`RSP: Updated air entry transparency to ${airEntryTransparency}`);
+  };
+
   // Apply textures when theme changes
   useEffect(() => {
     applyThemeTextures();
   }, [selectedTheme]);
+
+  // Update air entry transparency when it changes
+  useEffect(() => {
+    if (sceneRef.current) {
+      updateAirEntryTransparency();
+    }
+  }, [airEntryTransparency]);
 
   // Theme configurations with different Canvas3D parameters
   const themeConfig = {
