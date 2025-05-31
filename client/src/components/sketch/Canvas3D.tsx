@@ -1216,8 +1216,7 @@ export default function Canvas3D({
 
         const mesh = new THREE.Mesh(geometry, material);
         const position = transform2DTo3D(entryPosition);
-        // Move AirEntry elements slightly forward (0.5cm) to ensure they appear in front
-        mesh.position.set(position.x, position.y, zPosition + 0.5);
+        mesh.position.set(position.x, position.y, zPosition);
         
         // Set render order to ensure AirEntry elements appear on top of walls
         mesh.renderOrder = 1;
