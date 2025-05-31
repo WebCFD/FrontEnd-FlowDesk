@@ -254,6 +254,7 @@ export default function WizardDesign() {
     useState(false);
   const [showEraseDesignDialog, setShowEraseDesignDialog] = useState(false);
   const [wallTransparency, setWallTransparency] = useState(0.2);
+  const [airEntryTransparency, setAirEntryTransparency] = useState(1.0);
   const [ceilingHeight, setCeilingHeight] = useState(220); // Default 220cm - deprecated, usar floorParameters
   const [isMultifloor, setIsMultifloor] = useState(false);
   const [selectedFloor, setSelectedFloor] = useState("ground");
