@@ -3601,11 +3601,27 @@ export default function Canvas3D({
       document.removeEventListener("mousemove", mouseMoveHandler);
       document.removeEventListener("mouseup", mouseUpHandler);
     };
-  }, [floors, currentFloor, isEraserMode]);
+  }, []);
 
   useEffect(() => {
-    // Remove excessive logging that causes console message counter to grow
-    // console.log("Canvas3D received floors data:", floors, "Current eraser mode:", isEraserMode);
+    console.log("Canvas3D received floors data:", floors, "Current eraser mode:", isEraserMode, 
+                isEraserMode === undefined ? "⚠️ UNDEFINED VALUE!" : "✅ Valid boolean");
+
+    // Log detailed information about all air entries for debugging purposes
+    Object.entries(floors).forEach(([floorName, floorData]) => {
+      if (floorData.airEntries?.length) {
+        console.log(`DEBUG - FLOOR STATE: Floor ${floorName} has ${floorData.airEntries.length} air entries:`, 
+          floorData.airEntries.map((entry, idx) => ({
+            index: idx,
+            type: entry.type,
+            position: entry.position,
+            dimensions: entry.dimensions
+          }))
+        );
+      } else {
+        console.log(`DEBUG - FLOOR STATE: Floor ${floorName} has NO air entries`);
+      }
+    });
 
     // Don't reset selection state here - we'll handle it after rebuilding the scene
     // This prevents losing the selection when the scene is updated
