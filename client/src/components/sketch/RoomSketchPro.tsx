@@ -292,8 +292,8 @@ export function RoomSketchPro({
     canvas.height = 256;
     const ctx = canvas.getContext('2d')!;
 
-    // Cristal azulón para todos los temas
-    const glassColor = '#4682B4'; // Steel blue (azulón)
+    // Cristal azul más intenso para todos los temas
+    const glassColor = '#1E90FF'; // Dodger blue (azul más intenso)
     
     // Color del marco según el tema
     let frameColor;
@@ -338,10 +338,10 @@ export function RoomSketchPro({
     ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
     ctx.fillRect(20, 20, 100, 100);
 
-    // Gradiente de cristal
+    // Gradiente de cristal azul
     const gradient = ctx.createLinearGradient(0, 0, 256, 256);
-    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.3)');
-    gradient.addColorStop(1, 'rgba(135, 206, 250, 0.3)');
+    gradient.addColorStop(0, 'rgba(30, 144, 255, 0.8)'); // Azul intenso
+    gradient.addColorStop(1, 'rgba(0, 100, 200, 0.6)'); // Azul más oscuro
     ctx.fillStyle = gradient;
     ctx.fillRect(16, 16, 224, 224);
 
