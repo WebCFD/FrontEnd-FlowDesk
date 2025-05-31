@@ -1,0 +1,49 @@
+material=MeshBasicMaterial
+RoomSketchPro.tsx:432 RSP: Found 8 wall meshes to texture
+RoomSketchPro.tsx:451 RSP: Generating UV coordinates for wall 0
+RoomSketchPro.tsx:505 RSP: Applied modern texture to wall 0
+RoomSketchPro.tsx:451 RSP: Generating UV coordinates for wall 1
+RoomSketchPro.tsx:505 RSP: Applied modern texture to wall 1
+RoomSketchPro.tsx:451 RSP: Generating UV coordinates for wall 2
+RoomSketchPro.tsx:505 RSP: Applied modern texture to wall 2
+RoomSketchPro.tsx:451 RSP: Generating UV coordinates for wall 3
+RoomSketchPro.tsx:505 RSP: Applied modern texture to wall 3
+RoomSketchPro.tsx:451 RSP: Generating UV coordinates for wall 4
+RoomSketchPro.tsx:505 RSP: Applied modern texture to wall 4
+RoomSketchPro.tsx:451 RSP: Generating UV coordinates for wall 5
+RoomSketchPro.tsx:505 RSP: Applied modern texture to wall 5
+RoomSketchPro.tsx:451 RSP: Generating UV coordinates for wall 6
+RoomSketchPro.tsx:505 RSP: Applied modern texture to wall 6
+RoomSketchPro.tsx:451 RSP: Generating UV coordinates for wall 7
+RoomSketchPro.tsx:505 RSP: Applied modern texture to wall 7
+RoomSketchPro.tsx:517 RSP Debug: Mesh with userData: {type: 'wall', floorName: 'Ground Floor'}
+RoomSketchPro.tsx:517 RSP Debug: Mesh with userData: {type: 'wall', floorName: 'Ground Floor'}
+RoomSketchPro.tsx:517 RSP Debug: Mesh with userData: {type: 'wall', floorName: 'Ground Floor'}
+RoomSketchPro.tsx:517 RSP Debug: Mesh with userData: {type: 'wall', floorName: 'Ground Floor'}
+RoomSketchPro.tsx:517 RSP Debug: Mesh with userData: {type: 'door', position: {…}, dimensions: {…}, line: {…}, index: 4, …}
+RoomSketchPro.tsx:517 RSP Debug: Mesh with userData: {type: 'axis', direction: 'x', parentEntryIndex: 5, actualEntryIndex: 0}
+RoomSketchPro.tsx:517 RSP Debug: Mesh with userData: {type: 'axis', direction: 'y', parentEntryIndex: 5}
+RoomSketchPro.tsx:517 RSP Debug: Mesh with userData: {type: 'axis', direction: 'z', parentEntryIndex: 5}
+RoomSketchPro.tsx:517 RSP Debug: Mesh with userData: {type: 'vent', position: {…}, dimensions: {…}, line: {…}, index: 10, …}
+RoomSketchPro.tsx:517 RSP Debug: Mesh with userData: {type: 'axis', direction: 'x', parentEntryIndex: 11, actualEntryIndex: 1}
+RoomSketchPro.tsx:517 RSP Debug: Mesh with userData: {type: 'axis', direction: 'y', parentEntryIndex: 11}
+RoomSketchPro.tsx:517 RSP Debug: Mesh with userData: {type: 'axis', direction: 'z', parentEntryIndex: 11}
+RoomSketchPro.tsx:517 RSP Debug: Mesh with userData: {type: 'wall', floorName: 'first'}
+RoomSketchPro.tsx:517 RSP Debug: Mesh with userData: {type: 'wall', floorName: 'first'}
+RoomSketchPro.tsx:517 RSP Debug: Mesh with userData: {type: 'wall', floorName: 'first'}
+RoomSketchPro.tsx:517 RSP Debug: Mesh with userData: {type: 'wall', floorName: 'first'}
+RoomSketchPro.tsx:517 RSP Debug: Mesh with userData: {type: 'window', position: {…}, dimensions: {…}, line: {…}, index: 4, …}
+RoomSketchPro.tsx:517 RSP Debug: Mesh with userData: {type: 'axis', direction: 'x', parentEntryIndex: 5, actualEntryIndex: 0}
+RoomSketchPro.tsx:517 RSP Debug: Mesh with userData: {type: 'axis', direction: 'y', parentEntryIndex: 5}
+RoomSketchPro.tsx:517 RSP Debug: Mesh with userData: {type: 'axis', direction: 'z', parentEntryIndex: 5}
+RoomSketchPro.tsx:521 RSP Debug: Total meshes: 23, with userData: 20
+RoomSketchPro.tsx:535 RSP: Found 3 air entry meshes to texture
+RoomSketchPro.tsx:539 RSP: Air entry 0: type=door, userData= {type: 'door', position: {…}, dimensions: {…}, line: {…}, index: 4, …}
+RoomSketchPro.tsx:539 RSP: Air entry 1: type=vent, userData= {type: 'vent', position: {…}, dimensions: {…}, line: {…}, index: 10, …}
+RoomSketchPro.tsx:539 RSP: Air entry 2: type=window, userData= {type: 'window', position: {…}, dimensions: {…}, line: {…}, index: 4, …}
+RoomSketchPro.tsx:546 RSP: Processing air entry 0 of type door
+RoomSketchPro.tsx:597 RSP: Applied door texture to air entry 0
+RoomSketchPro.tsx:546 RSP: Processing air entry 1 of type vent
+RoomSketchPro.tsx:597 RSP: Applied vent texture to air entry 1
+RoomSketchPro.tsx:546 RSP: Processing air entry 2 of type window
+RoomSketchPro.tsx:597 RSP: Applied window texture to air entry 2
