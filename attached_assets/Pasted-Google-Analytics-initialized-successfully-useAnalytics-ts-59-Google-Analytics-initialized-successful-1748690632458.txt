@@ -1,0 +1,93 @@
+Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+AnalyticsProvider.tsx:21 Analytics initialized: true
+wizard-design.tsx:1396 Rendering Step 2 content
+Canvas3D.tsx:634   - Resetting cursor style to default
+Canvas3D.tsx:1594 TrackballControls buttons configured: {LEFT: 0, MIDDLE: 1, RIGHT: 2}
+Canvas3D.tsx:1633 Adding coordinate axes helper
+RoomSketchPro.tsx:102 RSP: Scene ready, storing references
+Canvas3D.tsx:3839 State changed - marking for render {isDragging: false, selectedAxis: null, hasSelectedEntry: false}
+Canvas3D.tsx:3977 isMeasureMode prop changed: false
+Canvas3D.tsx:3978 Setting isMeasuring state to: false
+Canvas3D.tsx:3997 Set cursor to auto - measure mode inactive
+Canvas3D.tsx:4034 Canvas3D isEraserMode prop changed: false - Applying UI changes 
+Canvas3D.tsx:4045 Checking scene for air entries in useEffect:
+Canvas3D.tsx:4055 Found air entry in scene: door at position: {x: 400, y: 256.78637770897836}
+Canvas3D.tsx:4055 Found air entry in scene: window at position: {x: 400, y: 91.08978328173376}
+Canvas3D.tsx:4058 Total air entries in scene for eraser mode: 2
+Canvas3D.tsx:4070 Set cursor to auto - eraser mode inactive
+Canvas3D.tsx:4161 🔄 Eraser mode changed, performing complete system reset
+Canvas3D.tsx:4101 🔄 COMPLETE EVENT SYSTEM RESET
+Canvas3D.tsx:4156 ✅ Complete event system reset finished
+wizard-design.tsx:2268 🔄 DATA FLOW: wizard-design -> RoomSketchPro: {currentFloor: 'ground', floorCount: 2, floorNames: Array(2), hasMultipleFloors: true}
+wizard-design.tsx:2276 ⚠️ IMPORTANT: RoomSketchPro should EXACTLY mirror Canvas3D view {currentFloorName: 'ground', sendingMultifloorData: true, note: 'Canvas3D displays a specific floor, RSP should show exactly the same'}
+wizard-design.tsx:2287 📊 FLOOR DATA FOR [ground]: {lineCount: 4, airEntryCount: 1, hasStairs: false, stairCount: 0, isCurrentFloor: true, …}
+wizard-design.tsx:2287 📊 FLOOR DATA FOR [first]: {lineCount: 4, airEntryCount: 1, hasStairs: false, stairCount: 0, isCurrentFloor: false, …}
+RoomSketchPro.tsx:140 RSP: Applying textures for theme: modern
+RoomSketchPro.tsx:154 RSP: All mesh objects in scene:
+RoomSketchPro.tsx:156   0: type=Mesh, userData= {} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   1: type=Mesh, userData= {} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   2: type=Mesh, userData= {} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   3: type=Mesh, userData= {} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   4: type=Mesh, userData= {type: 'door', position: {…}, dimensions: {…}, line: {…}, index: 4, …} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   5: type=Mesh, userData= {} material=MeshBasicMaterial
+RoomSketchPro.tsx:156   6: type=Mesh, userData= {type: 'axis', direction: 'x', parentEntryIndex: 5, actualEntryIndex: 0} material=MeshBasicMaterial
+RoomSketchPro.tsx:156   7: type=Mesh, userData= {type: 'axis', direction: 'y', parentEntryIndex: 5} material=MeshBasicMaterial
+RoomSketchPro.tsx:156   8: type=Mesh, userData= {type: 'axis', direction: 'z', parentEntryIndex: 5} material=MeshBasicMaterial
+RoomSketchPro.tsx:156   9: type=Mesh, userData= {} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   10: type=Mesh, userData= {} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   11: type=Mesh, userData= {} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   12: type=Mesh, userData= {} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   13: type=Mesh, userData= {type: 'window', position: {…}, dimensions: {…}, line: {…}, index: 4, …} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   14: type=Mesh, userData= {} material=MeshBasicMaterial
+RoomSketchPro.tsx:156   15: type=Mesh, userData= {type: 'axis', direction: 'x', parentEntryIndex: 5, actualEntryIndex: 0} material=MeshBasicMaterial
+RoomSketchPro.tsx:156   16: type=Mesh, userData= {type: 'axis', direction: 'y', parentEntryIndex: 5} material=MeshBasicMaterial
+RoomSketchPro.tsx:156   17: type=Mesh, userData= {type: 'axis', direction: 'z', parentEntryIndex: 5} material=MeshBasicMaterial
+RoomSketchPro.tsx:167 RSP: Found 0 wall meshes to texture
+RoomSketchPro.tsx:112 RSP: Attempt 1 to find walls after 1000ms
+RoomSketchPro.tsx:112 RSP: Attempt 2 to find walls after 2000ms
+RoomSketchPro.tsx:112 RSP: Attempt 3 to find walls after 3000ms
+RoomSketchPro.tsx:123 RSP: Found 0 walls, applying textures
+RoomSketchPro.tsx:140 RSP: Applying textures for theme: modern
+RoomSketchPro.tsx:154 RSP: All mesh objects in scene:
+RoomSketchPro.tsx:156   0: type=Mesh, userData= {} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   1: type=Mesh, userData= {} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   2: type=Mesh, userData= {} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   3: type=Mesh, userData= {} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   4: type=Mesh, userData= {type: 'door', position: {…}, dimensions: {…}, line: {…}, index: 4, …} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   5: type=Mesh, userData= {} material=MeshBasicMaterial
+RoomSketchPro.tsx:156   6: type=Mesh, userData= {type: 'axis', direction: 'x', parentEntryIndex: 5, actualEntryIndex: 0} material=MeshBasicMaterial
+RoomSketchPro.tsx:156   7: type=Mesh, userData= {type: 'axis', direction: 'y', parentEntryIndex: 5} material=MeshBasicMaterial
+RoomSketchPro.tsx:156   8: type=Mesh, userData= {type: 'axis', direction: 'z', parentEntryIndex: 5} material=MeshBasicMaterial
+RoomSketchPro.tsx:156   9: type=Mesh, userData= {} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   10: type=Mesh, userData= {} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   11: type=Mesh, userData= {} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   12: type=Mesh, userData= {} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   13: type=Mesh, userData= {type: 'window', position: {…}, dimensions: {…}, line: {…}, index: 4, …} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   14: type=Mesh, userData= {} material=MeshBasicMaterial
+RoomSketchPro.tsx:156   15: type=Mesh, userData= {type: 'axis', direction: 'x', parentEntryIndex: 5, actualEntryIndex: 0} material=MeshBasicMaterial
+RoomSketchPro.tsx:156   16: type=Mesh, userData= {type: 'axis', direction: 'y', parentEntryIndex: 5} material=MeshBasicMaterial
+RoomSketchPro.tsx:156   17: type=Mesh, userData= {type: 'axis', direction: 'z', parentEntryIndex: 5} material=MeshBasicMaterial
+RoomSketchPro.tsx:167 RSP: Found 0 wall meshes to texture
+RoomSketchPro.tsx:140 RSP: Applying textures for theme: classic
+RoomSketchPro.tsx:154 RSP: All mesh objects in scene:
+RoomSketchPro.tsx:156   0: type=Mesh, userData= {} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   1: type=Mesh, userData= {} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   2: type=Mesh, userData= {} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   3: type=Mesh, userData= {} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   4: type=Mesh, userData= {type: 'door', position: {…}, dimensions: {…}, line: {…}, index: 4, …} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   5: type=Mesh, userData= {} material=MeshBasicMaterial
+RoomSketchPro.tsx:156   6: type=Mesh, userData= {type: 'axis', direction: 'x', parentEntryIndex: 5, actualEntryIndex: 0} material=MeshBasicMaterial
+RoomSketchPro.tsx:156   7: type=Mesh, userData= {type: 'axis', direction: 'y', parentEntryIndex: 5} material=MeshBasicMaterial
+RoomSketchPro.tsx:156   8: type=Mesh, userData= {type: 'axis', direction: 'z', parentEntryIndex: 5} material=MeshBasicMaterial
+RoomSketchPro.tsx:156   9: type=Mesh, userData= {} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   10: type=Mesh, userData= {} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   11: type=Mesh, userData= {} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   12: type=Mesh, userData= {} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   13: type=Mesh, userData= {type: 'window', position: {…}, dimensions: {…}, line: {…}, index: 4, …} material=MeshPhongMaterial
+RoomSketchPro.tsx:156   14: type=Mesh, userData= {} material=MeshBasicMaterial
+RoomSketchPro.tsx:156   15: type=Mesh, userData= {type: 'axis', direction: 'x', parentEntryIndex: 5, actualEntryIndex: 0} material=MeshBasicMaterial
+RoomSketchPro.tsx:156   16: type=Mesh, userData= {type: 'axis', direction: 'y', parentEntryIndex: 5} material=MeshBasicMaterial
+RoomSketchPro.tsx:156   17: type=Mesh, userData= {type: 'axis', direction: 'z', parentEntryIndex: 5} material=MeshBasicMaterial
+RoomSketchPro.tsx:167 RSP: Found 0 wall meshes to texture

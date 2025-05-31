@@ -1108,6 +1108,8 @@ export default function Canvas3D({
       });
 
       const wall = new THREE.Mesh(geometry, wallMaterial);
+      wall.userData = { type: 'wall', floorName: floorData.name };
+      console.log(`Canvas3D: Created wall mesh with userData:`, wall.userData, `for floor: ${floorData.name}`);
       objects.push(wall);
     });
 
