@@ -94,6 +94,7 @@ interface Canvas3DProps {
     index: number
   ) => void;
   onViewChange?: (callback: (direction: ViewDirection) => void) => void;
+  onSceneReady?: (scene: THREE.Scene, renderer: THREE.WebGLRenderer) => void; // For RSP texture access
 }
 
 
@@ -471,6 +472,7 @@ export default function Canvas3D({
   onUpdateAirEntry,
   onDeleteAirEntry,
   onViewChange,
+  onSceneReady,
 }: Canvas3DProps) {
   // Access the SceneContext to share data with RoomSketchPro
   const { updateGeometryData, updateSceneData, updateFloorData, setCurrentFloor: setContextCurrentFloor } = useSceneContext();
