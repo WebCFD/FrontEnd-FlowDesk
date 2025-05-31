@@ -1,0 +1,34 @@
+✅ RSP: Generated procedural textures
+RoomSketchPro.tsx:555 RSP: Using existing UV coordinates for wall 0
+RoomSketchPro.tsx:563 RSP: Modern theme will be applied when brick texture loads
+RoomSketchPro.tsx:555 RSP: Using existing UV coordinates for wall 1
+RoomSketchPro.tsx:563 RSP: Modern theme will be applied when brick texture loads
+RoomSketchPro.tsx:555 RSP: Using existing UV coordinates for wall 2
+RoomSketchPro.tsx:563 RSP: Modern theme will be applied when brick texture loads
+RoomSketchPro.tsx:555 RSP: Using existing UV coordinates for wall 3
+RoomSketchPro.tsx:563 RSP: Modern theme will be applied when brick texture loads
+RoomSketchPro.tsx:555 RSP: Using existing UV coordinates for wall 4
+RoomSketchPro.tsx:563 RSP: Modern theme will be applied when brick texture loads
+RoomSketchPro.tsx:555 RSP: Using existing UV coordinates for wall 5
+RoomSketchPro.tsx:563 RSP: Modern theme will be applied when brick texture loads
+RoomSketchPro.tsx:555 RSP: Using existing UV coordinates for wall 6
+RoomSketchPro.tsx:563 RSP: Modern theme will be applied when brick texture loads
+RoomSketchPro.tsx:555 RSP: Using existing UV coordinates for wall 7
+RoomSketchPro.tsx:563 RSP: Modern theme will be applied when brick texture loads
+RoomSketchPro.tsx:602 RSP: Found 3 air entry meshes to texture
+RoomSketchPro.tsx:657 RSP: Applied door texture to air entry 0 with opacity 1
+RoomSketchPro.tsx:657 RSP: Applied vent texture to air entry 1 with opacity 1
+RoomSketchPro.tsx:657 RSP: Applied window texture to air entry 2 with opacity 1
+textureGenerator.ts:17 🧱 TextureGenerator: Your brick texture loaded successfully! 218 x 219
+textureGenerator.ts:22 🧱 TextureGenerator: Texture ready to use
+RoomSketchPro.tsx:510 ✅ RSP: Your brick texture loaded, applying to walls
+RoomSketchPro.tsx:532 ✅ RSP: Applied your brick texture to wall 0
+RoomSketchPro.tsx:532 ✅ RSP: Applied your brick texture to wall 1
+RoomSketchPro.tsx:532 ✅ RSP: Applied your brick texture to wall 2
+RoomSketchPro.tsx:532 ✅ RSP: Applied your brick texture to wall 3
+RoomSketchPro.tsx:532 ✅ RSP: Applied your brick texture to wall 4
+RoomSketchPro.tsx:532 ✅ RSP: Applied your brick texture to wall 5
+RoomSketchPro.tsx:532 ✅ RSP: Applied your brick texture to wall 6
+RoomSketchPro.tsx:532 ✅ RSP: Applied your brick texture to wall 7
+wizard-design.tsx:2291 Wizard: Wall transparency changing to: 0.3
+wizard-design.tsx:1399 Rendering Step 2 content

@@ -529,9 +529,16 @@ export function RoomSketchPro({
               side: originalMaterial.side
             });
             wallMesh.material = newMaterial;
+            wallMesh.material.needsUpdate = true;
             console.log(`✅ RSP: Applied your brick texture to wall ${index}`);
           }
         });
+        
+        // Force renderer update
+        if (rendererRef.current) {
+          rendererRef.current.render(sceneRef.current, cameraRef.current!);
+          console.log('🔄 RSP: Forced renderer update after applying brick texture');
+        }
       }
     }).catch((error) => {
       console.error('❌ RSP: Failed to load your brick texture, using fallback');
