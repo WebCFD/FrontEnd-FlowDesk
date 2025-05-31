@@ -530,18 +530,18 @@ export default function Canvas3D({
   useEffect(() => {
     // First update the ref to match the current state
     isEraserModeRef.current = isEraserMode;
-    console.log("📌 isEraserModeRef synchronized to:", isEraserModeRef.current);
+
   }, [isEraserMode]);
   
   // Handle cleanup when exiting eraser mode
   useEffect(() => {
     // Only perform cleanup when turning off eraser mode
     if (isEraserMode === false) {
-      console.log("🔄 Eraser mode turned off - performing comprehensive cleanup");
+
       
       // Clean up highlighted element if it exists
       if (hoveredEraseTarget) {
-        console.log("  - Restoring original material for highlighted element");
+
         
         try {
           // Restore original material 
@@ -556,7 +556,7 @@ export default function Canvas3D({
               hoveredEraseTarget.object.geometry.computeBoundingSphere();
               hoveredEraseTarget.object.geometry.computeBoundingBox();
             }
-            console.log("  - Restored original scale for highlighted element");
+
           }
           
           // Remove any debug visualization helpers for this object
@@ -564,7 +564,7 @@ export default function Canvas3D({
             sceneRef.current.traverse((obj) => {
               if (obj.userData?.type === 'debug-helper' && 
                   obj.userData?.target === hoveredEraseTarget.object.uuid) {
-                console.log("  - Removing debug hitbox visualization");
+
                 sceneRef.current?.remove(obj);
               }
             });
@@ -596,7 +596,7 @@ export default function Canvas3D({
                 object.geometry.computeBoundingBox();
               }
               
-              console.log(`  - Restored scale for ${object.userData?.type} that was missed`);
+
             } catch (err) {
               console.error("Error restoring scale for object during cleanup:", err);
             }
@@ -1221,13 +1221,7 @@ export default function Canvas3D({
 
       // Store the entry's index in airEntries array for direct reference
       const parentMeshIndex = objects.length - 1;
-      console.log("AXIS CREATION:", {
-        entryType: entry.type,
-        entryPosition: entry.position,
-        entryIndex: index,
-        parentMeshIndex: parentMeshIndex,
-        totalObjects: objects.length
-      });
+
 
       // Create custom axis meshes that are better for intersection detection
       
