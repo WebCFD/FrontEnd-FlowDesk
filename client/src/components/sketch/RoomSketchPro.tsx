@@ -837,7 +837,7 @@ export function RoomSketchPro({
           <input
             type="range"
             min={1.0}
-            max={3.0}
+            max={5.0}
             step={0.1}
             value={lightingIntensity}
             onChange={(e) => setLightingIntensity(parseFloat(e.target.value))}
