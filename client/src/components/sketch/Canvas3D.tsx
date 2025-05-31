@@ -1586,21 +1586,43 @@ export default function Canvas3D({
 
     // Initialize controls
     const controls = new TrackballControls(camera, renderer.domElement);
-    controls.rotateSpeed = 2.0;
-    controls.zoomSpeed = 1.2;
-    controls.panSpeed = 0.8;
-    controls.noZoom = false;
-    controls.noPan = false;
-    controls.staticMoving = true;
-    controls.dynamicDampingFactor = 0.2;
+    
+    // Configure controls based on mode
+    if (presentationMode) {
+      // Presentation mode: smoother, more cinematic controls
+      controls.rotateSpeed = 1.0;
+      controls.zoomSpeed = 0.8;
+      controls.panSpeed = 0.5;
+      controls.noZoom = false;
+      controls.noPan = false;
+      controls.staticMoving = true;
+      controls.dynamicDampingFactor = 0.1; // Smoother damping
+    } else {
+      // Edit mode: responsive controls for precision work
+      controls.rotateSpeed = 2.0;
+      controls.zoomSpeed = 1.2;
+      controls.panSpeed = 0.8;
+      controls.noZoom = false;
+      controls.noPan = false;
+      controls.staticMoving = true;
+      controls.dynamicDampingFactor = 0.2;
+    }
 
-    // Configure mouse buttons - don't use right button for controls
-    controls.mouseButtons = {
-      LEFT: THREE.MOUSE.ROTATE,
-      MIDDLE: THREE.MOUSE.DOLLY, // THREE.MOUSE.DOLLY instead of ZOOM for TrackballControls
-      RIGHT: THREE.MOUSE.PAN // Enable right mouse panning in controls
-    };
-    // Add mechanism to disable controls during dragging
+    // Configure mouse buttons - don't use right button for controls in edit mode
+    if (presentationMode) {
+      controls.mouseButtons = {
+        LEFT: THREE.MOUSE.ROTATE,
+        MIDDLE: THREE.MOUSE.DOLLY,
+        RIGHT: THREE.MOUSE.PAN
+      };
+    } else {
+      controls.mouseButtons = {
+        LEFT: THREE.MOUSE.ROTATE,
+        MIDDLE: THREE.MOUSE.DOLLY,
+        RIGHT: THREE.MOUSE.PAN
+      };
+    }
+    
     controls.enabled = true;
 
     console.log("TrackballControls buttons configured:", controls.mouseButtons);
@@ -1863,6 +1885,48 @@ export default function Canvas3D({
     };
 
     window.addEventListener("resize", handleResize);
+
+    // Function to apply custom materials (for presentation mode)
+    const applyCustomMaterials = useCallback((materials: MaterialConfig) => {
+      if (!sceneRef.current) return;
+
+      sceneRef.current.traverse((child) => {
+        if (child instanceof THREE.Mesh && child.userData) {
+          const type = child.userData.type;
+          
+          switch (type) {
+            case 'wall':
+              if (materials.wall) child.material = materials.wall;
+              break;
+            case 'floor':
+              if (materials.floor) child.material = materials.floor;
+              break;
+            case 'ceiling':
+              if (materials.ceiling) child.material = materials.ceiling;
+              break;
+            case 'door':
+              if (materials.door) child.material = materials.door;
+              break;
+            case 'window':
+              if (materials.window) child.material = materials.window;
+              break;
+            case 'stairs':
+              if (materials.stairs) child.material = materials.stairs;
+              break;
+          }
+        }
+      });
+
+      // Force re-render
+      needsRenderRef.current = true;
+    }, []);
+
+    // Expose material application function to parent (RSP)
+    useEffect(() => {
+      if (onMaterialsReady && presentationMode) {
+        onMaterialsReady(applyCustomMaterials);
+      }
+    }, [onMaterialsReady, presentationMode, applyCustomMaterials]);
 
     // Handle right mouse button down
     // Helper function to get mouse coordinates for raycasting
@@ -3396,18 +3460,18 @@ export default function Canvas3D({
       }
     };
 
+    // Create named handlers for event tracking
+    const mouseMoveHandler = (e: MouseEvent) => {
+      handleMouseMove(e);
+    };
+
+    const mouseUpHandler = (e: MouseEvent) => {
+      handleMouseUp(e);
+    };
+
     // Only add interaction event listeners if not in presentation mode
     if (!presentationMode) {
       canvas.addEventListener("mousedown", mouseDownWrapper);
-
-      // Create named handlers for event tracking
-      const mouseMoveHandler = (e: MouseEvent) => {
-        handleMouseMove(e);
-      };
-
-      const mouseUpHandler = (e: MouseEvent) => {
-        handleMouseUp(e);
-      };
 
       // Use document instead of window for more reliable event capture
       document.addEventListener("mousemove", mouseMoveHandler);
@@ -3554,9 +3618,11 @@ export default function Canvas3D({
         }
       }
 
-      // Remove global event listeners
-      document.removeEventListener("mousemove", mouseMoveHandler);
-      document.removeEventListener("mouseup", mouseUpHandler);
+      // Remove global event listeners (only if they were added)
+      if (!presentationMode) {
+        document.removeEventListener("mousemove", mouseMoveHandler);
+        document.removeEventListener("mouseup", mouseUpHandler);
+      }
     };
   }, []);
 
