@@ -3830,7 +3830,7 @@ export default function Canvas3D({
         }
       };
     }
-  }, [floors, currentFloor, ceilingHeight, floorDeckThickness, updateGeometryData, updateSceneData]);
+  }, [floors, currentFloor, ceilingHeight, floorDeckThickness]);
 
   useEffect(() => {
     // Mark that rendering is needed when selection or dragging state changes
