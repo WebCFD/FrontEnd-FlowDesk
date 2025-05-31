@@ -134,8 +134,8 @@ export function RoomSketchPro({
     let rowIndex = 0;
     
     while (yPos + brickHeight <= 128) {
-      // Desplazamiento alternado para cada hilera
-      const offsetX = (rowIndex % 2) * (brickWidth / 2);
+      // Sin desplazamiento para hileras perfectamente alineadas
+      const offsetX = 0;
       
       let xPos = offsetX + mortarThickness;
       
