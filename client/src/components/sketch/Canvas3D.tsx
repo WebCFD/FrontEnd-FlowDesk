@@ -4403,6 +4403,7 @@ export const generateSharedFloorGeometry = (
 
         const wall = new THREE.Mesh(geometry, wallMaterial);
         wall.userData = { type: 'wall', floorName };
+        console.log(`Canvas3D: Created wall mesh with userData:`, wall.userData, `for floor: ${floorName}`);
         objects.push(wall);
       });
 
