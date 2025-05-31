@@ -352,49 +352,61 @@ export function RoomSketchPro({
     canvas.height = 256;
     const ctx = canvas.getContext('2d')!;
 
-    // Fondo de rejilla - aluminio más claro
-    ctx.fillStyle = '#D0D0D0';
+    // Fondo de rejilla - gris azulado brillante
+    ctx.fillStyle = '#E6F0FF';
     ctx.fillRect(0, 0, 256, 256);
 
-    // Marco exterior grueso
-    ctx.strokeStyle = '#606060';
+    // Marco exterior grueso con tono azulado
+    ctx.strokeStyle = '#4A6B8A';
     ctx.lineWidth = 8;
     ctx.strokeRect(4, 4, 248, 248);
 
-    // Marco interior
-    ctx.strokeStyle = '#909090';
+    // Marco interior más luminoso
+    ctx.strokeStyle = '#7BA3CC';
     ctx.lineWidth = 4;
     ctx.strokeRect(12, 12, 232, 232);
 
-    // Láminas horizontales de rejilla más dramáticas
+    // Láminas horizontales de rejilla con gris azulado brillante
     for (let y = 25; y < 240; y += 12) {
-      // Sombra profunda debajo de cada lámina
-      ctx.fillStyle = '#707070';
+      // Sombra azul grisácea debajo de cada lámina
+      ctx.fillStyle = '#8099B3';
       ctx.fillRect(20, y + 4, 216, 4);
       
-      // Lámina principal de aluminio
-      ctx.fillStyle = '#E8E8E8';
+      // Lámina principal - gris azulado brillante
+      ctx.fillStyle = '#D4E6F1';
       ctx.fillRect(20, y, 216, 8);
       
-      // Highlight superior brillante
-      ctx.fillStyle = '#F8F8F8';
+      // Highlight superior muy brillante con toque azul
+      ctx.fillStyle = '#F0F8FF';
       ctx.fillRect(20, y, 216, 2);
       
-      // Borde lateral izquierdo y derecho para efecto 3D
-      ctx.fillStyle = '#C0C0C0';
+      // Reflejo metálico brillante en el centro
+      ctx.fillStyle = '#E8F4FD';
+      ctx.fillRect(20, y + 1, 216, 1);
+      
+      // Borde lateral con tono azulado metálico
+      ctx.fillStyle = '#B8D4E8';
       ctx.fillRect(20, y, 2, 8);
       ctx.fillRect(234, y, 2, 8);
     }
 
-    // Tornillos en las esquinas
+    // Tornillos en las esquinas con acabado azulado
     const screwPositions = [[30, 30], [226, 30], [30, 226], [226, 226]];
     screwPositions.forEach(([x, y]) => {
-      ctx.fillStyle = '#808080';
+      // Base del tornillo
+      ctx.fillStyle = '#6B8CA8';
       ctx.beginPath();
       ctx.arc(x, y, 6, 0, 2 * Math.PI);
       ctx.fill();
       
-      ctx.strokeStyle = '#606060';
+      // Highlight brillante
+      ctx.fillStyle = '#A8C8E0';
+      ctx.beginPath();
+      ctx.arc(x - 1, y - 1, 3, 0, 2 * Math.PI);
+      ctx.fill();
+      
+      // Cruz del tornillo
+      ctx.strokeStyle = '#4A6B8A';
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(x - 4, y);
