@@ -283,7 +283,7 @@ export function RoomSketchPro({
     for (let i = 0; i < 10; i++) {
       ctx.beginPath();
       ctx.moveTo(0, i * 51.2);
-      ctx.lineTo(256, i * 51.2 + 20);
+      ctx.lineTo(256, i * 51.2);
       ctx.stroke();
     }
 
