@@ -1211,11 +1211,13 @@ export default function Canvas3D({
           transparent: true,
           side: THREE.DoubleSide,
           depthTest: false, // Disable depth testing to render on top
+          depthWrite: false, // Disable depth writing
         });
 
         const mesh = new THREE.Mesh(geometry, material);
         const position = transform2DTo3D(entryPosition);
-        mesh.position.set(position.x, position.y, zPosition);
+        // Move AirEntry elements slightly forward (0.5cm) to ensure they appear in front
+        mesh.position.set(position.x, position.y, zPosition + 0.5);
         
         // Set render order to ensure AirEntry elements appear on top of walls
         mesh.renderOrder = 1;
