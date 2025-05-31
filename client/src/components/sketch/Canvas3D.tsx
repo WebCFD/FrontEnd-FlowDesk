@@ -5,18 +5,16 @@ import { makeTextSprite } from "@/lib/three-utils";
 import AirEntryDialog from "./AirEntryDialog";
 import { ViewDirection } from "./Toolbar3D";
 import { useSceneContext } from "../../contexts/SceneContext";
-import { 
-  transform2DTo3D, 
-  getFloorBaseHeight as getBaseHeight, 
-  createRoomPerimeter, 
-  createShapeFromPerimeter,
-  calculateWallVertices,
-  type Point,
-  type Line,
-  type FloorParameters
-} from "../../../shared/geometry-utils";
 
-// Remove local interfaces since they're now imported from shared/geometry-utils
+interface Point {
+  x: number;
+  y: number;
+}
+
+interface Line {
+  start: Point;
+  end: Point;
+}
 interface AirEntry {
   type: "window" | "door" | "vent";
   position: Point;
@@ -108,7 +106,20 @@ const PIXELS_TO_CM = 25 / 20;
 const GRID_SIZE = 1000;
 const GRID_DIVISIONS = 40;
 
-// Using transform2DTo3D from shared/geometry-utils instead of local implementation
+const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
+  const dimensions = { width: 800, height: 600 };
+  const centerX = dimensions.width / 2;
+  const centerY = dimensions.height / 2;
+
+  const relativeX = point.x - centerX;
+  const relativeY = centerY - point.y;
+
+  return new THREE.Vector3(
+    relativeX * PIXELS_TO_CM,
+    relativeY * PIXELS_TO_CM,
+    height,
+  );
+};
 
 // Add these utility functions after the existing transform2DTo3D function or other utility functions
 
