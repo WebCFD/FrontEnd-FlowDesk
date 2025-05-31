@@ -102,92 +102,65 @@ export function RoomSketchPro({
   // Convert roomHeight from cm to Canvas3D format (which expects cm)
   const ceilingHeightCm = roomHeight;
 
-  // Create procedural textures
+  // Create procedural textures with perfect horizontal orientation
   const createBrickTexture = () => {
     const canvas = document.createElement('canvas');
-    canvas.width = 512;
-    canvas.height = 256;
+    canvas.width = 256;
+    canvas.height = 128;
     const ctx = canvas.getContext('2d')!;
 
-    // Background mortar color (más claro y realista)
-    ctx.fillStyle = '#e8e0d8';
-    ctx.fillRect(0, 0, 512, 256);
+    // Background mortar color
+    ctx.fillStyle = '#e0d8d0';
+    ctx.fillRect(0, 0, 256, 128);
 
-    // Dimensiones aún más pequeñas y proporcionales de ladrillos
-    const brickWidth = 48;
-    const brickHeight = 18;
-    const mortarWidth = 3;
+    // Dimensiones de ladrillos horizontales perfectos
+    const brickWidth = 60;
+    const brickHeight = 20;
+    const mortarThickness = 2;
 
-    // Colores base más uniformes para ladrillos
-    const brickColors = [
-      { r: 155, g: 85, b: 70 },   // Rojo ladrillo principal
-      { r: 160, g: 88, b: 72 },   // Variación sutil 1
-      { r: 150, g: 82, b: 68 },   // Variación sutil 2
-      { r: 158, g: 86, b: 71 },   // Variación sutil 3
-    ];
+    // Color uniforme de ladrillo
+    const brickColor = { r: 155, g: 85, b: 70 };
 
-    for (let row = 0; row < 15; row++) {
-      for (let col = 0; col < 12; col++) {
-        // Patrón de desplazamiento alternado (típico de ladrillos)
-        const offsetX = (row % 2) * (brickWidth / 2);
-        const x = col * brickWidth + offsetX + mortarWidth;
-        const y = row * brickHeight + mortarWidth;
-
-        // Saltar si el ladrillo está fuera del canvas
-        if (x + brickWidth > 512 || y + brickHeight > 256) continue;
-
-        // Seleccionar color de ladrillo aleatoriamente
-        const baseColor = brickColors[Math.floor(Math.random() * brickColors.length)];
-        
-        // Añadir variación muy sutil al color para uniformidad
-        const variation = 8;
-        const red = Math.max(0, Math.min(255, baseColor.r + (Math.random() - 0.5) * variation));
-        const green = Math.max(0, Math.min(255, baseColor.g + (Math.random() - 0.5) * variation));
-        const blue = Math.max(0, Math.min(255, baseColor.b + (Math.random() - 0.5) * variation));
-        
-        // Dibujar el ladrillo base
-        ctx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
-        ctx.fillRect(x, y, brickWidth - mortarWidth, brickHeight - mortarWidth);
-
-        // Añadir textura interna muy sutil al ladrillo
-        for (let i = 0; i < 3; i++) {
-          const spotX = x + Math.random() * (brickWidth - mortarWidth);
-          const spotY = y + Math.random() * (brickHeight - mortarWidth);
-          const spotSize = 1;
+    // Crear hileras horizontales perfectas
+    let yPos = mortarThickness;
+    let rowIndex = 0;
+    
+    while (yPos + brickHeight <= 128) {
+      // Desplazamiento alternado para cada hilera
+      const offsetX = (rowIndex % 2) * (brickWidth / 2);
+      
+      let xPos = offsetX + mortarThickness;
+      
+      // Dibujar ladrillos en esta hilera
+      while (xPos + brickWidth <= 256 + offsetX) {
+        // Solo dibujar si el ladrillo está dentro del canvas
+        if (xPos >= 0 && xPos + brickWidth <= 256) {
+          // Color base con mínima variación
+          const variation = 5;
+          const red = brickColor.r + (Math.random() - 0.5) * variation;
+          const green = brickColor.g + (Math.random() - 0.5) * variation;
+          const blue = brickColor.b + (Math.random() - 0.5) * variation;
           
-          ctx.fillStyle = `rgba(${red + 15}, ${green + 15}, ${blue + 15}, 0.2)`;
-          ctx.fillRect(spotX, spotY, spotSize, spotSize);
+          // Dibujar el ladrillo
+          ctx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
+          ctx.fillRect(xPos, yPos, brickWidth - mortarThickness, brickHeight - mortarThickness);
+          
+          // Sombra sutil en la parte inferior
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+          ctx.fillRect(xPos, yPos + brickHeight - mortarThickness - 1, brickWidth - mortarThickness, 1);
         }
-
-        // Sombra en la parte inferior del ladrillo
-        const gradient = ctx.createLinearGradient(x, y + brickHeight - mortarWidth - 8, x, y + brickHeight - mortarWidth);
-        gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
-        gradient.addColorStop(1, 'rgba(0, 0, 0, 0.3)');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(x, y + brickHeight - mortarWidth - 8, brickWidth - mortarWidth, 8);
-
-        // Highlight en la parte superior
-        ctx.fillStyle = `rgba(255, 255, 255, 0.1)`;
-        ctx.fillRect(x, y, brickWidth - mortarWidth, 2);
+        
+        xPos += brickWidth;
       }
-    }
-
-    // Añadir algunas grietas aleatorias al mortero
-    ctx.strokeStyle = 'rgba(160, 150, 140, 0.5)';
-    ctx.lineWidth = 1;
-    for (let i = 0; i < 20; i++) {
-      ctx.beginPath();
-      ctx.moveTo(Math.random() * 512, Math.random() * 256);
-      ctx.lineTo(Math.random() * 512, Math.random() * 256);
-      ctx.stroke();
+      
+      yPos += brickHeight;
+      rowIndex++;
     }
 
     const texture = new THREE.CanvasTexture(canvas);
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
     texture.repeat.set(1, 1);
-    texture.minFilter = THREE.LinearFilter;
-    texture.magFilter = THREE.LinearFilter;
     return texture;
   };
 
