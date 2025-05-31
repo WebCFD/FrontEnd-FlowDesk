@@ -114,12 +114,26 @@ const CANVAS_CONFIG = {
   reverseTransformY: (relativeY: number) => (600 / 2) - relativeY / PIXELS_TO_CM
 };
 
-// Helper functions (independent of component state)
+// ========================================
+// CORE UTILITY FUNCTIONS (Independent of component state)
+// ========================================
+
+/**
+ * Normalizes floor names for consistent storage and retrieval
+ * Dependencies: None
+ * Used by: Canvas3D, RoomSketchPro, storage operations
+ */
 const normalizeFloorName = (floorName: string): string => {
   // Convert to lowercase and remove spaces - ensure consistent keys for storage/retrieval
   return floorName.toLowerCase().replace(/\s+/g, '');
 };
 
+/**
+ * Core coordinate transformation function: converts 2D canvas points to 3D world space
+ * Dependencies: CANVAS_CONFIG, PIXELS_TO_CM
+ * Used by: All 3D geometry generation, air entry positioning, wall creation
+ * Critical for: Maintaining consistent coordinate system between Canvas3D and RoomSketchPro
+ */
 const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
   const relativeX = point.x - CANVAS_CONFIG.centerX;
   const relativeY = CANVAS_CONFIG.centerY - point.y;
@@ -131,6 +145,11 @@ const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
   );
 };
 
+/**
+ * Creates ordered perimeter points from line segments
+ * Dependencies: None (pure function)
+ * Used by: Room geometry generation, floor area calculations
+ */
 const createRoomPerimeter = (lines: Line[]): Point[] => {
   if (lines.length === 0) return [];
 
@@ -388,6 +407,25 @@ const getConnectedFloorName = (
   return floorName; // No valid connected floor
 };
 
+/**
+ * ========================================
+ * CANVAS3D MAIN COMPONENT
+ * ========================================
+ * 
+ * Core 3D visualization component that renders floor plans, walls, air entries, and stairs
+ * 
+ * Key dependencies for shared geometry functions:
+ * - transform2DTo3D: Core coordinate transformation
+ * - CANVAS_CONFIG: Centralized dimensions configuration
+ * - PIXELS_TO_CM: Scale conversion constant
+ * - normalizeFloorName: Floor naming consistency
+ * - createRoomPerimeter: Room boundary generation
+ * 
+ * Critical for RoomSketchPro integration:
+ * - Air entry positioning algorithms (lines 2000-2200)
+ * - Wall geometry generation (lines 1200-1400)
+ * - Floor rendering logic (lines 800-1000)
+ */
 export default function Canvas3D({
   floors,
   currentFloor,
@@ -4203,7 +4241,25 @@ export default function Canvas3D({
   );
 }
 
-// Static function for RoomSketchPro to generate identical geometry
+/**
+ * ========================================
+ * SHARED GEOMETRY GENERATION FUNCTION
+ * ========================================
+ * 
+ * Critical function for RoomSketchPro integration - generates identical 3D geometry
+ * 
+ * CURRENT LIMITATION: Uses local duplicate functions instead of shared utilities
+ * TODO: Replace localTransform2DTo3D with shared transform2DTo3D function
+ * TODO: Replace localCreateRoomPerimeter with shared createRoomPerimeter function
+ * 
+ * Dependencies:
+ * - CANVAS_CONFIG: Centralized dimensions (✓ already using)
+ * - PIXELS_TO_CM: Scale conversion (✓ already using)
+ * - Air entry positioning algorithms (needs extraction from Canvas3D)
+ * - Wall normal calculations (needs extraction from Canvas3D)
+ * 
+ * This function must produce identical results to Canvas3D's internal geometry generation
+ */
 export const generateSharedFloorGeometry = (
   floors: Record<string, FloorData>,
   config: {
@@ -4217,7 +4273,8 @@ export const generateSharedFloorGeometry = (
 ): THREE.Object3D[] => {
   const objects: THREE.Object3D[] = [];
   
-  // Helper functions (identical to Canvas3D implementation)
+  // TEMPORARY: Helper functions (identical to Canvas3D implementation)
+  // These should be replaced with shared utility functions
   const localTransform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
     const relativeX = point.x - CANVAS_CONFIG.centerX;
     const relativeY = CANVAS_CONFIG.centerY - point.y;
