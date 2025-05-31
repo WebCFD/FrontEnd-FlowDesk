@@ -801,7 +801,14 @@ export function RoomSketchPro({
     <div 
       ref={containerRef}
       className={`relative w-full h-full ${getThemeBackground()}`}
-      style={{ width, height, minHeight: '400px' }}
+      style={{ 
+        width, 
+        height, 
+        minHeight: '400px',
+        backgroundImage: selectedTheme === 'modern' ? 'url(/brick_texture.png)' : undefined,
+        backgroundSize: 'repeat',
+        backgroundPosition: 'top left'
+      }}
     >
       <Canvas3D
         floors={canvas3DFloors}
