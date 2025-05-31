@@ -112,21 +112,26 @@ export function RoomSketchPro({
 
   // Load your actual brick texture image
   const createBrickTexture = () => {
-    console.log('RSP: Loading your brick texture image');
+    console.log('RSP: Loading your brick texture image from /brick_texture.png');
     const loader = new THREE.TextureLoader();
     const texture = loader.load(
       '/brick_texture.png',
-      (texture) => {
-        console.log('RSP: Your brick texture loaded successfully');
+      (loadedTexture) => {
+        console.log('RSP: Your brick texture loaded successfully!', loadedTexture.image.width, 'x', loadedTexture.image.height);
+        loadedTexture.needsUpdate = true;
       },
-      undefined,
+      (progress) => {
+        console.log('RSP: Loading progress:', progress);
+      },
       (error) => {
         console.error('RSP: Failed to load your brick texture:', error);
+        console.log('RSP: Trying to load from:', window.location.origin + '/brick_texture.png');
       }
     );
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
     texture.repeat.set(2, 2);
+    texture.needsUpdate = true;
     return texture;
   };
 
