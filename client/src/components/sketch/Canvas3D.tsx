@@ -4210,7 +4210,6 @@ export const generateSharedFloorGeometry = (
     const dimensions = { width: 800, height: 600 };
     const centerX = dimensions.width / 2;
     const centerY = dimensions.height / 2;
-    const PIXELS_TO_CM = 25 / 20;
 
     const relativeX = point.x - centerX;
     const relativeY = centerY - point.y;
