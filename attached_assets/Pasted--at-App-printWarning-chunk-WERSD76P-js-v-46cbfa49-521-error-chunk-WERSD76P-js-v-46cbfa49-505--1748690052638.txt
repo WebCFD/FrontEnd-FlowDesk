@@ -1,0 +1,65 @@
+    at App
+printWarning @ chunk-WERSD76P.js?v=46cbfa49:521
+error @ chunk-WERSD76P.js?v=46cbfa49:505
+checkForNestedUpdates @ chunk-WERSD76P.js?v=46cbfa49:19665
+scheduleUpdateOnFiber @ chunk-WERSD76P.js?v=46cbfa49:18533
+dispatchSetState @ chunk-WERSD76P.js?v=46cbfa49:12403
+updateGeometryData @ SceneContext.tsx:108
+(anonymous) @ Canvas3D.tsx:3641
+commitHookEffectListMount @ chunk-WERSD76P.js?v=46cbfa49:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=46cbfa49:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=46cbfa49:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=46cbfa49:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=46cbfa49:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=46cbfa49:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=46cbfa49:19447
+(anonymous) @ chunk-WERSD76P.js?v=46cbfa49:19328
+workLoop @ chunk-WERSD76P.js?v=46cbfa49:197
+flushWork @ chunk-WERSD76P.js?v=46cbfa49:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=46cbfa49:384Understand this errorAI
+SceneContext.tsx:108 Warning: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+    at Canvas3D (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/sketch/Canvas3D.tsx:220:3)
+    at div
+    at RoomSketchPro (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/sketch/RoomSketchPro.tsx:22:3)
+    at SceneProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/contexts/SceneContext.tsx:21:3)
+    at div
+    at div
+    at div
+    at _c9 (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at main
+    at div
+    at DashboardLayout (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/layout/dashboard-layout.tsx:18:43)
+    at WizardDesign (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/pages/dashboard/wizard-design.tsx:206:27)
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=46cbfa49:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=46cbfa49:379:17)
+    at Router
+    at main
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=46cbfa49:323:16)
+    at div
+    at AnalyticsProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/common/AnalyticsProvider.tsx:21:37)
+    at QueryClientProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=46cbfa49:2805:3)
+    at App
+printWarning @ chunk-WERSD76P.js?v=46cbfa49:521
+error @ chunk-WERSD76P.js?v=46cbfa49:505
+checkForNestedUpdates @ chunk-WERSD76P.js?v=46cbfa49:19665
+scheduleUpdateOnFiber @ chunk-WERSD76P.js?v=46cbfa49:18533
+dispatchSetState @ chunk-WERSD76P.js?v=46cbfa49:12403
+updateGeometryData @ SceneContext.tsx:108
+(anonymous) @ Canvas3D.tsx:3641
+commitHookEffectListMount @ chunk-WERSD76P.js?v=46cbfa49:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=46cbfa49:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=46cbfa49:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=46cbfa49:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=46cbfa49:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=46cbfa49:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=46cbfa49:19447
+(anonymous) @ chunk-WERSD76P.js?v=46cbfa49:19328
+workLoop @ chunk-WERSD76P.js?v=46cbfa49:197
+flushWork @ chunk-WERSD76P.js?v=46cbfa49:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=46cbfa49:384Understand this errorAI
+SceneContext.tsx:108 Warning: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one
