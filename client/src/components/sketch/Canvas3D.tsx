@@ -1801,7 +1801,7 @@ export default function Canvas3D({
           else if (dragState.selectedAxis === "y") {
             // Y-axis: Always vertical in world space (along global Z)
             newPosition.z += localDisplacement;
-            console.log(`Drag Y: vertical displacement: ${localDisplacement.toFixed(2)}`);
+
           } 
           else if (dragState.selectedAxis === "z" && dragState.axisDirectionVectors.z) {
             // Z-axis: Apply displacement along local Z direction vector
@@ -1810,7 +1810,7 @@ export default function Canvas3D({
             newPosition.y += localZDir.y * localDisplacement;
             newPosition.z += localZDir.z * localDisplacement;
             
-            console.log(`Drag Z along local axis: [${localZDir.x.toFixed(2)}, ${localZDir.y.toFixed(2)}, ${localZDir.z.toFixed(2)}], displacement: ${localDisplacement.toFixed(2)}`);
+
           }
           
           // Update the object's position
@@ -1947,7 +1947,7 @@ export default function Canvas3D({
       console.log("==== MEASUREMENT DEBUG ====");
       console.log("Measurement mode active (ref):", isMeasureModeRef.current);
       console.log("Current measurementStateRef:", measurementStateRef.current);
-      console.log("Mouse button:", event.button);
+
 
       // Only process right mouse button (button code 2) when in measure mode (using ref)
       if (event.button !== 2 || !isMeasureModeRef.current) return;
@@ -2112,19 +2112,10 @@ export default function Canvas3D({
         }
       });
 
-      console.log(
-        `Scene traversal complete - found: ${meshCount} meshes, ${arrowCount} arrows, ${otherObjectCount} other objects`,
-      );
-      console.log(
-        "After traversal - Air entry meshes found:",
-        airEntryMeshes.length,
-      );
-      console.log("After traversal - Axis helpers found:", axesHelpers.length);
+
 
       // First check for intersections with axes
-      console.log('Testing intersection with', axesHelpers.length, 'axes');
       const axesIntersects = raycaster.intersectObjects(axesHelpers, false);
-      console.log('Axes intersections found:', axesIntersects.length);
 
       if (axesIntersects.length > 0) {
         const axisObject = axesIntersects[0].object;
@@ -2585,25 +2576,10 @@ export default function Canvas3D({
             }
           });
           
-          console.log(`🏠 Scene contains ${airEntryCount} air entry meshes for highlighting`);
-          
-          if (airEntryCount > 0) {
-            console.log(`🏠 Air entries details: ${airEntryDetails.join('\n')}`);
-            console.log(`📦 Bounding boxes: `, airEntryBoundingBoxes);
-          }
+
         }
         
-        // Just log the mouse coordinates we already have
-        console.log(`🖱️ Mouse normalized coordinates: ${JSON.stringify(mouseCoords)}`);
-        
-        // Get raw client coordinates too
-        const canvas = containerRef.current;
-        if (canvas) {
-          const rect = canvas.getBoundingClientRect();
-          const rawX = event.clientX - rect.left;
-          const rawY = event.clientY - rect.top;
-          console.log(`🖱️ Mouse raw canvas coordinates: (${rawX}, ${rawY})`);
-        }
+
         
         // Reset previously highlighted element if any
         if (hoveredEraseTarget) {
@@ -3618,24 +3594,7 @@ export default function Canvas3D({
   }, []);
 
   useEffect(() => {
-    console.log("Canvas3D received floors data:", floors, "Current eraser mode:", isEraserMode, 
-                isEraserMode === undefined ? "⚠️ UNDEFINED VALUE!" : "✅ Valid boolean");
 
-    // Log detailed information about all air entries for debugging purposes
-    Object.entries(floors).forEach(([floorName, floorData]) => {
-      if (floorData.airEntries?.length) {
-        console.log(`DEBUG - FLOOR STATE: Floor ${floorName} has ${floorData.airEntries.length} air entries:`, 
-          floorData.airEntries.map((entry, idx) => ({
-            index: idx,
-            type: entry.type,
-            position: entry.position,
-            dimensions: entry.dimensions
-          }))
-        );
-      } else {
-        console.log(`DEBUG - FLOOR STATE: Floor ${floorName} has NO air entries`);
-      }
-    });
 
     // Don't reset selection state here - we'll handle it after rebuilding the scene
     // This prevents losing the selection when the scene is updated
