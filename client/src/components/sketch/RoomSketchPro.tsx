@@ -505,6 +505,17 @@ export function RoomSketchPro({
     // Generate textures (force regeneration for development)
     console.log('🔄 RSP: Generating textures...');
     
+    // Simple test: Create an HTML img element to verify image loading
+    console.log('🧪 SIMPLE TEST: Testing image loading with HTML img element');
+    const testImg = new Image();
+    testImg.onload = () => {
+      console.log('✅ SIMPLE TEST: Image loaded successfully via HTML img', testImg.width, 'x', testImg.height);
+    };
+    testImg.onerror = (error) => {
+      console.error('❌ SIMPLE TEST: Image failed to load via HTML img', error);
+    };
+    testImg.src = '/brick_texture.png';
+    
     // Load your brick texture and apply it when ready
     TextureGenerator.createBrickTexture().then((brickTexture) => {
       console.log('✅ RSP: Your brick texture loaded, applying to walls');
