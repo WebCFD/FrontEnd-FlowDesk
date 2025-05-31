@@ -186,7 +186,9 @@ export function RoomSketchPro({
     const texture = new THREE.CanvasTexture(canvas);
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(2, 1);
+    texture.repeat.set(1, 1);
+    texture.minFilter = THREE.LinearFilter;
+    texture.magFilter = THREE.LinearFilter;
     return texture;
   };
 
@@ -346,24 +348,33 @@ export function RoomSketchPro({
       // Ensure the geometry has UV coordinates for texture mapping
       const geometry = wallMesh.geometry as THREE.BufferGeometry;
       if (!geometry.attributes.uv) {
-        console.log(`RSP: Adding UV coordinates to wall ${index}`);
+        console.log(`RSP: Adding proper UV coordinates to wall ${index}`);
         const positionAttribute = geometry.attributes.position;
         const uvs = [];
         
+        // Calculate UV coordinates based on actual wall dimensions
+        // Get bounding box to understand the wall size
+        geometry.computeBoundingBox();
+        const bbox = geometry.boundingBox!;
+        const width = bbox.max.x - bbox.min.x;
+        const height = bbox.max.y - bbox.min.y;
+        
+        // Scale factor for brick pattern (each brick unit = 120x40 in texture space)
+        const brickWidth = 1.2; // meters
+        const brickHeight = 0.4; // meters
+        const uScale = width / brickWidth;
+        const vScale = height / brickHeight;
+        
         // Generate UV coordinates for each vertex
         for (let i = 0; i < positionAttribute.count; i++) {
-          // For walls, we map based on vertex index within each face
-          const faceIndex = Math.floor(i / 3);
-          const vertexIndex = i % 3;
+          const x = positionAttribute.getX(i);
+          const y = positionAttribute.getY(i);
           
-          // Basic UV mapping for triangles
-          if (vertexIndex === 0) {
-            uvs.push(0, 0); // Bottom-left
-          } else if (vertexIndex === 1) {
-            uvs.push(1, 0); // Bottom-right
-          } else {
-            uvs.push(0.5, 1); // Top-center
-          }
+          // Normalize coordinates based on bounding box
+          const u = ((x - bbox.min.x) / width) * uScale;
+          const v = ((y - bbox.min.y) / height) * vScale;
+          
+          uvs.push(u, v);
         }
         
         geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
