@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { useCanvas3DGeometry } from "@/hooks/useCanvas3DGeometry";
 import { 
@@ -223,5 +223,3 @@ export function RoomSketchPro({
     </div>
   );
 }
-
-export default RoomSketchPro;
