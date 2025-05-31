@@ -110,51 +110,25 @@ export function RoomSketchPro({
   // Convert roomHeight from cm to Canvas3D format (which expects cm)
   const ceilingHeightCm = roomHeight;
 
-  // Create brick texture procedurally for now
+  // Load optimized brick texture for modern style
   const createBrickTexture = () => {
-    console.log('RSP: Creating procedural brick texture');
-    const canvas = document.createElement('canvas');
-    canvas.width = 256;
-    canvas.height = 256;
-    const ctx = canvas.getContext('2d')!;
-
-    // Background mortar color
-    ctx.fillStyle = '#e0d8d0';
-    ctx.fillRect(0, 0, 256, 256);
-
-    // Simple brick pattern with clear horizontal and vertical lines
-    const brickWidth = 128;
-    const brickHeight = 32;
-    const mortarThickness = 4;
-
-    // Color base de ladrillo
-    ctx.fillStyle = '#9b5546';
-    
-    // Crear grid simple de ladrillos
-    for (let y = 0; y < 256; y += brickHeight + mortarThickness) {
-      for (let x = 0; x < 256; x += brickWidth + mortarThickness) {
-        ctx.fillRect(x, y, brickWidth, brickHeight);
+    console.log('RSP: Loading optimized brick texture');
+    const loader = new THREE.TextureLoader();
+    const texture = loader.load(
+      '/red_brick_texture.jpg',
+      (texture) => {
+        console.log('RSP: Brick texture loaded successfully', texture);
+      },
+      (progress) => {
+        console.log('RSP: Brick texture loading progress:', progress);
+      },
+      (error) => {
+        console.error('RSP: Error loading brick texture:', error);
       }
-    }
-    
-    // Líneas de mortero
-    ctx.fillStyle = '#e0d8d0';
-    
-    // Líneas horizontales
-    for (let y = brickHeight; y < 256; y += brickHeight + mortarThickness) {
-      ctx.fillRect(0, y, 256, mortarThickness);
-    }
-    
-    // Líneas verticales
-    for (let x = brickWidth; x < 256; x += brickWidth + mortarThickness) {
-      ctx.fillRect(x, 0, mortarThickness, 256);
-    }
-
-    const texture = new THREE.CanvasTexture(canvas);
+    );
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(2, 2);
-    console.log('RSP: Brick texture created successfully');
+    texture.repeat.set(3, 3);
     return texture;
   };
 
