@@ -129,22 +129,25 @@ export function RoomSketchPro({
     // Color base de ladrillo
     ctx.fillStyle = '#9b5546';
     
-    // Crear grid simple de ladrillos
+    // Crear grid completo de ladrillos con líneas horizontales y verticales
     for (let y = 0; y < 256; y += brickHeight + mortarThickness) {
       for (let x = 0; x < 256; x += brickWidth + mortarThickness) {
         // Dibujar ladrillo individual
         ctx.fillRect(x, y, brickWidth, brickHeight);
-        
-        // Líneas de separación horizontales
-        ctx.fillStyle = '#e0d8d0';
-        ctx.fillRect(x, y + brickHeight, brickWidth, mortarThickness);
-        
-        // Líneas de separación verticales
-        ctx.fillRect(x + brickWidth, y, mortarThickness, brickHeight + mortarThickness);
-        
-        // Volver al color del ladrillo
-        ctx.fillStyle = '#9b5546';
       }
+    }
+    
+    // Dibujar todas las líneas de mortero por separado para mayor claridad
+    ctx.fillStyle = '#e0d8d0';
+    
+    // Líneas horizontales (mortero horizontal)
+    for (let y = brickHeight; y < 256; y += brickHeight + mortarThickness) {
+      ctx.fillRect(0, y, 256, mortarThickness);
+    }
+    
+    // Líneas verticales (mortero vertical)
+    for (let x = brickWidth; x < 256; x += brickWidth + mortarThickness) {
+      ctx.fillRect(x, 0, mortarThickness, 256);
     }
 
     const texture = new THREE.CanvasTexture(canvas);
