@@ -105,44 +105,88 @@ export function RoomSketchPro({
   // Create procedural textures
   const createBrickTexture = () => {
     const canvas = document.createElement('canvas');
-    canvas.width = 256;
-    canvas.height = 128;
+    canvas.width = 512;
+    canvas.height = 256;
     const ctx = canvas.getContext('2d')!;
 
-    // Background mortar color
-    ctx.fillStyle = '#d4d4d4';
-    ctx.fillRect(0, 0, 256, 128);
+    // Background mortar color (más claro y realista)
+    ctx.fillStyle = '#e8e0d8';
+    ctx.fillRect(0, 0, 512, 256);
 
-    // Brick pattern
-    const brickWidth = 64;
-    const brickHeight = 32;
-    const mortarWidth = 2;
+    // Dimensiones más realistas de ladrillos
+    const brickWidth = 120;
+    const brickHeight = 40;
+    const mortarWidth = 8;
 
-    for (let row = 0; row < 4; row++) {
-      for (let col = 0; col < 4; col++) {
+    // Colores base para ladrillos más realistas
+    const brickColors = [
+      { r: 165, g: 85, b: 65 },   // Rojo ladrillo clásico
+      { r: 150, g: 75, b: 55 },   // Más oscuro
+      { r: 180, g: 95, b: 75 },   // Más claro
+      { r: 140, g: 70, b: 50 },   // Oscuro
+      { r: 170, g: 90, b: 70 }    // Medio
+    ];
+
+    for (let row = 0; row < 7; row++) {
+      for (let col = 0; col < 5; col++) {
+        // Patrón de desplazamiento alternado (típico de ladrillos)
         const offsetX = (row % 2) * (brickWidth / 2);
         const x = col * brickWidth + offsetX + mortarWidth;
         const y = row * brickHeight + mortarWidth;
 
-        // Brick color with slight variation
-        const variation = Math.random() * 20 - 10;
-        const red = Math.max(0, Math.min(255, 180 + variation));
-        const green = Math.max(0, Math.min(255, 120 + variation));
-        const blue = Math.max(0, Math.min(255, 80 + variation));
+        // Saltar si el ladrillo está fuera del canvas
+        if (x + brickWidth > 512 || y + brickHeight > 256) continue;
+
+        // Seleccionar color de ladrillo aleatoriamente
+        const baseColor = brickColors[Math.floor(Math.random() * brickColors.length)];
         
+        // Añadir variación sutil al color
+        const variation = 15;
+        const red = Math.max(0, Math.min(255, baseColor.r + (Math.random() - 0.5) * variation));
+        const green = Math.max(0, Math.min(255, baseColor.g + (Math.random() - 0.5) * variation));
+        const blue = Math.max(0, Math.min(255, baseColor.b + (Math.random() - 0.5) * variation));
+        
+        // Dibujar el ladrillo base
         ctx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
         ctx.fillRect(x, y, brickWidth - mortarWidth, brickHeight - mortarWidth);
 
-        // Add subtle shading
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-        ctx.fillRect(x, y + brickHeight - mortarWidth - 2, brickWidth - mortarWidth, 2);
+        // Añadir textura interna al ladrillo
+        for (let i = 0; i < 8; i++) {
+          const spotX = x + Math.random() * (brickWidth - mortarWidth);
+          const spotY = y + Math.random() * (brickHeight - mortarWidth);
+          const spotSize = 1 + Math.random() * 2;
+          
+          ctx.fillStyle = `rgba(${red + 20}, ${green + 20}, ${blue + 20}, 0.3)`;
+          ctx.fillRect(spotX, spotY, spotSize, spotSize);
+        }
+
+        // Sombra en la parte inferior del ladrillo
+        const gradient = ctx.createLinearGradient(x, y + brickHeight - mortarWidth - 8, x, y + brickHeight - mortarWidth);
+        gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0.3)');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(x, y + brickHeight - mortarWidth - 8, brickWidth - mortarWidth, 8);
+
+        // Highlight en la parte superior
+        ctx.fillStyle = `rgba(255, 255, 255, 0.1)`;
+        ctx.fillRect(x, y, brickWidth - mortarWidth, 2);
       }
+    }
+
+    // Añadir algunas grietas aleatorias al mortero
+    ctx.strokeStyle = 'rgba(160, 150, 140, 0.5)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 20; i++) {
+      ctx.beginPath();
+      ctx.moveTo(Math.random() * 512, Math.random() * 256);
+      ctx.lineTo(Math.random() * 512, Math.random() * 256);
+      ctx.stroke();
     }
 
     const texture = new THREE.CanvasTexture(canvas);
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(4, 2);
+    texture.repeat.set(2, 1);
     return texture;
   };
 
@@ -323,7 +367,6 @@ export function RoomSketchPro({
         }
         
         geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
-        geometry.uvsNeedUpdate = true;
       }
       
       // Create new material based on theme
