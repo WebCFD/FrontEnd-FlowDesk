@@ -253,13 +253,9 @@ const highlightSelectedAxis = (
     if (object instanceof THREE.ArrowHelper) {
       // Check if this arrow is close to our air entry
       const distance = object.position.distanceTo(airEntry.position);
-      console.log(`Arrow found, distance: ${distance}`);
       if (distance < 60) {
         // Increased detection radius
         arrows.push(object);
-        console.log(
-          `Added arrow to highlight check, color: ${(object.line.material as THREE.LineBasicMaterial).color.getHex().toString(16)}`,
-        );
       }
     }
   });
@@ -304,9 +300,7 @@ const highlightSelectedAxis = (
       const colorHex = arrowLineMaterial.color.getHex();
 
       if (colorHex === targetColor) {
-        console.log(
-          `Found matching arrow to highlight with color ${colorHex.toString(16)}`,
-        );
+
 
         // Highlight this arrow by making it larger
         arrow.scale.set(2, 2, 2);
@@ -2931,17 +2925,9 @@ export default function Canvas3D({
         needsRenderRef.current = true;
 
         // No position updates here - let the animation loop handle it
-        console.log("Mouse move during drag", {
-          x: event.clientX,
-          y: event.clientY,
-          axis: dragStateRef.current.selectedAxis,
-          dragging: dragStateRef.current.isDragging,
-          reactIsDragging: isDragging,
-          selectedAxis: selectedAxis
-        });
       }
-
-
+      // Add hover detection logic
+      else {
         // Flag that we need to re-render
         needsRenderRef.current = true;
         // Force immediate render on drag movement
