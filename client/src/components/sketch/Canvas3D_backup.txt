@@ -266,7 +266,9 @@ const highlightSelectedAxis = (
   airEntry: THREE.Mesh,
   axisType: "x" | "y" | "z" | null,
 ) => {
-  // Debug: Highlighting axis for air entry (disabled for production)
+    `Highlighting axis: ${axisType} for air entry at position:`,
+    airEntry.position,
+  );*/
 
   // Find all arrow helpers near the air entry
   const arrows: THREE.ArrowHelper[] = [];
