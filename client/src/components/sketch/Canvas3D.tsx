@@ -3231,32 +3231,15 @@ export default function Canvas3D({
     const handleEraserClick = (event: MouseEvent) => {
       // Only handle when in eraser mode - using ref for reliable state
       if (!isEraserModeRef.current || !onDeleteAirEntry) {
-        console.log("🚫 Eraser click ignored - isEraserMode:", isEraserModeRef.current, "onDeleteAirEntry:", !!onDeleteAirEntry);
+        // Eraser click ignored - not in eraser mode or no delete handler
         return;
       }
       
-      console.log("🔴 Eraser click detected in Canvas3D");
-      setDebugInfo(prev => ({
-        ...prev,
-        lastIntersection: "Processing eraser click..."
-      }));
+      // Eraser click detected - processing deletion
       
       // Check if controls are disabled - this is an indicator that we're hovering over an element
       const areControlsDisabled = controlsRef.current && !controlsRef.current.enabled;
-      console.log("🎮 Controls disabled:", areControlsDisabled);
-      
-      // Log available air entries in the current floor
       const floorData = floors[currentFloor];
-      if (floorData && floorData.airEntries) {
-        console.log(`🏠 Current floor ${currentFloor} has ${floorData.airEntries.length} air entries:`, 
-          floorData.airEntries.map((entry, idx) => 
-            `${idx}: ${entry.type} at (${entry.position.x}, ${entry.position.y})`
-          )
-        );
-      }
-      
-      // Debug what is hovered
-      console.log("🔍 hoveredEraseTarget state:", hoveredEraseTarget ? "Present" : "Null");
       
       // If we have a hovered target, use that directly rather than raycasting again
       if (hoveredEraseTarget) {
@@ -3297,13 +3280,10 @@ export default function Canvas3D({
           }, 50); // Short timeout to let the deletion happen first
         }
         
-        console.log("✅ Using highlighted air entry for deletion:", airEntryData);
-        setDebugInfo(prev => ({
-          ...prev,
-          lastIntersection: `Deleting ${airEntryData.type} at entry index ${airEntryData.entryIndex}`
-        }));
+        // Using highlighted air entry for deletion
+        // Deleting air entry
         
-        console.log("Air entry selected for deletion:", airEntryData);
+        // Air entry selected for deletion
         
         // Find the index of this air entry in the floors data
         let foundIndex = -1;
@@ -3601,7 +3581,7 @@ export default function Canvas3D({
       document.removeEventListener("mousemove", mouseMoveHandler);
       document.removeEventListener("mouseup", mouseUpHandler);
     };
-  }, [floors, currentFloor, isEraserMode]);
+  }, []);
 
   useEffect(() => {
     // Remove excessive logging that causes console message counter to grow
