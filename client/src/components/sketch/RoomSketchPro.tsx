@@ -681,6 +681,8 @@ export function RoomSketchPro({
 
   // Apply textures when theme changes
   useEffect(() => {
+    // Force texture regeneration
+    appliedTexturesRef.current = false;
     applyThemeTextures();
   }, [selectedTheme]);
 
