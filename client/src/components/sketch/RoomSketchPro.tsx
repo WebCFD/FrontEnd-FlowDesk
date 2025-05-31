@@ -82,6 +82,7 @@ export function RoomSketchPro({
 }: RoomSketchProProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedTheme, setSelectedTheme] = useState(materialTheme);
+  const [lightingIntensity, setLightingIntensity] = useState(0.9);
   const canvas3DRef = useRef<any>(null);
   const appliedTexturesRef = useRef<boolean>(false);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -809,6 +810,36 @@ export function RoomSketchPro({
             step={0.1}
             value={wallTransparency}
             onChange={(e) => onWallTransparencyChange(parseFloat(e.target.value))}
+            className="w-20"
+          />
+        </div>
+
+        {/* Control de transparencia de puertas y ventanas */}
+        {onAirEntryTransparencyChange && (
+          <div>
+            <label className="block text-xs mb-1">Door/Window Transparency</label>
+            <input
+              type="range"
+              min={0}
+              max={1}
+              step={0.1}
+              value={airEntryTransparency}
+              onChange={(e) => onAirEntryTransparencyChange(parseFloat(e.target.value))}
+              className="w-20"
+            />
+          </div>
+        )}
+
+        {/* Control de intensidad de iluminación */}
+        <div>
+          <label className="block text-xs mb-1">Lighting Intensity</label>
+          <input
+            type="range"
+            min={0.3}
+            max={1.5}
+            step={0.1}
+            value={lightingIntensity}
+            onChange={(e) => setLightingIntensity(parseFloat(e.target.value))}
             className="w-20"
           />
         </div>
