@@ -15,7 +15,7 @@ export class TextureGenerator {
         (loadedTexture) => {
           loadedTexture.wrapS = THREE.RepeatWrapping;
           loadedTexture.wrapT = THREE.RepeatWrapping;
-          loadedTexture.repeat.set(1, 1);
+          loadedTexture.repeat.set(4, 4);
           loadedTexture.needsUpdate = true;
           resolve(loadedTexture);
         },
