@@ -135,58 +135,7 @@ const debugLog = (category: keyof typeof DEBUG_CONFIG.categories, message: strin
   }
 };
 
-/**
- * Creates ordered perimeter points from line segments
- * Dependencies: None (pure function)
- * Used by: Room geometry generation, floor area calculations
- */
-const createRoomPerimeter = (lines: Line[]): Point[] => {
-  if (lines.length === 0) return [];
-
-  const perimeter: Point[] = [];
-  const visited = new Set<string>();
-  const pointToString = (p: Point) => `${p.x},${p.y}`;
-
-  // Create a map of points to their connected lines
-  const connections = new Map<string, Point[]>();
-  lines.forEach((line) => {
-    const startKey = pointToString(line.start);
-    const endKey = pointToString(line.end);
-
-    if (!connections.has(startKey)) connections.set(startKey, []);
-    if (!connections.has(endKey)) connections.set(endKey, []);
-
-    connections.get(startKey)!.push(line.end);
-    connections.get(endKey)!.push(line.start);
-  });
-
-  // Start from the first point and traverse
-  let currentPoint = lines[0].start;
-  perimeter.push(currentPoint);
-  visited.add(pointToString(currentPoint));
-
-  while (perimeter.length < lines.length) {
-    const currentKey = pointToString(currentPoint);
-    const connectedPoints = connections.get(currentKey) || [];
-    
-    let nextPoint: Point | null = null;
-    for (const point of connectedPoints) {
-      const pointKey = pointToString(point);
-      if (!visited.has(pointKey)) {
-        nextPoint = point;
-        break;
-      }
-    }
-
-    if (!nextPoint) break;
-    
-    perimeter.push(nextPoint);
-    visited.add(pointToString(nextPoint));
-    currentPoint = nextPoint;
-  }
-
-  return perimeter;
-};
+// createRoomPerimeter now imported from shared-geometry-utils
 
 // Add these utility functions after the existing transform2DTo3D function or other utility functions
 
