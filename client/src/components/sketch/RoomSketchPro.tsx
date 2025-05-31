@@ -122,9 +122,9 @@ export function RoomSketchPro({
     ctx.fillRect(0, 0, 256, 256);
 
     // Crear una textura de ladrillos simple sin patrones complejos
-    const brickWidth = 64;
-    const brickHeight = 20;
-    const mortarThickness = 3;
+    const brickWidth = 120;
+    const brickHeight = 40;
+    const mortarThickness = 4;
 
     // Color base de ladrillo
     ctx.fillStyle = '#9b5546';
@@ -547,8 +547,8 @@ export function RoomSketchPro({
         
         // Use world coordinates to calculate UV, ensuring horizontal texture alignment
         // Map X and Z coordinates to U, Y coordinate to V for consistent orientation
-        const u = (x + z) * 0.1; // Combine X and Z for horizontal mapping
-        const v = y * 0.1; // Y for vertical mapping
+        const u = (x + z) * 0.05; // Combine X and Z for horizontal mapping, reduced scale for larger bricks
+        const v = y * 0.05; // Y for vertical mapping, reduced scale for larger bricks
         
         uvs.push(u, v);
       }
