@@ -243,14 +243,37 @@ export function RoomSketchPro({
     return texture;
   };
 
-  const createDoorTexture = () => {
+  const createDoorTexture = (theme: string = selectedTheme) => {
     const canvas = document.createElement('canvas');
     canvas.width = 256;
     canvas.height = 512;
     const ctx = canvas.getContext('2d')!;
 
-    // Base door color - madera más contrastante
-    ctx.fillStyle = '#6B3410';
+    // Base door color - varies by theme
+    let baseColor, panelColor, handleColor;
+    switch (theme) {
+      case "modern":
+        baseColor = '#FFFFFF'; // White modern door
+        panelColor = '#F5F5F5';
+        handleColor = '#C0C0C0';
+        break;
+      case "classic":
+        baseColor = '#8B4513'; // Classic wood
+        panelColor = '#7A3612';
+        handleColor = '#FFD700';
+        break;
+      case "industrial":
+        baseColor = '#4A4A4A'; // Dark metal
+        panelColor = '#3A3A3A';
+        handleColor = '#CCCCCC';
+        break;
+      default:
+        baseColor = '#FFFFFF';
+        panelColor = '#F5F5F5';
+        handleColor = '#C0C0C0';
+    }
+    
+    ctx.fillStyle = baseColor;
     ctx.fillRect(0, 0, 256, 512);
 
     // Vetas de madera
@@ -270,10 +293,10 @@ export function RoomSketchPro({
     const marginY = 40;
 
     // Panel superior
-    ctx.strokeStyle = '#4A1F05';
+    ctx.strokeStyle = theme === 'classic' ? '#4A1F05' : '#888888';
     ctx.lineWidth = 8;
     ctx.strokeRect(marginX, marginY, panelWidth, panelHeight);
-    ctx.fillStyle = '#7A3612';
+    ctx.fillStyle = panelColor;
     ctx.fillRect(marginX + 4, marginY + 4, panelWidth - 8, panelHeight - 8);
 
     // Panel medio
@@ -284,12 +307,12 @@ export function RoomSketchPro({
     ctx.strokeRect(marginX, marginY + 320, panelWidth, panelHeight);
     ctx.fillRect(marginX + 4, marginY + 324, panelWidth - 8, panelHeight - 8);
 
-    // Manija de puerta más grande
-    ctx.fillStyle = '#FFD700';
+    // Manija de puerta
+    ctx.fillStyle = handleColor;
     ctx.beginPath();
     ctx.arc(200, 256, 12, 0, 2 * Math.PI);
     ctx.fill();
-    ctx.strokeStyle = '#B8860B';
+    ctx.strokeStyle = theme === 'classic' ? '#B8860B' : '#666666';
     ctx.lineWidth = 2;
     ctx.stroke();
 
@@ -299,18 +322,37 @@ export function RoomSketchPro({
     return texture;
   };
 
-  const createWindowTexture = () => {
+  const createWindowTexture = (theme: string = selectedTheme) => {
     const canvas = document.createElement('canvas');
     canvas.width = 256;
     canvas.height = 256;
     const ctx = canvas.getContext('2d')!;
 
-    // Fondo de ventana - cristal azul muy claro y brillante
-    ctx.fillStyle = '#F0F8FF';
+    // Fondo de ventana - varies by theme
+    let glassColor, frameColor;
+    switch (theme) {
+      case "modern":
+        glassColor = '#F0F8FF'; // Very light blue glass
+        frameColor = '#FFFFFF'; // White frame
+        break;
+      case "classic":
+        glassColor = '#F5F5DC'; // Beige glass
+        frameColor = '#8B4513'; // Brown frame
+        break;
+      case "industrial":
+        glassColor = '#E6E6FA'; // Lavender glass
+        frameColor = '#696969'; // Dark gray frame
+        break;
+      default:
+        glassColor = '#F0F8FF';
+        frameColor = '#FFFFFF';
+    }
+    
+    ctx.fillStyle = glassColor;
     ctx.fillRect(0, 0, 256, 256);
 
-    // Marco de ventana más grueso - casi blanco
-    ctx.strokeStyle = '#F8F8F8';
+    // Marco de ventana
+    ctx.strokeStyle = frameColor;
     ctx.lineWidth = 12;
     ctx.strokeRect(6, 6, 244, 244);
 
@@ -346,7 +388,7 @@ export function RoomSketchPro({
     return texture;
   };
 
-  const createVentTexture = () => {
+  const createVentTexture = (theme: string = selectedTheme) => {
     const canvas = document.createElement('canvas');
     canvas.width = 256;
     canvas.height = 256;
