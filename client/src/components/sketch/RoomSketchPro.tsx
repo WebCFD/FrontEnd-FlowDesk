@@ -334,8 +334,8 @@ export function RoomSketchPro({
     ctx.lineTo(244, 128);
     ctx.stroke();
 
-    // Reflejo más pronunciado
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+    // Reflejo más sutil para no tapar el color azul
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
     ctx.fillRect(20, 20, 100, 100);
 
     // Gradiente de cristal azul
