@@ -105,9 +105,29 @@ export function RoomSketchPro({
     cameraRef.current = camera;
     
     // Wait for walls to be generated before applying textures
-    setTimeout(() => {
-      applyThemeTextures();
-    }, 500);
+    // Use multiple attempts with increasing delays
+    const attempts = [1000, 2000, 3000];
+    
+    const tryApplyTextures = (attemptIndex = 0) => {
+      console.log(`RSP: Attempt ${attemptIndex + 1} to find walls after ${attempts[attemptIndex]}ms`);
+      
+      // Check if walls exist
+      let wallCount = 0;
+      scene.traverse((object) => {
+        if (object instanceof THREE.Mesh && object.userData?.type === 'wall') {
+          wallCount++;
+        }
+      });
+      
+      if (wallCount > 0 || attemptIndex >= attempts.length - 1) {
+        console.log(`RSP: Found ${wallCount} walls, applying textures`);
+        applyThemeTextures();
+      } else if (attemptIndex < attempts.length - 1) {
+        setTimeout(() => tryApplyTextures(attemptIndex + 1), attempts[attemptIndex + 1] - attempts[attemptIndex]);
+      }
+    };
+    
+    setTimeout(() => tryApplyTextures(), attempts[0]);
   };
 
   // Function to apply textures to Canvas3D scene materials
