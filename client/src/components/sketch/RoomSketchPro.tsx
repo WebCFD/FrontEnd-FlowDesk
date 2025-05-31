@@ -536,15 +536,35 @@ export function RoomSketchPro({
             
             // Wait 2 seconds then apply the brick texture
             setTimeout(() => {
+              console.log(`🧱 TEST: About to apply brick texture to wall ${index}`);
+              console.log(`🧱 TEST: Brick texture object:`, brickTexture);
+              console.log(`🧱 TEST: Brick texture image:`, brickTexture.image);
+              console.log(`🧱 TEST: Texture loaded:`, brickTexture.image?.complete);
+              
               const newMaterial = new THREE.MeshPhongMaterial({
                 map: brickTexture,
                 opacity: originalMaterial.opacity,
                 transparent: originalMaterial.transparent,
                 side: originalMaterial.side
               });
-              wallMesh.material = newMaterial;
-              wallMesh.material.needsUpdate = true;
-              console.log(`🧱 TEST: Applied brick texture to wall ${index} after red test`);
+              
+              // Test: Apply bright green first to see if material changes
+              const greenMaterial = new THREE.MeshPhongMaterial({
+                color: 0x00ff00, // Bright green
+                opacity: originalMaterial.opacity,
+                transparent: originalMaterial.transparent,
+                side: originalMaterial.side
+              });
+              wallMesh.material = greenMaterial;
+              console.log(`🟢 TEST: Applied green material to wall ${index}`);
+              
+              // Wait 1 second then apply texture
+              setTimeout(() => {
+                wallMesh.material = newMaterial;
+                wallMesh.material.needsUpdate = true;
+                console.log(`🧱 TEST: Applied brick texture material to wall ${index}`);
+                console.log(`🧱 TEST: Material map:`, newMaterial.map);
+              }, 1000);
             }, 2000);
           }
         });
