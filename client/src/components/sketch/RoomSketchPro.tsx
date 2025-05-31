@@ -119,6 +119,20 @@ export function RoomSketchPro({
 
     console.log('RSP: Applying textures for theme:', selectedTheme);
     
+    // Debug: Log all objects in the scene to understand what's there
+    const allObjects: any[] = [];
+    sceneRef.current.traverse((object) => {
+      if (object instanceof THREE.Mesh) {
+        allObjects.push({
+          type: object.type,
+          userData: object.userData,
+          material: object.material?.type || 'unknown'
+        });
+      }
+    });
+    
+    console.log('RSP: All mesh objects in scene:', allObjects);
+    
     // Find all wall meshes in the scene
     const wallMeshes: THREE.Mesh[] = [];
     sceneRef.current.traverse((object) => {
