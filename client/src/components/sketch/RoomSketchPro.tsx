@@ -162,7 +162,7 @@ export function RoomSketchPro({
     const texture = new THREE.CanvasTexture(canvas);
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(2, 2);
+    texture.repeat.set(0.5, 0.5); // Make bricks larger
     console.log('RSP: Realistic brick texture created successfully');
     return texture;
   };
@@ -547,55 +547,9 @@ export function RoomSketchPro({
     wallMeshes.forEach((wallMesh, index) => {
       const originalMaterial = wallMesh.material as THREE.MeshPhongMaterial;
       
-      // Force regenerate UV coordinates for texture mapping with proper orientation
+      // Keep existing UV coordinates and just apply the material
       const geometry = wallMesh.geometry as THREE.BufferGeometry;
-      console.log(`RSP: Generating UV coordinates for wall ${index}`);
-      const positionAttribute = geometry.attributes.position;
-      const uvs = [];
-      
-      // Calculate proper UV coordinates for consistent texture orientation per wall
-      // Get the wall direction to apply consistent UV mapping
-      const positions = positionAttribute.array;
-      const wallVertices = [];
-      
-      for (let i = 0; i < positions.length; i += 3) {
-        wallVertices.push({
-          x: positions[i],
-          y: positions[i + 1], 
-          z: positions[i + 2]
-        });
-      }
-      
-      // Calculate wall direction vector from first two vertices
-      let wallDirection = { x: 0, z: 0 };
-      if (wallVertices.length >= 2) {
-        wallDirection.x = wallVertices[1].x - wallVertices[0].x;
-        wallDirection.z = wallVertices[1].z - wallVertices[0].z;
-        
-        // Normalize the direction
-        const length = Math.sqrt(wallDirection.x * wallDirection.x + wallDirection.z * wallDirection.z);
-        if (length > 0) {
-          wallDirection.x /= length;
-          wallDirection.z /= length;
-        }
-      }
-      
-      // Apply UV mapping based on wall-local coordinates
-      for (let i = 0; i < positionAttribute.count; i++) {
-        const x = positionAttribute.getX(i);
-        const y = positionAttribute.getY(i);
-        const z = positionAttribute.getZ(i);
-        
-        // Project position onto wall direction for consistent U coordinate
-        const u = (x * wallDirection.x + z * wallDirection.z) * 0.02;
-        // Use absolute Y coordinate for vertical mapping to show horizontal lines
-        const v = Math.abs(y) * 0.02;
-        
-        uvs.push(u, v);
-      }
-      
-      geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
-      geometry.attributes.uv.needsUpdate = true;
+      console.log(`RSP: Using existing UV coordinates for wall ${index}`);
       
       // Create new material based on theme
       let newMaterial: THREE.MeshPhongMaterial;
