@@ -1215,6 +1215,9 @@ export default function Canvas3D({
         const mesh = new THREE.Mesh(geometry, material);
         const position = transform2DTo3D(entryPosition);
         mesh.position.set(position.x, position.y, zPosition);
+        
+        // Set render order to ensure AirEntry elements appear on top of walls
+        mesh.renderOrder = 1;
 
         // Add userData for raycasting identification - include the actual entry index for easy mapping
         mesh.userData = {
