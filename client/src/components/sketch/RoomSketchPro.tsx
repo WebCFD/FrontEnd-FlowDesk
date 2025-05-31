@@ -505,6 +505,22 @@ export function RoomSketchPro({
       console.log(`RSP: Applied ${selectedTheme} texture to wall ${index}`);
     });
 
+    // Debug: Log all objects in scene
+    if (sceneRef.current) {
+      let totalMeshes = 0;
+      let meshesWithUserData = 0;
+      sceneRef.current.traverse((object) => {
+        if (object instanceof THREE.Mesh) {
+          totalMeshes++;
+          if (object.userData && Object.keys(object.userData).length > 0) {
+            meshesWithUserData++;
+            console.log(`RSP Debug: Mesh with userData:`, object.userData);
+          }
+        }
+      });
+      console.log(`RSP Debug: Total meshes: ${totalMeshes}, with userData: ${meshesWithUserData}`);
+    }
+
     // Apply textures to air entries (doors, windows, vents)
     const airEntryMeshes: THREE.Mesh[] = [];
     if (sceneRef.current) {
@@ -517,10 +533,17 @@ export function RoomSketchPro({
     }
 
     console.log(`RSP: Found ${airEntryMeshes.length} air entry meshes to texture`);
+    
+    // Debug: Log all found air entries
+    airEntryMeshes.forEach((mesh, i) => {
+      console.log(`RSP: Air entry ${i}: type=${mesh.userData.type}, userData=`, mesh.userData);
+    });
 
     airEntryMeshes.forEach((airEntryMesh, index) => {
       const airEntryType = airEntryMesh.userData.type;
       const originalMaterial = airEntryMesh.material as THREE.MeshPhongMaterial;
+      
+      console.log(`RSP: Processing air entry ${index} of type ${airEntryType}`);
       
       let texture: THREE.Texture | undefined;
       let materialColor = 0xffffff;
