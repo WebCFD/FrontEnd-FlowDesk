@@ -5,23 +5,51 @@ import { makeTextSprite } from "@/lib/three-utils";
 import AirEntryDialog from "./AirEntryDialog";
 import { ViewDirection } from "./Toolbar3D";
 import { useSceneContext } from "../../contexts/SceneContext";
-import {
-  PIXELS_TO_CM,
-  CANVAS_CONFIG,
-  transform2DTo3D,
-  createRoomPerimeter,
-  normalizeFloorName,
-  createStairMesh,
-  positionAirEntry,
-  type Point,
-  type Line,
-  type AirEntry,
-  type StairPolygon,
-  type FloorData
-} from "./shared-geometry-utils";
 
-// Core interfaces now imported from shared-geometry-utils
-// Only Canvas3D-specific interfaces remain here
+interface Point {
+  x: number;
+  y: number;
+}
+
+interface Line {
+  start: Point;
+  end: Point;
+}
+interface AirEntry {
+  type: "window" | "door" | "vent";
+  position: Point;
+  dimensions: {
+    width: number;
+    height: number;
+    distanceToFloor?: number;
+  };
+  line: Line;
+}
+
+// Add StairPolygon interface
+interface StairPolygon {
+  id: string;
+  points: Point[];
+  floor: string;
+  direction?: "up" | "down";
+  connectsTo?: string;
+  isImported?: boolean;
+  // Add position3D data for sharing with RoomSketchPro
+  position3D?: {
+    baseHeight: number;
+    bottomZ: number;
+    topZ: number;
+  };
+}
+
+// Update FloorData to include stair polygons
+interface FloorData {
+  lines: Line[];
+  airEntries: AirEntry[];
+  hasClosedContour: boolean;
+  name: string;
+  stairPolygons?: StairPolygon[]; // Add stair polygons to floor data
+}
 
 // Define a mesh interface for air entries to help with TypeScript type checking
 interface AirEntryMesh extends THREE.Mesh {
@@ -68,9 +96,23 @@ interface Canvas3DProps {
 }
 
 
-// Local constants (PIXELS_TO_CM and CANVAS_CONFIG now imported from shared-geometry-utils)
+// Constants
+const PIXELS_TO_CM = 25 / 20;
 const GRID_SIZE = 1000;
 const GRID_DIVISIONS = 40;
+
+// Centralized dimensions configuration
+const CANVAS_CONFIG = {
+  dimensions: { width: 800, height: 600 },
+  get centerX() { return this.dimensions.width / 2; },
+  get centerY() { return this.dimensions.height / 2; },
+  get aspectRatio() { return this.dimensions.width / this.dimensions.height; },
+  // Helper methods for common calculations
+  getRelativeX: (pointX: number) => pointX - (800 / 2),
+  getRelativeY: (pointY: number) => (600 / 2) - pointY,
+  reverseTransformX: (relativeX: number) => relativeX / PIXELS_TO_CM + (800 / 2),
+  reverseTransformY: (relativeY: number) => (600 / 2) - relativeY / PIXELS_TO_CM
+};
 
 // Centralized raycaster configuration
 const RAYCASTER_CONFIG = {
@@ -91,27 +133,36 @@ const RAYCASTER_CONFIG = {
   }
 };
 
-// Debug configuration - centralized control for console output
-const DEBUG_CONFIG = {
-  enabled: false, // Set to true for development, false for production
-  categories: {
-    mouseEvents: false,
-    airEntryCreation: false,
-    positionTracking: false,
-    measurementMode: false,
-    eraserMode: false,
-    intersections: false,
-    floorState: false
-  }
-};
-
 // ========================================
 // CORE UTILITY FUNCTIONS (Independent of component state)
 // ========================================
 
-// normalizeFloorName now imported from shared-geometry-utils
+/**
+ * Normalizes floor names for consistent storage and retrieval
+ * Dependencies: None
+ * Used by: Canvas3D, RoomSketchPro, storage operations
+ */
+const normalizeFloorName = (floorName: string): string => {
+  // Convert to lowercase and remove spaces - ensure consistent keys for storage/retrieval
+  return floorName.toLowerCase().replace(/\s+/g, '');
+};
 
-// transform2DTo3D now imported from shared-geometry-utils
+/**
+ * Core coordinate transformation function: converts 2D canvas points to 3D world space
+ * Dependencies: CANVAS_CONFIG, PIXELS_TO_CM
+ * Used by: All 3D geometry generation, air entry positioning, wall creation
+ * Critical for: Maintaining consistent coordinate system between Canvas3D and RoomSketchPro
+ */
+const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
+  const relativeX = point.x - CANVAS_CONFIG.centerX;
+  const relativeY = CANVAS_CONFIG.centerY - point.y;
+
+  return new THREE.Vector3(
+    relativeX * PIXELS_TO_CM,
+    relativeY * PIXELS_TO_CM,
+    height,
+  );
+};
 
 /**
  * Applies raycaster configuration consistently
@@ -125,17 +176,57 @@ const applyRaycasterConfig = (raycaster: THREE.Raycaster, configType: keyof type
 };
 
 /**
- * Conditional debug logging - only logs when debug is enabled
- * Dependencies: DEBUG_CONFIG
- * Used by: All debug statements for controlled console output
+ * Creates ordered perimeter points from line segments
+ * Dependencies: None (pure function)
+ * Used by: Room geometry generation, floor area calculations
  */
-const debugLog = (category: keyof typeof DEBUG_CONFIG.categories, message: string, ...args: any[]) => {
-  if (DEBUG_CONFIG.enabled && DEBUG_CONFIG.categories[category]) {
-    console.log(`[${category.toUpperCase()}] ${message}`, ...args);
-  }
-};
+const createRoomPerimeter = (lines: Line[]): Point[] => {
+  if (lines.length === 0) return [];
 
-// createRoomPerimeter now imported from shared-geometry-utils
+  const perimeter: Point[] = [];
+  const visited = new Set<string>();
+  const pointToString = (p: Point) => `${p.x},${p.y}`;
+
+  // Create a map of points to their connected lines
+  const connections = new Map<string, Point[]>();
+  lines.forEach((line) => {
+    const startKey = pointToString(line.start);
+    const endKey = pointToString(line.end);
+
+    if (!connections.has(startKey)) connections.set(startKey, []);
+    if (!connections.has(endKey)) connections.set(endKey, []);
+
+    connections.get(startKey)!.push(line.end);
+    connections.get(endKey)!.push(line.start);
+  });
+
+  // Start from the first point and traverse
+  let currentPoint = lines[0].start;
+  perimeter.push(currentPoint);
+  visited.add(pointToString(currentPoint));
+
+  while (perimeter.length < lines.length) {
+    const currentKey = pointToString(currentPoint);
+    const connectedPoints = connections.get(currentKey) || [];
+    
+    let nextPoint: Point | null = null;
+    for (const point of connectedPoints) {
+      const pointKey = pointToString(point);
+      if (!visited.has(pointKey)) {
+        nextPoint = point;
+        break;
+      }
+    }
+
+    if (!nextPoint) break;
+    
+    perimeter.push(nextPoint);
+    visited.add(pointToString(nextPoint));
+    currentPoint = nextPoint;
+  }
+
+  return perimeter;
+};
 
 // Add these utility functions after the existing transform2DTo3D function or other utility functions
 
@@ -441,14 +532,14 @@ export default function Canvas3D({
   useEffect(() => {
     // First update the ref to match the current state
     isEraserModeRef.current = isEraserMode;
-    debugLog('eraserMode', 'isEraserModeRef synchronized to:', isEraserModeRef.current);
+    console.log("📌 isEraserModeRef synchronized to:", isEraserModeRef.current);
   }, [isEraserMode]);
   
   // Handle cleanup when exiting eraser mode
   useEffect(() => {
     // Only perform cleanup when turning off eraser mode
     if (isEraserMode === false) {
-      debugLog('eraserMode', 'Eraser mode turned off - performing comprehensive cleanup');
+      console.log("🔄 Eraser mode turned off - performing comprehensive cleanup");
       
       // Clean up highlighted element if it exists
       if (hoveredEraseTarget) {
@@ -1027,14 +1118,15 @@ export default function Canvas3D({
       // MUST BE IDENTICAL in RoomSketchPro for consistent visualization
       // Key functions: transform2DTo3D, wall normal calculations, positioning logic
       
-      debugLog('airEntryCreation', `Creating ${floorData.airEntries.length} air entries for floor ${floorData.name}`);
-      
+      console.log(
+        `Creating ${floorData.airEntries.length} air entries for floor ${floorData.name}`,
+      );
       floorData.airEntries.forEach((entry, index) => {
-        debugLog('airEntryCreation', `Creating air entry ${index} of type ${entry.type}`);
+        console.log(`Creating air entry ${index} of type ${entry.type}`);
         
         // Check if we have stored data for this entry (position and/or dimensions)
         const updatedEntryData = updatedPositions[index];
-        debugLog('positionTracking', `Checking for stored entry data for entry ${index}:`, {
+        console.log(`[ENTRY DATA LOADING] Checking for stored entry data for entry ${index}:`, {
           updatedPositionsExists: !!updatedPositions,
           haveUpdatedData: !!updatedEntryData,
           updatedEntryData: updatedEntryData,
@@ -1852,7 +1944,7 @@ export default function Canvas3D({
 
     const handleMeasurementMouseDown = (event: MouseEvent) => {
       // Add detailed logging about current state
-      debugLog('measurementMode', '==== MEASUREMENT DEBUG ====');
+      console.log("==== MEASUREMENT DEBUG ====");
       console.log("Measurement mode active (ref):", isMeasureModeRef.current);
       console.log("Current measurementStateRef:", measurementStateRef.current);
       console.log("Mouse button:", event.button);
@@ -2377,7 +2469,7 @@ export default function Canvas3D({
       const directionX = dx > 0 ? "RIGHT" : dx < 0 ? "LEFT" : "";
       const directionY = dy > 0 ? "DOWN" : dy < 0 ? "UP" : "";
       
-      debugLog('mouseEvents', `MOUSE DIRECTION: ${directionX}${directionY} (dx=${dx.toFixed(1)}, dy=${dy.toFixed(1)})`);
+      console.log(`🖱️ MOUSE DIRECTION: ${directionX}${directionY} (dx=${dx.toFixed(1)}, dy=${dy.toFixed(1)})`);
       
       // Update the last position
       lastMousePositionRef.current = { x: event.clientX, y: event.clientY };
@@ -2515,7 +2607,7 @@ export default function Canvas3D({
         
         // Reset previously highlighted element if any
         if (hoveredEraseTarget) {
-          debugLog('eraserMode', 'Resetting previously highlighted element');
+          console.log("🔄 Resetting previously highlighted element");
           // Restore original material
           hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
           setHoveredEraseTarget(null);
@@ -2593,17 +2685,17 @@ export default function Canvas3D({
             // Raycaster configuration is now handled centrally
             
             // Enhanced debugging for air entry intersections
-            debugLog('eraserMode', `Found ${meshIntersects.length} intersections with air entries`);
-            debugLog('eraserMode', `Eraser mode hover detection - ${airEntryMeshes.length} air entries in scene`);
+            console.log(`Found ${meshIntersects.length} intersections with air entries`);
             
-            if (DEBUG_CONFIG.enabled && DEBUG_CONFIG.categories.eraserMode) {
-              airEntryMeshes.forEach((mesh, i) => {
-                debugLog('eraserMode', `Air Entry #${i}: type=${mesh.userData.type}, position=${JSON.stringify(mesh.position)}`);
-                
-                const boundingBox = new THREE.Box3().setFromObject(mesh);
-                debugLog('eraserMode', `  Bounding box: min=(${boundingBox.min.x.toFixed(2)}, ${boundingBox.min.y.toFixed(2)}, ${boundingBox.min.z.toFixed(2)}), max=(${boundingBox.max.x.toFixed(2)}, ${boundingBox.max.y.toFixed(2)}, ${boundingBox.max.z.toFixed(2)})`);
-              });
-            }
+            // Log detailed info about available air entry meshes
+            console.log(`DEBUG: Eraser mode hover detection - ${airEntryMeshes.length} air entries in scene`);
+            airEntryMeshes.forEach((mesh, i) => {
+              console.log(`Air Entry #${i}: type=${mesh.userData.type}, position=${JSON.stringify(mesh.position)}, worldPosition=${JSON.stringify(mesh.getWorldPosition(new THREE.Vector3()))}`);
+              
+              // Output mesh bounding box for debugging
+              const boundingBox = new THREE.Box3().setFromObject(mesh);
+              console.log(`  Bounding box: min=(${boundingBox.min.x.toFixed(2)}, ${boundingBox.min.y.toFixed(2)}, ${boundingBox.min.z.toFixed(2)}), max=(${boundingBox.max.x.toFixed(2)}, ${boundingBox.max.y.toFixed(2)}, ${boundingBox.max.z.toFixed(2)})`);
+            });
             
             // Update debug info whether we have intersections or not
             const hasIntersections = meshIntersects.length > 0;
@@ -2614,9 +2706,9 @@ export default function Canvas3D({
               const screenX = (screenPos.x + 1) / 2 * window.innerWidth;
               const screenY = -(screenPos.y - 1) / 2 * window.innerHeight;
               
-              debugLog('positionTracking', `Highlighted object screen position: (${screenX.toFixed(0)}, ${screenY.toFixed(0)})`);
-              debugLog('positionTracking', `Mouse position: (${event.clientX}, ${event.clientY})`);
-              debugLog('positionTracking', `Distance: ${Math.sqrt(Math.pow(screenX - event.clientX, 2) + Math.pow(screenY - event.clientY, 2)).toFixed(1)}px`);
+              console.log(`📌 Highlighted object screen position: (${screenX.toFixed(0)}, ${screenY.toFixed(0)})`);
+              console.log(`📌 Mouse position: (${event.clientX}, ${event.clientY})`);
+              console.log(`📌 Distance: ${Math.sqrt(Math.pow(screenX - event.clientX, 2) + Math.pow(screenY - event.clientY, 2)).toFixed(1)}px`);
             }
             
             setDebugInfo(prev => ({
@@ -2629,7 +2721,7 @@ export default function Canvas3D({
             
             // If there are no intersections and we have a previously hovered target, reset it
             if (!hasIntersections && hoveredEraseTarget) {
-              debugLog('eraserMode', 'Clearing previous highlight - no intersection found');
+              console.log("🔄 Clearing previous highlight - no intersection found");
               
               try {
                 // Restore original material if it exists
@@ -2697,7 +2789,7 @@ export default function Canvas3D({
               
               // If we're already hovering over a different object, restore it first
               if (hoveredEraseTarget && hoveredEraseTarget.object !== mesh) {
-                debugLog('eraserMode', 'Switching hover target to new element');
+                console.log("🔄 Switching hover target to new element");
                 
                 try {
                   // Restore original material if it exists
@@ -3305,9 +3397,9 @@ export default function Canvas3D({
           const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
           const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
           
-          // Set up raycaster with precision configuration
+          // Set up raycaster
           const raycaster = new THREE.Raycaster();
-          applyRaycasterConfig(raycaster, 'precision');
+          raycaster.params.Line = { threshold: 0.5 }; // Use lower threshold for precise detection
           raycaster.setFromCamera(new THREE.Vector2(x, y), cameraRef.current!);
           
           // Check for intersections
@@ -4081,7 +4173,7 @@ export default function Canvas3D({
   
   // Complete event system reset function for debugging hover issues
   const resetHoveringCompletely = useCallback(() => {
-    debugLog('floorState', 'COMPLETE EVENT SYSTEM RESET');
+    console.log("🔄 COMPLETE EVENT SYSTEM RESET");
     
     // Re-enable controls
     if (controlsRef.current) {
@@ -4141,7 +4233,7 @@ export default function Canvas3D({
   
   // Add a useEffect to reset the system when entering/exiting eraser mode
   useEffect(() => {
-    debugLog('eraserMode', 'Eraser mode changed, performing complete system reset');
+    console.log("🔄 Eraser mode changed, performing complete system reset");
     resetHoveringCompletely();
   }, [isEraserMode, resetHoveringCompletely]);
 
