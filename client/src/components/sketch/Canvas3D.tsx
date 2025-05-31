@@ -1840,6 +1840,11 @@ export default function Canvas3D({
     };
     animate();
 
+    // Notify RSP that scene is ready for texture modifications
+    if (onSceneReady && presentationMode) {
+      onSceneReady(scene, renderer);
+    }
+
     // Handle resize
     const handleResize = () => {
       if (!containerRef.current || !camera || !renderer) return;
