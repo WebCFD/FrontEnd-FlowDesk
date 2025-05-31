@@ -533,24 +533,24 @@ export function RoomSketchPro({
     wallMeshes.forEach((wallMesh, index) => {
       const originalMaterial = wallMesh.material as THREE.MeshPhongMaterial;
       
-      // Force regenerate UV coordinates for texture mapping
+      // Force regenerate UV coordinates for texture mapping with proper orientation
       const geometry = wallMesh.geometry as THREE.BufferGeometry;
       console.log(`RSP: Generating UV coordinates for wall ${index}`);
       const positionAttribute = geometry.attributes.position;
       const uvs = [];
       
-      // Generate UV coordinates with simple triangle mapping that worked before
-      for (let i = 0; i < positionAttribute.count; i += 3) {
-        // Standard triangle UV mapping
-        uvs.push(0, 0);   // First vertex
-        uvs.push(1, 0);   // Second vertex  
-        uvs.push(0, 1);   // Third vertex
-      }
-      
-      // Handle any remaining vertices
-      const remaining = positionAttribute.count % 3;
-      for (let i = 0; i < remaining; i++) {
-        uvs.push(0, 0);
+      // Calculate proper UV coordinates based on world position to maintain texture orientation
+      for (let i = 0; i < positionAttribute.count; i++) {
+        const x = positionAttribute.getX(i);
+        const y = positionAttribute.getY(i);
+        const z = positionAttribute.getZ(i);
+        
+        // Use world coordinates to calculate UV, ensuring horizontal texture alignment
+        // Map X and Z coordinates to U, Y coordinate to V for consistent orientation
+        const u = (x + z) * 0.1; // Combine X and Z for horizontal mapping
+        const v = y * 0.1; // Y for vertical mapping
+        
+        uvs.push(u, v);
       }
       
       geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
