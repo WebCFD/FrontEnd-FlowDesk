@@ -507,11 +507,13 @@ export function RoomSketchPro({
 
     // Apply textures to air entries (doors, windows, vents)
     const airEntryMeshes: THREE.Mesh[] = [];
-    scene.traverse((object) => {
-      if (object instanceof THREE.Mesh && object.userData && object.userData.type === 'airEntry') {
-        airEntryMeshes.push(object);
-      }
-    });
+    if (sceneRef.current) {
+      sceneRef.current.traverse((object) => {
+        if (object instanceof THREE.Mesh && object.userData && object.userData.type === 'airEntry') {
+          airEntryMeshes.push(object);
+        }
+      });
+    }
 
     console.log(`RSP: Found ${airEntryMeshes.length} air entry meshes to texture`);
 
