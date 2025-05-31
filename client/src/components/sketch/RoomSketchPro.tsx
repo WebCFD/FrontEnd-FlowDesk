@@ -83,6 +83,11 @@ export function RoomSketchPro({
   const sceneRef = useRef<THREE.Scene | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const cameraRef = useRef<THREE.Camera | null>(null);
+  const texturesRef = useRef<{
+    brick?: THREE.Texture;
+    wood?: THREE.Texture;
+    metal?: THREE.Texture;
+  }>({});
 
   // Convert props to Canvas3D format
   const canvas3DFloors = floors || {
@@ -96,6 +101,122 @@ export function RoomSketchPro({
 
   // Convert roomHeight from cm to Canvas3D format (which expects cm)
   const ceilingHeightCm = roomHeight;
+
+  // Create procedural textures
+  const createBrickTexture = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 256;
+    canvas.height = 128;
+    const ctx = canvas.getContext('2d')!;
+
+    // Background mortar color
+    ctx.fillStyle = '#d4d4d4';
+    ctx.fillRect(0, 0, 256, 128);
+
+    // Brick pattern
+    const brickWidth = 64;
+    const brickHeight = 32;
+    const mortarWidth = 2;
+
+    for (let row = 0; row < 4; row++) {
+      for (let col = 0; col < 4; col++) {
+        const offsetX = (row % 2) * (brickWidth / 2);
+        const x = col * brickWidth + offsetX + mortarWidth;
+        const y = row * brickHeight + mortarWidth;
+
+        // Brick color with slight variation
+        const variation = Math.random() * 20 - 10;
+        const red = Math.max(0, Math.min(255, 180 + variation));
+        const green = Math.max(0, Math.min(255, 120 + variation));
+        const blue = Math.max(0, Math.min(255, 80 + variation));
+        
+        ctx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
+        ctx.fillRect(x, y, brickWidth - mortarWidth, brickHeight - mortarWidth);
+
+        // Add subtle shading
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+        ctx.fillRect(x, y + brickHeight - mortarWidth - 2, brickWidth - mortarWidth, 2);
+      }
+    }
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(4, 2);
+    return texture;
+  };
+
+  const createWoodTexture = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 256;
+    canvas.height = 256;
+    const ctx = canvas.getContext('2d')!;
+
+    // Wood base color
+    ctx.fillStyle = '#8b4513';
+    ctx.fillRect(0, 0, 256, 256);
+
+    // Wood grain lines
+    for (let i = 0; i < 20; i++) {
+      const y = i * 12;
+      ctx.strokeStyle = `rgba(139, 69, 19, ${0.3 + Math.random() * 0.4})`;
+      ctx.lineWidth = 1 + Math.random() * 2;
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      
+      // Create wavy grain lines
+      for (let x = 0; x < 256; x += 10) {
+        const waveY = y + Math.sin(x * 0.02) * 3;
+        ctx.lineTo(x, waveY);
+      }
+      ctx.stroke();
+    }
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(2, 2);
+    return texture;
+  };
+
+  const createMetalTexture = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 256;
+    canvas.height = 256;
+    const ctx = canvas.getContext('2d')!;
+
+    // Metal base color
+    ctx.fillStyle = '#708090';
+    ctx.fillRect(0, 0, 256, 256);
+
+    // Add brushed metal effect
+    for (let i = 0; i < 100; i++) {
+      const alpha = 0.1 + Math.random() * 0.2;
+      ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(Math.random() * 256, 0);
+      ctx.lineTo(Math.random() * 256, 256);
+      ctx.stroke();
+    }
+
+    // Add darker lines for contrast
+    for (let i = 0; i < 50; i++) {
+      const alpha = 0.1 + Math.random() * 0.2;
+      ctx.strokeStyle = `rgba(0, 0, 0, ${alpha})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(Math.random() * 256, 0);
+      ctx.lineTo(Math.random() * 256, 256);
+      ctx.stroke();
+    }
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(1, 1);
+    return texture;
+  };
 
   // Callback when Canvas3D scene is ready
   const handleSceneReady = (scene: THREE.Scene, renderer: THREE.WebGLRenderer, camera: THREE.Camera) => {
@@ -166,6 +287,14 @@ export function RoomSketchPro({
 
     console.log(`RSP: Found ${wallMeshes.length} wall meshes to texture`);
 
+    // Generate textures if not already created
+    if (!texturesRef.current.brick) {
+      texturesRef.current.brick = createBrickTexture();
+      texturesRef.current.wood = createWoodTexture();
+      texturesRef.current.metal = createMetalTexture();
+      console.log('RSP: Generated procedural textures');
+    }
+
     // Apply theme-specific materials to walls
     wallMeshes.forEach((wallMesh, index) => {
       const originalMaterial = wallMesh.material as THREE.MeshPhongMaterial;
@@ -176,7 +305,7 @@ export function RoomSketchPro({
       switch (selectedTheme) {
         case "modern":
           newMaterial = new THREE.MeshPhongMaterial({
-            color: 0xd4a574, // Brick color
+            map: texturesRef.current.brick, // Use brick texture
             opacity: originalMaterial.opacity,
             transparent: originalMaterial.transparent,
             side: originalMaterial.side
@@ -184,7 +313,7 @@ export function RoomSketchPro({
           break;
         case "classic":
           newMaterial = new THREE.MeshPhongMaterial({
-            color: 0x8b4513, // Wood color
+            map: texturesRef.current.wood, // Use wood texture
             opacity: originalMaterial.opacity,
             transparent: originalMaterial.transparent,
             side: originalMaterial.side
@@ -192,7 +321,7 @@ export function RoomSketchPro({
           break;
         case "industrial":
           newMaterial = new THREE.MeshPhongMaterial({
-            color: 0x708090, // Steel color
+            map: texturesRef.current.metal, // Use metal texture
             opacity: originalMaterial.opacity,
             transparent: originalMaterial.transparent,
             side: originalMaterial.side
@@ -203,7 +332,7 @@ export function RoomSketchPro({
       }
       
       wallMesh.material = newMaterial;
-      console.log(`RSP: Applied ${selectedTheme} material to wall ${index}`);
+      console.log(`RSP: Applied ${selectedTheme} texture to wall ${index}`);
     });
 
     // Mark that textures have been applied
