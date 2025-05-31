@@ -1216,9 +1216,8 @@ export default function Canvas3D({
         const position = transform2DTo3D(entryPosition);
         mesh.position.set(position.x, position.y, zPosition);
         
-        // Set render order and disable depth test to ensure AirEntry elements appear on top
+        // Set render order to ensure AirEntry elements appear on top of walls
         mesh.renderOrder = 1;
-        material.depthTest = false;
 
         // Add userData for raycasting identification - include the actual entry index for easy mapping
         mesh.userData = {
@@ -1231,18 +1230,18 @@ export default function Canvas3D({
         };
 
         // Calculate proper orientation
-        const wallDirection = new THREE.Vector3()
+        const wallDir = new THREE.Vector3()
           .subVectors(
             transform2DTo3D(entry.line.end),
             transform2DTo3D(entry.line.start),
           )
           .normalize();
-        const worldUpVector = new THREE.Vector3(0, 0, 1);
-        const wallNormalVector = new THREE.Vector3()
-          .crossVectors(wallDirection, worldUpVector)
+        const worldUp = new THREE.Vector3(0, 0, 1);
+        const wallNormal = new THREE.Vector3()
+          .crossVectors(wallDir, worldUp)
           .normalize();
 
-        const forward = wallNormalVector.clone();
+        const forward = wallNormal.clone();
         const up = new THREE.Vector3(0, 0, 1);
         const right = new THREE.Vector3().crossVectors(up, forward).normalize();
         forward.crossVectors(right, up).normalize();
