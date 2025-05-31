@@ -320,13 +320,13 @@ export function RoomSketchPro({
     ctx.lineWidth = 12;
     ctx.strokeRect(6, 6, 244, 244);
 
-    // Marco interior - casi blanco
-    ctx.strokeStyle = '#F5F5F5';
+    // Marco interior del mismo color que el marco exterior
+    ctx.strokeStyle = frameColor;
     ctx.lineWidth = 8;
     ctx.strokeRect(12, 12, 232, 232);
 
-    // Cruz central más visible
-    ctx.strokeStyle = '#D0D0D0';
+    // Cruz central del mismo color que el marco
+    ctx.strokeStyle = frameColor;
     ctx.lineWidth = 8;
     ctx.beginPath();
     ctx.moveTo(128, 12);
