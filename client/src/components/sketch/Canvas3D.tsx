@@ -5,23 +5,51 @@ import { makeTextSprite } from "@/lib/three-utils";
 import AirEntryDialog from "./AirEntryDialog";
 import { ViewDirection } from "./Toolbar3D";
 import { useSceneContext } from "../../contexts/SceneContext";
-import {
-  PIXELS_TO_CM,
-  CANVAS_CONFIG,
-  transform2DTo3D,
-  createRoomPerimeter,
-  normalizeFloorName,
-  createStairMesh,
-  positionAirEntry,
-  type Point,
-  type Line,
-  type AirEntry,
-  type StairPolygon,
-  type FloorData
-} from "./shared-geometry-utils";
 
-// Core interfaces now imported from shared-geometry-utils
-// Only Canvas3D-specific interfaces remain here
+interface Point {
+  x: number;
+  y: number;
+}
+
+interface Line {
+  start: Point;
+  end: Point;
+}
+interface AirEntry {
+  type: "window" | "door" | "vent";
+  position: Point;
+  dimensions: {
+    width: number;
+    height: number;
+    distanceToFloor?: number;
+  };
+  line: Line;
+}
+
+// Add StairPolygon interface
+interface StairPolygon {
+  id: string;
+  points: Point[];
+  floor: string;
+  direction?: "up" | "down";
+  connectsTo?: string;
+  isImported?: boolean;
+  // Add position3D data for sharing with RoomSketchPro
+  position3D?: {
+    baseHeight: number;
+    bottomZ: number;
+    topZ: number;
+  };
+}
+
+// Update FloorData to include stair polygons
+interface FloorData {
+  lines: Line[];
+  airEntries: AirEntry[];
+  hasClosedContour: boolean;
+  name: string;
+  stairPolygons?: StairPolygon[]; // Add stair polygons to floor data
+}
 
 // Define a mesh interface for air entries to help with TypeScript type checking
 interface AirEntryMesh extends THREE.Mesh {
@@ -68,9 +96,23 @@ interface Canvas3DProps {
 }
 
 
-// Local constants (PIXELS_TO_CM and CANVAS_CONFIG now imported from shared-geometry-utils)
+// Constants
+const PIXELS_TO_CM = 25 / 20;
 const GRID_SIZE = 1000;
 const GRID_DIVISIONS = 40;
+
+// Centralized dimensions configuration
+const CANVAS_CONFIG = {
+  dimensions: { width: 800, height: 600 },
+  get centerX() { return this.dimensions.width / 2; },
+  get centerY() { return this.dimensions.height / 2; },
+  get aspectRatio() { return this.dimensions.width / this.dimensions.height; },
+  // Helper methods for common calculations
+  getRelativeX: (pointX: number) => pointX - (800 / 2),
+  getRelativeY: (pointY: number) => (600 / 2) - pointY,
+  reverseTransformX: (relativeX: number) => relativeX / PIXELS_TO_CM + (800 / 2),
+  reverseTransformY: (relativeY: number) => (600 / 2) - relativeY / PIXELS_TO_CM
+};
 
 // Centralized raycaster configuration
 const RAYCASTER_CONFIG = {
@@ -109,9 +151,32 @@ const DEBUG_CONFIG = {
 // CORE UTILITY FUNCTIONS (Independent of component state)
 // ========================================
 
-// normalizeFloorName now imported from shared-geometry-utils
+/**
+ * Normalizes floor names for consistent storage and retrieval
+ * Dependencies: None
+ * Used by: Canvas3D, RoomSketchPro, storage operations
+ */
+const normalizeFloorName = (floorName: string): string => {
+  // Convert to lowercase and remove spaces - ensure consistent keys for storage/retrieval
+  return floorName.toLowerCase().replace(/\s+/g, '');
+};
 
-// transform2DTo3D now imported from shared-geometry-utils
+/**
+ * Core coordinate transformation function: converts 2D canvas points to 3D world space
+ * Dependencies: CANVAS_CONFIG, PIXELS_TO_CM
+ * Used by: All 3D geometry generation, air entry positioning, wall creation
+ * Critical for: Maintaining consistent coordinate system between Canvas3D and RoomSketchPro
+ */
+const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
+  const relativeX = point.x - CANVAS_CONFIG.centerX;
+  const relativeY = CANVAS_CONFIG.centerY - point.y;
+
+  return new THREE.Vector3(
+    relativeX * PIXELS_TO_CM,
+    relativeY * PIXELS_TO_CM,
+    height,
+  );
+};
 
 /**
  * Applies raycaster configuration consistently
@@ -135,7 +200,58 @@ const debugLog = (category: keyof typeof DEBUG_CONFIG.categories, message: strin
   }
 };
 
-// createRoomPerimeter now imported from shared-geometry-utils
+/**
+ * Creates ordered perimeter points from line segments
+ * Dependencies: None (pure function)
+ * Used by: Room geometry generation, floor area calculations
+ */
+const createRoomPerimeter = (lines: Line[]): Point[] => {
+  if (lines.length === 0) return [];
+
+  const perimeter: Point[] = [];
+  const visited = new Set<string>();
+  const pointToString = (p: Point) => `${p.x},${p.y}`;
+
+  // Create a map of points to their connected lines
+  const connections = new Map<string, Point[]>();
+  lines.forEach((line) => {
+    const startKey = pointToString(line.start);
+    const endKey = pointToString(line.end);
+
+    if (!connections.has(startKey)) connections.set(startKey, []);
+    if (!connections.has(endKey)) connections.set(endKey, []);
+
+    connections.get(startKey)!.push(line.end);
+    connections.get(endKey)!.push(line.start);
+  });
+
+  // Start from the first point and traverse
+  let currentPoint = lines[0].start;
+  perimeter.push(currentPoint);
+  visited.add(pointToString(currentPoint));
+
+  while (perimeter.length < lines.length) {
+    const currentKey = pointToString(currentPoint);
+    const connectedPoints = connections.get(currentKey) || [];
+    
+    let nextPoint: Point | null = null;
+    for (const point of connectedPoints) {
+      const pointKey = pointToString(point);
+      if (!visited.has(pointKey)) {
+        nextPoint = point;
+        break;
+      }
+    }
+
+    if (!nextPoint) break;
+    
+    perimeter.push(nextPoint);
+    visited.add(pointToString(nextPoint));
+    currentPoint = nextPoint;
+  }
+
+  return perimeter;
+};
 
 // Add these utility functions after the existing transform2DTo3D function or other utility functions
 
@@ -4081,7 +4197,7 @@ export default function Canvas3D({
   
   // Complete event system reset function for debugging hover issues
   const resetHoveringCompletely = useCallback(() => {
-    debugLog('floorState', 'COMPLETE EVENT SYSTEM RESET');
+    console.log("🔄 COMPLETE EVENT SYSTEM RESET");
     
     // Re-enable controls
     if (controlsRef.current) {
@@ -4141,7 +4257,7 @@ export default function Canvas3D({
   
   // Add a useEffect to reset the system when entering/exiting eraser mode
   useEffect(() => {
-    debugLog('eraserMode', 'Eraser mode changed, performing complete system reset');
+    console.log("🔄 Eraser mode changed, performing complete system reset");
     resetHoveringCompletely();
   }, [isEraserMode, resetHoveringCompletely]);
 
