@@ -3629,7 +3629,7 @@ export default function Canvas3D({
 
     
     if (currentFloorData) {
-      console.log(`Canvas3D - Updating current floor geometry with ${currentFloorData.lines?.length || 0} lines and ${currentFloorData.airEntries?.length || 0} airEntries`);
+
       
       // Update current floor in context (this will trigger setCurrentFloor in the context)
       setContextCurrentFloor(currentFloor);
