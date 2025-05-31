@@ -82,7 +82,7 @@ export function RoomSketchPro({
 }: RoomSketchProProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedTheme, setSelectedTheme] = useState(materialTheme);
-  const [lightingIntensity, setLightingIntensity] = useState(0.9);
+  const [lightingIntensity, setLightingIntensity] = useState(1.5);
   const canvas3DRef = useRef<any>(null);
   const appliedTexturesRef = useRef<boolean>(false);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -836,8 +836,8 @@ export function RoomSketchPro({
           <label className="block text-xs mb-1">Lighting Intensity</label>
           <input
             type="range"
-            min={0.3}
-            max={1.5}
+            min={1.0}
+            max={3.0}
             step={0.1}
             value={lightingIntensity}
             onChange={(e) => setLightingIntensity(parseFloat(e.target.value))}
