@@ -747,6 +747,17 @@ export default function Canvas3D({
   };
 
   // New function to create stair mesh
+  // ========================================
+  // PURE RENDERING FUNCTIONS - GEOMETRY CREATION
+  // ========================================
+  // These functions are pure and can be extracted for shared use
+  
+  /**
+   * Pure function: Creates 3D stair mesh geometry
+   * Dependencies: transform2DTo3D, PIXELS_TO_CM
+   * No side effects, no state mutations
+   * Extractable for RoomSketchPro
+   */
   const createStairMesh = (
     stairPolygon: StairPolygon,
     baseHeight: number,
@@ -2415,6 +2426,12 @@ export default function Canvas3D({
     }
     };
 
+    // ========================================
+    // INTERACTION LOGIC - EVENT HANDLERS
+    // ========================================
+    // These functions handle user interactions and state mutations
+    // NOT extractable for shared use (contains side effects)
+    
     const handleMouseMove = (event: MouseEvent) => {
       // Track mouse direction movement for debugging
       const dx = event.clientX - lastMousePositionRef.current.x;
