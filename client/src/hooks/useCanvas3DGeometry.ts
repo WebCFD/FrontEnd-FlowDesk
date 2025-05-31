@@ -66,14 +66,37 @@ export function useCanvas3DGeometry(
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xf0f0f0);
 
-    // Add lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-    scene.add(ambientLight);
+    // Add lighting - different setup for presentation mode
+    if (presentationMode) {
+      // RSP: More homogeneous, bright lighting without harsh shadows
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.9); // Much brighter ambient
+      scene.add(ambientLight);
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.4);
-    directionalLight.position.set(10, 10, 5);
-    directionalLight.castShadow = true;
-    scene.add(directionalLight);
+      // Multiple soft directional lights for even illumination
+      const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.3);
+      directionalLight1.position.set(10, 10, 5);
+      directionalLight1.castShadow = false; // No shadows
+      scene.add(directionalLight1);
+
+      const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.2);
+      directionalLight2.position.set(-10, 10, -5);
+      directionalLight2.castShadow = false; // No shadows
+      scene.add(directionalLight2);
+
+      const directionalLight3 = new THREE.DirectionalLight(0xffffff, 0.2);
+      directionalLight3.position.set(0, 15, 10);
+      directionalLight3.castShadow = false; // No shadows
+      scene.add(directionalLight3);
+    } else {
+      // Normal Canvas3D: Standard lighting with shadows
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+      scene.add(ambientLight);
+
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.4);
+      directionalLight.position.set(10, 10, 5);
+      directionalLight.castShadow = true;
+      scene.add(directionalLight);
+    }
 
     // Add grid helper for reference
     const gridHelper = new THREE.GridHelper(1000, 40, 0xcccccc, 0xcccccc);
