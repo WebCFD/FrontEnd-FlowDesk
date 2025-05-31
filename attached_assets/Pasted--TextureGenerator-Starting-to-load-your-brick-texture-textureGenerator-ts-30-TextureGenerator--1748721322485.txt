@@ -1,0 +1,41 @@
+🧱 TextureGenerator: Starting to load your brick texture
+textureGenerator.ts:30 🧱 TextureGenerator: Texture created, returning: _Texture {isTexture: true, uuid: '7a84bf50-3bb7-41b5-8b75-bd00064d5536', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:513 ✅ RSP: Generated textures including your brick texture: _Texture {isTexture: true, uuid: '7a84bf50-3bb7-41b5-8b75-bd00064d5536', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:521 RSP: Using existing UV coordinates for wall 0
+RoomSketchPro.tsx:528 RSP: Applying modern theme with brick texture: _Texture {isTexture: true, uuid: '7a84bf50-3bb7-41b5-8b75-bd00064d5536', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:535 RSP: Created modern material: MeshPhongMaterial {isMaterial: true, uuid: '7b9f21c9-ade3-497a-89b5-af76e2b4557d', name: '', type: 'MeshPhongMaterial', blending: 1, …}
+RoomSketchPro.tsx:558 RSP: Applied modern texture to wall 0
+RoomSketchPro.tsx:521 RSP: Using existing UV coordinates for wall 1
+RoomSketchPro.tsx:528 RSP: Applying modern theme with brick texture: _Texture {isTexture: true, uuid: '7a84bf50-3bb7-41b5-8b75-bd00064d5536', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:535 RSP: Created modern material: MeshPhongMaterial {isMaterial: true, uuid: 'e2644e7a-117f-448f-9921-b4787ce028c9', name: '', type: 'MeshPhongMaterial', blending: 1, …}
+RoomSketchPro.tsx:558 RSP: Applied modern texture to wall 1
+RoomSketchPro.tsx:521 RSP: Using existing UV coordinates for wall 2
+RoomSketchPro.tsx:528 RSP: Applying modern theme with brick texture: _Texture {isTexture: true, uuid: '7a84bf50-3bb7-41b5-8b75-bd00064d5536', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:535 RSP: Created modern material: MeshPhongMaterial {isMaterial: true, uuid: 'f826eecd-aa4f-4dd1-99b1-74b0e8939695', name: '', type: 'MeshPhongMaterial', blending: 1, …}
+RoomSketchPro.tsx:558 RSP: Applied modern texture to wall 2
+RoomSketchPro.tsx:521 RSP: Using existing UV coordinates for wall 3
+RoomSketchPro.tsx:528 RSP: Applying modern theme with brick texture: _Texture {isTexture: true, uuid: '7a84bf50-3bb7-41b5-8b75-bd00064d5536', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:535 RSP: Created modern material: MeshPhongMaterial {isMaterial: true, uuid: 'fd30c15a-16d5-4944-b8a2-c9229bac012b', name: '', type: 'MeshPhongMaterial', blending: 1, …}
+RoomSketchPro.tsx:558 RSP: Applied modern texture to wall 3
+RoomSketchPro.tsx:521 RSP: Using existing UV coordinates for wall 4
+RoomSketchPro.tsx:528 RSP: Applying modern theme with brick texture: _Texture {isTexture: true, uuid: '7a84bf50-3bb7-41b5-8b75-bd00064d5536', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:535 RSP: Created modern material: MeshPhongMaterial {isMaterial: true, uuid: 'b7dc6652-c2cb-4998-a183-913ab207197b', name: '', type: 'MeshPhongMaterial', blending: 1, …}
+RoomSketchPro.tsx:558 RSP: Applied modern texture to wall 4
+RoomSketchPro.tsx:521 RSP: Using existing UV coordinates for wall 5
+RoomSketchPro.tsx:528 RSP: Applying modern theme with brick texture: _Texture {isTexture: true, uuid: '7a84bf50-3bb7-41b5-8b75-bd00064d5536', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:535 RSP: Created modern material: MeshPhongMaterial {isMaterial: true, uuid: '320950d8-dee9-434c-aa61-13216afaa858', name: '', type: 'MeshPhongMaterial', blending: 1, …}
+RoomSketchPro.tsx:558 RSP: Applied modern texture to wall 5
+RoomSketchPro.tsx:521 RSP: Using existing UV coordinates for wall 6
+RoomSketchPro.tsx:528 RSP: Applying modern theme with brick texture: _Texture {isTexture: true, uuid: '7a84bf50-3bb7-41b5-8b75-bd00064d5536', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:535 RSP: Created modern material: MeshPhongMaterial {isMaterial: true, uuid: 'e685d78a-79a4-42ef-9b8c-56489aa94a6a', name: '', type: 'MeshPhongMaterial', blending: 1, …}
+RoomSketchPro.tsx:558 RSP: Applied modern texture to wall 6
+RoomSketchPro.tsx:521 RSP: Using existing UV coordinates for wall 7
+RoomSketchPro.tsx:528 RSP: Applying modern theme with brick texture: _Texture {isTexture: true, uuid: '7a84bf50-3bb7-41b5-8b75-bd00064d5536', name: '', source: Source, mipmaps: Array(0), …}
+RoomSketchPro.tsx:535 RSP: Created modern material: MeshPhongMaterial {isMaterial: true, uuid: '9ed9afed-9b84-44c9-af46-5b7cf033a34d', name: '', type: 'MeshPhongMaterial', blending: 1, …}
+RoomSketchPro.tsx:558 RSP: Applied modern texture to wall 7
+RoomSketchPro.tsx:574 RSP: Found 3 air entry meshes to texture
+RoomSketchPro.tsx:629 RSP: Applied door texture to air entry 0 with opacity 1
+RoomSketchPro.tsx:629 RSP: Applied vent texture to air entry 1 with opacity 1
+RoomSketchPro.tsx:629 RSP: Applied window texture to air entry 2 with opacity 1
+textureGenerator.ts:16 🧱 TextureGenerator: Your brick texture loaded successfully! 218 x 219
+textureGenerator.ts:17 🧱 TextureGenerator: Texture object: _Texture {isTexture: true, uuid: '7a84bf50-3bb7-41b5-8b75-bd00064d5536', name: '', source: Source, mipmaps: Array(0), …}

@@ -15,6 +15,10 @@ export class TextureGenerator {
       (loadedTexture) => {
         console.log('🧱 TextureGenerator: Your brick texture loaded successfully!', loadedTexture.image.width, 'x', loadedTexture.image.height);
         console.log('🧱 TextureGenerator: Texture object:', loadedTexture);
+        
+        // Force update all materials using this texture
+        loadedTexture.needsUpdate = true;
+        console.log('🧱 TextureGenerator: Forced texture update');
       },
       (progress) => {
         console.log('🧱 TextureGenerator: Loading progress:', progress);
@@ -27,6 +31,7 @@ export class TextureGenerator {
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
     texture.repeat.set(2, 2);
+    texture.needsUpdate = true;
     console.log('🧱 TextureGenerator: Texture created, returning:', texture);
     return texture;
   }
