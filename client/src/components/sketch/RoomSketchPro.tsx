@@ -351,21 +351,20 @@ export function RoomSketchPro({
       const uvs = [];
       
       // Generate UV coordinates ensuring bricks are always horizontal
-      for (let i = 0; i < positionAttribute.count; i++) {
-        const x = positionAttribute.getX(i);
-        const y = positionAttribute.getY(i);
-        const z = positionAttribute.getZ(i);
-        
-        // Map UV coordinates to ensure horizontal brick orientation
-        // Use world coordinates but force horizontal mapping
-        let u = x * 0.8;  // Horizontal mapping
-        let v = y * 0.8;  // Vertical mapping
-        
-        // Ensure positive values and reasonable scale
-        u = Math.abs(u) % 4;
-        v = Math.abs(v) % 4;
-        
-        uvs.push(u, v);
+      for (let i = 0; i < positionAttribute.count; i += 3) {
+        // For each triangle, assign UV coordinates that maintain horizontal brick orientation
+        // Triangle 1 vertex
+        uvs.push(0, 0);   // bottom-left
+        // Triangle 2 vertex  
+        uvs.push(2, 0);   // bottom-right (wider for horizontal)
+        // Triangle 3 vertex
+        uvs.push(0, 1);   // top-left
+      }
+      
+      // Handle any remaining vertices
+      const remaining = positionAttribute.count % 3;
+      for (let i = 0; i < remaining; i++) {
+        uvs.push(0, 0);
       }
       
       geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
