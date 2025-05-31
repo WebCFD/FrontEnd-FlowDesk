@@ -592,7 +592,7 @@ export function RoomSketchPro({
           break;
         case "window":
           texture = texturesRef.current.window;
-          materialColor = 0xE6F3FF; // Light blue for windows
+          materialColor = 0xF0F8FF; // Very light blue for windows
           break;
         case "vent":
           texture = texturesRef.current.vent;
