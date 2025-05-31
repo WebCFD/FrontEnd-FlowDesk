@@ -469,7 +469,7 @@ export default function Canvas3D({
   simulationType = "Comfort Simulation (steady run)",
   isMultifloor = false,
   presentationMode = false,
-  lightingIntensity = 0.9,
+  lightingIntensity = 1.5,
   floorParameters = {},
   onUpdateAirEntry,
   onDeleteAirEntry,
