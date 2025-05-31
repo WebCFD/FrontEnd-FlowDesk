@@ -1016,9 +1016,7 @@ export default function Canvas3D({
 
     // Check if we have stored updated positions for this floor - use the shared normalization function
     const normalizedFloorName = normalizeFloorName(floorData.name);
-    console.log(`[POSITION RETRIEVAL] Checking for positions with floor key: '${normalizedFloorName}'`);
-    console.log(`[POSITION RETRIEVAL] Raw floor name: '${floorData.name}', Normalized to: '${normalizedFloorName}'`);
-    console.log(`[POSITION RETRIEVAL] All stored positions:`, JSON.stringify(updatedAirEntryPositionsRef.current));
+
 
     // Try both possible keys for maximum compatibility during transition
     let updatedPositions = updatedAirEntryPositionsRef.current[normalizedFloorName] || {};
@@ -1026,11 +1024,11 @@ export default function Canvas3D({
     // If nothing is found with the normalized name, try the original 'ground' key as fallback
     // This handles the existing data during transition
     if (Object.keys(updatedPositions).length === 0 && normalizedFloorName === 'groundfloor') {
-        console.log(`[POSITION RETRIEVAL] No positions found with '${normalizedFloorName}', trying 'ground' as fallback`);
+
         updatedPositions = updatedAirEntryPositionsRef.current['ground'] || {};
     }
 
-    console.log(`[POSITION RETRIEVAL] Retrieved positions for '${normalizedFloorName}':`, JSON.stringify(updatedPositions));
+
 
     // Create floor and ceiling surfaces
     if (perimeterPoints.length > 2) {
@@ -1116,11 +1114,9 @@ export default function Canvas3D({
       // MUST BE IDENTICAL in RoomSketchPro for consistent visualization
       // Key functions: transform2DTo3D, wall normal calculations, positioning logic
       
-      console.log(
-        `Creating ${floorData.airEntries.length} air entries for floor ${floorData.name}`,
-      );
+
       floorData.airEntries.forEach((entry, index) => {
-        console.log(`Creating air entry ${index} of type ${entry.type}`);
+
         
         // Check if we have stored data for this entry (position and/or dimensions)
         const updatedEntryData = updatedPositions[index];
@@ -1539,7 +1535,7 @@ export default function Canvas3D({
       // Pass our local handleViewChange function to the parent component
       try {
         onViewChange(handleViewChange);
-        console.log("View change handler connected to parent component");
+    
       } catch (err) {
         console.error("Error connecting view change handler:", err);
       }
