@@ -522,15 +522,30 @@ export function RoomSketchPro({
         wallMeshes.forEach((wallMesh, index) => {
           if (selectedTheme === "modern") {
             const originalMaterial = wallMesh.material as THREE.MeshPhongMaterial;
-            const newMaterial = new THREE.MeshPhongMaterial({
-              map: brickTexture,
+            
+            // Test: Create a bright colored material first to verify the wall can change
+            console.log(`🧪 TEST: Creating test material for wall ${index}`);
+            const testMaterial = new THREE.MeshPhongMaterial({
+              color: 0xff0000, // Bright red
               opacity: originalMaterial.opacity,
               transparent: originalMaterial.transparent,
               side: originalMaterial.side
             });
-            wallMesh.material = newMaterial;
-            wallMesh.material.needsUpdate = true;
-            console.log(`✅ RSP: Applied your brick texture to wall ${index}`);
+            wallMesh.material = testMaterial;
+            console.log(`🔴 TEST: Applied red material to wall ${index}`);
+            
+            // Wait 2 seconds then apply the brick texture
+            setTimeout(() => {
+              const newMaterial = new THREE.MeshPhongMaterial({
+                map: brickTexture,
+                opacity: originalMaterial.opacity,
+                transparent: originalMaterial.transparent,
+                side: originalMaterial.side
+              });
+              wallMesh.material = newMaterial;
+              wallMesh.material.needsUpdate = true;
+              console.log(`🧱 TEST: Applied brick texture to wall ${index} after red test`);
+            }, 2000);
           }
         });
         
