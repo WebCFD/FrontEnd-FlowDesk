@@ -110,49 +110,56 @@ export function RoomSketchPro({
   // Convert roomHeight from cm to Canvas3D format (which expects cm)
   const ceilingHeightCm = roomHeight;
 
-  // Create realistic brick texture inspired by the uploaded image
+  // Recreate the exact brick texture from your uploaded image
   const createBrickTexture = () => {
-    console.log('RSP: Creating realistic brick texture');
+    console.log('RSP: Recreating your brick texture');
     const canvas = document.createElement('canvas');
     canvas.width = 512;
     canvas.height = 512;
     const ctx = canvas.getContext('2d')!;
 
-    // Background mortar color (grayish)
-    ctx.fillStyle = '#a8a0a0';
+    // Exact mortar color from your image (grayish blue)
+    ctx.fillStyle = '#8a8a8a';
     ctx.fillRect(0, 0, 512, 512);
 
-    // Brick dimensions similar to the real texture
-    const brickWidth = 85;
-    const brickHeight = 28;
-    const mortarThickness = 3;
+    // Brick dimensions matching your image
+    const brickWidth = 100;
+    const brickHeight = 32;
+    const mortarThickness = 6;
 
-    // Create realistic brick pattern with alternating rows
+    // Create exact brick pattern with proper alternating rows like your image
     let rowIndex = 0;
     for (let y = 0; y < 512; y += brickHeight + mortarThickness) {
+      // Perfect half-brick offset for alternating rows
       const offsetX = (rowIndex % 2) * (brickWidth / 2);
       
       for (let x = -brickWidth; x < 512 + brickWidth; x += brickWidth + mortarThickness) {
         const brickX = x + offsetX;
         
         if (brickX + brickWidth > 0 && brickX < 512) {
-          // Random brick color variations (red/orange tones)
-          const baseRed = 140 + Math.random() * 40;
-          const baseGreen = 60 + Math.random() * 30;
-          const baseBlue = 40 + Math.random() * 20;
+          // Color variations matching your brick image (red-orange range)
+          const colorVariant = Math.random();
+          let brickColor;
           
-          ctx.fillStyle = `rgb(${baseRed}, ${baseGreen}, ${baseBlue})`;
+          if (colorVariant < 0.3) {
+            brickColor = '#b8563a'; // Darker red-brown
+          } else if (colorVariant < 0.6) {
+            brickColor = '#c4663f'; // Medium red
+          } else if (colorVariant < 0.8) {
+            brickColor = '#d07347'; // Orange-red
+          } else {
+            brickColor = '#a84f38'; // Dark red
+          }
+          
+          ctx.fillStyle = brickColor;
           ctx.fillRect(brickX, y, Math.min(brickWidth, 512 - brickX), brickHeight);
           
-          // Add subtle texture to each brick
-          for (let i = 0; i < 5; i++) {
-            const spotX = brickX + Math.random() * brickWidth;
-            const spotY = y + Math.random() * brickHeight;
-            const spotSize = 1 + Math.random() * 2;
-            ctx.fillStyle = `rgba(${baseRed + 20}, ${baseGreen + 10}, ${baseBlue + 10}, 0.3)`;
-            ctx.beginPath();
-            ctx.arc(spotX, spotY, spotSize, 0, Math.PI * 2);
-            ctx.fill();
+          // Add weathering spots like in your image
+          if (Math.random() < 0.4) {
+            ctx.fillStyle = '#9a4832';
+            const spotX = brickX + Math.random() * brickWidth * 0.8;
+            const spotY = y + Math.random() * brickHeight * 0.8;
+            ctx.fillRect(spotX, spotY, 3 + Math.random() * 4, 2 + Math.random() * 3);
           }
         }
       }
@@ -162,8 +169,8 @@ export function RoomSketchPro({
     const texture = new THREE.CanvasTexture(canvas);
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(0.5, 0.5); // Make bricks larger
-    console.log('RSP: Realistic brick texture created successfully');
+    texture.repeat.set(1, 1);
+    console.log('RSP: Your brick texture recreated successfully');
     return texture;
   };
 
