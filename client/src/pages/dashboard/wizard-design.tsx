@@ -1337,22 +1337,7 @@ export default function WizardDesign() {
                     </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <h3 className="font-semibold">Doors/Windows/Vents Transparency</h3>
-                    <div className="px-2">
-                      <Slider
-                        value={[airEntryTransparency * 100]}
-                        max={100}
-                        step={1}
-                        onValueChange={(value: number[]) =>
-                          setAirEntryTransparency(value[0] / 100)
-                        }
-                      />
-                      <div className="text-sm text-right mt-1">
-                        {Math.round(airEntryTransparency * 100)}%
-                      </div>
-                    </div>
-                  </div>
+
 
                   {/* Height parameters moved to Parameters section */}
                 </div>
@@ -1463,6 +1448,30 @@ export default function WizardDesign() {
                       />
                       <div className="text-sm text-right mt-1">
                         {Math.round(wallTransparency * 100)}%
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Air Entry Transparency */}
+                  <div className="space-y-4 mt-4">
+                    <h3 className="font-semibold">Doors/Windows/Vents Transparency</h3>
+                    <div className="px-2">
+                      <Slider
+                        value={[airEntryTransparency]}
+                        onValueChange={(values: number[]) => {
+                          console.log(
+                            "Wizard: Air entry transparency changing to:",
+                            values[0],
+                          );
+                          setAirEntryTransparency(values[0]);
+                        }}
+                        min={0}
+                        max={1}
+                        step={0.01}
+                        className="flex-1"
+                      />
+                      <div className="text-sm text-right mt-1">
+                        {Math.round(airEntryTransparency * 100)}%
                       </div>
                     </div>
                   </div>
