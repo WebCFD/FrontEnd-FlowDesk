@@ -334,15 +334,9 @@ export function RoomSketchPro({
     ctx.lineTo(244, 128);
     ctx.stroke();
 
-    // Reflejo más sutil para no tapar el color azul
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-    ctx.fillRect(20, 20, 100, 100);
-
-    // Gradiente de cristal azul
-    const gradient = ctx.createLinearGradient(0, 0, 256, 256);
-    gradient.addColorStop(0, 'rgba(30, 144, 255, 0.8)'); // Azul intenso
-    gradient.addColorStop(1, 'rgba(0, 100, 200, 0.6)'); // Azul más oscuro
-    ctx.fillStyle = gradient;
+    // Sin reflejo para mantener color uniforme
+    // Color azul uniforme en toda la superficie del cristal
+    ctx.fillStyle = glassColor;
     ctx.fillRect(16, 16, 224, 224);
 
     const texture = new THREE.CanvasTexture(canvas);
