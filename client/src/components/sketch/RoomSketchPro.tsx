@@ -394,8 +394,31 @@ export function RoomSketchPro({
     canvas.height = 256;
     const ctx = canvas.getContext('2d')!;
 
-    // Fondo de rejilla - gris azulado brillante
-    ctx.fillStyle = '#E6F0FF';
+    // Fondo de rejilla - varies by theme
+    let backColor, slotColor, frameColor;
+    switch (theme) {
+      case "modern":
+        backColor = '#F5F5F5'; // Light aluminum
+        slotColor = '#CCCCCC'; // Light gray slots
+        frameColor = '#4A6B8A'; // Blue frame
+        break;
+      case "classic":
+        backColor = '#DEB887'; // Burlywood
+        slotColor = '#CD853F'; // Peru color slots
+        frameColor = '#8B4513'; // Brown frame
+        break;
+      case "industrial":
+        backColor = '#708090'; // Slate gray
+        slotColor = '#2F4F4F'; // Dark slate gray slots
+        frameColor = '#2F2F2F'; // Dark frame
+        break;
+      default:
+        backColor = '#F5F5F5';
+        slotColor = '#CCCCCC';
+        frameColor = '#4A6B8A';
+    }
+    
+    ctx.fillStyle = backColor;
     ctx.fillRect(0, 0, 256, 256);
 
     // Marco exterior grueso con tono azulado
