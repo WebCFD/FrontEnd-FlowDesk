@@ -2467,7 +2467,7 @@ export default function Canvas3D({
       const currentEraserMode = isEraserModeRef.current;
       
       // Add more detailed debug logging
-      console.log(`🔍 MOUSE MOVE: coords=${mouseCoords.x.toFixed(2)},${mouseCoords.y.toFixed(2)}, isEraserMode=${currentEraserMode}, isEraserModeRef=${isEraserModeRef.current}`);
+
       
       setDebugInfo(prev => ({
         ...prev,
@@ -2498,7 +2498,7 @@ export default function Canvas3D({
           buttons: event.buttons // 0 = no buttons, 1 = left, 2 = right, 4 = middle
         } : 'No controls';
         
-        console.log(`🎮 TrackballControls state: ${JSON.stringify(controlsState)}`);
+
         
         // Skip hover detection if mouse buttons are being held down
         if (event.buttons !== 0) {
