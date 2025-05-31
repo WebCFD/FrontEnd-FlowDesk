@@ -305,17 +305,17 @@ export function RoomSketchPro({
     canvas.height = 256;
     const ctx = canvas.getContext('2d')!;
 
-    // Fondo de ventana - cristal azul más visible
-    ctx.fillStyle = '#B3D9FF';
+    // Fondo de ventana - cristal azul mucho más claro
+    ctx.fillStyle = '#E6F3FF';
     ctx.fillRect(0, 0, 256, 256);
 
-    // Marco de ventana más grueso
-    ctx.strokeStyle = '#E0E0E0';
+    // Marco de ventana más grueso - casi blanco
+    ctx.strokeStyle = '#F8F8F8';
     ctx.lineWidth = 12;
     ctx.strokeRect(6, 6, 244, 244);
 
-    // Marco interior
-    ctx.strokeStyle = '#C0C0C0';
+    // Marco interior - casi blanco
+    ctx.strokeStyle = '#F5F5F5';
     ctx.lineWidth = 8;
     ctx.strokeRect(12, 12, 232, 232);
 
@@ -373,11 +373,11 @@ export function RoomSketchPro({
       ctx.fillRect(20, y + 4, 216, 4);
       
       // Lámina principal - gris azulado brillante
-      ctx.fillStyle = '#D4E6F1';
+      ctx.fillStyle = '#F8FCFF';
       ctx.fillRect(20, y, 216, 8);
       
       // Highlight superior muy brillante con toque azul
-      ctx.fillStyle = '#F0F8FF';
+      ctx.fillStyle = "rgba(240, 248, 255)";
       ctx.fillRect(20, y, 216, 2);
       
       // Reflejo metálico brillante en el centro
@@ -491,16 +491,14 @@ export function RoomSketchPro({
 
     console.log(`RSP: Found ${wallMeshes.length} wall meshes to texture`);
 
-    // Generate textures if not already created
-    if (!texturesRef.current.brick) {
-      texturesRef.current.brick = createBrickTexture();
-      texturesRef.current.wood = createWoodTexture();
-      texturesRef.current.metal = createMetalTexture();
-      texturesRef.current.door = createDoorTexture();
-      texturesRef.current.window = createWindowTexture();
-      texturesRef.current.vent = createVentTexture();
-      console.log('RSP: Generated procedural textures including doors, windows, and vents');
-    }
+    // Generate textures (force regeneration for development)
+    texturesRef.current.brick = createBrickTexture();
+    texturesRef.current.wood = createWoodTexture();
+    texturesRef.current.metal = createMetalTexture();
+    texturesRef.current.door = createDoorTexture();
+    texturesRef.current.window = createWindowTexture();
+    texturesRef.current.vent = createVentTexture();
+    console.log('RSP: Generated procedural textures including doors, windows, and vents');
 
     // Apply theme-specific materials to walls
     wallMeshes.forEach((wallMesh, index) => {
