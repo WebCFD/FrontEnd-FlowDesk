@@ -1070,7 +1070,13 @@ export default function Canvas3D({
       objects.push(wall);
     });
 
-      // Create air entries (windows, doors, vents)
+      // ========================================
+      // CRITICAL: AIR ENTRY POSITIONING ALGORITHM
+      // ========================================
+      // This section contains the core logic for positioning air entries in 3D space
+      // MUST BE IDENTICAL in RoomSketchPro for consistent visualization
+      // Key functions: transform2DTo3D, wall normal calculations, positioning logic
+      
       console.log(
         `Creating ${floorData.airEntries.length} air entries for floor ${floorData.name}`,
       );
