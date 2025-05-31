@@ -94,36 +94,11 @@ export function RoomSketchPro({
   // Convert roomHeight from cm to Canvas3D format (which expects cm)
   const ceilingHeightCm = roomHeight;
 
-  // Function to apply textures to Canvas3D scene
+  // Function to apply textures to Canvas3D scene materials
   const applyThemeTextures = () => {
-    const canvas3DContainer = containerRef.current?.querySelector('canvas');
-    if (!canvas3DContainer) return;
-
-    // Get the Three.js scene from Canvas3D
-    // This is a simplified approach - in a full implementation we'd need
-    // Canvas3D to expose its scene or provide a callback
-    setTimeout(() => {
-      const allCanvases = document.querySelectorAll('canvas');
-      for (let canvas of allCanvases) {
-        if (canvas.parentElement === containerRef.current?.querySelector('div')) {
-          // Apply theme-specific visual changes through CSS filters as a workaround
-          switch (selectedTheme) {
-            case "modern":
-              canvas.style.filter = "contrast(1.1) brightness(1.05) hue-rotate(5deg)";
-              break;
-            case "classic":
-              canvas.style.filter = "contrast(0.9) brightness(0.95) sepia(0.2)";
-              break;
-            case "industrial":
-              canvas.style.filter = "contrast(1.2) brightness(0.8) saturate(0.7)";
-              break;
-            default:
-              canvas.style.filter = "none";
-          }
-          break;
-        }
-      }
-    }, 100);
+    // This will be our main function to modify Three.js materials
+    // We'll implement this step by step
+    console.log('RSP: Preparing to apply textures for theme:', selectedTheme);
   };
 
   useEffect(() => {
@@ -223,24 +198,11 @@ export function RoomSketchPro({
         </div>
       </div>
 
-      {/* Overlay de textura para tema moderno */}
-      {selectedTheme === "modern" && (
-        <div 
-          className="absolute inset-0 pointer-events-none z-5"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='64' height='32' viewBox='0 0 64 32' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='64' height='32' fill='%23f5f5f5' fill-opacity='0.1'/%3E%3Crect x='0' y='0' width='60' height='14' fill='%23d4a574' fill-opacity='0.3'/%3E%3Crect x='0' y='18' width='60' height='14' fill='%23d4a574' fill-opacity='0.3'/%3E%3Crect x='32' y='0' width='60' height='14' fill='%23c49660' fill-opacity='0.2'/%3E%3C/svg%3E")`,
-            backgroundSize: '64px 32px',
-            backgroundRepeat: 'repeat',
-            mixBlendMode: 'multiply',
-            opacity: 0.4
-          }}
-        />
-      )}
+
 
       {/* Información del tema actual */}
       <div className="absolute bottom-2 left-2 z-10 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">
         RSP v2.0 - Tema: {themeConfig[selectedTheme].name}
-        {selectedTheme === "modern" && " (Ladrillos)"}
       </div>
     </div>
   );
