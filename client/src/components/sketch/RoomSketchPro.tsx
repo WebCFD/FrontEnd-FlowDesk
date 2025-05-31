@@ -527,9 +527,16 @@ export function RoomSketchPro({
             const positions = geometry.getAttribute('position');
             const uvs = new Float32Array(positions.count * 2);
             
+            // Create proper UV mapping based on world coordinates
             for (let i = 0; i < positions.count; i++) {
-              const u = (i % 2);
-              const v = Math.floor(i / 2) % 2;
+              const x = positions.getX(i);
+              const y = positions.getY(i);
+              const z = positions.getZ(i);
+              
+              // Use world coordinates to create seamless UV mapping
+              const u = (x + z) * 0.02; // Scale factor for texture size
+              const v = y * 0.02;
+              
               uvs[i * 2] = u;
               uvs[i * 2 + 1] = v;
             }
@@ -572,9 +579,16 @@ export function RoomSketchPro({
         const positions = geometry.getAttribute('position');
         const uvs = new Float32Array(positions.count * 2);
         
+        // Create proper UV mapping based on world coordinates
         for (let i = 0; i < positions.count; i++) {
-          const u = (i % 2);
-          const v = Math.floor(i / 2) % 2;
+          const x = positions.getX(i);
+          const y = positions.getY(i);
+          const z = positions.getZ(i);
+          
+          // Use world coordinates to create seamless UV mapping
+          const u = (x + z) * 0.02;
+          const v = y * 0.02;
+          
           uvs[i * 2] = u;
           uvs[i * 2 + 1] = v;
         }
