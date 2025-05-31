@@ -503,13 +503,14 @@ export function RoomSketchPro({
     console.log(`RSP: Found ${wallMeshes.length} wall meshes to texture`);
 
     // Generate textures (force regeneration for development)
-    texturesRef.current.brick = createBrickTexture();
+    console.log('🔄 RSP: Generating textures...');
+    texturesRef.current.brick = TextureGenerator.createBrickTexture(); // Use your real brick texture
     texturesRef.current.wood = createWoodTexture();
     texturesRef.current.metal = createMetalTexture();
     texturesRef.current.door = createDoorTexture();
     texturesRef.current.window = createWindowTexture();
     texturesRef.current.vent = createVentTexture();
-    console.log('RSP: Generated procedural textures including doors, windows, and vents');
+    console.log('✅ RSP: Generated textures including your brick texture:', texturesRef.current.brick);
 
     // Apply theme-specific materials to walls
     wallMeshes.forEach((wallMesh, index) => {
