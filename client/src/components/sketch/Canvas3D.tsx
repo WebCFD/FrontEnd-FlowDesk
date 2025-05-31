@@ -1120,18 +1120,7 @@ export default function Canvas3D({
         
         // Check if we have stored data for this entry (position and/or dimensions)
         const updatedEntryData = updatedPositions[index];
-        console.log(`[ENTRY DATA LOADING] Checking for stored entry data for entry ${index}:`, {
-          updatedPositionsExists: !!updatedPositions,
-          haveUpdatedData: !!updatedEntryData,
-          updatedEntryData: updatedEntryData,
-          entryOriginalPosition: entry.position,
-          entryOriginalDimensions: entry.dimensions,
-          entryIndex: index,
-          floorName: floorData.name,
-          normalizedFloorName: normalizedFloorName,
-          allPositionsStoredForThisFloor: JSON.stringify(updatedPositions),
-          allFloorEntries: floorData.airEntries.length
-        });
+
 
         // Create working copies of entry position and dimensions
         let entryPosition = { ...entry.position };
@@ -1142,37 +1131,21 @@ export default function Canvas3D({
           // Check if this is the old format (direct x/y properties) or new format (position/dimensions props)
           if ('x' in updatedEntryData && 'y' in updatedEntryData) {
             // Old format - just position data
-            console.log(`[ENTRY DATA LOADING] Found legacy position format for entry ${index}:`, {
-              from: entry.position,
-              to: updatedEntryData,
-              diffX: updatedEntryData.x - entry.position.x,
-              diffY: updatedEntryData.y - entry.position.y
-            });
+
             entryPosition = { x: updatedEntryData.x, y: updatedEntryData.y };
           } else if (updatedEntryData.position) {
             // New format - has position and maybe dimensions
-            console.log(`[ENTRY DATA LOADING] Using stored position for entry ${index}:`, {
-              from: entry.position,
-              to: updatedEntryData.position,
-              diffX: updatedEntryData.position.x - entry.position.x,
-              diffY: updatedEntryData.position.y - entry.position.y
-            });
+
             entryPosition = updatedEntryData.position;
             
             // If we also have dimensions, use those
             if (updatedEntryData.dimensions) {
-              console.log(`[ENTRY DATA LOADING] Using stored dimensions for entry ${index}:`, {
-                from: entry.dimensions,
-                to: updatedEntryData.dimensions
-              });
+
               entryDimensions = updatedEntryData.dimensions;
             }
           }
         } else {
-          console.log(`[ENTRY DATA LOADING] No stored data found for entry ${index}, using original values:`, {
-            position: entry.position,
-            dimensions: entry.dimensions
-          });
+
         }
         
         // Use dimensions directly as they are already in cm
@@ -1212,11 +1185,7 @@ export default function Canvas3D({
           entryIndex: index  // Add the actual index in the airEntries array
         };
 
-        console.log(`AIR ENTRY userData for mesh at index ${index}:`, {
-          meshPosition3D: { x: position.x, y: position.y, z: zPosition },
-          userData: mesh.userData,
-          originalEntry: entry
-        });
+
 
       // Calculate proper orientation
       const wallDirection = new THREE.Vector3()
@@ -1248,7 +1217,7 @@ export default function Canvas3D({
 
       // Add coordinate system axes
       const axisLength = 50; // Length of the coordinate axes
-      console.log(`Creating custom axis arrows for entry at position ${position.x}, ${position.y}, ${zPosition}`);
+
 
       // Store the entry's index in airEntries array for direct reference
       const parentMeshIndex = objects.length - 1;
