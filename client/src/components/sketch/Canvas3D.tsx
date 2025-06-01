@@ -4776,16 +4776,119 @@ export default function Canvas3D({
       }
     };
 
+    // Double-click handler for furniture editing
+    const handleDoubleClick = (event: MouseEvent) => {
+      if (presentationMode) return; // Disable editing in presentation mode
+      
+      event.preventDefault();
+      
+      if (!sceneRef.current || !cameraRef.current) return;
+      
+      // Get mouse coordinates
+      const rect = container.getBoundingClientRect();
+      const mouse = new THREE.Vector2(
+        ((event.clientX - rect.left) / rect.width) * 2 - 1,
+        -((event.clientY - rect.top) / rect.height) * 2 + 1
+      );
+      
+      // Create raycaster
+      const raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera(mouse, cameraRef.current);
+      
+      // Find furniture objects in the scene
+      const furnitureObjects: THREE.Mesh[] = [];
+      sceneRef.current.traverse((object) => {
+        if (object instanceof THREE.Mesh && object.userData.type === 'furniture') {
+          furnitureObjects.push(object);
+        }
+      });
+      
+      // Check for intersections
+      const intersects = raycaster.intersectObjects(furnitureObjects);
+      
+      if (intersects.length > 0) {
+        const intersectedObject = intersects[0].object as THREE.Mesh;
+        const furnitureId = intersectedObject.userData.furnitureId;
+        
+        if (furnitureId && onUpdateFurniture) {
+          // Find the furniture item data
+          // This would need to be passed from the parent component
+          // For now, we'll create a mock furniture item based on the mesh
+          const mockFurnitureItem: FurnitureItem = {
+            id: furnitureId,
+            type: intersectedObject.userData.furnitureType || 'table',
+            name: intersectedObject.userData.furnitureName || 'Furniture',
+            floorName: intersectedObject.userData.floorName || currentFloor,
+            position: {
+              x: intersectedObject.position.x,
+              y: intersectedObject.position.y,
+              z: intersectedObject.position.z
+            },
+            rotation: {
+              x: intersectedObject.rotation.x,
+              y: intersectedObject.rotation.y,
+              z: intersectedObject.rotation.z
+            },
+            dimensions: intersectedObject.userData.dimensions || { width: 80, height: 80, depth: 80 },
+            information: intersectedObject.userData.information || '',
+            meshId: intersectedObject.userData.meshId || furnitureId,
+            createdAt: intersectedObject.userData.createdAt || Date.now(),
+            updatedAt: Date.now()
+          };
+          
+          setEditingFurniture({
+            index: 0, // This would need to be the actual index from the furniture list
+            item: mockFurnitureItem
+          });
+        }
+      }
+    };
+
     container.addEventListener("dragover", handleDragOver);
     container.addEventListener("dragleave", handleDragLeave);
     container.addEventListener("drop", handleDrop);
+    container.addEventListener("dblclick", handleDoubleClick);
 
     return () => {
       container.removeEventListener("dragover", handleDragOver);
       container.removeEventListener("dragleave", handleDragLeave);
       container.removeEventListener("drop", handleDrop);
+      container.removeEventListener("dblclick", handleDoubleClick);
     };
   }, [currentFloor, onFurnitureAdd, isMultifloor, floorParameters]);
+
+  // Handler for updating furniture
+  const handleFurnitureEdit = (
+    index: number,
+    data: {
+      name: string;
+      position: { x: number; y: number; z: number };
+      rotation: { x: number; y: number; z: number };
+      scale: { x: number; y: number; z: number };
+      properties?: {
+        material?: string;
+        temperature?: number;
+        thermalConductivity?: number;
+        density?: number;
+        heatCapacity?: number;
+      };
+    }
+  ) => {
+    if (!editingFurniture || !onUpdateFurniture) return;
+
+    const updatedFurniture: FurnitureItem = {
+      ...editingFurniture.item,
+      name: data.name,
+      position: data.position,
+      rotation: data.rotation,
+      // Note: scale is handled internally, dimensions are stored separately
+      updatedAt: Date.now()
+    };
+
+    // Call the parent component's handler
+    onUpdateFurniture(updatedFurniture);
+    setEditingFurniture(null);
+  };
 
   return (
     <>
@@ -4828,6 +4931,37 @@ export default function Canvas3D({
           }
           initialValues={editingAirEntry.entry.dimensions}
           isEditing={true}
+        />
+      )}
+
+      {/* Dialog for editing furniture */}
+      {editingFurniture && (
+        <FurnitureDialog
+          type={editingFurniture.item.type}
+          isOpen={true}
+          onClose={() => setEditingFurniture(null)}
+          onConfirm={(data) => handleFurnitureEdit(editingFurniture.index, data)}
+          initialValues={{
+            name: editingFurniture.item.name,
+            position: editingFurniture.item.position,
+            rotation: editingFurniture.item.rotation,
+            scale: { x: 1, y: 1, z: 1 }, // Default scale
+            properties: {
+              material: "wood",
+              temperature: 20,
+              thermalConductivity: 0.12,
+              density: 600,
+              heatCapacity: 1200
+            }
+          }}
+          isEditing={true}
+          floorContext={{
+            floorName: editingFurniture.item.floorName,
+            floorHeight: 220, // Default floor height
+            clickPosition: editingFurniture.item.position
+          }}
+          furnitureIndex={editingFurniture.index}
+          currentFloor={currentFloor}
         />
       )}
     </>
