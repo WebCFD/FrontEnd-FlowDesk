@@ -480,7 +480,7 @@ const sanitizeFurnitureItem = (item: Partial<FurnitureItem>, floorName: string):
 const migrateFloorsData = (floors: Record<string, FloorData>): Record<string, FloorData> => {
   const migratedFloors: Record<string, FloorData> = {};
   
-  for (const [floorName, floorData] of Object.entries(floors)) {
+  for (const [floorName, floorData] of Object.entries(migratedFloors)) {
     migratedFloors[floorName] = migrateFloorData(floorData);
   }
   
@@ -3649,7 +3649,7 @@ export default function Canvas3D({
     // This prevents losing the selection when the scene is updated
 
     // Check specifically for stair polygons
-    Object.entries(floors).forEach(([floorName, floorData]) => {
+    Object.entries(migratedFloors).forEach(([floorName, floorData]) => {
       if (floorData.stairPolygons?.length) {
         console.log(
           `Floor ${floorName} has ${floorData.stairPolygons.length} stair polygons:`,
@@ -3689,7 +3689,7 @@ export default function Canvas3D({
     toRemove.forEach((object) => sceneRef.current?.remove(object));
 
     // Create and add objects for each floor
-    Object.entries(floors).forEach(([floorName, floorData]) => {
+    Object.entries(migratedFloors).forEach(([floorName, floorData]) => {
       if (floorData.hasClosedContour || floorName === currentFloor) {
         const baseHeight = getFloorBaseHeight(floorName);
         
@@ -3738,7 +3738,7 @@ export default function Canvas3D({
       setContextCurrentFloor(currentFloor);
       
       // Also individually update each floor to ensure proper synchronization
-      Object.entries(floors).forEach(([floorName, floorData]) => {
+      Object.entries(migratedFloors).forEach(([floorName, floorData]) => {
         updateFloorData(floorName, floorData);
       });
       
@@ -4481,7 +4481,7 @@ export const generateSharedFloorGeometry = (
   };
 
   // Generate geometry for each floor (identical logic to Canvas3D)
-  Object.entries(floors).forEach(([floorName, floorData]) => {
+  Object.entries(migratedFloors).forEach(([floorName, floorData]) => {
     if (floorData.hasClosedContour || floorName === config.currentFloor) {
       const baseHeight = getFloorBaseHeight(floorName);
       
