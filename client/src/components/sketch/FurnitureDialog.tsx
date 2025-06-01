@@ -48,6 +48,8 @@ interface FurnitureDialogProps {
     clickPosition: { x: number; y: number; z: number };
   };
   onPositionUpdate?: (newPosition: { x: number; y: number; z: number }) => void;
+  onRotationUpdate?: (newRotation: { x: number; y: number; z: number }) => void;
+  onScaleUpdate?: (newScale: { x: number; y: number; z: number }) => void;
   furnitureIndex?: number;
   currentFloor?: string;
 }
@@ -109,7 +111,15 @@ const furnitureDefaults = {
 };
 
 export default function FurnitureDialog(props: FurnitureDialogProps) {
-  const { type, isOpen: dialogOpen, onClose, isEditing = false } = props;
+  const { 
+    type, 
+    isOpen: dialogOpen, 
+    onClose, 
+    isEditing = false,
+    onPositionUpdate,
+    onRotationUpdate,
+    onScaleUpdate
+  } = props;
   
   // Estado unificado para manejar todas las propiedades del furniture
   const [values, setValues] = useState(() => getDefaultValues());
@@ -304,10 +314,15 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                         id="pos-x"
                         type="number"
                         value={elementPosition.x}
-                        onChange={(e) => setElementPosition(prev => ({
-                          ...prev,
-                          x: Number(e.target.value)
-                        }))}
+                        onChange={(e) => {
+                          const newX = Number(e.target.value);
+                          const newPosition = { ...elementPosition, x: newX };
+                          setElementPosition(newPosition);
+                          // Real-time update
+                          if (onPositionUpdate) {
+                            onPositionUpdate(newPosition);
+                          }
+                        }}
                         className="text-sm"
                       />
                     </div>
@@ -317,10 +332,15 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                         id="pos-y"
                         type="number"
                         value={elementPosition.y}
-                        onChange={(e) => setElementPosition(prev => ({
-                          ...prev,
-                          y: Number(e.target.value)
-                        }))}
+                        onChange={(e) => {
+                          const newY = Number(e.target.value);
+                          const newPosition = { ...elementPosition, y: newY };
+                          setElementPosition(newPosition);
+                          // Real-time update
+                          if (onPositionUpdate) {
+                            onPositionUpdate(newPosition);
+                          }
+                        }}
                         className="text-sm"
                       />
                     </div>
@@ -330,10 +350,15 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                         id="pos-z"
                         type="number"
                         value={elementPosition.z}
-                        onChange={(e) => setElementPosition(prev => ({
-                          ...prev,
-                          z: Number(e.target.value)
-                        }))}
+                        onChange={(e) => {
+                          const newZ = Number(e.target.value);
+                          const newPosition = { ...elementPosition, z: newZ };
+                          setElementPosition(newPosition);
+                          // Real-time update
+                          if (onPositionUpdate) {
+                            onPositionUpdate(newPosition);
+                          }
+                        }}
                         className="text-sm"
                       />
                     </div>
@@ -350,13 +375,18 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                         id="rot-x"
                         type="number"
                         value={values.rotation.x * (180 / Math.PI)}
-                        onChange={(e) => setValues(prev => ({
-                          ...prev,
-                          rotation: {
-                            ...prev.rotation,
-                            x: Number(e.target.value) * (Math.PI / 180)
+                        onChange={(e) => {
+                          const newRotationX = Number(e.target.value) * (Math.PI / 180);
+                          const newRotation = { ...values.rotation, x: newRotationX };
+                          setValues(prev => ({
+                            ...prev,
+                            rotation: newRotation
+                          }));
+                          // Real-time update
+                          if (onRotationUpdate) {
+                            onRotationUpdate(newRotation);
                           }
-                        }))}
+                        }}
                         className="text-sm"
                       />
                     </div>
@@ -366,13 +396,18 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                         id="rot-y"
                         type="number"
                         value={values.rotation.y * (180 / Math.PI)}
-                        onChange={(e) => setValues(prev => ({
-                          ...prev,
-                          rotation: {
-                            ...prev.rotation,
-                            y: Number(e.target.value) * (Math.PI / 180)
+                        onChange={(e) => {
+                          const newRotationY = Number(e.target.value) * (Math.PI / 180);
+                          const newRotation = { ...values.rotation, y: newRotationY };
+                          setValues(prev => ({
+                            ...prev,
+                            rotation: newRotation
+                          }));
+                          // Real-time update
+                          if (onRotationUpdate) {
+                            onRotationUpdate(newRotation);
                           }
-                        }))}
+                        }}
                         className="text-sm"
                       />
                     </div>
