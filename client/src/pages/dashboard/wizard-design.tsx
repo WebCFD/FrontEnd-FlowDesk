@@ -1564,7 +1564,6 @@ export default function WizardDesign() {
                           className="h-auto py-2 flex flex-col items-center justify-center gap-1"
                           draggable={true}
                           onDragStart={(e) => {
-                            console.log(`Starting drag for ${item.name}`);
                             // Only send the necessary data without React elements to avoid circular references
                             const serializable = {
                               id: item.id,

@@ -63,24 +63,12 @@ const furnitureItems: FurnitureItem[] = [
 ];
 
 export function FurnitureMenu({ onDragStart, wallTransparency = 0.8, onWallTransparencyChange }: FurnitureMenuProps) {
-  console.log("FurnitureMenu render - furnitureItems:", furnitureItems);
-  console.log("FurnitureMenu render - furnitureItems length:", furnitureItems.length);
-  
   const handleTransparencyChange = (values: number[]) => {
     const newValue = values[0];
-    console.log("=== FurnitureMenu Transparency Change ===");
-    console.log("Previous transparency:", wallTransparency);
-    console.log("New transparency value:", newValue);
-
     if (onWallTransparencyChange) {
-      console.log("Calling onWallTransparencyChange with value:", newValue);
       onWallTransparencyChange(newValue);
-    } else {
-      console.warn("onWallTransparencyChange callback is not provided");
     }
   };
-
-  console.log("FurnitureMenu render - wallTransparency:", wallTransparency);
 
   // Ensure wallTransparency has a valid value before using toFixed
   const displayValue = typeof wallTransparency === 'number' ? wallTransparency.toFixed(1) : '0.8';
@@ -113,14 +101,8 @@ export function FurnitureMenu({ onDragStart, wallTransparency = 0.8, onWallTrans
               key={item.id}
               draggable
               onDragStart={(e) => {
-                console.log("🔵 TEST 1: FurnitureMenu drag started for:", item.name);
-                console.log("🔵 TEST 1: Item data:", item);
-                console.log("🔵 TEST 1: Serialized data:", JSON.stringify(item));
-                
                 e.dataTransfer.setData('application/json', JSON.stringify(item));
                 onDragStart(item);
-                
-                console.log("🔵 TEST 1: DataTransfer set successfully");
               }}
               className={cn(
                 "h-16 p-2 flex flex-col items-center justify-center",
