@@ -1092,22 +1092,26 @@ export default function Canvas3D({
   const [activeMeasurementLine, setActiveMeasurementLine] = useState<THREE.Line | null>(null);
   const [activeMeasurementLabel, setActiveMeasurementLabel] = useState<THREE.Sprite | null>(null);
   
-  // Surface highlighting state for drag & drop
-  const [highlightedSurface, setHighlightedSurface] = useState<THREE.Mesh | null>(null);
-  const [originalMaterial, setOriginalMaterial] = useState<THREE.Material | null>(null);
+  // Store original materials for all surfaces (no React state)
+  const originalMaterialsRef = useRef<Map<THREE.Mesh, THREE.Material>>(new Map());
 
-  // Functions for surface highlighting during drag operations
-  const highlightSurface = useCallback((mesh: THREE.Mesh) => {
-    console.log(`🔥 HIGHLIGHT SURFACE: Attempting to highlight ${mesh.userData.type}`);
+  // Simple direct surface highlighting without React state
+  const clearAllHighlights = () => {
+    // Restore all original materials
+    originalMaterialsRef.current.forEach((originalMaterial, mesh) => {
+      mesh.material = originalMaterial;
+    });
+    originalMaterialsRef.current.clear();
+    needsRenderRef.current = true;
+  };
+
+  const highlightSurface = (mesh: THREE.Mesh) => {
+    // Clear all existing highlights first
+    clearAllHighlights();
     
-    // Clear any existing highlight first
-    if (highlightedSurface && originalMaterial) {
-      highlightedSurface.material = originalMaterial;
-      console.log(`🔥 HIGHLIGHT SURFACE: Cleared previous highlight`);
-    }
-    
-    // Store original material and apply new highlight
-    const newOriginalMaterial = mesh.material as THREE.Material;
+    // Store original material
+    const originalMaterial = mesh.material as THREE.Material;
+    originalMaterialsRef.current.set(mesh, originalMaterial);
     
     // Create highlight material based on surface type
     const surfaceType = mesh.userData.type;
@@ -1132,38 +1136,17 @@ export default function Canvas3D({
     
     // Apply highlight
     mesh.material = highlightMaterial;
-    setHighlightedSurface(mesh);
-    setOriginalMaterial(newOriginalMaterial);
-    
-    console.log(`🔥 HIGHLIGHT SURFACE: Applied ${surfaceType} highlight`);
-    
-    // Trigger render
     needsRenderRef.current = true;
-  }, [highlightedSurface, originalMaterial]);
-
-  const clearSurfaceHighlight = useCallback(() => {
-    console.log(`🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: ${highlightedSurface ? 'YES' : 'NO'}, has material: ${originalMaterial ? 'YES' : 'NO'})`);
     
-    if (highlightedSurface && originalMaterial) {
-      // Restore original material
-      highlightedSurface.material = originalMaterial;
-      setHighlightedSurface(null);
-      setOriginalMaterial(null);
-      
-      // Trigger render
-      needsRenderRef.current = true;
-      console.log("🔥 CLEAR HIGHLIGHT: Successfully cleared highlight");
-    } else {
-      console.log("🔥 CLEAR HIGHLIGHT: Nothing to clear");
-    }
-  }, []); // Remove dependencies to break the cycle
+    console.log(`🔥 HIGHLIGHTED: ${surfaceType} on ${mesh.userData.floorName}`);
+  };
 
   // Add effect to cleanup highlight when component unmounts or floor changes
   useEffect(() => {
     return () => {
-      clearSurfaceHighlight();
+      clearAllHighlights();
     };
-  }, [currentFloor, clearSurfaceHighlight]);
+  }, [currentFloor]);
 
   const isMeasureModeRef = useRef(false);
 
@@ -4748,35 +4731,31 @@ export default function Canvas3D({
         
         console.log(`🔍 RAYCAST: Found ${intersects.length} intersections with ${surfaces.length} surfaces`);
         
+        // Clear all highlights first
+        clearAllHighlights();
+        
         if (intersects.length > 0) {
           // Get the closest intersection (first one)
           const targetMesh = intersects[0].object as THREE.Mesh;
           console.log(`🎯 TARGET: ${targetMesh.userData.type} on ${targetMesh.userData.floorName}`);
           
-          // Only highlight if it's different from current
-          if (highlightedSurface !== targetMesh) {
-            console.log(`🔥 NEW INTERSECTION: Highlighting ${targetMesh.userData.type}`);
-            highlightSurface(targetMesh);
-          }
+          // Highlight the intersected surface
+          highlightSurface(targetMesh);
         } else {
-          // No intersection - clear highlight
-          if (highlightedSurface) {
-            console.log(`🔥 NO INTERSECTION: Clearing highlight`);
-            clearSurfaceHighlight();
-          }
+          console.log(`🔥 NO INTERSECTION: No highlights applied`);
         }
       }
     };
 
     const handleDragLeave = (event: DragEvent) => {
       console.log("🔥 DRAG LEAVE: Event triggered");
-      clearSurfaceHighlight();
+      clearAllHighlights();
     };
 
     const handleDrop = (event: DragEvent) => {
       // Clear highlight when dropping
       console.log("🔥 DROP: Event triggered, clearing highlight");
-      clearSurfaceHighlight();
+      clearAllHighlights();
       
       if (sceneRef.current && cameraRef.current) {
         handleFurnitureDrop(
@@ -4801,7 +4780,7 @@ export default function Canvas3D({
       container.removeEventListener("dragleave", handleDragLeave);
       container.removeEventListener("drop", handleDrop);
     };
-  }, [currentFloor, onFurnitureAdd, clearSurfaceHighlight, highlightSurface, isMultifloor, floorParameters]);
+  }, [currentFloor, onFurnitureAdd, isMultifloor, floorParameters]);
 
   return (
     <>
