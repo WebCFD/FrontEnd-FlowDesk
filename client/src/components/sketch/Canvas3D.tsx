@@ -570,6 +570,13 @@ const detectSurfaceFromPosition = (
   console.log('🔍 RAYCASTING DEBUG - Intersections found:', intersects.length);
   
   if (intersects.length > 0) {
+    intersects.forEach((intersection, i) => {
+      const mesh = intersection.object as THREE.Mesh;
+      console.log(`  Intersection ${i}: ${mesh.userData.type} "${mesh.userData.floorName}" at point:`, intersection.point);
+    });
+  }
+  
+  if (intersects.length > 0) {
     // Find the closest surface intersection
     const closestIntersect = intersects[0];
     const correspondingSurface = surfaceMeshes.find(s => s.mesh === closestIntersect.object);
