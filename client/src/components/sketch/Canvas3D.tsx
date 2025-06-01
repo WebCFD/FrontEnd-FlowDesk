@@ -2584,7 +2584,7 @@ export default function Canvas3D({
         
         // Reset previously highlighted element if any
         if (hoveredEraseTarget) {
-          console.log("🔄 Resetting previously highlighted element");
+
           // Restore original material
           hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
           setHoveredEraseTarget(null);
@@ -2908,14 +2908,6 @@ export default function Canvas3D({
         needsRenderRef.current = true;
 
         // No position updates here - let the animation loop handle it
-        console.log("Mouse move during drag", {
-          x: event.clientX,
-          y: event.clientY,
-          axis: dragStateRef.current.selectedAxis,
-          dragging: dragStateRef.current.isDragging,
-          reactIsDragging: isDragging,
-          selectedAxis: selectedAxis
-        });
       }
 
 
