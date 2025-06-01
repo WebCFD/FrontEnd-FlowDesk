@@ -560,21 +560,8 @@ const detectSurfaceFromPosition = (
     }
   });
 
-  console.log('🔍 RAYCASTING DEBUG - Surface meshes found:', surfaceMeshes.length);
-  surfaceMeshes.forEach((sm, i) => {
-    console.log(`  ${sm.surfaceType} ${i}: "${sm.floorName}", position: ${sm.mesh.position.x}, ${sm.mesh.position.y}, ${sm.mesh.position.z}`);
-  });
-
   // Check intersections with both floor and ceiling meshes
   const intersects = raycaster.intersectObjects(surfaceMeshes.map(s => s.mesh));
-  console.log('🔍 RAYCASTING DEBUG - Intersections found:', intersects.length);
-  
-  if (intersects.length > 0) {
-    intersects.forEach((intersection, i) => {
-      const mesh = intersection.object as THREE.Mesh;
-      console.log(`  Intersection ${i}: ${mesh.userData.type} "${mesh.userData.floorName}" at point:`, intersection.point);
-    });
-  }
   
   if (intersects.length > 0) {
     // Find the closest surface intersection
@@ -592,14 +579,11 @@ const detectSurfaceFromPosition = (
                               null;
       
       if (matchingFloorKey) {
-        console.log(`🎯 SURFACE DETECTION - Found ${correspondingSurface.surfaceType} on "${correspondingSurface.floorName}" (matched as "${matchingFloorKey}")`);
         return { 
           floorName: matchingFloorKey, 
           surfaceType: correspondingSurface.surfaceType, 
           fallbackUsed: false 
         };
-      } else {
-        console.log(`⚠️ SURFACE DETECTION - Found ${correspondingSurface.surfaceType} on "${correspondingSurface.floorName}" but no match in availableFloors:`, Object.keys(availableFloors));
       }
     }
   }
@@ -664,7 +648,6 @@ const calculateFurniturePosition = (
   });
 
   const intersects = raycaster.intersectObjects(surfaceMeshes);
-  console.log(`🎯 POSITION CALC - Looking for ${surfaceType} on ${targetFloor}, found ${surfaceMeshes.length} meshes, ${intersects.length} intersections`);
   
   if (intersects.length > 0) {
     const point = intersects[0].point;
@@ -712,13 +695,6 @@ const handleFurnitureDrop = (
     const furnitureMenuData = JSON.parse(itemData);
     
     // FASE 2 TEST: Sistema de raycasting y detección de piso
-    console.log("🧪 FASE 2 TEST - Input:", {
-      currentFloor,
-      isMultifloor,
-      mousePosition: { x: event.clientX, y: event.clientY },
-      availableFloors: Object.keys(migratedFloors)
-    });
-
     const surfaceDetection = detectSurfaceFromPosition(
       event,
       camera,
@@ -729,12 +705,6 @@ const handleFurnitureDrop = (
       floorParameters
     );
     
-    console.log("🧪 FASE 2 TEST - Surface Detection:", {
-      detectedFloor: surfaceDetection.floorName,
-      surfaceType: surfaceDetection.surfaceType,
-      fallbackUsed: surfaceDetection.fallbackUsed
-    });
-    
     const calculatedPosition = calculateFurniturePosition(
       event,
       camera,
@@ -743,12 +713,7 @@ const handleFurnitureDrop = (
       surfaceDetection.surfaceType,
       floorParameters
     );
-    
-    console.log("🧪 FASE 2 TEST - Position Calculation:", {
-      calculatedPosition,
-      floorUsedForCalculation: surfaceDetection.floorName,
-      surfaceType: surfaceDetection.surfaceType
-    });
+
     
     // Use default dimensions from menu data
     const dimensions = furnitureMenuData.defaultDimensions || { width: 80, height: 80, depth: 80 };
