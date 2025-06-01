@@ -558,8 +558,14 @@ const detectFloorFromPosition = (
     }
   });
 
+  console.log('🔍 RAYCASTING DEBUG - Floor meshes found:', floorMeshes.length);
+  floorMeshes.forEach((fm, i) => {
+    console.log(`  Floor ${i}: ${fm.floorName}, position: ${fm.mesh.position.x}, ${fm.mesh.position.y}, ${fm.mesh.position.z}`);
+  });
+
   // Check intersections with floor meshes
   const intersects = raycaster.intersectObjects(floorMeshes.map(f => f.mesh));
+  console.log('🔍 RAYCASTING DEBUG - Intersections found:', intersects.length);
   
   if (intersects.length > 0) {
     // Find the closest floor intersection
