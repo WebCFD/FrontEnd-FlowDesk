@@ -674,7 +674,7 @@ const calculateFurniturePosition = (
  */
 
 // Main furniture drop handler that integrates with Canvas3D
-const handleFurnitureDrop = (
+const handleFurnitureDrop = async (
   event: DragEvent,
   camera: THREE.Camera,
   scene: THREE.Scene,
@@ -683,7 +683,7 @@ const handleFurnitureDrop = (
   isMultifloor: boolean,
   floorParameters: Record<string, { ceilingHeight: number; floorDeck: number }>,
   onFurnitureAdd?: (item: FurnitureItem) => void
-): void => {
+): Promise<void> => {
   event.preventDefault();
   
   const itemData = event.dataTransfer?.getData("application/json");
@@ -734,7 +734,7 @@ const handleFurnitureDrop = (
     };
 
     // Create and add 3D model to scene
-    const model = createFurnitureModel(furnitureItem, scene);
+    const model = await createFurnitureModel(furnitureItem, scene);
     
     if (model) {
       onFurnitureAdd(furnitureItem);
@@ -746,10 +746,10 @@ const handleFurnitureDrop = (
 };
 
 // PHASE 3: Function to create and add furniture models to the scene
-const createFurnitureModel = (
+const createFurnitureModel = async (
   furnitureItem: FurnitureItem,
   scene: THREE.Scene
-): THREE.Group | null => {
+): Promise<THREE.Group | null> => {
   let model: THREE.Group;
 
   // Create the appropriate model based on furniture type
@@ -764,7 +764,7 @@ const createFurnitureModel = (
       model = createArmchairModel();
       break;
     case 'car':
-      model = createCarModel();
+      model = await createCarModel();
       break;
     default:
       console.error(`Unknown furniture type: ${furnitureItem.type}`);
