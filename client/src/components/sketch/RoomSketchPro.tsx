@@ -543,8 +543,8 @@ export function RoomSketchPro({
           
           const newMaterial = new THREE.MeshPhongMaterial({
             map: brickTexture,
-            opacity: originalMaterial.opacity,
-            transparent: originalMaterial.transparent,
+            opacity: wallTransparency,
+            transparent: wallTransparency < 1.0,
             side: originalMaterial.side
           });
           
@@ -598,8 +598,8 @@ export function RoomSketchPro({
           marbleTexture.repeat.set(4, 4);
           newMaterial = new THREE.MeshPhongMaterial({
             map: marbleTexture,
-            opacity: originalMaterial.opacity,
-            transparent: originalMaterial.transparent,
+            opacity: wallTransparency,
+            transparent: wallTransparency < 1.0,
             side: originalMaterial.side
           });
           break;
@@ -614,8 +614,8 @@ export function RoomSketchPro({
           industrialTexture.repeat.set(4, 4);
           newMaterial = new THREE.MeshPhongMaterial({
             map: industrialTexture,
-            opacity: originalMaterial.opacity,
-            transparent: originalMaterial.transparent,
+            opacity: wallTransparency,
+            transparent: wallTransparency < 1.0,
             side: originalMaterial.side
           });
           break;
