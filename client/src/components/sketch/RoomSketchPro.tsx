@@ -691,12 +691,12 @@ export function RoomSketchPro({
           geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
         }
 
-        // Create new material with texture and custom transparency
+        // Create new material with texture using original opacity for better visibility
         const newMaterial = new THREE.MeshPhongMaterial({
           map: texture,
           color: materialColor,
-          opacity: airEntryTransparency,
-          transparent: airEntryTransparency < 1.0,
+          opacity: originalMaterial.opacity,
+          transparent: originalMaterial.transparent,
           side: originalMaterial.side
         });
         
