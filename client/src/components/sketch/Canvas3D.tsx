@@ -707,6 +707,22 @@ const handleFurnitureDrop = (
       updatedAt: Date.now()
     };
 
+    // FASE 1 TEST: Validar estructura de datos completa
+    console.log("🧪 FASE 1 TEST - FurnitureItem creado:", furnitureItem);
+    console.log("🧪 FASE 1 TEST - Campos requeridos:", {
+      id: !!furnitureItem.id,
+      type: !!furnitureItem.type,
+      name: !!furnitureItem.name,
+      floorName: !!furnitureItem.floorName,
+      position: !!furnitureItem.position,
+      rotation: !!furnitureItem.rotation,
+      dimensions: !!furnitureItem.dimensions,
+      information: !!furnitureItem.information,
+      meshId: !!furnitureItem.meshId,
+      createdAt: !!furnitureItem.createdAt,
+      updatedAt: !!furnitureItem.updatedAt
+    });
+
     // Create and add 3D model to scene
     const model = createFurnitureModel(furnitureItem, scene);
     
