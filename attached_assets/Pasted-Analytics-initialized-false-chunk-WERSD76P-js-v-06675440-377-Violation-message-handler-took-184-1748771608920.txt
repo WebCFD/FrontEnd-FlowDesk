@@ -1,0 +1,43 @@
+Analytics initialized: false
+chunk-WERSD76P.js?v=06675440:377 [Violation] 'message' handler took 184ms
+dashboard-sidebar.tsx:64 
+            
+            
+           GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+fetchUserData @ dashboard-sidebar.tsx:64
+(anonymous) @ dashboard-sidebar.tsx:79
+commitHookEffectListMount @ chunk-WERSD76P.js?v=06675440:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=06675440:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=06675440:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=06675440:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=06675440:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=06675440:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=06675440:19447
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=06675440:18868
+flushSyncCallbacks @ chunk-WERSD76P.js?v=06675440:9119
+commitRootImpl @ chunk-WERSD76P.js?v=06675440:19432
+commitRoot @ chunk-WERSD76P.js?v=06675440:19277
+finishConcurrentRender @ chunk-WERSD76P.js?v=06675440:18805
+performConcurrentWorkOnRoot @ chunk-WERSD76P.js?v=06675440:18718
+workLoop @ chunk-WERSD76P.js?v=06675440:197
+flushWork @ chunk-WERSD76P.js?v=06675440:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=06675440:384Understand this errorAI
+analytics.ts:26 Google Analytics initialized with ID: G-XZYY9DVVHW
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+AnalyticsProvider.tsx:21 Analytics initialized: true
+Canvas3D.tsx:1938 🔧 DEBUG: Canvas3D useEffect initialization starting
+Canvas3D.tsx:1945 🔧 DEBUG: Container found, initializing Three.js scene
+Canvas3D.tsx:1952 🔧 DEBUG: Scene created and assigned to ref
+chunk-WERSD76P.js?v=06675440:18625 [Violation] 'click' handler took 217ms
+Canvas3D.tsx:2154 [Violation] 'requestAnimationFrame' handler took 58ms
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.Understand this warningAI
+wizard-design.tsx:1533 Starting drag for Table
+Canvas3D.tsx:711 🧪 FASE 1 TEST - FurnitureItem creado: {id: 'table_1748771600563', type: 'table', name: 'Table', floorName: 'first', position: {…}, …}
+Canvas3D.tsx:712 🧪 FASE 1 TEST - Campos requeridos: {id: true, type: true, name: true, floorName: true, position: true, …}
