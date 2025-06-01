@@ -6,6 +6,7 @@ import AirEntryDialog from "./AirEntryDialog";
 import { ViewDirection } from "./Toolbar3D";
 import { useSceneContext } from "../../contexts/SceneContext";
 import { FurnitureItem, FurnitureCallbacks } from "@shared/furniture-types";
+import { createTableModel, createPersonModel, createArmchairModel } from "./furniture-models";
 
 interface Point {
   x: number;
@@ -641,6 +642,163 @@ const calculateFurniturePosition = (
     y: worldY,
     z: baseHeight + 10 // Slightly above floor surface
   };
+};
+
+/**
+ * PHASE 3: Furniture Drop Handler Functions
+ * Integrated drop functionality with existing Canvas3D architecture
+ */
+
+// Main furniture drop handler that integrates with Canvas3D
+const handleFurnitureDrop = (
+  event: DragEvent,
+  camera: THREE.Camera,
+  scene: THREE.Scene,
+  currentFloor: string,
+  migratedFloors: Record<string, FloorData>,
+  isMultifloor: boolean,
+  floorParameters: Record<string, { ceilingHeight: number; floorDeck: number }>,
+  onFurnitureAdd?: (item: FurnitureItem) => void
+): void => {
+  event.preventDefault();
+  
+  const itemData = event.dataTransfer?.getData("application/json");
+  if (!itemData || !onFurnitureAdd) {
+    return;
+  }
+
+  try {
+    const furnitureMenuData = JSON.parse(itemData);
+    
+    // PHASE 2: Use intelligent floor detection
+    const detectedFloor = detectFloorFromPosition(
+      event,
+      camera,
+      scene,
+      currentFloor,
+      migratedFloors,
+      isMultifloor,
+      floorParameters
+    );
+    
+    // PHASE 2: Use enhanced position calculation
+    const calculatedPosition = calculateFurniturePosition(
+      event,
+      camera,
+      scene,
+      detectedFloor,
+      floorParameters
+    );
+    
+    // Use default dimensions from menu data
+    const dimensions = furnitureMenuData.defaultDimensions || { width: 80, height: 80, depth: 80 };
+    
+    // Create furniture item with comprehensive data
+    const furnitureItem: FurnitureItem = {
+      id: `${furnitureMenuData.id}_${Date.now()}`,
+      type: furnitureMenuData.id as 'table' | 'person' | 'armchair',
+      name: furnitureMenuData.name,
+      floorName: detectedFloor,
+      position: calculatedPosition,
+      rotation: { x: 0, y: 0, z: 0 },
+      dimensions: dimensions,
+      information: `${furnitureMenuData.name} placed on ${detectedFloor}`,
+      meshId: `furniture_${Date.now()}`,
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    };
+
+    // PHASE 3: Create and add 3D model to scene
+    const model = createFurnitureModel(furnitureItem, scene);
+    
+    if (model) {
+      // Add furniture to the system
+      onFurnitureAdd(furnitureItem);
+    } else {
+      console.error("Failed to create furniture model for:", furnitureItem.type);
+    }
+    
+  } catch (error) {
+    console.error("Error processing furniture drop:", error);
+  }
+};
+
+// PHASE 3: Function to create and add furniture models to the scene
+const createFurnitureModel = (
+  furnitureItem: FurnitureItem,
+  scene: THREE.Scene
+): THREE.Group | null => {
+  let model: THREE.Group;
+
+  // Create the appropriate model based on furniture type
+  switch (furnitureItem.type) {
+    case 'table':
+      model = createTableModel();
+      break;
+    case 'person':
+      model = createPersonModel();
+      break;
+    case 'armchair':
+      model = createArmchairModel();
+      break;
+    default:
+      console.error(`Unknown furniture type: ${furnitureItem.type}`);
+      return null;
+  }
+
+  // Apply position, rotation, and scale from furniture item
+  model.position.set(
+    furnitureItem.position.x,
+    furnitureItem.position.y,
+    furnitureItem.position.z
+  );
+
+  model.rotation.set(
+    furnitureItem.rotation.x,
+    furnitureItem.rotation.y,
+    furnitureItem.rotation.z
+  );
+
+  // Apply scaling based on dimensions if different from defaults
+  if (furnitureItem.dimensions) {
+    const defaultDimensions = getDefaultDimensions(furnitureItem.type);
+    const scaleX = furnitureItem.dimensions.width / defaultDimensions.width;
+    const scaleY = furnitureItem.dimensions.depth / defaultDimensions.depth;
+    const scaleZ = furnitureItem.dimensions.height / defaultDimensions.height;
+    
+    model.scale.set(scaleX, scaleY, scaleZ);
+  }
+
+  // Add metadata to the model for identification
+  model.userData = {
+    type: 'furniture',
+    furnitureType: furnitureItem.type,
+    furnitureId: furnitureItem.id,
+    floorName: furnitureItem.floorName,
+    isSelectable: true
+  };
+
+  // Set the meshId in the furniture item for reference
+  furnitureItem.meshId = model.uuid;
+
+  // Add to scene
+  scene.add(model);
+
+  return model;
+};
+
+// Helper function to get default dimensions for furniture types
+const getDefaultDimensions = (type: 'table' | 'person' | 'armchair') => {
+  switch (type) {
+    case 'table':
+      return { width: 120, height: 75, depth: 80 };
+    case 'person':
+      return { width: 50, height: 170, depth: 30 };
+    case 'armchair':
+      return { width: 70, height: 85, depth: 70 };
+    default:
+      return { width: 80, height: 80, depth: 80 };
+  }
 };
 
 /**
@@ -4430,54 +4588,18 @@ export default function Canvas3D({
     };
 
     const handleDrop = (event: DragEvent) => {
-      event.preventDefault();
-      const itemData = event.dataTransfer?.getData("application/json");
-      if (itemData && onFurnitureAdd && sceneRef.current && cameraRef.current) {
-        try {
-          const furnitureMenuData = JSON.parse(itemData);
-          
-          // PHASE 2: Use intelligent floor detection
-          const detectedFloor = detectFloorFromPosition(
-            event,
-            cameraRef.current,
-            sceneRef.current,
-            currentFloor,
-            migratedFloors,
-            isMultifloor || false,
-            floorParameters || {}
-          );
-          
-          // PHASE 2: Use enhanced position calculation
-          const calculatedPosition = calculateFurniturePosition(
-            event,
-            cameraRef.current,
-            sceneRef.current,
-            detectedFloor,
-            floorParameters || {}
-          );
-          
-          // Use default dimensions from menu data
-          const dimensions = furnitureMenuData.defaultDimensions || { width: 80, height: 80, depth: 80 };
-          
-          // Convert menu item to full FurnitureItem
-          const furnitureItem: FurnitureItem = {
-            id: `${furnitureMenuData.id}_${Date.now()}`,
-            type: furnitureMenuData.id as 'table' | 'person' | 'armchair',
-            name: furnitureMenuData.name,
-            floorName: detectedFloor,
-            position: calculatedPosition,
-            rotation: { x: 0, y: 0, z: 0 },
-            dimensions: dimensions,
-            information: `${furnitureMenuData.name} placed on ${detectedFloor}`,
-            meshId: `furniture_${Date.now()}`,
-            createdAt: Date.now(),
-            updatedAt: Date.now()
-          };
-
-          onFurnitureAdd(furnitureItem);
-        } catch (error) {
-          console.error("Error processing furniture drop:", error);
-        }
+      // PHASE 3: Use centralized furniture drop handler
+      if (sceneRef.current && cameraRef.current) {
+        handleFurnitureDrop(
+          event,
+          cameraRef.current,
+          sceneRef.current,
+          currentFloor,
+          migratedFloors,
+          isMultifloor || false,
+          floorParameters || {},
+          onFurnitureAdd
+        );
       }
     };
 
