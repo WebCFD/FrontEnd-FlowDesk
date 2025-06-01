@@ -208,6 +208,14 @@ export function RoomSketchPro({
   };
 
   const createDoorTexture = (theme: string = selectedTheme) => {
+    // For modern theme, use the uploaded door texture
+    if (theme === "modern") {
+      const texture = new THREE.TextureLoader().load('/modern_door_texture.png');
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      return texture;
+    }
+
     const canvas = document.createElement('canvas');
     canvas.width = 256;
     canvas.height = 512;
@@ -216,11 +224,6 @@ export function RoomSketchPro({
     // Base door color - varies by theme
     let baseColor, panelColor, handleColor;
     switch (theme) {
-      case "modern":
-        baseColor = '#FFFFFF'; // White modern door
-        panelColor = '#F5F5F5';
-        handleColor = '#C0C0C0';
-        break;
       case "classic":
         baseColor = '#FFFFFF'; // Same as modern - white door
         panelColor = '#F5F5F5';
