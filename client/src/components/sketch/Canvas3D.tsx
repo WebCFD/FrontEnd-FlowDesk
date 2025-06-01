@@ -1091,6 +1091,61 @@ export default function Canvas3D({
   const [measurements, setMeasurements] = useState<Measurement3D[]>([]);
   const [activeMeasurementLine, setActiveMeasurementLine] = useState<THREE.Line | null>(null);
   const [activeMeasurementLabel, setActiveMeasurementLabel] = useState<THREE.Sprite | null>(null);
+  
+  // Surface highlighting state for drag & drop
+  const [highlightedSurface, setHighlightedSurface] = useState<THREE.Mesh | null>(null);
+  const [originalMaterial, setOriginalMaterial] = useState<THREE.Material | null>(null);
+
+  // Functions for surface highlighting during drag operations
+  const highlightSurface = useCallback((mesh: THREE.Mesh) => {
+    if (highlightedSurface === mesh) return; // Already highlighted
+    
+    // Clear previous highlight
+    clearSurfaceHighlight();
+    
+    // Store original material
+    setOriginalMaterial(mesh.material as THREE.Material);
+    
+    // Create highlight material based on surface type
+    const surfaceType = mesh.userData.type;
+    let highlightColor: number;
+    
+    if (surfaceType === 'floor') {
+      highlightColor = 0x00ff00; // Bright green for floors
+    } else if (surfaceType === 'ceiling') {
+      highlightColor = 0x0088ff; // Bright blue for ceilings
+    } else {
+      highlightColor = 0xffff00; // Yellow fallback
+    }
+    
+    // Create highlight material with emission and transparency
+    const highlightMaterial = new THREE.MeshPhongMaterial({
+      color: highlightColor,
+      transparent: true,
+      opacity: 0.4,
+      emissive: new THREE.Color(highlightColor),
+      emissiveIntensity: 0.3
+    });
+    
+    // Apply highlight
+    mesh.material = highlightMaterial;
+    setHighlightedSurface(mesh);
+    
+    // Trigger render
+    needsRenderRef.current = true;
+  }, [highlightedSurface]);
+
+  const clearSurfaceHighlight = useCallback(() => {
+    if (highlightedSurface && originalMaterial) {
+      // Restore original material
+      highlightedSurface.material = originalMaterial;
+      setHighlightedSurface(null);
+      setOriginalMaterial(null);
+      
+      // Trigger render
+      needsRenderRef.current = true;
+    }
+  }, [highlightedSurface, originalMaterial]);
 
   const isMeasureModeRef = useRef(false);
 
@@ -4637,9 +4692,52 @@ export default function Canvas3D({
     const handleDragOver = (event: DragEvent) => {
       event.preventDefault();
       event.dataTransfer!.dropEffect = "copy";
+      
+      // Highlight the surface that would receive the drop
+      if (cameraRef.current && sceneRef.current) {
+        const surfaceDetection = detectSurfaceFromPosition(
+          event,
+          cameraRef.current,
+          sceneRef.current,
+          currentFloor,
+          migratedFloors,
+          isMultifloor,
+          floorParameters
+        );
+        
+        // Find the mesh for the detected surface
+        const surfaceMeshes: { mesh: THREE.Mesh; floorName: string; surfaceType: string }[] = [];
+        
+        sceneRef.current.traverse((object: THREE.Object3D) => {
+          if (object instanceof THREE.Mesh && object.userData.type && object.userData.floorName) {
+            const floorName = object.userData.floorName;
+            const normalizedFloorName = normalizeFloorName(floorName);
+            const surfaceType = object.userData.type;
+            
+            // Check if this mesh matches our detected surface
+            if ((floorName === surfaceDetection.floorName || normalizedFloorName === surfaceDetection.floorName) &&
+                surfaceType === surfaceDetection.surfaceType) {
+              surfaceMeshes.push({ mesh: object, floorName, surfaceType });
+            }
+          }
+        });
+        
+        // Highlight the first matching surface
+        if (surfaceMeshes.length > 0) {
+          highlightSurface(surfaceMeshes[0].mesh);
+        }
+      }
+    };
+
+    const handleDragLeave = (event: DragEvent) => {
+      // Clear highlight when drag leaves the canvas area
+      clearSurfaceHighlight();
     };
 
     const handleDrop = (event: DragEvent) => {
+      // Clear highlight when dropping
+      clearSurfaceHighlight();
+      
       if (sceneRef.current && cameraRef.current) {
         handleFurnitureDrop(
           event,
