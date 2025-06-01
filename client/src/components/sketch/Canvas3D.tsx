@@ -1098,7 +1098,12 @@ export default function Canvas3D({
 
   // Functions for surface highlighting during drag operations
   const highlightSurface = useCallback((mesh: THREE.Mesh) => {
-    if (highlightedSurface === mesh) return; // Already highlighted
+    console.log(`🔥 HIGHLIGHT SURFACE: Attempting to highlight ${mesh.userData.type} (current: ${highlightedSurface ? 'HAS' : 'NONE'})`);
+    
+    if (highlightedSurface === mesh) {
+      console.log(`🔥 HIGHLIGHT SURFACE: Already highlighted, skipping`);
+      return; // Already highlighted
+    }
     
     // Clear previous highlight
     clearSurfaceHighlight();
@@ -1131,11 +1136,15 @@ export default function Canvas3D({
     mesh.material = highlightMaterial;
     setHighlightedSurface(mesh);
     
+    console.log(`🔥 HIGHLIGHT SURFACE: Applied ${surfaceType} highlight with color ${highlightColor.toString(16)}`);
+    
     // Trigger render
     needsRenderRef.current = true;
   }, [highlightedSurface]);
 
   const clearSurfaceHighlight = useCallback(() => {
+    console.log(`🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: ${highlightedSurface ? 'YES' : 'NO'}, has material: ${originalMaterial ? 'YES' : 'NO'})`);
+    
     if (highlightedSurface && originalMaterial) {
       // Restore original material
       highlightedSurface.material = originalMaterial;
@@ -1144,7 +1153,9 @@ export default function Canvas3D({
       
       // Trigger render
       needsRenderRef.current = true;
-      console.log("✓ Surface highlight cleared");
+      console.log("🔥 CLEAR HIGHLIGHT: Successfully cleared highlight");
+    } else {
+      console.log("🔥 CLEAR HIGHLIGHT: Nothing to clear");
     }
   }, [highlightedSurface, originalMaterial]);
 
@@ -4730,8 +4741,7 @@ export default function Canvas3D({
               const normalizedFloorName = normalizeFloorName(floorName);
               const surfaceType = object.userData.type;
               
-              // Debug: Check all possible matches
-              console.log(`Checking mesh: ${floorName} (${normalizedFloorName}) - ${surfaceType} vs target: ${surfaceDetection.floorName} - ${surfaceDetection.surfaceType}`);
+
               
               // Check if this mesh matches our detected surface
               // More flexible matching: check if normalized names match or if one contains the other
@@ -4745,44 +4755,35 @@ export default function Canvas3D({
               
               if (meshMatches && surfaceType === surfaceDetection.surfaceType) {
                 surfaceMeshes.push({ mesh: object, floorName, surfaceType });
-                console.log(`✓ Match found: ${floorName} - ${surfaceType}`);
               }
             }
           });
           
-          console.log(`Surface detection result: ${surfaceDetection.floorName} - ${surfaceDetection.surfaceType}, found ${surfaceMeshes.length} matching meshes`);
-          
           // Always clear previous highlight first, then apply new one if found
           if (surfaceMeshes.length > 0) {
+            console.log(`🔥 HIGHLIGHT: Found surface, applying highlight to ${surfaceMeshes[0].floorName} - ${surfaceMeshes[0].surfaceType}`);
             highlightSurface(surfaceMeshes[0].mesh);
           } else {
             // If no surface found or raycasting failed, clear any existing highlight
+            console.log(`🔥 HIGHLIGHT: No surface found, clearing highlight (had highlight: ${highlightedSurface ? 'YES' : 'NO'})`);
             clearSurfaceHighlight();
-            console.log("✓ No surface intersection found, clearing highlight");
           }
         } catch (error) {
           // If there's any error in surface detection, clear highlight
+          console.log(`🔥 HIGHLIGHT: Error in detection, clearing highlight (had highlight: ${highlightedSurface ? 'YES' : 'NO'})`);
           clearSurfaceHighlight();
-          console.log("✓ Error in surface detection, clearing highlight");
         }
       }
     };
 
     const handleDragLeave = (event: DragEvent) => {
-      // Only clear if we're really leaving the container
-      const rect = container.getBoundingClientRect();
-      const x = event.clientX;
-      const y = event.clientY;
-      
-      // Check if cursor is outside the container bounds
-      if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
-        clearSurfaceHighlight();
-        console.log("✓ Drag left container area, clearing highlight");
-      }
+      console.log("🔥 DRAG LEAVE: Event triggered");
+      clearSurfaceHighlight();
     };
 
     const handleDrop = (event: DragEvent) => {
       // Clear highlight when dropping
+      console.log("🔥 DROP: Event triggered, clearing highlight");
       clearSurfaceHighlight();
       
       if (sceneRef.current && cameraRef.current) {
