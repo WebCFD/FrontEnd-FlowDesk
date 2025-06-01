@@ -4751,12 +4751,12 @@ export default function Canvas3D({
       clearAllHighlights();
     };
 
-    const handleDrop = (event: DragEvent) => {
+    const handleDrop = async (event: DragEvent) => {
       // Clear highlight when dropping
       clearAllHighlights();
       
       if (sceneRef.current && cameraRef.current) {
-        handleFurnitureDrop(
+        await handleFurnitureDrop(
           event,
           cameraRef.current,
           sceneRef.current,
