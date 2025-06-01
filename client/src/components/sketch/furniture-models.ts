@@ -220,10 +220,10 @@ export const createCarModel = (): THREE.Group => {
   const group = new THREE.Group();
   const loader = new GLTFLoader();
 
-  // Get reference dimensions from the simple car model (body: 180x80x40)
-  const targetWidth = 180;
-  const targetDepth = 80;
-  const targetHeight = 60;
+  // Get reference dimensions from the simple car model (body: 180x80x40) - scaled x4
+  const targetWidth = 720;
+  const targetDepth = 320;
+  const targetHeight = 240;
 
   // Load Batmobile synchronously with promise handling
   loader.load(
