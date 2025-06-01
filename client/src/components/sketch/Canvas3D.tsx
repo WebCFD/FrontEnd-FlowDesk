@@ -481,7 +481,7 @@ const sanitizeFurnitureItem = (item: Partial<FurnitureItem>, floorName: string):
 const migrateFloorsData = (floors: Record<string, FloorData>): Record<string, FloorData> => {
   const migratedFloors: Record<string, FloorData> = {};
   
-  for (const [floorName, floorData] of Object.entries(migratedFloors)) {
+  for (const [floorName, floorData] of Object.entries(floors)) {
     migratedFloors[floorName] = migrateFloorData(floorData);
   }
   
@@ -2550,7 +2550,7 @@ export default function Canvas3D({
                     return;
                   }
 
-                  const floorData = migratedFloors[currentFloor];
+                  const floorData = floors[currentFloor];
 
                   if (floorData && floorData.airEntries) {
                     // First try to use the entryIndex from userData if available
@@ -2798,7 +2798,7 @@ export default function Canvas3D({
         const airEntryData = mesh.userData;
 
         // Just select the air entry but don't start dragging
-        const floorData = migratedFloors[currentFloor];
+        const floorData = floors[currentFloor];
 
         if (floorData && floorData.airEntries) {
           const index = floorData.airEntries.findIndex(
@@ -3428,7 +3428,7 @@ export default function Canvas3D({
         // Finalize the position change using ref values
         if (dragStateRef.current.selectedObject && onUpdateAirEntry) {
           // Get the current floor data
-          const floorData = migratedFloors[currentFloor];
+          const floorData = floors[currentFloor];
           const entryIndex = dragStateRef.current.entryIndex;
 
           // Ensure we have valid index
@@ -3674,7 +3674,7 @@ export default function Canvas3D({
         
         // Find the index of this air entry in the floors data
         let foundIndex = -1;
-        const floorData = migratedFloors[currentFloor];
+        const floorData = floors[currentFloor];
         
         if (floorData && floorData.airEntries) {
           // First try to use the stored entryIndex if available (most reliable)
@@ -3879,7 +3879,7 @@ export default function Canvas3D({
 
         // Find the index of this air entry in the floors data
         let foundIndex = -1;
-        const floorData = migratedFloors[currentFloor];
+        const floorData = floors[currentFloor];
 
         if (floorData && floorData.airEntries) {
           console.log("Double-click position search:", {
@@ -3983,7 +3983,7 @@ export default function Canvas3D({
     // This prevents losing the selection when the scene is updated
 
     // Check specifically for stair polygons
-    Object.entries(migratedFloors).forEach(([floorName, floorData]) => {
+    Object.entries(floors).forEach(([floorName, floorData]) => {
       if (floorData.stairPolygons?.length) {
         console.log(
           `Floor ${floorName} has ${floorData.stairPolygons.length} stair polygons:`,
@@ -4023,7 +4023,7 @@ export default function Canvas3D({
     toRemove.forEach((object) => sceneRef.current?.remove(object));
 
     // Create and add objects for each floor
-    Object.entries(migratedFloors).forEach(([floorName, floorData]) => {
+    Object.entries(floors).forEach(([floorName, floorData]) => {
       if (floorData.hasClosedContour || floorName === currentFloor) {
         const baseHeight = getFloorBaseHeight(floorName);
         
@@ -4062,7 +4062,7 @@ export default function Canvas3D({
     });
     
     // Then set current floor data for immediate use
-    const currentFloorData = migratedFloors[currentFloor];
+    const currentFloorData = floors[currentFloor];
 
     
     if (currentFloorData) {
@@ -4072,7 +4072,7 @@ export default function Canvas3D({
       setContextCurrentFloor(currentFloor);
       
       // Also individually update each floor to ensure proper synchronization
-      Object.entries(migratedFloors).forEach(([floorName, floorData]) => {
+      Object.entries(floors).forEach(([floorName, floorData]) => {
         updateFloorData(floorName, floorData);
       });
       
@@ -4110,7 +4110,7 @@ export default function Canvas3D({
     // After rebuilding the scene, we need to restore or reset selection state
     if (selectedAirEntry) {
       // Try to find the new mesh object for our selected air entry
-      const currentFloorData = migratedFloors[currentFloor];
+      const currentFloorData = floors[currentFloor];
       if (currentFloorData && currentFloorData.airEntries) {
         const entryIndex = selectedAirEntry.index;
 
@@ -4797,7 +4797,7 @@ export const generateSharedFloorGeometry = (
   };
 
   // Generate geometry for each floor (identical logic to Canvas3D)
-  Object.entries(migratedFloors).forEach(([floorName, floorData]) => {
+  Object.entries(floors).forEach(([floorName, floorData]) => {
     if (floorData.hasClosedContour || floorName === config.currentFloor) {
       const baseHeight = getFloorBaseHeight(floorName);
       
