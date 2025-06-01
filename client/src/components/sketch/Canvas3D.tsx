@@ -525,7 +525,8 @@ const calculateFloorBaseHeight = (
 };
 
 // Detect which floor to place furniture based on mouse position and 3D context
-const detectFloorFromPosition = (
+// Enhanced surface detection that returns both floor and surface type
+const detectSurfaceFromPosition = (
   mouseEvent: DragEvent,
   camera: THREE.Camera,
   scene: THREE.Scene,
@@ -533,10 +534,10 @@ const detectFloorFromPosition = (
   availableFloors: Record<string, FloorData>,
   isMultifloor: boolean,
   floorParameters: Record<string, { ceilingHeight: number; floorDeck: number }>
-): string => {
+): { floorName: string; surfaceType: 'floor' | 'ceiling'; fallbackUsed: boolean } => {
   // If not multifloor, always use current floor
   if (!isMultifloor) {
-    return currentFloor;
+    return { floorName: currentFloor, surfaceType: 'floor', fallbackUsed: true };
   }
 
   // Get mouse coordinates in 3D space
@@ -549,31 +550,37 @@ const detectFloorFromPosition = (
   const raycaster = new THREE.Raycaster();
   raycaster.setFromCamera(new THREE.Vector2(mouseX, mouseY), camera);
 
-  // Find floor meshes in the scene
-  const floorMeshes: Array<{ mesh: THREE.Mesh; floorName: string }> = [];
+  // Find floor and ceiling meshes in the scene
+  const surfaceMeshes: Array<{ mesh: THREE.Mesh; floorName: string; surfaceType: 'floor' | 'ceiling' }> = [];
   scene.traverse((object) => {
-    if (object instanceof THREE.Mesh && object.userData.type === 'floor') {
+    if (object instanceof THREE.Mesh && (object.userData.type === 'floor' || object.userData.type === 'ceiling')) {
       const floorName = object.userData.floorName || 'ground';
-      floorMeshes.push({ mesh: object, floorName });
+      const surfaceType = object.userData.type as 'floor' | 'ceiling';
+      surfaceMeshes.push({ mesh: object, floorName, surfaceType });
     }
   });
 
-  console.log('🔍 RAYCASTING DEBUG - Floor meshes found:', floorMeshes.length);
-  floorMeshes.forEach((fm, i) => {
-    console.log(`  Floor ${i}: ${fm.floorName}, position: ${fm.mesh.position.x}, ${fm.mesh.position.y}, ${fm.mesh.position.z}`);
+  console.log('🔍 RAYCASTING DEBUG - Surface meshes found:', surfaceMeshes.length);
+  surfaceMeshes.forEach((sm, i) => {
+    console.log(`  ${sm.surfaceType} ${i}: ${sm.floorName}, position: ${sm.mesh.position.x}, ${sm.mesh.position.y}, ${sm.mesh.position.z}`);
   });
 
-  // Check intersections with floor meshes
-  const intersects = raycaster.intersectObjects(floorMeshes.map(f => f.mesh));
+  // Check intersections with both floor and ceiling meshes
+  const intersects = raycaster.intersectObjects(surfaceMeshes.map(s => s.mesh));
   console.log('🔍 RAYCASTING DEBUG - Intersections found:', intersects.length);
   
   if (intersects.length > 0) {
-    // Find the closest floor intersection
+    // Find the closest surface intersection
     const closestIntersect = intersects[0];
-    const correspondingFloor = floorMeshes.find(f => f.mesh === closestIntersect.object);
+    const correspondingSurface = surfaceMeshes.find(s => s.mesh === closestIntersect.object);
     
-    if (correspondingFloor && availableFloors[correspondingFloor.floorName]) {
-      return correspondingFloor.floorName;
+    if (correspondingSurface && availableFloors[correspondingSurface.floorName]) {
+      console.log(`🎯 SURFACE DETECTION - Found ${correspondingSurface.surfaceType} on ${correspondingSurface.floorName}`);
+      return { 
+        floorName: correspondingSurface.floorName, 
+        surfaceType: correspondingSurface.surfaceType, 
+        fallbackUsed: false 
+      };
     }
   }
 
@@ -599,7 +606,7 @@ const detectFloorFromPosition = (
     }
   }
   
-  return bestFloor;
+  return { floorName: bestFloor, surfaceType: 'floor', fallbackUsed: true };
 };
 
 // Enhanced position calculation for furniture placement
@@ -684,7 +691,7 @@ const handleFurnitureDrop = (
       availableFloors: Object.keys(migratedFloors)
     });
 
-    const detectedFloor = detectFloorFromPosition(
+    const surfaceDetection = detectSurfaceFromPosition(
       event,
       camera,
       scene,
@@ -694,9 +701,10 @@ const handleFurnitureDrop = (
       floorParameters
     );
     
-    console.log("🧪 FASE 2 TEST - Floor Detection:", {
-      detectedFloor,
-      fallbackUsed: detectedFloor === currentFloor
+    console.log("🧪 FASE 2 TEST - Surface Detection:", {
+      detectedFloor: surfaceDetection.floorName,
+      surfaceType: surfaceDetection.surfaceType,
+      fallbackUsed: surfaceDetection.fallbackUsed
     });
     
     const calculatedPosition = calculateFurniturePosition(

@@ -1,0 +1,39 @@
+🧪 FASE 2 TEST - Input: {currentFloor: 'first', isMultifloor: true, mousePosition: {…}, availableFloors: Array(2)}
+Canvas3D.tsx:561 🔍 RAYCASTING DEBUG - Floor meshes found: 2
+Canvas3D.tsx:563   Floor 0: Ground Floor, position: 0, 0, 0
+Canvas3D.tsx:563   Floor 1: first, position: 0, 0, 255
+Canvas3D.tsx:568 🔍 RAYCASTING DEBUG - Intersections found: 1
+Canvas3D.tsx:697 🧪 FASE 2 TEST - Floor Detection: {detectedFloor: 'first', fallbackUsed: true}
+Canvas3D.tsx:710 🧪 FASE 2 TEST - Position Calculation: {calculatedPosition: {…}, floorUsedForCalculation: 'first'}
+wizard-design.tsx:1533 Starting drag for Table
+Canvas3D.tsx:680 🧪 FASE 2 TEST - Input: {currentFloor: 'first', isMultifloor: true, mousePosition: {…}, availableFloors: Array(2)}
+Canvas3D.tsx:561 🔍 RAYCASTING DEBUG - Floor meshes found: 2
+Canvas3D.tsx:563   Floor 0: Ground Floor, position: 0, 0, 0
+Canvas3D.tsx:563   Floor 1: first, position: 0, 0, 255
+Canvas3D.tsx:568 🔍 RAYCASTING DEBUG - Intersections found: 1
+Canvas3D.tsx:697 🧪 FASE 2 TEST - Floor Detection: {detectedFloor: 'ground', fallbackUsed: false}
+Canvas3D.tsx:710 🧪 FASE 2 TEST - Position Calculation: {calculatedPosition: {…}, floorUsedForCalculation: 'ground'}
+wizard-design.tsx:1533 Starting drag for Person
+Canvas3D.tsx:680 🧪 FASE 2 TEST - Input: {currentFloor: 'first', isMultifloor: true, mousePosition: {…}, availableFloors: Array(2)}
+Canvas3D.tsx:561 🔍 RAYCASTING DEBUG - Floor meshes found: 2
+Canvas3D.tsx:563   Floor 0: Ground Floor, position: 0, 0, 0
+Canvas3D.tsx:563   Floor 1: first, position: 0, 0, 255
+Canvas3D.tsx:568 🔍 RAYCASTING DEBUG - Intersections found: 0
+Canvas3D.tsx:697 🧪 FASE 2 TEST - Floor Detection: {detectedFloor: 'ground', fallbackUsed: false}
+Canvas3D.tsx:710 🧪 FASE 2 TEST - Position Calculation: {calculatedPosition: {…}, floorUsedForCalculation: 'ground'}
+wizard-design.tsx:1533 Starting drag for Person
+Canvas3D.tsx:680 🧪 FASE 2 TEST - Input: {currentFloor: 'first', isMultifloor: true, mousePosition: {…}, availableFloors: Array(2)}
+Canvas3D.tsx:561 🔍 RAYCASTING DEBUG - Floor meshes found: 2
+Canvas3D.tsx:563   Floor 0: Ground Floor, position: 0, 0, 0
+Canvas3D.tsx:563   Floor 1: first, position: 0, 0, 255
+Canvas3D.tsx:568 🔍 RAYCASTING DEBUG - Intersections found: 1
+Canvas3D.tsx:697 🧪 FASE 2 TEST - Floor Detection: {detectedFloor: 'first', fallbackUsed: true}
+Canvas3D.tsx:710 🧪 FASE 2 TEST - Position Calculation: {calculatedPosition: {…}, floorUsedForCalculation: 'first'}
+wizard-design.tsx:1533 Starting drag for Person
+Canvas3D.tsx:680 🧪 FASE 2 TEST - Input: {currentFloor: 'first', isMultifloor: true, mousePosition: {…}, availableFloors: Array(2)}
+Canvas3D.tsx:561 🔍 RAYCASTING DEBUG - Floor meshes found: 2
+Canvas3D.tsx:563   Floor 0: Ground Floor, position: 0, 0, 0
+Canvas3D.tsx:563   Floor 1: first, position: 0, 0, 255
+Canvas3D.tsx:568 🔍 RAYCASTING DEBUG - Intersections found: 0
+Canvas3D.tsx:697 🧪 FASE 2 TEST - Floor Detection: {detectedFloor: 'ground', fallbackUsed: false}
+Canvas3D.tsx:710 🧪 FASE 2 TEST - Position Calculation: {calculatedPosition: {…}, floorUsedForCalculation: 'ground'}
