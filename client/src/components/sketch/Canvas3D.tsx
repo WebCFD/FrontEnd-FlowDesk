@@ -6,7 +6,7 @@ import AirEntryDialog from "./AirEntryDialog";
 import { ViewDirection } from "./Toolbar3D";
 import { useSceneContext } from "../../contexts/SceneContext";
 import { FurnitureItem, FurnitureCallbacks } from "@shared/furniture-types";
-import { createTableModel, createPersonModel, createArmchairModel } from "./furniture-models";
+import { createTableModel, createPersonModel, createArmchairModel, createCarModel } from "./furniture-models";
 
 interface Point {
   x: number;
@@ -721,7 +721,7 @@ const handleFurnitureDrop = (
     // Create furniture item
     const furnitureItem: FurnitureItem = {
       id: `${furnitureMenuData.id}_${Date.now()}`,
-      type: furnitureMenuData.id as 'table' | 'person' | 'armchair',
+      type: furnitureMenuData.id as 'table' | 'person' | 'armchair' | 'car',
       name: furnitureMenuData.name,
       floorName: surfaceDetection.floorName,
       position: calculatedPosition,
@@ -762,6 +762,9 @@ const createFurnitureModel = (
       break;
     case 'armchair':
       model = createArmchairModel();
+      break;
+    case 'car':
+      model = createCarModel();
       break;
     default:
       console.error(`Unknown furniture type: ${furnitureItem.type}`);
@@ -810,7 +813,7 @@ const createFurnitureModel = (
 };
 
 // Helper function to get default dimensions for furniture types
-const getDefaultDimensions = (type: 'table' | 'person' | 'armchair') => {
+const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'car') => {
   switch (type) {
     case 'table':
       return { width: 120, height: 75, depth: 80 };
@@ -818,6 +821,8 @@ const getDefaultDimensions = (type: 'table' | 'person' | 'armchair') => {
       return { width: 50, height: 170, depth: 30 };
     case 'armchair':
       return { width: 70, height: 85, depth: 70 };
+    case 'car':
+      return { width: 450, height: 150, depth: 180 };
     default:
       return { width: 80, height: 80, depth: 80 };
   }
