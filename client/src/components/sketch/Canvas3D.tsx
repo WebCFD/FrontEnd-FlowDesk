@@ -739,6 +739,17 @@ const handleFurnitureDrop = (
     
     if (model) {
       onFurnitureAdd(furnitureItem);
+      
+      // Auto-open editing dialog for newly created furniture
+      console.log("🎛️ Auto-opening furniture dialog for new item:", furnitureItem);
+      
+      // Set a slight delay to ensure the scene has updated
+      setTimeout(() => {
+        setEditingFurniture({
+          index: 0, // This would be the actual index in a real furniture list
+          item: furnitureItem
+        });
+      }, 100);
     }
     
   } catch (error) {
