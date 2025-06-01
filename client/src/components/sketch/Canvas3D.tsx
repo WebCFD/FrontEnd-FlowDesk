@@ -650,10 +650,16 @@ const calculateFurniturePosition = (
   // Try to intersect with the specific surface type (floor or ceiling)
   const surfaceMeshes: THREE.Mesh[] = [];
   scene.traverse((object) => {
-    if (object instanceof THREE.Mesh && 
-        object.userData.type === surfaceType && 
-        object.userData.floorName === targetFloor) {
-      surfaceMeshes.push(object);
+    if (object instanceof THREE.Mesh && object.userData.type === surfaceType) {
+      // Normalize floor name for matching (same logic as detection)
+      let meshFloorName = object.userData.floorName;
+      let normalizedMeshName = meshFloorName.toLowerCase().replace(/\s+/g, '');
+      if (normalizedMeshName === 'groundfloor') normalizedMeshName = 'ground';
+      
+      // Match if direct name matches OR normalized name matches
+      if (meshFloorName === targetFloor || normalizedMeshName === targetFloor) {
+        surfaceMeshes.push(object);
+      }
     }
   });
 
