@@ -4726,8 +4726,16 @@ export default function Canvas3D({
             console.log(`Checking mesh: ${floorName} (${normalizedFloorName}) - ${surfaceType} vs target: ${surfaceDetection.floorName} - ${surfaceDetection.surfaceType}`);
             
             // Check if this mesh matches our detected surface
-            if ((floorName === surfaceDetection.floorName || normalizedFloorName === surfaceDetection.floorName) &&
-                surfaceType === surfaceDetection.surfaceType) {
+            // More flexible matching: check if normalized names match or if one contains the other
+            const targetFloor = surfaceDetection.floorName;
+            const meshMatches = floorName === targetFloor || 
+                               normalizedFloorName === targetFloor ||
+                               floorName.toLowerCase().includes(targetFloor.toLowerCase()) ||
+                               targetFloor.toLowerCase().includes(floorName.toLowerCase()) ||
+                               normalizedFloorName.includes(targetFloor) ||
+                               targetFloor.includes(normalizedFloorName);
+            
+            if (meshMatches && surfaceType === surfaceDetection.surfaceType) {
               surfaceMeshes.push({ mesh: object, floorName, surfaceType });
               console.log(`✓ Match found: ${floorName} - ${surfaceType}`);
             }
