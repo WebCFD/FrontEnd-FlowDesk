@@ -3184,8 +3184,8 @@ export default function Canvas3D({
           needsRenderRef.current = true;
         }
         
-        // Find potential erase targets
-        const airEntryMeshes: THREE.Mesh[] = [];
+        // Find potential erase targets (air entries and furniture)
+        const erasableItems: THREE.Mesh[] = [];
         
         if (sceneRef.current) {
           sceneRef.current.traverse((object) => {
@@ -3196,17 +3196,23 @@ export default function Canvas3D({
               object.userData.type &&
               ["window", "door", "vent"].includes(object.userData.type)
             ) {
-              // We won't automatically enlarge all objects now - we'll only enlarge them
-              // when they're actually under the mouse cursor
-              airEntryMeshes.push(object as THREE.Mesh);
+              erasableItems.push(object as THREE.Mesh);
+            }
+            // Collect furniture meshes (including child meshes of furniture groups)
+            else if (
+              object instanceof THREE.Mesh &&
+              object.userData &&
+              (object.userData.type === 'furniture' || object.parent?.userData.type === 'furniture')
+            ) {
+              erasableItems.push(object as THREE.Mesh);
             }
           });
           
-          console.log(`Found ${airEntryMeshes.length} potential air entries for eraser hover detection`);
+          console.log(`Found ${erasableItems.length} potential erasable items for eraser hover detection`);
           
-          // Detect when no air entries are available
-          if (airEntryMeshes.length === 0 && hoveredEraseTarget) {
-            console.log("⚠️ No air entries found in scene but we have a hovered target - cleaning up");
+          // Detect when no erasable items are available
+          if (erasableItems.length === 0 && hoveredEraseTarget) {
+            console.log("⚠️ No erasable items found in scene but we have a hovered target - cleaning up");
             
             // Restore original material
             hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
@@ -3243,17 +3249,17 @@ export default function Canvas3D({
             applyRaycasterConfig(raycaster, 'precision');
             
             // Make sure we're using recursive flag = true to catch child objects too
-            const meshIntersects = raycaster.intersectObjects(airEntryMeshes, true);
+            const meshIntersects = raycaster.intersectObjects(erasableItems, true);
             
             // Raycaster configuration is now handled centrally
             
-            // Enhanced debugging for air entry intersections
-            console.log(`Found ${meshIntersects.length} intersections with air entries`);
+            // Enhanced debugging for erasable item intersections
+            console.log(`Found ${meshIntersects.length} intersections with erasable items`);
             
-            // Log detailed info about available air entry meshes
-            console.log(`DEBUG: Eraser mode hover detection - ${airEntryMeshes.length} air entries in scene`);
-            airEntryMeshes.forEach((mesh, i) => {
-              console.log(`Air Entry #${i}: type=${mesh.userData.type}, position=${JSON.stringify(mesh.position)}, worldPosition=${JSON.stringify(mesh.getWorldPosition(new THREE.Vector3()))}`);
+            // Log detailed info about available erasable items
+            console.log(`DEBUG: Eraser mode hover detection - ${erasableItems.length} erasable items in scene`);
+            erasableItems.forEach((mesh, i) => {
+              console.log(`Erasable Item #${i}: type=${mesh.userData.type}, position=${JSON.stringify(mesh.position)}, worldPosition=${JSON.stringify(mesh.getWorldPosition(new THREE.Vector3()))}`);
               
               // Output mesh bounding box for debugging
               const boundingBox = new THREE.Box3().setFromObject(mesh);
