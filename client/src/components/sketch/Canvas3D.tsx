@@ -4778,11 +4778,19 @@ export default function Canvas3D({
 
     // Double-click handler for furniture editing
     const handleDoubleClick = (event: MouseEvent) => {
-      if (presentationMode) return; // Disable editing in presentation mode
+      console.log("🖱️ Double-click detected!");
+      
+      if (presentationMode) {
+        console.log("❌ Presentation mode active, editing disabled");
+        return;
+      }
       
       event.preventDefault();
       
-      if (!sceneRef.current || !cameraRef.current) return;
+      if (!sceneRef.current || !cameraRef.current) {
+        console.log("❌ Scene or camera not available");
+        return;
+      }
       
       // Get mouse coordinates
       const rect = container.getBoundingClientRect();
@@ -4790,6 +4798,8 @@ export default function Canvas3D({
         ((event.clientX - rect.left) / rect.width) * 2 - 1,
         -((event.clientY - rect.top) / rect.height) * 2 + 1
       );
+      
+      console.log("🎯 Mouse coordinates:", mouse);
       
       // Create raycaster
       const raycaster = new THREE.Raycaster();
@@ -4800,17 +4810,28 @@ export default function Canvas3D({
       sceneRef.current.traverse((object) => {
         if (object instanceof THREE.Mesh && object.userData.type === 'furniture') {
           furnitureObjects.push(object);
+          console.log("🪑 Found furniture object:", object.userData);
         }
       });
       
+      console.log(`🔍 Found ${furnitureObjects.length} furniture objects in scene`);
+      
       // Check for intersections
       const intersects = raycaster.intersectObjects(furnitureObjects);
+      
+      console.log(`💥 Found ${intersects.length} intersections`);
       
       if (intersects.length > 0) {
         const intersectedObject = intersects[0].object as THREE.Mesh;
         const furnitureId = intersectedObject.userData.furnitureId;
         
-        if (furnitureId && onUpdateFurniture) {
+        console.log("✅ Intersected furniture object:", {
+          furnitureId,
+          userData: intersectedObject.userData,
+          position: intersectedObject.position
+        });
+        
+        if (furnitureId) {
           // Find the furniture item data
           // This would need to be passed from the parent component
           // For now, we'll create a mock furniture item based on the mesh
@@ -4836,11 +4857,17 @@ export default function Canvas3D({
             updatedAt: Date.now()
           };
           
+          console.log("🎛️ Opening furniture dialog with item:", mockFurnitureItem);
+          
           setEditingFurniture({
             index: 0, // This would need to be the actual index from the furniture list
             item: mockFurnitureItem
           });
+        } else {
+          console.log("❌ No furnitureId found in userData");
         }
+      } else {
+        console.log("❌ No furniture intersections found");
       }
     };
 
