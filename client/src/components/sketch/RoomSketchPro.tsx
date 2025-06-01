@@ -580,8 +580,13 @@ export function RoomSketchPro({
       
       switch (selectedTheme) {
         case "modern":
+          // Load marble texture for modern theme
+          const marbleTexture = new THREE.TextureLoader().load('/marble_texture.png');
+          marbleTexture.wrapS = THREE.RepeatWrapping;
+          marbleTexture.wrapT = THREE.RepeatWrapping;
+          marbleTexture.repeat.set(4, 4);
           newMaterial = new THREE.MeshPhongMaterial({
-            map: texturesRef.current.wood,
+            map: marbleTexture,
             opacity: originalMaterial.opacity,
             transparent: originalMaterial.transparent,
             side: originalMaterial.side
