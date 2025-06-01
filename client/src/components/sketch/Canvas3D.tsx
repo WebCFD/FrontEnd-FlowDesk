@@ -4953,6 +4953,61 @@ export default function Canvas3D({
     };
   }, [currentFloor, onFurnitureAdd, isMultifloor, floorParameters]);
 
+  // Real-time update functions for furniture editing
+  const handleRealTimePositionUpdate = (newPosition: { x: number; y: number; z: number }) => {
+    if (!editingFurniture || !sceneRef.current) return;
+
+    const furnitureId = editingFurniture.item.id;
+    let furnitureGroup: THREE.Group | null = null;
+
+    sceneRef.current.traverse((child) => {
+      if (child.userData.furnitureId === furnitureId && child.userData.type === 'furniture') {
+        furnitureGroup = child as THREE.Group;
+      }
+    });
+
+    if (furnitureGroup) {
+      furnitureGroup.position.set(newPosition.x, newPosition.y, newPosition.z);
+      console.log("🔄 Real-time position update:", newPosition);
+    }
+  };
+
+  const handleRealTimeRotationUpdate = (newRotation: { x: number; y: number; z: number }) => {
+    if (!editingFurniture || !sceneRef.current) return;
+
+    const furnitureId = editingFurniture.item.id;
+    let furnitureGroup: THREE.Group | null = null;
+
+    sceneRef.current.traverse((child) => {
+      if (child.userData.furnitureId === furnitureId && child.userData.type === 'furniture') {
+        furnitureGroup = child as THREE.Group;
+      }
+    });
+
+    if (furnitureGroup) {
+      furnitureGroup.rotation.set(newRotation.x, newRotation.y, newRotation.z);
+      console.log("🔄 Real-time rotation update:", newRotation);
+    }
+  };
+
+  const handleRealTimeScaleUpdate = (newScale: { x: number; y: number; z: number }) => {
+    if (!editingFurniture || !sceneRef.current) return;
+
+    const furnitureId = editingFurniture.item.id;
+    let furnitureGroup: THREE.Group | null = null;
+
+    sceneRef.current.traverse((child) => {
+      if (child.userData.furnitureId === furnitureId && child.userData.type === 'furniture') {
+        furnitureGroup = child as THREE.Group;
+      }
+    });
+
+    if (furnitureGroup) {
+      furnitureGroup.scale.set(newScale.x, newScale.y, newScale.z);
+      console.log("🔄 Real-time scale update:", newScale);
+    }
+  };
+
   // Handler for updating furniture
   const handleFurnitureEdit = (
     index: number,
@@ -5077,6 +5132,9 @@ export default function Canvas3D({
           isOpen={true}
           onClose={() => setEditingFurniture(null)}
           onConfirm={(data) => handleFurnitureEdit(editingFurniture.index, data)}
+          onPositionUpdate={handleRealTimePositionUpdate}
+          onRotationUpdate={handleRealTimeRotationUpdate}
+          onScaleUpdate={handleRealTimeScaleUpdate}
           initialValues={{
             name: editingFurniture.item.name,
             position: editingFurniture.item.position,
