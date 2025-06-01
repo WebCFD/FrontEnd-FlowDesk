@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import RoomSketchPro from "@/components/sketch/RoomSketchPro_wrapper";
+import { RoomSketchPro } from "@/components/sketch/RoomSketchPro";
 import { SceneProvider } from "@/contexts/SceneContext";
 
 // Test data
