@@ -244,8 +244,8 @@ export const createCarModel = (): THREE.Group => {
       const uniformScale = Math.min(scaleX, scaleY, scaleZ);
       carModel.scale.setScalar(uniformScale);
       
-      // Apply additional 2x scaling on X-axis only
-      carModel.scale.x *= 2;
+      // Apply additional scaling on X-axis only
+      carModel.scale.x *= 2 * 1.5;
       
       // Rotate 90 degrees around X-axis
       carModel.rotation.x = Math.PI / 2;
