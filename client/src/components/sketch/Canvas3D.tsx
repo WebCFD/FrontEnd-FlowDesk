@@ -609,12 +609,13 @@ const detectSurfaceFromPosition = (
   return { floorName: bestFloor, surfaceType: 'floor', fallbackUsed: true };
 };
 
-// Enhanced position calculation for furniture placement
+// Enhanced position calculation for furniture placement with surface support
 const calculateFurniturePosition = (
   mouseEvent: DragEvent,
   camera: THREE.Camera,
   scene: THREE.Scene,
   targetFloor: string,
+  surfaceType: 'floor' | 'ceiling',
   floorParameters: Record<string, { ceilingHeight: number; floorDeck: number }>
 ): { x: number; y: number; z: number } => {
   const container = mouseEvent.currentTarget as HTMLElement;
@@ -626,17 +627,18 @@ const calculateFurniturePosition = (
   const raycaster = new THREE.Raycaster();
   raycaster.setFromCamera(new THREE.Vector2(mouseX, mouseY), camera);
 
-  // Try to intersect with floor mesh first
-  const floorMeshes: THREE.Mesh[] = [];
+  // Try to intersect with the specific surface type (floor or ceiling)
+  const surfaceMeshes: THREE.Mesh[] = [];
   scene.traverse((object) => {
     if (object instanceof THREE.Mesh && 
-        object.userData.type === 'floor' && 
+        object.userData.type === surfaceType && 
         object.userData.floorName === targetFloor) {
-      floorMeshes.push(object);
+      surfaceMeshes.push(object);
     }
   });
 
-  const intersects = raycaster.intersectObjects(floorMeshes);
+  const intersects = raycaster.intersectObjects(surfaceMeshes);
+  console.log(`🎯 POSITION CALC - Looking for ${surfaceType} on ${targetFloor}, found ${surfaceMeshes.length} meshes, ${intersects.length} intersections`);
   
   if (intersects.length > 0) {
     const point = intersects[0].point;
@@ -712,6 +714,7 @@ const handleFurnitureDrop = (
       camera,
       scene,
       surfaceDetection.floorName,
+      surfaceDetection.surfaceType,
       floorParameters
     );
     
