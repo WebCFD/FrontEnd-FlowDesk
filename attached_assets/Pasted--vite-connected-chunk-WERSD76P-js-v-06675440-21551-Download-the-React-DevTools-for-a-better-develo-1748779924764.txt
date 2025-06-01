@@ -1,0 +1,41 @@
+[vite] connected.
+chunk-WERSD76P.js?v=06675440:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+AnalyticsProvider.tsx:21 Analytics initialized: false
+chunk-WERSD76P.js?v=06675440:377 [Violation] 'message' handler took 447ms
+dashboard-sidebar.tsx:64 
+            
+            
+           GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+fetchUserData @ dashboard-sidebar.tsx:64
+(anonymous) @ dashboard-sidebar.tsx:79
+commitHookEffectListMount @ chunk-WERSD76P.js?v=06675440:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=06675440:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=06675440:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=06675440:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=06675440:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=06675440:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=06675440:19447
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=06675440:18868
+flushSyncCallbacks @ chunk-WERSD76P.js?v=06675440:9119
+commitRootImpl @ chunk-WERSD76P.js?v=06675440:19432
+commitRoot @ chunk-WERSD76P.js?v=06675440:19277
+finishConcurrentRender @ chunk-WERSD76P.js?v=06675440:18805
+performConcurrentWorkOnRoot @ chunk-WERSD76P.js?v=06675440:18718
+workLoop @ chunk-WERSD76P.js?v=06675440:197
+flushWork @ chunk-WERSD76P.js?v=06675440:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=06675440:384Understand this errorAI
+analytics.ts:26 Google Analytics initialized with ID: G-XZYY9DVVHW
+useAnalytics.ts:59 Google Analytics initialized successfully
+js?id=G-XZYY9DVVHW:657 [Violation] 'setTimeout' handler took 57ms
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+AnalyticsProvider.tsx:21 Analytics initialized: true
+PageViewTracker.tsx:22 [Violation] 'setTimeout' handler took 56ms
+Canvas3D.tsx:2026 🔧 DEBUG: Canvas3D useEffect initialization starting
+Canvas3D.tsx:2033 🔧 DEBUG: Container found, initializing Three.js scene
+Canvas3D.tsx:2040 🔧 DEBUG: Scene created and assigned to ref
+Canvas3D.tsx:1558 🎨 FLOOR VISUAL - Created Ground Floor floor at Z=0 with color: ffcccc
+Canvas3D.tsx:1578 🎨 CEILING VISUAL - Created Ground Floor ceiling at Z=220 with color: f0e6ff
+Canvas3D.tsx:1558 🎨 FLOOR VISUAL - Created first floor at Z=255 with color: ff6666
+Canvas3D.tsx:1578 🎨 CEILING VISUAL - Created first ceiling at Z=475 with color: d9b3ff
+chunk-WERSD76P.js?v=06675440:18625 
