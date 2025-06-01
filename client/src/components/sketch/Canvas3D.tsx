@@ -674,7 +674,7 @@ const calculateFurniturePosition = (
  */
 
 // Main furniture drop handler that integrates with Canvas3D
-const handleFurnitureDrop = async (
+const handleFurnitureDrop = (
   event: DragEvent,
   camera: THREE.Camera,
   scene: THREE.Scene,
@@ -683,7 +683,7 @@ const handleFurnitureDrop = async (
   isMultifloor: boolean,
   floorParameters: Record<string, { ceilingHeight: number; floorDeck: number }>,
   onFurnitureAdd?: (item: FurnitureItem) => void
-): Promise<void> => {
+): void => {
   event.preventDefault();
   
   const itemData = event.dataTransfer?.getData("application/json");
@@ -734,7 +734,7 @@ const handleFurnitureDrop = async (
     };
 
     // Create and add 3D model to scene
-    const model = await createFurnitureModel(furnitureItem, scene);
+    const model = createFurnitureModel(furnitureItem, scene);
     
     if (model) {
       onFurnitureAdd(furnitureItem);
@@ -746,10 +746,10 @@ const handleFurnitureDrop = async (
 };
 
 // PHASE 3: Function to create and add furniture models to the scene
-const createFurnitureModel = async (
+const createFurnitureModel = (
   furnitureItem: FurnitureItem,
   scene: THREE.Scene
-): Promise<THREE.Group | null> => {
+): THREE.Group | null => {
   let model: THREE.Group;
 
   // Create the appropriate model based on furniture type
@@ -764,7 +764,7 @@ const createFurnitureModel = async (
       model = createArmchairModel();
       break;
     case 'car':
-      model = await createCarModel();
+      model = createCarModel();
       break;
     default:
       console.error(`Unknown furniture type: ${furnitureItem.type}`);
@@ -4751,12 +4751,12 @@ export default function Canvas3D({
       clearAllHighlights();
     };
 
-    const handleDrop = async (event: DragEvent) => {
+    const handleDrop = (event: DragEvent) => {
       // Clear highlight when dropping
       clearAllHighlights();
       
       if (sceneRef.current && cameraRef.current) {
-        await handleFurnitureDrop(
+        handleFurnitureDrop(
           event,
           cameraRef.current,
           sceneRef.current,
