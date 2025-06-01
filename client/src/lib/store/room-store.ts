@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
+import type { FurnitureItem } from '@shared/furniture-types';
 import { syncWallsWithLines } from '../simulationDataConverter';
 
 interface Point {
@@ -75,6 +76,7 @@ interface FloorData {
   walls: Wall[];
   measurements: Measurement[];
   stairPolygons: StairPolygon[]; // Add stairs to floor data
+  furnitureItems: FurnitureItem[]; // Add furniture items to floor data
   hasClosedContour: boolean;
   name: string;
   templateSource?: string; // Name of the floor this was copied from
@@ -94,6 +96,11 @@ interface RoomState {
   addStairPolygon: (polygon: StairPolygon) => void;
   removeStairPolygon: (id: string) => void;
   setHasClosedContour: (hasContour: boolean) => void;
+  // Furniture management
+  setFurnitureItems: (items: FurnitureItem[]) => void;
+  addFurnitureItem: (item: FurnitureItem) => void;
+  updateFurnitureItem: (item: FurnitureItem) => void;
+  removeFurnitureItem: (itemId: string) => void;
   // Floor management
   addFloor: (name: string, template?: string) => void;
   removeFloor: (name: string) => void;
@@ -115,6 +122,7 @@ export const useRoomStore = create<RoomState>()(
             walls: [],
             measurements: [],
             stairPolygons: [], // Add empty stair polygons array
+            furnitureItems: [], // Add empty furniture items array
             hasClosedContour: false,
             name: 'Ground Floor'
           }
@@ -198,6 +206,7 @@ export const useRoomStore = create<RoomState>()(
                 walls: [],
                 measurements: [],
                 stairPolygons: [], // Include empty stairPolygons array
+                furnitureItems: [], // Include empty furnitureItems array
                 hasClosedContour: false,
                 name
               };
@@ -333,6 +342,51 @@ export const useRoomStore = create<RoomState>()(
           
           return { floors: currentFloors };
         }),
+
+        // Furniture management methods
+        setFurnitureItems: (items) => set((state) => ({
+          floors: {
+            ...state.floors,
+            [state.currentFloor]: {
+              ...state.floors[state.currentFloor],
+              furnitureItems: items
+            }
+          }
+        })),
+
+        addFurnitureItem: (item) => set((state) => ({
+          floors: {
+            ...state.floors,
+            [state.currentFloor]: {
+              ...state.floors[state.currentFloor],
+              furnitureItems: [...state.floors[state.currentFloor].furnitureItems, item]
+            }
+          }
+        })),
+
+        updateFurnitureItem: (item) => set((state) => ({
+          floors: {
+            ...state.floors,
+            [state.currentFloor]: {
+              ...state.floors[state.currentFloor],
+              furnitureItems: state.floors[state.currentFloor].furnitureItems.map(
+                existing => existing.id === item.id ? item : existing
+              )
+            }
+          }
+        })),
+
+        removeFurnitureItem: (itemId) => set((state) => ({
+          floors: {
+            ...state.floors,
+            [state.currentFloor]: {
+              ...state.floors[state.currentFloor],
+              furnitureItems: state.floors[state.currentFloor].furnitureItems.filter(
+                item => item.id !== itemId
+              )
+            }
+          }
+        })),
         
         reset: () => set({
           floors: {
@@ -342,6 +396,7 @@ export const useRoomStore = create<RoomState>()(
               walls: [],
               measurements: [],
               stairPolygons: [],
+              furnitureItems: [],
               hasClosedContour: false,
               name: 'Ground Floor'
             }
