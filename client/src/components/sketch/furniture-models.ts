@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 export interface FurnitureModel {
   geometry: THREE.BufferGeometry;
@@ -217,9 +218,54 @@ export const createArmchairModel = (): THREE.Group => {
 
 export const createCarModel = (): THREE.Group => {
   const group = new THREE.Group();
+  const loader = new GLTFLoader();
 
+  // Get reference dimensions from the simple car model (body: 180x80x40)
+  const targetWidth = 180;
+  const targetDepth = 80;
+  const targetHeight = 60;
+
+  // Load Batmobile synchronously with promise handling
+  loader.load(
+    '/models/car.glb',
+    (gltf) => {
+      const carModel = gltf.scene.clone();
+      
+      // Calculate bounding box to get current size
+      const box = new THREE.Box3().setFromObject(carModel);
+      const currentSize = box.getSize(new THREE.Vector3());
+      
+      // Calculate scale to match target dimensions
+      const scaleX = targetWidth / currentSize.x;
+      const scaleY = targetDepth / currentSize.y;
+      const scaleZ = targetHeight / currentSize.z;
+      
+      // Use the smallest scale to maintain proportions
+      const uniformScale = Math.min(scaleX, scaleY, scaleZ);
+      carModel.scale.setScalar(uniformScale);
+      
+      // Position at ground level
+      carModel.position.z = 0;
+      
+      // Clear the group and add the loaded model
+      group.clear();
+      group.add(carModel);
+    },
+    undefined,
+    (error) => {
+      // Fallback to simple car if loading fails
+      createFallbackCar(group);
+    }
+  );
+
+  // Return group immediately with fallback car
+  createFallbackCar(group);
+  return group;
+};
+
+function createFallbackCar(group: THREE.Group): void {
   const carBodyMaterial = new THREE.MeshStandardMaterial({
-    color: 0x1E40AF, // Blue car body
+    color: 0x1E40AF,
     roughness: 0.2,
     metalness: 0.8
   });
@@ -244,49 +290,19 @@ export const createCarModel = (): THREE.Group => {
   body.position.z = 35;
   group.add(body);
 
-  // Hood/Front
-  const hoodGeometry = new THREE.BoxGeometry(60, 80, 25);
-  const hood = new THREE.Mesh(hoodGeometry, carBodyMaterial);
-  hood.position.set(120, 0, 27.5);
-  group.add(hood);
-
-  // Windshield
-  const windshieldGeometry = new THREE.BoxGeometry(5, 70, 35);
-  const windshield = new THREE.Mesh(windshieldGeometry, glassMaterial);
-  windshield.position.set(50, 0, 45);
-  group.add(windshield);
-
-  // Rear window
-  const rearWindowGeometry = new THREE.BoxGeometry(5, 70, 30);
-  const rearWindow = new THREE.Mesh(rearWindowGeometry, glassMaterial);
-  rearWindow.position.set(-70, 0, 42.5);
-  group.add(rearWindow);
-
-  // Side windows
-  const sideWindowGeometry = new THREE.BoxGeometry(80, 5, 30);
-  const leftWindow = new THREE.Mesh(sideWindowGeometry, glassMaterial);
-  leftWindow.position.set(-10, 42.5, 42.5);
-  group.add(leftWindow);
-
-  const rightWindow = new THREE.Mesh(sideWindowGeometry, glassMaterial);
-  rightWindow.position.set(-10, -42.5, 42.5);
-  group.add(rightWindow);
-
   // Wheels
   const wheelGeometry = new THREE.CylinderGeometry(18, 18, 12, 16);
   const wheelPositions = [
-    { x: 80, y: 50 },   // Front left
-    { x: 80, y: -50 },  // Front right
-    { x: -80, y: 50 },  // Rear left
-    { x: -80, y: -50 }  // Rear right
+    { x: 80, y: 50 },
+    { x: 80, y: -50 },
+    { x: -80, y: 50 },
+    { x: -80, y: -50 }
   ];
 
   wheelPositions.forEach(pos => {
     const wheel = new THREE.Mesh(wheelGeometry, tireMaterial);
     wheel.position.set(pos.x, pos.y, 18);
-    wheel.rotation.z = Math.PI / 2; // Rotate to be vertical
+    wheel.rotation.z = Math.PI / 2;
     group.add(wheel);
   });
-
-  return group;
-};
+}
