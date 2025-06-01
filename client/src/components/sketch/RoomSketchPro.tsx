@@ -640,7 +640,7 @@ export function RoomSketchPro({
           texture = texturesRef.current.door;
           // Only modern theme uses gray color to match the uploaded texture
           if (selectedTheme === "modern") {
-            materialColor = 0x4A5568; // Dark gray for modern doors
+            materialColor = 0x9CA3AF; // Light gray for modern doors
           } else {
             materialColor = 0x8B4513; // Brown for other themes
           }
