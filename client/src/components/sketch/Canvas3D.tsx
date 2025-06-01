@@ -488,6 +488,162 @@ const migrateFloorsData = (floors: Record<string, FloorData>): Record<string, Fl
 };
 
 /**
+ * PHASE 2: Automatic Floor Detection Functions
+ * Intelligent floor detection based on 3D position and camera view
+ */
+
+// Helper function for floor height calculation (Phase 2)
+const calculateFloorBaseHeight = (
+  floorName: string,
+  availableFloors: Record<string, FloorData>,
+  isMultifloor: boolean,
+  floorParameters: Record<string, { ceilingHeight: number; floorDeck: number }>,
+  defaultCeilingHeight: number = 220,
+  defaultFloorDeck: number = 35
+): number => {
+  const floorOrder = ["ground", "first", "second", "third", "fourth", "fifth"];
+  const index = floorOrder.indexOf(floorName);
+  if (index === -1) return 0;
+
+  let baseHeight = 0;
+  for (let i = 0; i < index; i++) {
+    const previousFloor = floorOrder[i];
+    if (availableFloors[previousFloor]?.hasClosedContour) {
+      let floorCeilingHeight, currentFloorDeck;
+      if (isMultifloor && floorParameters[previousFloor]) {
+        floorCeilingHeight = floorParameters[previousFloor].ceilingHeight;
+        currentFloorDeck = floorParameters[previousFloor].floorDeck;
+      } else {
+        floorCeilingHeight = defaultCeilingHeight;
+        currentFloorDeck = defaultFloorDeck;
+      }
+      baseHeight += floorCeilingHeight + currentFloorDeck;
+    }
+  }
+  return baseHeight;
+};
+
+// Detect which floor to place furniture based on mouse position and 3D context
+const detectFloorFromPosition = (
+  mouseEvent: DragEvent,
+  camera: THREE.Camera,
+  scene: THREE.Scene,
+  currentFloor: string,
+  availableFloors: Record<string, FloorData>,
+  isMultifloor: boolean,
+  floorParameters: Record<string, { ceilingHeight: number; floorDeck: number }>
+): string => {
+  // If not multifloor, always use current floor
+  if (!isMultifloor) {
+    return currentFloor;
+  }
+
+  // Get mouse coordinates in 3D space
+  const container = mouseEvent.currentTarget as HTMLElement;
+  const rect = container.getBoundingClientRect();
+  const mouseX = ((mouseEvent.clientX - rect.left) / rect.width) * 2 - 1;
+  const mouseY = -((mouseEvent.clientY - rect.top) / rect.height) * 2 + 1;
+
+  // Create raycaster to find intersection point
+  const raycaster = new THREE.Raycaster();
+  raycaster.setFromCamera(new THREE.Vector2(mouseX, mouseY), camera);
+
+  // Find floor meshes in the scene
+  const floorMeshes: Array<{ mesh: THREE.Mesh; floorName: string }> = [];
+  scene.traverse((object) => {
+    if (object instanceof THREE.Mesh && object.userData.type === 'floor') {
+      const floorName = object.userData.floorName || 'ground';
+      floorMeshes.push({ mesh: object, floorName });
+    }
+  });
+
+  // Check intersections with floor meshes
+  const intersects = raycaster.intersectObjects(floorMeshes.map(f => f.mesh));
+  
+  if (intersects.length > 0) {
+    // Find the closest floor intersection
+    const closestIntersect = intersects[0];
+    const correspondingFloor = floorMeshes.find(f => f.mesh === closestIntersect.object);
+    
+    if (correspondingFloor && availableFloors[correspondingFloor.floorName]) {
+      return correspondingFloor.floorName;
+    }
+  }
+
+  // Fallback: Use camera position to estimate which floor is being viewed
+  const cameraY = camera.position.y;
+  
+  // Calculate floor heights
+  const floorOrder = ["ground", "first", "second", "third", "fourth", "fifth"];
+  let bestFloor = currentFloor;
+  let bestDistance = Infinity;
+  
+  for (const floorName of floorOrder) {
+    if (!availableFloors[floorName]) continue;
+    
+    const baseHeight = calculateFloorBaseHeight(floorName, availableFloors, isMultifloor, floorParameters);
+    const ceilingHeight = floorParameters[floorName]?.ceilingHeight || 220;
+    const floorMidpoint = baseHeight + (ceilingHeight / 2);
+    
+    const distance = Math.abs(cameraY - floorMidpoint);
+    if (distance < bestDistance) {
+      bestDistance = distance;
+      bestFloor = floorName;
+    }
+  }
+  
+  return bestFloor;
+};
+
+// Enhanced position calculation for furniture placement
+const calculateFurniturePosition = (
+  mouseEvent: DragEvent,
+  camera: THREE.Camera,
+  scene: THREE.Scene,
+  targetFloor: string,
+  floorParameters: Record<string, { ceilingHeight: number; floorDeck: number }>
+): { x: number; y: number; z: number } => {
+  const container = mouseEvent.currentTarget as HTMLElement;
+  const rect = container.getBoundingClientRect();
+  const mouseX = ((mouseEvent.clientX - rect.left) / rect.width) * 2 - 1;
+  const mouseY = -((mouseEvent.clientY - rect.top) / rect.height) * 2 + 1;
+
+  // Create raycaster
+  const raycaster = new THREE.Raycaster();
+  raycaster.setFromCamera(new THREE.Vector2(mouseX, mouseY), camera);
+
+  // Try to intersect with floor mesh first
+  const floorMeshes: THREE.Mesh[] = [];
+  scene.traverse((object) => {
+    if (object instanceof THREE.Mesh && 
+        object.userData.type === 'floor' && 
+        object.userData.floorName === targetFloor) {
+      floorMeshes.push(object);
+    }
+  });
+
+  const intersects = raycaster.intersectObjects(floorMeshes);
+  
+  if (intersects.length > 0) {
+    const point = intersects[0].point;
+    return { x: point.x, y: point.y, z: point.z };
+  }
+
+  // Fallback: Calculate position based on floor height and mouse projection
+  const baseHeight = calculateFloorBaseHeight(targetFloor, {}, false, floorParameters);
+  
+  // Project mouse coordinates to the floor plane
+  const worldX = (mouseEvent.clientX - rect.left - rect.width / 2) * PIXELS_TO_CM;
+  const worldY = (rect.height / 2 - (mouseEvent.clientY - rect.top)) * PIXELS_TO_CM;
+  
+  return {
+    x: worldX,
+    y: worldY,
+    z: baseHeight + 10 // Slightly above floor surface
+  };
+};
+
+/**
  * ========================================
  * CANVAS3D MAIN COMPONENT
  * ========================================
@@ -4276,36 +4432,47 @@ export default function Canvas3D({
     const handleDrop = (event: DragEvent) => {
       event.preventDefault();
       const itemData = event.dataTransfer?.getData("application/json");
-      if (itemData && onFurnitureAdd) {
+      if (itemData && onFurnitureAdd && sceneRef.current && cameraRef.current) {
         try {
           const furnitureMenuData = JSON.parse(itemData);
+          
+          // PHASE 2: Use intelligent floor detection
+          const detectedFloor = detectFloorFromPosition(
+            event,
+            cameraRef.current,
+            sceneRef.current,
+            currentFloor,
+            migratedFloors,
+            isMultifloor || false,
+            floorParameters || {}
+          );
+          
+          // PHASE 2: Use enhanced position calculation
+          const calculatedPosition = calculateFurniturePosition(
+            event,
+            cameraRef.current,
+            sceneRef.current,
+            detectedFloor,
+            floorParameters || {}
+          );
+          
+          // Use default dimensions from menu data
+          const dimensions = furnitureMenuData.defaultDimensions || { width: 80, height: 80, depth: 80 };
           
           // Convert menu item to full FurnitureItem
           const furnitureItem: FurnitureItem = {
             id: `${furnitureMenuData.id}_${Date.now()}`,
             type: furnitureMenuData.id as 'table' | 'person' | 'armchair',
             name: furnitureMenuData.name,
-            floorName: currentFloor,
-            position: { x: 0, y: 0, z: 0 }, // Will be calculated
+            floorName: detectedFloor,
+            position: calculatedPosition,
             rotation: { x: 0, y: 0, z: 0 },
-            dimensions: { width: 80, height: 80, depth: 80 }, // Default dimensions
-            information: `${furnitureMenuData.name} placed on ${currentFloor}`,
+            dimensions: dimensions,
+            information: `${furnitureMenuData.name} placed on ${detectedFloor}`,
             meshId: `furniture_${Date.now()}`,
             createdAt: Date.now(),
             updatedAt: Date.now()
           };
-
-          // Calculate drop position based on mouse coordinates
-          // TODO: This will be enhanced in Phase 2 with proper floor detection
-          const rect = container.getBoundingClientRect();
-          const mouseX = event.clientX - rect.left;
-          const mouseY = event.clientY - rect.top;
-          
-          // Convert to 3D coordinates (simplified for Phase 0)
-          const worldX = (mouseX - CANVAS_CONFIG.centerX) * PIXELS_TO_CM;
-          const worldY = (CANVAS_CONFIG.centerY - mouseY) * PIXELS_TO_CM;
-          
-          furnitureItem.position = { x: worldX, y: worldY, z: 0 };
 
           onFurnitureAdd(furnitureItem);
         } catch (error) {
