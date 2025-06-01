@@ -53,11 +53,9 @@ const furnitureItems: FurnitureItem[] = [
     name: 'Car',
     icon: `
       <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="6" y="18" width="28" height="8" rx="1" fill="#1E40AF"/>
-        <rect x="3" y="22" width="34" height="6" rx="1" fill="#1E40AF"/>
-        <circle cx="12" cy="30" r="3" fill="#2D3748"/>
-        <circle cx="28" cy="30" r="3" fill="#2D3748"/>
-        <rect x="8" y="15" width="24" height="4" rx="1" fill="#87CEEB" opacity="0.6"/>
+        <rect x="5" y="20" width="30" height="8" fill="#1E40AF"/>
+        <circle cx="12" cy="32" r="3" fill="#2D3748"/>
+        <circle cx="28" cy="32" r="3" fill="#2D3748"/>
       </svg>
     `,
     defaultDimensions: { width: 450, height: 150, depth: 180 }
