@@ -1,0 +1,60 @@
+📊 FLOOR DATA FOR [ground]: {lineCount: 4, airEntryCount: 3, hasStairs: false, stairCount: 0, isCurrentFloor: true, …}
+wizard-design.tsx:2319 📊 FLOOR DATA FOR [first]: {lineCount: 4, airEntryCount: 1, hasStairs: false, stairCount: 0, isCurrentFloor: false, …}
+RoomSketchPro.tsx:752 RSP: Updated air entry transparency to 0.7
+wizard-design.tsx:2295 Wizard: Air entry transparency changing to: 0.6
+wizard-design.tsx:1399 Rendering Step 2 content
+wizard-design.tsx:2300 🔄 DATA FLOW: wizard-design -> RoomSketchPro: {currentFloor: 'ground', floorCount: 2, floorNames: Array(2), hasMultipleFloors: true}
+wizard-design.tsx:2308 ⚠️ IMPORTANT: RoomSketchPro should EXACTLY mirror Canvas3D view {currentFloorName: 'ground', sendingMultifloorData: true, note: 'Canvas3D displays a specific floor, RSP should show exactly the same'}
+wizard-design.tsx:2319 📊 FLOOR DATA FOR [ground]: {lineCount: 4, airEntryCount: 3, hasStairs: false, stairCount: 0, isCurrentFloor: true, …}
+wizard-design.tsx:2319 📊 FLOOR DATA FOR [first]: {lineCount: 4, airEntryCount: 1, hasStairs: false, stairCount: 0, isCurrentFloor: false, …}
+RoomSketchPro.tsx:752 RSP: Updated air entry transparency to 0.6
+wizard-design.tsx:2295 Wizard: Air entry transparency changing to: 0.5
+wizard-design.tsx:1399 Rendering Step 2 content
+wizard-design.tsx:2300 🔄 DATA FLOW: wizard-design -> RoomSketchPro: {currentFloor: 'ground', floorCount: 2, floorNames: Array(2), hasMultipleFloors: true}
+wizard-design.tsx:2308 ⚠️ IMPORTANT: RoomSketchPro should EXACTLY mirror Canvas3D view {currentFloorName: 'ground', sendingMultifloorData: true, note: 'Canvas3D displays a specific floor, RSP should show exactly the same'}
+wizard-design.tsx:2319 📊 FLOOR DATA FOR [ground]: {lineCount: 4, airEntryCount: 3, hasStairs: false, stairCount: 0, isCurrentFloor: true, …}
+wizard-design.tsx:2319 📊 FLOOR DATA FOR [first]: {lineCount: 4, airEntryCount: 1, hasStairs: false, stairCount: 0, isCurrentFloor: false, …}
+RoomSketchPro.tsx:752 RSP: Updated air entry transparency to 0.5
+wizard-design.tsx:2295 Wizard: Air entry transparency changing to: 0.6
+wizard-design.tsx:1399 Rendering Step 2 content
+wizard-design.tsx:2300 🔄 DATA FLOW: wizard-design -> RoomSketchPro: {currentFloor: 'ground', floorCount: 2, floorNames: Array(2), hasMultipleFloors: true}
+wizard-design.tsx:2308 ⚠️ IMPORTANT: RoomSketchPro should EXACTLY mirror Canvas3D view {currentFloorName: 'ground', sendingMultifloorData: true, note: 'Canvas3D displays a specific floor, RSP should show exactly the same'}
+wizard-design.tsx:2319 📊 FLOOR DATA FOR [ground]: {lineCount: 4, airEntryCount: 3, hasStairs: false, stairCount: 0, isCurrentFloor: true, …}
+wizard-design.tsx:2319 📊 FLOOR DATA FOR [first]: {lineCount: 4, airEntryCount: 1, hasStairs: false, stairCount: 0, isCurrentFloor: false, …}
+RoomSketchPro.tsx:752 RSP: Updated air entry transparency to 0.6
+wizard-design.tsx:2295 Wizard: Air entry transparency changing to: 0.7
+wizard-design.tsx:1399 Rendering Step 2 content
+wizard-design.tsx:2300 🔄 DATA FLOW: wizard-design -> RoomSketchPro: {currentFloor: 'ground', floorCount: 2, floorNames: Array(2), hasMultipleFloors: true}
+wizard-design.tsx:2308 ⚠️ IMPORTANT: RoomSketchPro should EXACTLY mirror Canvas3D view {currentFloorName: 'ground', sendingMultifloorData: true, note: 'Canvas3D displays a specific floor, RSP should show exactly the same'}
+wizard-design.tsx:2319 📊 FLOOR DATA FOR [ground]: {lineCount: 4, airEntryCount: 3, hasStairs: false, stairCount: 0, isCurrentFloor: true, …}
+wizard-design.tsx:2319 📊 FLOOR DATA FOR [first]: {lineCount: 4, airEntryCount: 1, hasStairs: false, stairCount: 0, isCurrentFloor: false, …}
+RoomSketchPro.tsx:752 RSP: Updated air entry transparency to 0.7
+wizard-design.tsx:2295 Wizard: Air entry transparency changing to: 0.8
+wizard-design.tsx:1399 Rendering Step 2 content
+wizard-design.tsx:2300 🔄 DATA FLOW: wizard-design -> RoomSketchPro: {currentFloor: 'ground', floorCount: 2, floorNames: Array(2), hasMultipleFloors: true}
+wizard-design.tsx:2308 ⚠️ IMPORTANT: RoomSketchPro should EXACTLY mirror Canvas3D view {currentFloorName: 'ground', sendingMultifloorData: true, note: 'Canvas3D displays a specific floor, RSP should show exactly the same'}
+wizard-design.tsx:2319 📊 FLOOR DATA FOR [ground]: {lineCount: 4, airEntryCount: 3, hasStairs: false, stairCount: 0, isCurrentFloor: true, …}
+wizard-design.tsx:2319 📊 FLOOR DATA FOR [first]: {lineCount: 4, airEntryCount: 1, hasStairs: false, stairCount: 0, isCurrentFloor: false, …}
+RoomSketchPro.tsx:752 RSP: Updated air entry transparency to 0.8
+wizard-design.tsx:2295 Wizard: Air entry transparency changing to: 0.9
+wizard-design.tsx:1399 Rendering Step 2 content
+wizard-design.tsx:2300 🔄 DATA FLOW: wizard-design -> RoomSketchPro: {currentFloor: 'ground', floorCount: 2, floorNames: Array(2), hasMultipleFloors: true}
+wizard-design.tsx:2308 ⚠️ IMPORTANT: RoomSketchPro should EXACTLY mirror Canvas3D view {currentFloorName: 'ground', sendingMultifloorData: true, note: 'Canvas3D displays a specific floor, RSP should show exactly the same'}
+wizard-design.tsx:2319 📊 FLOOR DATA FOR [ground]: {lineCount: 4, airEntryCount: 3, hasStairs: false, stairCount: 0, isCurrentFloor: true, …}
+wizard-design.tsx:2319 📊 FLOOR DATA FOR [first]: {lineCount: 4, airEntryCount: 1, hasStairs: false, stairCount: 0, isCurrentFloor: false, …}
+RoomSketchPro.tsx:752 RSP: Updated air entry transparency to 0.9
+RoomSketchPro.tsx:479 RSP: Applying textures for theme: classic
+RoomSketchPro.tsx:480 RSP: Available textures: {wood: CanvasTexture, metal: CanvasTexture, door: _Texture, window: CanvasTexture, vent: CanvasTexture, …}
+RoomSketchPro.tsx:494 RSP: All mesh objects in scene:
+RoomSketchPro.tsx:496   0: type=Mesh, userData= {type: 'wall', floorName: 'Ground Floor'} material=MeshPhongMaterial
+RoomSketchPro.tsx:496   1: type=Mesh, userData= {type: 'wall', floorName: 'Ground Floor'} material=MeshPhongMaterial
+RoomSketchPro.tsx:496   2: type=Mesh, userData= {type: 'wall', floorName: 'Ground Floor'} material=MeshPhongMaterial
+RoomSketchPro.tsx:496   3: type=Mesh, userData= {type: 'wall', floorName: 'Ground Floor'} material=MeshPhongMaterial
+RoomSketchPro.tsx:496   4: type=Mesh, userData= {type: 'door', position: {…}, dimensions: {…}, line: {…}, index: 4, …} material=MeshPhongMaterial
+RoomSketchPro.tsx:496   5: type=Mesh, userData= {} material=MeshBasicMaterial
+RoomSketchPro.tsx:496   6: type=Mesh, userData= {type: 'axis', direction: 'x', parentEntryIndex: 5, actualEntryIndex: 0} material=MeshBasicMaterial
+RoomSketchPro.tsx:496   7: type=Mesh, userData= {type: 'axis', direction: 'y', parentEntryIndex: 5} material=MeshBasicMaterial
+RoomSketchPro.tsx:496   8: type=Mesh, userData= {type: 'axis', direction: 'z', parentEntryIndex: 5} material=MeshBasicMaterial
+RoomSketchPro.tsx:496   9: type=Mesh, userData= {type: 'vent', position: {…}, dimensions: {…}, line: {…}, index: 10, …} material=MeshPhongMaterial
+RoomSketchPro.tsx:496   10: type=Mesh, userData= {} material=MeshBasicMaterial
+RoomSketchPro.tsx:496   11: type=Mesh, userData= {type: 'axis', direction: 'x', parentEntryIndex: 11, actualEntryIndex: 1}

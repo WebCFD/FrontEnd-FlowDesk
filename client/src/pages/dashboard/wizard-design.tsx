@@ -1396,7 +1396,6 @@ export default function WizardDesign() {
   );
 
   const renderStep2 = () => {
-    console.log("Rendering Step 2 content");
     return (
       <>
         <Card className="mt-4">
@@ -2288,43 +2287,10 @@ export default function WizardDesign() {
               currentFloor={currentFloor} // Pass the current floor explicitly
               floors={floors} // Pass the entire floors object directly
               onWallTransparencyChange={(value) => {
-                console.log("Wizard: Wall transparency changing to:", value);
                 setWallTransparency(value);
               }}
               onAirEntryTransparencyChange={(value) => {
-                console.log("Wizard: Air entry transparency changing to:", value);
                 setAirEntryTransparency(value);
-              }}
-              onComponentMount={() => {
-                // Add detailed logging of the data being passed to RoomSketchPro
-                console.log("🔄 DATA FLOW: wizard-design -> RoomSketchPro:", {
-                  currentFloor,
-                  floorCount: Object.keys(floors).length,
-                  floorNames: Object.keys(floors),
-                  hasMultipleFloors: Object.keys(floors).length > 1,
-                });
-
-                // Log which floor is active in Canvas3D for comparison
-                console.log(
-                  "⚠️ IMPORTANT: RoomSketchPro should EXACTLY mirror Canvas3D view",
-                  {
-                    currentFloorName: currentFloor,
-                    sendingMultifloorData: true,
-                    note: "Canvas3D displays a specific floor, RSP should show exactly the same",
-                  },
-                );
-
-                // Log specific floor contents that will be displayed in Canvas3D vs RSP
-                Object.keys(floors).forEach((floorName) => {
-                  console.log(`📊 FLOOR DATA FOR [${floorName}]:`, {
-                    lineCount: floors[floorName]?.lines?.length || 0,
-                    airEntryCount: floors[floorName]?.airEntries?.length || 0,
-                    hasStairs: !!floors[floorName]?.stairPolygons?.length,
-                    stairCount: floors[floorName]?.stairPolygons?.length || 0,
-                    isCurrentFloor: floorName === currentFloor,
-                    shouldBeVisibleInRSP: floorName === currentFloor, // Only current floor should be visible in RSP
-                  });
-                });
               }}
             />
           ) : tab === "2d-editor" ? (

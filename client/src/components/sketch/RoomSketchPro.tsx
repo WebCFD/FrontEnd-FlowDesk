@@ -472,29 +472,8 @@ export function RoomSketchPro({
   // Function to apply textures to Canvas3D scene materials
   const applyThemeTextures = () => {
     if (!sceneRef.current) {
-      console.log('RSP: Scene not ready yet, skipping texture application');
       return;
     }
-
-    console.log('RSP: Applying textures for theme:', selectedTheme);
-    console.log('RSP: Available textures:', texturesRef.current);
-    
-    // Debug: Log all objects in the scene to understand what's there
-    const allObjects: any[] = [];
-    sceneRef.current.traverse((object) => {
-      if (object instanceof THREE.Mesh) {
-        allObjects.push({
-          type: object.type,
-          userData: object.userData,
-          material: object.material?.type || 'unknown'
-        });
-      }
-    });
-    
-    console.log('RSP: All mesh objects in scene:');
-    allObjects.forEach((obj, index) => {
-      console.log(`  ${index}: type=${obj.type}, userData=`, obj.userData, `material=${obj.material}`);
-    });
     
     // Find all wall meshes in the scene
     const wallMeshes: THREE.Mesh[] = [];
@@ -704,7 +683,6 @@ export function RoomSketchPro({
         
         airEntryMesh.material = newMaterial;
         airEntryMesh.renderOrder = 2; // Render after walls
-        console.log(`RSP: Applied ${airEntryType} texture to air entry ${index} with opacity ${airEntryTransparency}`);
       }
     });
 
@@ -749,7 +727,7 @@ export function RoomSketchPro({
       rendererRef.current.render(sceneRef.current, cameraRef.current);
     }
 
-    console.log(`RSP: Updated air entry transparency to ${airEntryTransparency}`);
+
   };
 
   // Apply textures when theme changes
