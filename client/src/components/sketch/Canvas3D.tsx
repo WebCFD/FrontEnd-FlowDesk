@@ -4801,9 +4801,17 @@ export default function Canvas3D({
             originalOnFurnitureAdd(item);
           }
           
-          // Store for auto-opening dialog
-          console.log("🎛️ Storing furniture item for auto-open dialog:", item);
-          newFurnitureForDialog.current = item;
+          // Auto-open dialog immediately after creation
+          console.log("🎛️ Auto-opening furniture dialog immediately for new item:", item);
+          
+          // Use setTimeout to ensure the DOM has updated
+          setTimeout(() => {
+            setEditingFurniture({
+              index: 0, // This would be the actual index in a real furniture list
+              item: item
+            });
+            console.log("🎛️ setEditingFurniture called for new furniture:", item);
+          }, 50);
         };
         
         handleFurnitureDrop(

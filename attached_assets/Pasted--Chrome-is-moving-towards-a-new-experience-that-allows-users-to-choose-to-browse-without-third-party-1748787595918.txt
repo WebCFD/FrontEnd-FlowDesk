@@ -1,0 +1,17 @@
+ Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.Understand this warningAI
+Canvas3D.tsx:4805 🎛️ Storing furniture item for auto-open dialog: {id: 'table_1748787569797', type: 'table', name: 'Table', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:744 🎛️ Storing furniture item for auto-open dialog: {id: 'table_1748787569797', type: 'table', name: 'Table', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:4824 🖱️ Double-click detected!
+Canvas3D.tsx:4843 🎯 Mouse coordinates: _Vector2 {x: 0.37803985595703127, y: -0.13481068929036466}
+Canvas3D.tsx:4855 🪑 Found furniture group: {type: 'furniture', furnitureType: 'table', furnitureId: 'table_1748787569797', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:4860 🪑 Found furniture mesh: {type: 'furniture', furnitureType: 'table', furnitureId: 'table_1748787569797', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:4860 🪑 Found furniture mesh: {type: 'furniture', furnitureType: 'table', furnitureId: 'table_1748787569797', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:4860 🪑 Found furniture mesh: {type: 'furniture', furnitureType: 'table', furnitureId: 'table_1748787569797', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:4860 🪑 Found furniture mesh: {type: 'furniture', furnitureType: 'table', furnitureId: 'table_1748787569797', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:4860 🪑 Found furniture mesh: {type: 'furniture', furnitureType: 'table', furnitureId: 'table_1748787569797', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:4864 🔍 Found 6 furniture objects in scene
+Canvas3D.tsx:4869 💥 Found 2 intersections
+Canvas3D.tsx:4883 ✅ Intersected furniture object: {furnitureId: 'table_1748787569797', userData: {…}, position: _Vector3}
+Canvas3D.tsx:4915 🎛️ Opening furniture dialog with item: {id: 'table_1748787569797', type: 'table', name: 'Furniture', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:4916 🎛️ Setting editingFurniture state...
+Canvas3D.tsx:4923 🎛️ editingFurniture state set!
