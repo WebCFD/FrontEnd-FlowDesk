@@ -1473,28 +1473,44 @@ export default function Canvas3D({
       }
       shape.lineTo(firstPoint.x, firstPoint.y);
 
-      // Floor surface
+      // Floor surface with distinctive colors
       const floorGeometry = new THREE.ShapeGeometry(shape);
+      let floorColor = 0x808080; // Default gray
+      if (floorData.name === 'ground') floorColor = 0x00ff00; // Green for ground
+      else if (floorData.name === 'first') floorColor = 0x0000ff; // Blue for first floor
+      else if (floorData.name === 'second') floorColor = 0xff0000; // Red for second floor
+      else if (floorData.name === 'third') floorColor = 0xffff00; // Yellow for third floor
+      
       const floorMaterial = new THREE.MeshPhongMaterial({
-        color: isCurrentFloor ? 0x808080 : 0xa0a0a0,
-        opacity: isCurrentFloor ? 0.3 : 0.2,
+        color: floorColor,
+        opacity: 0.5, // More opaque to see colors clearly
         transparent: true,
         side: THREE.DoubleSide,
       });
       const floor = new THREE.Mesh(floorGeometry, floorMaterial);
       floor.position.z = baseHeight;
+      floor.userData = { type: 'floor', floorName: floorData.name }; // CRITICAL for raycasting
+      console.log(`🎨 FLOOR VISUAL - Created ${floorData.name} floor at Z=${baseHeight} with color:`, floorColor.toString(16));
       objects.push(floor);
 
-      // Ceiling surface
+      // Ceiling surface with lighter tones
       const ceilingGeometry = new THREE.ShapeGeometry(shape);
+      let ceilingColor = 0xe0e0e0; // Default light gray
+      if (floorData.name === 'ground') ceilingColor = 0x80ff80; // Light green for ground ceiling
+      else if (floorData.name === 'first') ceilingColor = 0x8080ff; // Light blue for first ceiling
+      else if (floorData.name === 'second') ceilingColor = 0xff8080; // Light red for second ceiling
+      else if (floorData.name === 'third') ceilingColor = 0xffff80; // Light yellow for third ceiling
+      
       const ceilingMaterial = new THREE.MeshPhongMaterial({
-        color: isCurrentFloor ? 0xe0e0e0 : 0xf0f0f0,
-        opacity: isCurrentFloor ? 0.2 : 0.1,
+        color: ceilingColor,
+        opacity: 0.3, // Semi-transparent
         transparent: true,
         side: THREE.DoubleSide,
       });
       const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
       ceiling.position.z = baseHeight + floorCeilingHeight;
+      ceiling.userData = { type: 'ceiling', floorName: floorData.name }; // For completeness
+      console.log(`🎨 CEILING VISUAL - Created ${floorData.name} ceiling at Z=${baseHeight + floorCeilingHeight} with color:`, ceilingColor.toString(16));
       objects.push(ceiling);
     }
 
