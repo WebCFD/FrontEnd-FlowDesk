@@ -68,8 +68,12 @@ export default function DashboardSidebar() {
           const data = await response.json();
           setUserData(data);
         }
+        // Don't log 401 errors as they're expected when not authenticated
       } catch (error) {
-        console.error("Failed to fetch user data:", error);
+        // Only log unexpected errors, not authentication errors
+        if (error instanceof Error && !error.message.includes('401')) {
+          console.error("Failed to fetch user data:", error);
+        }
       }
     }
     fetchUserData();
