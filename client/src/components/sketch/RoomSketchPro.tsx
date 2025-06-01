@@ -638,7 +638,14 @@ export function RoomSketchPro({
       switch (airEntryType) {
         case "door":
           texture = texturesRef.current.door;
-          materialColor = 0x8B4513; // Brown for doors
+          // Door color varies by theme
+          if (selectedTheme === "modern") {
+            materialColor = 0x4A5568; // Dark gray for modern doors
+          } else if (selectedTheme === "industrial") {
+            materialColor = 0x3A3A3A; // Darker metal gray
+          } else {
+            materialColor = 0xF5F5F5; // Light gray for classic
+          }
           break;
         case "window":
           texture = texturesRef.current.window;
