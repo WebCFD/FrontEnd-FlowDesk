@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { TrackballControls } from "three/addons/controls/TrackballControls.js";
 import { makeTextSprite } from "@/lib/three-utils";
 import AirEntryDialog from "./AirEntryDialog";
+import FurnitureDialog from "./FurnitureDialog";
 import { ViewDirection } from "./Toolbar3D";
 import { useSceneContext } from "../../contexts/SceneContext";
 import { FurnitureItem, FurnitureCallbacks } from "@shared/furniture-types";
@@ -933,6 +934,12 @@ export default function Canvas3D({
   const [editingAirEntry, setEditingAirEntry] = useState<{
     index: number;
     entry: AirEntry;
+  } | null>(null);
+  
+  // State for editing furniture
+  const [editingFurniture, setEditingFurniture] = useState<{
+    index: number;
+    item: FurnitureItem;
   } | null>(null);
   const [ignoreNextClick, setIgnoreNextClick] = useState<boolean>(false);
   // Track the selected air entry element for dragging
