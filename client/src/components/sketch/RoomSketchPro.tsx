@@ -611,7 +611,7 @@ export function RoomSketchPro({
           const industrialTexture = new THREE.TextureLoader().load('/industrial_wall_texture.png');
           industrialTexture.wrapS = THREE.RepeatWrapping;
           industrialTexture.wrapT = THREE.RepeatWrapping;
-          industrialTexture.repeat.set(4, 4);
+          industrialTexture.repeat.set(2, 2);
           newMaterial = new THREE.MeshPhongMaterial({
             map: industrialTexture,
             opacity: wallTransparency,
