@@ -2331,7 +2331,19 @@ export default function WizardDesign() {
                 // TODO: Integrate with furniture store/state management
                 toast({
                   title: "Furniture Added",
-                  description: `${item.name} has been placed on ${item.floorName}`,
+                  description: `${item.name} has been placed on ${currentFloor}`,
+                });
+              }}
+              onUpdateFurniture={(item) => {
+                toast({
+                  title: "Furniture Updated",
+                  description: `${item.name} has been modified`,
+                });
+              }}
+              onDeleteFurniture={(itemId) => {
+                toast({
+                  title: "Furniture Deleted",
+                  description: "Furniture item has been removed",
                 });
               }}
             />

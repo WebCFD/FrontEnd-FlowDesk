@@ -4780,10 +4780,8 @@ export default function Canvas3D({
     const handleDoubleClick = (event: MouseEvent) => {
       console.log("🖱️ Double-click detected!");
       
-      if (presentationMode) {
-        console.log("❌ Presentation mode active, editing disabled");
-        return;
-      }
+      // Allow furniture editing even in presentation mode for selective editing
+      // Other editing interactions remain disabled in presentation mode
       
       event.preventDefault();
       

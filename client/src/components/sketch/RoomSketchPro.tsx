@@ -47,6 +47,8 @@ interface RoomSketchProProps {
   airEntries?: AirEntry[];
   roomHeight?: number;
   onFurnitureAdd?: (item: FurnitureItem) => void;
+  onUpdateFurniture?: (item: FurnitureItem) => void;
+  onDeleteFurniture?: (itemId: string) => void;
   wallTransparency: number;
   onWallTransparencyChange: (value: number) => void;
   airEntryTransparency?: number;
@@ -73,6 +75,8 @@ export function RoomSketchPro({
   airEntries = [],
   roomHeight = 250, // cm
   onFurnitureAdd,
+  onUpdateFurniture,
+  onDeleteFurniture,
   wallTransparency,
   onWallTransparencyChange,
   airEntryTransparency = 1.0,
@@ -808,6 +812,8 @@ export function RoomSketchPro({
         onDeleteAirEntry={undefined}
         onSceneReady={handleSceneReady}
         onFurnitureAdd={onFurnitureAdd} // Pass furniture callback to Canvas3D
+        onUpdateFurniture={onUpdateFurniture} // Enable furniture editing in RSP
+        onDeleteFurniture={onDeleteFurniture} // Enable furniture deletion in RSP
       />
       
       {/* Controles específicos de RSP */}
