@@ -22,7 +22,7 @@ export default function TestCarModel() {
       0.1,
       1000
     );
-    camera.position.set(100, 50, 100);
+    camera.position.set(300, 200, 300);
     camera.lookAt(0, 0, 0);
 
     // Setup renderer
