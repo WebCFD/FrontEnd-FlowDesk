@@ -220,10 +220,10 @@ export const createCarModel = (): THREE.Group => {
   const group = new THREE.Group();
   const loader = new GLTFLoader();
 
-  // Get reference dimensions from the simple car model (body: 180x80x40) - doubled
-  const targetWidth = 360;
-  const targetDepth = 160;
-  const targetHeight = 120;
+  // Get reference dimensions from the simple car model (body: 180x80x40)
+  const targetWidth = 180;
+  const targetDepth = 80;
+  const targetHeight = 60;
 
   // Load Batmobile synchronously with promise handling
   loader.load(
@@ -243,9 +243,6 @@ export const createCarModel = (): THREE.Group => {
       // Use the smallest scale to maintain proportions
       const uniformScale = Math.min(scaleX, scaleY, scaleZ);
       carModel.scale.setScalar(uniformScale);
-      
-      // Rotate 90 degrees around Z-axis (user's X-axis)
-      carModel.rotation.z = Math.PI / 2;
       
       // Position at ground level
       carModel.position.z = 0;
