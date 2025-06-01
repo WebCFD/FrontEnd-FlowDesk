@@ -4703,53 +4703,67 @@ export default function Canvas3D({
       
       // Highlight the surface that would receive the drop
       if (cameraRef.current && sceneRef.current) {
-        const surfaceDetection = detectSurfaceFromPosition(
-          event,
-          cameraRef.current,
-          sceneRef.current,
-          currentFloor,
-          migratedFloors,
-          isMultifloor,
-          floorParameters
-        );
-        
-        // Find the mesh for the detected surface
-        const surfaceMeshes: { mesh: THREE.Mesh; floorName: string; surfaceType: string }[] = [];
-        
-        sceneRef.current.traverse((object: THREE.Object3D) => {
-          if (object instanceof THREE.Mesh && object.userData.type && object.userData.floorName) {
-            const floorName = object.userData.floorName;
-            const normalizedFloorName = normalizeFloorName(floorName);
-            const surfaceType = object.userData.type;
-            
-            // Debug: Check all possible matches
-            console.log(`Checking mesh: ${floorName} (${normalizedFloorName}) - ${surfaceType} vs target: ${surfaceDetection.floorName} - ${surfaceDetection.surfaceType}`);
-            
-            // Check if this mesh matches our detected surface
-            // More flexible matching: check if normalized names match or if one contains the other
-            const targetFloor = surfaceDetection.floorName;
-            const meshMatches = floorName === targetFloor || 
-                               normalizedFloorName === targetFloor ||
-                               floorName.toLowerCase().includes(targetFloor.toLowerCase()) ||
-                               targetFloor.toLowerCase().includes(floorName.toLowerCase()) ||
-                               normalizedFloorName.includes(targetFloor) ||
-                               targetFloor.includes(normalizedFloorName);
-            
-            if (meshMatches && surfaceType === surfaceDetection.surfaceType) {
-              surfaceMeshes.push({ mesh: object, floorName, surfaceType });
-              console.log(`✓ Match found: ${floorName} - ${surfaceType}`);
-            }
+        try {
+          const surfaceDetection = detectSurfaceFromPosition(
+            event,
+            cameraRef.current,
+            sceneRef.current,
+            currentFloor,
+            migratedFloors,
+            isMultifloor,
+            floorParameters
+          );
+          
+          // If fallback was used, it means no real surface was detected
+          if (surfaceDetection.fallbackUsed) {
+            clearSurfaceHighlight();
+            console.log("✓ Using fallback detection, clearing highlight");
+            return;
           }
-        });
         
-        console.log(`Surface detection result: ${surfaceDetection.floorName} - ${surfaceDetection.surfaceType}, found ${surfaceMeshes.length} matching meshes`);
-        
-        // Highlight the first matching surface
-        if (surfaceMeshes.length > 0) {
-          highlightSurface(surfaceMeshes[0].mesh);
-        } else {
-          // If no surface found, clear any existing highlight
+          // Find the mesh for the detected surface
+          const surfaceMeshes: { mesh: THREE.Mesh; floorName: string; surfaceType: string }[] = [];
+          
+          sceneRef.current.traverse((object: THREE.Object3D) => {
+            if (object instanceof THREE.Mesh && object.userData.type && object.userData.floorName) {
+              const floorName = object.userData.floorName;
+              const normalizedFloorName = normalizeFloorName(floorName);
+              const surfaceType = object.userData.type;
+              
+              // Debug: Check all possible matches
+              console.log(`Checking mesh: ${floorName} (${normalizedFloorName}) - ${surfaceType} vs target: ${surfaceDetection.floorName} - ${surfaceDetection.surfaceType}`);
+              
+              // Check if this mesh matches our detected surface
+              // More flexible matching: check if normalized names match or if one contains the other
+              const targetFloor = surfaceDetection.floorName;
+              const meshMatches = floorName === targetFloor || 
+                                 normalizedFloorName === targetFloor ||
+                                 floorName.toLowerCase().includes(targetFloor.toLowerCase()) ||
+                                 targetFloor.toLowerCase().includes(floorName.toLowerCase()) ||
+                                 normalizedFloorName.includes(targetFloor) ||
+                                 targetFloor.includes(normalizedFloorName);
+              
+              if (meshMatches && surfaceType === surfaceDetection.surfaceType) {
+                surfaceMeshes.push({ mesh: object, floorName, surfaceType });
+                console.log(`✓ Match found: ${floorName} - ${surfaceType}`);
+              }
+            }
+          });
+          
+          console.log(`Surface detection result: ${surfaceDetection.floorName} - ${surfaceDetection.surfaceType}, found ${surfaceMeshes.length} matching meshes`);
+          
+          // Always clear previous highlight first, then apply new one if found
+          if (surfaceMeshes.length > 0) {
+            highlightSurface(surfaceMeshes[0].mesh);
+          } else {
+            // If no surface found or raycasting failed, clear any existing highlight
+            clearSurfaceHighlight();
+            console.log("✓ No surface intersection found, clearing highlight");
+          }
+        } catch (error) {
+          // If there's any error in surface detection, clear highlight
           clearSurfaceHighlight();
+          console.log("✓ Error in surface detection, clearing highlight");
         }
       }
     };
