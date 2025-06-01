@@ -952,11 +952,18 @@ export default function Canvas3D({
   
   // Effect to auto-open dialog for newly created furniture
   useEffect(() => {
+    console.log("🔍 useEffect triggered - checking newFurnitureForDialog:", newFurnitureForDialog.current);
+    
     if (newFurnitureForDialog.current) {
       console.log("🎛️ Auto-opening dialog for new furniture:", newFurnitureForDialog.current);
       
       setEditingFurniture({
         index: 0, // This would be the actual index in a real furniture list
+        item: newFurnitureForDialog.current
+      });
+      
+      console.log("🎛️ setEditingFurniture called with:", {
+        index: 0,
         item: newFurnitureForDialog.current
       });
       
