@@ -1523,6 +1523,40 @@ export default function WizardDesign() {
                             />
                           ),
                         },
+                        {
+                          id: "car",
+                          name: "Car",
+                          icon: (
+                            <g>
+                              <rect
+                                x="2"
+                                y="10"
+                                width="20"
+                                height="6"
+                                rx="1"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                fill="none"
+                              />
+                              <circle
+                                cx="6"
+                                cy="18"
+                                r="2"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                fill="none"
+                              />
+                              <circle
+                                cx="18"
+                                cy="18"
+                                r="2"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                fill="none"
+                              />
+                            </g>
+                          ),
+                        },
                       ].map((item) => (
                         <Button
                           key={item.id}
