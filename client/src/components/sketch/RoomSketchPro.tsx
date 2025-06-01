@@ -216,6 +216,14 @@ export function RoomSketchPro({
       return texture;
     }
 
+    // For industrial theme, use the uploaded red door texture
+    if (theme === "industrial") {
+      const texture = new THREE.TextureLoader().load('/industrial_door_texture.png');
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      return texture;
+    }
+
     const canvas = document.createElement('canvas');
     canvas.width = 256;
     canvas.height = 512;
@@ -643,11 +651,13 @@ export function RoomSketchPro({
       switch (airEntryType) {
         case "door":
           texture = texturesRef.current.door;
-          // Only modern theme uses gray color to match the uploaded texture
+          // Color varies by theme to match uploaded textures
           if (selectedTheme === "modern") {
-            materialColor = 0xD1D5DB; // Even lighter gray for modern doors
+            materialColor = 0xD1D5DB; // Light gray for modern doors
+          } else if (selectedTheme === "industrial") {
+            materialColor = 0xDC2626; // Red for industrial doors
           } else {
-            materialColor = 0x8B4513; // Brown for other themes
+            materialColor = 0x8B4513; // Brown for classic theme
           }
           break;
         case "window":
