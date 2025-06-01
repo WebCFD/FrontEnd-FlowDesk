@@ -4870,11 +4870,14 @@ export default function Canvas3D({
             };
             
             console.log("🎛️ Opening furniture dialog with item:", mockFurnitureItem);
+            console.log("🎛️ Setting editingFurniture state...");
             
             setEditingFurniture({
               index: 0, // This would need to be the actual index from the furniture list
               item: mockFurnitureItem
             });
+            
+            console.log("🎛️ editingFurniture state set!");
           } else {
             console.log("❌ No furnitureId found in userData");
           }
