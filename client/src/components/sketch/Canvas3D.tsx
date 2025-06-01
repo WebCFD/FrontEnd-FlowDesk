@@ -848,6 +848,17 @@ export default function Canvas3D({
   // PHASE 1: Migrate floors data to ensure backward compatibility
   const migratedFloors = useMemo(() => migrateFloorsData(floors), [floors]);
 
+  // DEBUG: Canvas3D initialization logging
+  useEffect(() => {
+    console.log("🔧 DEBUG: Canvas3D component mounted");
+    console.log("🔧 DEBUG: Props received:", { 
+      currentFloor, 
+      floorsCount: Object.keys(floors).length,
+      isMultifloor,
+      presentationMode 
+    });
+  }, []);
+
   // Function to setup lighting based on presentation mode
   const setupLights = (scene: THREE.Scene) => {
     if (presentationMode && lightingIntensity !== undefined) {
@@ -1919,12 +1930,21 @@ export default function Canvas3D({
   }, [onViewChange, handleViewChange]);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    console.log("🔧 DEBUG: Canvas3D useEffect initialization starting");
+    
+    if (!containerRef.current) {
+      console.error("🔴 DEBUG: containerRef.current is null!");
+      return;
+    }
+    
+    console.log("🔧 DEBUG: Container found, initializing Three.js scene");
 
     // Initialize scene
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xf8fafc);
     sceneRef.current = scene;
+    
+    console.log("🔧 DEBUG: Scene created and assigned to ref");
 
     // Initialize camera
     const camera = new THREE.PerspectiveCamera(
