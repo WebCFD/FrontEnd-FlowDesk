@@ -742,7 +742,7 @@ const handleFurnitureDrop = (
       
       // Store the furniture item for auto-opening dialog
       console.log("🎛️ Storing furniture item for auto-open dialog:", furnitureItem);
-      newFurnitureForDialog.current = furnitureItem;
+      // This will be handled in the component's handleDrop function
     }
     
   } catch (error) {
@@ -4785,6 +4785,20 @@ export default function Canvas3D({
       clearAllHighlights();
       
       if (sceneRef.current && cameraRef.current) {
+        // Store the original onFurnitureAdd callback to wrap it
+        const originalOnFurnitureAdd = onFurnitureAdd;
+        
+        // Create wrapped callback that also stores item for dialog
+        const wrappedOnFurnitureAdd = (item: FurnitureItem) => {
+          if (originalOnFurnitureAdd) {
+            originalOnFurnitureAdd(item);
+          }
+          
+          // Store for auto-opening dialog
+          console.log("🎛️ Storing furniture item for auto-open dialog:", item);
+          newFurnitureForDialog.current = item;
+        };
+        
         handleFurnitureDrop(
           event,
           cameraRef.current,
@@ -4793,7 +4807,7 @@ export default function Canvas3D({
           migratedFloors,
           isMultifloor || false,
           floorParameters || {},
-          onFurnitureAdd
+          wrappedOnFurnitureAdd
         );
       }
     };
