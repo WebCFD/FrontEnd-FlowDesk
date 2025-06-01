@@ -13,6 +13,7 @@ import WizardDesign from "@/pages/dashboard/wizard-design";
 import TestCanvas3D from "@/pages/test-canvas3d";
 import TestFase2 from "@/pages/test-fase2";
 import TestFase3 from "@/pages/test-fase3";
+import TestCarModel from "@/pages/test-car-model";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { ProtectedRoute } from "@/lib/protected-route";
@@ -42,6 +43,7 @@ function Router() {
       <Route path="/test-canvas3d" component={TestCanvas3D} />
       <Route path="/test-fase2" component={TestFase2} />
       <Route path="/test-fase3" component={TestFase3} />
+      <Route path="/test-car-model" component={TestCarModel} />
       <Route path="/dashboard/settings">
         <ProtectedRoute>
           <Settings />
