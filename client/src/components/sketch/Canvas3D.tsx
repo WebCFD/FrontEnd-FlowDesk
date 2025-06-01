@@ -4711,66 +4711,45 @@ export default function Canvas3D({
       event.preventDefault();
       event.dataTransfer!.dropEffect = "copy";
       
-      // Highlight the surface that would receive the drop
+      // Simple raycasting logic: highlight the last surface intersected
       if (cameraRef.current && sceneRef.current) {
-        try {
-          const surfaceDetection = detectSurfaceFromPosition(
-            event,
-            cameraRef.current,
-            sceneRef.current,
-            currentFloor,
-            migratedFloors,
-            isMultifloor,
-            floorParameters
-          );
-          
-          // If fallback was used, it means no real surface was detected
-          if (surfaceDetection.fallbackUsed) {
-            clearSurfaceHighlight();
-            console.log("✓ Using fallback detection, clearing highlight");
-            return;
-          }
-        
-          // Find the mesh for the detected surface
-          const surfaceMeshes: { mesh: THREE.Mesh; floorName: string; surfaceType: string }[] = [];
-          
-          sceneRef.current.traverse((object: THREE.Object3D) => {
-            if (object instanceof THREE.Mesh && object.userData.type && object.userData.floorName) {
-              const floorName = object.userData.floorName;
-              const normalizedFloorName = normalizeFloorName(floorName);
-              const surfaceType = object.userData.type;
-              
+        const rect = container.getBoundingClientRect();
+        const mouse = new THREE.Vector2(
+          ((event.clientX - rect.left) / rect.width) * 2 - 1,
+          -((event.clientY - rect.top) / rect.height) * 2 + 1
+        );
 
-              
-              // Check if this mesh matches our detected surface
-              // More flexible matching: check if normalized names match or if one contains the other
-              const targetFloor = surfaceDetection.floorName;
-              const meshMatches = floorName === targetFloor || 
-                                 normalizedFloorName === targetFloor ||
-                                 floorName.toLowerCase().includes(targetFloor.toLowerCase()) ||
-                                 targetFloor.toLowerCase().includes(floorName.toLowerCase()) ||
-                                 normalizedFloorName.includes(targetFloor) ||
-                                 targetFloor.includes(normalizedFloorName);
-              
-              if (meshMatches && surfaceType === surfaceDetection.surfaceType) {
-                surfaceMeshes.push({ mesh: object, floorName, surfaceType });
-              }
-            }
-          });
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(mouse, cameraRef.current);
+
+        // Get all floor and ceiling meshes
+        const surfaces: THREE.Mesh[] = [];
+        sceneRef.current.traverse((object: THREE.Object3D) => {
+          if (object instanceof THREE.Mesh && 
+              object.userData.type && 
+              (object.userData.type === 'floor' || object.userData.type === 'ceiling')) {
+            surfaces.push(object);
+          }
+        });
+
+        // Get intersections with surfaces only
+        const intersects = raycaster.intersectObjects(surfaces);
+        
+        if (intersects.length > 0) {
+          // Get the last (furthest) intersection - this ensures we get the actual target surface
+          const targetMesh = intersects[intersects.length - 1].object as THREE.Mesh;
           
-          // Always clear previous highlight first, then apply new one if found
-          if (surfaceMeshes.length > 0) {
-            console.log(`🔥 HIGHLIGHT: Found surface, applying highlight to ${surfaceMeshes[0].floorName} - ${surfaceMeshes[0].surfaceType}`);
-            highlightSurface(surfaceMeshes[0].mesh);
-          } else {
-            // If no surface found or raycasting failed, clear any existing highlight
-            console.log(`🔥 HIGHLIGHT: No surface found, clearing highlight (had highlight: ${highlightedSurface ? 'YES' : 'NO'})`);
+          // Only highlight if it's different from current
+          if (highlightedSurface !== targetMesh) {
+            console.log(`🔥 NEW INTERSECTION: ${targetMesh.userData.type} on ${targetMesh.userData.floorName}`);
+            highlightSurface(targetMesh);
+          }
+        } else {
+          // No intersection - clear highlight
+          if (highlightedSurface) {
+            console.log(`🔥 NO INTERSECTION: Clearing highlight`);
             clearSurfaceHighlight();
           }
-        } catch (error) {
-          // If there's any error in surface detection, clear highlight
-          console.log(`🔥 HIGHLIGHT: Error in detection, clearing highlight (had highlight: ${highlightedSurface ? 'YES' : 'NO'})`);
-          clearSurfaceHighlight();
         }
       }
     };
