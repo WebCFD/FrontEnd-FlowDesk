@@ -711,13 +711,14 @@ const handleFurnitureDrop = (
       event,
       camera,
       scene,
-      detectedFloor,
+      surfaceDetection.floorName,
       floorParameters
     );
     
     console.log("🧪 FASE 2 TEST - Position Calculation:", {
       calculatedPosition,
-      floorUsedForCalculation: detectedFloor
+      floorUsedForCalculation: surfaceDetection.floorName,
+      surfaceType: surfaceDetection.surfaceType
     });
     
     // Use default dimensions from menu data
@@ -728,11 +729,11 @@ const handleFurnitureDrop = (
       id: `${furnitureMenuData.id}_${Date.now()}`,
       type: furnitureMenuData.id as 'table' | 'person' | 'armchair',
       name: furnitureMenuData.name,
-      floorName: detectedFloor,
+      floorName: surfaceDetection.floorName,
       position: calculatedPosition,
-      rotation: { x: 0, y: 0, z: 0 },
+      rotation: surfaceDetection.surfaceType === 'ceiling' ? { x: Math.PI, y: 0, z: 0 } : { x: 0, y: 0, z: 0 },
       dimensions: dimensions,
-      information: `${furnitureMenuData.name} placed on ${detectedFloor}`,
+      information: `${furnitureMenuData.name} placed on ${surfaceDetection.surfaceType} of ${surfaceDetection.floorName}`,
       meshId: `furniture_${Date.now()}`,
       createdAt: Date.now(),
       updatedAt: Date.now()
