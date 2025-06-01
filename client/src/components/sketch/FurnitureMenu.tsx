@@ -63,6 +63,9 @@ const furnitureItems: FurnitureItem[] = [
 ];
 
 export function FurnitureMenu({ onDragStart, wallTransparency = 0.8, onWallTransparencyChange }: FurnitureMenuProps) {
+  console.log("FurnitureMenu render - furnitureItems:", furnitureItems);
+  console.log("FurnitureMenu render - furnitureItems length:", furnitureItems.length);
+  
   const handleTransparencyChange = (values: number[]) => {
     const newValue = values[0];
     console.log("=== FurnitureMenu Transparency Change ===");
