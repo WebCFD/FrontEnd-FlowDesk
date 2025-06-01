@@ -660,30 +660,17 @@ const handleFurnitureDrop = (
   floorParameters: Record<string, { ceilingHeight: number; floorDeck: number }>,
   onFurnitureAdd?: (item: FurnitureItem) => void
 ): void => {
-  console.log("🔍 DEBUG: handleFurnitureDrop called");
   event.preventDefault();
   
   const itemData = event.dataTransfer?.getData("application/json");
-  console.log("🔍 DEBUG: itemData received:", itemData);
-  
-  if (!itemData) {
-    console.error("🔴 DEBUG: No itemData found");
+  if (!itemData || !onFurnitureAdd) {
     return;
   }
-  
-  if (!onFurnitureAdd) {
-    console.error("🔴 DEBUG: onFurnitureAdd callback not provided");
-    return;
-  }
-  
-  console.log("🔍 DEBUG: onFurnitureAdd callback available");
 
   try {
     const furnitureMenuData = JSON.parse(itemData);
-    console.log("🔍 DEBUG: Parsed furniture data:", furnitureMenuData);
     
-    // PHASE 2: Use intelligent floor detection
-    console.log("🔍 DEBUG: Starting floor detection...");
+    // Detect floor and calculate position
     const detectedFloor = detectFloorFromPosition(
       event,
       camera,
@@ -693,10 +680,7 @@ const handleFurnitureDrop = (
       isMultifloor,
       floorParameters
     );
-    console.log("🔍 DEBUG: Detected floor:", detectedFloor);
     
-    // PHASE 2: Use enhanced position calculation
-    console.log("🔍 DEBUG: Calculating 3D position...");
     const calculatedPosition = calculateFurniturePosition(
       event,
       camera,
@@ -704,14 +688,11 @@ const handleFurnitureDrop = (
       detectedFloor,
       floorParameters
     );
-    console.log("🔍 DEBUG: Calculated position:", calculatedPosition);
     
     // Use default dimensions from menu data
     const dimensions = furnitureMenuData.defaultDimensions || { width: 80, height: 80, depth: 80 };
-    console.log("🔍 DEBUG: Using dimensions:", dimensions);
     
-    // Create furniture item with comprehensive data
-    console.log("🔍 DEBUG: Creating furniture item...");
+    // Create furniture item
     const furnitureItem: FurnitureItem = {
       id: `${furnitureMenuData.id}_${Date.now()}`,
       type: furnitureMenuData.id as 'table' | 'person' | 'armchair',
@@ -725,22 +706,12 @@ const handleFurnitureDrop = (
       createdAt: Date.now(),
       updatedAt: Date.now()
     };
-    console.log("🔍 DEBUG: Created furniture item:", furnitureItem);
 
-    // PHASE 3: Create and add 3D model to scene
-    console.log("🔍 DEBUG: Creating 3D model...");
+    // Create and add 3D model to scene
     const model = createFurnitureModel(furnitureItem, scene);
-    console.log("🔍 DEBUG: Created model:", model);
-    console.log("🔍 DEBUG: Scene children count before:", scene.children.length);
     
     if (model) {
-      console.log("🔍 DEBUG: Model created successfully, calling onFurnitureAdd...");
-      // Add furniture to the system
       onFurnitureAdd(furnitureItem);
-      console.log("🔍 DEBUG: onFurnitureAdd completed");
-      console.log("🔍 DEBUG: Scene children count after:", scene.children.length);
-    } else {
-      console.error("🔴 DEBUG: Failed to create furniture model for:", furnitureItem.type);
     }
     
   } catch (error) {
@@ -873,17 +844,8 @@ export default function Canvas3D({
   // PHASE 1: Migrate floors data to ensure backward compatibility
   const migratedFloors = useMemo(() => migrateFloorsData(floors), [floors]);
 
-  // DEBUG: Canvas3D initialization logging
+  // Canvas3D initialization
   useEffect(() => {
-    console.log("🔧 DEBUG: Canvas3D component mounted");
-    console.log("🔍 DEBUG: Canvas3D received onFurnitureAdd prop:", !!onFurnitureAdd);
-    console.log("🔍 DEBUG: Canvas3D onFurnitureAdd type:", typeof onFurnitureAdd);
-    console.log("🔧 DEBUG: Props received:", { 
-      currentFloor, 
-      floorsCount: Object.keys(floors).length,
-      isMultifloor,
-      presentationMode 
-    });
   }, []);
 
   // Function to setup lighting based on presentation mode
@@ -4632,16 +4594,10 @@ export default function Canvas3D({
     const handleDragOver = (event: DragEvent) => {
       event.preventDefault();
       event.dataTransfer!.dropEffect = "copy";
-      console.log("🟡 TEST 1: Canvas3D drag over detected");
     };
 
     const handleDrop = (event: DragEvent) => {
-      console.log("🟢 TEST 1: Canvas3D drop detected");
-      console.log("🟢 TEST 1: Event dataTransfer:", event.dataTransfer?.getData("application/json"));
-      
-      // PHASE 3: Use centralized furniture drop handler
       if (sceneRef.current && cameraRef.current) {
-        console.log("🟢 TEST 1: Scene and camera available, calling handleFurnitureDrop");
         handleFurnitureDrop(
           event,
           cameraRef.current,
@@ -4652,8 +4608,6 @@ export default function Canvas3D({
           floorParameters || {},
           onFurnitureAdd
         );
-      } else {
-        console.error("🔴 TEST 1: Missing scene or camera refs");
       }
     };
 
