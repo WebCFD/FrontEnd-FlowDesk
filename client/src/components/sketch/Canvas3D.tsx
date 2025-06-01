@@ -481,6 +481,9 @@ export default function Canvas3D({
   onDeleteAirEntry,
   onViewChange,
   onSceneReady,
+  onFurnitureAdd,
+  onUpdateFurniture,
+  onDeleteFurniture,
 }: Canvas3DProps) {
   // Access the SceneContext to share data with RoomSketchPro
   const { updateGeometryData, updateSceneData, updateFloorData, setCurrentFloor: setContextCurrentFloor } = useSceneContext();
@@ -4213,6 +4216,66 @@ export default function Canvas3D({
 
     resetHoveringCompletely();
   }, [isEraserMode, resetHoveringCompletely]);
+
+  // Drag and drop handlers for furniture
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || !sceneRef.current) return;
+
+    const handleDragOver = (event: DragEvent) => {
+      event.preventDefault();
+      event.dataTransfer!.dropEffect = "copy";
+    };
+
+    const handleDrop = (event: DragEvent) => {
+      event.preventDefault();
+      const itemData = event.dataTransfer?.getData("application/json");
+      if (itemData && onFurnitureAdd) {
+        try {
+          const furnitureMenuData = JSON.parse(itemData);
+          
+          // Convert menu item to full FurnitureItem
+          const furnitureItem: FurnitureItem = {
+            id: `${furnitureMenuData.id}_${Date.now()}`,
+            type: furnitureMenuData.id as 'table' | 'person' | 'armchair',
+            name: furnitureMenuData.name,
+            floorName: currentFloor,
+            position: { x: 0, y: 0, z: 0 }, // Will be calculated
+            rotation: { x: 0, y: 0, z: 0 },
+            dimensions: { width: 80, height: 80, depth: 80 }, // Default dimensions
+            information: `${furnitureMenuData.name} placed on ${currentFloor}`,
+            meshId: `furniture_${Date.now()}`,
+            createdAt: Date.now(),
+            updatedAt: Date.now()
+          };
+
+          // Calculate drop position based on mouse coordinates
+          // TODO: This will be enhanced in Phase 2 with proper floor detection
+          const rect = container.getBoundingClientRect();
+          const mouseX = event.clientX - rect.left;
+          const mouseY = event.clientY - rect.top;
+          
+          // Convert to 3D coordinates (simplified for Phase 0)
+          const worldX = (mouseX - CANVAS_CONFIG.centerX) * PIXELS_TO_CM;
+          const worldY = (CANVAS_CONFIG.centerY - mouseY) * PIXELS_TO_CM;
+          
+          furnitureItem.position = { x: worldX, y: worldY, z: 0 };
+
+          onFurnitureAdd(furnitureItem);
+        } catch (error) {
+          console.error("Error processing furniture drop:", error);
+        }
+      }
+    };
+
+    container.addEventListener("dragover", handleDragOver);
+    container.addEventListener("drop", handleDrop);
+
+    return () => {
+      container.removeEventListener("dragover", handleDragOver);
+      container.removeEventListener("drop", handleDrop);
+    };
+  }, [currentFloor, onFurnitureAdd]);
 
   return (
     <>

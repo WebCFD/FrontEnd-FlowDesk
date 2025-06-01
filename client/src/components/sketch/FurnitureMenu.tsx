@@ -1,11 +1,9 @@
 import { cn } from "@/lib/utils";
 import { Slider } from "@/components/ui/slider";
+import { FurnitureMenuItemData } from "@shared/furniture-types";
 
-interface FurnitureItem {
-  id: string;
-  name: string;
-  icon: string;
-}
+// Use the unified menu item type
+type FurnitureItem = FurnitureMenuItemData;
 
 interface FurnitureMenuProps {
   onDragStart: (item: FurnitureItem) => void;
@@ -23,7 +21,8 @@ const furnitureItems: FurnitureItem[] = [
         <rect x="8" y="29" width="4" height="8" fill="#8B4513"/>
         <rect x="28" y="29" width="4" height="8" fill="#8B4513"/>
       </svg>
-    `
+    `,
+    defaultDimensions: { width: 120, height: 75, depth: 80 }
   },
   {
     id: 'person',
@@ -33,7 +32,8 @@ const furnitureItems: FurnitureItem[] = [
         <circle cx="20" cy="10" r="6" fill="#4A5568"/>
         <path d="M10 35V20C10 17.2386 12.2386 15 15 15H25C27.7614 15 30 17.2386 30 20V35" stroke="#4A5568" stroke-width="4"/>
       </svg>
-    `
+    `,
+    defaultDimensions: { width: 50, height: 170, depth: 30 }
   },
   {
     id: 'armchair',
@@ -45,7 +45,8 @@ const furnitureItems: FurnitureItem[] = [
         <rect x="8" y="30" width="4" height="5" fill="#4A5568"/>
         <rect x="28" y="30" width="4" height="5" fill="#4A5568"/>
       </svg>
-    `
+    `,
+    defaultDimensions: { width: 70, height: 85, depth: 70 }
   }
 ];
 
