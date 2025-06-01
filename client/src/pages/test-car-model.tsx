@@ -22,7 +22,7 @@ export default function TestCarModel() {
       0.1,
       1000
     );
-    camera.position.set(500, 300, 500);
+    camera.position.set(100, 50, 100);
     camera.lookAt(0, 0, 0);
 
     // Setup renderer
@@ -34,13 +34,18 @@ export default function TestCarModel() {
     containerRef.current.appendChild(renderer.domElement);
 
     // Add lights
-    const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+    const ambientLight = new THREE.AmbientLight(0x404040, 1.0);
     scene.add(ambientLight);
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
     directionalLight.position.set(100, 100, 100);
     directionalLight.castShadow = true;
     scene.add(directionalLight);
+
+    // Add extra front light
+    const frontLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    frontLight.position.set(0, 50, 100);
+    scene.add(frontLight);
 
     // Add ground plane
     const groundGeometry = new THREE.PlaneGeometry(1000, 1000);
@@ -63,13 +68,39 @@ export default function TestCarModel() {
         carModel.scale.setScalar(0.2);
         carModel.position.set(0, 0, 0);
         
-        // Enable shadows
+        // Debug model info
+        console.log('🔍 Model details:');
+        console.log('- Children count:', carModel.children.length);
+        console.log('- Model scale:', carModel.scale);
+        console.log('- Model position:', carModel.position);
+        
+        // Enable shadows and debug materials
+        let meshCount = 0;
         carModel.traverse((child) => {
           if (child instanceof THREE.Mesh) {
+            meshCount++;
             child.castShadow = true;
             child.receiveShadow = true;
+            
+            // Log material info
+            console.log(`- Mesh ${meshCount}:`, child.material);
+            
+            // Make sure materials are visible
+            if (child.material) {
+              if (Array.isArray(child.material)) {
+                child.material.forEach(mat => {
+                  if (mat.opacity !== undefined) mat.opacity = 1.0;
+                  if (mat.transparent !== undefined) mat.transparent = false;
+                });
+              } else {
+                if (child.material.opacity !== undefined) child.material.opacity = 1.0;
+                if (child.material.transparent !== undefined) child.material.transparent = false;
+              }
+            }
           }
         });
+        
+        console.log('- Total meshes found:', meshCount);
         
         scene.add(carModel);
         console.log('✅ Batmobile model loaded successfully!');
