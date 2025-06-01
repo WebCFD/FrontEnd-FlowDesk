@@ -888,7 +888,15 @@ export default function Canvas3D({
   
   // Get furniture items from global store for current floor
   const currentFloorFurniture = useMemo(() => {
-    return globalFloors[currentFloor]?.furnitureItems || [];
+    const floorData = globalFloors[currentFloor];
+    if (!floorData) {
+      console.log("🪑 Floor data not found for:", currentFloor);
+      return [];
+    }
+    
+    const furniture = floorData.furnitureItems || [];
+    console.log("🪑 Current floor furniture items:", furniture);
+    return furniture;
   }, [globalFloors, currentFloor]);
   
   // Wrap furniture callbacks to integrate with global store

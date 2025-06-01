@@ -359,7 +359,7 @@ export const useRoomStore = create<RoomState>()(
             ...state.floors,
             [state.currentFloor]: {
               ...state.floors[state.currentFloor],
-              furnitureItems: [...state.floors[state.currentFloor].furnitureItems, item]
+              furnitureItems: [...(state.floors[state.currentFloor].furnitureItems || []), item]
             }
           }
         })),
@@ -369,7 +369,7 @@ export const useRoomStore = create<RoomState>()(
             ...state.floors,
             [state.currentFloor]: {
               ...state.floors[state.currentFloor],
-              furnitureItems: state.floors[state.currentFloor].furnitureItems.map(
+              furnitureItems: (state.floors[state.currentFloor].furnitureItems || []).map(
                 existing => existing.id === item.id ? item : existing
               )
             }
@@ -381,7 +381,7 @@ export const useRoomStore = create<RoomState>()(
             ...state.floors,
             [state.currentFloor]: {
               ...state.floors[state.currentFloor],
-              furnitureItems: state.floors[state.currentFloor].furnitureItems.filter(
+              furnitureItems: (state.floors[state.currentFloor].furnitureItems || []).filter(
                 item => item.id !== itemId
               )
             }
