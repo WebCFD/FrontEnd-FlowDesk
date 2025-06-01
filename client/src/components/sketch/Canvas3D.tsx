@@ -740,16 +740,9 @@ const handleFurnitureDrop = (
     if (model) {
       onFurnitureAdd(furnitureItem);
       
-      // Auto-open editing dialog for newly created furniture
-      console.log("🎛️ Auto-opening furniture dialog for new item:", furnitureItem);
-      
-      // Set a slight delay to ensure the scene has updated
-      setTimeout(() => {
-        setEditingFurniture({
-          index: 0, // This would be the actual index in a real furniture list
-          item: furnitureItem
-        });
-      }, 100);
+      // Store the furniture item for auto-opening dialog
+      console.log("🎛️ Storing furniture item for auto-open dialog:", furnitureItem);
+      newFurnitureForDialog.current = furnitureItem;
     }
     
   } catch (error) {
@@ -952,7 +945,25 @@ export default function Canvas3D({
     index: number;
     item: FurnitureItem;
   } | null>(null);
+  
+  // Reference to store newly created furniture for auto-opening dialog
+  const newFurnitureForDialog = useRef<FurnitureItem | null>(null);
   const [ignoreNextClick, setIgnoreNextClick] = useState<boolean>(false);
+  
+  // Effect to auto-open dialog for newly created furniture
+  useEffect(() => {
+    if (newFurnitureForDialog.current) {
+      console.log("🎛️ Auto-opening dialog for new furniture:", newFurnitureForDialog.current);
+      
+      setEditingFurniture({
+        index: 0, // This would be the actual index in a real furniture list
+        item: newFurnitureForDialog.current
+      });
+      
+      // Clear the reference
+      newFurnitureForDialog.current = null;
+    }
+  }, [floors, currentFloor]); // Trigger when floors update (after furniture is added)
   // Track the selected air entry element for dragging
   const [selectedAirEntry, setSelectedAirEntry] = useState<{
     index: number;
