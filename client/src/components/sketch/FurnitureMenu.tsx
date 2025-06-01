@@ -98,8 +98,14 @@ export function FurnitureMenu({ onDragStart, wallTransparency = 0.8, onWallTrans
               key={item.id}
               draggable
               onDragStart={(e) => {
+                console.log("🔵 TEST 1: FurnitureMenu drag started for:", item.name);
+                console.log("🔵 TEST 1: Item data:", item);
+                console.log("🔵 TEST 1: Serialized data:", JSON.stringify(item));
+                
                 e.dataTransfer.setData('application/json', JSON.stringify(item));
                 onDragStart(item);
+                
+                console.log("🔵 TEST 1: DataTransfer set successfully");
               }}
               className={cn(
                 "h-16 p-2 flex flex-col items-center justify-center",
