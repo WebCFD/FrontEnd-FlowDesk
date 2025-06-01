@@ -4803,66 +4803,83 @@ export default function Canvas3D({
       const raycaster = new THREE.Raycaster();
       raycaster.setFromCamera(mouse, cameraRef.current);
       
-      // Find furniture objects in the scene
-      const furnitureObjects: THREE.Mesh[] = [];
+      // Find furniture objects in the scene (both groups and meshes)
+      const furnitureObjects: THREE.Object3D[] = [];
       sceneRef.current.traverse((object) => {
-        if (object instanceof THREE.Mesh && object.userData.type === 'furniture') {
+        // Check for furniture groups (main containers)
+        if (object.userData.type === 'furniture') {
           furnitureObjects.push(object);
-          console.log("🪑 Found furniture object:", object.userData);
+          console.log("🪑 Found furniture group:", object.userData);
+        }
+        // Also check for meshes within furniture groups
+        else if (object instanceof THREE.Mesh && object.parent?.userData.type === 'furniture') {
+          furnitureObjects.push(object);
+          console.log("🪑 Found furniture mesh:", object.parent?.userData);
         }
       });
       
       console.log(`🔍 Found ${furnitureObjects.length} furniture objects in scene`);
       
-      // Check for intersections
-      const intersects = raycaster.intersectObjects(furnitureObjects);
+      // Check for intersections (recursive to handle group children)
+      const intersects = raycaster.intersectObjects(furnitureObjects, true);
       
       console.log(`💥 Found ${intersects.length} intersections`);
       
       if (intersects.length > 0) {
-        const intersectedObject = intersects[0].object as THREE.Mesh;
-        const furnitureId = intersectedObject.userData.furnitureId;
+        const intersectedObject = intersects[0].object;
         
-        console.log("✅ Intersected furniture object:", {
-          furnitureId,
-          userData: intersectedObject.userData,
-          position: intersectedObject.position
-        });
+        // Find the furniture group (either the object itself or its parent)
+        let furnitureGroup = intersectedObject;
+        while (furnitureGroup && furnitureGroup.userData.type !== 'furniture') {
+          furnitureGroup = furnitureGroup.parent;
+        }
         
-        if (furnitureId) {
-          // Find the furniture item data
-          // This would need to be passed from the parent component
-          // For now, we'll create a mock furniture item based on the mesh
-          const mockFurnitureItem: FurnitureItem = {
-            id: furnitureId,
-            type: intersectedObject.userData.furnitureType || 'table',
-            name: intersectedObject.userData.furnitureName || 'Furniture',
-            floorName: intersectedObject.userData.floorName || currentFloor,
-            position: {
-              x: intersectedObject.position.x,
-              y: intersectedObject.position.y,
-              z: intersectedObject.position.z
-            },
-            rotation: {
-              x: intersectedObject.rotation.x,
-              y: intersectedObject.rotation.y,
-              z: intersectedObject.rotation.z
-            },
-            dimensions: intersectedObject.userData.dimensions || { width: 80, height: 80, depth: 80 },
-            information: intersectedObject.userData.information || '',
-            meshId: intersectedObject.userData.meshId || furnitureId,
-            createdAt: intersectedObject.userData.createdAt || Date.now(),
-            updatedAt: Date.now()
-          };
+        if (furnitureGroup && furnitureGroup.userData.type === 'furniture') {
+          const furnitureId = furnitureGroup.userData.furnitureId;
           
-          console.log("🎛️ Opening furniture dialog with item:", mockFurnitureItem);
-          
-          setEditingFurniture({
-            index: 0, // This would need to be the actual index from the furniture list
-            item: mockFurnitureItem
+          console.log("✅ Intersected furniture object:", {
+            furnitureId,
+            userData: furnitureGroup.userData,
+            position: furnitureGroup.position
           });
+          
+          if (furnitureId) {
+            // Find the furniture item data
+            // This would need to be passed from the parent component
+            // For now, we'll create a mock furniture item based on the mesh
+            const mockFurnitureItem: FurnitureItem = {
+              id: furnitureId,
+              type: furnitureGroup.userData.furnitureType || 'table',
+              name: furnitureGroup.userData.furnitureName || 'Furniture',
+              floorName: furnitureGroup.userData.floorName || currentFloor,
+              position: {
+                x: furnitureGroup.position.x,
+                y: furnitureGroup.position.y,
+                z: furnitureGroup.position.z
+              },
+              rotation: {
+                x: furnitureGroup.rotation.x,
+                y: furnitureGroup.rotation.y,
+                z: furnitureGroup.rotation.z
+              },
+              dimensions: furnitureGroup.userData.dimensions || { width: 80, height: 80, depth: 80 },
+              information: furnitureGroup.userData.information || '',
+              meshId: furnitureGroup.userData.meshId || furnitureId,
+              createdAt: furnitureGroup.userData.createdAt || Date.now(),
+              updatedAt: Date.now()
+            };
+            
+            console.log("🎛️ Opening furniture dialog with item:", mockFurnitureItem);
+            
+            setEditingFurniture({
+              index: 0, // This would need to be the actual index from the furniture list
+              item: mockFurnitureItem
+            });
+          } else {
+            console.log("❌ No furnitureId found in userData");
+          }
         } else {
-          console.log("❌ No furnitureId found in userData");
+          console.log("❌ No furniture group found");
         }
       } else {
         console.log("❌ No furniture intersections found");
