@@ -4755,8 +4755,16 @@ export default function Canvas3D({
     };
 
     const handleDragLeave = (event: DragEvent) => {
-      // Clear highlight when drag leaves the canvas area
-      clearSurfaceHighlight();
+      // Only clear if we're really leaving the container
+      const rect = container.getBoundingClientRect();
+      const x = event.clientX;
+      const y = event.clientY;
+      
+      // Check if cursor is outside the container bounds
+      if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
+        clearSurfaceHighlight();
+        console.log("✓ Drag left container area, clearing highlight");
+      }
     };
 
     const handleDrop = (event: DragEvent) => {
