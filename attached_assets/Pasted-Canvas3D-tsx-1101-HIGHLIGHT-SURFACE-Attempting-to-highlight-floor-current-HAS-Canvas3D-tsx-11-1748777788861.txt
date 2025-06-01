@@ -1,0 +1,368 @@
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: YES, has material: YES)
+Canvas3D.tsx:1156 🔥 CLEAR HIGHLIGHT: Successfully cleared highlight
+Canvas3D.tsx:1139 🔥 HIGHLIGHT SURFACE: Applied ceiling highlight with color 88ff
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: YES, has material: YES)
+Canvas3D.tsx:1156 🔥 CLEAR HIGHLIGHT: Successfully cleared highlight
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: YES, has material: YES)
+Canvas3D.tsx:1156 🔥 CLEAR HIGHLIGHT: Successfully cleared highlight
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: NONE)
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1158 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:1139 🔥 HIGHLIGHT SURFACE: Applied ceiling highlight with color 88ff
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: NONE)
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1158 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:1139 🔥 HIGHLIGHT SURFACE: Applied ceiling highlight with color 88ff
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1158 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: YES, has material: YES)
+Canvas3D.tsx:1156 🔥 CLEAR HIGHLIGHT: Successfully cleared highlight
+Canvas3D.tsx:1139 🔥 HIGHLIGHT SURFACE: Applied floor highlight with color ff00
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: YES, has material: YES)
+Canvas3D.tsx:1156 🔥 CLEAR HIGHLIGHT: Successfully cleared highlight
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: YES, has material: YES)
+Canvas3D.tsx:1156 🔥 CLEAR HIGHLIGHT: Successfully cleared highlight
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: NONE)
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1158 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:1139 🔥 HIGHLIGHT SURFACE: Applied floor highlight with color ff00
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: NONE)
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1158 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:1139 🔥 HIGHLIGHT SURFACE: Applied floor highlight with color ff00
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1158 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to first - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to Ground Floor - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: HAS)
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: YES, has material: YES)
+Canvas3D.tsx:1156 🔥 CLEAR HIGHLIGHT: Successfully cleared highlight
+Canvas3D.tsx:1139 🔥 HIGHLIGHT SURFACE: Applied ceiling highlight with color 88ff
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: YES, has material: YES)
+Canvas3D.tsx:1156 🔥 CLEAR HIGHLIGHT: Successfully cleared highlight
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: YES, has material: YES)
+Canvas3D.tsx:1156 🔥 CLEAR HIGHLIGHT: Successfully cleared highlight
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to Ground Floor - ceiling
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight ceiling (current: NONE)
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1158 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:1139 🔥 HIGHLIGHT SURFACE: Applied ceiling highlight with color 88ff
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1158 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to Ground Floor - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: YES, has material: YES)
+Canvas3D.tsx:1156 🔥 CLEAR HIGHLIGHT: Successfully cleared highlight
+Canvas3D.tsx:1139 🔥 HIGHLIGHT SURFACE: Applied floor highlight with color ff00
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: YES, has material: YES)
+Canvas3D.tsx:1156 🔥 CLEAR HIGHLIGHT: Successfully cleared highlight
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: YES, has material: YES)
+Canvas3D.tsx:1156 🔥 CLEAR HIGHLIGHT: Successfully cleared highlight
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to Ground Floor - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: NONE)
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1158 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:1139 🔥 HIGHLIGHT SURFACE: Applied floor highlight with color ff00
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to Ground Floor - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: NONE)
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1158 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:1139 🔥 HIGHLIGHT SURFACE: Applied floor highlight with color ff00
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1158 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to Ground Floor - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to Ground Floor - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to Ground Floor - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to Ground Floor - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to Ground Floor - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to Ground Floor - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to Ground Floor - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to Ground Floor - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to Ground Floor - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:4764 🔥 HIGHLIGHT: Found surface, applying highlight to Ground Floor - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor (current: HAS)
+Canvas3D.tsx:1104 🔥 HIGHLIGHT SURFACE: Already highlighted, skipping
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: YES, has material: YES)
+Canvas3D.tsx:1156 🔥 CLEAR HIGHLIGHT: Successfully cleared highlight
+Canvas3D.tsx:4731 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: YES, has material: YES)
+Canvas3D.tsx:1156 🔥 CLEAR HIGHLIGHT: Successfully cleared highlight
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1158 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4731 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1158 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4731 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1158 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4731 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1158 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4731 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1158 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4731 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1158 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4731 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1158 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4731 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1158 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4731 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1158 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4731 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1158 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4731 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:4786 🔥 DROP: Event triggered, clearing highlight
+Canvas3D.tsx:1146 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1158 🔥 CLEAR HIGHLIGHT: Nothing to clear

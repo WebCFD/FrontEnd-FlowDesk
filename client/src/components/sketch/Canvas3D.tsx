@@ -1098,18 +1098,16 @@ export default function Canvas3D({
 
   // Functions for surface highlighting during drag operations
   const highlightSurface = useCallback((mesh: THREE.Mesh) => {
-    console.log(`🔥 HIGHLIGHT SURFACE: Attempting to highlight ${mesh.userData.type} (current: ${highlightedSurface ? 'HAS' : 'NONE'})`);
+    console.log(`🔥 HIGHLIGHT SURFACE: Attempting to highlight ${mesh.userData.type}`);
     
-    if (highlightedSurface === mesh) {
-      console.log(`🔥 HIGHLIGHT SURFACE: Already highlighted, skipping`);
-      return; // Already highlighted
+    // Clear any existing highlight first
+    if (highlightedSurface && originalMaterial) {
+      highlightedSurface.material = originalMaterial;
+      console.log(`🔥 HIGHLIGHT SURFACE: Cleared previous highlight`);
     }
     
-    // Clear previous highlight
-    clearSurfaceHighlight();
-    
-    // Store original material
-    setOriginalMaterial(mesh.material as THREE.Material);
+    // Store original material and apply new highlight
+    const newOriginalMaterial = mesh.material as THREE.Material;
     
     // Create highlight material based on surface type
     const surfaceType = mesh.userData.type;
@@ -1135,12 +1133,13 @@ export default function Canvas3D({
     // Apply highlight
     mesh.material = highlightMaterial;
     setHighlightedSurface(mesh);
+    setOriginalMaterial(newOriginalMaterial);
     
-    console.log(`🔥 HIGHLIGHT SURFACE: Applied ${surfaceType} highlight with color ${highlightColor.toString(16)}`);
+    console.log(`🔥 HIGHLIGHT SURFACE: Applied ${surfaceType} highlight`);
     
     // Trigger render
     needsRenderRef.current = true;
-  }, [highlightedSurface]);
+  }, [highlightedSurface, originalMaterial]);
 
   const clearSurfaceHighlight = useCallback(() => {
     console.log(`🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: ${highlightedSurface ? 'YES' : 'NO'}, has material: ${originalMaterial ? 'YES' : 'NO'})`);
@@ -1157,7 +1156,7 @@ export default function Canvas3D({
     } else {
       console.log("🔥 CLEAR HIGHLIGHT: Nothing to clear");
     }
-  }, [highlightedSurface, originalMaterial]);
+  }, []); // Remove dependencies to break the cycle
 
   // Add effect to cleanup highlight when component unmounts or floor changes
   useEffect(() => {
