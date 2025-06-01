@@ -1494,13 +1494,13 @@ export default function Canvas3D({
       console.log(`🎨 FLOOR VISUAL - Created ${floorData.name} floor at Z=${baseHeight} with color:`, floorColor.toString(16));
       objects.push(floor);
 
-      // Ceiling surface with corresponding red tones (slightly lighter)
+      // Ceiling surface with violet tones from light to dark (bottom to top)
       const ceilingGeometry = new THREE.ShapeGeometry(shape);
       let ceilingColor = 0xe0e0e0; // Default light gray
-      if (floorNameLower.includes('ground')) ceilingColor = 0xffe6e6; // Very light red for ground ceiling
-      else if (floorNameLower.includes('first')) ceilingColor = 0xffb3b3; // Light red for first ceiling
-      else if (floorNameLower.includes('second')) ceilingColor = 0xff9999; // Medium light red for second ceiling
-      else if (floorNameLower.includes('third')) ceilingColor = 0xcc6666; // Medium red for third ceiling
+      if (floorNameLower.includes('ground')) ceilingColor = 0xf0e6ff; // Very light violet for ground ceiling
+      else if (floorNameLower.includes('first')) ceilingColor = 0xd9b3ff; // Light violet for first ceiling
+      else if (floorNameLower.includes('second')) ceilingColor = 0xb366ff; // Medium violet for second ceiling
+      else if (floorNameLower.includes('third')) ceilingColor = 0x8000ff; // Dark violet for third ceiling
       
       const ceilingMaterial = new THREE.MeshPhongMaterial({
         color: ceilingColor,
