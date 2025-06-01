@@ -581,15 +581,26 @@ const detectSurfaceFromPosition = (
     const closestIntersect = intersects[0];
     const correspondingSurface = surfaceMeshes.find(s => s.mesh === closestIntersect.object);
     
-    if (correspondingSurface && availableFloors[correspondingSurface.floorName]) {
-      console.log(`🎯 SURFACE DETECTION - Found ${correspondingSurface.surfaceType} on "${correspondingSurface.floorName}"`);
-      return { 
-        floorName: correspondingSurface.floorName, 
-        surfaceType: correspondingSurface.surfaceType, 
-        fallbackUsed: false 
-      };
-    } else if (correspondingSurface) {
-      console.log(`⚠️ SURFACE DETECTION - Found ${correspondingSurface.surfaceType} on "${correspondingSurface.floorName}" but floor not in availableFloors:`, Object.keys(availableFloors));
+    if (correspondingSurface) {
+      // Normalize floor name for matching
+      let normalizedFloorName = correspondingSurface.floorName.toLowerCase().replace(/\s+/g, '');
+      if (normalizedFloorName === 'groundfloor') normalizedFloorName = 'ground';
+      
+      // Try direct match first, then normalized match
+      const matchingFloorKey = availableFloors[correspondingSurface.floorName] ? correspondingSurface.floorName :
+                              availableFloors[normalizedFloorName] ? normalizedFloorName :
+                              null;
+      
+      if (matchingFloorKey) {
+        console.log(`🎯 SURFACE DETECTION - Found ${correspondingSurface.surfaceType} on "${correspondingSurface.floorName}" (matched as "${matchingFloorKey}")`);
+        return { 
+          floorName: matchingFloorKey, 
+          surfaceType: correspondingSurface.surfaceType, 
+          fallbackUsed: false 
+        };
+      } else {
+        console.log(`⚠️ SURFACE DETECTION - Found ${correspondingSurface.surfaceType} on "${correspondingSurface.floorName}" but no match in availableFloors:`, Object.keys(availableFloors));
+      }
     }
   }
 
