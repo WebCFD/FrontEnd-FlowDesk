@@ -60,7 +60,7 @@ export default function TestCarModel() {
         const carModel = gltf.scene.clone();
         
         // Scale and position the model
-        carModel.scale.setScalar(1.0);
+        carModel.scale.setScalar(0.3);
         carModel.position.set(0, 0, 0);
         
         // Enable shadows
