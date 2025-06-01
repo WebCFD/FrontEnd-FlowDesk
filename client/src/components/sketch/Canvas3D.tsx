@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import * as THREE from "three";
 import { TrackballControls } from "three/addons/controls/TrackballControls.js";
 import { makeTextSprite } from "@/lib/three-utils";
@@ -2464,7 +2464,7 @@ export default function Canvas3D({
         const airEntryData = mesh.userData;
 
         // Just select the air entry but don't start dragging
-        const floorData = floors[currentFloor];
+        const floorData = migratedFloors[currentFloor];
 
         if (floorData && floorData.airEntries) {
           const index = floorData.airEntries.findIndex(
@@ -3094,7 +3094,7 @@ export default function Canvas3D({
         // Finalize the position change using ref values
         if (dragStateRef.current.selectedObject && onUpdateAirEntry) {
           // Get the current floor data
-          const floorData = floors[currentFloor];
+          const floorData = migratedFloors[currentFloor];
           const entryIndex = dragStateRef.current.entryIndex;
 
           // Ensure we have valid index
@@ -3340,7 +3340,7 @@ export default function Canvas3D({
         
         // Find the index of this air entry in the floors data
         let foundIndex = -1;
-        const floorData = floors[currentFloor];
+        const floorData = migratedFloors[currentFloor];
         
         if (floorData && floorData.airEntries) {
           // First try to use the stored entryIndex if available (most reliable)
@@ -3545,7 +3545,7 @@ export default function Canvas3D({
 
         // Find the index of this air entry in the floors data
         let foundIndex = -1;
-        const floorData = floors[currentFloor];
+        const floorData = migratedFloors[currentFloor];
 
         if (floorData && floorData.airEntries) {
           console.log("Double-click position search:", {
@@ -3728,7 +3728,7 @@ export default function Canvas3D({
     });
     
     // Then set current floor data for immediate use
-    const currentFloorData = floors[currentFloor];
+    const currentFloorData = migratedFloors[currentFloor];
 
     
     if (currentFloorData) {
@@ -3776,7 +3776,7 @@ export default function Canvas3D({
     // After rebuilding the scene, we need to restore or reset selection state
     if (selectedAirEntry) {
       // Try to find the new mesh object for our selected air entry
-      const currentFloorData = floors[currentFloor];
+      const currentFloorData = migratedFloors[currentFloor];
       if (currentFloorData && currentFloorData.airEntries) {
         const entryIndex = selectedAirEntry.index;
 
