@@ -244,6 +244,9 @@ export const createCarModel = (): THREE.Group => {
       const uniformScale = Math.min(scaleX, scaleY, scaleZ);
       carModel.scale.setScalar(uniformScale);
       
+      // Rotate 90 degrees around X-axis
+      carModel.rotation.x = Math.PI / 2;
+      
       // Position at ground level
       carModel.position.z = 0;
       
