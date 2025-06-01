@@ -4735,6 +4735,14 @@ export default function Canvas3D({
         // Get intersections with surfaces only
         const intersects = raycaster.intersectObjects(surfaces);
         
+        console.log(`🔍 RAYCAST: Found ${intersects.length} intersections with ${surfaces.length} surfaces`);
+        if (intersects.length > 0) {
+          intersects.forEach((intersection, i) => {
+            const mesh = intersection.object as THREE.Mesh;
+            console.log(`  ${i}: ${mesh.userData.type} on ${mesh.userData.floorName} at distance ${intersection.distance.toFixed(2)}`);
+          });
+        }
+        
         if (intersects.length > 0) {
           // Get the last (furthest) intersection - this ensures we get the actual target surface
           const targetMesh = intersects[intersects.length - 1].object as THREE.Mesh;
