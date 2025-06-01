@@ -1,0 +1,117 @@
+HT SURFACE: Applied floor highlight
+Canvas3D.tsx:4763 🔥 HIGHLIGHT: Found surface, applying highlight to Ground Floor - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor
+Canvas3D.tsx:1106 🔥 HIGHLIGHT SURFACE: Cleared previous highlight
+Canvas3D.tsx:1138 🔥 HIGHLIGHT SURFACE: Applied floor highlight
+Canvas3D.tsx:4763 🔥 HIGHLIGHT: Found surface, applying highlight to Ground Floor - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor
+Canvas3D.tsx:1106 🔥 HIGHLIGHT SURFACE: Cleared previous highlight
+Canvas3D.tsx:1138 🔥 HIGHLIGHT SURFACE: Applied floor highlight
+Canvas3D.tsx:4763 🔥 HIGHLIGHT: Found surface, applying highlight to Ground Floor - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor
+Canvas3D.tsx:1106 🔥 HIGHLIGHT SURFACE: Cleared previous highlight
+Canvas3D.tsx:1138 🔥 HIGHLIGHT SURFACE: Applied floor highlight
+Canvas3D.tsx:4763 🔥 HIGHLIGHT: Found surface, applying highlight to Ground Floor - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor
+Canvas3D.tsx:1106 🔥 HIGHLIGHT SURFACE: Cleared previous highlight
+Canvas3D.tsx:1138 🔥 HIGHLIGHT SURFACE: Applied floor highlight
+Canvas3D.tsx:4763 🔥 HIGHLIGHT: Found surface, applying highlight to Ground Floor - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor
+Canvas3D.tsx:1106 🔥 HIGHLIGHT SURFACE: Cleared previous highlight
+Canvas3D.tsx:1138 🔥 HIGHLIGHT SURFACE: Applied floor highlight
+Canvas3D.tsx:4763 🔥 HIGHLIGHT: Found surface, applying highlight to Ground Floor - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor
+Canvas3D.tsx:1106 🔥 HIGHLIGHT SURFACE: Cleared previous highlight
+Canvas3D.tsx:1138 🔥 HIGHLIGHT SURFACE: Applied floor highlight
+Canvas3D.tsx:4763 🔥 HIGHLIGHT: Found surface, applying highlight to Ground Floor - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor
+Canvas3D.tsx:1106 🔥 HIGHLIGHT SURFACE: Cleared previous highlight
+Canvas3D.tsx:1138 🔥 HIGHLIGHT SURFACE: Applied floor highlight
+Canvas3D.tsx:4763 🔥 HIGHLIGHT: Found surface, applying highlight to Ground Floor - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor
+Canvas3D.tsx:1106 🔥 HIGHLIGHT SURFACE: Cleared previous highlight
+Canvas3D.tsx:1138 🔥 HIGHLIGHT SURFACE: Applied floor highlight
+Canvas3D.tsx:4763 🔥 HIGHLIGHT: Found surface, applying highlight to Ground Floor - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor
+Canvas3D.tsx:1106 🔥 HIGHLIGHT SURFACE: Cleared previous highlight
+Canvas3D.tsx:1138 🔥 HIGHLIGHT SURFACE: Applied floor highlight
+Canvas3D.tsx:4763 🔥 HIGHLIGHT: Found surface, applying highlight to Ground Floor - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor
+Canvas3D.tsx:1106 🔥 HIGHLIGHT SURFACE: Cleared previous highlight
+Canvas3D.tsx:1138 🔥 HIGHLIGHT SURFACE: Applied floor highlight
+Canvas3D.tsx:4763 🔥 HIGHLIGHT: Found surface, applying highlight to Ground Floor - floor
+Canvas3D.tsx:1101 🔥 HIGHLIGHT SURFACE: Attempting to highlight floor
+Canvas3D.tsx:1106 🔥 HIGHLIGHT SURFACE: Cleared previous highlight
+Canvas3D.tsx:1138 🔥 HIGHLIGHT SURFACE: Applied floor highlight
+Canvas3D.tsx:1145 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1157 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4730 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1145 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1157 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4730 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1145 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1157 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4730 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1145 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1157 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4730 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1145 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1157 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4730 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1145 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1157 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4730 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1145 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1157 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4730 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1145 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1157 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4730 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1145 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1157 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4730 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1145 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1157 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4730 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1145 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1157 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4730 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1145 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1157 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4730 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1145 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1157 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4730 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1145 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1157 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4730 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1145 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1157 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4730 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1145 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1157 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4730 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1145 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1157 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4730 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1145 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1157 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4730 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1145 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1157 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4730 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1145 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1157 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4730 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1145 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1157 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4730 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1145 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1157 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4730 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:1145 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1157 🔥 CLEAR HIGHLIGHT: Nothing to clear
+Canvas3D.tsx:4730 ✓ Using fallback detection, clearing highlight
+Canvas3D.tsx:4785 🔥 DROP: Event triggered, clearing highlight
+Canvas3D.tsx:1145 🔥 CLEAR HIGHLIGHT: Attempting to clear (has surface: NO, has material: NO)
+Canvas3D.tsx:1157 🔥 CLEAR HIGHLIGHT: Nothing to clear
