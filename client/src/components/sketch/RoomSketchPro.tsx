@@ -599,8 +599,13 @@ export function RoomSketchPro({
           // Skip classic theme here - handled in brick texture promise above
           return;
         case "industrial":
+          // Load industrial metal texture
+          const industrialTexture = new THREE.TextureLoader().load('/industrial_wall_texture.png');
+          industrialTexture.wrapS = THREE.RepeatWrapping;
+          industrialTexture.wrapT = THREE.RepeatWrapping;
+          industrialTexture.repeat.set(4, 4);
           newMaterial = new THREE.MeshPhongMaterial({
-            map: texturesRef.current.metal,
+            map: industrialTexture,
             opacity: originalMaterial.opacity,
             transparent: originalMaterial.transparent,
             side: originalMaterial.side
@@ -640,7 +645,7 @@ export function RoomSketchPro({
           texture = texturesRef.current.door;
           // Only modern theme uses gray color to match the uploaded texture
           if (selectedTheme === "modern") {
-            materialColor = 0x9CA3AF; // Light gray for modern doors
+            materialColor = 0xD1D5DB; // Even lighter gray for modern doors
           } else {
             materialColor = 0x8B4513; // Brown for other themes
           }
