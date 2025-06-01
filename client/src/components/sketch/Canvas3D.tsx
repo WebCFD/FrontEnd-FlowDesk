@@ -8,6 +8,7 @@ import { ViewDirection } from "./Toolbar3D";
 import { useSceneContext } from "../../contexts/SceneContext";
 import { FurnitureItem, FurnitureCallbacks } from "@shared/furniture-types";
 import { createTableModel, createPersonModel, createArmchairModel, createCarModel } from "./furniture-models";
+import { useRoomStore } from "@/lib/store/room-store";
 
 interface Point {
   x: number;
@@ -876,6 +877,44 @@ export default function Canvas3D({
 }: Canvas3DProps) {
   // Access the SceneContext to share data with RoomSketchPro
   const { updateGeometryData, updateSceneData, updateFloorData, setCurrentFloor: setContextCurrentFloor } = useSceneContext();
+  
+  // Connect to the global room store for persistent furniture management
+  const { 
+    addFurnitureItem, 
+    updateFurnitureItem, 
+    removeFurnitureItem, 
+    floors: globalFloors 
+  } = useRoomStore();
+  
+  // Get furniture items from global store for current floor
+  const currentFloorFurniture = useMemo(() => {
+    return globalFloors[currentFloor]?.furnitureItems || [];
+  }, [globalFloors, currentFloor]);
+  
+  // Wrap furniture callbacks to integrate with global store
+  const wrappedOnFurnitureAdd = useCallback((item: FurnitureItem) => {
+    console.log("🪑 Adding furniture to global store:", item);
+    addFurnitureItem(item);
+    if (onFurnitureAdd) {
+      onFurnitureAdd(item);
+    }
+  }, [addFurnitureItem, onFurnitureAdd]);
+  
+  const wrappedOnUpdateFurniture = useCallback((item: FurnitureItem) => {
+    console.log("🪑 Updating furniture in global store:", item);
+    updateFurnitureItem(item);
+    if (onUpdateFurniture) {
+      onUpdateFurniture(item);
+    }
+  }, [updateFurnitureItem, onUpdateFurniture]);
+  
+  const wrappedOnDeleteFurniture = useCallback((itemId: string) => {
+    console.log("🪑 Removing furniture from global store:", itemId);
+    removeFurnitureItem(itemId);
+    if (onDeleteFurniture) {
+      onDeleteFurniture(itemId);
+    }
+  }, [removeFurnitureItem, onDeleteFurniture]);
 
   // PHASE 1: Migrate floors data to ensure backward compatibility
   const migratedFloors = useMemo(() => migrateFloorsData(floors), [floors]);
@@ -971,6 +1010,35 @@ export default function Canvas3D({
       newFurnitureForDialog.current = null;
     }
   }, [floors, currentFloor]); // Trigger when floors update (after furniture is added)
+
+  // Effect to sync furniture items from global store with 3D scene
+  useEffect(() => {
+    if (!sceneRef.current) return;
+    
+    console.log("🪑 Syncing furniture items from store to 3D scene:", currentFloorFurniture);
+    
+    // Remove all existing furniture from scene
+    const furnitureToRemove: THREE.Object3D[] = [];
+    sceneRef.current.traverse((object) => {
+      if (object.userData.type === 'furniture') {
+        furnitureToRemove.push(object);
+      }
+    });
+    
+    furnitureToRemove.forEach(furniture => {
+      sceneRef.current?.remove(furniture);
+    });
+    
+    // Add furniture items from store to scene
+    currentFloorFurniture.forEach(furnitureItem => {
+      const model = createFurnitureModel(furnitureItem, sceneRef.current!);
+      if (model) {
+        console.log("🪑 Added furniture to scene from store:", furnitureItem.id);
+      }
+    });
+    
+    needsRenderRef.current = true;
+  }, [currentFloorFurniture, currentFloor]);
   // Track the selected air entry element for dragging
   const [selectedAirEntry, setSelectedAirEntry] = useState<{
     index: number;
@@ -4792,14 +4860,10 @@ export default function Canvas3D({
       clearAllHighlights();
       
       if (sceneRef.current && cameraRef.current) {
-        // Store the original onFurnitureAdd callback to wrap it
-        const originalOnFurnitureAdd = onFurnitureAdd;
-        
-        // Create wrapped callback that also stores item for dialog
-        const wrappedOnFurnitureAdd = (item: FurnitureItem) => {
-          if (originalOnFurnitureAdd) {
-            originalOnFurnitureAdd(item);
-          }
+        // Create callback that integrates with store and auto-opens dialog
+        const furnitureAddCallback = (item: FurnitureItem) => {
+          // Add to global store
+          wrappedOnFurnitureAdd(item);
           
           // Auto-open dialog immediately after creation
           console.log("🎛️ Auto-opening furniture dialog immediately for new item:", item);
@@ -4822,7 +4886,7 @@ export default function Canvas3D({
           migratedFloors,
           isMultifloor || false,
           floorParameters || {},
-          wrappedOnFurnitureAdd
+          furnitureAddCallback
         );
       }
     };
