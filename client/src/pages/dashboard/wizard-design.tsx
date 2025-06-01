@@ -2286,6 +2286,8 @@ export default function WizardDesign() {
               roomHeight={getCurrentCeilingHeight()}
               currentFloor={currentFloor} // Pass the current floor explicitly
               floors={floors} // Pass the entire floors object directly
+              isMultifloor={isMultifloor}
+              floorParameters={floorParameters}
               onWallTransparencyChange={(value) => {
                 setWallTransparency(value);
               }}

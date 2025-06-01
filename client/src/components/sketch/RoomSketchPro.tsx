@@ -53,6 +53,8 @@ interface RoomSketchProProps {
   onAirEntryTransparencyChange?: (value: number) => void;
   currentFloor?: string;
   floors?: Record<string, FloorData>;
+  isMultifloor?: boolean;
+  floorParameters?: Record<string, { ceilingHeight: number; floorDeck: number }>;
   onComponentMount?: () => void;
   materialTheme?: "modern" | "classic" | "industrial";
 }
@@ -77,6 +79,8 @@ export function RoomSketchPro({
   onAirEntryTransparencyChange,
   currentFloor = "ground",
   floors,
+  isMultifloor = true,
+  floorParameters = {},
   onComponentMount,
   materialTheme = "modern"
 }: RoomSketchProProps) {
@@ -798,6 +802,8 @@ export function RoomSketchPro({
         lightingIntensity={lightingIntensity} // Control de intensidad de iluminación
         isMeasureMode={false}
         isEraserMode={false}
+        isMultifloor={isMultifloor}
+        floorParameters={floorParameters}
         onUpdateAirEntry={undefined}
         onDeleteAirEntry={undefined}
         onSceneReady={handleSceneReady}
