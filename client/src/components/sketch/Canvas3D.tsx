@@ -670,7 +670,14 @@ const handleFurnitureDrop = (
   try {
     const furnitureMenuData = JSON.parse(itemData);
     
-    // Detect floor and calculate position
+    // FASE 2 TEST: Sistema de raycasting y detección de piso
+    console.log("🧪 FASE 2 TEST - Input:", {
+      currentFloor,
+      isMultifloor,
+      mousePosition: { x: event.clientX, y: event.clientY },
+      availableFloors: Object.keys(migratedFloors)
+    });
+
     const detectedFloor = detectFloorFromPosition(
       event,
       camera,
@@ -681,6 +688,11 @@ const handleFurnitureDrop = (
       floorParameters
     );
     
+    console.log("🧪 FASE 2 TEST - Floor Detection:", {
+      detectedFloor,
+      fallbackUsed: detectedFloor === currentFloor
+    });
+    
     const calculatedPosition = calculateFurniturePosition(
       event,
       camera,
@@ -688,6 +700,11 @@ const handleFurnitureDrop = (
       detectedFloor,
       floorParameters
     );
+    
+    console.log("🧪 FASE 2 TEST - Position Calculation:", {
+      calculatedPosition,
+      floorUsedForCalculation: detectedFloor
+    });
     
     // Use default dimensions from menu data
     const dimensions = furnitureMenuData.defaultDimensions || { width: 80, height: 80, depth: 80 };
@@ -706,22 +723,6 @@ const handleFurnitureDrop = (
       createdAt: Date.now(),
       updatedAt: Date.now()
     };
-
-    // FASE 1 TEST: Validar estructura de datos completa
-    console.log("🧪 FASE 1 TEST - FurnitureItem creado:", furnitureItem);
-    console.log("🧪 FASE 1 TEST - Campos requeridos:", {
-      id: !!furnitureItem.id,
-      type: !!furnitureItem.type,
-      name: !!furnitureItem.name,
-      floorName: !!furnitureItem.floorName,
-      position: !!furnitureItem.position,
-      rotation: !!furnitureItem.rotation,
-      dimensions: !!furnitureItem.dimensions,
-      information: !!furnitureItem.information,
-      meshId: !!furnitureItem.meshId,
-      createdAt: !!furnitureItem.createdAt,
-      updatedAt: !!furnitureItem.updatedAt
-    });
 
     // Create and add 3D model to scene
     const model = createFurnitureModel(furnitureItem, scene);
