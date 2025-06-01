@@ -1,0 +1,84 @@
+
+client:614 [vite] connected.
+chunk-WERSD76P.js?v=06675440:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+AnalyticsProvider.tsx:21 Analytics initialized: false
+dashboard-sidebar.tsx:64 
+ GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+
+analytics.ts:26 Google Analytics initialized with ID: G-XZYY9DVVHW
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+js?id=G-XZYY9DVVHW:657 [Violation] 'setTimeout' handler took 59ms
+AnalyticsProvider.tsx:21 Analytics initialized: true
+Canvas3D.tsx:878 🔧 DEBUG: Canvas3D component mounted
+Canvas3D.tsx:879 🔍 DEBUG: Canvas3D received onFurnitureAdd prop: false
+Canvas3D.tsx:880 🔍 DEBUG: Canvas3D onFurnitureAdd type: undefined
+Canvas3D.tsx:881 🔧 DEBUG: Props received: 
+{currentFloor: 'first', floorsCount: 2, isMultifloor: false, presentationMode: true}
+Canvas3D.tsx:1960 🔧 DEBUG: Canvas3D useEffect initialization starting
+Canvas3D.tsx:1967 🔧 DEBUG: Container found, initializing Three.js scene
+Canvas3D.tsx:1974 🔧 DEBUG: Scene created and assigned to ref
+chunk-WERSD76P.js?v=06675440:18625 [Violation] 'click' handler took 315ms
+Canvas3D.tsx:2176 [Violation] 'requestAnimationFrame' handler took 53ms
+wizard-design.tsx:1533 Starting drag for Table
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4635 🟡 TEST 1: Canvas3D drag over detected
+Canvas3D.tsx:4639 🟢 TEST 1: Canvas3D drop detected
+Canvas3D.tsx:4640 🟢 TEST 1: Event dataTransfer: {"id":"table","name":"Table"}
+Canvas3D.tsx:4644 🟢 TEST 1: Scene and camera available, calling handleFurnitureDrop
+Canvas3D.tsx:663 🔍 DEBUG: handleFurnitureDrop called
+Canvas3D.tsx:667 🔍 DEBUG: itemData received: {"id":"table","name":"Table"}
+Canvas3D.tsx:675 🔴 DEBUG: onFurnitureAdd callback not provided
+handleFurnitureDrop	@	Canvas3D.tsx:675
+handleDrop	@	Canvas3D.tsx:4645

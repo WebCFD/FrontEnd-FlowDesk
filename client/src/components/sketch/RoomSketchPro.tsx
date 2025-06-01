@@ -801,6 +801,7 @@ export function RoomSketchPro({
         onUpdateAirEntry={undefined}
         onDeleteAirEntry={undefined}
         onSceneReady={handleSceneReady}
+        onFurnitureAdd={onFurnitureAdd} // Pass furniture callback to Canvas3D
       />
       
       {/* Controles específicos de RSP */}

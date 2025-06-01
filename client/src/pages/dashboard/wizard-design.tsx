@@ -2292,6 +2292,14 @@ export default function WizardDesign() {
               onAirEntryTransparencyChange={(value) => {
                 setAirEntryTransparency(value);
               }}
+              onFurnitureAdd={(item) => {
+                console.log("🟢 FURNITURE: Added furniture item in RSP:", item);
+                // TODO: Integrate with furniture store/state management
+                toast({
+                  title: "Furniture Added",
+                  description: `${item.name} has been placed on ${item.floorName}`,
+                });
+              }}
             />
           ) : tab === "2d-editor" ? (
             <Canvas2D
@@ -2345,14 +2353,6 @@ export default function WizardDesign() {
               onUpdateAirEntry={handleUpdateAirEntryFrom3D}
               onDeleteAirEntry={handleDeleteAirEntryFrom3D}
               onViewChange={handleViewChange}
-              onFurnitureAdd={(item) => {
-                console.log("🟢 FURNITURE: Added furniture item:", item);
-                // TODO: Integrate with furniture store/state management
-                toast({
-                  title: "Furniture Added",
-                  description: `${item.name} has been placed on ${item.floorName}`,
-                });
-              }}
             />
           )}
         </SceneProvider>
