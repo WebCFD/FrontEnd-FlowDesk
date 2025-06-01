@@ -8,7 +8,6 @@ import { ViewDirection } from "./Toolbar3D";
 import { useSceneContext } from "../../contexts/SceneContext";
 import { FurnitureItem, FurnitureCallbacks } from "@shared/furniture-types";
 import { createTableModel, createPersonModel, createArmchairModel, createCarModel } from "./furniture-models";
-import { useRoomStore } from "@/lib/store/room-store";
 
 interface Point {
   x: number;
@@ -877,52 +876,6 @@ export default function Canvas3D({
 }: Canvas3DProps) {
   // Access the SceneContext to share data with RoomSketchPro
   const { updateGeometryData, updateSceneData, updateFloorData, setCurrentFloor: setContextCurrentFloor } = useSceneContext();
-  
-  // Connect to the global room store for persistent furniture management
-  const { 
-    addFurnitureItem, 
-    updateFurnitureItem, 
-    removeFurnitureItem, 
-    floors: globalFloors 
-  } = useRoomStore();
-  
-  // Get furniture items from global store for current floor
-  const currentFloorFurniture = useMemo(() => {
-    const floorData = globalFloors[currentFloor];
-    if (!floorData) {
-      console.log("🪑 Floor data not found for:", currentFloor);
-      return [];
-    }
-    
-    const furniture = floorData.furnitureItems || [];
-    console.log("🪑 Current floor furniture items:", furniture);
-    return furniture;
-  }, [globalFloors, currentFloor]);
-  
-  // Wrap furniture callbacks to integrate with global store
-  const wrappedOnFurnitureAdd = useCallback((item: FurnitureItem) => {
-    console.log("🪑 Adding furniture to global store:", item);
-    addFurnitureItem(item);
-    if (onFurnitureAdd) {
-      onFurnitureAdd(item);
-    }
-  }, [addFurnitureItem, onFurnitureAdd]);
-  
-  const wrappedOnUpdateFurniture = useCallback((item: FurnitureItem) => {
-    console.log("🪑 Updating furniture in global store:", item);
-    updateFurnitureItem(item);
-    if (onUpdateFurniture) {
-      onUpdateFurniture(item);
-    }
-  }, [updateFurnitureItem, onUpdateFurniture]);
-  
-  const wrappedOnDeleteFurniture = useCallback((itemId: string) => {
-    console.log("🪑 Removing furniture from global store:", itemId);
-    removeFurnitureItem(itemId);
-    if (onDeleteFurniture) {
-      onDeleteFurniture(itemId);
-    }
-  }, [removeFurnitureItem, onDeleteFurniture]);
 
   // PHASE 1: Migrate floors data to ensure backward compatibility
   const migratedFloors = useMemo(() => migrateFloorsData(floors), [floors]);
@@ -1018,35 +971,6 @@ export default function Canvas3D({
       newFurnitureForDialog.current = null;
     }
   }, [floors, currentFloor]); // Trigger when floors update (after furniture is added)
-
-  // Effect to sync furniture items from global store with 3D scene
-  useEffect(() => {
-    if (!sceneRef.current) return;
-    
-    console.log("🪑 Syncing furniture items from store to 3D scene:", currentFloorFurniture);
-    
-    // Remove all existing furniture from scene
-    const furnitureToRemove: THREE.Object3D[] = [];
-    sceneRef.current.traverse((object) => {
-      if (object.userData.type === 'furniture') {
-        furnitureToRemove.push(object);
-      }
-    });
-    
-    furnitureToRemove.forEach(furniture => {
-      sceneRef.current?.remove(furniture);
-    });
-    
-    // Add furniture items from store to scene
-    currentFloorFurniture.forEach(furnitureItem => {
-      const model = createFurnitureModel(furnitureItem, sceneRef.current!);
-      if (model) {
-        console.log("🪑 Added furniture to scene from store:", furnitureItem.id);
-      }
-    });
-    
-    needsRenderRef.current = true;
-  }, [currentFloorFurniture, currentFloor]);
   // Track the selected air entry element for dragging
   const [selectedAirEntry, setSelectedAirEntry] = useState<{
     index: number;
@@ -3192,8 +3116,8 @@ export default function Canvas3D({
           needsRenderRef.current = true;
         }
         
-        // Find potential erase targets (air entries and furniture)
-        const erasableItems: THREE.Mesh[] = [];
+        // Find potential erase targets
+        const airEntryMeshes: THREE.Mesh[] = [];
         
         if (sceneRef.current) {
           sceneRef.current.traverse((object) => {
@@ -3204,23 +3128,17 @@ export default function Canvas3D({
               object.userData.type &&
               ["window", "door", "vent"].includes(object.userData.type)
             ) {
-              erasableItems.push(object as THREE.Mesh);
-            }
-            // Collect furniture meshes (including child meshes of furniture groups)
-            else if (
-              object instanceof THREE.Mesh &&
-              object.userData &&
-              (object.userData.type === 'furniture' || object.parent?.userData.type === 'furniture')
-            ) {
-              erasableItems.push(object as THREE.Mesh);
+              // We won't automatically enlarge all objects now - we'll only enlarge them
+              // when they're actually under the mouse cursor
+              airEntryMeshes.push(object as THREE.Mesh);
             }
           });
           
-          console.log(`Found ${erasableItems.length} potential erasable items for eraser hover detection`);
+          console.log(`Found ${airEntryMeshes.length} potential air entries for eraser hover detection`);
           
-          // Detect when no erasable items are available
-          if (erasableItems.length === 0 && hoveredEraseTarget) {
-            console.log("⚠️ No erasable items found in scene but we have a hovered target - cleaning up");
+          // Detect when no air entries are available
+          if (airEntryMeshes.length === 0 && hoveredEraseTarget) {
+            console.log("⚠️ No air entries found in scene but we have a hovered target - cleaning up");
             
             // Restore original material
             hoveredEraseTarget.object.material = hoveredEraseTarget.originalMaterial;
@@ -3257,17 +3175,17 @@ export default function Canvas3D({
             applyRaycasterConfig(raycaster, 'precision');
             
             // Make sure we're using recursive flag = true to catch child objects too
-            const meshIntersects = raycaster.intersectObjects(erasableItems, true);
+            const meshIntersects = raycaster.intersectObjects(airEntryMeshes, true);
             
             // Raycaster configuration is now handled centrally
             
-            // Enhanced debugging for erasable item intersections
-            console.log(`Found ${meshIntersects.length} intersections with erasable items`);
+            // Enhanced debugging for air entry intersections
+            console.log(`Found ${meshIntersects.length} intersections with air entries`);
             
-            // Log detailed info about available erasable items
-            console.log(`DEBUG: Eraser mode hover detection - ${erasableItems.length} erasable items in scene`);
-            erasableItems.forEach((mesh, i) => {
-              console.log(`Erasable Item #${i}: type=${mesh.userData.type}, position=${JSON.stringify(mesh.position)}, worldPosition=${JSON.stringify(mesh.getWorldPosition(new THREE.Vector3()))}`);
+            // Log detailed info about available air entry meshes
+            console.log(`DEBUG: Eraser mode hover detection - ${airEntryMeshes.length} air entries in scene`);
+            airEntryMeshes.forEach((mesh, i) => {
+              console.log(`Air Entry #${i}: type=${mesh.userData.type}, position=${JSON.stringify(mesh.position)}, worldPosition=${JSON.stringify(mesh.getWorldPosition(new THREE.Vector3()))}`);
               
               // Output mesh bounding box for debugging
               const boundingBox = new THREE.Box3().setFromObject(mesh);
@@ -4874,10 +4792,14 @@ export default function Canvas3D({
       clearAllHighlights();
       
       if (sceneRef.current && cameraRef.current) {
-        // Create callback that integrates with store and auto-opens dialog
-        const furnitureAddCallback = (item: FurnitureItem) => {
-          // Add to global store
-          wrappedOnFurnitureAdd(item);
+        // Store the original onFurnitureAdd callback to wrap it
+        const originalOnFurnitureAdd = onFurnitureAdd;
+        
+        // Create wrapped callback that also stores item for dialog
+        const wrappedOnFurnitureAdd = (item: FurnitureItem) => {
+          if (originalOnFurnitureAdd) {
+            originalOnFurnitureAdd(item);
+          }
           
           // Auto-open dialog immediately after creation
           console.log("🎛️ Auto-opening furniture dialog immediately for new item:", item);
@@ -4900,7 +4822,7 @@ export default function Canvas3D({
           migratedFloors,
           isMultifloor || false,
           floorParameters || {},
-          furnitureAddCallback
+          wrappedOnFurnitureAdd
         );
       }
     };
