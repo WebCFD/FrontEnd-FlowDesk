@@ -4707,9 +4707,20 @@ export default function Canvas3D({
     const container = containerRef.current;
     if (!container || !sceneRef.current) return;
 
+    // Add throttling to prevent too many calls
+    let lastRaycastTime = 0;
+    const RAYCAST_THROTTLE = 50; // ms
+
     const handleDragOver = (event: DragEvent) => {
       event.preventDefault();
       event.dataTransfer!.dropEffect = "copy";
+      
+      // Throttle raycasting
+      const now = Date.now();
+      if (now - lastRaycastTime < RAYCAST_THROTTLE) {
+        return;
+      }
+      lastRaycastTime = now;
       
       // Simple raycasting logic: highlight the last surface intersected
       if (cameraRef.current && sceneRef.current) {
@@ -4736,20 +4747,15 @@ export default function Canvas3D({
         const intersects = raycaster.intersectObjects(surfaces);
         
         console.log(`🔍 RAYCAST: Found ${intersects.length} intersections with ${surfaces.length} surfaces`);
-        if (intersects.length > 0) {
-          intersects.forEach((intersection, i) => {
-            const mesh = intersection.object as THREE.Mesh;
-            console.log(`  ${i}: ${mesh.userData.type} on ${mesh.userData.floorName} at distance ${intersection.distance.toFixed(2)}`);
-          });
-        }
         
         if (intersects.length > 0) {
-          // Get the last (furthest) intersection - this ensures we get the actual target surface
-          const targetMesh = intersects[intersects.length - 1].object as THREE.Mesh;
+          // Get the closest intersection (first one)
+          const targetMesh = intersects[0].object as THREE.Mesh;
+          console.log(`🎯 TARGET: ${targetMesh.userData.type} on ${targetMesh.userData.floorName}`);
           
           // Only highlight if it's different from current
           if (highlightedSurface !== targetMesh) {
-            console.log(`🔥 NEW INTERSECTION: ${targetMesh.userData.type} on ${targetMesh.userData.floorName}`);
+            console.log(`🔥 NEW INTERSECTION: Highlighting ${targetMesh.userData.type}`);
             highlightSurface(targetMesh);
           }
         } else {
