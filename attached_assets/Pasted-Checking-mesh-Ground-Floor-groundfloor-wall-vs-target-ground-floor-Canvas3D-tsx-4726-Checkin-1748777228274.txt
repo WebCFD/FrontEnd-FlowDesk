@@ -1,0 +1,73 @@
+Checking mesh: Ground Floor (groundfloor) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - floor vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - ceiling vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - wall vs target: ground - floor
+Canvas3D.tsx:4737 Surface detection result: ground - floor, found 0 matching meshes
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - floor vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - ceiling vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - floor vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - ceiling vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - wall vs target: ground - floor
+Canvas3D.tsx:4737 Surface detection result: ground - floor, found 0 matching meshes
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - floor vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - ceiling vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - floor vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - ceiling vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - wall vs target: ground - floor
+Canvas3D.tsx:4737 Surface detection result: ground - floor, found 0 matching meshes
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - floor vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - ceiling vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - floor vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - ceiling vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - wall vs target: ground - floor
+Canvas3D.tsx:4737 Surface detection result: ground - floor, found 0 matching meshes
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - floor vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - ceiling vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - floor vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - ceiling vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - wall vs target: ground - floor
+Canvas3D.tsx:4737 Surface detection result: ground - floor, found 0 matching meshes
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - floor vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - ceiling vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: Ground Floor (groundfloor) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - floor vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - ceiling vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - wall vs target: ground - floor
+Canvas3D.tsx:4726 Checking mesh: first (first) - wall vs target: ground - floor
+Canvas3D.tsx:4737 Surface detection result: ground - floor, found 0 matching meshe
