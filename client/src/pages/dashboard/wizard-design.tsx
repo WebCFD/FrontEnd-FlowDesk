@@ -2293,7 +2293,6 @@ export default function WizardDesign() {
                 setAirEntryTransparency(value);
               }}
               onFurnitureAdd={(item) => {
-                console.log("🟢 FURNITURE: Added furniture item in RSP:", item);
                 // TODO: Integrate with furniture store/state management
                 toast({
                   title: "Furniture Added",
