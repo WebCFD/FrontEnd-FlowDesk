@@ -438,7 +438,7 @@ export function RoomSketchPro({
 
   // Callback when Canvas3D scene is ready
   const handleSceneReady = (scene: THREE.Scene, renderer: THREE.WebGLRenderer, camera: THREE.Camera) => {
-    console.log('RSP: Scene ready, storing references');
+
     sceneRef.current = scene;
     rendererRef.current = renderer;
     cameraRef.current = camera;
@@ -448,7 +448,7 @@ export function RoomSketchPro({
     const attempts = [1000, 2000, 3000];
     
     const tryApplyTextures = (attemptIndex = 0) => {
-      console.log(`RSP: Attempt ${attemptIndex + 1} to find walls after ${attempts[attemptIndex]}ms`);
+
       
       // Check if walls exist
       let wallCount = 0;
@@ -459,7 +459,7 @@ export function RoomSketchPro({
       });
       
       if (wallCount > 0 || attemptIndex >= attempts.length - 1) {
-        console.log(`RSP: Found ${wallCount} walls, applying textures`);
+
         applyThemeTextures();
       } else if (attemptIndex < attempts.length - 1) {
         setTimeout(() => tryApplyTextures(attemptIndex + 1), attempts[attemptIndex + 1] - attempts[attemptIndex]);
@@ -618,7 +618,7 @@ export function RoomSketchPro({
       });
     }
 
-    console.log(`RSP: Found ${airEntryMeshes.length} air entry meshes to texture`);
+
 
     airEntryMeshes.forEach((airEntryMesh, index) => {
       const airEntryType = airEntryMesh.userData.type;
