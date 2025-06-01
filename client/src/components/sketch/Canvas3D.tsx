@@ -2326,14 +2326,14 @@ export default function Canvas3D({
                       mesh.getWorldDirection(worldDirection);
                       // The cylinder is along the Y axis by default, so we need the up vector
                       xAxisDirection.set(worldDirection.x, worldDirection.y, 0).normalize();
-                      console.log("Found X axis mesh - direction vector:", xAxisDirection);
+
                     }
                     else if (mesh.userData.direction === "z") {
                       // Extract world direction of Z axis from mesh orientation
                       const worldDirection = new THREE.Vector3();
                       mesh.getWorldDirection(worldDirection);
                       zAxisDirection.set(worldDirection.x, worldDirection.y, 0).normalize();
-                      console.log("Found Z axis mesh - direction vector:", zAxisDirection);
+
                     }
                   });
 
