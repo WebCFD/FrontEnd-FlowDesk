@@ -227,7 +227,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
   return (
     <div 
       className="fixed inset-0 z-50 flex items-start justify-center"
-      style={{ backgroundColor: 'rgba(0, 0, 0, 0.1)' }}
+      style={{ pointerEvents: 'none' }}
     >
       <div
         className="relative bg-white rounded-lg shadow-lg border border-gray-200"
@@ -236,7 +236,8 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
           top: position.y,
           width: '425px',
           maxHeight: '90vh',
-          overflow: 'auto'
+          overflow: 'auto',
+          pointerEvents: 'auto'
         }}
         onMouseDown={handleMouseDown}
       >
