@@ -1,0 +1,26 @@
+Starting drag for Table
+Canvas3D.tsx:698 🧪 FASE 2 TEST - Input: {currentFloor: 'first', isMultifloor: true, mousePosition: {…}, availableFloors: Array(2)}
+Canvas3D.tsx:563 🔍 RAYCASTING DEBUG - Surface meshes found: 4
+Canvas3D.tsx:565   floor 0: "Ground Floor", position: 0, 0, 0
+Canvas3D.tsx:565   ceiling 1: "Ground Floor", position: 0, 0, 220
+Canvas3D.tsx:565   floor 2: "first", position: 0, 0, 255
+Canvas3D.tsx:565   ceiling 3: "first", position: 0, 0, 475
+Canvas3D.tsx:570 🔍 RAYCASTING DEBUG - Intersections found: 1
+Canvas3D.tsx:575   Intersection 0: floor "first" at point: _Vector3 {x: -101.88411094648282, y: -107.38338600011639, z: 255}
+Canvas3D.tsx:585 🎯 SURFACE DETECTION - Found floor on "first"
+Canvas3D.tsx:715 🧪 FASE 2 TEST - Surface Detection: {detectedFloor: 'first', surfaceType: 'floor', fallbackUsed: false}
+Canvas3D.tsx:650 🎯 POSITION CALC - Looking for floor on first, found 1 meshes, 1 intersections
+Canvas3D.tsx:730 🧪 FASE 2 TEST - Position Calculation: {calculatedPosition: {…}, floorUsedForCalculation: 'first', surfaceType: 'floor'}
+wizard-design.tsx:1533 Starting drag for Table
+Canvas3D.tsx:698 🧪 FASE 2 TEST - Input: {currentFloor: 'first', isMultifloor: true, mousePosition: {…}, availableFloors: Array(2)}
+Canvas3D.tsx:563 🔍 RAYCASTING DEBUG - Surface meshes found: 4
+Canvas3D.tsx:565   floor 0: "Ground Floor", position: 0, 0, 0
+Canvas3D.tsx:565   ceiling 1: "Ground Floor", position: 0, 0, 220
+Canvas3D.tsx:565   floor 2: "first", position: 0, 0, 255
+Canvas3D.tsx:565   ceiling 3: "first", position: 0, 0, 475
+Canvas3D.tsx:570 🔍 RAYCASTING DEBUG - Intersections found: 1
+Canvas3D.tsx:575   Intersection 0: ceiling "Ground Floor" at point: _Vector3 {x: -132.3422556357592, y: 7.202688178070048, z: 220}
+Canvas3D.tsx:592 ⚠️ SURFACE DETECTION - Found ceiling on "Ground Floor" but floor not in availableFloors: (2) ['ground', 'first']
+Canvas3D.tsx:715 🧪 FASE 2 TEST - Surface Detection: {detectedFloor: 'ground', surfaceType: 'floor', fallbackUsed: true}
+Canvas3D.tsx:650 🎯 POSITION CALC - Looking for floor on ground, found 0 meshes, 0 intersections
+Canvas3D.tsx:730 🧪 FASE 2 TEST - Position Calculation: {calculatedPosition: {…}, floorUsedForCalculation: 'ground', surfaceType: 'floor'}
