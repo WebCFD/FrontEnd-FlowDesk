@@ -562,7 +562,7 @@ const detectSurfaceFromPosition = (
 
   console.log('🔍 RAYCASTING DEBUG - Surface meshes found:', surfaceMeshes.length);
   surfaceMeshes.forEach((sm, i) => {
-    console.log(`  ${sm.surfaceType} ${i}: ${sm.floorName}, position: ${sm.mesh.position.x}, ${sm.mesh.position.y}, ${sm.mesh.position.z}`);
+    console.log(`  ${sm.surfaceType} ${i}: "${sm.floorName}", position: ${sm.mesh.position.x}, ${sm.mesh.position.y}, ${sm.mesh.position.z}`);
   });
 
   // Check intersections with both floor and ceiling meshes
@@ -575,12 +575,14 @@ const detectSurfaceFromPosition = (
     const correspondingSurface = surfaceMeshes.find(s => s.mesh === closestIntersect.object);
     
     if (correspondingSurface && availableFloors[correspondingSurface.floorName]) {
-      console.log(`🎯 SURFACE DETECTION - Found ${correspondingSurface.surfaceType} on ${correspondingSurface.floorName}`);
+      console.log(`🎯 SURFACE DETECTION - Found ${correspondingSurface.surfaceType} on "${correspondingSurface.floorName}"`);
       return { 
         floorName: correspondingSurface.floorName, 
         surfaceType: correspondingSurface.surfaceType, 
         fallbackUsed: false 
       };
+    } else if (correspondingSurface) {
+      console.log(`⚠️ SURFACE DETECTION - Found ${correspondingSurface.surfaceType} on "${correspondingSurface.floorName}" but floor not in availableFloors:`, Object.keys(availableFloors));
     }
   }
 
