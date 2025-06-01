@@ -445,6 +445,49 @@ const getConnectedFloorName = (
 };
 
 /**
+ * PHASE 1: Data Migration Functions
+ * Ensures backward compatibility with existing FloorData
+ */
+
+// Migrate legacy FloorData to include furniture support
+const migrateFloorData = (floorData: FloorData): FloorData => {
+  return {
+    ...floorData,
+    furnitureItems: floorData.furnitureItems || [], // Default empty array if not present
+  };
+};
+
+// Validate and sanitize FurnitureItem data
+const sanitizeFurnitureItem = (item: Partial<FurnitureItem>, floorName: string): FurnitureItem => {
+  const now = Date.now();
+  return {
+    id: item.id || `furniture_${now}`,
+    type: item.type || 'table',
+    name: item.name || 'Unnamed Furniture',
+    floorName: item.floorName || floorName,
+    position: item.position || { x: 0, y: 0, z: 0 },
+    rotation: item.rotation || { x: 0, y: 0, z: 0 },
+    dimensions: item.dimensions || { width: 80, height: 80, depth: 80 },
+    information: item.information || '',
+    simulationProperties: item.simulationProperties || {},
+    meshId: item.meshId,
+    createdAt: item.createdAt || now,
+    updatedAt: now,
+  };
+};
+
+// Migrate floors data collection
+const migrateFloorsData = (floors: Record<string, FloorData>): Record<string, FloorData> => {
+  const migratedFloors: Record<string, FloorData> = {};
+  
+  for (const [floorName, floorData] of Object.entries(floors)) {
+    migratedFloors[floorName] = migrateFloorData(floorData);
+  }
+  
+  return migratedFloors;
+};
+
+/**
  * ========================================
  * CANVAS3D MAIN COMPONENT
  * ========================================
@@ -487,6 +530,9 @@ export default function Canvas3D({
 }: Canvas3DProps) {
   // Access the SceneContext to share data with RoomSketchPro
   const { updateGeometryData, updateSceneData, updateFloorData, setCurrentFloor: setContextCurrentFloor } = useSceneContext();
+
+  // PHASE 1: Migrate floors data to ensure backward compatibility
+  const migratedFloors = useMemo(() => migrateFloorsData(floors), [floors]);
 
   // Function to setup lighting based on presentation mode
   const setupLights = (scene: THREE.Scene) => {
@@ -2170,7 +2216,7 @@ export default function Canvas3D({
                     return;
                   }
 
-                  const floorData = floors[currentFloor];
+                  const floorData = migratedFloors[currentFloor];
 
                   if (floorData && floorData.airEntries) {
                     // First try to use the entryIndex from userData if available
