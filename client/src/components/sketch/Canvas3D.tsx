@@ -1473,14 +1473,14 @@ export default function Canvas3D({
       }
       shape.lineTo(firstPoint.x, firstPoint.y);
 
-      // Floor surface with distinctive colors
+      // Floor surface with red tones from light to dark (bottom to top)
       const floorGeometry = new THREE.ShapeGeometry(shape);
       let floorColor = 0x808080; // Default gray
       const floorNameLower = floorData.name.toLowerCase();
-      if (floorNameLower.includes('ground')) floorColor = 0x00ff00; // Green for ground
-      else if (floorNameLower.includes('first')) floorColor = 0x0000ff; // Blue for first floor
-      else if (floorNameLower.includes('second')) floorColor = 0xff0000; // Red for second floor
-      else if (floorNameLower.includes('third')) floorColor = 0xffff00; // Yellow for third floor
+      if (floorNameLower.includes('ground')) floorColor = 0xffcccc; // Light red for ground
+      else if (floorNameLower.includes('first')) floorColor = 0xff6666; // Medium red for first floor
+      else if (floorNameLower.includes('second')) floorColor = 0xff3333; // Dark red for second floor
+      else if (floorNameLower.includes('third')) floorColor = 0x990000; // Very dark red for third floor
       
       const floorMaterial = new THREE.MeshPhongMaterial({
         color: floorColor,
@@ -1494,13 +1494,13 @@ export default function Canvas3D({
       console.log(`🎨 FLOOR VISUAL - Created ${floorData.name} floor at Z=${baseHeight} with color:`, floorColor.toString(16));
       objects.push(floor);
 
-      // Ceiling surface with lighter tones
+      // Ceiling surface with corresponding red tones (slightly lighter)
       const ceilingGeometry = new THREE.ShapeGeometry(shape);
       let ceilingColor = 0xe0e0e0; // Default light gray
-      if (floorNameLower.includes('ground')) ceilingColor = 0x80ff80; // Light green for ground ceiling
-      else if (floorNameLower.includes('first')) ceilingColor = 0x8080ff; // Light blue for first ceiling
-      else if (floorNameLower.includes('second')) ceilingColor = 0xff8080; // Light red for second ceiling
-      else if (floorNameLower.includes('third')) ceilingColor = 0xffff80; // Light yellow for third ceiling
+      if (floorNameLower.includes('ground')) ceilingColor = 0xffe6e6; // Very light red for ground ceiling
+      else if (floorNameLower.includes('first')) ceilingColor = 0xffb3b3; // Light red for first ceiling
+      else if (floorNameLower.includes('second')) ceilingColor = 0xff9999; // Medium light red for second ceiling
+      else if (floorNameLower.includes('third')) ceilingColor = 0xcc6666; // Medium red for third ceiling
       
       const ceilingMaterial = new THREE.MeshPhongMaterial({
         color: ceilingColor,
