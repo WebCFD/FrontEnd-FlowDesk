@@ -666,7 +666,7 @@ export default function Canvas3D({
       // Reset cursor on container if it exists
       if (containerRef.current) {
         containerRef.current.style.cursor = 'auto';
-        console.log("  - Resetting cursor style to default");
+
       }
       
       // Force render to update the appearance
@@ -1631,7 +1631,7 @@ export default function Canvas3D({
     // Add mechanism to disable controls during dragging
     controls.enabled = true;
 
-    console.log("TrackballControls buttons configured:", controls.mouseButtons);
+
     controlsRef.current = controls;
 
     // Add lights using centralized function
@@ -1665,11 +1665,11 @@ export default function Canvas3D({
     
     // Add coordinate axes only if they don't already exist
     if (!axesHelperExists) {
-      console.log("Adding coordinate axes helper");
+  
       const axesHelper = new THREE.AxesHelper(200);
       scene.add(axesHelper);
     } else {
-      console.log("Axes helper already exists, skipping creation");
+
     }
     
     // Add axis labels if they don't already exist
@@ -4025,8 +4025,7 @@ export default function Canvas3D({
 
   // Effect to handle measure mode changes
   useEffect(() => {
-    console.log("isMeasureMode prop changed:", isMeasureMode);
-    console.log("Setting isMeasuring state to:", isMeasureMode);
+
 
     // Update both state and ref
     setIsMeasuring(isMeasureMode);
@@ -4200,7 +4199,7 @@ export default function Canvas3D({
       containerRef.current.style.cursor = isEraserMode ? 'not-allowed' : 'auto';
     }
     
-    console.log("✅ Complete event system reset finished");
+
   }, [hoveredEraseTarget, isEraserMode]);
   
   // Add a useEffect to reset the system when entering/exiting eraser mode
