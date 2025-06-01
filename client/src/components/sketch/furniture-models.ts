@@ -226,7 +226,7 @@ export const createCarModel = async (): Promise<THREE.Group> => {
     const carModel = gltf.scene.clone();
     
     // Scale the model to appropriate size
-    const scale = 0.3; // Adjusted scale for better size
+    const scale = 0.2; // Reduced by 80% for better proportions
     carModel.scale.setScalar(scale);
     
     // Ensure the car sits on the ground
