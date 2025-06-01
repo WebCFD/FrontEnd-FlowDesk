@@ -4970,19 +4970,59 @@ export default function Canvas3D({
       };
     }
   ) => {
-    if (!editingFurniture || !onUpdateFurniture) return;
+    if (!editingFurniture || !sceneRef.current) return;
 
+    console.log("🔧 Updating furniture in scene:", editingFurniture.item.id, data);
+
+    // Find the furniture object in the scene by ID
+    const furnitureId = editingFurniture.item.id;
+    let furnitureGroup: THREE.Group | null = null;
+
+    sceneRef.current.traverse((child) => {
+      if (child.userData.furnitureId === furnitureId && child.userData.type === 'furniture') {
+        furnitureGroup = child as THREE.Group;
+      }
+    });
+
+    if (furnitureGroup) {
+      console.log("✅ Found furniture object in scene, updating...");
+      
+      // Update position
+      furnitureGroup.position.set(data.position.x, data.position.y, data.position.z);
+      
+      // Update rotation
+      furnitureGroup.rotation.set(data.rotation.x, data.rotation.y, data.rotation.z);
+      
+      // Update scale
+      furnitureGroup.scale.set(data.scale.x, data.scale.y, data.scale.z);
+      
+      // Update userData
+      furnitureGroup.userData.furnitureName = data.name;
+      
+      console.log("🎯 Furniture updated in scene:", {
+        position: data.position,
+        rotation: data.rotation,
+        scale: data.scale,
+        name: data.name
+      });
+    } else {
+      console.error("❌ Could not find furniture object in scene with ID:", furnitureId);
+    }
+
+    // Update the furniture item data
     const updatedFurniture: FurnitureItem = {
       ...editingFurniture.item,
       name: data.name,
       position: data.position,
       rotation: data.rotation,
-      // Note: scale is handled internally, dimensions are stored separately
       updatedAt: Date.now()
     };
 
-    // Call the parent component's handler
-    onUpdateFurniture(updatedFurniture);
+    // Call the parent component's handler if available
+    if (onUpdateFurniture) {
+      onUpdateFurniture(updatedFurniture);
+    }
+    
     setEditingFurniture(null);
   };
 
