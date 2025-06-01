@@ -222,9 +222,9 @@ export function RoomSketchPro({
         handleColor = '#C0C0C0';
         break;
       case "classic":
-        baseColor = '#8B4513'; // Classic wood
-        panelColor = '#7A3612';
-        handleColor = '#FFD700';
+        baseColor = '#FFFFFF'; // Same as modern - white door
+        panelColor = '#F5F5F5';
+        handleColor = '#C0C0C0';
         break;
       case "industrial":
         baseColor = '#4A4A4A'; // Dark metal
@@ -257,7 +257,7 @@ export function RoomSketchPro({
     const marginY = 40;
 
     // Panel superior
-    ctx.strokeStyle = theme === 'classic' ? '#4A1F05' : '#888888';
+    ctx.strokeStyle = '#888888';
     ctx.lineWidth = 8;
     ctx.strokeRect(marginX, marginY, panelWidth, panelHeight);
     ctx.fillStyle = panelColor;
@@ -276,7 +276,7 @@ export function RoomSketchPro({
     ctx.beginPath();
     ctx.arc(200, 256, 12, 0, 2 * Math.PI);
     ctx.fill();
-    ctx.strokeStyle = theme === 'classic' ? '#B8860B' : '#666666';
+    ctx.strokeStyle = '#666666';
     ctx.lineWidth = 2;
     ctx.stroke();
 
