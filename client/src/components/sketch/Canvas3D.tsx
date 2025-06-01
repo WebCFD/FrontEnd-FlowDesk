@@ -876,6 +876,8 @@ export default function Canvas3D({
   // DEBUG: Canvas3D initialization logging
   useEffect(() => {
     console.log("🔧 DEBUG: Canvas3D component mounted");
+    console.log("🔍 DEBUG: Canvas3D received onFurnitureAdd prop:", !!onFurnitureAdd);
+    console.log("🔍 DEBUG: Canvas3D onFurnitureAdd type:", typeof onFurnitureAdd);
     console.log("🔧 DEBUG: Props received:", { 
       currentFloor, 
       floorsCount: Object.keys(floors).length,
