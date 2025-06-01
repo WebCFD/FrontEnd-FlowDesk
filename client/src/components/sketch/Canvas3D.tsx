@@ -1138,7 +1138,7 @@ export default function Canvas3D({
     mesh.material = highlightMaterial;
     needsRenderRef.current = true;
     
-    console.log(`🔥 HIGHLIGHTED: ${surfaceType} on ${mesh.userData.floorName}`);
+
   };
 
   // Add effect to cleanup highlight when component unmounts or floor changes
@@ -4729,32 +4729,25 @@ export default function Canvas3D({
         // Get intersections with surfaces only
         const intersects = raycaster.intersectObjects(surfaces);
         
-        console.log(`🔍 RAYCAST: Found ${intersects.length} intersections with ${surfaces.length} surfaces`);
-        
         // Clear all highlights first
         clearAllHighlights();
         
         if (intersects.length > 0) {
           // Get the closest intersection (first one)
           const targetMesh = intersects[0].object as THREE.Mesh;
-          console.log(`🎯 TARGET: ${targetMesh.userData.type} on ${targetMesh.userData.floorName}`);
           
           // Highlight the intersected surface
           highlightSurface(targetMesh);
-        } else {
-          console.log(`🔥 NO INTERSECTION: No highlights applied`);
         }
       }
     };
 
     const handleDragLeave = (event: DragEvent) => {
-      console.log("🔥 DRAG LEAVE: Event triggered");
       clearAllHighlights();
     };
 
     const handleDrop = (event: DragEvent) => {
       // Clear highlight when dropping
-      console.log("🔥 DROP: Event triggered, clearing highlight");
       clearAllHighlights();
       
       if (sceneRef.current && cameraRef.current) {
