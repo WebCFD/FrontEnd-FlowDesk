@@ -4585,11 +4585,16 @@ export default function Canvas3D({
     const handleDragOver = (event: DragEvent) => {
       event.preventDefault();
       event.dataTransfer!.dropEffect = "copy";
+      console.log("🟡 TEST 1: Canvas3D drag over detected");
     };
 
     const handleDrop = (event: DragEvent) => {
+      console.log("🟢 TEST 1: Canvas3D drop detected");
+      console.log("🟢 TEST 1: Event dataTransfer:", event.dataTransfer?.getData("application/json"));
+      
       // PHASE 3: Use centralized furniture drop handler
       if (sceneRef.current && cameraRef.current) {
+        console.log("🟢 TEST 1: Scene and camera available, calling handleFurnitureDrop");
         handleFurnitureDrop(
           event,
           cameraRef.current,
@@ -4600,6 +4605,8 @@ export default function Canvas3D({
           floorParameters || {},
           onFurnitureAdd
         );
+      } else {
+        console.error("🔴 TEST 1: Missing scene or camera refs");
       }
     };
 
