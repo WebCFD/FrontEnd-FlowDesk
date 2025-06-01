@@ -501,8 +501,8 @@ export function RoomSketchPro({
     TextureGenerator.createBrickTexture().then((brickTexture) => {
       texturesRef.current.brick = brickTexture;
       
-      // Apply texture to walls for modern theme
-      if (sceneRef.current && selectedTheme === "modern") {
+      // Apply texture to walls for classic theme
+      if (sceneRef.current && selectedTheme === "classic") {
         const wallMeshes: THREE.Mesh[] = [];
         sceneRef.current.traverse((object) => {
           if (object instanceof THREE.Mesh && object.userData?.type === 'wall') {
@@ -580,9 +580,6 @@ export function RoomSketchPro({
       
       switch (selectedTheme) {
         case "modern":
-          // Skip modern theme here - handled in brick texture promise above
-          return;
-        case "classic":
           newMaterial = new THREE.MeshPhongMaterial({
             map: texturesRef.current.wood,
             opacity: originalMaterial.opacity,
@@ -590,6 +587,9 @@ export function RoomSketchPro({
             side: originalMaterial.side
           });
           break;
+        case "classic":
+          // Skip classic theme here - handled in brick texture promise above
+          return;
         case "industrial":
           newMaterial = new THREE.MeshPhongMaterial({
             map: texturesRef.current.metal,
