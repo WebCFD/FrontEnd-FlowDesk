@@ -697,10 +697,13 @@ export function RoomSketchPro({
           color: materialColor,
           opacity: originalMaterial.opacity,
           transparent: originalMaterial.transparent,
-          side: originalMaterial.side
+          side: originalMaterial.side,
+          emissive: 0x222222, // Subtle gray glow
+          emissiveIntensity: 0.2 // Low intensity for natural look
         });
         
         airEntryMesh.material = newMaterial;
+        airEntryMesh.renderOrder = 2; // Render after walls
         console.log(`RSP: Applied ${airEntryType} texture to air entry ${index} with opacity ${airEntryTransparency}`);
       }
     });
