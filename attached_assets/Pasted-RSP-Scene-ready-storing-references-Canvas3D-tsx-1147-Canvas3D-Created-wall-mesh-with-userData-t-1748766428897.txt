@@ -1,0 +1,28 @@
+RSP: Scene ready, storing references
+Canvas3D.tsx:1147 Canvas3D: Created wall mesh with userData: {type: 'wall', floorName: 'Ground Floor'} for floor: Ground Floor
+Canvas3D.tsx:1147 Canvas3D: Created wall mesh with userData: {type: 'wall', floorName: 'Ground Floor'} for floor: Ground Floor
+Canvas3D.tsx:1147 Canvas3D: Created wall mesh with userData: {type: 'wall', floorName: 'Ground Floor'} for floor: Ground Floor
+Canvas3D.tsx:1147 Canvas3D: Created wall mesh with userData: {type: 'wall', floorName: 'Ground Floor'} for floor: Ground Floor
+Canvas3D.tsx:1147 Canvas3D: Created wall mesh with userData: {type: 'wall', floorName: 'first'} for floor: first
+Canvas3D.tsx:1147 Canvas3D: Created wall mesh with userData: {type: 'wall', floorName: 'first'} for floor: first
+Canvas3D.tsx:1147 Canvas3D: Created wall mesh with userData: {type: 'wall', floorName: 'first'} for floor: first
+Canvas3D.tsx:1147 Canvas3D: Created wall mesh with userData: {type: 'wall', floorName: 'first'} for floor: first
+Canvas3D.tsx:3866 State changed - marking for render {isDragging: false, selectedAxis: null, hasSelectedEntry: false}
+Canvas3D.tsx:4032 isMeasureMode prop changed: false
+Canvas3D.tsx:4033 Setting isMeasuring state to: false
+Canvas3D.tsx:4052 Set cursor to auto - measure mode inactive
+Canvas3D.tsx:4089 Canvas3D isEraserMode prop changed: false - Applying UI changes 
+Canvas3D.tsx:4100 Checking scene for air entries in useEffect:
+Canvas3D.tsx:4110 Found air entry in scene: door at position: {x: 400, y: 256.78637770897836}
+Canvas3D.tsx:4110 Found air entry in scene: vent at position: {x: 400, y: 132.34042553191483}
+Canvas3D.tsx:4110 Found air entry in scene: window at position: {x: 569.3950177935943, y: 40}
+Canvas3D.tsx:4110 Found air entry in scene: window at position: {x: 400, y: 91.08978328173376}
+Canvas3D.tsx:4113 Total air entries in scene for eraser mode: 4
+Canvas3D.tsx:4125 Set cursor to auto - eraser mode inactive
+Canvas3D.tsx:4216 🔄 Eraser mode changed, performing complete system reset
+Canvas3D.tsx:4156 🔄 COMPLETE EVENT SYSTEM RESET
+Canvas3D.tsx:4211 ✅ Complete event system reset finished
+RoomSketchPro.tsx:621 RSP: Found 4 air entry meshes to texture
+RoomSketchPro.tsx:451 RSP: Attempt 1 to find walls after 1000ms
+RoomSketchPro.tsx:462 RSP: Found 8 walls, applying textures
+RoomSketchPro.tsx:621 RSP: Found 4 air entry meshes to texture

@@ -1144,7 +1144,7 @@ export default function Canvas3D({
 
       const wall = new THREE.Mesh(geometry, wallMaterial);
       wall.userData = { type: 'wall', floorName: floorData.name };
-      console.log(`Canvas3D: Created wall mesh with userData:`, wall.userData, `for floor: ${floorData.name}`);
+
       objects.push(wall);
     });
 
@@ -3863,11 +3863,7 @@ export default function Canvas3D({
     // Mark that rendering is needed when selection or dragging state changes
     if (needsRenderRef.current !== undefined) {
       needsRenderRef.current = true;
-      console.log("State changed - marking for render", { 
-        isDragging, 
-        selectedAxis,
-        hasSelectedEntry: !!selectedAirEntry
-      });
+
 
       // Disable controls during dragging
       if (controlsRef.current) {
@@ -4045,11 +4041,11 @@ export default function Canvas3D({
       if (isMeasureMode) {
         containerRef.current.style.cursor = 'crosshair';
         containerRef.current.title = 'Right-click to set measurement points, ESC to cancel';
-        console.log("Set cursor to crosshair - measure mode active");
+
       } else {
         containerRef.current.style.cursor = 'auto';
         containerRef.current.title = '';
-        console.log("Set cursor to auto - measure mode inactive");
+
       }
     }
 
@@ -4086,8 +4082,7 @@ export default function Canvas3D({
   // Effect to handle eraser mode changes - UI updates only
   useEffect(() => {
     const eraserModeValue = isEraserMode === true; // Force a boolean value
-    console.log("Canvas3D isEraserMode prop changed:", isEraserMode, "- Applying UI changes", 
-                isEraserMode === undefined ? "👉 UNDEFINED VALUE!" : "");
+
     
     // Update debug info to reflect current eraser mode state
     setDebugInfo(prev => ({
@@ -4097,7 +4092,6 @@ export default function Canvas3D({
     
     // Log how many air entry elements exist in the scene
     if (sceneRef.current) {
-      console.log("Checking scene for air entries in useEffect:");
       let airEntryCount = 0;
       sceneRef.current.traverse((object) => {
         if (
@@ -4107,10 +4101,8 @@ export default function Canvas3D({
           ["window", "door", "vent"].includes(object.userData.type)
         ) {
           airEntryCount++;
-          console.log(`Found air entry in scene: ${object.userData.type} at position:`, object.userData.position);
         }
       });
-      console.log(`Total air entries in scene for eraser mode: ${airEntryCount}`);
     }
     
     // Add visual indication of eraser mode
@@ -4118,11 +4110,11 @@ export default function Canvas3D({
       if (eraserModeValue) {
         containerRef.current.style.cursor = 'not-allowed'; // Eraser cursor
         containerRef.current.title = 'Left-click to erase air entries (windows, doors, vents)';
-        console.log("Set cursor to not-allowed - eraser mode active");
+
       } else if (!isMeasureMode) { // Only reset if we're not in measure mode
         containerRef.current.style.cursor = 'auto';
         containerRef.current.title = '';
-        console.log("Set cursor to auto - eraser mode inactive");
+
       }
     }
   }, [isEraserMode, isMeasureMode]);
@@ -4153,7 +4145,7 @@ export default function Canvas3D({
   
   // Complete event system reset function for debugging hover issues
   const resetHoveringCompletely = useCallback(() => {
-    console.log("🔄 COMPLETE EVENT SYSTEM RESET");
+
     
     // Re-enable controls
     if (controlsRef.current) {
@@ -4213,7 +4205,7 @@ export default function Canvas3D({
   
   // Add a useEffect to reset the system when entering/exiting eraser mode
   useEffect(() => {
-    console.log("🔄 Eraser mode changed, performing complete system reset");
+
     resetHoveringCompletely();
   }, [isEraserMode, resetHoveringCompletely]);
 
