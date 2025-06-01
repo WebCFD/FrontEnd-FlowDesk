@@ -256,7 +256,7 @@ export default function WizardDesign() {
   const [wallTransparency, setWallTransparency] = useState(0.2);
   const [airEntryTransparency, setAirEntryTransparency] = useState(1.0);
   const [ceilingHeight, setCeilingHeight] = useState(220); // Default 220cm - deprecated, usar floorParameters
-  const [isMultifloor, setIsMultifloor] = useState(false);
+  const [isMultifloor, setIsMultifloor] = useState(true);
   const [selectedFloor, setSelectedFloor] = useState("ground");
   const [loadFromFloor, setLoadFromFloor] = useState("ground");
   const [floorDeckThickness, setFloorDeckThickness] = useState(35); // Default 35cm - deprecated, usar floorParameters
@@ -2052,13 +2052,13 @@ export default function WizardDesign() {
     <div className="border rounded-lg p-4">
       <h3 className="font-semibold text-lg mb-4">Parameters</h3>
       <div className="space-y-4">
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 opacity-50">
           <Checkbox
             id="multifloor"
             checked={isMultifloor}
-            onCheckedChange={(checked) => setIsMultifloor(checked as boolean)}
+            disabled={true}
           />
-          <Label htmlFor="multifloor">Multifloor</Label>
+          <Label htmlFor="multifloor" className="text-gray-500">Multifloor (Always enabled)</Label>
         </div>
 
         {isMultifloor && (
