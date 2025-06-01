@@ -1,8 +1,7 @@
-import { useRef, useEffect, useState, useMemo } from "react";
+import { useRef, useEffect, useState } from "react";
 import Canvas3D from "./Canvas3D";
 import * as THREE from "three";
 import { TextureGenerator } from "./textureGenerator";
-import { useRoomStore } from "@/lib/store/room-store";
 
 interface Point {
   x: number;
@@ -105,27 +104,6 @@ export function RoomSketchPro({
     window?: THREE.Texture;
     vent?: THREE.Texture;
   }>({});
-
-  // Connect to global store for furniture persistence
-  const { 
-    addFurnitureItem, 
-    updateFurnitureItem, 
-    removeFurnitureItem, 
-    floors: globalFloors 
-  } = useRoomStore();
-  
-  // Get furniture items from global store for current floor
-  const currentFloorFurniture = useMemo(() => {
-    const floorData = globalFloors[currentFloor];
-    if (!floorData) {
-      console.log("🏠 RSP: Floor data not found for:", currentFloor);
-      return [];
-    }
-    
-    const furniture = floorData.furnitureItems || [];
-    console.log("🏠 RSP: Current floor furniture items:", furniture);
-    return furniture;
-  }, [globalFloors, currentFloor]);
 
   // Convert props to Canvas3D format
   const canvas3DFloors = floors || {
@@ -833,28 +811,9 @@ export function RoomSketchPro({
         onUpdateAirEntry={undefined}
         onDeleteAirEntry={undefined}
         onSceneReady={handleSceneReady}
-        onFurnitureAdd={(item) => {
-          console.log("🏠 RSP: Adding furniture item:", item);
-          addFurnitureItem(item);
-          if (onFurnitureAdd) onFurnitureAdd(item);
-          // Re-apply textures after furniture is added
-          setTimeout(() => {
-            console.log("🏠 RSP: Re-applying textures after furniture deposit");
-            appliedTexturesRef.current = false;
-            applyThemeTextures();
-          }, 100);
-        }}
-        onUpdateFurniture={(item) => {
-          console.log("🏠 RSP: Updating furniture item:", item);
-          updateFurnitureItem(item);
-          if (onUpdateFurniture) onUpdateFurniture(item);
-        }}
-        onDeleteFurniture={(itemId) => {
-          console.log("🏠 RSP: Deleting furniture item:", itemId);
-          removeFurnitureItem(itemId);
-          if (onDeleteFurniture) onDeleteFurniture(itemId);
-        }}
-        furnitureItems={currentFloorFurniture}
+        onFurnitureAdd={onFurnitureAdd}
+        onUpdateFurniture={onUpdateFurniture}
+        onDeleteFurniture={onDeleteFurniture}
       />
       
       {/* Controles específicos de RSP */}
