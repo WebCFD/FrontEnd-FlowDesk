@@ -5,6 +5,7 @@ import { makeTextSprite } from "@/lib/three-utils";
 import AirEntryDialog from "./AirEntryDialog";
 import { ViewDirection } from "./Toolbar3D";
 import { useSceneContext } from "../../contexts/SceneContext";
+import { FurnitureItem, FurnitureCallbacks } from "@shared/furniture-types";
 
 interface Point {
   x: number;
@@ -49,6 +50,7 @@ interface FloorData {
   hasClosedContour: boolean;
   name: string;
   stairPolygons?: StairPolygon[]; // Add stair polygons to floor data
+  furnitureItems?: FurnitureItem[]; // Add furniture items to floor data
 }
 
 // Define a mesh interface for air entries to help with TypeScript type checking
@@ -96,6 +98,10 @@ interface Canvas3DProps {
   ) => void;
   onViewChange?: (callback: (direction: ViewDirection) => void) => void;
   onSceneReady?: (scene: THREE.Scene, renderer: THREE.WebGLRenderer, camera: THREE.Camera) => void; // For RSP texture access
+  // Furniture callbacks
+  onFurnitureAdd?: (item: FurnitureItem) => void;
+  onUpdateFurniture?: (item: FurnitureItem) => void;
+  onDeleteFurniture?: (itemId: string) => void;
 }
 
 
