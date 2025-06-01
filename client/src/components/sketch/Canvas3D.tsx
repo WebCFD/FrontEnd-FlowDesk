@@ -4753,13 +4753,15 @@ export default function Canvas3D({
     };
 
     container.addEventListener("dragover", handleDragOver);
+    container.addEventListener("dragleave", handleDragLeave);
     container.addEventListener("drop", handleDrop);
 
     return () => {
       container.removeEventListener("dragover", handleDragOver);
+      container.removeEventListener("dragleave", handleDragLeave);
       container.removeEventListener("drop", handleDrop);
     };
-  }, [currentFloor, onFurnitureAdd]);
+  }, [currentFloor, onFurnitureAdd, clearSurfaceHighlight, highlightSurface, isMultifloor, floorParameters]);
 
   return (
     <>
