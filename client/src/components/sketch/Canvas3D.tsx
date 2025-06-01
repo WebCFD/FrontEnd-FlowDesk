@@ -1144,8 +1144,16 @@ export default function Canvas3D({
       
       // Trigger render
       needsRenderRef.current = true;
+      console.log("✓ Surface highlight cleared");
     }
   }, [highlightedSurface, originalMaterial]);
+
+  // Add effect to cleanup highlight when component unmounts or floor changes
+  useEffect(() => {
+    return () => {
+      clearSurfaceHighlight();
+    };
+  }, [currentFloor, clearSurfaceHighlight]);
 
   const isMeasureModeRef = useRef(false);
 
@@ -4714,17 +4722,26 @@ export default function Canvas3D({
             const normalizedFloorName = normalizeFloorName(floorName);
             const surfaceType = object.userData.type;
             
+            // Debug: Check all possible matches
+            console.log(`Checking mesh: ${floorName} (${normalizedFloorName}) - ${surfaceType} vs target: ${surfaceDetection.floorName} - ${surfaceDetection.surfaceType}`);
+            
             // Check if this mesh matches our detected surface
             if ((floorName === surfaceDetection.floorName || normalizedFloorName === surfaceDetection.floorName) &&
                 surfaceType === surfaceDetection.surfaceType) {
               surfaceMeshes.push({ mesh: object, floorName, surfaceType });
+              console.log(`✓ Match found: ${floorName} - ${surfaceType}`);
             }
           }
         });
         
+        console.log(`Surface detection result: ${surfaceDetection.floorName} - ${surfaceDetection.surfaceType}, found ${surfaceMeshes.length} matching meshes`);
+        
         // Highlight the first matching surface
         if (surfaceMeshes.length > 0) {
           highlightSurface(surfaceMeshes[0].mesh);
+        } else {
+          // If no surface found, clear any existing highlight
+          clearSurfaceHighlight();
         }
       }
     };
