@@ -804,8 +804,7 @@ export default function Canvas3D({
   // Access the SceneContext to share data with RoomSketchPro
   const { updateGeometryData, updateSceneData, updateFloorData, setCurrentFloor: setContextCurrentFloor } = useSceneContext();
 
-  // FASE 5A: Integrate room store for furniture persistence
-  const { addFurnitureToFloor, updateFurnitureInFloor, deleteFurnitureFromFloor, floors: storeFloors } = useRoomStore();
+  // PHASE 5: Pure props pattern - removed Zustand store dependencies
 
   // PHASE 1: Migrate floors data to ensure backward compatibility
   const migratedFloors = useMemo(() => migrateFloorsData(floors), [floors]);
@@ -868,16 +867,15 @@ export default function Canvas3D({
       const model = createFurnitureModel(furnitureItem, scene);
       
       if (model) {
-        // FASE 5A: Store furniture in room store for persistence
-        console.log("📦 FASE 5A TEST: Adding furniture to store:", {
+        // PHASE 5: Pure props pattern - use only callback
+        console.log("📦 PHASE 5: Adding furniture via props callback:", {
           floorName: surfaceDetection.floorName,
           furnitureId: furnitureItem.id,
           furnitureType: furnitureItem.type,
           position: furnitureItem.position
         });
-        addFurnitureToFloor(surfaceDetection.floorName, furnitureItem);
         
-        // Also call the callback if provided (for backward compatibility)
+        // Use only the callback for furniture addition
         onFurnitureAdd?.(furnitureItem);
         
         // Store the furniture item for auto-opening dialog
@@ -1983,6 +1981,19 @@ export default function Canvas3D({
           floorCeilingHeight,
         );
         objects.push(...stairObjects);
+      });
+    }
+
+    // Create furniture items from props (Phase 3: Rendering Integration)
+    if (floorData.furnitureItems && floorData.furnitureItems.length > 0) {
+      console.log(`PHASE 3: Rendering ${floorData.furnitureItems.length} furniture items for floor ${floorData.name}`);
+      
+      floorData.furnitureItems.forEach((furnitureItem) => {
+        // Create 3D furniture model using existing furniture creation logic
+        const furnitureModel = createFurnitureModel(furnitureItem, sceneRef.current!);
+        if (furnitureModel) {
+          objects.push(furnitureModel);
+        }
       });
     }
 
