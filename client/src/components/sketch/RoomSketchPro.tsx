@@ -810,6 +810,7 @@ export function RoomSketchPro({
         lightingIntensity={lightingIntensity} // Control de intensidad de iluminación
         isMeasureMode={false}
         isEraserMode={false}
+        isFurnitureEraserMode={isFurnitureEraserMode}
         isMultifloor={isMultifloor}
         floorParameters={floorParameters}
         onUpdateAirEntry={undefined}

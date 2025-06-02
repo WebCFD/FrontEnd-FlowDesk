@@ -4917,18 +4917,78 @@ export default function Canvas3D({
       }
     };
 
+    // Single click handler for furniture deletion
+    const handleClick = (event: MouseEvent) => {
+      // Only handle clicks in furniture eraser mode
+      if (!isFurnitureEraserMode) return;
+      
+      event.preventDefault();
+      
+      if (!sceneRef.current || !cameraRef.current) return;
+      
+      // Get mouse coordinates
+      const rect = container.getBoundingClientRect();
+      const mouse = new THREE.Vector2(
+        ((event.clientX - rect.left) / rect.width) * 2 - 1,
+        -((event.clientY - rect.top) / rect.height) * 2 + 1
+      );
+      
+      // Create raycaster
+      const raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera(mouse, cameraRef.current);
+      
+      // Find furniture objects in the scene
+      const furnitureObjects: THREE.Object3D[] = [];
+      sceneRef.current.traverse((object) => {
+        if (object.userData.type === 'furniture') {
+          furnitureObjects.push(object);
+        }
+      });
+      
+      // Check for intersections
+      const intersects = raycaster.intersectObjects(furnitureObjects, true);
+      
+      if (intersects.length > 0) {
+        const intersectedObject = intersects[0].object;
+        
+        // Find the furniture group
+        let furnitureGroup = intersectedObject;
+        while (furnitureGroup && furnitureGroup.userData.type !== 'furniture') {
+          furnitureGroup = furnitureGroup.parent;
+        }
+        
+        if (furnitureGroup && furnitureGroup.userData.type === 'furniture') {
+          const furnitureId = furnitureGroup.userData.furnitureId;
+          
+          if (furnitureId && onDeleteFurniture) {
+            // Find the furniture floor and index for the callback
+            const furnitureFloorName = furnitureGroup.userData.floorName || currentFloor;
+            const furnitureIndex = furnitureGroup.userData.index || 0;
+            
+            // Remove from scene
+            sceneRef.current.remove(furnitureGroup);
+            
+            // Call deletion callback with floor name and index
+            onDeleteFurniture(furnitureFloorName, furnitureIndex);
+          }
+        }
+      }
+    };
+
     container.addEventListener("dragover", handleDragOver);
     container.addEventListener("dragleave", handleDragLeave);
     container.addEventListener("drop", handleDrop);
     container.addEventListener("dblclick", handleDoubleClick);
+    container.addEventListener("click", handleClick);
 
     return () => {
       container.removeEventListener("dragover", handleDragOver);
       container.removeEventListener("dragleave", handleDragLeave);
       container.removeEventListener("drop", handleDrop);
       container.removeEventListener("dblclick", handleDoubleClick);
+      container.removeEventListener("click", handleClick);
     };
-  }, [currentFloor, onFurnitureAdd, isMultifloor, floorParameters]);
+  }, [currentFloor, onFurnitureAdd, isMultifloor, floorParameters, isFurnitureEraserMode, onDeleteFurniture]);
 
   // Real-time update functions for furniture editing
   const handleRealTimePositionUpdate = (newPosition: { x: number; y: number; z: number }) => {
