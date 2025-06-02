@@ -739,11 +739,15 @@ const handleFurnitureDrop = (
     const model = createFurnitureModel(furnitureItem, scene);
     
     if (model) {
-      onFurnitureAdd(furnitureItem);
+      // FASE 5A: Store furniture in room store for persistence
+      addFurnitureToFloor(surfaceDetection.floorName, furnitureItem);
+      
+      // Also call the callback if provided (for backward compatibility)
+      onFurnitureAdd?.(furnitureItem);
       
       // Store the furniture item for auto-opening dialog
       console.log("🎛️ Storing furniture item for auto-open dialog:", furnitureItem);
-      // This will be handled in the component's handleDrop function
+      newFurnitureForDialog.current = furnitureItem;
     }
     
   } catch (error) {
@@ -878,8 +882,85 @@ export default function Canvas3D({
   // Access the SceneContext to share data with RoomSketchPro
   const { updateGeometryData, updateSceneData, updateFloorData, setCurrentFloor: setContextCurrentFloor } = useSceneContext();
 
+  // FASE 5A: Integrate room store for furniture persistence
+  const { addFurnitureToFloor, updateFurnitureInFloor, deleteFurnitureFromFloor, floors: storeFloors } = useRoomStore();
+
   // PHASE 1: Migrate floors data to ensure backward compatibility
   const migratedFloors = useMemo(() => migrateFloorsData(floors), [floors]);
+
+  // FASE 5A: Component-level furniture drop handler with store access
+  const handleComponentFurnitureDrop = useCallback((
+    event: DragEvent,
+    camera: THREE.Camera,
+    scene: THREE.Scene
+  ) => {
+    event.preventDefault();
+    
+    const itemData = event.dataTransfer?.getData("application/json");
+    if (!itemData) {
+      return;
+    }
+
+    try {
+      const furnitureMenuData = JSON.parse(itemData);
+      
+      // FASE 2 TEST: Sistema de raycasting y detección de piso
+      const surfaceDetection = detectSurfaceFromPosition(
+        event,
+        camera,
+        scene,
+        currentFloor,
+        migratedFloors,
+        isMultifloor,
+        floorParameters
+      );
+      
+      const calculatedPosition = calculateFurniturePosition(
+        event,
+        camera,
+        scene,
+        surfaceDetection.floorName,
+        surfaceDetection.surfaceType,
+        floorParameters
+      );
+
+      // Use default dimensions from menu data
+      const dimensions = furnitureMenuData.defaultDimensions || { width: 80, height: 80, depth: 80 };
+      
+      // Create furniture item
+      const furnitureItem: FurnitureItem = {
+        id: `${furnitureMenuData.id}_${Date.now()}`,
+        type: furnitureMenuData.id as 'table' | 'person' | 'armchair' | 'car',
+        name: furnitureMenuData.name,
+        floorName: surfaceDetection.floorName,
+        position: calculatedPosition,
+        rotation: surfaceDetection.surfaceType === 'ceiling' ? { x: Math.PI, y: 0, z: 0 } : { x: 0, y: 0, z: 0 },
+        dimensions: dimensions,
+        information: `${furnitureMenuData.name} placed on ${surfaceDetection.surfaceType} of ${surfaceDetection.floorName}`,
+        meshId: `furniture_${Date.now()}`,
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+      };
+
+      // Create and add 3D model to scene
+      const model = createFurnitureModel(furnitureItem, scene);
+      
+      if (model) {
+        // FASE 5A: Store furniture in room store for persistence
+        addFurnitureToFloor(surfaceDetection.floorName, furnitureItem);
+        
+        // Also call the callback if provided (for backward compatibility)
+        onFurnitureAdd?.(furnitureItem);
+        
+        // Store the furniture item for auto-opening dialog
+        console.log("🎛️ Storing furniture item for auto-open dialog:", furnitureItem);
+        newFurnitureForDialog.current = furnitureItem;
+      }
+      
+    } catch (error) {
+      console.error("Error processing furniture drop:", error);
+    }
+  }, [currentFloor, migratedFloors, isMultifloor, floorParameters, addFurnitureToFloor, onFurnitureAdd]);
 
   // Canvas3D initialization
   useEffect(() => {
@@ -5074,10 +5155,11 @@ export default function Canvas3D({
       updatedAt: Date.now()
     };
 
-    // Call the parent component's handler if available
-    if (onUpdateFurniture) {
-      onUpdateFurniture(updatedFurniture);
-    }
+    // FASE 5A: Update furniture in room store for persistence
+    updateFurnitureInFloor(editingFurniture.item.floorName, editingFurniture.item.id, updatedFurniture);
+
+    // Call the parent component's handler if available (for backward compatibility)
+    onUpdateFurniture?.(updatedFurniture);
     
     setEditingFurniture(null);
   };
