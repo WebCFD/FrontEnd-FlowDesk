@@ -57,6 +57,7 @@ import AirEntryDialog from "@/components/sketch/AirEntryDialog";
 import Canvas3D from "@/components/sketch/Canvas3D";
 import { Toolbar3D, ViewDirection } from "@/components/sketch/Toolbar3D";
 import { useRoomStore } from "@/lib/store/room-store";
+import { FurnitureItem } from "@shared/furniture-types";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
@@ -1066,6 +1067,34 @@ export default function WizardDesign() {
         description: `Updated ${updatedEntry.type} in ${formatFloorText(floorName)}`,
       });
     }
+  };
+
+  // Phase 2: Furniture callback handlers
+  const handleFurnitureAdd = (floorName: string, item: FurnitureItem) => {
+    console.log("🪑 Phase 2: Adding furniture via props pattern:", { floorName, item });
+    addFurnitureToFloor(floorName, item);
+    toast({
+      title: "Furniture Added",
+      description: `Added ${item.type} to ${formatFloorText(floorName)}`,
+    });
+  };
+
+  const handleFurnitureUpdate = (floorName: string, index: number, item: FurnitureItem) => {
+    console.log("🪑 Phase 2: Updating furniture via props pattern:", { floorName, index, item });
+    updateFurnitureInFloor(floorName, index, item);
+    toast({
+      title: "Furniture Updated",
+      description: `Updated ${item.type} in ${formatFloorText(floorName)}`,
+    });
+  };
+
+  const handleFurnitureDelete = (floorName: string, index: number) => {
+    console.log("🪑 Phase 2: Deleting furniture via props pattern:", { floorName, index });
+    deleteFurnitureFromFloor(floorName, index);
+    toast({
+      title: "Furniture Deleted",
+      description: `Deleted furniture from ${formatFloorText(floorName)}`,
+    });
   };
 
   const renderStepIndicator = () => (
@@ -2403,24 +2432,9 @@ export default function WizardDesign() {
               onUpdateAirEntry={handleUpdateAirEntryFrom3D}
               onDeleteAirEntry={handleDeleteAirEntryFrom3D}
               onViewChange={handleViewChange}
-              onFurnitureAdd={(item) => {
-                toast({
-                  title: "Furniture Added",
-                  description: `${item.name} has been placed on ${currentFloor}`,
-                });
-              }}
-              onUpdateFurniture={(item) => {
-                toast({
-                  title: "Furniture Updated",
-                  description: `${item.name} has been modified`,
-                });
-              }}
-              onDeleteFurniture={(itemId) => {
-                toast({
-                  title: "Furniture Deleted",
-                  description: "Furniture item has been removed",
-                });
-              }}
+              onFurnitureAdd={handleFurnitureAdd}
+              onFurnitureUpdate={handleFurnitureUpdate}
+              onFurnitureDelete={handleFurnitureDelete}
             />
           )}
         </SceneProvider>
