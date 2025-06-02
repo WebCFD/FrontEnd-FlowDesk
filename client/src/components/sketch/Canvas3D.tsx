@@ -1959,6 +1959,12 @@ export default function Canvas3D({
       console.log(`🪑 FURNITURE RENDER: Floor ${floorData.name} has ${floorData.furnitureItems.length} furniture items`);
       
       floorData.furnitureItems.forEach((furnitureItem) => {
+        // Validate furniture item data before processing
+        if (!furnitureItem || !furnitureItem.type || !furnitureItem.position) {
+          console.log(`❌ FURNITURE RENDER: Invalid furniture item data:`, furnitureItem);
+          return;
+        }
+        
         console.log(`🪑 FURNITURE RENDER: Creating model for ${furnitureItem.type} at`, furnitureItem.position);
         const furnitureModel = createFurnitureModel(furnitureItem, sceneRef.current!);
         if (furnitureModel) {
