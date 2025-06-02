@@ -675,85 +675,7 @@ const calculateFurniturePosition = (
  * Integrated drop functionality with existing Canvas3D architecture
  */
 
-// Main furniture drop handler that integrates with Canvas3D
-const handleFurnitureDrop = (
-  event: DragEvent,
-  camera: THREE.Camera,
-  scene: THREE.Scene,
-  currentFloor: string,
-  migratedFloors: Record<string, FloorData>,
-  isMultifloor: boolean,
-  floorParameters: Record<string, { ceilingHeight: number; floorDeck: number }>,
-  onFurnitureAdd?: (item: FurnitureItem) => void
-): void => {
-  event.preventDefault();
-  
-  const itemData = event.dataTransfer?.getData("application/json");
-  if (!itemData || !onFurnitureAdd) {
-    return;
-  }
-
-  try {
-    const furnitureMenuData = JSON.parse(itemData);
-    
-    // FASE 2 TEST: Sistema de raycasting y detección de piso
-    const surfaceDetection = detectSurfaceFromPosition(
-      event,
-      camera,
-      scene,
-      currentFloor,
-      migratedFloors,
-      isMultifloor,
-      floorParameters
-    );
-    
-    const calculatedPosition = calculateFurniturePosition(
-      event,
-      camera,
-      scene,
-      surfaceDetection.floorName,
-      surfaceDetection.surfaceType,
-      floorParameters
-    );
-
-    
-    // Use default dimensions from menu data
-    const dimensions = furnitureMenuData.defaultDimensions || { width: 80, height: 80, depth: 80 };
-    
-    // Create furniture item
-    const furnitureItem: FurnitureItem = {
-      id: `${furnitureMenuData.id}_${Date.now()}`,
-      type: furnitureMenuData.id as 'table' | 'person' | 'armchair' | 'car',
-      name: furnitureMenuData.name,
-      floorName: surfaceDetection.floorName,
-      position: calculatedPosition,
-      rotation: surfaceDetection.surfaceType === 'ceiling' ? { x: Math.PI, y: 0, z: 0 } : { x: 0, y: 0, z: 0 },
-      dimensions: dimensions,
-      information: `${furnitureMenuData.name} placed on ${surfaceDetection.surfaceType} of ${surfaceDetection.floorName}`,
-      meshId: `furniture_${Date.now()}`,
-      createdAt: Date.now(),
-      updatedAt: Date.now()
-    };
-
-    // Create and add 3D model to scene
-    const model = createFurnitureModel(furnitureItem, scene);
-    
-    if (model) {
-      // FASE 5A: Store furniture in room store for persistence
-      addFurnitureToFloor(surfaceDetection.floorName, furnitureItem);
-      
-      // Also call the callback if provided (for backward compatibility)
-      onFurnitureAdd?.(furnitureItem);
-      
-      // Store the furniture item for auto-opening dialog
-      console.log("🎛️ Storing furniture item for auto-open dialog:", furnitureItem);
-      newFurnitureForDialog.current = furnitureItem;
-    }
-    
-  } catch (error) {
-    console.error("Error processing furniture drop:", error);
-  }
-};
+// Legacy function removed - now using handleComponentFurnitureDrop inside Canvas3D component
 
 // PHASE 3: Function to create and add furniture models to the scene
 const createFurnitureModel = (
@@ -4874,38 +4796,8 @@ export default function Canvas3D({
       clearAllHighlights();
       
       if (sceneRef.current && cameraRef.current) {
-        // Store the original onFurnitureAdd callback to wrap it
-        const originalOnFurnitureAdd = onFurnitureAdd;
-        
-        // Create wrapped callback that also stores item for dialog
-        const wrappedOnFurnitureAdd = (item: FurnitureItem) => {
-          if (originalOnFurnitureAdd) {
-            originalOnFurnitureAdd(item);
-          }
-          
-          // Auto-open dialog immediately after creation
-          console.log("🎛️ Auto-opening furniture dialog immediately for new item:", item);
-          
-          // Use setTimeout to ensure the DOM has updated
-          setTimeout(() => {
-            setEditingFurniture({
-              index: 0, // This would be the actual index in a real furniture list
-              item: item
-            });
-            console.log("🎛️ setEditingFurniture called for new furniture:", item);
-          }, 50);
-        };
-        
-        handleFurnitureDrop(
-          event,
-          cameraRef.current,
-          sceneRef.current,
-          currentFloor,
-          migratedFloors,
-          isMultifloor || false,
-          floorParameters || {},
-          wrappedOnFurnitureAdd
-        );
+        // FASE 5A: Use the new component-level furniture drop handler
+        handleComponentFurnitureDrop(event, cameraRef.current, sceneRef.current);
       }
     };
 
