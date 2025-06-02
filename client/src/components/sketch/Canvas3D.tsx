@@ -1957,11 +1957,20 @@ export default function Canvas3D({
     // Create furniture items from props
     if (floorData.furnitureItems && floorData.furnitureItems.length > 0) {
       console.log(`🪑 FURNITURE RENDER: Floor ${floorData.name} has ${floorData.furnitureItems.length} furniture items`);
+      console.log(`🔍 DIAGNOSTIC RENDER - Full furnitureItems array:`, floorData.furnitureItems);
+      console.log(`🔍 DIAGNOSTIC RENDER - Array is Array:`, Array.isArray(floorData.furnitureItems));
       
-      floorData.furnitureItems.forEach((furnitureItem) => {
+      floorData.furnitureItems.forEach((furnitureItem, index) => {
+        console.log(`🔍 DIAGNOSTIC RENDER - Item ${index}:`, furnitureItem);
+        console.log(`🔍 DIAGNOSTIC RENDER - Item type:`, typeof furnitureItem);
+        console.log(`🔍 DIAGNOSTIC RENDER - Is object:`, typeof furnitureItem === 'object');
+        console.log(`🔍 DIAGNOSTIC RENDER - Has type property:`, furnitureItem && typeof furnitureItem === 'object' && 'type' in furnitureItem);
+        console.log(`🔍 DIAGNOSTIC RENDER - Has position property:`, furnitureItem && typeof furnitureItem === 'object' && 'position' in furnitureItem);
+        
         // Validate furniture item data before processing
         if (!furnitureItem || !furnitureItem.type || !furnitureItem.position) {
           console.log(`❌ FURNITURE RENDER: Invalid furniture item data:`, furnitureItem);
+          console.log(`❌ FURNITURE RENDER: Full array for debugging:`, floorData.furnitureItems);
           return;
         }
         
