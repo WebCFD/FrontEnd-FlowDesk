@@ -1071,8 +1071,13 @@ export default function WizardDesign() {
 
   // Phase 2: Furniture callback handlers
   const handleFurnitureAdd = (floorName: string, item: FurnitureItem) => {
-    console.log("🪑 Phase 2: Adding furniture via props pattern:", { floorName, item });
+    console.log(`🪑 STORE ADD: Adding ${item.type} to floor ${floorName}`);
     addFurnitureToFloor(floorName, item);
+    
+    // Verificar que se agregó correctamente
+    const currentFloorData = floors[floorName];
+    console.log(`🪑 STORE VERIFY: Floor ${floorName} now has ${currentFloorData?.furnitureItems?.length || 0} furniture items`);
+    
     toast({
       title: "Furniture Added",
       description: `Added ${item.type} to ${formatFloorText(floorName)}`,
@@ -2332,10 +2337,18 @@ export default function WizardDesign() {
   );
 
   const renderCanvasSection = (mode = "tabs") => {
-    // Add these debug statements for 3D preview
+    // Logs para rastrear datos de muebles cuando cambias entre vistas
     if (tab === "3d-preview" && mode === "tabs") {
-
-
+      const currentFloorData = floors[currentFloor];
+      console.log(`🪑 VIEW SWITCH: Switching to 3D view for floor ${currentFloor}`);
+      console.log(`🪑 VIEW SWITCH: Floor ${currentFloor} has ${currentFloorData?.furnitureItems?.length || 0} furniture items`);
+      if (currentFloorData?.furnitureItems?.length > 0) {
+        console.log(`🪑 VIEW SWITCH: Furniture items:`, currentFloorData.furnitureItems.map(item => ({ 
+          id: item.id, 
+          type: item.type, 
+          position: item.position 
+        })));
+      }
     }
 
     return (
