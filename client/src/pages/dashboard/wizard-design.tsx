@@ -1071,20 +1071,33 @@ export default function WizardDesign() {
 
   // Phase 2: Furniture callback handlers
   const handleFurnitureAdd = useCallback((floorName: string, item: FurnitureItem) => {
-    console.log("🔵 WIZARD: handleFurnitureAdd called with:", { floorName, item });
-    console.log("🔵 WIZARD: Current floors before add:", floors);
+    console.log(`🪑 CALLBACK EXECUTED: handleFurnitureAdd called with ${item.type} for floor ${floorName}`);
+    
+    // Test 1: Verificar estado del store antes
+    const storeBefore = useRoomStore.getState().floors[floorName]?.furnitureItems || [];
+    console.log(`🪑 TEST 1 - Store BEFORE: Floor ${floorName} has ${storeBefore.length} furniture items`);
+    
+    // Test 2: Ejecutar la función del store
+    console.log(`🪑 TEST 2 - Calling addFurnitureToFloor...`);
     addFurnitureToFloor(floorName, item);
-    console.log("🔵 WIZARD: addFurnitureToFloor called");
+    
+    // Test 3: Verificar estado del store después (inmediato)
+    const storeAfter = useRoomStore.getState().floors[floorName]?.furnitureItems || [];
+    console.log(`🪑 TEST 3 - Store AFTER: Floor ${floorName} has ${storeAfter.length} furniture items`);
+    
+    // Test 4: Verificar props locales
+    const currentFloorData = floors[floorName];
+    console.log(`🪑 TEST 4 - Props data: Floor ${floorName} has ${currentFloorData?.furnitureItems?.length || 0} furniture items in props`);
     
     toast({
       title: "Furniture Added",
       description: `Added ${item.type} to ${formatFloorText(floorName)}`,
     });
-  }, [addFurnitureToFloor, toast]);
+  }, [addFurnitureToFloor, floors, toast]);
 
   const handleFurnitureUpdate = (floorName: string, index: number, item: FurnitureItem) => {
     console.log("🪑 Phase 2: Updating furniture via props pattern:", { floorName, index, item });
-    updateFurnitureInFloor(floorName, item.id, item);
+    updateFurnitureInFloor(floorName, index, item);
     toast({
       title: "Furniture Updated",
       description: `Updated ${item.type} in ${formatFloorText(floorName)}`,
@@ -1093,16 +1106,11 @@ export default function WizardDesign() {
 
   const handleFurnitureDelete = (floorName: string, index: number) => {
     console.log("🪑 Phase 2: Deleting furniture via props pattern:", { floorName, index });
-    // Need to get the furniture ID from the index
-    const floorData = floors[floorName];
-    const furnitureItem = floorData?.furnitureItems?.[index];
-    if (furnitureItem) {
-      deleteFurnitureFromFloor(floorName, furnitureItem.id);
-      toast({
-        title: "Furniture Deleted",
-        description: `Deleted furniture from ${formatFloorText(floorName)}`,
-      });
-    }
+    deleteFurnitureFromFloor(floorName, index);
+    toast({
+      title: "Furniture Deleted",
+      description: `Deleted furniture from ${formatFloorText(floorName)}`,
+    });
   };
 
   const renderStepIndicator = () => (
@@ -2340,17 +2348,18 @@ export default function WizardDesign() {
   );
 
   const renderCanvasSection = (mode = "tabs") => {
-    // PERSISTENCE DEBUG: Track furniture data when switching views
-    console.log(`🔍 PERSISTENCE: Rendering canvas section, mode: ${mode}, tab: ${tab}`);
-    console.log(`🔍 PERSISTENCE: Current floor: ${currentFloor}`);
-    console.log(`🔍 PERSISTENCE: Floors state:`, floors);
-    
-    const currentFloorData = floors[currentFloor];
-    console.log(`🔍 PERSISTENCE: Current floor data:`, currentFloorData);
-    console.log(`🔍 PERSISTENCE: Furniture count: ${currentFloorData?.furnitureItems?.length || 0}`);
-    
-    if (currentFloorData?.furnitureItems?.length > 0) {
-      console.log(`🔍 PERSISTENCE: Furniture items:`, currentFloorData.furnitureItems);
+    // Logs para rastrear datos de muebles cuando cambias entre vistas
+    if (tab === "3d-preview" && mode === "tabs") {
+      const currentFloorData = floors[currentFloor];
+      console.log(`🪑 VIEW SWITCH: Switching to 3D view for floor ${currentFloor}`);
+      console.log(`🪑 VIEW SWITCH: Floor ${currentFloor} has ${currentFloorData?.furnitureItems?.length || 0} furniture items`);
+      if (currentFloorData?.furnitureItems?.length > 0) {
+        console.log(`🪑 VIEW SWITCH: Furniture items:`, currentFloorData.furnitureItems.map(item => ({ 
+          id: item.id, 
+          type: item.type, 
+          position: item.position 
+        })));
+      }
     }
 
     return (
@@ -2375,7 +2384,7 @@ export default function WizardDesign() {
               onAirEntryTransparencyChange={(value) => {
                 setAirEntryTransparency(value);
               }}
-              onFurnitureAdd={(item) => handleFurnitureAdd(currentFloor, item)}
+              onFurnitureAdd={handleFurnitureAdd}
               onUpdateFurniture={(item) => {
                 toast({
                   title: "Furniture Updated",
