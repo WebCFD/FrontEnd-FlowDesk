@@ -8,6 +8,7 @@ import { ViewDirection } from "./Toolbar3D";
 import { useSceneContext } from "../../contexts/SceneContext";
 import { FurnitureItem, FurnitureCallbacks } from "@shared/furniture-types";
 import { createTableModel, createPersonModel, createArmchairModel, createCarModel } from "./furniture-models";
+import { useRoomStore } from "@/lib/store/room-store";
 
 interface Point {
   x: number;

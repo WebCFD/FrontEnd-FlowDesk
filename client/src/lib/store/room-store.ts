@@ -196,6 +196,49 @@ export const useRoomStore = create<RoomState>()(
           }
         })),
 
+        // FASE 5A: Furniture operations
+        setFurnitureItems: (items) => set((state) => ({
+          floors: {
+            ...state.floors,
+            [state.currentFloor]: {
+              ...state.floors[state.currentFloor],
+              furnitureItems: items
+            }
+          }
+        })),
+
+        addFurnitureToFloor: (floorName, item) => set((state) => ({
+          floors: {
+            ...state.floors,
+            [floorName]: {
+              ...state.floors[floorName],
+              furnitureItems: [...(state.floors[floorName]?.furnitureItems || []), item]
+            }
+          }
+        })),
+
+        updateFurnitureInFloor: (floorName, itemId, item) => set((state) => ({
+          floors: {
+            ...state.floors,
+            [floorName]: {
+              ...state.floors[floorName],
+              furnitureItems: state.floors[floorName]?.furnitureItems?.map(existing => 
+                existing.id === itemId ? { ...existing, ...item, updatedAt: Date.now() } : existing
+              ) || []
+            }
+          }
+        })),
+
+        deleteFurnitureFromFloor: (floorName, itemId) => set((state) => ({
+          floors: {
+            ...state.floors,
+            [floorName]: {
+              ...state.floors[floorName],
+              furnitureItems: state.floors[floorName]?.furnitureItems?.filter(item => item.id !== itemId) || []
+            }
+          }
+        })),
+
         // Floor management
         addFloor: (name, template) => set((state) => {
           const newFloor: FloorData = template 
