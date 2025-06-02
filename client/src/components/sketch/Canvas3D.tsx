@@ -951,18 +951,9 @@ export default function Canvas3D({
   
   // Effect to auto-open dialog for newly created furniture
   useEffect(() => {
-    console.log("🔍 useEffect triggered - checking newFurnitureForDialog:", newFurnitureForDialog.current);
-    
     if (newFurnitureForDialog.current) {
-      console.log("🎛️ Auto-opening dialog for new furniture:", newFurnitureForDialog.current);
-      
       setEditingFurniture({
         index: 0, // This would be the actual index in a real furniture list
-        item: newFurnitureForDialog.current
-      });
-      
-      console.log("🎛️ setEditingFurniture called with:", {
-        index: 0,
         item: newFurnitureForDialog.current
       });
       
@@ -2079,21 +2070,16 @@ export default function Canvas3D({
   }, [onViewChange, handleViewChange]);
 
   useEffect(() => {
-    console.log("🔧 DEBUG: Canvas3D useEffect initialization starting");
+
     
     if (!containerRef.current) {
-      console.error("🔴 DEBUG: containerRef.current is null!");
       return;
     }
-    
-    console.log("🔧 DEBUG: Container found, initializing Three.js scene");
 
     // Initialize scene
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xf8fafc);
     sceneRef.current = scene;
-    
-    console.log("🔧 DEBUG: Scene created and assigned to ref");
 
     // Initialize camera
     const camera = new THREE.PerspectiveCamera(
@@ -3199,18 +3185,7 @@ export default function Canvas3D({
             
             // Raycaster configuration is now handled centrally
             
-            // Enhanced debugging for air entry intersections
-            console.log(`Found ${meshIntersects.length} intersections with air entries`);
-            
-            // Log detailed info about available air entry meshes
-            console.log(`DEBUG: Eraser mode hover detection - ${airEntryMeshes.length} air entries in scene`);
-            airEntryMeshes.forEach((mesh, i) => {
-              console.log(`Air Entry #${i}: type=${mesh.userData.type}, position=${JSON.stringify(mesh.position)}, worldPosition=${JSON.stringify(mesh.getWorldPosition(new THREE.Vector3()))}`);
-              
-              // Output mesh bounding box for debugging
-              const boundingBox = new THREE.Box3().setFromObject(mesh);
-              console.log(`  Bounding box: min=(${boundingBox.min.x.toFixed(2)}, ${boundingBox.min.y.toFixed(2)}, ${boundingBox.min.z.toFixed(2)}), max=(${boundingBox.max.x.toFixed(2)}, ${boundingBox.max.y.toFixed(2)}, ${boundingBox.max.z.toFixed(2)})`);
-            });
+
             
             // Update debug info whether we have intersections or not
             const hasIntersections = meshIntersects.length > 0;
@@ -3759,7 +3734,6 @@ export default function Canvas3D({
         return;
       }
       
-      console.log("🔴 Eraser click detected in Canvas3D");
       setDebugInfo(prev => ({
         ...prev,
         lastIntersection: "Processing eraser click..."
