@@ -1081,7 +1081,7 @@ export default function WizardDesign() {
 
   const handleFurnitureUpdate = (floorName: string, index: number, item: FurnitureItem) => {
     console.log("🪑 Phase 2: Updating furniture via props pattern:", { floorName, index, item });
-    updateFurnitureInFloor(floorName, index, item);
+    updateFurnitureInFloor(floorName, item.id, item);
     toast({
       title: "Furniture Updated",
       description: `Updated ${item.type} in ${formatFloorText(floorName)}`,
@@ -1090,11 +1090,16 @@ export default function WizardDesign() {
 
   const handleFurnitureDelete = (floorName: string, index: number) => {
     console.log("🪑 Phase 2: Deleting furniture via props pattern:", { floorName, index });
-    deleteFurnitureFromFloor(floorName, index);
-    toast({
-      title: "Furniture Deleted",
-      description: `Deleted furniture from ${formatFloorText(floorName)}`,
-    });
+    // Need to get the furniture ID from the index
+    const floorData = floors[floorName];
+    const furnitureItem = floorData?.furnitureItems?.[index];
+    if (furnitureItem) {
+      deleteFurnitureFromFloor(floorName, furnitureItem.id);
+      toast({
+        title: "Furniture Deleted",
+        description: `Deleted furniture from ${formatFloorText(floorName)}`,
+      });
+    }
   };
 
   const renderStepIndicator = () => (
