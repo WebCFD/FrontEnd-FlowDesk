@@ -1,0 +1,102 @@
+Canvas3D.tsx:871 🪑 CANVAS3D: About to call onFurnitureAdd callback for table on floor ground
+Canvas3D.tsx:872 🔍 CALLBACK DEBUG: {exists: true, type: 'function', isFunction: true, stringified: '(floorName, item) => {\n    console.log(`🪑 CALLBACK EXECUTED: handleFurnitureAdd called with ${item.'}
+Canvas3D.tsx:880 🪑 CANVAS3D: Calling callback with args: {floorName: 'ground', itemType: 'table'}
+wizard-design.tsx:1074 🪑 CALLBACK EXECUTED: handleFurnitureAdd called with table for floor ground
+wizard-design.tsx:1078 🔍 DIAGNOSTIC 1 - Complete store state: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+wizard-design.tsx:1082 🔍 DIAGNOSTIC 2 - Floor ground in store: {lines: Array(5), airEntries: Array(0), walls: Array(5), measurements: Array(0), stairPolygons: Array(0), …}
+wizard-design.tsx:1083 🔍 DIAGNOSTIC 2 - furnitureItems type: object
+wizard-design.tsx:1084 🔍 DIAGNOSTIC 2 - furnitureItems value: (10) ['ground', 'ground', 'ground', 'ground', 'ground', 'ground', 'ground', 'ground', {…}, {…}]
+wizard-design.tsx:1088 🪑 TEST 1 - Store BEFORE: Floor ground has 10 furniture items
+wizard-design.tsx:1089 🪑 TEST 1 - Items details: (10) ['ground', 'ground', 'ground', 'ground', 'ground', 'ground', 'ground', 'ground', {…}, {…}]
+wizard-design.tsx:1092 🪑 TEST 2 - Calling addFurnitureToFloor with: {floorName: 'ground', item: {…}}
+room-store.ts:211 🏪 STORE TEST: Adding furniture to floor: {floorName: 'ground', furnitureId: 'table_1748894688472', currentFurnitureCount: 10, newItem: {…}}
+wizard-design.tsx:1097 🪑 TEST 3 - Store AFTER: Floor ground has 11 furniture items
+wizard-design.tsx:1098 🪑 TEST 3 - Items details: (11) ['ground', 'ground', 'ground', 'ground', 'ground', 'ground', 'ground', 'ground', {…}, {…}, {…}]
+wizard-design.tsx:1102 🪑 TEST 4 - Props data: Floor ground has 10 furniture items in props
+wizard-design.tsx:1103 🪑 TEST 4 - Props items details: (10) ['ground', 'ground', 'ground', 'ground', 'ground', 'ground', 'ground', 'ground', {…}, {…}]
+Canvas3D.tsx:882 🪑 CANVAS3D: Callback call completed
+Canvas3D.tsx:968 🔍 useEffect triggered - checking newFurnitureForDialog: {id: 'table_1748894688472', type: 'table', name: 'Table', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:971 🎛️ Auto-opening dialog for new furniture: {id: 'table_1748894688472', type: 'table', name: 'Table', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:978 🎛️ setEditingFurniture called with: {index: 0, item: {…}}
+Canvas3D.tsx:1610 🎨 FLOOR VISUAL - Created Ground Floor floor at Z=0 with color: ffcccc
+Canvas3D.tsx:1630 🎨 CEILING VISUAL - Created Ground Floor ceiling at Z=220 with color: f0e6ff
+Canvas3D.tsx:1959 🪑 FURNITURE RENDER: Floor Ground Floor has 11 furniture items
+Canvas3D.tsx:1960 🔍 DIAGNOSTIC RENDER - Full furnitureItems array: (11) ['ground', 'ground', 'ground', 'ground', 'ground', 'ground', 'ground', 'ground', {…}, {…}, {…}]
+Canvas3D.tsx:1961 🔍 DIAGNOSTIC RENDER - Array is Array: true
+Canvas3D.tsx:1964 🔍 DIAGNOSTIC RENDER - Item 0: ground
+Canvas3D.tsx:1965 🔍 DIAGNOSTIC RENDER - Item type: string
+Canvas3D.tsx:1966 🔍 DIAGNOSTIC RENDER - Is object: false
+Canvas3D.tsx:1967 🔍 DIAGNOSTIC RENDER - Has type property: false
+Canvas3D.tsx:1968 🔍 DIAGNOSTIC RENDER - Has position property: false
+Canvas3D.tsx:1972 ❌ FURNITURE RENDER: Invalid furniture item data: ground
+Canvas3D.tsx:1973 ❌ FURNITURE RENDER: Full array for debugging: (11) ['ground', 'ground', 'ground', 'ground', 'ground', 'ground', 'ground', 'ground', {…}, {…}, {…}]
+Canvas3D.tsx:1964 🔍 DIAGNOSTIC RENDER - Item 1: ground
+Canvas3D.tsx:1965 🔍 DIAGNOSTIC RENDER - Item type: string
+Canvas3D.tsx:1966 🔍 DIAGNOSTIC RENDER - Is object: false
+Canvas3D.tsx:1967 🔍 DIAGNOSTIC RENDER - Has type property: false
+Canvas3D.tsx:1968 🔍 DIAGNOSTIC RENDER - Has position property: false
+Canvas3D.tsx:1972 ❌ FURNITURE RENDER: Invalid furniture item data: ground
+Canvas3D.tsx:1973 ❌ FURNITURE RENDER: Full array for debugging: (11) ['ground', 'ground', 'ground', 'ground', 'ground', 'ground', 'ground', 'ground', {…}, {…}, {…}]
+Canvas3D.tsx:1964 🔍 DIAGNOSTIC RENDER - Item 2: ground
+Canvas3D.tsx:1965 🔍 DIAGNOSTIC RENDER - Item type: string
+Canvas3D.tsx:1966 🔍 DIAGNOSTIC RENDER - Is object: false
+Canvas3D.tsx:1967 🔍 DIAGNOSTIC RENDER - Has type property: false
+Canvas3D.tsx:1968 🔍 DIAGNOSTIC RENDER - Has position property: false
+Canvas3D.tsx:1972 ❌ FURNITURE RENDER: Invalid furniture item data: ground
+Canvas3D.tsx:1973 ❌ FURNITURE RENDER: Full array for debugging: (11) ['ground', 'ground', 'ground', 'ground', 'ground', 'ground', 'ground', 'ground', {…}, {…}, {…}]
+Canvas3D.tsx:1964 🔍 DIAGNOSTIC RENDER - Item 3: ground
+Canvas3D.tsx:1965 🔍 DIAGNOSTIC RENDER - Item type: string
+Canvas3D.tsx:1966 🔍 DIAGNOSTIC RENDER - Is object: false
+Canvas3D.tsx:1967 🔍 DIAGNOSTIC RENDER - Has type property: false
+Canvas3D.tsx:1968 🔍 DIAGNOSTIC RENDER - Has position property: false
+Canvas3D.tsx:1972 ❌ FURNITURE RENDER: Invalid furniture item data: ground
+Canvas3D.tsx:1973 ❌ FURNITURE RENDER: Full array for debugging: (11) ['ground', 'ground', 'ground', 'ground', 'ground', 'ground', 'ground', 'ground', {…}, {…}, {…}]
+Canvas3D.tsx:1964 🔍 DIAGNOSTIC RENDER - Item 4: ground
+Canvas3D.tsx:1965 🔍 DIAGNOSTIC RENDER - Item type: string
+Canvas3D.tsx:1966 🔍 DIAGNOSTIC RENDER - Is object: false
+Canvas3D.tsx:1967 🔍 DIAGNOSTIC RENDER - Has type property: false
+Canvas3D.tsx:1968 🔍 DIAGNOSTIC RENDER - Has position property: false
+Canvas3D.tsx:1972 ❌ FURNITURE RENDER: Invalid furniture item data: ground
+Canvas3D.tsx:1973 ❌ FURNITURE RENDER: Full array for debugging: (11) ['ground', 'ground', 'ground', 'ground', 'ground', 'ground', 'ground', 'ground', {…}, {…}, {…}]
+Canvas3D.tsx:1964 🔍 DIAGNOSTIC RENDER - Item 5: ground
+Canvas3D.tsx:1965 🔍 DIAGNOSTIC RENDER - Item type: string
+Canvas3D.tsx:1966 🔍 DIAGNOSTIC RENDER - Is object: false
+Canvas3D.tsx:1967 🔍 DIAGNOSTIC RENDER - Has type property: false
+Canvas3D.tsx:1968 🔍 DIAGNOSTIC RENDER - Has position property: false
+Canvas3D.tsx:1972 ❌ FURNITURE RENDER: Invalid furniture item data: ground
+Canvas3D.tsx:1973 ❌ FURNITURE RENDER: Full array for debugging: (11) ['ground', 'ground', 'ground', 'ground', 'ground', 'ground', 'ground', 'ground', {…}, {…}, {…}]
+Canvas3D.tsx:1964 🔍 DIAGNOSTIC RENDER - Item 6: ground
+Canvas3D.tsx:1965 🔍 DIAGNOSTIC RENDER - Item type: string
+Canvas3D.tsx:1966 🔍 DIAGNOSTIC RENDER - Is object: false
+Canvas3D.tsx:1967 🔍 DIAGNOSTIC RENDER - Has type property: false
+Canvas3D.tsx:1968 🔍 DIAGNOSTIC RENDER - Has position property: false
+Canvas3D.tsx:1972 ❌ FURNITURE RENDER: Invalid furniture item data: ground
+Canvas3D.tsx:1973 ❌ FURNITURE RENDER: Full array for debugging: (11) ['ground', 'ground', 'ground', 'ground', 'ground', 'ground', 'ground', 'ground', {…}, {…}, {…}]
+Canvas3D.tsx:1964 🔍 DIAGNOSTIC RENDER - Item 7: ground
+Canvas3D.tsx:1965 🔍 DIAGNOSTIC RENDER - Item type: string
+Canvas3D.tsx:1966 🔍 DIAGNOSTIC RENDER - Is object: false
+Canvas3D.tsx:1967 🔍 DIAGNOSTIC RENDER - Has type property: false
+Canvas3D.tsx:1968 🔍 DIAGNOSTIC RENDER - Has position property: false
+Canvas3D.tsx:1972 ❌ FURNITURE RENDER: Invalid furniture item data: ground
+Canvas3D.tsx:1973 ❌ FURNITURE RENDER: Full array for debugging: (11) ['ground', 'ground', 'ground', 'ground', 'ground', 'ground', 'ground', 'ground', {…}, {…}, {…}]
+Canvas3D.tsx:1964 🔍 DIAGNOSTIC RENDER - Item 8: {id: 'table_1748894292516', type: 'table', name: 'Table', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:1965 🔍 DIAGNOSTIC RENDER - Item type: object
+Canvas3D.tsx:1966 🔍 DIAGNOSTIC RENDER - Is object: true
+Canvas3D.tsx:1967 🔍 DIAGNOSTIC RENDER - Has type property: true
+Canvas3D.tsx:1968 🔍 DIAGNOSTIC RENDER - Has position property: true
+Canvas3D.tsx:1977 🪑 FURNITURE RENDER: Creating model for table at {x: -92.73526506396499, y: -12.194764445213082, z: -1.1368683772161603e-13}
+Canvas3D.tsx:1981 🪑 FURNITURE RENDER: Successfully added table to scene
+Canvas3D.tsx:1964 🔍 DIAGNOSTIC RENDER - Item 9: {id: 'table_1748894461027', type: 'table', name: 'Table', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:1965 🔍 DIAGNOSTIC RENDER - Item type: object
+Canvas3D.tsx:1966 🔍 DIAGNOSTIC RENDER - Is object: true
+Canvas3D.tsx:1967 🔍 DIAGNOSTIC RENDER - Has type property: true
+Canvas3D.tsx:1968 🔍 DIAGNOSTIC RENDER - Has position property: true
+Canvas3D.tsx:1977 🪑 FURNITURE RENDER: Creating model for table at {x: 143.09873549385597, y: 20.331921812471705, z: 1.1368683772161603e-13}
+Canvas3D.tsx:1981 🪑 FURNITURE RENDER: Successfully added table to scene
+Canvas3D.tsx:1964 🔍 DIAGNOSTIC RENDER - Item 10: {id: 'table_1748894688472', type: 'table', name: 'Table', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:1965 🔍 DIAGNOSTIC RENDER - Item type: object
+Canvas3D.tsx:1966 🔍 DIAGNOSTIC RENDER - Is object: true
+Canvas3D.tsx:1967 🔍 DIAGNOSTIC RENDER - Has type property: true
+Canvas3D.tsx:1968 🔍 DIAGNOSTIC RENDER - Has position property: true
+Canvas3D.tsx:1977 🪑 FURNITURE RENDER: Creating model for table at {x: 80.71078958343016, y: -41.75491386559668, z: 0}
+Canvas3D.tsx:1981 🪑 FURNITURE RENDER: Successfully added table to scene

@@ -214,14 +214,71 @@ export const useRoomStore = create<RoomState>()(
             currentFurnitureCount: state.floors[floorName]?.furnitureItems?.length || 0,
             newItem: item
           });
+          
+          // Clean existing array - remove any invalid items (strings, nulls, etc.)
+          const existingItems = state.floors[floorName]?.furnitureItems || [];
+          const cleanedItems = existingItems.filter(furnitureItem => 
+            furnitureItem && 
+            typeof furnitureItem === 'object' && 
+            furnitureItem.type && 
+            furnitureItem.position
+          );
+          
+          console.log("🧹 STORE CLEANUP: Removed invalid items:", {
+            original: existingItems.length,
+            cleaned: cleanedItems.length,
+            removed: existingItems.length - cleanedItems.length
+          });
+          
           return {
             floors: {
               ...state.floors,
               [floorName]: {
                 ...state.floors[floorName],
-                furnitureItems: [...(state.floors[floorName]?.furnitureItems || []), item]
+                furnitureItems: [...cleanedItems, item]
               }
             }
+          };
+        }),
+
+        cleanCorruptedFurnitureData: () => set((state) => {
+          console.log("🧹 CLEANUP: Starting furniture data cleanup...");
+          
+          const cleanedFloors = { ...state.floors };
+          let totalCorrupted = 0;
+          let totalCleaned = 0;
+          
+          Object.keys(cleanedFloors).forEach(floorName => {
+            const floor = cleanedFloors[floorName];
+            if (floor && floor.furnitureItems) {
+              const originalCount = floor.furnitureItems.length;
+              const cleanedItems = floor.furnitureItems.filter(item => 
+                item && 
+                typeof item === 'object' && 
+                item.type && 
+                item.position
+              );
+              const cleanedCount = cleanedItems.length;
+              const corruptedCount = originalCount - cleanedCount;
+              
+              totalCorrupted += corruptedCount;
+              totalCleaned += cleanedCount;
+              
+              if (corruptedCount > 0) {
+                console.log(`🧹 CLEANUP: Floor ${floorName} - removed ${corruptedCount} corrupted items, kept ${cleanedCount} valid items`);
+                cleanedFloors[floorName] = {
+                  ...floor,
+                  furnitureItems: cleanedItems
+                };
+              }
+            }
+          });
+          
+          console.log(`🧹 CLEANUP COMPLETE: Removed ${totalCorrupted} corrupted items total, kept ${totalCleaned} valid items`);
+          
+          return {
+            ...state,
+            floors: cleanedFloors
           };
         }),
 
