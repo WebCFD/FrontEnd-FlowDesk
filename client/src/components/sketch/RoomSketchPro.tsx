@@ -59,6 +59,8 @@ interface RoomSketchProProps {
   floorParameters?: Record<string, { ceilingHeight: number; floorDeck: number }>;
   onComponentMount?: () => void;
   materialTheme?: "modern" | "classic" | "industrial";
+  isFurnitureEraserMode?: boolean;
+  onToggleFurnitureEraserMode?: () => void;
 }
 
 /**
@@ -86,7 +88,9 @@ export function RoomSketchPro({
   isMultifloor = true,
   floorParameters = {},
   onComponentMount,
-  materialTheme = "modern"
+  materialTheme = "modern",
+  isFurnitureEraserMode = false,
+  onToggleFurnitureEraserMode
 }: RoomSketchProProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedTheme, setSelectedTheme] = useState(materialTheme);
