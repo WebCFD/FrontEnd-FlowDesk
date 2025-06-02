@@ -1071,12 +1071,23 @@ export default function WizardDesign() {
 
   // Phase 2: Furniture callback handlers
   const handleFurnitureAdd = (floorName: string, item: FurnitureItem) => {
-    console.log(`🪑 STORE ADD: Adding ${item.type} to floor ${floorName}`);
+    console.log(`🪑 CALLBACK EXECUTED: handleFurnitureAdd called with ${item.type} for floor ${floorName}`);
+    
+    // Test 1: Verificar estado del store antes
+    const storeBefore = useRoomStore.getState().floors[floorName]?.furnitureItems || [];
+    console.log(`🪑 TEST 1 - Store BEFORE: Floor ${floorName} has ${storeBefore.length} furniture items`);
+    
+    // Test 2: Ejecutar la función del store
+    console.log(`🪑 TEST 2 - Calling addFurnitureToFloor...`);
     addFurnitureToFloor(floorName, item);
     
-    // Verificar que se agregó correctamente
+    // Test 3: Verificar estado del store después (inmediato)
+    const storeAfter = useRoomStore.getState().floors[floorName]?.furnitureItems || [];
+    console.log(`🪑 TEST 3 - Store AFTER: Floor ${floorName} has ${storeAfter.length} furniture items`);
+    
+    // Test 4: Verificar props locales
     const currentFloorData = floors[floorName];
-    console.log(`🪑 STORE VERIFY: Floor ${floorName} now has ${currentFloorData?.furnitureItems?.length || 0} furniture items`);
+    console.log(`🪑 TEST 4 - Props data: Floor ${floorName} has ${currentFloorData?.furnitureItems?.length || 0} furniture items in props`);
     
     toast({
       title: "Furniture Added",

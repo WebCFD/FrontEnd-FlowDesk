@@ -868,8 +868,10 @@ export default function Canvas3D({
       
       if (model) {
         // Add furniture via callback
-        console.log(`🪑 FURNITURE ADD: Adding ${furnitureItem.type} to floor ${surfaceDetection.floorName}`);
+        console.log(`🪑 CANVAS3D: About to call onFurnitureAdd callback for ${furnitureItem.type} on floor ${surfaceDetection.floorName}`);
+        console.log(`🪑 CANVAS3D: Callback exists:`, !!onFurnitureAdd);
         onFurnitureAdd?.(surfaceDetection.floorName, furnitureItem);
+        console.log(`🪑 CANVAS3D: Callback executed successfully`);
         
         // Store for dialog
         newFurnitureForDialog.current = furnitureItem;
