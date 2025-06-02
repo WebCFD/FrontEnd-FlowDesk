@@ -809,7 +809,7 @@ export default function Canvas3D({
 
   // FASE 5C: Load stored furniture into scene when component initializes or floor changes
   useEffect(() => {
-    if (!scene) return;
+    if (!sceneRef.current) return;
     
     const storedFurniture = storeFloors[currentFloor]?.furnitureItems || [];
     console.log("🔄 FASE 5C: Loading stored furniture into scene:", {
@@ -819,15 +819,15 @@ export default function Canvas3D({
     });
 
     // Clear existing furniture from scene
-    const furnitureGroups = scene.children.filter(child => 
+    const furnitureGroups = sceneRef.current.children.filter(child => 
       child.userData?.type === 'furniture'
     );
-    furnitureGroups.forEach(group => scene.remove(group));
+    furnitureGroups.forEach(group => sceneRef.current!.remove(group));
 
     // Add stored furniture to scene
     storedFurniture.forEach(furnitureItem => {
       console.log("🏗️ Creating furniture model from store:", furnitureItem);
-      const model = createFurnitureModel(furnitureItem, scene);
+      const model = createFurnitureModel(furnitureItem, sceneRef.current!);
       if (model) {
         console.log("✅ Successfully added stored furniture to scene:", furnitureItem.id);
       } else {
@@ -835,7 +835,7 @@ export default function Canvas3D({
       }
     });
     
-  }, [scene, currentFloor, storeFloors]);
+  }, [sceneRef.current, currentFloor, storeFloors]);
 
   // PHASE 1: Migrate floors data to ensure backward compatibility
   const migratedFloors = useMemo(() => migrateFloorsData(floors), [floors]);
