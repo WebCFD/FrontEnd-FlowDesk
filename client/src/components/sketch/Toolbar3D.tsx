@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Eye, Eraser, Ruler, ChevronDown } from "lucide-react";
+import { Eye, Eraser, Ruler, ChevronDown, Trash2 } from "lucide-react";
 
 export type ViewDirection = "+X" | "-X" | "+Y" | "-Y" | "+Z" | "-Z";
 
@@ -20,6 +20,8 @@ interface Toolbar3DProps {
   onToggleMeasureMode: () => void;
   isEraserMode?: boolean;
   onToggleEraserMode?: () => void;
+  isFurnitureEraserMode?: boolean;
+  onToggleFurnitureEraserMode?: () => void;
   onViewChange?: (direction: ViewDirection) => void;
 }
 
@@ -31,6 +33,8 @@ export function Toolbar3D({
   onToggleMeasureMode,
   isEraserMode = false,
   onToggleEraserMode,
+  isFurnitureEraserMode = false,
+  onToggleFurnitureEraserMode,
   onViewChange,
 }: Toolbar3DProps) {
   return (
@@ -40,7 +44,7 @@ export function Toolbar3D({
     )}>
       <div className="space-y-4">
         <h3 className="font-semibold">3D Tools</h3>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -75,10 +79,23 @@ export function Toolbar3D({
             </DropdownMenuContent>
           </DropdownMenu>
           <Button
+            variant={isMeasureMode ? "default" : "outline"}
+            className={cn(
+              "w-full h-16 flex flex-col items-center justify-center gap-1",
+              isMeasureMode && "bg-violet-500 hover:bg-violet-600 text-white border-violet-600"
+            )}
+            onClick={onToggleMeasureMode}
+          >
+            <Ruler className="w-6 h-6" />
+            <span className="text-xs">Measure</span>
+          </Button>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <Button
             variant={isEraserMode ? "default" : "outline"}
             className={cn(
               "w-full h-16 flex flex-col items-center justify-center gap-1",
-              isEraserMode && "bg-violet-500 hover:bg-violet-600 text-white border-violet-600"
+              isEraserMode && "bg-red-500 hover:bg-red-600 text-white border-red-600"
             )}
             onClick={() => {
               console.log("Eraser button clicked, current isEraserMode:", isEraserMode);
@@ -89,15 +106,17 @@ export function Toolbar3D({
             <span className="text-xs">Eraser</span>
           </Button>
           <Button
-            variant={isMeasureMode ? "default" : "outline"}
+            variant={isFurnitureEraserMode ? "default" : "outline"}
             className={cn(
               "w-full h-16 flex flex-col items-center justify-center gap-1",
-              isMeasureMode && "bg-violet-500 hover:bg-violet-600 text-white border-violet-600"
+              isFurnitureEraserMode && "bg-orange-500 hover:bg-orange-600 text-white border-orange-600"
             )}
-            onClick={onToggleMeasureMode}
+            onClick={() => {
+              if (onToggleFurnitureEraserMode) onToggleFurnitureEraserMode();
+            }}
           >
-            <Ruler className="w-6 h-6" />
-            <span className="text-xs">Measure</span>
+            <Trash2 className="w-6 h-6" />
+            <span className="text-xs">Del Furn</span>
           </Button>
         </div>
       </div>

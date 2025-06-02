@@ -310,6 +310,7 @@ export default function WizardDesign() {
   };
   const [isMeasureMode, setIsMeasureMode] = useState(false);
   const [isEraserMode, setIsEraserMode] = useState(false);
+  const [isFurnitureEraserMode, setIsFurnitureEraserMode] = useState(false);
 
   // Estado para el diálogo de datos de simulación
   const [showSimulationDataDialog, setShowSimulationDataDialog] =
@@ -818,6 +819,8 @@ export default function WizardDesign() {
         "🔴 ERASER TOGGLE - Disabling measure mode because eraser mode was enabled",
       );
       setIsMeasureMode(false);
+      // Also disable furniture eraser mode
+      setIsFurnitureEraserMode(false);
     }
 
     // Use the new value for toast notifications instead of the current state
@@ -834,6 +837,26 @@ export default function WizardDesign() {
 
     // Log for debugging
     console.log("🔴 ERASER TOGGLE - Set isEraserMode to:", newEraserMode);
+  };
+
+  // Toggle furniture eraser mode
+  const handleToggleFurnitureEraserMode = () => {
+    const newFurnitureEraserMode = !isFurnitureEraserMode;
+
+    // Disable other modes when enabling furniture eraser mode
+    if (newFurnitureEraserMode) {
+      setIsMeasureMode(false);
+      setIsEraserMode(false);
+    }
+
+    toast({
+      title: newFurnitureEraserMode ? "Furniture Eraser Enabled" : "Furniture Eraser Disabled",
+      description: newFurnitureEraserMode
+        ? "Click on furniture to delete it"
+        : "Exited furniture eraser mode",
+    });
+
+    setIsFurnitureEraserMode(newFurnitureEraserMode);
   };
 
   // Handle view direction changes
