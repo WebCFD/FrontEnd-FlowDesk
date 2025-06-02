@@ -340,11 +340,7 @@ export default function WizardDesign() {
     deleteFurnitureFromFloor,
   } = useRoomStore();
 
-  // Clean corrupted furniture data on component mount
-  useEffect(() => {
-    console.log("🧹 INIT: Running furniture cleanup on app load");
-    useRoomStore.getState().cleanCorruptedFurnitureData();
-  }, []);
+
 
   // Get current floor data
   const currentFloorData = floors[currentFloor];
