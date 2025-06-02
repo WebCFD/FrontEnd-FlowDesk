@@ -1,0 +1,30 @@
+📦 FASE 5A TEST: Adding furniture to store: {floorName: 'ground', furnitureId: 'table_1748881022216', furnitureType: 'table', position: {…}}
+room-store.ts:211 🏪 STORE TEST: Adding furniture to floor: {floorName: 'ground', furnitureId: 'table_1748881022216', currentFurnitureCount: 0, newItem: {…}}
+Canvas3D.tsx:884 🎛️ Storing furniture item for auto-open dialog: {id: 'table_1748881022216', type: 'table', name: 'Table', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:965 🔍 useEffect triggered - checking newFurnitureForDialog: {id: 'table_1748881022216', type: 'table', name: 'Table', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:968 🎛️ Auto-opening dialog for new furniture: {id: 'table_1748881022216', type: 'table', name: 'Table', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:975 🎛️ setEditingFurniture called with: {index: 0, item: {…}}
+Canvas3D.tsx:990 🔄 FASE 5C: Loading stored furniture into scene: {floorName: 'ground', furnitureCount: 1, items: Array(1)}
+Canvas3D.tsx:1004 🏗️ Creating furniture model from store: {id: 'table_1748881022216', type: 'table', name: 'Table', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:1007 ✅ Successfully added stored furniture to scene: table_1748881022216
+Canvas3D.tsx:1634 🎨 FLOOR VISUAL - Created Ground Floor floor at Z=0 with color: ffcccc
+Canvas3D.tsx:1654 🎨 CEILING VISUAL - Created Ground Floor ceiling at Z=220 with color: f0e6ff
+Canvas3D.tsx:965 🔍 useEffect triggered - checking newFurnitureForDialog: null
+Canvas3D.tsx:2102 🔧 DEBUG: Canvas3D useEffect initialization starting
+Canvas3D.tsx:2109 🔧 DEBUG: Container found, initializing Three.js scene
+Canvas3D.tsx:2116 🔧 DEBUG: Scene created and assigned to ref
+Canvas3D.tsx:1634 🎨 FLOOR VISUAL - Created Ground Floor floor at Z=0 with color: ffcccc
+Canvas3D.tsx:1654 🎨 CEILING VISUAL - Created Ground Floor ceiling at Z=220 with color: f0e6ff
+chunk-WERSD76P.js?v=1e4e45b3:18625 [Violation] 'click' handler took 211ms
+wizard-design:1 [.WebGL-0x2c54000df100] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+wizard-design:1 [.WebGL-0x2c54000df100] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+wizard-design:1 [.WebGL-0x2c54000df100] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+Canvas3D.tsx:965 🔍 useEffect triggered - checking newFurnitureForDialog: null
+Canvas3D.tsx:2102 🔧 DEBUG: Canvas3D useEffect initialization starting
+Canvas3D.tsx:2109 🔧 DEBUG: Container found, initializing Three.js scene
+Canvas3D.tsx:2116 🔧 DEBUG: Scene created and assigned to ref
+Canvas3D.tsx:1634 🎨 FLOOR VISUAL - Created Ground Floor floor at Z=0 with color: ffcccc
+Canvas3D.tsx:1654 🎨 CEILING VISUAL - Created Ground Floor ceiling at Z=220 with color: f0e6ff
+wizard-design:1 [.WebGL-0x2c5406754d00] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+wizard-design:1 [.WebGL-0x2c5406754d00] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+wizard-design:1 [.WebGL-0x2c5406754d00] GL_INVALID_OPERATION: Texture is immutable.
