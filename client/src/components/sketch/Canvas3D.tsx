@@ -869,9 +869,20 @@ export default function Canvas3D({
       if (model) {
         // Add furniture via callback
         console.log(`🪑 CANVAS3D: About to call onFurnitureAdd callback for ${furnitureItem.type} on floor ${surfaceDetection.floorName}`);
-        console.log(`🪑 CANVAS3D: Callback exists:`, !!onFurnitureAdd);
-        onFurnitureAdd?.(surfaceDetection.floorName, furnitureItem);
-        console.log(`🪑 CANVAS3D: Callback executed successfully`);
+        console.log('🔍 CALLBACK DEBUG:', {
+          exists: !!onFurnitureAdd,
+          type: typeof onFurnitureAdd,
+          isFunction: typeof onFurnitureAdd === 'function',
+          stringified: onFurnitureAdd?.toString().substring(0, 100)
+        });
+        
+        if (onFurnitureAdd && typeof onFurnitureAdd === 'function') {
+          console.log(`🪑 CANVAS3D: Calling callback with args:`, { floorName: surfaceDetection.floorName, itemType: furnitureItem.type });
+          onFurnitureAdd(surfaceDetection.floorName, furnitureItem);
+          console.log(`🪑 CANVAS3D: Callback call completed`);
+        } else {
+          console.log(`❌ CANVAS3D: Callback is not a function:`, onFurnitureAdd);
+        }
         
         // Store for dialog
         newFurnitureForDialog.current = furnitureItem;
