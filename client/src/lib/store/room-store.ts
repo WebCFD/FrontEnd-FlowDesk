@@ -197,15 +197,24 @@ export const useRoomStore = create<RoomState>()(
         })),
 
         // FASE 5A: Furniture operations
-        setFurnitureItems: (items) => set((state) => ({
-          floors: {
-            ...state.floors,
-            [state.currentFloor]: {
-              ...state.floors[state.currentFloor],
-              furnitureItems: items
+        setFurnitureItems: (items) => set((state) => {
+          console.log("🔍 ROOT CAUSE: setFurnitureItems called with:", items);
+          console.log("🔍 ROOT CAUSE: Target floor:", state.currentFloor);
+          console.log("🔍 ROOT CAUSE: Items analysis:");
+          items.forEach((item, index) => {
+            console.log(`  Item ${index}: ${typeof item} - ${item === "ground" ? "CORRUPTED STRING!" : "Valid"}`, item);
+          });
+          
+          return {
+            floors: {
+              ...state.floors,
+              [state.currentFloor]: {
+                ...state.floors[state.currentFloor],
+                furnitureItems: items
+              }
             }
-          }
-        })),
+          };
+        }),
 
         addFurnitureToFloor: (floorName, item) => set((state) => {
           console.log("🏪 STORE TEST: Adding furniture to floor:", {
@@ -213,6 +222,14 @@ export const useRoomStore = create<RoomState>()(
             furnitureId: item.id,
             currentFurnitureCount: state.floors[floorName]?.furnitureItems?.length || 0,
             newItem: item
+          });
+          
+          // ROOT CAUSE ANALYSIS: Log current array contents before modification
+          const currentArray = state.floors[floorName]?.furnitureItems || [];
+          console.log("🔍 ROOT CAUSE: Current array before adding:", currentArray);
+          console.log("🔍 ROOT CAUSE: Each item analysis:");
+          currentArray.forEach((item, index) => {
+            console.log(`  Item ${index}: ${typeof item} - ${item === "ground" ? "CORRUPTED STRING" : "Valid object"}`, item);
           });
           
           // Clean existing array - remove any invalid items (strings, nulls, etc.)
