@@ -1,0 +1,25 @@
+Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.Understand this warningAI
+Canvas3D.tsx:955 🔍 useEffect triggered - checking newFurnitureForDialog: null
+Canvas3D.tsx:2083 🔧 DEBUG: Canvas3D useEffect initialization starting
+Canvas3D.tsx:2090 🔧 DEBUG: Container found, initializing Three.js scene
+Canvas3D.tsx:2097 🔧 DEBUG: Scene created and assigned to ref
+Canvas3D.tsx:1597 🎨 FLOOR VISUAL - Created Ground Floor floor at Z=0 with color: ffcccc
+Canvas3D.tsx:1617 🎨 CEILING VISUAL - Created Ground Floor ceiling at Z=220 with color: f0e6ff
+Canvas3D.tsx:1959 🪑 FURNITURE RENDER: Floor Ground Floor has no furniture items
+chunk-WERSD76P.js?v=1e4e45b3:18625 [Violation] 'click' handler took 204ms
+Canvas3D.tsx:871 🪑 FURNITURE ADD: Adding table to floor ground
+wizard-design:1 [.WebGL-0x2c5409d6e900] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+wizard-design:1 [.WebGL-0x2c5409d6e900] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+wizard-design:1 [.WebGL-0x2c5409d6e900] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+wizard-design:1 [.WebGL-0x2c5409d6e900] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+wizard-design:1 [.WebGL-0x2c5409d6e900] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+wizard-design:1 [.WebGL-0x2c5409d6e900] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+wizard-design:1 [.WebGL-0x2c5409d6e900] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+Canvas3D.tsx:955 🔍 useEffect triggered - checking newFurnitureForDialog: null
+Canvas3D.tsx:2083 🔧 DEBUG: Canvas3D useEffect initialization starting
+Canvas3D.tsx:2090 🔧 DEBUG: Container found, initializing Three.js scene
+Canvas3D.tsx:2097 🔧 DEBUG: Scene created and assigned to ref
+Canvas3D.tsx:1597 🎨 FLOOR VISUAL - Created Ground Floor floor at Z=0 with color: ffcccc
+Canvas3D.tsx:1617 🎨 CEILING VISUAL - Created Ground Floor ceiling at Z=220 with color: f0e6ff
+Canvas3D.tsx:1959 🪑 FURNITURE RENDER: Floor Ground Floor has no furniture items
+chunk-WERSD76P.js?v=1e4e45b3:18625 [Violation] 'click' handler took 260ms
