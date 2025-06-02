@@ -46,9 +46,9 @@ interface RoomSketchProProps {
   lines?: Line[];
   airEntries?: AirEntry[];
   roomHeight?: number;
-  onFurnitureAdd?: (item: FurnitureItem) => void;
-  onUpdateFurniture?: (item: FurnitureItem) => void;
-  onDeleteFurniture?: (itemId: string) => void;
+  onFurnitureAdd?: (floorName: string, item: FurnitureItem) => void;
+  onUpdateFurniture?: (floorName: string, index: number, item: FurnitureItem) => void;
+  onDeleteFurniture?: (floorName: string, index: number) => void;
   wallTransparency: number;
   onWallTransparencyChange: (value: number) => void;
   airEntryTransparency?: number;
