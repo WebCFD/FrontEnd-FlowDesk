@@ -982,9 +982,12 @@ export default function Canvas3D({
     }
   }, [floors, currentFloor]); // Trigger when floors update (after furniture is added)
 
-  // FASE 5C: Load stored furniture into scene when component initializes or floor changes
-  useEffect(() => {
-    if (!sceneRef.current) return;
+  // FASE 5C: Load stored furniture into scene AFTER scene is ready
+  const loadStoredFurniture = useCallback(() => {
+    if (!sceneRef.current) {
+      console.log("🔄 FASE 5C: Scene not ready yet, skipping furniture load");
+      return;
+    }
     
     const storedFurniture = storeFloors[currentFloor]?.furnitureItems || [];
     console.log("🔄 FASE 5C: Loading stored furniture into scene:", {
@@ -1011,6 +1014,11 @@ export default function Canvas3D({
     });
     
   }, [currentFloor, storeFloors]);
+
+  // Trigger furniture loading when floor changes OR when store updates
+  useEffect(() => {
+    loadStoredFurniture();
+  }, [loadStoredFurniture]);
   // Track the selected air entry element for dragging
   const [selectedAirEntry, setSelectedAirEntry] = useState<{
     index: number;
