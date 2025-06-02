@@ -807,6 +807,13 @@ export default function Canvas3D({
   // FASE 5A: Integrate room store for furniture persistence
   const { addFurnitureToFloor, updateFurnitureInFloor, deleteFurnitureFromFloor, floors: storeFloors } = useRoomStore();
 
+  // DEBUG: Log current store state
+  useEffect(() => {
+    console.log("🔍 STORE DEBUG: Current store floors data:", storeFloors);
+    console.log("🔍 STORE DEBUG: Current floor furniture count:", storeFloors[currentFloor]?.furnitureItems?.length || 0);
+    console.log("🔍 STORE DEBUG: Current floor furniture items:", storeFloors[currentFloor]?.furnitureItems || []);
+  }, [storeFloors, currentFloor]);
+
   // PHASE 1: Migrate floors data to ensure backward compatibility
   const migratedFloors = useMemo(() => migrateFloorsData(floors), [floors]);
 

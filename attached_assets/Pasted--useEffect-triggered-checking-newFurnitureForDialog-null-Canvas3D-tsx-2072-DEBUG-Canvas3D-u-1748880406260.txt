@@ -1,0 +1,73 @@
+🔍 useEffect triggered - checking newFurnitureForDialog: null
+Canvas3D.tsx:2072 🔧 DEBUG: Canvas3D useEffect initialization starting
+Canvas3D.tsx:2079 🔧 DEBUG: Container found, initializing Three.js scene
+Canvas3D.tsx:2086 🔧 DEBUG: Scene created and assigned to ref
+Canvas3D.tsx:1604 🎨 FLOOR VISUAL - Created Ground Floor floor at Z=0 with color: ffcccc
+Canvas3D.tsx:1624 🎨 CEILING VISUAL - Created Ground Floor ceiling at Z=220 with color: f0e6ff
+chunk-WERSD76P.js?v=1e4e45b3:18625 [Violation] 'click' handler took 216ms
+Canvas3D.tsx:872 📦 FASE 5A TEST: Adding furniture to store: {floorName: 'ground', furnitureId: 'table_1748880306688', furnitureType: 'table', position: {…}}
+room-store.ts:211 🏪 STORE TEST: Adding furniture to floor: {floorName: 'ground', furnitureId: 'table_1748880306688', currentFurnitureCount: 13, newItem: {…}}
+Canvas3D.tsx:884 🎛️ Storing furniture item for auto-open dialog: {id: 'table_1748880306688', type: 'table', name: 'Table', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:965 🔍 useEffect triggered - checking newFurnitureForDialog: {id: 'table_1748880306688', type: 'table', name: 'Table', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:968 🎛️ Auto-opening dialog for new furniture: {id: 'table_1748880306688', type: 'table', name: 'Table', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:975 🎛️ setEditingFurniture called with: {index: 0, item: {…}}
+Canvas3D.tsx:1604 🎨 FLOOR VISUAL - Created Ground Floor floor at Z=0 with color: ffcccc
+Canvas3D.tsx:1624 🎨 CEILING VISUAL - Created Ground Floor ceiling at Z=220 with color: f0e6ff
+Canvas3D.tsx:4812 🖱️ Double-click detected!
+Canvas3D.tsx:4831 🎯 Mouse coordinates: _Vector2 {x: 0.2780398559570312, y: 0.07518931070963542}
+Canvas3D.tsx:4843 🪑 Found furniture group: {type: 'furniture', furnitureType: 'table', furnitureId: 'table_1748880306688', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:4848 🪑 Found furniture mesh: {type: 'furniture', furnitureType: 'table', furnitureId: 'table_1748880306688', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:4848 🪑 Found furniture mesh: {type: 'furniture', furnitureType: 'table', furnitureId: 'table_1748880306688', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:4848 🪑 Found furniture mesh: {type: 'furniture', furnitureType: 'table', furnitureId: 'table_1748880306688', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:4848 🪑 Found furniture mesh: {type: 'furniture', furnitureType: 'table', furnitureId: 'table_1748880306688', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:4848 🪑 Found furniture mesh: {type: 'furniture', furnitureType: 'table', furnitureId: 'table_1748880306688', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:4852 🔍 Found 6 furniture objects in scene
+Canvas3D.tsx:4857 💥 Found 2 intersections
+Canvas3D.tsx:4871 ✅ Intersected furniture object: {furnitureId: 'table_1748880306688', userData: {…}, position: _Vector3}
+Canvas3D.tsx:4903 🎛️ Opening furniture dialog with item: {id: 'table_1748880306688', type: 'table', name: 'Furniture', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:4904 🎛️ Setting editingFurniture state...
+Canvas3D.tsx:4911 🎛️ editingFurniture state set!
+Canvas3D.tsx:4951 🔄 Real-time position update: {x: 169.127997792703, y: -166.5907872372767, z: 0}
+Canvas3D.tsx:4951 🔄 Real-time position update: {x: 170.127997792703, y: -166.5907872372767, z: 0}
+Canvas3D.tsx:4951 🔄 Real-time position update: {x: 171.127997792703, y: -166.5907872372767, z: 0}
+Canvas3D.tsx:4951 🔄 Real-time position update: {x: 172.127997792703, y: -166.5907872372767, z: 0}
+Canvas3D.tsx:4951 🔄 Real-time position update: {x: 173.127997792703, y: -166.5907872372767, z: 0}
+Canvas3D.tsx:4951 🔄 Real-time position update: {x: 174.127997792703, y: -166.5907872372767, z: 0}
+Canvas3D.tsx:4951 🔄 Real-time position update: {x: 175.127997792703, y: -166.5907872372767, z: 0}
+Canvas3D.tsx:4951 🔄 Real-time position update: {x: 176.127997792703, y: -166.5907872372767, z: 0}
+Canvas3D.tsx:4951 🔄 Real-time position update: {x: 177.127997792703, y: -166.5907872372767, z: 0}
+Canvas3D.tsx:4951 🔄 Real-time position update: {x: 178.127997792703, y: -166.5907872372767, z: 0}
+Canvas3D.tsx:4951 🔄 Real-time position update: {x: 179.127997792703, y: -166.5907872372767, z: 0}
+Canvas3D.tsx:5010 🔧 Updating furniture in scene: table_1748880306688 {name: 'Furniture', position: {…}, rotation: {…}, scale: {…}, properties: {…}}
+Canvas3D.tsx:5023 ✅ Found furniture object in scene, updating...
+Canvas3D.tsx:5037 🎯 Furniture updated in scene: {position: {…}, rotation: {…}, scale: {…}, name: 'Furniture'}
+Canvas3D.tsx:5057 🔄 FASE 5B TEST: Updating furniture in store: {floorName: 'ground', furnitureId: 'table_1748880306688', oldData: {…}, newData: {…}}
+room-store.ts:229 🔄 STORE TEST: Updating furniture in floor: {floorName: 'ground', itemId: 'table_1748880306688', currentItems: 14, updateData: {…}}
+Canvas3D.tsx:965 🔍 useEffect triggered - checking newFurnitureForDialog: null
+Canvas3D.tsx:1604 🎨 FLOOR VISUAL - Created Ground Floor floor at Z=0 with color: ffcccc
+Canvas3D.tsx:1624 🎨 CEILING VISUAL - Created Ground Floor ceiling at Z=220 with color: f0e6ff
+Canvas3D.tsx:4812 🖱️ Double-click detected!
+Canvas3D.tsx:4831 🎯 Mouse coordinates: _Vector2 {x: 0.33053985595703117, y: 0.08852264404296872}
+Canvas3D.tsx:4843 🪑 Found furniture group: {type: 'furniture', furnitureType: 'table', furnitureId: 'table_1748880306688', floorName: 'ground', isSelectable: true, …}
+Canvas3D.tsx:4848 🪑 Found furniture mesh: {type: 'furniture', furnitureType: 'table', furnitureId: 'table_1748880306688', floorName: 'ground', isSelectable: true, …}
+Canvas3D.tsx:4848 🪑 Found furniture mesh: {type: 'furniture', furnitureType: 'table', furnitureId: 'table_1748880306688', floorName: 'ground', isSelectable: true, …}
+Canvas3D.tsx:4848 🪑 Found furniture mesh: {type: 'furniture', furnitureType: 'table', furnitureId: 'table_1748880306688', floorName: 'ground', isSelectable: true, …}
+Canvas3D.tsx:4848 🪑 Found furniture mesh: {type: 'furniture', furnitureType: 'table', furnitureId: 'table_1748880306688', floorName: 'ground', isSelectable: true, …}
+Canvas3D.tsx:4848 🪑 Found furniture mesh: {type: 'furniture', furnitureType: 'table', furnitureId: 'table_1748880306688', floorName: 'ground', isSelectable: true, …}
+Canvas3D.tsx:4852 🔍 Found 6 furniture objects in scene
+Canvas3D.tsx:4857 💥 Found 2 intersections
+Canvas3D.tsx:4871 ✅ Intersected furniture object: {furnitureId: 'table_1748880306688', userData: {…}, position: _Vector3}
+Canvas3D.tsx:4903 🎛️ Opening furniture dialog with item: {id: 'table_1748880306688', type: 'table', name: 'Furniture', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:4904 🎛️ Setting editingFurniture state...
+Canvas3D.tsx:4911 🎛️ editingFurniture state set!
+Canvas3D.tsx:4951 🔄 Real-time position update: {x: 0, y: -166.5907872372767, z: 0}
+Canvas3D.tsx:4951 🔄 Real-time position update: {x: 0.127997792703, y: -166.5907872372767, z: 0}
+Canvas3D.tsx:4951 🔄 Real-time position update: {x: 1.127997792703, y: -166.5907872372767, z: 0}
+Canvas3D.tsx:5010 🔧 Updating furniture in scene: table_1748880306688 {name: 'Furniture', position: {…}, rotation: {…}, scale: {…}, properties: {…}}
+Canvas3D.tsx:5023 ✅ Found furniture object in scene, updating...
+Canvas3D.tsx:5037 🎯 Furniture updated in scene: {position: {…}, rotation: {…}, scale: {…}, name: 'Furniture'}
+Canvas3D.tsx:5057 🔄 FASE 5B TEST: Updating furniture in store: {floorName: 'ground', furnitureId: 'table_1748880306688', oldData: {…}, newData: {…}}
+room-store.ts:229 🔄 STORE TEST: Updating furniture in floor: {floorName: 'ground', itemId: 'table_1748880306688', currentItems: 14, updateData: {…}}
+Canvas3D.tsx:965 🔍 useEffect triggered - checking newFurnitureForDialog: null
+Canvas3D.tsx:1604 🎨 FLOOR VISUAL - Created Ground Floor floor at Z=0 with color: ffcccc
+Canvas3D.tsx:1624 🎨 CEILING VISUAL - Created Ground Floor ceiling at Z=220 with color: f0e6ff
