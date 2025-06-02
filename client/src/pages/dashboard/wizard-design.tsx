@@ -1071,7 +1071,10 @@ export default function WizardDesign() {
 
   // Phase 2: Furniture callback handlers
   const handleFurnitureAdd = useCallback((floorName: string, item: FurnitureItem) => {
+    console.log("🔵 WIZARD: handleFurnitureAdd called with:", { floorName, item });
+    console.log("🔵 WIZARD: Current floors before add:", floors);
     addFurnitureToFloor(floorName, item);
+    console.log("🔵 WIZARD: addFurnitureToFloor called");
     
     toast({
       title: "Furniture Added",
