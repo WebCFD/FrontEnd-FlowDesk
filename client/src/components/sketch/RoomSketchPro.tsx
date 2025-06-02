@@ -882,6 +882,23 @@ export function RoomSketchPro({
             ))}
           </select>
         </div>
+
+        {/* Botón de borrado de muebles */}
+        {onToggleFurnitureEraserMode && (
+          <div>
+            <button
+              onClick={onToggleFurnitureEraserMode}
+              className={`text-xs px-2 py-1 rounded font-medium transition-colors ${
+                isFurnitureEraserMode
+                  ? 'bg-orange-500 text-white shadow-md'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+              title="Toggle furniture eraser mode"
+            >
+              Del Furn
+            </button>
+          </div>
+        )}
       </div>
 
 
