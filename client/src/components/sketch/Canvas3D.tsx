@@ -4803,7 +4803,6 @@ export default function Canvas3D({
         // Check for furniture groups (main containers)
         if (object.userData.type === 'furniture') {
           furnitureObjects.push(object);
-          console.log("🪑 Found furniture group:", object.userData);
         }
         // Also check for meshes within furniture groups
         else if (object instanceof THREE.Mesh && object.parent?.userData.type === 'furniture') {
@@ -4863,15 +4862,15 @@ export default function Canvas3D({
               item: mockFurnitureItem
             });
             
-            console.log("🎛️ editingFurniture state set!");
+
           } else {
-            console.log("❌ No furnitureId found in userData");
+
           }
         } else {
-          console.log("❌ No furniture group found");
+
         }
       } else {
-        console.log("❌ No furniture intersections found");
+
       }
     };
 
@@ -4921,7 +4920,7 @@ export default function Canvas3D({
 
     if (furnitureGroup) {
       furnitureGroup.rotation.set(newRotation.x, newRotation.y, newRotation.z);
-      console.log("🔄 Real-time rotation update:", newRotation);
+
     }
   };
 
