@@ -2404,6 +2404,8 @@ export default function WizardDesign() {
                   description: "Furniture item has been removed",
                 });
               }}
+              isFurnitureEraserMode={isFurnitureEraserMode}
+              onToggleFurnitureEraserMode={handleToggleFurnitureEraserMode}
             />
           ) : tab === "2d-editor" ? (
             <Canvas2D

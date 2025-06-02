@@ -84,6 +84,7 @@ interface Canvas3DProps {
   wallTransparency: number;
   isMeasureMode?: boolean;
   isEraserMode?: boolean;
+  isFurnitureEraserMode?: boolean;
   simulationName?: string;
   simulationType?: string;
   isMultifloor?: boolean;
@@ -787,6 +788,7 @@ export default function Canvas3D({
   wallTransparency = 0.7,
   isMeasureMode = false,
   isEraserMode, // Removed default value to ensure external state is always respected
+  isFurnitureEraserMode = false,
   simulationName = "",
   simulationType = "Comfort Simulation (steady run)",
   isMultifloor = false,
