@@ -682,11 +682,6 @@ const createFurnitureModel = (
   furnitureItem: FurnitureItem,
   scene: THREE.Scene
 ): THREE.Group | null => {
-  if (!furnitureItem.type) {
-    console.error('Furniture item missing type property:', furnitureItem);
-    return null;
-  }
-
   let model: THREE.Group;
 
   // Create the appropriate model based on furniture type
@@ -705,7 +700,6 @@ const createFurnitureModel = (
       break;
     default:
       console.error(`Unknown furniture type: ${furnitureItem.type}`);
-      console.log('Available types should be: table, person, armchair, car');
       return null;
   }
 
@@ -874,7 +868,21 @@ export default function Canvas3D({
       
       if (model) {
         // Add furniture via callback
-        onFurnitureAdd?.(surfaceDetection.floorName, furnitureItem);
+        console.log(`🪑 CANVAS3D: About to call onFurnitureAdd callback for ${furnitureItem.type} on floor ${surfaceDetection.floorName}`);
+        console.log('🔍 CALLBACK DEBUG:', {
+          exists: !!onFurnitureAdd,
+          type: typeof onFurnitureAdd,
+          isFunction: typeof onFurnitureAdd === 'function',
+          stringified: onFurnitureAdd?.toString().substring(0, 100)
+        });
+        
+        if (onFurnitureAdd && typeof onFurnitureAdd === 'function') {
+          console.log(`🪑 CANVAS3D: Calling callback with args:`, { floorName: surfaceDetection.floorName, itemType: furnitureItem.type });
+          onFurnitureAdd(surfaceDetection.floorName, furnitureItem);
+          console.log(`🪑 CANVAS3D: Callback call completed`);
+        } else {
+          console.log(`❌ CANVAS3D: Callback is not a function:`, onFurnitureAdd);
+        }
         
         // Store for dialog
         newFurnitureForDialog.current = furnitureItem;
@@ -957,9 +965,18 @@ export default function Canvas3D({
   
   // Effect to auto-open dialog for newly created furniture
   useEffect(() => {
+    console.log("🔍 useEffect triggered - checking newFurnitureForDialog:", newFurnitureForDialog.current);
+    
     if (newFurnitureForDialog.current) {
+      console.log("🎛️ Auto-opening dialog for new furniture:", newFurnitureForDialog.current);
+      
       setEditingFurniture({
         index: 0, // This would be the actual index in a real furniture list
+        item: newFurnitureForDialog.current
+      });
+      
+      console.log("🎛️ setEditingFurniture called with:", {
+        index: 0,
         item: newFurnitureForDialog.current
       });
       
@@ -1590,7 +1607,7 @@ export default function Canvas3D({
       const floor = new THREE.Mesh(floorGeometry, floorMaterial);
       floor.position.z = baseHeight;
       floor.userData = { type: 'floor', floorName: floorData.name }; // CRITICAL for raycasting
-
+      console.log(`🎨 FLOOR VISUAL - Created ${floorData.name} floor at Z=${baseHeight} with color:`, floorColor.toString(16));
       objects.push(floor);
 
       // Ceiling surface with violet tones from light to dark (bottom to top)
@@ -1610,7 +1627,7 @@ export default function Canvas3D({
       const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
       ceiling.position.z = baseHeight + floorCeilingHeight;
       ceiling.userData = { type: 'ceiling', floorName: floorData.name }; // For completeness
-
+      console.log(`🎨 CEILING VISUAL - Created ${floorData.name} ceiling at Z=${baseHeight + floorCeilingHeight} with color:`, ceilingColor.toString(16));
       objects.push(ceiling);
     }
 
@@ -1939,22 +1956,20 @@ export default function Canvas3D({
 
     // Create furniture items from props
     if (floorData.furnitureItems && floorData.furnitureItems.length > 0) {
-      // Filter out invalid furniture items (corrupted data that are just strings)
-      const validFurnitureItems = floorData.furnitureItems.filter((item): item is FurnitureItem => {
-        return typeof item === 'object' && 
-               item !== null && 
-               typeof item.type === 'string' && 
-               typeof item.id === 'string' &&
-               item.position &&
-               typeof item.position.x === 'number';
-      });
+      console.log(`🪑 FURNITURE RENDER: Floor ${floorData.name} has ${floorData.furnitureItems.length} furniture items`);
       
-      validFurnitureItems.forEach((furnitureItem) => {
+      floorData.furnitureItems.forEach((furnitureItem) => {
+        console.log(`🪑 FURNITURE RENDER: Creating model for ${furnitureItem.type} at`, furnitureItem.position);
         const furnitureModel = createFurnitureModel(furnitureItem, sceneRef.current!);
         if (furnitureModel) {
           objects.push(furnitureModel);
+          console.log(`🪑 FURNITURE RENDER: Successfully added ${furnitureItem.type} to scene`);
+        } else {
+          console.log(`❌ FURNITURE RENDER: Failed to create model for ${furnitureItem.type}`);
         }
       });
+    } else {
+      console.log(`🪑 FURNITURE RENDER: Floor ${floorData.name} has no furniture items`);
     }
 
     return objects;
@@ -2078,16 +2093,21 @@ export default function Canvas3D({
   }, [onViewChange, handleViewChange]);
 
   useEffect(() => {
-
+    console.log("🔧 DEBUG: Canvas3D useEffect initialization starting");
     
     if (!containerRef.current) {
+      console.error("🔴 DEBUG: containerRef.current is null!");
       return;
     }
+    
+    console.log("🔧 DEBUG: Container found, initializing Three.js scene");
 
     // Initialize scene
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xf8fafc);
     sceneRef.current = scene;
+    
+    console.log("🔧 DEBUG: Scene created and assigned to ref");
 
     // Initialize camera
     const camera = new THREE.PerspectiveCamera(
@@ -2602,8 +2622,19 @@ export default function Canvas3D({
 
         // Log object type and info
         if (object instanceof THREE.Mesh) {
-          // Object tracking for debugging
+          console.log(
+            `Found mesh: ${object.uuid.substring(0, 8)}`,
+            `userData:`,
+            object.userData,
+            `type:`,
+            object.userData?.type || "none",
+          );
         } else if (object instanceof THREE.ArrowHelper) {
+          console.log(
+            `Found ArrowHelper: ${object.uuid.substring(0, 8)}`,
+            `userData:`,
+            object.userData,
+          );
           arrowCount++;
         } else {
           otherObjectCount++;
@@ -2616,6 +2647,7 @@ export default function Canvas3D({
           object.userData.type &&
           ["window", "door", "vent"].includes(object.userData.type)
         ) {
+          console.log("✅ Adding to airEntryMeshes");
           airEntryMeshes.push(object as THREE.Mesh);
         }
 
@@ -2628,6 +2660,7 @@ export default function Canvas3D({
             object.userData?.direction === "y" ||
             object.userData?.direction === "z")
         ) {
+          console.log("✅ Adding to axesHelpers");
           axesHelpers.push(object);
         }
       });
@@ -3180,7 +3213,18 @@ export default function Canvas3D({
             
             // Raycaster configuration is now handled centrally
             
-
+            // Enhanced debugging for air entry intersections
+            console.log(`Found ${meshIntersects.length} intersections with air entries`);
+            
+            // Log detailed info about available air entry meshes
+            console.log(`DEBUG: Eraser mode hover detection - ${airEntryMeshes.length} air entries in scene`);
+            airEntryMeshes.forEach((mesh, i) => {
+              console.log(`Air Entry #${i}: type=${mesh.userData.type}, position=${JSON.stringify(mesh.position)}, worldPosition=${JSON.stringify(mesh.getWorldPosition(new THREE.Vector3()))}`);
+              
+              // Output mesh bounding box for debugging
+              const boundingBox = new THREE.Box3().setFromObject(mesh);
+              console.log(`  Bounding box: min=(${boundingBox.min.x.toFixed(2)}, ${boundingBox.min.y.toFixed(2)}, ${boundingBox.min.z.toFixed(2)}), max=(${boundingBox.max.x.toFixed(2)}, ${boundingBox.max.y.toFixed(2)}, ${boundingBox.max.z.toFixed(2)})`);
+            });
             
             // Update debug info whether we have intersections or not
             const hasIntersections = meshIntersects.length > 0;
@@ -3191,7 +3235,9 @@ export default function Canvas3D({
               const screenX = (screenPos.x + 1) / 2 * window.innerWidth;
               const screenY = -(screenPos.y - 1) / 2 * window.innerHeight;
               
-
+              console.log(`📌 Highlighted object screen position: (${screenX.toFixed(0)}, ${screenY.toFixed(0)})`);
+              console.log(`📌 Mouse position: (${event.clientX}, ${event.clientY})`);
+              console.log(`📌 Distance: ${Math.sqrt(Math.pow(screenX - event.clientX, 2) + Math.pow(screenY - event.clientY, 2)).toFixed(1)}px`);
             }
             
             setDebugInfo(prev => ({
@@ -3204,6 +3250,7 @@ export default function Canvas3D({
             
             // If there are no intersections and we have a previously hovered target, reset it
             if (!hasIntersections && hoveredEraseTarget) {
+              console.log("🔄 Clearing previous highlight - no intersection found");
               
               try {
                 // Restore original material if it exists
@@ -3726,6 +3773,7 @@ export default function Canvas3D({
         return;
       }
       
+      console.log("🔴 Eraser click detected in Canvas3D");
       setDebugInfo(prev => ({
         ...prev,
         lastIntersection: "Processing eraser click..."
@@ -4785,12 +4833,15 @@ export default function Canvas3D({
 
     // Double-click handler for furniture editing
     const handleDoubleClick = (event: MouseEvent) => {
+      console.log("🖱️ Double-click detected!");
+      
       // Allow furniture editing even in presentation mode for selective editing
       // Other editing interactions remain disabled in presentation mode
       
       event.preventDefault();
       
       if (!sceneRef.current || !cameraRef.current) {
+        console.log("❌ Scene or camera not available");
         return;
       }
       
@@ -4800,6 +4851,8 @@ export default function Canvas3D({
         ((event.clientX - rect.left) / rect.width) * 2 - 1,
         -((event.clientY - rect.top) / rect.height) * 2 + 1
       );
+      
+      console.log("🎯 Mouse coordinates:", mouse);
       
       // Create raycaster
       const raycaster = new THREE.Raycaster();
@@ -4811,16 +4864,21 @@ export default function Canvas3D({
         // Check for furniture groups (main containers)
         if (object.userData.type === 'furniture') {
           furnitureObjects.push(object);
+          console.log("🪑 Found furniture group:", object.userData);
         }
         // Also check for meshes within furniture groups
         else if (object instanceof THREE.Mesh && object.parent?.userData.type === 'furniture') {
           furnitureObjects.push(object);
-
+          console.log("🪑 Found furniture mesh:", object.parent?.userData);
         }
       });
       
+      console.log(`🔍 Found ${furnitureObjects.length} furniture objects in scene`);
+      
       // Check for intersections (recursive to handle group children)
       const intersects = raycaster.intersectObjects(furnitureObjects, true);
+      
+      console.log(`💥 Found ${intersects.length} intersections`);
       
       if (intersects.length > 0) {
         const intersectedObject = intersects[0].object;
@@ -4834,7 +4892,11 @@ export default function Canvas3D({
         if (furnitureGroup && furnitureGroup.userData.type === 'furniture') {
           const furnitureId = furnitureGroup.userData.furnitureId;
           
-
+          console.log("✅ Intersected furniture object:", {
+            furnitureId,
+            userData: furnitureGroup.userData,
+            position: furnitureGroup.position
+          });
           
           if (furnitureId) {
             // Find the furniture item data
@@ -4870,15 +4932,15 @@ export default function Canvas3D({
               item: mockFurnitureItem
             });
             
-
+            console.log("🎛️ editingFurniture state set!");
           } else {
-
+            console.log("❌ No furnitureId found in userData");
           }
         } else {
-
+          console.log("❌ No furniture group found");
         }
       } else {
-
+        console.log("❌ No furniture intersections found");
       }
     };
 
@@ -4928,7 +4990,7 @@ export default function Canvas3D({
 
     if (furnitureGroup) {
       furnitureGroup.rotation.set(newRotation.x, newRotation.y, newRotation.z);
-
+      console.log("🔄 Real-time rotation update:", newRotation);
     }
   };
 
