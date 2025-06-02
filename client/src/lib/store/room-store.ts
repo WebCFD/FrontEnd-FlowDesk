@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import { syncWallsWithLines } from '../simulationDataConverter';
+import type { FurnitureItem } from '@shared/furniture-types';
 
 interface Point {
   x: number;
@@ -75,6 +76,7 @@ interface FloorData {
   walls: Wall[];
   measurements: Measurement[];
   stairPolygons: StairPolygon[]; // Add stairs to floor data
+  furnitureItems: FurnitureItem[]; // FASE 5A: Add furniture support
   hasClosedContour: boolean;
   name: string;
   templateSource?: string; // Name of the floor this was copied from
@@ -93,6 +95,11 @@ interface RoomState {
   setStairPolygons: (polygons: StairPolygon[]) => void;
   addStairPolygon: (polygon: StairPolygon) => void;
   removeStairPolygon: (id: string) => void;
+  // FASE 5A: Furniture operations
+  setFurnitureItems: (items: FurnitureItem[]) => void;
+  addFurnitureToFloor: (floorName: string, item: FurnitureItem) => void;
+  updateFurnitureInFloor: (floorName: string, itemId: string, item: FurnitureItem) => void;
+  deleteFurnitureFromFloor: (floorName: string, itemId: string) => void;
   setHasClosedContour: (hasContour: boolean) => void;
   // Floor management
   addFloor: (name: string, template?: string) => void;
@@ -115,6 +122,7 @@ export const useRoomStore = create<RoomState>()(
             walls: [],
             measurements: [],
             stairPolygons: [], // Add empty stair polygons array
+            furnitureItems: [], // FASE 5A: Initialize empty furniture array
             hasClosedContour: false,
             name: 'Ground Floor'
           }
@@ -198,6 +206,7 @@ export const useRoomStore = create<RoomState>()(
                 walls: [],
                 measurements: [],
                 stairPolygons: [], // Include empty stairPolygons array
+                furnitureItems: [], // FASE 5A: Include empty furniture array
                 hasClosedContour: false,
                 name
               };
@@ -342,6 +351,7 @@ export const useRoomStore = create<RoomState>()(
               walls: [],
               measurements: [],
               stairPolygons: [],
+              furnitureItems: [], // FASE 5A: Include empty furniture array
               hasClosedContour: false,
               name: 'Ground Floor'
             }
