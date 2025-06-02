@@ -197,41 +197,17 @@ export const useRoomStore = create<RoomState>()(
         })),
 
         // FASE 5A: Furniture operations
-        setFurnitureItems: (items) => set((state) => {
-          console.log("🔍 ROOT CAUSE: setFurnitureItems called with:", items);
-          console.log("🔍 ROOT CAUSE: Target floor:", state.currentFloor);
-          console.log("🔍 ROOT CAUSE: Items analysis:");
-          items.forEach((item, index) => {
-            console.log(`  Item ${index}: ${typeof item} - ${item === "ground" ? "CORRUPTED STRING!" : "Valid"}`, item);
-          });
-          
-          return {
-            floors: {
-              ...state.floors,
-              [state.currentFloor]: {
-                ...state.floors[state.currentFloor],
-                furnitureItems: items
-              }
+        setFurnitureItems: (items) => set((state) => ({
+          floors: {
+            ...state.floors,
+            [state.currentFloor]: {
+              ...state.floors[state.currentFloor],
+              furnitureItems: items
             }
-          };
-        }),
+          }
+        })),
 
         addFurnitureToFloor: (floorName, item) => set((state) => {
-          console.log("🏪 STORE TEST: Adding furniture to floor:", {
-            floorName,
-            furnitureId: item.id,
-            currentFurnitureCount: state.floors[floorName]?.furnitureItems?.length || 0,
-            newItem: item
-          });
-          
-          // ROOT CAUSE ANALYSIS: Log current array contents before modification
-          const currentArray = state.floors[floorName]?.furnitureItems || [];
-          console.log("🔍 ROOT CAUSE: Current array before adding:", currentArray);
-          console.log("🔍 ROOT CAUSE: Each item analysis:");
-          currentArray.forEach((item, index) => {
-            console.log(`  Item ${index}: ${typeof item} - ${item === "ground" ? "CORRUPTED STRING" : "Valid object"}`, item);
-          });
-          
           // Clean existing array - remove any invalid items (strings, nulls, etc.)
           const existingItems = state.floors[floorName]?.furnitureItems || [];
           const cleanedItems = existingItems.filter(furnitureItem => 
@@ -240,12 +216,6 @@ export const useRoomStore = create<RoomState>()(
             furnitureItem.type && 
             furnitureItem.position
           );
-          
-          console.log("🧹 STORE CLEANUP: Removed invalid items:", {
-            original: existingItems.length,
-            cleaned: cleanedItems.length,
-            removed: existingItems.length - cleanedItems.length
-          });
           
           return {
             floors: {
@@ -259,12 +229,6 @@ export const useRoomStore = create<RoomState>()(
         }),
 
         updateFurnitureInFloor: (floorName, itemId, item) => set((state) => {
-          console.log("🔄 STORE TEST: Updating furniture in floor:", {
-            floorName,
-            itemId,
-            currentItems: state.floors[floorName]?.furnitureItems?.length || 0,
-            updateData: item
-          });
           return {
             floors: {
               ...state.floors,
@@ -455,27 +419,20 @@ export const useRoomStore = create<RoomState>()(
         name: 'room-storage',
         onRehydrateStorage: () => (state) => {
           if (state) {
-            console.log("🧹 AUTO-CLEANUP: Checking for corrupted furniture data on load...");
-            
             // Clean corrupted furniture data automatically
-            let hasCorruption = false;
             const cleanedFloors = { ...state.floors };
             
             Object.keys(cleanedFloors).forEach(floorName => {
               const floor = cleanedFloors[floorName];
               if (floor && floor.furnitureItems) {
-                const originalCount = floor.furnitureItems.length;
                 const cleanedItems = floor.furnitureItems.filter(item => 
                   item && 
                   typeof item === 'object' && 
                   item.type && 
                   item.position
                 );
-                const corruptedCount = originalCount - cleanedItems.length;
                 
-                if (corruptedCount > 0) {
-                  hasCorruption = true;
-                  console.log(`🧹 AUTO-CLEANUP: Floor ${floorName} - removed ${corruptedCount} corrupted items`);
+                if (cleanedItems.length !== floor.furnitureItems.length) {
                   cleanedFloors[floorName] = {
                     ...floor,
                     furnitureItems: cleanedItems
@@ -484,12 +441,7 @@ export const useRoomStore = create<RoomState>()(
               }
             });
             
-            if (hasCorruption) {
-              console.log("🧹 AUTO-CLEANUP: Applied automatic corruption cleanup");
-              state.floors = cleanedFloors;
-            } else {
-              console.log("🧹 AUTO-CLEANUP: No corruption detected");
-            }
+            state.floors = cleanedFloors;
           }
         },
       }
