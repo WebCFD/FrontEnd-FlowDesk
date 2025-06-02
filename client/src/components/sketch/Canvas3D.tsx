@@ -867,19 +867,11 @@ export default function Canvas3D({
       const model = createFurnitureModel(furnitureItem, scene);
       
       if (model) {
-        // PHASE 5: Pure props pattern - use only callback
-        console.log("📦 PHASE 5: Adding furniture via props callback:", {
-          floorName: surfaceDetection.floorName,
-          furnitureId: furnitureItem.id,
-          furnitureType: furnitureItem.type,
-          position: furnitureItem.position
-        });
+        // Add furniture via callback
+        console.log(`🪑 FURNITURE ADD: Adding ${furnitureItem.type} to floor ${surfaceDetection.floorName}`);
+        onFurnitureAdd?.(surfaceDetection.floorName, furnitureItem);
         
-        // Use only the callback for furniture addition
-        onFurnitureAdd?.(furnitureItem);
-        
-        // Store the furniture item for auto-opening dialog
-        console.log("🎛️ Storing furniture item for auto-open dialog:", furnitureItem);
+        // Store for dialog
         newFurnitureForDialog.current = furnitureItem;
       }
       
@@ -1949,17 +1941,22 @@ export default function Canvas3D({
       });
     }
 
-    // Create furniture items from props (Phase 3: Rendering Integration)
+    // Create furniture items from props
     if (floorData.furnitureItems && floorData.furnitureItems.length > 0) {
-      console.log(`PHASE 3: Rendering ${floorData.furnitureItems.length} furniture items for floor ${floorData.name}`);
+      console.log(`🪑 FURNITURE RENDER: Floor ${floorData.name} has ${floorData.furnitureItems.length} furniture items`);
       
       floorData.furnitureItems.forEach((furnitureItem) => {
-        // Create 3D furniture model using existing furniture creation logic
+        console.log(`🪑 FURNITURE RENDER: Creating model for ${furnitureItem.type} at`, furnitureItem.position);
         const furnitureModel = createFurnitureModel(furnitureItem, sceneRef.current!);
         if (furnitureModel) {
           objects.push(furnitureModel);
+          console.log(`🪑 FURNITURE RENDER: Successfully added ${furnitureItem.type} to scene`);
+        } else {
+          console.log(`❌ FURNITURE RENDER: Failed to create model for ${furnitureItem.type}`);
         }
       });
+    } else {
+      console.log(`🪑 FURNITURE RENDER: Floor ${floorData.name} has no furniture items`);
     }
 
     return objects;
