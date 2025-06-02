@@ -1,0 +1,117 @@
+ Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.Understand this warningAI
+Canvas3D.tsx:1946 🪑 FURNITURE RENDER: Floor Ground Floor has 2 furniture items
+Canvas3D.tsx:1949 🪑 FURNITURE RENDER: Creating model for undefined at undefined
+Canvas3D.tsx:686 Creating furniture model for: ground
+Canvas3D.tsx:687 Furniture type: undefined undefined
+Canvas3D.tsx:690 Furniture item missing type property: ground
+createFurnitureModel @ Canvas3D.tsx:690
+(anonymous) @ Canvas3D.tsx:1950
+createFloorObjects @ Canvas3D.tsx:1948
+(anonymous) @ Canvas3D.tsx:4159
+(anonymous) @ Canvas3D.tsx:4143
+commitHookEffectListMount @ chunk-WERSD76P.js?v=1e4e45b3:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=1e4e45b3:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=1e4e45b3:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=1e4e45b3:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=1e4e45b3:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=1e4e45b3:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=1e4e45b3:19447
+commitRootImpl @ chunk-WERSD76P.js?v=1e4e45b3:19416
+commitRoot @ chunk-WERSD76P.js?v=1e4e45b3:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=1e4e45b3:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=1e4e45b3:9119
+(anonymous) @ chunk-WERSD76P.js?v=1e4e45b3:18627Understand this errorAI
+Canvas3D.tsx:1955 ❌ FURNITURE RENDER: Failed to create model for undefined
+Canvas3D.tsx:1949 🪑 FURNITURE RENDER: Creating model for undefined at undefined
+Canvas3D.tsx:686 Creating furniture model for: ground
+Canvas3D.tsx:687 Furniture type: undefined undefined
+Canvas3D.tsx:690 Furniture item missing type property: ground
+createFurnitureModel @ Canvas3D.tsx:690
+(anonymous) @ Canvas3D.tsx:1950
+createFloorObjects @ Canvas3D.tsx:1948
+(anonymous) @ Canvas3D.tsx:4159
+(anonymous) @ Canvas3D.tsx:4143
+commitHookEffectListMount @ chunk-WERSD76P.js?v=1e4e45b3:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=1e4e45b3:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=1e4e45b3:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=1e4e45b3:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=1e4e45b3:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=1e4e45b3:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=1e4e45b3:19447
+commitRootImpl @ chunk-WERSD76P.js?v=1e4e45b3:19416
+commitRoot @ chunk-WERSD76P.js?v=1e4e45b3:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=1e4e45b3:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=1e4e45b3:9119
+(anonymous) @ chunk-WERSD76P.js?v=1e4e45b3:18627Understand this errorAI
+Canvas3D.tsx:1955 ❌ FURNITURE RENDER: Failed to create model for undefined
+chunk-WERSD76P.js?v=1e4e45b3:18625 [Violation] 'click' handler took 189ms
+Canvas3D.tsx:686 Creating furniture model for: {id: 'table_1748893414336', type: 'table', name: 'Table', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:687 Furniture type: table string
+room-store.ts:211 🏪 STORE TEST: Adding furniture to floor: {floorName: 'ground', furnitureId: undefined, currentFurnitureCount: 2, newItem: 'ground'}
+Canvas3D.tsx:1946 🪑 FURNITURE RENDER: Floor Ground Floor has 3 furniture items
+Canvas3D.tsx:1949 🪑 FURNITURE RENDER: Creating model for undefined at undefined
+Canvas3D.tsx:686 Creating furniture model for: ground
+Canvas3D.tsx:687 Furniture type: undefined undefined
+Canvas3D.tsx:690 Furniture item missing type property: ground
+createFurnitureModel @ Canvas3D.tsx:690
+(anonymous) @ Canvas3D.tsx:1950
+createFloorObjects @ Canvas3D.tsx:1948
+(anonymous) @ Canvas3D.tsx:4159
+(anonymous) @ Canvas3D.tsx:4143
+commitHookEffectListMount @ chunk-WERSD76P.js?v=1e4e45b3:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=1e4e45b3:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=1e4e45b3:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=1e4e45b3:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=1e4e45b3:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=1e4e45b3:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=1e4e45b3:19447
+commitRootImpl @ chunk-WERSD76P.js?v=1e4e45b3:19416
+commitRoot @ chunk-WERSD76P.js?v=1e4e45b3:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=1e4e45b3:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=1e4e45b3:9119
+(anonymous) @ chunk-WERSD76P.js?v=1e4e45b3:18627Understand this errorAI
+Canvas3D.tsx:1955 ❌ FURNITURE RENDER: Failed to create model for undefined
+Canvas3D.tsx:1949 🪑 FURNITURE RENDER: Creating model for undefined at undefined
+Canvas3D.tsx:686 Creating furniture model for: ground
+Canvas3D.tsx:687 Furniture type: undefined undefined
+Canvas3D.tsx:690 Furniture item missing type property: ground
+createFurnitureModel @ Canvas3D.tsx:690
+(anonymous) @ Canvas3D.tsx:1950
+createFloorObjects @ Canvas3D.tsx:1948
+(anonymous) @ Canvas3D.tsx:4159
+(anonymous) @ Canvas3D.tsx:4143
+commitHookEffectListMount @ chunk-WERSD76P.js?v=1e4e45b3:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=1e4e45b3:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=1e4e45b3:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=1e4e45b3:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=1e4e45b3:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=1e4e45b3:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=1e4e45b3:19447
+commitRootImpl @ chunk-WERSD76P.js?v=1e4e45b3:19416
+commitRoot @ chunk-WERSD76P.js?v=1e4e45b3:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=1e4e45b3:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=1e4e45b3:9119
+(anonymous) @ chunk-WERSD76P.js?v=1e4e45b3:18627Understand this errorAI
+Canvas3D.tsx:1955 ❌ FURNITURE RENDER: Failed to create model for undefined
+Canvas3D.tsx:1949 🪑 FURNITURE RENDER: Creating model for undefined at undefined
+Canvas3D.tsx:686 Creating furniture model for: ground
+Canvas3D.tsx:687 Furniture type: undefined undefined
+Canvas3D.tsx:690 Furniture item missing type property: ground
+createFurnitureModel @ Canvas3D.tsx:690
+(anonymous) @ Canvas3D.tsx:1950
+createFloorObjects @ Canvas3D.tsx:1948
+(anonymous) @ Canvas3D.tsx:4159
+(anonymous) @ Canvas3D.tsx:4143
+commitHookEffectListMount @ chunk-WERSD76P.js?v=1e4e45b3:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=1e4e45b3:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=1e4e45b3:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=1e4e45b3:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=1e4e45b3:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=1e4e45b3:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=1e4e45b3:19447
+commitRootImpl @ chunk-WERSD76P.js?v=1e4e45b3:19416
+commitRoot @ chunk-WERSD76P.js?v=1e4e45b3:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=1e4e45b3:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=1e4e45b3:9119
+(anonymous) @ chunk-WERSD76P.js?v=1e4e45b3:18627Understand this errorAI
+Canvas3D.tsx:1955 ❌ FURNITURE RENDER: Failed to create model for undefined

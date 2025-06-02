@@ -682,10 +682,6 @@ const createFurnitureModel = (
   furnitureItem: FurnitureItem,
   scene: THREE.Scene
 ): THREE.Group | null => {
-  // Debug the furniture item to understand the issue
-  console.log('Creating furniture model for:', furnitureItem);
-  console.log('Furniture type:', furnitureItem.type, typeof furnitureItem.type);
-  
   if (!furnitureItem.type) {
     console.error('Furniture item missing type property:', furnitureItem);
     return null;
@@ -1943,20 +1939,22 @@ export default function Canvas3D({
 
     // Create furniture items from props
     if (floorData.furnitureItems && floorData.furnitureItems.length > 0) {
-      console.log(`🪑 FURNITURE RENDER: Floor ${floorData.name} has ${floorData.furnitureItems.length} furniture items`);
+      // Filter out invalid furniture items (corrupted data that are just strings)
+      const validFurnitureItems = floorData.furnitureItems.filter((item): item is FurnitureItem => {
+        return typeof item === 'object' && 
+               item !== null && 
+               typeof item.type === 'string' && 
+               typeof item.id === 'string' &&
+               item.position &&
+               typeof item.position.x === 'number';
+      });
       
-      floorData.furnitureItems.forEach((furnitureItem) => {
-        console.log(`🪑 FURNITURE RENDER: Creating model for ${furnitureItem.type} at`, furnitureItem.position);
+      validFurnitureItems.forEach((furnitureItem) => {
         const furnitureModel = createFurnitureModel(furnitureItem, sceneRef.current!);
         if (furnitureModel) {
           objects.push(furnitureModel);
-          console.log(`🪑 FURNITURE RENDER: Successfully added ${furnitureItem.type} to scene`);
-        } else {
-          console.log(`❌ FURNITURE RENDER: Failed to create model for ${furnitureItem.type}`);
         }
       });
-    } else {
-      console.log(`🪑 FURNITURE RENDER: Floor ${floorData.name} has no furniture items`);
     }
 
     return objects;
