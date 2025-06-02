@@ -1584,7 +1584,7 @@ export default function Canvas3D({
       const floor = new THREE.Mesh(floorGeometry, floorMaterial);
       floor.position.z = baseHeight;
       floor.userData = { type: 'floor', floorName: floorData.name }; // CRITICAL for raycasting
-      console.log(`🎨 FLOOR VISUAL - Created ${floorData.name} floor at Z=${baseHeight} with color:`, floorColor.toString(16));
+
       objects.push(floor);
 
       // Ceiling surface with violet tones from light to dark (bottom to top)
@@ -1604,7 +1604,7 @@ export default function Canvas3D({
       const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
       ceiling.position.z = baseHeight + floorCeilingHeight;
       ceiling.userData = { type: 'ceiling', floorName: floorData.name }; // For completeness
-      console.log(`🎨 CEILING VISUAL - Created ${floorData.name} ceiling at Z=${baseHeight + floorCeilingHeight} with color:`, ceilingColor.toString(16));
+
       objects.push(ceiling);
     }
 
@@ -2594,19 +2594,8 @@ export default function Canvas3D({
 
         // Log object type and info
         if (object instanceof THREE.Mesh) {
-          console.log(
-            `Found mesh: ${object.uuid.substring(0, 8)}`,
-            `userData:`,
-            object.userData,
-            `type:`,
-            object.userData?.type || "none",
-          );
+          // Object tracking for debugging
         } else if (object instanceof THREE.ArrowHelper) {
-          console.log(
-            `Found ArrowHelper: ${object.uuid.substring(0, 8)}`,
-            `userData:`,
-            object.userData,
-          );
           arrowCount++;
         } else {
           otherObjectCount++;
@@ -2619,7 +2608,6 @@ export default function Canvas3D({
           object.userData.type &&
           ["window", "door", "vent"].includes(object.userData.type)
         ) {
-          console.log("✅ Adding to airEntryMeshes");
           airEntryMeshes.push(object as THREE.Mesh);
         }
 
@@ -2632,7 +2620,6 @@ export default function Canvas3D({
             object.userData?.direction === "y" ||
             object.userData?.direction === "z")
         ) {
-          console.log("✅ Adding to axesHelpers");
           axesHelpers.push(object);
         }
       });
@@ -3196,9 +3183,7 @@ export default function Canvas3D({
               const screenX = (screenPos.x + 1) / 2 * window.innerWidth;
               const screenY = -(screenPos.y - 1) / 2 * window.innerHeight;
               
-              console.log(`📌 Highlighted object screen position: (${screenX.toFixed(0)}, ${screenY.toFixed(0)})`);
-              console.log(`📌 Mouse position: (${event.clientX}, ${event.clientY})`);
-              console.log(`📌 Distance: ${Math.sqrt(Math.pow(screenX - event.clientX, 2) + Math.pow(screenY - event.clientY, 2)).toFixed(1)}px`);
+
             }
             
             setDebugInfo(prev => ({
@@ -3211,7 +3196,6 @@ export default function Canvas3D({
             
             // If there are no intersections and we have a previously hovered target, reset it
             if (!hasIntersections && hoveredEraseTarget) {
-              console.log("🔄 Clearing previous highlight - no intersection found");
               
               try {
                 // Restore original material if it exists
@@ -4793,15 +4777,12 @@ export default function Canvas3D({
 
     // Double-click handler for furniture editing
     const handleDoubleClick = (event: MouseEvent) => {
-      console.log("🖱️ Double-click detected!");
-      
       // Allow furniture editing even in presentation mode for selective editing
       // Other editing interactions remain disabled in presentation mode
       
       event.preventDefault();
       
       if (!sceneRef.current || !cameraRef.current) {
-        console.log("❌ Scene or camera not available");
         return;
       }
       
@@ -4811,8 +4792,6 @@ export default function Canvas3D({
         ((event.clientX - rect.left) / rect.width) * 2 - 1,
         -((event.clientY - rect.top) / rect.height) * 2 + 1
       );
-      
-      console.log("🎯 Mouse coordinates:", mouse);
       
       // Create raycaster
       const raycaster = new THREE.Raycaster();
@@ -4829,16 +4808,12 @@ export default function Canvas3D({
         // Also check for meshes within furniture groups
         else if (object instanceof THREE.Mesh && object.parent?.userData.type === 'furniture') {
           furnitureObjects.push(object);
-          console.log("🪑 Found furniture mesh:", object.parent?.userData);
+
         }
       });
       
-      console.log(`🔍 Found ${furnitureObjects.length} furniture objects in scene`);
-      
       // Check for intersections (recursive to handle group children)
       const intersects = raycaster.intersectObjects(furnitureObjects, true);
-      
-      console.log(`💥 Found ${intersects.length} intersections`);
       
       if (intersects.length > 0) {
         const intersectedObject = intersects[0].object;
@@ -4852,11 +4827,7 @@ export default function Canvas3D({
         if (furnitureGroup && furnitureGroup.userData.type === 'furniture') {
           const furnitureId = furnitureGroup.userData.furnitureId;
           
-          console.log("✅ Intersected furniture object:", {
-            furnitureId,
-            userData: furnitureGroup.userData,
-            position: furnitureGroup.position
-          });
+
           
           if (furnitureId) {
             // Find the furniture item data
