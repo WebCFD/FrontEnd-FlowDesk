@@ -2384,13 +2384,7 @@ export default function WizardDesign() {
               onAirEntryTransparencyChange={(value) => {
                 setAirEntryTransparency(value);
               }}
-              onFurnitureAdd={(item) => {
-                // TODO: Integrate with furniture store/state management
-                toast({
-                  title: "Furniture Added",
-                  description: `${item.name} has been placed on ${currentFloor}`,
-                });
-              }}
+              onFurnitureAdd={handleFurnitureAdd}
               onUpdateFurniture={(item) => {
                 toast({
                   title: "Furniture Updated",

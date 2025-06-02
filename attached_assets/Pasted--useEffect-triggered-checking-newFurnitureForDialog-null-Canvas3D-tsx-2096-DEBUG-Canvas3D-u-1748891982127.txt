@@ -1,0 +1,27 @@
+🔍 useEffect triggered - checking newFurnitureForDialog: null
+Canvas3D.tsx:2096 🔧 DEBUG: Canvas3D useEffect initialization starting
+Canvas3D.tsx:2103 🔧 DEBUG: Container found, initializing Three.js scene
+Canvas3D.tsx:2110 🔧 DEBUG: Scene created and assigned to ref
+Canvas3D.tsx:1610 🎨 FLOOR VISUAL - Created Ground Floor floor at Z=0 with color: ffcccc
+Canvas3D.tsx:1630 🎨 CEILING VISUAL - Created Ground Floor ceiling at Z=220 with color: f0e6ff
+Canvas3D.tsx:1972 🪑 FURNITURE RENDER: Floor Ground Floor has no furniture items
+chunk-WERSD76P.js?v=1e4e45b3:18625 [Violation] 'click' handler took 200ms
+Canvas3D.tsx:871 🪑 CANVAS3D: About to call onFurnitureAdd callback for table on floor ground
+Canvas3D.tsx:872 🔍 CALLBACK DEBUG: {exists: true, type: 'function', isFunction: true, stringified: '(item) => {\n          toast({\n            title: "Furniture Added",\n            description: `${item'}
+Canvas3D.tsx:880 🪑 CANVAS3D: Calling callback with args: {floorName: 'ground', itemType: 'table'}
+Canvas3D.tsx:882 🪑 CANVAS3D: Callback call completed
+wizard-design:1 [.WebGL-0x2c5408c4d400] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+wizard-design:1 [.WebGL-0x2c5408c4d400] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+wizard-design:1 [.WebGL-0x2c5408c4d400] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+wizard-design:1 [.WebGL-0x2c5408c4d400] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+wizard-design:1 [.WebGL-0x2c5408c4d400] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+wizard-design:1 [.WebGL-0x2c5408c4d400] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+wizard-design:1 [.WebGL-0x2c5408c4d400] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+Canvas3D.tsx:968 🔍 useEffect triggered - checking newFurnitureForDialog: null
+Canvas3D.tsx:2096 🔧 DEBUG: Canvas3D useEffect initialization starting
+Canvas3D.tsx:2103 🔧 DEBUG: Container found, initializing Three.js scene
+Canvas3D.tsx:2110 🔧 DEBUG: Scene created and assigned to ref
+Canvas3D.tsx:1610 🎨 FLOOR VISUAL - Created Ground Floor floor at Z=0 with color: ffcccc
+Canvas3D.tsx:1630 🎨 CEILING VISUAL - Created Ground Floor ceiling at Z=220 with color: f0e6ff
+Canvas3D.tsx:1972 🪑 FURNITURE RENDER: Floor Ground Floor has no furniture items
+chunk-WERSD76P.js?v=1e4e45b3:18625 [Violation] 'click' handler took 294ms
