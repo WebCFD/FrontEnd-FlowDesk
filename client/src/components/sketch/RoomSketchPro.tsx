@@ -88,6 +88,18 @@ export function RoomSketchPro({
   onComponentMount,
   materialTheme = "modern"
 }: RoomSketchProProps) {
+  
+  // PERSISTENCE DEBUG: Track props received by RoomSketchPro
+  console.log(`🔍 RSP PERSISTENCE: RoomSketchPro props received`);
+  console.log(`🔍 RSP PERSISTENCE: Current floor: ${currentFloor}`);
+  console.log(`🔍 RSP PERSISTENCE: Floors:`, floors);
+  console.log(`🔍 RSP PERSISTENCE: onFurnitureAdd callback:`, !!onFurnitureAdd);
+  
+  const currentFloorData = floors?.[currentFloor];
+  if (currentFloorData?.furnitureItems) {
+    console.log(`🔍 RSP PERSISTENCE: Floor ${currentFloor} furniture count: ${currentFloorData.furnitureItems.length}`);
+    console.log(`🔍 RSP PERSISTENCE: Floor ${currentFloor} furniture items:`, currentFloorData.furnitureItems);
+  }
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedTheme, setSelectedTheme] = useState(materialTheme);
   const [lightingIntensity, setLightingIntensity] = useState(1.5);

@@ -2340,18 +2340,17 @@ export default function WizardDesign() {
   );
 
   const renderCanvasSection = (mode = "tabs") => {
-    // Logs para rastrear datos de muebles cuando cambias entre vistas
-    if (tab === "3d-preview" && mode === "tabs") {
-      const currentFloorData = floors[currentFloor];
-      console.log(`🪑 VIEW SWITCH: Switching to 3D view for floor ${currentFloor}`);
-      console.log(`🪑 VIEW SWITCH: Floor ${currentFloor} has ${currentFloorData?.furnitureItems?.length || 0} furniture items`);
-      if (currentFloorData?.furnitureItems?.length > 0) {
-        console.log(`🪑 VIEW SWITCH: Furniture items:`, currentFloorData.furnitureItems.map(item => ({ 
-          id: item.id, 
-          type: item.type, 
-          position: item.position 
-        })));
-      }
+    // PERSISTENCE DEBUG: Track furniture data when switching views
+    console.log(`🔍 PERSISTENCE: Rendering canvas section, mode: ${mode}, tab: ${tab}`);
+    console.log(`🔍 PERSISTENCE: Current floor: ${currentFloor}`);
+    console.log(`🔍 PERSISTENCE: Floors state:`, floors);
+    
+    const currentFloorData = floors[currentFloor];
+    console.log(`🔍 PERSISTENCE: Current floor data:`, currentFloorData);
+    console.log(`🔍 PERSISTENCE: Furniture count: ${currentFloorData?.furnitureItems?.length || 0}`);
+    
+    if (currentFloorData?.furnitureItems?.length > 0) {
+      console.log(`🔍 PERSISTENCE: Furniture items:`, currentFloorData.furnitureItems);
     }
 
     return (
