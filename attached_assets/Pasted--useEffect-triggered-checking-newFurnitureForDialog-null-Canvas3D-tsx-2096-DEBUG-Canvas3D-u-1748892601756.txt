@@ -1,0 +1,39 @@
+🔍 useEffect triggered - checking newFurnitureForDialog: null
+Canvas3D.tsx:2096 🔧 DEBUG: Canvas3D useEffect initialization starting
+Canvas3D.tsx:2103 🔧 DEBUG: Container found, initializing Three.js scene
+Canvas3D.tsx:2110 🔧 DEBUG: Scene created and assigned to ref
+Canvas3D.tsx:1610 🎨 FLOOR VISUAL - Created Ground Floor floor at Z=0 with color: ffcccc
+Canvas3D.tsx:1630 🎨 CEILING VISUAL - Created Ground Floor ceiling at Z=220 with color: f0e6ff
+Canvas3D.tsx:1972 🪑 FURNITURE RENDER: Floor Ground Floor has no furniture items
+chunk-WERSD76P.js?v=1e4e45b3:18625 [Violation] 'click' handler took 312ms
+Canvas3D.tsx:871 🪑 CANVAS3D: About to call onFurnitureAdd callback for table on floor ground
+Canvas3D.tsx:872 🔍 CALLBACK DEBUG: {exists: true, type: 'function', isFunction: true, stringified: '(floorName, item) => {\n    console.log(`🪑 CALLBACK EXECUTED: handleFurnitureAdd called with ${item.'}
+Canvas3D.tsx:880 🪑 CANVAS3D: Calling callback with args: {floorName: 'ground', itemType: 'table'}
+wizard-design.tsx:1074 🪑 CALLBACK EXECUTED: handleFurnitureAdd called with table for floor ground
+wizard-design.tsx:1078 🪑 TEST 1 - Store BEFORE: Floor ground has 0 furniture items
+wizard-design.tsx:1081 🪑 TEST 2 - Calling addFurnitureToFloor...
+room-store.ts:211 🏪 STORE TEST: Adding furniture to floor: {floorName: 'ground', furnitureId: 'table_1748892548120', currentFurnitureCount: 0, newItem: {…}}
+wizard-design.tsx:1086 🪑 TEST 3 - Store AFTER: Floor ground has 1 furniture items
+wizard-design.tsx:1090 🪑 TEST 4 - Props data: Floor ground has 0 furniture items in props
+Canvas3D.tsx:882 🪑 CANVAS3D: Callback call completed
+Canvas3D.tsx:968 🔍 useEffect triggered - checking newFurnitureForDialog: {id: 'table_1748892548120', type: 'table', name: 'Table', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:971 🎛️ Auto-opening dialog for new furniture: {id: 'table_1748892548120', type: 'table', name: 'Table', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:978 🎛️ setEditingFurniture called with: {index: 0, item: {…}}
+Canvas3D.tsx:1610 🎨 FLOOR VISUAL - Created Ground Floor floor at Z=0 with color: ffcccc
+Canvas3D.tsx:1630 🎨 CEILING VISUAL - Created Ground Floor ceiling at Z=220 with color: f0e6ff
+Canvas3D.tsx:1959 🪑 FURNITURE RENDER: Floor Ground Floor has 1 furniture items
+Canvas3D.tsx:1962 🪑 FURNITURE RENDER: Creating model for table at {x: 70.30963349521062, y: 13.608268867219408, z: 0}
+Canvas3D.tsx:1966 🪑 FURNITURE RENDER: Successfully added table to scene
+wizard-design:1 [.WebGL-0x2c5403b9d500] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+wizard-design:1 [.WebGL-0x2c5403b9d500] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+wizard-design:1 [.WebGL-0x2c5403b9d500] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+Canvas3D.tsx:968 🔍 useEffect triggered - checking newFurnitureForDialog: null
+Canvas3D.tsx:2096 🔧 DEBUG: Canvas3D useEffect initialization starting
+Canvas3D.tsx:2103 🔧 DEBUG: Container found, initializing Three.js scene
+Canvas3D.tsx:2110 🔧 DEBUG: Scene created and assigned to ref
+Canvas3D.tsx:1610 🎨 FLOOR VISUAL - Created Ground Floor floor at Z=0 with color: ffcccc
+Canvas3D.tsx:1630 🎨 CEILING VISUAL - Created Ground Floor ceiling at Z=220 with color: f0e6ff
+Canvas3D.tsx:1959 🪑 FURNITURE RENDER: Floor Ground Floor has 1 furniture items
+Canvas3D.tsx:1962 🪑 FURNITURE RENDER: Creating model for table at {x: 70.30963349521062, y: 13.608268867219408, z: 0}
+Canvas3D.tsx:1966 🪑 FURNITURE RENDER: Successfully added table to scene
+chunk-WERSD76P.js?v=1e4e45b3:18625 [Violation] 'click' handler took 210ms
