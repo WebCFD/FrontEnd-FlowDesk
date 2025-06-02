@@ -1071,29 +1071,13 @@ export default function WizardDesign() {
 
   // Phase 2: Furniture callback handlers
   const handleFurnitureAdd = useCallback((floorName: string, item: FurnitureItem) => {
-    console.log(`🪑 CALLBACK EXECUTED: handleFurnitureAdd called with ${item.type} for floor ${floorName}`);
-    
-    // Test 1: Verificar estado del store antes
-    const storeBefore = useRoomStore.getState().floors[floorName]?.furnitureItems || [];
-    console.log(`🪑 TEST 1 - Store BEFORE: Floor ${floorName} has ${storeBefore.length} furniture items`);
-    
-    // Test 2: Ejecutar la función del store
-    console.log(`🪑 TEST 2 - Calling addFurnitureToFloor...`);
     addFurnitureToFloor(floorName, item);
-    
-    // Test 3: Verificar estado del store después (inmediato)
-    const storeAfter = useRoomStore.getState().floors[floorName]?.furnitureItems || [];
-    console.log(`🪑 TEST 3 - Store AFTER: Floor ${floorName} has ${storeAfter.length} furniture items`);
-    
-    // Test 4: Verificar props locales
-    const currentFloorData = floors[floorName];
-    console.log(`🪑 TEST 4 - Props data: Floor ${floorName} has ${currentFloorData?.furnitureItems?.length || 0} furniture items in props`);
     
     toast({
       title: "Furniture Added",
       description: `Added ${item.type} to ${formatFloorText(floorName)}`,
     });
-  }, [addFurnitureToFloor, floors, toast]);
+  }, [addFurnitureToFloor, toast]);
 
   const handleFurnitureUpdate = (floorName: string, index: number, item: FurnitureItem) => {
     console.log("🪑 Phase 2: Updating furniture via props pattern:", { floorName, index, item });
@@ -2384,7 +2368,7 @@ export default function WizardDesign() {
               onAirEntryTransparencyChange={(value) => {
                 setAirEntryTransparency(value);
               }}
-              onFurnitureAdd={handleFurnitureAdd}
+              onFurnitureAdd={(item) => handleFurnitureAdd(currentFloor, item)}
               onUpdateFurniture={(item) => {
                 toast({
                   title: "Furniture Updated",
