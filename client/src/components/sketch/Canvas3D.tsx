@@ -103,8 +103,8 @@ interface Canvas3DProps {
   onSceneReady?: (scene: THREE.Scene, renderer: THREE.WebGLRenderer, camera: THREE.Camera) => void; // For RSP texture access
   // Furniture callbacks - Phase 2: Props pattern
   onFurnitureAdd?: (floorName: string, item: FurnitureItem) => void;
-  onFurnitureUpdate?: (floorName: string, index: number, item: FurnitureItem) => void;
-  onFurnitureDelete?: (floorName: string, index: number) => void;
+  onUpdateFurniture?: (floorName: string, index: number, item: FurnitureItem) => void;
+  onDeleteFurniture?: (floorName: string, index: number) => void;
 }
 
 
