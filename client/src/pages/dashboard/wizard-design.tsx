@@ -1070,7 +1070,7 @@ export default function WizardDesign() {
   };
 
   // Phase 2: Furniture callback handlers
-  const handleFurnitureAdd = (floorName: string, item: FurnitureItem) => {
+  const handleFurnitureAdd = useCallback((floorName: string, item: FurnitureItem) => {
     console.log(`🪑 CALLBACK EXECUTED: handleFurnitureAdd called with ${item.type} for floor ${floorName}`);
     
     // Test 1: Verificar estado del store antes
@@ -1093,7 +1093,7 @@ export default function WizardDesign() {
       title: "Furniture Added",
       description: `Added ${item.type} to ${formatFloorText(floorName)}`,
     });
-  };
+  }, [addFurnitureToFloor, floors, toast]);
 
   const handleFurnitureUpdate = (floorName: string, index: number, item: FurnitureItem) => {
     console.log("🪑 Phase 2: Updating furniture via props pattern:", { floorName, index, item });

@@ -1,0 +1,26 @@
+🔍 useEffect triggered - checking newFurnitureForDialog: null
+Canvas3D.tsx:2085 🔧 DEBUG: Canvas3D useEffect initialization starting
+Canvas3D.tsx:2092 🔧 DEBUG: Container found, initializing Three.js scene
+Canvas3D.tsx:2099 🔧 DEBUG: Scene created and assigned to ref
+Canvas3D.tsx:1599 🎨 FLOOR VISUAL - Created Ground Floor floor at Z=0 with color: ffcccc
+Canvas3D.tsx:1619 🎨 CEILING VISUAL - Created Ground Floor ceiling at Z=220 with color: f0e6ff
+Canvas3D.tsx:1961 🪑 FURNITURE RENDER: Floor Ground Floor has no furniture items
+chunk-WERSD76P.js?v=1e4e45b3:18625 [Violation] 'click' handler took 217ms
+Canvas3D.tsx:871 🪑 CANVAS3D: About to call onFurnitureAdd callback for table on floor ground
+Canvas3D.tsx:872 🪑 CANVAS3D: Callback exists: true
+Canvas3D.tsx:874 🪑 CANVAS3D: Callback executed successfully
+wizard-design:1 [.WebGL-0x2c540259e200] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+wizard-design:1 [.WebGL-0x2c540259e200] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+wizard-design:1 [.WebGL-0x2c540259e200] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+wizard-design:1 [.WebGL-0x2c540259e200] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+wizard-design:1 [.WebGL-0x2c540259e200] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+wizard-design:1 [.WebGL-0x2c540259e200] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+wizard-design:1 [.WebGL-0x2c540259e200] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+Canvas3D.tsx:957 🔍 useEffect triggered - checking newFurnitureForDialog: null
+Canvas3D.tsx:2085 🔧 DEBUG: Canvas3D useEffect initialization starting
+Canvas3D.tsx:2092 🔧 DEBUG: Container found, initializing Three.js scene
+Canvas3D.tsx:2099 🔧 DEBUG: Scene created and assigned to ref
+Canvas3D.tsx:1599 🎨 FLOOR VISUAL - Created Ground Floor floor at Z=0 with color: ffcccc
+Canvas3D.tsx:1619 🎨 CEILING VISUAL - Created Ground Floor ceiling at Z=220 with color: f0e6ff
+Canvas3D.tsx:1961 🪑 FURNITURE RENDER: Floor Ground Floor has no furniture items
+chunk-WERSD76P.js?v=1e4e45b3:18625 [Violation] 'click' handler took 282ms
