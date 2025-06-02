@@ -869,6 +869,12 @@ export default function Canvas3D({
       
       if (model) {
         // FASE 5A: Store furniture in room store for persistence
+        console.log("📦 FASE 5A TEST: Adding furniture to store:", {
+          floorName: surfaceDetection.floorName,
+          furnitureId: furnitureItem.id,
+          furnitureType: furnitureItem.type,
+          position: furnitureItem.position
+        });
         addFurnitureToFloor(surfaceDetection.floorName, furnitureItem);
         
         // Also call the callback if provided (for backward compatibility)
@@ -5047,7 +5053,13 @@ export default function Canvas3D({
       updatedAt: Date.now()
     };
 
-    // FASE 5A: Update furniture in room store for persistence
+    // FASE 5B: Update furniture in room store for persistence
+    console.log("🔄 FASE 5B TEST: Updating furniture in store:", {
+      floorName: editingFurniture.item.floorName,
+      furnitureId: editingFurniture.item.id,
+      oldData: editingFurniture.item,
+      newData: updatedFurniture
+    });
     updateFurnitureInFloor(editingFurniture.item.floorName, editingFurniture.item.id, updatedFurniture);
 
     // Call the parent component's handler if available (for backward compatibility)
