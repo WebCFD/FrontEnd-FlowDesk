@@ -333,11 +333,15 @@ export default function WizardDesign() {
     removeFloor,
     copyFloorAs,
     syncWallsForCurrentFloor,
+    // Phase 2: Add furniture store functions
+    addFurnitureToFloor,
+    updateFurnitureInFloor,
+    deleteFurnitureFromFloor,
   } = useRoomStore();
 
   // Get current floor data
   const currentFloorData = floors[currentFloor];
-  const { lines, airEntries, walls, measurements, hasClosedContour, stairPolygons } =
+  const { lines, airEntries, walls, measurements, hasClosedContour, stairPolygons, furnitureItems } =
     currentFloorData;
 
   // Auto-inicializar parámetros cuando se activa multifloor
