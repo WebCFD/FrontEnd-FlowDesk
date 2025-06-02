@@ -682,6 +682,15 @@ const createFurnitureModel = (
   furnitureItem: FurnitureItem,
   scene: THREE.Scene
 ): THREE.Group | null => {
+  // Debug the furniture item to understand the issue
+  console.log('Creating furniture model for:', furnitureItem);
+  console.log('Furniture type:', furnitureItem.type, typeof furnitureItem.type);
+  
+  if (!furnitureItem.type) {
+    console.error('Furniture item missing type property:', furnitureItem);
+    return null;
+  }
+
   let model: THREE.Group;
 
   // Create the appropriate model based on furniture type
@@ -700,6 +709,7 @@ const createFurnitureModel = (
       break;
     default:
       console.error(`Unknown furniture type: ${furnitureItem.type}`);
+      console.log('Available types should be: table, person, armchair, car');
       return null;
   }
 
