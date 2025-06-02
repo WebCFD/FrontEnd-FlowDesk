@@ -258,47 +258,6 @@ export const useRoomStore = create<RoomState>()(
           };
         }),
 
-        cleanCorruptedFurnitureData: () => set((state) => {
-          console.log("🧹 CLEANUP: Starting furniture data cleanup...");
-          
-          const cleanedFloors = { ...state.floors };
-          let totalCorrupted = 0;
-          let totalCleaned = 0;
-          
-          Object.keys(cleanedFloors).forEach(floorName => {
-            const floor = cleanedFloors[floorName];
-            if (floor && floor.furnitureItems) {
-              const originalCount = floor.furnitureItems.length;
-              const cleanedItems = floor.furnitureItems.filter(item => 
-                item && 
-                typeof item === 'object' && 
-                item.type && 
-                item.position
-              );
-              const cleanedCount = cleanedItems.length;
-              const corruptedCount = originalCount - cleanedCount;
-              
-              totalCorrupted += corruptedCount;
-              totalCleaned += cleanedCount;
-              
-              if (corruptedCount > 0) {
-                console.log(`🧹 CLEANUP: Floor ${floorName} - removed ${corruptedCount} corrupted items, kept ${cleanedCount} valid items`);
-                cleanedFloors[floorName] = {
-                  ...floor,
-                  furnitureItems: cleanedItems
-                };
-              }
-            }
-          });
-          
-          console.log(`🧹 CLEANUP COMPLETE: Removed ${totalCorrupted} corrupted items total, kept ${totalCleaned} valid items`);
-          
-          return {
-            ...state,
-            floors: cleanedFloors
-          };
-        }),
-
         updateFurnitureInFloor: (floorName, itemId, item) => set((state) => {
           console.log("🔄 STORE TEST: Updating furniture in floor:", {
             floorName,
@@ -494,6 +453,45 @@ export const useRoomStore = create<RoomState>()(
       }),
       {
         name: 'room-storage',
+        onRehydrateStorage: () => (state) => {
+          if (state) {
+            console.log("🧹 AUTO-CLEANUP: Checking for corrupted furniture data on load...");
+            
+            // Clean corrupted furniture data automatically
+            let hasCorruption = false;
+            const cleanedFloors = { ...state.floors };
+            
+            Object.keys(cleanedFloors).forEach(floorName => {
+              const floor = cleanedFloors[floorName];
+              if (floor && floor.furnitureItems) {
+                const originalCount = floor.furnitureItems.length;
+                const cleanedItems = floor.furnitureItems.filter(item => 
+                  item && 
+                  typeof item === 'object' && 
+                  item.type && 
+                  item.position
+                );
+                const corruptedCount = originalCount - cleanedItems.length;
+                
+                if (corruptedCount > 0) {
+                  hasCorruption = true;
+                  console.log(`🧹 AUTO-CLEANUP: Floor ${floorName} - removed ${corruptedCount} corrupted items`);
+                  cleanedFloors[floorName] = {
+                    ...floor,
+                    furnitureItems: cleanedItems
+                  };
+                }
+              }
+            });
+            
+            if (hasCorruption) {
+              console.log("🧹 AUTO-CLEANUP: Applied automatic corruption cleanup");
+              state.floors = cleanedFloors;
+            } else {
+              console.log("🧹 AUTO-CLEANUP: No corruption detected");
+            }
+          }
+        },
       }
     )
   )
