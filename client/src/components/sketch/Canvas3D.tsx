@@ -886,7 +886,7 @@ export default function Canvas3D({
     } catch (error) {
       console.error("Error processing furniture drop:", error);
     }
-  }, [currentFloor, migratedFloors, isMultifloor, floorParameters, addFurnitureToFloor, onFurnitureAdd]);
+  }, [currentFloor, migratedFloors, isMultifloor, floorParameters, onFurnitureAdd]);
 
   // Canvas3D initialization
   useEffect(() => {
@@ -980,43 +980,8 @@ export default function Canvas3D({
     }
   }, [floors, currentFloor]); // Trigger when floors update (after furniture is added)
 
-  // FASE 5C: Load stored furniture into scene AFTER scene is ready
-  const loadStoredFurniture = useCallback(() => {
-    if (!sceneRef.current) {
-      console.log("🔄 FASE 5C: Scene not ready yet, skipping furniture load");
-      return;
-    }
-    
-    const storedFurniture = storeFloors[currentFloor]?.furnitureItems || [];
-    console.log("🔄 FASE 5C: Loading stored furniture into scene:", {
-      floorName: currentFloor,
-      furnitureCount: storedFurniture.length,
-      items: storedFurniture.map(item => ({ id: item.id, type: item.type, position: item.position }))
-    });
-
-    // Clear existing furniture from scene
-    const furnitureGroups = sceneRef.current.children.filter((child: THREE.Object3D) => 
-      child.userData?.type === 'furniture'
-    );
-    furnitureGroups.forEach(group => sceneRef.current!.remove(group));
-
-    // Add stored furniture to scene
-    storedFurniture.forEach(furnitureItem => {
-      console.log("🏗️ Creating furniture model from store:", furnitureItem);
-      const model = createFurnitureModel(furnitureItem, sceneRef.current!);
-      if (model) {
-        console.log("✅ Successfully added stored furniture to scene:", furnitureItem.id);
-      } else {
-        console.error("❌ Failed to create furniture model for:", furnitureItem);
-      }
-    });
-    
-  }, [currentFloor, storeFloors]);
-
-  // Trigger furniture loading when floor changes OR when store updates
-  useEffect(() => {
-    loadStoredFurniture();
-  }, [loadStoredFurniture]);
+  // PHASE 5: Pure props pattern - furniture is now rendered in scene building loop
+  // No longer need manual furniture loading as it's handled in createFloorObjects
   // Track the selected air entry element for dragging
   const [selectedAirEntry, setSelectedAirEntry] = useState<{
     index: number;
@@ -5102,16 +5067,15 @@ export default function Canvas3D({
       updatedAt: Date.now()
     };
 
-    // FASE 5B: Update furniture in room store for persistence
-    console.log("🔄 FASE 5B TEST: Updating furniture in store:", {
+    // PHASE 5: Pure props pattern - use only callback for furniture updates
+    console.log("🔄 PHASE 5: Updating furniture via props callback:", {
       floorName: editingFurniture.item.floorName,
       furnitureId: editingFurniture.item.id,
       oldData: editingFurniture.item,
       newData: updatedFurniture
     });
-    updateFurnitureInFloor(editingFurniture.item.floorName, editingFurniture.item.id, updatedFurniture);
 
-    // Call the parent component's handler if available (for backward compatibility)
+    // Use only the callback for furniture updates
     onUpdateFurniture?.(updatedFurniture);
     
     setEditingFurniture(null);
