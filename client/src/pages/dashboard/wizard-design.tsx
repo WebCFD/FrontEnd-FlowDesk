@@ -2398,12 +2398,7 @@ export default function WizardDesign() {
                   description: `${item.name} has been modified`,
                 });
               }}
-              onDeleteFurniture={(itemId) => {
-                toast({
-                  title: "Furniture Deleted",
-                  description: "Furniture item has been removed",
-                });
-              }}
+              onDeleteFurniture={handleFurnitureDelete}
               isFurnitureEraserMode={isFurnitureEraserMode}
               onToggleFurnitureEraserMode={handleToggleFurnitureEraserMode}
             />
