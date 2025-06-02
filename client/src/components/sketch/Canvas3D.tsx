@@ -5002,7 +5002,7 @@ export default function Canvas3D({
   ) => {
     if (!editingFurniture || !sceneRef.current) return;
 
-    console.log("🔧 Updating furniture in scene:", editingFurniture.item.id, data);
+
 
     // Find the furniture object in the scene by ID
     const furnitureId = editingFurniture.item.id;
@@ -5015,7 +5015,7 @@ export default function Canvas3D({
     });
 
     if (furnitureGroup) {
-      console.log("✅ Found furniture object in scene, updating...");
+
       
       // Update position
       furnitureGroup.position.set(data.position.x, data.position.y, data.position.z);
@@ -5029,12 +5029,7 @@ export default function Canvas3D({
       // Update userData
       furnitureGroup.userData.furnitureName = data.name;
       
-      console.log("🎯 Furniture updated in scene:", {
-        position: data.position,
-        rotation: data.rotation,
-        scale: data.scale,
-        name: data.name
-      });
+
     } else {
       console.error("❌ Could not find furniture object in scene with ID:", furnitureId);
     }
@@ -5049,12 +5044,7 @@ export default function Canvas3D({
     };
 
     // PHASE 5: Pure props pattern - use only callback for furniture updates
-    console.log("🔄 PHASE 5: Updating furniture via props callback:", {
-      floorName: editingFurniture.item.floorName,
-      furnitureId: editingFurniture.item.id,
-      oldData: editingFurniture.item,
-      newData: updatedFurniture
-    });
+
 
     // Use only the callback for furniture updates
     onUpdateFurniture?.(updatedFurniture);
