@@ -953,18 +953,11 @@ export default function Canvas3D({
   
   // Effect to auto-open dialog for newly created furniture
   useEffect(() => {
-    console.log("🔍 useEffect triggered - checking newFurnitureForDialog:", newFurnitureForDialog.current);
+
     
     if (newFurnitureForDialog.current) {
-      console.log("🎛️ Auto-opening dialog for new furniture:", newFurnitureForDialog.current);
-      
       setEditingFurniture({
         index: 0, // This would be the actual index in a real furniture list
-        item: newFurnitureForDialog.current
-      });
-      
-      console.log("🎛️ setEditingFurniture called with:", {
-        index: 0,
         item: newFurnitureForDialog.current
       });
       
@@ -1595,7 +1588,7 @@ export default function Canvas3D({
       const floor = new THREE.Mesh(floorGeometry, floorMaterial);
       floor.position.z = baseHeight;
       floor.userData = { type: 'floor', floorName: floorData.name }; // CRITICAL for raycasting
-      console.log(`🎨 FLOOR VISUAL - Created ${floorData.name} floor at Z=${baseHeight} with color:`, floorColor.toString(16));
+
       objects.push(floor);
 
       // Ceiling surface with violet tones from light to dark (bottom to top)
@@ -1615,7 +1608,7 @@ export default function Canvas3D({
       const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
       ceiling.position.z = baseHeight + floorCeilingHeight;
       ceiling.userData = { type: 'ceiling', floorName: floorData.name }; // For completeness
-      console.log(`🎨 CEILING VISUAL - Created ${floorData.name} ceiling at Z=${baseHeight + floorCeilingHeight} with color:`, ceilingColor.toString(16));
+
       objects.push(ceiling);
     }
 
@@ -2078,21 +2071,14 @@ export default function Canvas3D({
   }, [onViewChange, handleViewChange]);
 
   useEffect(() => {
-    console.log("🔧 DEBUG: Canvas3D useEffect initialization starting");
-    
     if (!containerRef.current) {
-      console.error("🔴 DEBUG: containerRef.current is null!");
       return;
     }
-    
-    console.log("🔧 DEBUG: Container found, initializing Three.js scene");
 
     // Initialize scene
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xf8fafc);
     sceneRef.current = scene;
-    
-    console.log("🔧 DEBUG: Scene created and assigned to ref");
 
     // Initialize camera
     const camera = new THREE.PerspectiveCamera(
