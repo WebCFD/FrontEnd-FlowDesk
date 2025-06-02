@@ -207,27 +207,43 @@ export const useRoomStore = create<RoomState>()(
           }
         })),
 
-        addFurnitureToFloor: (floorName, item) => set((state) => ({
-          floors: {
-            ...state.floors,
-            [floorName]: {
-              ...state.floors[floorName],
-              furnitureItems: [...(state.floors[floorName]?.furnitureItems || []), item]
+        addFurnitureToFloor: (floorName, item) => set((state) => {
+          console.log("🏪 STORE TEST: Adding furniture to floor:", {
+            floorName,
+            furnitureId: item.id,
+            currentFurnitureCount: state.floors[floorName]?.furnitureItems?.length || 0,
+            newItem: item
+          });
+          return {
+            floors: {
+              ...state.floors,
+              [floorName]: {
+                ...state.floors[floorName],
+                furnitureItems: [...(state.floors[floorName]?.furnitureItems || []), item]
+              }
             }
-          }
-        })),
+          };
+        }),
 
-        updateFurnitureInFloor: (floorName, itemId, item) => set((state) => ({
-          floors: {
-            ...state.floors,
-            [floorName]: {
-              ...state.floors[floorName],
-              furnitureItems: state.floors[floorName]?.furnitureItems?.map(existing => 
-                existing.id === itemId ? { ...existing, ...item, updatedAt: Date.now() } : existing
-              ) || []
+        updateFurnitureInFloor: (floorName, itemId, item) => set((state) => {
+          console.log("🔄 STORE TEST: Updating furniture in floor:", {
+            floorName,
+            itemId,
+            currentItems: state.floors[floorName]?.furnitureItems?.length || 0,
+            updateData: item
+          });
+          return {
+            floors: {
+              ...state.floors,
+              [floorName]: {
+                ...state.floors[floorName],
+                furnitureItems: state.floors[floorName]?.furnitureItems?.map(existing => 
+                  existing.id === itemId ? { ...existing, ...item, updatedAt: Date.now() } : existing
+                ) || []
+              }
             }
-          }
-        })),
+          };
+        }),
 
         deleteFurnitureFromFloor: (floorName, itemId) => set((state) => ({
           floors: {

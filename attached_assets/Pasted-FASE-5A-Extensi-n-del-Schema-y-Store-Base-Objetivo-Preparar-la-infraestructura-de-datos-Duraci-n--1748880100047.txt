@@ -1,0 +1,61 @@
+FASE 5A: Extensión del Schema y Store Base
+Objetivo: Preparar la infraestructura de datos
+Duración: ~30 min
+
+Tareas:
+
+Agregar furnitureItems?: FurnitureItem[] al tipo FloorData en shared/schema.ts
+Actualizar funciones de migración existentes para incluir furniture
+Modificar el store de rooms para manejar furniture en wizard-design.tsx
+Verificar que la persistencia 2D no se rompa
+Entregables: Schema actualizado, sin cambios visuales aún
+
+FASE 5B: Conectores Store ↔ Canvas3D
+Objetivo: Reemplazar callbacks locales con acciones del store
+Duración: ~45 min
+
+Tareas:
+
+Crear acciones addFurnitureToFloor, updateFurnitureInFloor, deleteFurnitureFromFloor
+Conectar onFurnitureAdd de Canvas3D con el store global
+Conectar onUpdateFurniture con acciones del store
+Verificar sincronización: Store → Canvas3D → Visual
+Entregables: Furniture persistente entre navegación de pisos
+
+FASE 5C: Sincronización Canvas3D ↔ RoomSketchPro
+Objetivo: Renderizar furniture en ambas vistas consistentemente
+Duración: ~30 min
+
+Tareas:
+
+Modificar RoomSketchPro para leer furniture del store
+Asegurar que cambios en Canvas3D se reflejen en RSP
+Verificar que texturas y materiales se mantengan
+Testing de consistencia visual
+Entregables: Furniture visible y sincronizado en ambas vistas
+
+FASE 5D: Sistema de Eliminación (Eraser)
+Objetivo: Implementar herramienta de borrado
+Duración: ~40 min
+
+Tareas:
+
+Agregar botón "Eraser" al toolbar existente
+Implementar modo eraser en Canvas3D (click para eliminar)
+Agregar confirmación de eliminación
+Conectar eliminación con store global
+Actualizar ambas vistas tras eliminación
+Entregables: Sistema completo de eliminación funcional
+
+FASE 5E: Persistencia y Serialización
+Objetivo: Asegurar que furniture se guarde/cargue correctamente
+Duración: ~20 min
+
+Tareas:
+
+Verificar que furniture se incluye en exportación de diseños
+Testing de carga de proyectos con furniture
+Validar serialización JSON completa
+Testing de navegación entre pantallas
+Entregables: Persistencia completa, furniture sobrevive recargas
+
