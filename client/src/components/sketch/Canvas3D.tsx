@@ -865,16 +865,14 @@ export default function Canvas3D({
         updatedAt: Date.now()
       };
 
-      // Create and add 3D model to scene
+      // Create and add 3D model to scene in PREVIEW mode (not persisted yet)
       const model = createFurnitureModel(furnitureItem, scene);
       
       if (model) {
-        // Add furniture via callback
-        if (onFurnitureAdd && typeof onFurnitureAdd === 'function') {
-          onFurnitureAdd(surfaceDetection.floorName, furnitureItem);
-        }
+        // Mark as preview furniture (not persisted to data store yet)
+        model.userData.isPreview = true;
         
-        // Store for dialog
+        // Store for dialog - furniture will only be persisted when user confirms
         newFurnitureForDialog.current = furnitureItem;
       }
       
