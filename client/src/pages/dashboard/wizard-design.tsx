@@ -48,6 +48,7 @@ import {
   ChevronDown,
   FileText,
   Info,
+  Trash2,
 } from "lucide-react";
 import Canvas2D from "@/components/sketch/Canvas2D";
 import { RoomSketchPro } from "@/components/sketch/RoomSketchPro";
@@ -1312,7 +1313,7 @@ export default function WizardDesign() {
               >
                 <h3 className="font-semibold text-lg mb-4">3D Tools</h3>
                 <div className="space-y-4">
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-2 gap-2">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button
@@ -1359,20 +1360,36 @@ export default function WizardDesign() {
                       </DropdownMenuContent>
                     </DropdownMenu>
                     <Button
-                      variant={isEraserMode ? "default" : "outline"}
-                      className="w-full h-16 flex flex-col items-center justify-center gap-1"
-                      onClick={handleToggleEraserMode}
-                    >
-                      <Eraser className="w-6 h-6" />
-                      <span className="text-xs">Eraser</span>
-                    </Button>
-                    <Button
                       variant={isMeasureMode ? "default" : "outline"}
                       className="w-full h-16 flex flex-col items-center justify-center gap-1"
                       onClick={handleToggleMeasureMode}
                     >
                       <Ruler className="w-6 h-6" />
                       <span className="text-xs">Measure</span>
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button
+                      variant={isEraserMode ? "default" : "outline"}
+                      className={cn(
+                        "w-full h-16 flex flex-col items-center justify-center gap-1",
+                        isEraserMode && "bg-red-500 hover:bg-red-600 text-white border-red-600"
+                      )}
+                      onClick={handleToggleEraserMode}
+                    >
+                      <Eraser className="w-6 h-6" />
+                      <span className="text-xs">Eraser</span>
+                    </Button>
+                    <Button
+                      variant={isFurnitureEraserMode ? "default" : "outline"}
+                      className={cn(
+                        "w-full h-16 flex flex-col items-center justify-center gap-1",
+                        isFurnitureEraserMode && "bg-orange-500 hover:bg-orange-600 text-white border-orange-600"
+                      )}
+                      onClick={handleToggleFurnitureEraserMode}
+                    >
+                      <Trash2 className="w-6 h-6" />
+                      <span className="text-xs">Del Furn</span>
                     </Button>
                   </div>
 
