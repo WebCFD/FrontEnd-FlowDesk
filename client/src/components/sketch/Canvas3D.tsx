@@ -5097,17 +5097,8 @@ export default function Canvas3D({
       console.error("❌ Could not find furniture object in scene with ID:", furnitureId);
     }
 
-    // Update the furniture item data
-    const updatedFurniture: FurnitureItem = {
-      ...editingFurniture.item,
-      name: data.name,
-      position: data.position,
-      rotation: data.rotation,
-      updatedAt: Date.now()
-    };
-
-    // PHASE 5: For newly dropped furniture, don't call onUpdateFurniture as it's already persisted
-    // Only update the scene representation, not the data store
+    // For newly dropped furniture, only update scene visual properties
+    // Don't create data objects or call persistence callbacks since furniture is already saved
     
     setEditingFurniture(null);
   };
