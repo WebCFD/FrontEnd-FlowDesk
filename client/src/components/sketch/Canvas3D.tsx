@@ -5172,12 +5172,17 @@ export default function Canvas3D({
             const furnitureId = editingFurniture.item.id;
             
             // First: Remove from 3D scene (like handleClick does)
-            if (sceneRef.current) {
-              sceneRef.current.traverse((child) => {
-                if (child.userData.furnitureId === furnitureId && child.userData.type === 'furniture') {
-                  sceneRef.current?.remove(child);
-                }
-              });
+            try {
+              if (sceneRef.current && typeof sceneRef.current.traverse === 'function') {
+                sceneRef.current.traverse((child) => {
+                  if (child.userData?.furnitureId === furnitureId && child.userData?.type === 'furniture') {
+                    sceneRef.current?.remove(child);
+                  }
+                });
+              }
+            } catch (error) {
+              console.warn("Could not remove furniture from scene:", error);
+              // Continue with data store cleanup even if scene removal fails
             }
             
             // Second: Remove from data store via callback
