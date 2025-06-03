@@ -5106,11 +5106,8 @@ export default function Canvas3D({
       updatedAt: Date.now()
     };
 
-    // PHASE 5: Pure props pattern - use only callback for furniture updates
-
-
-    // Use only the callback for furniture updates
-    onUpdateFurniture?.(updatedFurniture);
+    // PHASE 5: For newly dropped furniture, don't call onUpdateFurniture as it's already persisted
+    // Only update the scene representation, not the data store
     
     setEditingFurniture(null);
   };
