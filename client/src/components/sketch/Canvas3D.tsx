@@ -105,7 +105,7 @@ interface Canvas3DProps {
   // Furniture callbacks - Phase 2: Props pattern
   onFurnitureAdd?: (floorName: string, item: FurnitureItem) => void;
   onUpdateFurniture?: (floorName: string, index: number, item: FurnitureItem) => void;
-  onDeleteFurniture?: (floorName: string, index: number) => void;
+  onDeleteFurniture?: (floorName: string, itemId: string) => void;
 }
 
 
@@ -5167,16 +5167,18 @@ export default function Canvas3D({
           onClose={() => setEditingFurniture(null)}
           onConfirm={(data) => handleFurnitureEdit(editingFurniture.index, data)}
           onCancel={() => {
-            if (!editingFurniture || !sceneRef.current) return;
+            if (!editingFurniture) return;
             
             const furnitureId = editingFurniture.item.id;
             
             // First: Remove from 3D scene (like handleClick does)
-            sceneRef.current.traverse((child) => {
-              if (child.userData.furnitureId === furnitureId && child.userData.type === 'furniture') {
-                sceneRef.current?.remove(child);
-              }
-            });
+            if (sceneRef.current) {
+              sceneRef.current.traverse((child) => {
+                if (child.userData.furnitureId === furnitureId && child.userData.type === 'furniture') {
+                  sceneRef.current?.remove(child);
+                }
+              });
+            }
             
             // Second: Remove from data store via callback
             if (onDeleteFurniture) {
