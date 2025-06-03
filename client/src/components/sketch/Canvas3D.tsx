@@ -4961,15 +4961,14 @@ export default function Canvas3D({
           const furnitureId = furnitureGroup.userData.furnitureId;
           
           if (furnitureId && onDeleteFurniture) {
-            // Find the furniture floor and index for the callback
+            // Find the furniture floor for the callback
             const furnitureFloorName = furnitureGroup.userData.floorName || currentFloor;
-            const furnitureIndex = furnitureGroup.userData.index || 0;
             
             // Remove from scene
             sceneRef.current.remove(furnitureGroup);
             
-            // Call deletion callback with floor name and index
-            onDeleteFurniture(furnitureFloorName, furnitureIndex);
+            // Call deletion callback with floor name and furniture ID
+            onDeleteFurniture(furnitureFloorName, furnitureId);
           }
         }
       }
