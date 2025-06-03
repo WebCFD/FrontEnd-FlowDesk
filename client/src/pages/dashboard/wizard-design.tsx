@@ -1112,8 +1112,8 @@ export default function WizardDesign() {
     });
   };
 
-  const handleFurnitureDelete = (floorName: string, index: number) => {
-    deleteFurnitureFromFloor(floorName, index);
+  const handleFurnitureDelete = (floorName: string, itemId: string) => {
+    deleteFurnitureFromFloor(floorName, itemId);
     toast({
       title: "Furniture Deleted",
       description: `Deleted furniture from ${formatFloorText(floorName)}`,
@@ -2398,12 +2398,7 @@ export default function WizardDesign() {
                   description: `${item.name} has been modified`,
                 });
               }}
-              onDeleteFurniture={(itemId) => {
-                toast({
-                  title: "Furniture Deleted",
-                  description: "Furniture item has been removed",
-                });
-              }}
+              onDeleteFurniture={handleFurnitureDelete}
               isFurnitureEraserMode={isFurnitureEraserMode}
               onToggleFurnitureEraserMode={handleToggleFurnitureEraserMode}
             />
