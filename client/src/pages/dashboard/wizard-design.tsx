@@ -2398,14 +2398,7 @@ export default function WizardDesign() {
                   description: `${item.name} has been modified`,
                 });
               }}
-              onDeleteFurniture={(itemId) => {
-                toast({
-                  title: "Furniture Deleted",
-                  description: "Furniture item has been removed",
-                });
-              }}
-              isFurnitureEraserMode={isFurnitureEraserMode}
-              onToggleFurnitureEraserMode={handleToggleFurnitureEraserMode}
+              onDeleteFurniture={handleFurnitureDelete}
             />
           ) : tab === "2d-editor" ? (
             <Canvas2D
@@ -2450,6 +2443,7 @@ export default function WizardDesign() {
               wallTransparency={wallTransparency}
               isMeasureMode={isMeasureMode}
               isEraserMode={isEraserMode}
+              isFurnitureEraserMode={isFurnitureEraserMode}
               simulationName={simulationName}
               simulationType={
                 simulationType === "comfort"
@@ -2460,8 +2454,30 @@ export default function WizardDesign() {
               onDeleteAirEntry={handleDeleteAirEntryFrom3D}
               onViewChange={handleViewChange}
               onFurnitureAdd={handleFurnitureAdd}
-              onFurnitureUpdate={handleFurnitureUpdate}
-              onFurnitureDelete={handleFurnitureDelete}
+              onUpdateFurniture={handleFurnitureUpdate}
+              onDeleteFurniture={(floorName, index) => {
+                // Remove furniture from the data store
+                setFloors(prevFloors => {
+                  const updatedFloors = { ...prevFloors };
+                  const floorData = updatedFloors[floorName];
+                  if (floorData && floorData.furnitureItems) {
+                    // Remove the furniture item at the specified index
+                    const updatedFurnitureItems = [...floorData.furnitureItems];
+                    updatedFurnitureItems.splice(index, 1);
+                    
+                    updatedFloors[floorName] = {
+                      ...floorData,
+                      furnitureItems: updatedFurnitureItems
+                    };
+                  }
+                  return updatedFloors;
+                });
+                
+                toast({
+                  title: "Furniture Deleted",
+                  description: "Furniture item has been removed",
+                });
+              }}
             />
           )}
         </SceneProvider>

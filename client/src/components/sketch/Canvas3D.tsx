@@ -4963,13 +4963,21 @@ export default function Canvas3D({
           if (furnitureId && onDeleteFurniture) {
             // Find the furniture floor and index for the callback
             const furnitureFloorName = furnitureGroup.userData.floorName || currentFloor;
-            const furnitureIndex = furnitureGroup.userData.index || 0;
             
-            // Remove from scene
-            sceneRef.current.remove(furnitureGroup);
+            // Find the correct index in the furniture items array
+            let furnitureIndex = -1;
+            const currentFloorData = floors[furnitureFloorName];
+            if (currentFloorData && currentFloorData.furnitureItems) {
+              furnitureIndex = currentFloorData.furnitureItems.findIndex(item => item.id === furnitureId);
+            }
             
-            // Call deletion callback with floor name and index
-            onDeleteFurniture(furnitureFloorName, furnitureIndex);
+            if (furnitureIndex !== -1) {
+              // Remove from scene
+              sceneRef.current.remove(furnitureGroup);
+              
+              // Call deletion callback with floor name and index
+              onDeleteFurniture(furnitureFloorName, furnitureIndex);
+            }
           }
         }
       }
