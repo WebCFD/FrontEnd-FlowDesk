@@ -1945,9 +1945,22 @@ export default function Canvas3D({
           return;
         }
         
-        const furnitureModel = createFurnitureModel(furnitureItem, sceneRef.current!);
-        if (furnitureModel) {
-          objects.push(furnitureModel);
+        // Check if furniture already exists in scene to prevent duplicates
+        let furnitureExists = false;
+        if (sceneRef.current) {
+          sceneRef.current.traverse((child) => {
+            if (child.userData?.furnitureId === furnitureItem.id && child.userData?.type === 'furniture') {
+              furnitureExists = true;
+            }
+          });
+        }
+        
+        // Only create furniture if it doesn't already exist in scene
+        if (!furnitureExists) {
+          const furnitureModel = createFurnitureModel(furnitureItem, sceneRef.current!);
+          if (furnitureModel) {
+            objects.push(furnitureModel);
+          }
         }
       });
     }
