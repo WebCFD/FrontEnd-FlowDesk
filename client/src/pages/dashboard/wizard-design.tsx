@@ -2455,29 +2455,7 @@ export default function WizardDesign() {
               onViewChange={handleViewChange}
               onFurnitureAdd={handleFurnitureAdd}
               onUpdateFurniture={handleFurnitureUpdate}
-              onDeleteFurniture={(floorName, index) => {
-                // Remove furniture from the data store
-                setFloors(prevFloors => {
-                  const updatedFloors = { ...prevFloors };
-                  const floorData = updatedFloors[floorName];
-                  if (floorData && floorData.furnitureItems) {
-                    // Remove the furniture item at the specified index
-                    const updatedFurnitureItems = [...floorData.furnitureItems];
-                    updatedFurnitureItems.splice(index, 1);
-                    
-                    updatedFloors[floorName] = {
-                      ...floorData,
-                      furnitureItems: updatedFurnitureItems
-                    };
-                  }
-                  return updatedFloors;
-                });
-                
-                toast({
-                  title: "Furniture Deleted",
-                  description: "Furniture item has been removed",
-                });
-              }}
+              onDeleteFurniture={handleFurnitureDelete}
             />
           )}
         </SceneProvider>
