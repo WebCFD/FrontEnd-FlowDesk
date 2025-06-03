@@ -5167,10 +5167,23 @@ export default function Canvas3D({
           onClose={() => setEditingFurniture(null)}
           onConfirm={(data) => handleFurnitureEdit(editingFurniture.index, data)}
           onCancel={() => {
-            // Use existing deletion logic when canceling
+            if (!editingFurniture || !sceneRef.current) return;
+            
+            const furnitureId = editingFurniture.item.id;
+            
+            // First: Remove from 3D scene (like handleClick does)
+            sceneRef.current.traverse((child) => {
+              if (child.userData.furnitureId === furnitureId && child.userData.type === 'furniture') {
+                sceneRef.current?.remove(child);
+              }
+            });
+            
+            // Second: Remove from data store via callback
             if (onDeleteFurniture) {
               onDeleteFurniture(editingFurniture.item.floorName, editingFurniture.item.id);
             }
+            
+            // Third: Close dialog
             setEditingFurniture(null);
           }}
           onPositionUpdate={handleRealTimePositionUpdate}
