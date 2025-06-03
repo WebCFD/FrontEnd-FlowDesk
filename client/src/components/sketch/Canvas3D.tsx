@@ -945,6 +945,7 @@ export default function Canvas3D({
   const [editingFurniture, setEditingFurniture] = useState<{
     index: number;
     item: FurnitureItem;
+    isPreview?: boolean; // Track if this is preview furniture
   } | null>(null);
   
   // Reference to store newly created furniture for auto-opening dialog
@@ -958,7 +959,8 @@ export default function Canvas3D({
     if (newFurnitureForDialog.current) {
       setEditingFurniture({
         index: 0, // This would be the actual index in a real furniture list
-        item: newFurnitureForDialog.current
+        item: newFurnitureForDialog.current,
+        isPreview: true // Mark as preview furniture
       });
       
       // Clear the reference
@@ -5042,6 +5044,82 @@ export default function Canvas3D({
     }
   };
 
+  // Handler for canceling preview furniture (removes from scene without persisting)
+  const handlePreviewFurnitureCancel = useCallback(() => {
+    if (!editingFurniture || !sceneRef.current) return;
+
+    const furnitureId = editingFurniture.item.id;
+    
+    // Find and remove the preview furniture from the scene
+    sceneRef.current.traverse((child) => {
+      if (child.userData.furnitureId === furnitureId && 
+          child.userData.type === 'furniture' && 
+          child.userData.isPreview) {
+        sceneRef.current?.remove(child);
+        console.log("🗑️ Removed preview furniture from scene:", furnitureId);
+      }
+    });
+    
+    // Close dialog
+    setEditingFurniture(null);
+  }, [editingFurniture]);
+
+  // Handler for confirming preview furniture (persists to data store)
+  const handlePreviewFurnitureConfirm = useCallback((data: {
+    name: string;
+    position: { x: number; y: number; z: number };
+    rotation: { x: number; y: number; z: number };
+    scale: { x: number; y: number; z: number };
+    properties?: {
+      material?: string;
+      temperature?: number;
+      thermalConductivity?: number;
+      density?: number;
+      heatCapacity?: number;
+    };
+  }) => {
+    if (!editingFurniture || !sceneRef.current) return;
+
+    const furnitureId = editingFurniture.item.id;
+    let furnitureGroup: THREE.Group | null = null;
+
+    // Find the preview furniture in the scene
+    sceneRef.current.traverse((child) => {
+      if (child.userData.furnitureId === furnitureId && child.userData.type === 'furniture') {
+        furnitureGroup = child as THREE.Group;
+      }
+    });
+
+    if (furnitureGroup) {
+      // Update the 3D model with dialog data
+      furnitureGroup.position.set(data.position.x, data.position.y, data.position.z);
+      furnitureGroup.rotation.set(data.rotation.x, data.rotation.y, data.rotation.z);
+      furnitureGroup.scale.set(data.scale.x, data.scale.y, data.scale.z);
+      furnitureGroup.userData.furnitureName = data.name;
+      
+      // Remove preview flag - now it's permanent
+      delete furnitureGroup.userData.isPreview;
+    }
+
+    // Create updated furniture item with dialog data
+    const updatedFurniture: FurnitureItem = {
+      ...editingFurniture.item,
+      name: data.name,
+      position: data.position,
+      rotation: data.rotation,
+      updatedAt: Date.now()
+    };
+
+    // NOW persist to data store for the first time
+    if (onFurnitureAdd && typeof onFurnitureAdd === 'function') {
+      onFurnitureAdd(editingFurniture.item.floorName, updatedFurniture);
+      console.log("✅ Persisted furniture to data store:", updatedFurniture.id);
+    }
+    
+    // Close dialog
+    setEditingFurniture(null);
+  }, [editingFurniture, onFurnitureAdd]);
+
   // Handler for updating furniture
   const handleFurnitureEdit = (
     index: number,
@@ -5161,7 +5239,16 @@ export default function Canvas3D({
           type={editingFurniture.item.type}
           isOpen={true}
           onClose={() => setEditingFurniture(null)}
-          onConfirm={(data) => handleFurnitureEdit(editingFurniture.index, data)}
+          onConfirm={
+            editingFurniture.isPreview 
+              ? handlePreviewFurnitureConfirm 
+              : (data) => handleFurnitureEdit(editingFurniture.index, data)
+          }
+          onCancel={
+            editingFurniture.isPreview 
+              ? handlePreviewFurnitureCancel 
+              : undefined
+          }
           onPositionUpdate={handleRealTimePositionUpdate}
           onRotationUpdate={handleRealTimeRotationUpdate}
           onScaleUpdate={handleRealTimeScaleUpdate}
@@ -5178,7 +5265,7 @@ export default function Canvas3D({
               heatCapacity: 1200
             }
           }}
-          isEditing={true}
+          isEditing={!editingFurniture.isPreview} // Preview furniture is "adding", not "editing"
           floorContext={{
             floorName: editingFurniture.item.floorName,
             floorHeight: 220, // Default floor height
