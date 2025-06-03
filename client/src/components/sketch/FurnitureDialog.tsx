@@ -28,6 +28,7 @@ interface FurnitureDialogProps {
       heatCapacity?: number;
     };
   }) => void;
+  onCancel?: () => void; // New prop for cancel handling
   isEditing?: boolean;
   initialValues?: {
     name: string;
