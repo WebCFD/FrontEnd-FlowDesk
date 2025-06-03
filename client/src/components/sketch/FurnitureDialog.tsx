@@ -116,6 +116,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
     type, 
     isOpen: dialogOpen, 
     onClose, 
+    onCancel,
     isEditing = false,
     onPositionUpdate,
     onRotationUpdate,
@@ -591,7 +592,12 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
             <Button
               type="button"
               variant="outline"
-              onClick={onClose}
+              onClick={() => {
+                if (onCancel) {
+                  onCancel();
+                }
+                onClose();
+              }}
             >
               Cancel
             </Button>
