@@ -1461,9 +1461,9 @@ export default function WizardDesign() {
           <CardContent className="p-4">
 
 
-            <div className="flex gap-4" style={{ height: `calc(100vh - ${VIEWPORT_OFFSET_PX}px)` }}>
+            <div className="flex gap-4" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
               {/* Left side menus - copy style from Step 1 */}
-              <div className="w-72 space-y-6 overflow-y-auto" style={{ height: `calc(100vh - ${VIEWPORT_OFFSET_PX}px)` }}>
+              <div className="w-72 space-y-6 overflow-y-auto" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
                 {/* Main options */}
                 <div className="border rounded-lg p-4">
                   <h3 className="font-semibold text-lg mb-4">3D Menu</h3>
@@ -2326,7 +2326,7 @@ export default function WizardDesign() {
     }
 
     return (
-      <div className="border rounded-lg overflow-hidden bg-white min-w-[600px]" style={{ height: `calc(100vh - ${VIEWPORT_OFFSET_PX}px)`, flex: 1 }}>
+      <div className="border rounded-lg overflow-hidden bg-white min-w-[600px]" style={{ height: `calc(100vh - ${viewportOffset}px)`, flex: 1 }}>
         <SceneProvider>
           {mode === "step2" ? (
             <RoomSketchPro
