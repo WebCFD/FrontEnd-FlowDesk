@@ -339,6 +339,7 @@ export default function WizardDesign() {
     addFurnitureToFloor,
     updateFurnitureInFloor,
     deleteFurnitureFromFloor,
+    reset: storeReset, // Import store reset function with alias
   } = useRoomStore();
 
 
@@ -1905,7 +1906,7 @@ export default function WizardDesign() {
     });
     
     // PASO 2: Resetear el store ANTES de cambiar isMultifloor (evita useEffect con datos intermedios)
-    reset();
+    storeReset(); // Use store reset function instead of local reset
     
     // PASO 3: CRÍTICO - Sincronizar currentFloor del store con ground
     setCurrentFloor("ground");
