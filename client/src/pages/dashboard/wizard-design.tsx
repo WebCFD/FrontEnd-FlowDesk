@@ -84,9 +84,7 @@ import {
 } from "@/components/ui/dialog";
 import { FurnitureMenu } from "@/components/sketch/FurnitureMenu";
 import { ToolbarToggle } from "@/components/sketch/ToolbarToggle";
-
-// Configuration - Layout Settings
-const VIEWPORT_OFFSET_PX = 300; // Viewport height offset for UI elements (header, navigation, etc.)
+import { useSketchStore } from "@/lib/stores/sketch-store";
 
 interface Point {
   x: number;
@@ -239,6 +237,7 @@ const getConnectedFloorName = (
 export default function WizardDesign() {
   const [, setLocation] = useLocation();
   const { user, setReturnTo } = useAuth();
+  const { viewportOffset } = useSketchStore();
   const [step, setStep] = useState(1);
   const [simulationName, setSimulationName] = useState("");
   const [simulationType, setSimulationType] = useState("comfort");
@@ -1172,9 +1171,9 @@ export default function WizardDesign() {
             hasClosedContour={hasClosedContour}
           />
 
-          <div className="flex gap-4" style={{ height: `calc(100vh - ${VIEWPORT_OFFSET_PX}px)` }}>
+          <div className="flex gap-4" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
             {/* Left side menus */}
-            <div className="w-72 space-y-6 overflow-y-auto" style={{ height: `calc(100vh - ${VIEWPORT_OFFSET_PX}px)` }}>
+            <div className="w-72 space-y-6 overflow-y-auto" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
               {/* 2D Menu - grayed out in 3D view */}
               <div
                 className={cn(
