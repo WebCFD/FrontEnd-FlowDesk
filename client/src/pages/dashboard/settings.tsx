@@ -71,10 +71,12 @@ export default function Settings() {
   };
 
   const handleViewportOffsetChange = (value: number[]) => {
-    setViewportOffset(value[0]);
+    // Validate and clamp the value between 150 and 700
+    const clampedValue = Math.max(150, Math.min(700, value[0]));
+    setViewportOffset(clampedValue);
     toast({
       title: "Viewport Offset updated",
-      description: `Canvas viewport offset set to ${value[0]}px successfully.`
+      description: `Canvas viewport offset set to ${clampedValue}px successfully.`
     });
   };
 
@@ -245,8 +247,8 @@ export default function Settings() {
                     <Slider
                       value={[viewportOffset]}
                       onValueChange={handleViewportOffsetChange}
-                      min={200}
-                      max={500}
+                      min={150}
+                      max={700}
                       step={10}
                       className="w-full"
                     />

@@ -22,7 +22,7 @@ export const useSketchStore = create<SketchState>()(
       setSnapDistance: (value: number) => set({ snapDistance: value }),
       setShowCursorCoordinates: (value: boolean) => set({ showCursorCoordinates: value }),
       setFontScale: (value: number) => set({ fontScale: value }),
-      setViewportOffset: (value: number) => set({ viewportOffset: value }),
+      setViewportOffset: (value: number) => set({ viewportOffset: Math.max(150, Math.min(700, value)) }),
     }),
     {
       name: 'sketch-store',
