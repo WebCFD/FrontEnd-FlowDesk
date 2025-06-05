@@ -3428,6 +3428,7 @@ export default function Canvas2D({
           onConfirm={handleCoordinateEdit}
           initialCoordinates={editingPoint.point}
           relativeCoordinates={getJSONCoordinates(editingPoint.point)}
+          isStairPoint={!!editingPoint.isStairPoint}
         />
       )}
 
