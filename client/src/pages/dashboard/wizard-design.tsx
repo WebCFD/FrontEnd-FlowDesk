@@ -1457,25 +1457,7 @@ export default function WizardDesign() {
       <>
         <Card className="mt-4">
           <CardContent className="p-4">
-            {/* We'll use a custom toolbar for Step 2 that looks like the one in Step 1 */}
-            <div className="mb-4 flex">
-              <div className="bg-card border rounded-md inline-flex shadow-sm overflow-hidden">
-                <Button
-                  variant="ghost"
-                  className="px-3 py-2 text-sm font-medium rounded-none bg-blue-50 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
-                  disabled
-                >
-                  3D Editor
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="px-3 py-2 text-sm font-medium rounded-none hover:bg-gray-50"
-                  disabled
-                >
-                  3D Preview
-                </Button>
-              </div>
-            </div>
+
 
             <div className="flex gap-4">
               {/* Left side menus - copy style from Step 1 */}
