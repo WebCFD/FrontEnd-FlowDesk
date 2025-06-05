@@ -20,6 +20,7 @@ interface CoordinateEditorDialogProps {
   initialCoordinates: Point;
   // These coordinates are in centimeters
   relativeCoordinates: { x: number; y: number };
+  isStairPoint?: boolean;
 }
 
 export default function CoordinateEditorDialog({
@@ -28,6 +29,7 @@ export default function CoordinateEditorDialog({
   onConfirm,
   initialCoordinates,
   relativeCoordinates,
+  isStairPoint = false,
 }: CoordinateEditorDialogProps) {
   console.log('[DIALOG-DEBUG] Rendering CoordinateEditorDialog, isOpen:', isOpen);
 
@@ -188,7 +190,9 @@ export default function CoordinateEditorDialog({
             className="absolute top-3 left-3 h-1 w-8 bg-muted-foreground/20 rounded-sm" 
             style={{ pointerEvents: 'none' }}
           />
-          <DialogTitle>Edit Point Coordinates</DialogTitle>
+          <DialogTitle>
+            {isStairPoint ? "Stair End Point Edit" : "Wall End Point Edit"}
+          </DialogTitle>
           <DialogDescription>
             Enter the exact coordinates in centimeters.
           </DialogDescription>

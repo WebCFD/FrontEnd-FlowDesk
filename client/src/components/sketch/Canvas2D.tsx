@@ -1175,13 +1175,75 @@ export default function Canvas2D({
 
   // Handle double click for wall properties editing - updated version
   const handleDoubleClickNew = (e: ReactMouseEvent<HTMLCanvasElement, MouseEvent>) => {
-    debugLog("Double-click detected - checking for air entries, points, or wall properties");
+    debugLog("Double-click detected - checking for stairs, air entries, points, or wall properties");
     const point = getCanvasPoint(e.nativeEvent);
     
     // Set flag to ignore the next click
     setIgnoreNextClick(true);
     
-    // FIRST: Check for air entries - HIGHEST PRIORITY
+    // FIRST: Check for stair polygon vertex double-click - HIGHEST PRIORITY
+    if (stairPolygons && stairPolygons.length > 0) {
+      for (
+        let polygonIndex = 0;
+        polygonIndex < stairPolygons.length;
+        polygonIndex++
+      ) {
+        const polygon = stairPolygons[polygonIndex];
+
+        // Skip imported stair polygons as they shouldn't be editable
+        if (polygon.isImported) continue;
+
+        for (
+          let pointIndex = 0;
+          pointIndex < polygon.points.length;
+          pointIndex++
+        ) {
+          const stairPoint = polygon.points[pointIndex];
+          const dx = point.x - stairPoint.x;
+          const dy = point.y - stairPoint.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < (POINT_RADIUS * 2) / zoom) {
+            debugLog(
+              `Double-click detected on stair point at (${stairPoint.x}, ${stairPoint.y})`,
+            );
+
+            // If stair tool is active, set flag to prevent new stair creation
+            if (currentTool === "stairs") {
+              debugLog("Setting ignoreStairToolClick flag to true");
+              setIgnoreStairToolClick(true);
+
+              // Also cancel any active stair drawing
+              if (isDrawingStairs) {
+                debugLog("Canceling active stair drawing");
+                setIsDrawingStairs(false);
+                setCurrentStairPoints([]);
+                setPreviewStairPoint(null);
+              }
+
+              // Reset the flag after a short delay
+              setTimeout(() => {
+                debugLog("Resetting ignoreStairToolClick flag to false");
+                setIgnoreStairToolClick(false);
+              }, 500);
+            }
+
+            // Found a stair polygon vertex
+            setEditingPoint({
+              point: stairPoint,
+              lines: [],
+              isStart: [],
+              isStairPoint: true,
+              stairPolygonIndex: polygonIndex,
+              pointIndex: pointIndex,
+            });
+            return;
+          }
+        }
+      }
+    }
+    
+    // SECOND: Check for air entries
     const airEntryInfo = findAirEntryAtLocation(point);
     if (airEntryInfo) {
       debugLog(`Double-click detected on air entry - opening air entry editor`);
@@ -1192,7 +1254,7 @@ export default function Canvas2D({
       return;
     }
     
-    // SECOND: Check for exact point (endpoint) double-click
+    // THIRD: Check for exact point (endpoint) double-click
     const pointInfo = findPointAtLocation(point);
     if (pointInfo) {
       debugLog(`Double-click detected on point coordinates - opening coordinate editor`);
@@ -1205,7 +1267,7 @@ export default function Canvas2D({
       return;
     }
     
-    // THIRD: Check for wall properties editing (lines but not endpoints)
+    // FOURTH: Check for wall properties editing (lines but not endpoints)
     const nearbyLines = findLinesNearPoint(point);
     if (nearbyLines.length > 0) {
       const associatedWall = findWallForLine(walls, nearbyLines[0]);
@@ -1217,7 +1279,7 @@ export default function Canvas2D({
       }
     }
     
-    // FOURTH: Fall back to existing functionality (stairs, etc.)
+    // FIFTH: Fall back to existing functionality (other elements)
     handleDoubleClickLegacy(e.nativeEvent);
   };
 
