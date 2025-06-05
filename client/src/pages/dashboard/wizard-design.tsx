@@ -1895,8 +1895,8 @@ export default function WizardDesign() {
     // PASO 3: CRÍTICO - Sincronizar currentFloor del store con ground
     setCurrentFloor("ground");
     
-    // PASO 4: Desactivar multifloor DESPUÉS del reset para evitar efectos intermedios
-    setIsMultifloor(false);
+    // PASO 4: Mantener multifloor SIEMPRE activo (ya no es parámetro de usuario)
+    setIsMultifloor(true);
     setSelectedFloor("ground");
     setLoadFromFloor("ground");
     
