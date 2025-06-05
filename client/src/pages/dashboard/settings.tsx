@@ -24,7 +24,7 @@ export default function Settings() {
     radius: 0.5
   });
 
-  const { snapDistance, setSnapDistance, showCursorCoordinates, setShowCursorCoordinates, fontScale, setFontScale } = useSketchStore();
+  const { snapDistance, setSnapDistance, showCursorCoordinates, setShowCursorCoordinates, fontScale, setFontScale, viewportOffset, setViewportOffset } = useSketchStore();
 
   const variants = [
     { value: 'professional', label: 'Professional' },
@@ -67,6 +67,14 @@ export default function Settings() {
     toast({
       title: "Text Size updated",
       description: `Text size set to ${Math.round(value[0] * 100)}% successfully.`
+    });
+  };
+
+  const handleViewportOffsetChange = (value: number[]) => {
+    setViewportOffset(value[0]);
+    toast({
+      title: "Viewport Offset updated",
+      description: `Canvas viewport offset set to ${value[0]}px successfully.`
     });
   };
 
@@ -215,6 +223,41 @@ export default function Settings() {
                   checked={showCursorCoordinates}
                   onCheckedChange={handleCursorCoordinatesChange}
                 />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* New Layout Settings Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Layout Settings</CardTitle>
+            <CardDescription>
+              Configure canvas and viewport layout parameters
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-4">
+              <div>
+                <Label>Viewport Offset</Label>
+                <div className="flex items-center gap-4 mt-2">
+                  <div className="flex-1">
+                    <Slider
+                      value={[viewportOffset]}
+                      onValueChange={handleViewportOffsetChange}
+                      min={200}
+                      max={500}
+                      step={10}
+                      className="w-full"
+                    />
+                  </div>
+                  <span className="text-sm text-muted-foreground w-16 text-right">
+                    {viewportOffset}px
+                  </span>
+                </div>
+                <div className="text-sm text-muted-foreground mt-1">
+                  Height offset for UI elements (header, navigation, etc.)
+                </div>
               </div>
             </div>
           </CardContent>
