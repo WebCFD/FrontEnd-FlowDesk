@@ -1298,6 +1298,34 @@ export default function WizardDesign() {
                     </Button>
                   </div>
                 </div>
+
+                {/* Stair Design - Moved from Parameters */}
+                {isMultifloor && (
+                  <div className="space-y-4 mt-4">
+                    <h3 className="font-semibold">Stair Design</h3>
+                    <Button
+                      variant={currentTool === "stairs" ? "default" : "outline"}
+                      className={cn(
+                        "w-full",
+                        currentTool === "stairs" &&
+                          "bg-violet-500 hover:bg-violet-600 text-white border-violet-600",
+                      )}
+                      onClick={() => {
+                        setCurrentTool("stairs");
+                        setCurrentAirEntry(null);
+                        setTab("2d-editor");
+                        toast({
+                          title: "Stair Design Tool Activated",
+                          description:
+                            "Click on the canvas to place points and create a stair polygon. Close the shape by clicking near the first point.",
+                        });
+                      }}
+                    >
+                      <FileEdit className="mr-2 h-4 w-4" />
+                      Stair Design
+                    </Button>
+                  </div>
+                )}
               </div>
 
               {/* 3D Tools - grayed out in 2D view */}
@@ -2212,29 +2240,7 @@ export default function WizardDesign() {
               </div>
             </div>
 
-            <div className="pt-4">
-              <Button
-                variant={currentTool === "stairs" ? "default" : "outline"}
-                className={cn(
-                  "w-full",
-                  currentTool === "stairs" &&
-                    "bg-violet-500 hover:bg-violet-600 text-white border-violet-600",
-                )}
-                onClick={() => {
-                  setCurrentTool("stairs");
-                  setCurrentAirEntry(null);
-                  setTab("2d-editor");
-                  toast({
-                    title: "Stair Design Tool Activated",
-                    description:
-                      "Click on the canvas to place points and create a stair polygon. Close the shape by clicking near the first point.",
-                  });
-                }}
-              >
-                <FileEdit className="mr-2 h-4 w-4" />
-                Stair Design
-              </Button>
-            </div>
+
           </div>
         )}
 
