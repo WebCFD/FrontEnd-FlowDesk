@@ -1431,35 +1431,7 @@ export default function WizardDesign() {
               {renderParametersMenu()}
 
               {/* Files - always active */}
-              <div className="border rounded-lg p-4">
-                <h3 className="font-semibold text-lg mb-4">Files</h3>
-                <div className="space-y-2">
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start"
-                    onClick={handleSaveDesign}
-                  >
-                    <Save className="mr-2 h-4 w-4" />
-                    Save Design
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="w-full justify-start"
-                    onClick={() => setShowLoadDesignDialog(true)}
-                  >
-                    <Upload className="mr-2 h-4 w-4" />
-                    Load Design
-                  </Button>
-                  <Button 
-                    variant="destructive" 
-                    className="w-full justify-start"
-                    onClick={() => setShowEraseDesignDialog(true)}
-                  >
-                    <Eraser className="mr-2 h-4 w-4" />
-                    Erase Design
-                  </Button>
-                </div>
-              </div>
+              {renderFilesMenu()}
             </div>
 
             {/* Right side - Canvas */}
@@ -1678,28 +1650,8 @@ export default function WizardDesign() {
                 {/* Parameters Menu - Same as Step 1 */}
                 {renderParametersMenu()}
 
-                {/* Files section matching Step 1 */}
-                <div className="border rounded-lg p-4">
-                  <h3 className="font-semibold text-lg mb-4">Files</h3>
-                  <div className="space-y-2">
-                    <Button
-                      variant="outline"
-                      className="w-full flex items-center gap-2"
-                      onClick={handleSaveDesign}
-                    >
-                      <Save className="h-4 w-4" />
-                      Save Design
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="w-full flex items-center gap-2"
-                      onClick={() => setShowLoadDesignDialog(true)}
-                    >
-                      <Upload className="h-4 w-4" />
-                      Load Design
-                    </Button>
-                  </div>
-                </div>
+                {/* Files section - unified */}
+                {renderFilesMenu()}
               </div>
 
               {/* Main content area - using the same renderCanvasSection as 3D preview for consistency */}
@@ -2145,6 +2097,38 @@ export default function WizardDesign() {
   const handleBack = () => {
     if (step > 1) setStep(step - 1);
   };
+
+  const renderFilesMenu = () => (
+    <div className="border rounded-lg p-4">
+      <h3 className="font-semibold text-lg mb-4">Files</h3>
+      <div className="space-y-2">
+        <Button
+          variant="outline"
+          className="w-full justify-start"
+          onClick={handleSaveDesign}
+        >
+          <Save className="mr-2 h-4 w-4" />
+          Save Design
+        </Button>
+        <Button 
+          variant="outline" 
+          className="w-full justify-start"
+          onClick={() => setShowLoadDesignDialog(true)}
+        >
+          <Upload className="mr-2 h-4 w-4" />
+          Load Design
+        </Button>
+        <Button 
+          variant="destructive" 
+          className="w-full justify-start"
+          onClick={() => setShowEraseDesignDialog(true)}
+        >
+          <Eraser className="mr-2 h-4 w-4" />
+          Erase Design
+        </Button>
+      </div>
+    </div>
+  );
 
   const renderParametersMenu = () => (
     <div className="border rounded-lg p-4">
