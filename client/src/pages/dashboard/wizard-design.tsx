@@ -1647,27 +1647,8 @@ export default function WizardDesign() {
                   </div>
                 </div>
 
-                {/* Parameters (matching style from Step 1) */}
-                <div className="border rounded-lg p-4">
-                  <h3 className="font-semibold text-lg mb-4">Parameters</h3>
-                  <div className="space-y-4">
-                    <div className="space-y-4">
-                      <Label>Air Flow Rate</Label>
-                      <Slider defaultValue={[50]} max={100} step={1} />
-                      <div className="text-sm text-right">50 m³/h</div>
-                    </div>
-                    <div className="space-y-4">
-                      <Label>Temperature</Label>
-                      <Slider defaultValue={[20]} max={40} min={0} step={1} />
-                      <div className="text-sm text-right">20°C</div>
-                    </div>
-                    <div className="space-y-4">
-                      <Label>Humidity</Label>
-                      <Slider defaultValue={[45]} max={100} min={0} step={1} />
-                      <div className="text-sm text-right">45%</div>
-                    </div>
-                  </div>
-                </div>
+                {/* Parameters Menu - Same as Step 1 */}
+                {renderParametersMenu()}
 
                 {/* Files section matching Step 1 */}
                 <div className="border rounded-lg p-4">
