@@ -1391,17 +1391,10 @@ export default function Canvas3D({
     // Close the shape
     shape.lineTo(firstPoint.x, firstPoint.y);
 
-    // Determine the z-positions
+    // Determine the z-positions (stairs always go up by default)
     let bottomZ, topZ;
-    if (stairPolygon.direction === "down") {
-      // Stair going down: connects current floor to the floor below
-      bottomZ = baseHeight - floorDeckThickness;
-      topZ = baseHeight;
-    } else {
-      // Stair going up (default): connects current floor to the floor above
-      bottomZ = baseHeight + floorCeilingHeight;
-      topZ = baseHeight + floorCeilingHeight + floorDeckThickness;
-    }
+    bottomZ = baseHeight + floorCeilingHeight;
+    topZ = baseHeight + floorCeilingHeight + floorDeckThickness;
     
     // Enrich the stairPolygon with 3D position data to share with RoomSketchPro
     stairPolygon.position3D = {
@@ -1413,8 +1406,7 @@ export default function Canvas3D({
     console.log(`🔢 STAIR 3D POSITION DATA: ${stairPolygon.id}`, {
       baseHeight,
       bottomZ,
-      topZ,
-      direction: stairPolygon.direction
+      topZ
     });
 
     // Create extruded geometry for the stair
