@@ -1952,10 +1952,9 @@ export default function Canvas2D({
     ctx: CanvasRenderingContext2D,
     points: Point[],
     isPreview: boolean = false,
-    direction: "up" | "down" = "up",
     isHighlighted: boolean = false,
     isImported: boolean = false,
-    isSnapTarget: boolean = false, // Add this parameter
+    isSnapTarget: boolean = false,
   ) => {
     if (points.length < 2) return;
 
@@ -2643,7 +2642,6 @@ export default function Canvas2D({
             ctx,
             stair.points,
             false,
-            stair.direction || "up",
             isHighlighted,
             stair.isImported || false,
             isSnapTarget,
@@ -2660,7 +2658,7 @@ export default function Canvas2D({
         }
 
         // Draw the preview stair polygon
-        drawStairPolygon(ctx, previewPoints, true);
+        drawStairPolygon(ctx, previewPoints, true, false, false, false);
 
         // Show tooltip if actively drawing stairs
         if (previewStairPoint) {
