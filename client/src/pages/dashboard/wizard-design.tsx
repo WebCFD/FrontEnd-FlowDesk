@@ -264,6 +264,7 @@ export default function WizardDesign() {
   const [loadFromFloor, setLoadFromFloor] = useState("ground");
   const [floorDeckThickness, setFloorDeckThickness] = useState(35); // Default 35cm - deprecated, usar floorParameters
   const [defaultWallTemperature, setDefaultWallTemperature] = useState(20); // Default wall temperature in °C
+  const [canvas3DKey, setCanvas3DKey] = useState(0); // Force re-render of Canvas3D
   
   // Nuevos estados para parámetros por planta
   const [floorParameters, setFloorParameters] = useState<Record<string, { ceilingHeight: number; floorDeck: number }>>({
@@ -628,6 +629,19 @@ export default function WizardDesign() {
 
     // Update stairs for target floor
     setStairPolygons(projectedStairs);
+    
+    // Show feedback when stairs are projected
+    const projectedCount = projectedStairs.filter(stair => stair.isImported).length;
+    if (projectedCount > 0) {
+      // Force re-render of Canvas3D to show projected stairs immediately
+      setCanvas3DKey(prev => prev + 1);
+      
+      toast({
+        title: "Stairs Projected",
+        description: `${projectedCount} stair(s) projected from adjacent floors`,
+        duration: 2000,
+      });
+    }
   };
 
   // Handle floor selection change
@@ -2455,6 +2469,7 @@ export default function WizardDesign() {
             />
           ) : (
             <Canvas3D
+              key={canvas3DKey}
               floors={floors}
               currentFloor={currentFloor}
               ceilingHeight={ceilingHeight}
