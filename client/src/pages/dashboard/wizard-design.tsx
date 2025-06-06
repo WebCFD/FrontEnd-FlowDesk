@@ -517,24 +517,8 @@ export default function WizardDesign() {
       newStairPolygons = [...ownedStairs];
     }
 
-    // Copy stairs from source floor (without direction dependency)
-    if (sourceFloorData.stairPolygons && sourceFloorData.stairPolygons.length > 0) {
-      sourceFloorData.stairPolygons.forEach((stair) => {
-        // Skip imported stairs to avoid copying projections
-        if (!stair.isImported) {
-          // Create a copy of the stair for the target floor
-          const copiedStair: StairPolygon = {
-            id: `copied-${stair.id}-${Date.now()}`, // Generate unique ID
-            points: [...stair.points], // Copy points
-            floor: currentFloor, // Set floor to current floor
-            connectsTo: stair.connectsTo, // Preserve connections
-            isImported: false, // Mark as owned by this floor
-          };
-
-          newStairPolygons.push(copiedStair);
-        }
-      });
-    }
+    // Note: Stairs are NOT copied during template load
+    // They will be projected automatically by projectStairsFromAdjacentFloors
 
     // Set new data for the current floor
     setLines(newLines);

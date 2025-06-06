@@ -839,6 +839,7 @@ export function convertStairPolygonToExport(
 
 /**
  * Converts array of StairPolygons to array of StairExportNew for a floor
+ * Only exports stairs that are owned by this floor (not imported projections)
  */
 export function convertStairPolygonsToExport(
   stairPolygons: StairPolygon[], 
@@ -847,8 +848,11 @@ export function convertStairPolygonsToExport(
   const exportedStairs: StairExportNew[] = [];
   
   stairPolygons.forEach(stairPolygon => {
-    const exportedStair = convertStairPolygonToExport(stairPolygon, floorName, exportedStairs);
-    exportedStairs.push(exportedStair);
+    // Only export stairs owned by this floor (not projections from other floors)
+    if (!stairPolygon.isImported) {
+      const exportedStair = convertStairPolygonToExport(stairPolygon, floorName, exportedStairs);
+      exportedStairs.push(exportedStair);
+    }
   });
   
   return exportedStairs;
