@@ -517,42 +517,21 @@ export default function WizardDesign() {
       newStairPolygons = [...ownedStairs];
     }
 
-    // Process stairs from source floor
-    if (
-      sourceFloorData.stairPolygons &&
-      sourceFloorData.stairPolygons.length > 0
-    ) {
+    // Copy stairs from source floor (without direction dependency)
+    if (sourceFloorData.stairPolygons && sourceFloorData.stairPolygons.length > 0) {
       sourceFloorData.stairPolygons.forEach((stair) => {
-        // Determine if this stair connects to our target floor
-        const connectsToTargetFloor =
-          (stair.direction === "up" &&
-            getConnectedFloorName(loadFromFloor, "up") === currentFloor) ||
-          (stair.direction === "down" &&
-            getConnectedFloorName(loadFromFloor, "down") === currentFloor);
+        // Skip imported stairs to avoid copying projections
+        if (!stair.isImported) {
+          // Create a copy of the stair for the target floor
+          const copiedStair: StairPolygon = {
+            id: `copied-${stair.id}-${Date.now()}`, // Generate unique ID
+            points: [...stair.points], // Copy points
+            floor: currentFloor, // Set floor to current floor
+            connectsTo: stair.connectsTo, // Preserve connections
+            isImported: false, // Mark as owned by this floor
+          };
 
-        // If this stair connects to our target floor, create a corresponding stair
-        if (connectsToTargetFloor) {
-          // Create a new stair for the target floor, inverting the direction
-          const newDirection = stair.direction === "up" ? "down" : "up";
-
-          // Check if this stair already exists in the target floor
-          const existingStairIndex = newStairPolygons.findIndex(
-            (s) => s.connectsTo === stair.id || s.id === stair.connectsTo,
-          );
-
-          if (existingStairIndex === -1) {
-            // Create a new corresponding stair
-            const newStair: StairPolygon = {
-              id: `imported-${stair.id}`, // Create a new ID for the imported stair
-              points: [...stair.points], // Copy points
-              floor: currentFloor, // Set floor to current floor
-              direction: newDirection as "up" | "down", // Invert direction with proper typing
-              connectsTo: stair.id, // Link to the original stair
-              isImported: true, // Mark as imported
-            };
-
-            newStairPolygons.push(newStair);
-          }
+          newStairPolygons.push(copiedStair);
         }
       });
     }
@@ -564,6 +543,14 @@ export default function WizardDesign() {
     setMeasurements(newMeasurements);
     setStairPolygons(newStairPolygons);
     setHasClosedContour(sourceFloorData.hasClosedContour);
+
+    // Project stairs from adjacent floors after template load
+    setTimeout(() => {
+      projectStairsFromAdjacentFloors(currentFloor);
+    }, 100);
+
+    // Force Canvas3D re-render for immediate visual feedback
+    setCanvas3DKey(prev => prev + 1);
 
     toast({
       title: "Floor Template Loaded",
