@@ -244,6 +244,9 @@ export function generateSimulationData(
   roomHeight: number = 2.5,
   floorParameters?: Record<string, { ceilingHeight: number; floorDeck: number }>
 ): SimulationExport {
+  // Reset global stair line counter for each export
+  globalStairLineCounter = 1;
+  
   const exportData: SimulationExport = {
     version: "1.0",
     floors: {}
@@ -254,7 +257,9 @@ export function generateSimulationData(
     // Convertir nombre de piso a número (ground=0, first=1, etc.)
     const floorNumber = index.toString();
 
-    // Convertir escaleras usando la nueva estructura mejorada
+    // Convertir escaleras usando la nueva estructura mejorada con líneas individuales
+    // Cada escalera ahora tiene formato: stair_0F_1, stair_1F_2, etc.
+    // Cada línea de escalera tiene formato: stair_line_1, stair_line_2, etc.
     const stairs: StairExportNew[] = convertStairPolygonsToExport(
       floorData.stairPolygons || [], 
       floorName
@@ -822,6 +827,11 @@ export function convertStairPolygonToExport(
   // Convert polygon points to lines
   const lines = stairPolygonToLines(stairPolygon);
   
+  // Validate minimum polygon structure
+  if (lines.length < 3) {
+    console.warn(`Stair ${stairId} has insufficient points for a valid polygon`);
+  }
+  
   return {
     id: stairId,
     lines: lines,
@@ -845,4 +855,70 @@ export function convertStairPolygonsToExport(
   });
   
   return exportedStairs;
+}
+
+// ================== STAIR UTILITY FUNCTIONS ==================
+
+/**
+ * Extracts floor index from stair ID (e.g., "stair_1F_2" -> 1)
+ */
+export function getFloorIndexFromStairId(stairId: string): number {
+  const match = stairId.match(/stair_(\d+)F_\d+/);
+  return match ? parseInt(match[1]) : 0;
+}
+
+/**
+ * Validates that a stair polygon has minimum required structure
+ */
+export function validateStairPolygon(stairPolygon: StairPolygon): boolean {
+  if (!stairPolygon.points || stairPolygon.points.length < 3) {
+    return false;
+  }
+  
+  // Check for valid coordinates
+  return stairPolygon.points.every(point => 
+    typeof point.x === 'number' && 
+    typeof point.y === 'number' && 
+    !isNaN(point.x) && 
+    !isNaN(point.y)
+  );
+}
+
+/**
+ * Calculates the geometric center of a stair polygon
+ */
+export function calculateStairCenter(stairPolygon: StairPolygon): Point2D {
+  if (!stairPolygon.points || stairPolygon.points.length === 0) {
+    return { x: 0, y: 0 };
+  }
+  
+  const center = stairPolygon.points.reduce(
+    (acc, point) => ({
+      x: acc.x + point.x / stairPolygon.points.length,
+      y: acc.y + point.y / stairPolygon.points.length
+    }),
+    { x: 0, y: 0 }
+  );
+  
+  return center;
+}
+
+/**
+ * Calculates the approximate area of a stair polygon using shoelace formula
+ */
+export function calculateStairArea(stairPolygon: StairPolygon): number {
+  if (!stairPolygon.points || stairPolygon.points.length < 3) {
+    return 0;
+  }
+  
+  let area = 0;
+  const points = stairPolygon.points;
+  
+  for (let i = 0; i < points.length; i++) {
+    const j = (i + 1) % points.length;
+    area += points[i].x * points[j].y;
+    area -= points[j].x * points[i].y;
+  }
+  
+  return Math.abs(area) / 2;
 }
