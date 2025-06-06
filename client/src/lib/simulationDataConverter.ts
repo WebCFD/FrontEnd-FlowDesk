@@ -573,34 +573,17 @@ export function lineToUniqueId(line: Line): string {
   return `${line.start.x},${line.start.y}_${line.end.x},${line.end.y}`;
 }
 
-/**
- * Obtiene el índice de planta basado en el nombre del piso
- */
-export function getFloorIndex(floorName: string): number {
-  // Mapeo de nombres comunes a índices
-  const floorMap: Record<string, number> = {
-    'Planta Baja': 0,
-    'Ground Floor': 0,
-    'Primera Planta': 1,
-    'First Floor': 1,
-    'Segunda Planta': 2,
-    'Second Floor': 2,
-    'Tercera Planta': 3,
-    'Third Floor': 3
-  };
-  
-  return floorMap[floorName] || 0;
-}
+
 
 /**
- * Genera el siguiente número de pared para una planta específica
+ * Genera el siguiente número de pared para una planta específica usando prefijo
  */
-export function getNextWallNumber(walls: Wall[], floorIndex: number): number {
-  const floorPrefix = `wall_${floorIndex}F_`;
+export function getNextWallNumber(walls: Wall[], floorPrefix: string): number {
+  const prefixPattern = `wall_${floorPrefix}_`;
   
   // Encontrar todos los números de pared existentes para esta planta
   const existingNumbers = walls
-    .filter(wall => wall.id.startsWith(floorPrefix))
+    .filter(wall => wall.id.startsWith(prefixPattern))
     .map(wall => {
       const match = wall.id.match(/(\d+)$/);
       return match ? parseInt(match[1]) : 0;
@@ -620,11 +603,11 @@ export function createWallFromLine(
   existingWalls: Wall[], 
   temperature: number = 20.0
 ): Wall {
-  const floorIndex = getFloorIndex(floorName);
-  const wallNumber = getNextWallNumber(existingWalls, floorIndex);
+  const floorPrefix = getFloorPrefix(floorName);
+  const wallNumber = getNextWallNumber(existingWalls, floorPrefix);
   
   return {
-    id: `wall_${floorIndex}F_${wallNumber}`,
+    id: `wall_${floorPrefix}_${wallNumber}`,
     uuid: generateUUID(),
     floor: floorName,
     lineRef: lineToUniqueId(line),
@@ -876,11 +859,11 @@ function getFloorPrefix(floorName: string): string {
 // ================== STAIR UTILITY FUNCTIONS ==================
 
 /**
- * Extracts floor index from stair ID (e.g., "stair_1F_2" -> 1)
+ * Extracts floor prefix from stair ID (e.g., "stair_1F_2" -> "1F")
  */
-export function getFloorIndexFromStairId(stairId: string): number {
-  const match = stairId.match(/stair_(\d+)F_\d+/);
-  return match ? parseInt(match[1]) : 0;
+export function getFloorPrefixFromStairId(stairId: string): string {
+  const match = stairId.match(/stair_(\d+F)_\d+/);
+  return match ? match[1] : '0F';
 }
 
 /**
