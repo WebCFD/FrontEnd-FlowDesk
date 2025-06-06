@@ -254,15 +254,11 @@ export function generateSimulationData(
     // Convertir nombre de piso a número (ground=0, first=1, etc.)
     const floorNumber = index.toString();
 
-    // Convertir escaleras con coordenadas normalizadas
-    const stairs: StairExport[] = (floorData.stairPolygons || []).map((stair, index) => {
-      return {
-        id: stair.id || `stair_${index}`,
-        points: stair.points.map(p => normalizeCoordinates({ x: p.x, y: p.y })),
-        connectsTo: stair.connectsTo,
-        direction: stair.direction
-      };
-    });
+    // Convertir escaleras usando la nueva estructura mejorada
+    const stairs: StairExportNew[] = convertStairPolygonsToExport(
+      floorData.stairPolygons || [], 
+      floorName
+    );
 
     // Convertir paredes - usar sincronización para asegurar datos limpios
     const synchronizedWalls = prepareSynchronizedWalls(
@@ -732,4 +728,121 @@ export function prepareSynchronizedWalls(
   floorName: string
 ): Wall[] {
   return syncWallsWithLines(lines, walls, floorName);
+}
+
+// ================== STAIR CONVERSION SYSTEM ==================
+
+/**
+ * Generates the next stair number for a given floor
+ */
+function getNextStairNumber(existingStairs: StairExportNew[], floorIndex: number): number {
+  const floorPrefix = `stair_${floorIndex}F_`;
+  
+  // Find all existing stair numbers for this floor
+  const existingNumbers = existingStairs
+    .filter(stair => stair.id.startsWith(floorPrefix))
+    .map(stair => {
+      const match = stair.id.match(/(\d+)$/);
+      return match ? parseInt(match[1]) : 0;
+    })
+    .filter(num => !isNaN(num));
+  
+  // Return the next available number
+  return existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1;
+}
+
+/**
+ * Global counter for stair line IDs
+ */
+let globalStairLineCounter = 1;
+
+/**
+ * Generates unique ID for stair lines
+ */
+function generateStairLineId(): string {
+  return `stair_line_${globalStairLineCounter++}`;
+}
+
+/**
+ * Creates a stair line from two points
+ */
+function createStairLineFromSegment(startPoint: Point2D, endPoint: Point2D): StairLineExport {
+  const startCoords = normalizeCoordinates(startPoint);
+  const endCoords = normalizeCoordinates(endPoint);
+  
+  return {
+    id: generateStairLineId(),
+    start: { 
+      x: parseFloat(cmToM(startCoords.x).toFixed(5)), 
+      y: parseFloat(cmToM(startCoords.y).toFixed(5)) 
+    },
+    end: { 
+      x: parseFloat(cmToM(endCoords.x).toFixed(5)), 
+      y: parseFloat(cmToM(endCoords.y).toFixed(5)) 
+    }
+  };
+}
+
+/**
+ * Converts a StairPolygon into an array of StairLineExport
+ */
+function stairPolygonToLines(stairPolygon: StairPolygon): StairLineExport[] {
+  const lines: StairLineExport[] = [];
+  
+  if (stairPolygon.points.length < 3) {
+    return lines; // Need at least 3 points to form a polygon
+  }
+  
+  // Create lines between consecutive points
+  for (let i = 0; i < stairPolygon.points.length; i++) {
+    const startPoint = stairPolygon.points[i];
+    const endPoint = stairPolygon.points[(i + 1) % stairPolygon.points.length]; // Wrap around to first point
+    
+    const line = createStairLineFromSegment(startPoint, endPoint);
+    lines.push(line);
+  }
+  
+  return lines;
+}
+
+/**
+ * Converts StairPolygon to StairExportNew with proper ID nomenclature
+ */
+export function convertStairPolygonToExport(
+  stairPolygon: StairPolygon, 
+  floorName: string, 
+  existingStairs: StairExportNew[]
+): StairExportNew {
+  const floorIndex = getFloorIndex(floorName);
+  const stairNumber = getNextStairNumber(existingStairs, floorIndex);
+  
+  // Generate stair ID: stair_0F_1, stair_1F_2, etc.
+  const stairId = `stair_${floorIndex}F_${stairNumber}`;
+  
+  // Convert polygon points to lines
+  const lines = stairPolygonToLines(stairPolygon);
+  
+  return {
+    id: stairId,
+    lines: lines,
+    direction: stairPolygon.direction,
+    connectsTo: stairPolygon.connectsTo
+  };
+}
+
+/**
+ * Converts array of StairPolygons to array of StairExportNew for a floor
+ */
+export function convertStairPolygonsToExport(
+  stairPolygons: StairPolygon[], 
+  floorName: string
+): StairExportNew[] {
+  const exportedStairs: StairExportNew[] = [];
+  
+  stairPolygons.forEach(stairPolygon => {
+    const exportedStair = convertStairPolygonToExport(stairPolygon, floorName, exportedStairs);
+    exportedStairs.push(exportedStair);
+  });
+  
+  return exportedStairs;
 }
