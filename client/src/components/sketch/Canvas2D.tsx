@@ -1687,7 +1687,6 @@ export default function Canvas2D({
           id: Math.random().toString(36).substring(2, 9),
           points: [...currentStairPoints],
           floor: floorText,
-          direction: "up", // Default direction, can be customized later
         };
 
         // Add the new stair polygon
@@ -1984,7 +1983,7 @@ export default function Canvas2D({
       ctx.setLineDash([5 / zoom, 5 / zoom]);
     } else {
       // Completed stair styling - solid
-      const color = direction === "up" ? "#7c3aed" : "#8b5cf6"; // Different shades for up/down
+      const color = "#7c3aed"; // Violet color for all stairs
       ctx.strokeStyle = color;
       ctx.fillStyle = `${color}33`; // Add transparency
       ctx.lineWidth = 2 / zoom;
@@ -2028,14 +2027,7 @@ export default function Canvas2D({
       const label = isImported ? "IMPORTED STAIR" : "STAIR";
       ctx.fillText(label, center.x, center.y);
 
-      // Add direction indicator text below the main label
-      ctx.fillStyle = isImported ? "#991b1b" : "#000";
-      ctx.font = `${10 / zoom}px Arial`;
-      ctx.fillText(
-        direction === "up" ? "(UP)" : "(DOWN)",
-        center.x,
-        center.y + 14 / zoom,
-      );
+      // Remove direction indicator - no longer needed
 
       // If imported, add a "non-editable" indicator
       if (isImported) {
