@@ -150,7 +150,6 @@ interface StairExport {
   id: string;
   points: PointXY[];
   connectsTo?: string;
-  direction?: string;
 }
 
 // New improved stair export interfaces
@@ -163,7 +162,6 @@ interface StairLineExport {
 interface StairExportNew {
   id: string;
   lines: StairLineExport[];
-  direction?: string;
   connectsTo?: string;
 }
 
@@ -835,7 +833,6 @@ export function convertStairPolygonToExport(
   return {
     id: stairId,
     lines: lines,
-    direction: stairPolygon.direction,
     connectsTo: stairPolygon.connectsTo
   };
 }

@@ -26,7 +26,6 @@ export interface StairPolygon {
   id: string;
   points: Point[];
   floor: string;
-  direction?: "up" | "down";
   connectsTo?: string;
   sourceFloor?: string; // Track where the stair was originally defined
   isImported?: boolean; // Flag to identify if this stair was imported from another floor
@@ -42,7 +41,6 @@ export interface StairLineExport {
 export interface StairExportNew {
   id: string;
   lines: StairLineExport[];
-  direction?: "up" | "down";
   connectsTo?: string;
 }
 
