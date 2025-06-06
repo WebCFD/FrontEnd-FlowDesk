@@ -736,14 +736,14 @@ export function prepareSynchronizedWalls(
 // ================== STAIR CONVERSION SYSTEM ==================
 
 /**
- * Generates the next stair number for a given floor
+ * Generates the next stair number for a given floor using prefix-based matching
  */
-function getNextStairNumber(existingStairs: StairExportNew[], floorIndex: number): number {
-  const floorPrefix = `stair_${floorIndex}F_`;
+function getNextStairNumber(existingStairs: StairExportNew[], floorPrefix: string): number {
+  const prefixPattern = `stair_${floorPrefix}_`;
   
   // Find all existing stair numbers for this floor
   const existingNumbers = existingStairs
-    .filter(stair => stair.id.startsWith(floorPrefix))
+    .filter(stair => stair.id.startsWith(prefixPattern))
     .map(stair => {
       const match = stair.id.match(/(\d+)$/);
       return match ? parseInt(match[1]) : 0;
@@ -816,11 +816,11 @@ export function convertStairPolygonToExport(
   floorName: string, 
   existingStairs: StairExportNew[]
 ): StairExportNew {
-  const floorIndex = getFloorIndex(floorName);
-  const stairNumber = getNextStairNumber(existingStairs, floorIndex);
+  const floorPrefix = getFloorPrefix(floorName);
+  const stairNumber = getNextStairNumber(existingStairs, floorPrefix);
   
   // Generate stair ID: stair_0F_1, stair_1F_2, etc.
-  const stairId = `stair_${floorIndex}F_${stairNumber}`;
+  const stairId = `stair_${floorPrefix}_${stairNumber}`;
   
   // Convert polygon points to lines
   const lines = stairPolygonToLines(stairPolygon);
@@ -856,6 +856,21 @@ export function convertStairPolygonsToExport(
   });
   
   return exportedStairs;
+}
+
+// ================== FLOOR NAMING UTILITIES ==================
+
+/**
+ * Gets floor prefix for consistent ID generation across walls and stairs
+ * Replaces getFloorIndex function with direct mapping
+ */
+function getFloorPrefix(floorName: string): string {
+  return floorName === 'ground' ? '0F' : 
+         floorName === 'first' ? '1F' :
+         floorName === 'second' ? '2F' :
+         floorName === 'third' ? '3F' :
+         floorName === 'fourth' ? '4F' :
+         floorName === 'fifth' ? '5F' : '0F';
 }
 
 // ================== STAIR UTILITY FUNCTIONS ==================
