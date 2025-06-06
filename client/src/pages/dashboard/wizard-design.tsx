@@ -570,6 +570,66 @@ export default function WizardDesign() {
     });
   };
 
+  // Project stairs from adjacent floors (replaces direction-based logic)
+  const projectStairsFromAdjacentFloors = (targetFloorName: string) => {
+    const targetFloorData = floors[targetFloorName];
+    if (!targetFloorData) return;
+
+    // Get all floor names for adjacency calculation
+    const floorOrder = ["ground", "first", "second", "third", "fourth"];
+    const targetIndex = floorOrder.indexOf(targetFloorName);
+    if (targetIndex === -1) return;
+
+    // Find adjacent floors (floor above and below)
+    const adjacentFloors = [];
+    if (targetIndex > 0) adjacentFloors.push(floorOrder[targetIndex - 1]); // Floor below
+    if (targetIndex < floorOrder.length - 1) adjacentFloors.push(floorOrder[targetIndex + 1]); // Floor above
+
+    let projectedStairs: StairPolygon[] = [];
+    
+    // Keep existing stairs that are owned by this floor (not imported)
+    const existingOwnedStairs = targetFloorData.stairPolygons?.filter(stair => !stair.isImported) || [];
+    projectedStairs = [...existingOwnedStairs];
+
+    // Project stairs from each adjacent floor
+    adjacentFloors.forEach(adjacentFloorName => {
+      const adjacentFloorData = floors[adjacentFloorName];
+      if (!adjacentFloorData?.stairPolygons) return;
+
+      adjacentFloorData.stairPolygons.forEach(stair => {
+        // Skip already imported stairs to avoid duplicates
+        if (stair.isImported) return;
+
+        // Check if this stair should be projected to target floor
+        // Logic: stairs always connect adjacent floors (simplified without direction)
+        const shouldProject = true; // All stairs from adjacent floors get projected
+
+        if (shouldProject) {
+          // Check if projection already exists
+          const existingProjection = projectedStairs.find(
+            s => s.connectsTo === stair.id || s.id === stair.connectsTo
+          );
+
+          if (!existingProjection) {
+            // Create projected stair
+            const projectedStair: StairPolygon = {
+              id: `imported-${stair.id}`,
+              points: [...stair.points],
+              floor: targetFloorName,
+              connectsTo: stair.id,
+              isImported: true
+            };
+
+            projectedStairs.push(projectedStair);
+          }
+        }
+      });
+    });
+
+    // Update stairs for target floor
+    setStairPolygons(projectedStairs);
+  };
+
   // Handle floor selection change
   const handleFloorChange = (floorName: string) => {
     if (!floors[floorName]) {
@@ -578,6 +638,9 @@ export default function WizardDesign() {
     }
     setCurrentFloor(floorName);
     setSelectedFloor(floorName);
+    
+    // Auto-project stairs from adjacent floors (without direction dependency)
+    projectStairsFromAdjacentFloors(floorName);
   };
 
   // Handle adding a new floor
