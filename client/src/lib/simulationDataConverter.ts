@@ -153,6 +153,20 @@ interface StairExport {
   direction?: string;
 }
 
+// New improved stair export interfaces
+interface StairLineExport {
+  id: string;
+  start: PointXY;
+  end: PointXY;
+}
+
+interface StairExportNew {
+  id: string;
+  lines: StairLineExport[];
+  direction?: string;
+  connectsTo?: string;
+}
+
 interface WallExport {
   id: string;
   start: PointXY;
@@ -172,7 +186,7 @@ interface FloorExport {
   height: number;
   floorDeck: number;
   walls: WallExport[];
-  stairs: StairExport[];
+  stairs: StairExportNew[];
   furniture: FurnitureExport[];
 }
 

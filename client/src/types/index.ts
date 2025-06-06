@@ -32,6 +32,20 @@ export interface StairPolygon {
   isImported?: boolean; // Flag to identify if this stair was imported from another floor
 }
 
+// New export types for improved JSON structure
+export interface StairLineExport {
+  id: string;
+  start: Point;
+  end: Point;
+}
+
+export interface StairExportNew {
+  id: string;
+  lines: StairLineExport[];
+  direction?: "up" | "down";
+  connectsTo?: string;
+}
+
 export interface Measurement {
   start: Point;
   end: Point;
