@@ -1,0 +1,84 @@
+wizard-design:1 [.WebGL-0x740c42ce00] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+wizard-design:1 [.WebGL-0x740c42ce00] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+wizard-design:1 [.WebGL-0x740c42ce00] GL_INVALID_OPERATION: Texture is immutable.Understand this warningAI
+chunk-WERSD76P.js?v=1e4e45b3:18625 [Violation] 'click' handler took 171ms
+Canvas3D.tsx:4998 🎯 DelFurn: Click detected in furniture eraser mode
+Canvas3D.tsx:5011 🖱️ DelFurn: Mouse coordinates: -0.06147725985083796 0.012448705538542826
+Canvas3D.tsx:5032 📋 DelFurn: Found 0 furniture objects in scene
+Canvas3D.tsx:5036 🎯 DelFurn: Raycaster found 0 intersections
+Canvas3D.tsx:5090 ❌ DelFurn: No intersections found with furniture objects
+wizard-design.tsx:1571 Dragging furniture: {id: 'vent', name: 'Vent', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…ke="#22c55e" stroke-width="2"/>\n      </svg>\n    ', defaultDimensions: {…}}
+RoomSketchPro.tsx:797 RSP: New furniture added, re-applying textures...
+Canvas3D.tsx:4993 🚫 DelFurn: Not in furniture eraser mode
+Canvas3D.tsx:4993 🚫 DelFurn: Not in furniture eraser mode
+Canvas3D.tsx:4993 🚫 DelFurn: Not in furniture eraser mode
+Canvas3D.tsx:4878 🖱️ Double-click detected!
+Canvas3D.tsx:4897 🎯 Mouse coordinates: _Vector2 {x: -0.14513609085347656, y: -0.12999732511726192}
+Canvas3D.tsx:4909 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'vent_1749291303978', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:4909 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', isSelectable: true, isVentFurniture: true}
+Canvas3D.tsx:4918 🔍 Found 2 furniture objects in scene
+Canvas3D.tsx:4923 💥 Found 2 intersections
+Canvas3D.tsx:4937 ✅ Intersected furniture object: {furnitureId: undefined, userData: {…}, position: _Vector3}
+Canvas3D.tsx:4979 ❌ No furnitureId found in userData
+Canvas3D.tsx:4993 🚫 DelFurn: Not in furniture eraser mode
+Canvas3D.tsx:4998 🎯 DelFurn: Click detected in furniture eraser mode
+Canvas3D.tsx:5011 🖱️ DelFurn: Mouse coordinates: -0.1380161903426137 -0.14109701581771406
+Canvas3D.tsx:5021 🔍 DelFurn: Found furniture object: {type: 'Group', furnitureType: 'vent', furnitureId: 'vent_1749291303978', isVentFurniture: undefined, uuid: '6559da1d-f355-4806-8d29-1ebc5a32ca97'}
+Canvas3D.tsx:5021 🔍 DelFurn: Found furniture object: {type: 'Mesh', furnitureType: 'vent', furnitureId: undefined, isVentFurniture: true, uuid: '5b713e05-a394-4022-9cab-7bc9f4018b11'}
+Canvas3D.tsx:5032 📋 DelFurn: Found 2 furniture objects in scene
+Canvas3D.tsx:5036 🎯 DelFurn: Raycaster found 2 intersections
+Canvas3D.tsx:5040 ✅ DelFurn: Hit object: {type: 'Mesh', userData: {…}, position: _Vector3, uuid: '5b713e05-a394-4022-9cab-7bc9f4018b11'}
+Canvas3D.tsx:5060 🎯 DelFurn: Found furniture group: {furnitureType: 'vent', furnitureId: undefined, floorName: undefined, isVentFurniture: true}
+Canvas3D.tsx:5081 ❌ DelFurn: Missing furnitureId or deletion callback: {furnitureId: undefined, onDeleteFurniture: true}
+Canvas3D.tsx:4998 🎯 DelFurn: Click detected in furniture eraser mode
+Canvas3D.tsx:5011 🖱️ DelFurn: Mouse coordinates: -0.1380161903426137 -0.14109701581771406
+Canvas3D.tsx:5021 🔍 DelFurn: Found furniture object: {type: 'Group', furnitureType: 'vent', furnitureId: 'vent_1749291303978', isVentFurniture: undefined, uuid: '6559da1d-f355-4806-8d29-1ebc5a32ca97'}
+Canvas3D.tsx:5021 🔍 DelFurn: Found furniture object: {type: 'Mesh', furnitureType: 'vent', furnitureId: undefined, isVentFurniture: true, uuid: '5b713e05-a394-4022-9cab-7bc9f4018b11'}
+Canvas3D.tsx:5032 📋 DelFurn: Found 2 furniture objects in scene
+Canvas3D.tsx:5036 🎯 DelFurn: Raycaster found 2 intersections
+Canvas3D.tsx:5040 ✅ DelFurn: Hit object: {type: 'Mesh', userData: {…}, position: _Vector3, uuid: '5b713e05-a394-4022-9cab-7bc9f4018b11'}
+Canvas3D.tsx:5060 🎯 DelFurn: Found furniture group: {furnitureType: 'vent', furnitureId: undefined, floorName: undefined, isVentFurniture: true}
+Canvas3D.tsx:5081 ❌ DelFurn: Missing furnitureId or deletion callback: {furnitureId: undefined, onDeleteFurniture: true}
+Canvas3D.tsx:4878 🖱️ Double-click detected!
+Canvas3D.tsx:4897 🎯 Mouse coordinates: _Vector2 {x: -0.1380161903426137, y: -0.14109701581771406}
+Canvas3D.tsx:4909 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'vent_1749291303978', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:4909 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', isSelectable: true, isVentFurniture: true}
+Canvas3D.tsx:4918 🔍 Found 2 furniture objects in scene
+Canvas3D.tsx:4923 💥 Found 2 intersections
+Canvas3D.tsx:4937 ✅ Intersected furniture object: {furnitureId: undefined, userData: {…}, position: _Vector3}
+Canvas3D.tsx:4979 ❌ No furnitureId found in userData
+Canvas3D.tsx:4998 🎯 DelFurn: Click detected in furniture eraser mode
+Canvas3D.tsx:5011 🖱️ DelFurn: Mouse coordinates: -0.1380161903426137 -0.14109701581771406
+Canvas3D.tsx:5021 🔍 DelFurn: Found furniture object: {type: 'Group', furnitureType: 'vent', furnitureId: 'vent_1749291303978', isVentFurniture: undefined, uuid: '6559da1d-f355-4806-8d29-1ebc5a32ca97'}
+Canvas3D.tsx:5021 🔍 DelFurn: Found furniture object: {type: 'Mesh', furnitureType: 'vent', furnitureId: undefined, isVentFurniture: true, uuid: '5b713e05-a394-4022-9cab-7bc9f4018b11'}
+Canvas3D.tsx:5032 📋 DelFurn: Found 2 furniture objects in scene
+Canvas3D.tsx:5036 🎯 DelFurn: Raycaster found 2 intersections
+Canvas3D.tsx:5040 ✅ DelFurn: Hit object: {type: 'Mesh', userData: {…}, position: _Vector3, uuid: '5b713e05-a394-4022-9cab-7bc9f4018b11'}
+Canvas3D.tsx:5060 🎯 DelFurn: Found furniture group: {furnitureType: 'vent', furnitureId: undefined, floorName: undefined, isVentFurniture: true}
+Canvas3D.tsx:5081 ❌ DelFurn: Missing furnitureId or deletion callback: {furnitureId: undefined, onDeleteFurniture: true}
+Canvas3D.tsx:4998 🎯 DelFurn: Click detected in furniture eraser mode
+Canvas3D.tsx:5011 🖱️ DelFurn: Mouse coordinates: -0.1380161903426137 -0.14109701581771406
+Canvas3D.tsx:5021 🔍 DelFurn: Found furniture object: {type: 'Group', furnitureType: 'vent', furnitureId: 'vent_1749291303978', isVentFurniture: undefined, uuid: '6559da1d-f355-4806-8d29-1ebc5a32ca97'}
+Canvas3D.tsx:5021 🔍 DelFurn: Found furniture object: {type: 'Mesh', furnitureType: 'vent', furnitureId: undefined, isVentFurniture: true, uuid: '5b713e05-a394-4022-9cab-7bc9f4018b11'}
+Canvas3D.tsx:5032 📋 DelFurn: Found 2 furniture objects in scene
+Canvas3D.tsx:5036 🎯 DelFurn: Raycaster found 2 intersections
+Canvas3D.tsx:5040 ✅ DelFurn: Hit object: {type: 'Mesh', userData: {…}, position: _Vector3, uuid: '5b713e05-a394-4022-9cab-7bc9f4018b11'}
+Canvas3D.tsx:5060 🎯 DelFurn: Found furniture group: {furnitureType: 'vent', furnitureId: undefined, floorName: undefined, isVentFurniture: true}
+Canvas3D.tsx:5081 ❌ DelFurn: Missing furnitureId or deletion callback: {furnitureId: undefined, onDeleteFurniture: true}
+Canvas3D.tsx:4998 🎯 DelFurn: Click detected in furniture eraser mode
+Canvas3D.tsx:5011 🖱️ DelFurn: Mouse coordinates: -0.1380161903426137 -0.14109701581771406
+Canvas3D.tsx:5021 🔍 DelFurn: Found furniture object: {type: 'Group', furnitureType: 'vent', furnitureId: 'vent_1749291303978', isVentFurniture: undefined, uuid: '6559da1d-f355-4806-8d29-1ebc5a32ca97'}
+Canvas3D.tsx:5021 🔍 DelFurn: Found furniture object: {type: 'Mesh', furnitureType: 'vent', furnitureId: undefined, isVentFurniture: true, uuid: '5b713e05-a394-4022-9cab-7bc9f4018b11'}
+Canvas3D.tsx:5032 📋 DelFurn: Found 2 furniture objects in scene
+Canvas3D.tsx:5036 🎯 DelFurn: Raycaster found 2 intersections
+Canvas3D.tsx:5040 ✅ DelFurn: Hit object: {type: 'Mesh', userData: {…}, position: _Vector3, uuid: '5b713e05-a394-4022-9cab-7bc9f4018b11'}
+Canvas3D.tsx:5060 🎯 DelFurn: Found furniture group: {furnitureType: 'vent', furnitureId: undefined, floorName: undefined, isVentFurniture: true}
+Canvas3D.tsx:5081 ❌ DelFurn: Missing furnitureId or deletion callback: {furnitureId: undefined, onDeleteFurniture: true}
+Canvas3D.tsx:4878 🖱️ Double-click detected!
+Canvas3D.tsx:4897 🎯 Mouse coordinates: _Vector2 {x: -0.1380161903426137, y: -0.14109701581771406}
+Canvas3D.tsx:4909 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'vent_1749291303978', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:4909 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', isSelectable: true, isVentFurniture: true}
+Canvas3D.tsx:4918 🔍 Found 2 furniture objects in scene
+Canvas3D.tsx:4923 💥 Found 2 intersections
+Canvas3D.tsx:4937 ✅ Intersected furniture object: {furnitureId: undefined, userData: {…}, position: _Vector3}
+Canvas3D.tsx:4979 
