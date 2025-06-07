@@ -113,8 +113,8 @@ interface Canvas3DProps {
 }
 
 
-// Constants
-const PIXELS_TO_CM = 25 / 20;
+// Constants - corrected to match actual canvas scale: 25cm = 20px
+const PIXELS_TO_CM = 20 / 25; // 0.8 - correct conversion factor
 const GRID_SIZE = 1000;
 const GRID_DIVISIONS = 40;
 
@@ -798,11 +798,11 @@ const createFurnitureModel = (
   if (furnitureItem.dimensions) {
     const defaultDimensions = getDefaultDimensions(furnitureItem.type);
     
-    // Special handling for custom STL objects - apply canvas coordinate conversion
+    // Special handling for custom STL objects - apply proper coordinate conversion
     if (furnitureItem.type === 'custom') {
-      // The scene coordinate system appears to need larger scaling
-      // Based on actual measurements, we need ~50x larger scale
-      const sceneScale = 50; // Empirically determined from actual scene measurements
+      // STL dimensions are in cm, need to convert to scene units
+      // With corrected PIXELS_TO_CM = 0.8, we need to scale appropriately
+      const sceneScale = 1; // Use unit scale, let dimension system handle conversion
       model.scale.set(sceneScale, sceneScale, sceneScale);
       
 
