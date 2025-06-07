@@ -819,7 +819,7 @@ const createFurnitureModel = (
 };
 
 // Helper function to get default dimensions for furniture types
-const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'car' | 'block' | 'vent') => {
+const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'car' | 'block' | 'vent' | 'custom') => {
   switch (type) {
     case 'table':
       return { width: 120, height: 75, depth: 80 };
@@ -833,6 +833,8 @@ const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'car' | 'b
       return { width: 80, height: 80, depth: 80 };
     case 'vent':
       return { width: 50, height: 50, depth: 10 };
+    case 'custom':
+      return { width: 100, height: 100, depth: 100 };
     default:
       return { width: 80, height: 80, depth: 80 };
   }
