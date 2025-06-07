@@ -4991,18 +4991,11 @@ export default function Canvas3D({
     // Single click handler for furniture deletion
     const handleClick = (event: MouseEvent) => {
       // Only handle clicks in furniture eraser mode
-      if (!isFurnitureEraserMode) {
-        console.log("🚫 DelFurn: Not in furniture eraser mode");
-        return;
-      }
+      if (!isFurnitureEraserMode) return;
       
       event.preventDefault();
-      console.log("🎯 DelFurn: Click detected in furniture eraser mode");
       
-      if (!sceneRef.current || !cameraRef.current) {
-        console.log("❌ DelFurn: Missing scene or camera refs");
-        return;
-      }
+      if (!sceneRef.current || !cameraRef.current) return;
       
       // Get mouse coordinates
       const rect = container.getBoundingClientRect();
@@ -5010,7 +5003,6 @@ export default function Canvas3D({
         ((event.clientX - rect.left) / rect.width) * 2 - 1,
         -((event.clientY - rect.top) / rect.height) * 2 + 1
       );
-      console.log("🖱️ DelFurn: Mouse coordinates:", mouse.x, mouse.y);
       
       // Create raycaster
       const raycaster = new THREE.Raycaster();
@@ -5020,63 +5012,31 @@ export default function Canvas3D({
       const furnitureObjects: THREE.Object3D[] = [];
       sceneRef.current.traverse((object) => {
         if (object.userData.type === 'furniture') {
-          console.log("🔍 DelFurn: Found furniture object:", {
-            type: object.type,
-            furnitureType: object.userData.furnitureType,
-            furnitureId: object.userData.furnitureId,
-            isVentFurniture: object.userData.isVentFurniture,
-            uuid: object.uuid
-          });
           furnitureObjects.push(object);
         }
       });
       
-      console.log(`📋 DelFurn: Found ${furnitureObjects.length} furniture objects in scene`);
-      
       // Check for intersections
       const intersects = raycaster.intersectObjects(furnitureObjects, true);
-      console.log(`🎯 DelFurn: Raycaster found ${intersects.length} intersections`);
       
       if (intersects.length > 0) {
         const intersectedObject = intersects[0].object;
-        console.log("✅ DelFurn: Hit object:", {
-          type: intersectedObject.type,
-          userData: intersectedObject.userData,
-          position: intersectedObject.position,
-          uuid: intersectedObject.uuid
-        });
         
         // Find the furniture group - prioritize groups with furnitureId
         let furnitureGroup = intersectedObject;
         
         // First check if the hit object itself has furnitureId
-        if (furnitureGroup.userData.furnitureId) {
-          console.log("🎯 DelFurn: Hit object has furnitureId directly");
-        } else {
+        if (!furnitureGroup.userData.furnitureId) {
           // Look for parent with furnitureId
-          console.log("🔍 DelFurn: Hit object lacks furnitureId, checking parent");
           furnitureGroup = intersectedObject.parent;
-          console.log("🔍 DelFurn: Parent check:", {
-            type: furnitureGroup?.type,
-            userData: furnitureGroup?.userData,
-            hasFurnitureId: !!furnitureGroup?.userData?.furnitureId
-          });
         }
         
         if (furnitureGroup && furnitureGroup.userData.type === 'furniture') {
           const furnitureId = furnitureGroup.userData.furnitureId;
-          console.log("🎯 DelFurn: Found furniture group:", {
-            furnitureType: furnitureGroup.userData.furnitureType,
-            furnitureId: furnitureId,
-            floorName: furnitureGroup.userData.floorName,
-            isVentFurniture: furnitureGroup.userData.isVentFurniture
-          });
           
           if (furnitureId && onDeleteFurniture) {
             // Find the furniture floor for the callback
             const furnitureFloorName = furnitureGroup.userData.floorName || currentFloor;
-            
-            console.log("🗑️ DelFurn: Deleting furniture:", furnitureId, "from floor:", furnitureFloorName);
             
             // Remove from scene
             sceneRef.current.remove(furnitureGroup);
@@ -5088,19 +5048,8 @@ export default function Canvas3D({
             if (onFurnitureDeleted) {
               onFurnitureDeleted();
             }
-            
-            console.log("✅ DelFurn: Deletion completed successfully");
-          } else {
-            console.log("❌ DelFurn: Missing furnitureId or deletion callback:", {
-              furnitureId,
-              onDeleteFurniture: !!onDeleteFurniture
-            });
           }
-        } else {
-          console.log("❌ DelFurn: No furniture group found or invalid userData");
         }
-      } else {
-        console.log("❌ DelFurn: No intersections found with furniture objects");
       }
     };
 
