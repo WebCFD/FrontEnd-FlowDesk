@@ -851,7 +851,8 @@ export default function Canvas3D({
   onDeleteFurniture,
 }: Canvas3DProps) {
   // Access the SceneContext to share data with RoomSketchPro
-  const { updateGeometryData, updateSceneData, updateFloorData, setCurrentFloor: setContextCurrentFloor } = useSceneContext();
+  const sceneContext = useSceneContext();
+  const { updateGeometryData, updateSceneData, updateFloorData, setCurrentFloor: setContextCurrentFloor } = sceneContext;
 
   // PHASE 5: Pure props pattern - removed Zustand store dependencies
 
@@ -2135,9 +2136,7 @@ export default function Canvas3D({
     sceneRef.current = scene;
 
     // Register scene with SceneContext for cross-component access
-    if (sceneContext) {
-      sceneContext.registerScene('canvas3D', scene);
-    }
+    sceneContext.registerScene('canvas3D', scene);
 
     // Initialize camera
     const camera = new THREE.PerspectiveCamera(
@@ -4162,6 +4161,9 @@ export default function Canvas3D({
           containerRef.current.removeChild(renderer.domElement);
         }
       }
+
+      // Unregister scene from SceneContext
+      sceneContext.unregisterScene('canvas3D');
 
       // Remove global event listeners
       document.removeEventListener("mousemove", mouseMoveHandler);

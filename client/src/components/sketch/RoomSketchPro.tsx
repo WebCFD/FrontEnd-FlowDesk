@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import Canvas3D from "./Canvas3D";
 import * as THREE from "three";
 import { TextureGenerator } from "./textureGenerator";
+import { useSceneContext } from "../../contexts/SceneContext";
 
 interface Point {
   x: number;
