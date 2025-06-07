@@ -86,7 +86,7 @@ export function FurnitureMenu({ onDragStart, wallTransparency = 0.8, onWallTrans
   const displayValue = typeof wallTransparency === 'number' ? wallTransparency.toFixed(1) : '0.8';
 
   return (
-    <div className="w-48 space-y-6">
+    <div className="w-full space-y-6">
       <div className="space-y-4">
         <h3 className="font-semibold">View Controls</h3>
         <div className="space-y-2">
