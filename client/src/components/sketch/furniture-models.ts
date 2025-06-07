@@ -316,12 +316,10 @@ function createFallbackCar(group: THREE.Group): void {
 export const createBlockModel = (): THREE.Group => {
   const group = new THREE.Group();
 
-  // Simple cube block with opaque light gray material
+  // Simple cube block with completely matte material (no shine or reflections)
   const blockGeometry = new THREE.BoxGeometry(80, 80, 80);
-  const blockMaterial = new THREE.MeshStandardMaterial({
+  const blockMaterial = new THREE.MeshLambertMaterial({
     color: 0xf5f5f5, // Very light gray, almost white
-    roughness: 0.2,
-    metalness: 0.0
   });
   
   const block = new THREE.Mesh(blockGeometry, blockMaterial);
