@@ -121,6 +121,19 @@ const furnitureDefaults = {
       density: 2400,
       heatCapacity: 880
     }
+  },
+  custom: {
+    name: "Custom Object",
+    position: { x: 0, y: 0, z: 0 },
+    rotation: { x: 0, y: 0, z: 0 },
+    scale: { x: 1, y: 1, z: 1 },
+    properties: {
+      material: "mixed",
+      temperature: 20,
+      thermalConductivity: 1.0,
+      density: 1500,
+      heatCapacity: 1000
+    }
   }
 };
 
