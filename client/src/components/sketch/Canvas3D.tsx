@@ -8,6 +8,8 @@ import { ViewDirection } from "./Toolbar3D";
 import { useSceneContext } from "../../contexts/SceneContext";
 import { FurnitureItem, FurnitureCallbacks } from "@shared/furniture-types";
 import { createTableModel, createPersonModel, createArmchairModel, createCarModel, createBlockModel } from "./furniture-models";
+import { STLProcessor } from "./STLProcessor";
+import { customFurnitureStore } from "@/lib/custom-furniture-store";
 import { useRoomStore } from "@/lib/store/room-store";
 
 interface Point {
@@ -756,6 +758,19 @@ const createFurnitureModel = (
       break;
     case 'vent':
       model = createVentPlaneModel(furnitureItem);
+      break;
+    case 'custom':
+      // Handle custom STL objects
+      const processor = STLProcessor.getInstance();
+      const customMesh = processor.createMeshFromStored(furnitureItem.id);
+      if (customMesh) {
+        model = new THREE.Group();
+        model.add(customMesh);
+        console.log(`Created custom STL object: ${furnitureItem.name} (${furnitureItem.id})`);
+      } else {
+        console.error(`Custom STL object not found in store: ${furnitureItem.id}`);
+        return null;
+      }
       break;
     default:
       console.error(`Unknown furniture type: ${furnitureItem.type}`);
