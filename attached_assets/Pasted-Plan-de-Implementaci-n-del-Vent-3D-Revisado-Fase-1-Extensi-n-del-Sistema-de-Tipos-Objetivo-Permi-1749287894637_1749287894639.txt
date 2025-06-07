@@ -1,0 +1,132 @@
+Plan de Implementación del Vent 3D (Revisado)
+Fase 1: Extensión del Sistema de Tipos
+Objetivo: Permitir que el sistema de furniture reconozca el tipo 'vent'
+
+Archivos a modificar:
+
+shared/furniture-types.ts - Añadir 'vent' al union type de FurnitureItem
+Detalles:
+
+Extender type: 'table' | 'person' | 'armchair' | 'car' | 'vent'
+NO añadir propiedades específicas del vent aquí (se manejarán via AirEntryDialog)
+Fase 2: Añadir Vent al Menú de Furniture
+Objetivo: Crear el botón drag & drop para el vent en FurnitureMenu
+
+Archivos a modificar:
+
+client/src/components/sketch/FurnitureMenu.tsx
+Detalles:
+
+Añadir entrada al array furnitureItems con id 'vent'
+Reutilizar el ícono SVG del wizard-design.tsx (rejilla 2x2)
+Definir dimensiones por defecto: { width: 50, height: 50, depth: 10 }
+
+
+
+
+
+
+
+Fase 3: Crear Renderizado Específico del Vent
+Objetivo: Implementar función que cree la geometría del vent usando PlaneGeometry + textura
+
+Archivos a modificar:
+
+client/src/components/sketch/Canvas3D.tsx
+Detalles:
+
+Crear función createVentPlaneModel(furnitureItem: FurnitureItem): THREE.Group
+Usar PlaneGeometry igual que air entries existentes
+Aplicar textura de rejilla usando el sistema existente de texturas
+Detectar superficie (suelo/techo) basado en posición Z
+Establecer normal automáticamente: suelo (0,0,1), techo (0,0,-1)
+Aplicar rotación apropiada según superficie
+
+
+
+
+
+
+Fase 4: Integrar Vent en createFurnitureModel
+Objetivo: Conectar el nuevo renderizado con el sistema de furniture existente
+
+Archivos a modificar:
+
+client/src/components/sketch/Canvas3D.tsx
+Detalles:
+
+Añadir case 'vent' en el switch de createFurnitureModel()
+Llamar a createVentPlaneModel() para crear la geometría
+Asegurar que se apliquen position, rotation, scale correctamente
+Mantener userData para identificación en raycasting
+Fase 5: Reutilizar AirEntryDialog para Vents Furniture
+Objetivo: Usar el mismo AirEntryDialog del 2D para mantener consistencia
+
+Archivos a modificar:
+
+client/src/components/sketch/Canvas3D.tsx
+Detalles:
+
+NO crear VentDialog.tsx - usar AirEntryDialog existente
+Adaptar props de AirEntryDialog para trabajar con furniture items
+Crear función de conversión: FurnitureItem ↔ AirEntry format
+Mantener todas las propiedades térmicas del 2D: shape, airOrientation, flowType, flowValue
+Cualquier cambio en AirEntryDialog se reflejará automáticamente en 3D
+Fase 6: Integrar Detección y Edición con AirEntryDialog
+Objetivo: Conectar doble-click en vents con AirEntryDialog existente
+
+Archivos a modificar:
+
+client/src/components/sketch/Canvas3D.tsx
+Detalles:
+
+Modificar lógica de raycasting para detectar vents tipo furniture
+Al hacer doble-click en vent furniture, abrir AirEntryDialog
+Crear funciones de conversión:
+furnitureVentToAirEntry() - convertir furniture vent a formato AirEntry
+airEntryToFurnitureVent() - convertir respuesta de dialog a furniture
+Manejar callbacks desde AirEntryDialog
+Actualizar posición/propiedades en el 3D en tiempo real
+Fase 7: Lógica de Colocación Inteligente
+Objetivo: Snap automático a suelo/techo durante drag & drop
+
+Archivos a modificar:
+
+client/src/components/sketch/Canvas3D.tsx
+Detalles:
+
+Modificar handleFurnitureDrop para casos especiales del vent
+Detectar proximidad a suelo (z < 50cm) o techo (z > altura-50cm)
+Ajustar posición Z automáticamente a superficie exacta
+Establecer normal y rotación según superficie detectada
+Mostrar feedback visual durante el drop
+Fase 8: Extensión de Propiedades por Defecto
+Objetivo: Definir defaults térmicos del vent en furniture system
+
+Archivos a modificar:
+
+client/src/components/sketch/FurnitureDialog.tsx
+Detalles:
+
+Añadir ventDefaults al objeto de defaults existente
+Usar mismos defaults que ventDefaults en AirEntryDialog.tsx
+Propiedades: width: 50, height: 50, distanceToFloor: 120
+Mantener consistencia con el sistema 2D
+Funciones de Conversión Necesarias:
+furnitureVentToAirEntry(furnitureItem: FurnitureItem):
+
+Convertir furniture vent a formato compatible con AirEntryDialog
+Mapear position → wall context simulado
+Convertir propiedades furniture → propiedades air entry
+airEntryToFurnitureVent(airEntryData, furnitureItem: FurnitureItem):
+
+Convertir respuesta de AirEntryDialog a furniture item
+Actualizar position, dimensions
+Preservar userData y referencias 3D
+Ventajas de este enfoque:
+
+Reutilización 100% del AirEntryDialog existente
+Consistencia automática entre 2D y 3D
+Mantenimiento único - cambios en AirEntryDialog se propagan automáticamente
+Preserva funcionalidad térmica completa del 2D
+Resultado final: El vent funcionará como furniture con drag & drop, usando exactamente el mismo diálogo de propiedades que en 2D, manteniendo total consistencia y sincronización.
