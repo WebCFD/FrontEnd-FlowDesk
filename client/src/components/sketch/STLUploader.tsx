@@ -5,6 +5,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Upload, FileText, AlertCircle, CheckCircle } from 'lucide-react';
 import { STLLoader } from 'three-stdlib';
 import * as THREE from 'three';
+import { STLProcessor } from './STLProcessor';
 
 interface STLUploaderProps {
   onModelLoaded: (modelData: {
@@ -60,8 +61,8 @@ export function STLUploader({ onModelLoaded }: STLUploaderProps) {
       
       setUploadState({
         status: 'processing',
-        progress: 50,
-        message: 'Processing STL geometry...'
+        progress: 30,
+        message: 'Parsing STL geometry...'
       });
 
       // Parse STL geometry
@@ -74,35 +75,45 @@ export function STLUploader({ onModelLoaded }: STLUploaderProps) {
 
       setUploadState({
         status: 'processing',
-        progress: 80,
-        message: 'Finalizing model...'
+        progress: 60,
+        message: 'Processing geometry and materials...'
       });
-
-      // Compute bounding box for auto-scaling
-      geometry.computeBoundingBox();
-      geometry.computeVertexNormals();
 
       // Generate clean name from filename
       const cleanName = file.name.replace(/\.stl$/i, '').replace(/[^a-zA-Z0-9\s]/g, ' ').trim();
 
+      // Use enhanced STL processor
+      const processor = STLProcessor.getInstance();
+      const processedData = await processor.processSTLGeometry(geometry, cleanName, file);
+
+      setUploadState({
+        status: 'processing',
+        progress: 90,
+        message: 'Generating thumbnail...'
+      });
+
+      // Small delay to show thumbnail generation step
+      await new Promise(resolve => setTimeout(resolve, 200));
+
       setUploadState({
         status: 'success',
         progress: 100,
-        message: `Successfully loaded "${cleanName}"`
+        message: `Successfully loaded "${processedData.name}"`
       });
 
-      // Log geometry info for debugging
-      console.log('STL Loader: Successfully processed geometry', {
+      // Log enhanced processing info
+      console.log('STL Processor: Enhanced processing complete', {
+        name: processedData.name,
         vertexCount: geometry.attributes.position.count,
-        boundingBox: geometry.boundingBox,
-        cleanName: cleanName,
-        fileSize: (file.size / 1024).toFixed(1) + 'KB'
+        dimensions: processedData.dimensions,
+        fileSize: (file.size / 1024).toFixed(1) + 'KB',
+        hasThumbnail: !!processedData.thumbnail
       });
 
-      // Pass the processed model data
+      // Pass the processed model data (maintaining backward compatibility)
       onModelLoaded({
-        name: cleanName,
-        geometry,
+        name: processedData.name,
+        geometry: processedData.geometry,
         originalFile: file
       });
 
