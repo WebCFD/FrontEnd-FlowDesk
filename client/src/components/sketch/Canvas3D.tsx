@@ -767,14 +767,7 @@ const createFurnitureModel = (
         model = new THREE.Group();
         model.add(customMesh);
         
-        // Debug: Check mesh properties
-        console.log(`DEBUG STL Mesh:`, {
-          name: furnitureItem.name,
-          geometryVertices: customMesh.geometry.attributes.position.count,
-          meshPosition: customMesh.position,
-          meshScale: customMesh.scale,
-          boundingBox: new THREE.Box3().setFromObject(customMesh)
-        });
+
         
         console.log(`Created custom STL object: ${furnitureItem.name}`);
       } else {
@@ -832,27 +825,7 @@ const createFurnitureModel = (
   // Add to scene
   scene.add(model);
 
-  // Debug: Final object state after all transformations
-  if (furnitureItem.type === 'custom') {
-    const worldPosition = new THREE.Vector3();
-    model.getWorldPosition(worldPosition);
-    const boundingBox = new THREE.Box3().setFromObject(model);
-    
-    console.log(`DEBUG FINAL STL PLACEMENT:`, {
-      name: furnitureItem.name,
-      furniturePosition: furnitureItem.position,
-      modelPosition: model.position,
-      worldPosition: worldPosition,
-      modelScale: model.scale,
-      boundingBox: boundingBox,
-      boundingBoxSize: {
-        width: boundingBox.max.x - boundingBox.min.x,
-        height: boundingBox.max.y - boundingBox.min.y,
-        depth: boundingBox.max.z - boundingBox.min.z
-      },
-      addedToScene: scene.children.includes(model)
-    });
-  }
+
 
   return model;
 };
