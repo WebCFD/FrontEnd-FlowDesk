@@ -2,7 +2,8 @@ import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Upload, FileText, AlertCircle, CheckCircle } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Upload, FileText, AlertCircle, CheckCircle, Info } from 'lucide-react';
 import { STLLoader } from 'three-stdlib';
 import * as THREE from 'three';
 import { STLProcessor } from './STLProcessor';
@@ -220,15 +221,40 @@ export function STLUploader({ onModelLoaded }: STLUploaderProps) {
         className="hidden"
       />
       
-      <Button
-        onClick={handleButtonClick}
-        disabled={isDisabled}
-        variant="outline"
-        className="w-full flex items-center gap-2"
-      >
-        {getStatusIcon()}
-        {getButtonText()}
-      </Button>
+      <TooltipProvider>
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={handleButtonClick}
+            disabled={isDisabled}
+            variant="outline"
+            className="flex-1 flex items-center gap-2"
+          >
+            {getStatusIcon()}
+            {getButtonText()}
+          </Button>
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-8 h-8 p-0 flex-shrink-0"
+              >
+                <Info className="w-4 h-4 text-gray-500" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="left" className="max-w-xs">
+              <div className="text-sm space-y-1">
+                <p><strong>STL Requirements:</strong></p>
+                <p>• Watertight closed surface geometry</p>
+                <p>• SI units (1 unit = 1 meter)</p>
+                <p>• Lowest point at Z=0 (negative Z renders below floor)</p>
+                <p>• Maximum file size: 3MB</p>
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </div>
+      </TooltipProvider>
 
       {uploadState.status !== 'idle' && (
         <div className="space-y-2">
