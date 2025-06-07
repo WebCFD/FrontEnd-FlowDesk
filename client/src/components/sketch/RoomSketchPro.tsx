@@ -715,37 +715,36 @@ export function RoomSketchPro({
       const originalMaterial = ventMesh.material as THREE.MeshPhongMaterial;
       
       if (texturesRef.current.vent && originalMaterial) {
-        // Add UV coordinates if missing
+        // Add correct UV coordinates for PlaneGeometry if missing
         const geometry = ventMesh.geometry as THREE.BufferGeometry;
         if (!geometry.attributes.uv) {
-          const positionAttribute = geometry.attributes.position;
-          const uvs = [];
-          
-          for (let i = 0; i < positionAttribute.count; i += 3) {
-            uvs.push(0, 0, 1, 0, 0, 1);
-          }
-          
-          const remaining = positionAttribute.count % 3;
-          for (let i = 0; i < remaining; i++) {
-            uvs.push(0, 0);
-          }
-          
-          geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+          // PlaneGeometry has 4 vertices, need proper UV mapping for a quad
+          const uvs = new Float32Array([
+            0, 0,  // bottom-left
+            1, 0,  // bottom-right
+            0, 1,  // top-left
+            1, 1   // top-right
+          ]);
+          geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
         }
 
-        // Create new material with vent texture
+        // Create new material preserving critical original properties
         const newMaterial = new THREE.MeshPhongMaterial({
           map: texturesRef.current.vent,
-          color: 0xB8B8B8, // Aluminum color for vent furniture
-          opacity: originalMaterial.opacity,
-          transparent: originalMaterial.transparent,
+          color: 0xFFFFFF, // White base color to show texture properly
+          opacity: 1.0, // No transparency for vent furniture
+          transparent: false, // VentFurniture should not be transparent
           side: originalMaterial.side,
-          emissive: 0x222222,
-          emissiveIntensity: 0.2
+          // Preserve critical depth properties from original material
+          depthTest: originalMaterial.depthTest,
+          depthWrite: originalMaterial.depthWrite,
+          emissive: 0x111111,
+          emissiveIntensity: 0.1
         });
         
         ventMesh.material = newMaterial;
-        ventMesh.renderOrder = 2;
+        // Preserve original renderOrder (renderOrder is a mesh property, not material)
+        ventMesh.renderOrder = ventMesh.renderOrder || 2;
       }
     });
 
