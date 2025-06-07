@@ -698,6 +698,57 @@ export function RoomSketchPro({
       }
     });
 
+    // Apply textures to vent furniture (separate from wall air entries)
+    const ventFurnitureMeshes: THREE.Mesh[] = [];
+    if (sceneRef.current) {
+      sceneRef.current.traverse((object) => {
+        if (object instanceof THREE.Mesh && object.userData && 
+            object.userData.type === 'furniture' && 
+            object.userData.furnitureType === 'vent' &&
+            object.userData.isVentFurniture) {
+          ventFurnitureMeshes.push(object);
+        }
+      });
+    }
+
+    ventFurnitureMeshes.forEach((ventMesh) => {
+      const originalMaterial = ventMesh.material as THREE.MeshPhongMaterial;
+      
+      if (texturesRef.current.vent && originalMaterial) {
+        // Add UV coordinates if missing
+        const geometry = ventMesh.geometry as THREE.BufferGeometry;
+        if (!geometry.attributes.uv) {
+          const positionAttribute = geometry.attributes.position;
+          const uvs = [];
+          
+          for (let i = 0; i < positionAttribute.count; i += 3) {
+            uvs.push(0, 0, 1, 0, 0, 1);
+          }
+          
+          const remaining = positionAttribute.count % 3;
+          for (let i = 0; i < remaining; i++) {
+            uvs.push(0, 0);
+          }
+          
+          geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+        }
+
+        // Create new material with vent texture
+        const newMaterial = new THREE.MeshPhongMaterial({
+          map: texturesRef.current.vent,
+          color: 0xB8B8B8, // Aluminum color for vent furniture
+          opacity: originalMaterial.opacity,
+          transparent: originalMaterial.transparent,
+          side: originalMaterial.side,
+          emissive: 0x222222,
+          emissiveIntensity: 0.2
+        });
+        
+        ventMesh.material = newMaterial;
+        ventMesh.renderOrder = 2;
+      }
+    });
+
     // Mark that textures have been applied
     appliedTexturesRef.current = true;
     
