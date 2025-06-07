@@ -164,8 +164,11 @@ export function FurnitureMenu({ onDragStart, wallTransparency = 0.8, onWallTrans
                 "h-16 p-2 flex flex-col items-center justify-center",
                 "border-2 border-gray-300 rounded-md",
                 "hover:bg-gray-100 cursor-move transition-all duration-200",
-                "bg-white shadow-sm"
+                "bg-white shadow-sm",
+                // Highlight custom objects with subtle green border
+                item.id.startsWith('custom_') ? "border-green-300 bg-green-50" : ""
               )}
+              title={`${item.name} - Drag to canvas to place`}
             >
               <div 
                 className="w-10 h-10"
