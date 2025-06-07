@@ -577,74 +577,19 @@ export function RoomSketchPro({
       applyTextureToMeshes(texturesRef.current.brick!, 'brick');
     });
     
-    // Generate other textures immediately
+    // Generate other textures immediately and apply them
     texturesRef.current.wood = createWoodTexture();
     texturesRef.current.metal = createMetalTexture();
     texturesRef.current.door = createDoorTexture();
     texturesRef.current.window = createWindowTexture();
     texturesRef.current.vent = createVentTexture();
+    
+    // Apply vent texture to vent furniture across all scenes
+    applyTextureToMeshes(texturesRef.current.vent, 'vent');
 
 
-    // Apply theme-specific materials to walls (only non-modern themes since modern waits for brick texture)
-    wallMeshes.forEach((wallMesh, index) => {
-      const originalMaterial = wallMesh.material as THREE.MeshPhongMaterial;
-      const geometry = wallMesh.geometry as THREE.BufferGeometry;
-      
-      // Generate UV coordinates if missing
-      const uvAttribute = geometry.getAttribute('uv');
-      if (!uvAttribute) {
-        const positions = geometry.getAttribute('position');
-        const uvs = new Float32Array(positions.count * 2);
-        
-        for (let i = 0; i < positions.count; i++) {
-          const u = (i % 2);
-          const v = Math.floor(i / 2) % 2;
-          uvs[i * 2] = u;
-          uvs[i * 2 + 1] = v;
-        }
-        
-        geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
-      }
-      
-      // Create new material based on theme
-      let newMaterial: THREE.MeshPhongMaterial;
-      
-      switch (selectedTheme) {
-        case "modern":
-          // Load marble texture for modern theme
-          const marbleTexture = new THREE.TextureLoader().load('/marble_texture.png');
-          marbleTexture.wrapS = THREE.RepeatWrapping;
-          marbleTexture.wrapT = THREE.RepeatWrapping;
-          marbleTexture.repeat.set(4, 4);
-          newMaterial = new THREE.MeshPhongMaterial({
-            map: marbleTexture,
-            opacity: wallTransparency,
-            transparent: wallTransparency < 1.0,
-            side: originalMaterial.side
-          });
-          break;
-        case "classic":
-          // Skip classic theme here - handled in brick texture promise above
-          return;
-        case "industrial":
-          // Load industrial metal texture
-          const industrialTexture = new THREE.TextureLoader().load('/industrial_wall_texture.png');
-          industrialTexture.wrapS = THREE.RepeatWrapping;
-          industrialTexture.wrapT = THREE.RepeatWrapping;
-          industrialTexture.repeat.set(4, 4);
-          newMaterial = new THREE.MeshPhongMaterial({
-            map: industrialTexture,
-            opacity: wallTransparency,
-            transparent: wallTransparency < 1.0,
-            side: originalMaterial.side
-          });
-          break;
-        default:
-          return;
-      }
-      
-      wallMesh.material = newMaterial;
-    });
+    // Modern and industrial themes are now handled by the cross-scene texture system above
+    console.log('RSP: Texture application complete across all registered scenes');
 
 
 
