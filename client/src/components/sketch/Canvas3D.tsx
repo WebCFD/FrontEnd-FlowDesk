@@ -829,7 +829,25 @@ const createFurnitureModel = (
   // Add to scene
   scene.add(model);
 
-
+  // Debug: Measure actual object size in scene after all transformations
+  if (furnitureItem.type === 'custom') {
+    // Force update transforms and measure
+    model.updateMatrixWorld(true);
+    const actualBoundingBox = new THREE.Box3().setFromObject(model);
+    const actualSize = {
+      width: actualBoundingBox.max.x - actualBoundingBox.min.x,
+      height: actualBoundingBox.max.y - actualBoundingBox.min.y,
+      depth: actualBoundingBox.max.z - actualBoundingBox.min.z
+    };
+    
+    console.log(`ACTUAL SCENE MEASUREMENT:`, {
+      name: furnitureItem.name,
+      actualSceneSize: actualSize,
+      expectedSize: 80,
+      ratio: actualSize.width / 80,
+      position: model.position
+    });
+  }
 
   return model;
 };
