@@ -5055,6 +5055,16 @@ export default function Canvas3D({
           furnitureGroup = furnitureGroup.parent;
         }
         
+        // If we didn't find a furniture group, try checking the parent directly
+        if (!furnitureGroup || furnitureGroup.userData.type !== 'furniture') {
+          furnitureGroup = intersectedObject.parent;
+          console.log("🔍 DelFurn: Trying parent directly:", {
+            type: furnitureGroup?.type,
+            userData: furnitureGroup?.userData,
+            hasFurnitureId: !!furnitureGroup?.userData?.furnitureId
+          });
+        }
+        
         if (furnitureGroup && furnitureGroup.userData.type === 'furniture') {
           const furnitureId = furnitureGroup.userData.furnitureId;
           console.log("🎯 DelFurn: Found furniture group:", {
