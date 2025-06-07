@@ -1,0 +1,38 @@
+Implementation Plan: Load Object Feature
+Phase 1: File Upload Infrastructure
+File Input Component: Create a file picker specifically for .stl files
+File Validation: Ensure only .stl files are accepted
+File Storage: Store uploaded STL files in a temporary cache for processing
+Progress Indicator: Show loading progress during file upload and processing
+Restrict size to lower than 3 MB
+
+Phase 2: STL Processing System
+STL Loader Integration: Import and configure Three.js STLLoader
+Geometry Processing: Convert STL BufferGeometry to usable Three.js mesh
+Auto-scaling: Calculate bounding box and normalize to reasonable furniture dimensions
+Material Assignment: Apply default material (similar to Block element's matte finish)
+Thumbnail Generation: Create 2D preview image for the furniture menu
+
+Phase 3: Dynamic Furniture Menu Integration
+"Load Object" Button: Add beneath existing furniture items in FurnitureMenu
+Dynamic Item Addition: Append loaded STL objects to the furniture array
+Custom Icons: Generate or use generic 3D model icon for loaded objects
+Naming System: Allow users to name their custom objects
+
+Phase 4: Drag & Drop Integration
+Unified Handling: Treat STL objects exactly like built-in furniture types
+Position Calculation: Use existing surface detection for placement
+Scene Integration: Add to Canvas3D scene with proper userData tags
+Edit Support: Enable editing through existing FurnitureDialog system
+Open dialog box properties like built-in forniture types
+Also erasing the object like other forniture types
+
+Phase 5: Memory Management
+Cache System: Store processed STL geometries to avoid reloading
+Cleanup: Remove unused geometries when objects are deleted
+Performance: Optimize for multiple custom objects in scene
+Technical Considerations
+File Size Limits: Reasonable limits for STL file sizes
+Error Handling: Graceful handling of corrupted or invalid STL files
+Browser Compatibility: Ensure file reading works across browsers
+Security: Validate file contents to prevent malicious uploads
