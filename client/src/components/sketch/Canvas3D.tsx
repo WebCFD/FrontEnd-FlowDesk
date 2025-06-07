@@ -717,6 +717,14 @@ const createVentPlaneModel = (furnitureItem: FurnitureItem): THREE.Group => {
     isVentFurniture: true   // Flag for vent furniture texture system
   };
   
+  // Add userData to the group as well for deletion detection
+  group.userData = {
+    type: 'furniture',
+    furnitureType: 'vent',
+    isSelectable: true,
+    isVentFurniture: true
+  };
+  
   group.add(mesh);
   return group;
 };
@@ -4702,40 +4710,7 @@ export default function Canvas3D({
     }
   }, [isEraserMode, isMeasureMode]);
 
-  // Effect to handle furniture eraser mode changes - adjust VentFurniture properties for raycasting
-  useEffect(() => {
-    if (!sceneRef.current) return;
 
-    // Find all VentFurniture meshes in the scene
-    sceneRef.current.traverse((object) => {
-      if (object instanceof THREE.Mesh && 
-          object.userData?.type === 'furniture' && 
-          object.userData?.furnitureType === 'vent' &&
-          object.userData?.isVentFurniture) {
-        
-        const material = object.material as THREE.MeshPhongMaterial;
-        
-        if (isFurnitureEraserMode) {
-          // Enable raycasting detection by temporarily enabling depth testing
-          material.depthTest = true;
-          material.depthWrite = true;
-          object.renderOrder = 0; // Normal render order for raycasting
-        } else {
-          // Restore original properties for proper vent rendering
-          material.depthTest = false;
-          material.depthWrite = false;
-          object.renderOrder = 2; // Render on top like air entries
-        }
-        
-        material.needsUpdate = true;
-      }
-    });
-    
-    // Force a render update
-    if (rendererRef.current && cameraRef.current) {
-      needsRenderRef.current = true;
-    }
-  }, [isFurnitureEraserMode]);
 
   useEffect(() => {
     if (sceneRef.current) {
