@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import { X, Move } from "lucide-react";
 import type { FurnitureItem } from "@shared/furniture-types";
 
-type FurnitureType = 'table' | 'person' | 'armchair' | 'car';
+type FurnitureType = 'table' | 'person' | 'armchair' | 'car' | 'vent';
 
 interface FurnitureDialogProps {
   type: FurnitureType;
