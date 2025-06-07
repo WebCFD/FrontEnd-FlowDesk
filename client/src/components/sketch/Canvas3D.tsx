@@ -692,9 +692,9 @@ const createVentPlaneModel = (furnitureItem: FurnitureItem): THREE.Group => {
   
   // Create material with vent-specific properties
   const material = new THREE.MeshPhongMaterial({
-    color: 0x22c55e, // Green color for vents (matching existing air entry system)
-    opacity: 0.8,
-    transparent: true,
+    color: 0xC0C0C0, // Silver/aluminum color for vents
+    opacity: 1.0,
+    transparent: false, // VentFurniture should not be transparent
     side: THREE.DoubleSide,
     depthTest: false,
     depthWrite: false,
