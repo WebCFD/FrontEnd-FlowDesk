@@ -63,10 +63,10 @@ export class STLProcessor {
     const height = Math.abs(boundingBox.max.y - boundingBox.min.y);
     const depth = Math.abs(boundingBox.max.z - boundingBox.min.z);
 
-    // Target maximum dimension similar to table size (120cm)
+    // Target maximum dimension for furniture scale (larger size for visibility)
     const maxDimension = Math.max(width, height, depth);
-    const targetMaxSize = 120;
-    const scaleFactor = maxDimension > targetMaxSize ? targetMaxSize / maxDimension : 1;
+    const targetMaxSize = 80; // Scale to 80 scene units for proper visibility
+    const scaleFactor = targetMaxSize / maxDimension;
 
     // Apply scaling to geometry
     if (scaleFactor !== 1) {
