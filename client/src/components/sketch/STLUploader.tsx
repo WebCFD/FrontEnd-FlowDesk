@@ -98,7 +98,7 @@ export function STLUploader({ onModelLoaded }: STLUploaderProps) {
       setUploadState({
         status: 'success',
         progress: 100,
-        message: `Successfully loaded "${processedData.name}"`
+        message: `"${processedData.name}" added to furniture menu! Drag it to the canvas to place.`
       });
 
       // Log enhanced processing info
@@ -127,7 +127,7 @@ export function STLUploader({ onModelLoaded }: STLUploaderProps) {
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
         }
-      }, 2000);
+      }, 4000);
 
     } catch (error) {
       console.error('STL processing error:', error);
