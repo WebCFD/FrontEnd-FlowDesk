@@ -60,6 +60,14 @@ class CustomFurnitureStore {
     };
 
     this.customFurniture.set(id, customData);
+    
+    console.log('Custom Furniture Store: Added new item', {
+      id,
+      name: data.name,
+      dimensions: normalizedDimensions,
+      totalItems: this.customFurniture.size
+    });
+    
     this.notify();
     
     return id;
