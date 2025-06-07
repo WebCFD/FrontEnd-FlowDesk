@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { useRoomStore } from "@/lib/store/room-store";
+import { customFurnitureStore } from "@/lib/custom-furniture-store";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -89,6 +90,9 @@ export default function DashboardSidebar() {
       if (response.ok) {
         // Clear room data
         reset();
+        
+        // Complete reset of custom furniture store (Logout behavior)
+        customFurnitureStore.reset();
 
         toast({
           title: "Success!",
