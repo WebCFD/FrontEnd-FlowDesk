@@ -800,8 +800,8 @@ const createFurnitureModel = (
     
     // Special handling for custom STL objects - they're already scaled in STLProcessor
     if (furnitureItem.type === 'custom') {
-      // STL objects are already properly scaled in STLProcessor, use unit scale
-      model.scale.set(1, 1, 1);
+      // Apply additional scale to make STL objects more visible (they appear too small)
+      model.scale.set(10, 10, 10); // 10x larger for visibility
     } else {
       const scaleX = furnitureItem.dimensions.width / defaultDimensions.width;
       const scaleY = furnitureItem.dimensions.depth / defaultDimensions.depth;
