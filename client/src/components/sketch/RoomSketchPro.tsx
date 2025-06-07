@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import Canvas3D from "./Canvas3D";
 import * as THREE from "three";
 import { TextureGenerator } from "./textureGenerator";
@@ -877,6 +877,7 @@ export function RoomSketchPro({
         onUpdateAirEntry={undefined}
         onDeleteAirEntry={undefined}
         onSceneReady={handleSceneReady}
+        onFurnitureAdded={handleFurnitureAdded} // Callback to re-apply textures when furniture is added
         onFurnitureAdd={onFurnitureAdd} // Pass furniture callback to Canvas3D
         onUpdateFurniture={onUpdateFurniture} // Enable furniture editing in RSP
         onDeleteFurniture={onDeleteFurniture} // Enable furniture deletion in RSP

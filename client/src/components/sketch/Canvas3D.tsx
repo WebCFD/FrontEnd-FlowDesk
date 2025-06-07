@@ -847,6 +847,7 @@ export default function Canvas3D({
   onDeleteAirEntry,
   onViewChange,
   onSceneReady,
+  onFurnitureAdded,
   onFurnitureAdd,
   onUpdateFurniture,
   onDeleteFurniture,
