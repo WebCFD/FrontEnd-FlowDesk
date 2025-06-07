@@ -735,7 +735,8 @@ const createVentPlaneModel = (furnitureItem: FurnitureItem): THREE.Group => {
 // PHASE 3: Function to create and add furniture models to the scene
 const createFurnitureModel = (
   furnitureItem: FurnitureItem,
-  scene: THREE.Scene
+  scene: THREE.Scene,
+  deleteFurnitureCallback?: (floorName: string, itemId: string) => void
 ): THREE.Group | null => {
   let model: THREE.Group;
 
@@ -775,8 +776,8 @@ const createFurnitureModel = (
         console.warn(`Custom STL object not found in store, cleaning up reference: ${furnitureItem.id}`);
         
         // Remove orphaned furniture from the store
-        if (onDeleteFurniture) {
-          onDeleteFurniture(furnitureItem.floorName, furnitureItem.id);
+        if (deleteFurnitureCallback) {
+          deleteFurnitureCallback(furnitureItem.floorName, furnitureItem.id);
         }
         
         return null;
@@ -1011,7 +1012,7 @@ export default function Canvas3D({
       };
 
       // Create and add 3D model to scene
-      const model = createFurnitureModel(furnitureItem, scene);
+      const model = createFurnitureModel(furnitureItem, scene, onDeleteFurniture);
       
       if (model) {
         // Add furniture via callback
@@ -2099,7 +2100,7 @@ export default function Canvas3D({
         
         // Only create furniture if it doesn't already exist in scene
         if (!furnitureExists) {
-          const furnitureModel = createFurnitureModel(furnitureItem, sceneRef.current!);
+          const furnitureModel = createFurnitureModel(furnitureItem, sceneRef.current!, onDeleteFurniture);
           if (furnitureModel) {
             objects.push(furnitureModel);
           }
