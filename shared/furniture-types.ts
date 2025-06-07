@@ -5,7 +5,7 @@
 
 export interface FurnitureItem {
   id: string;
-  type: 'table' | 'person' | 'armchair' | 'car' | 'vent';
+  type: 'table' | 'person' | 'armchair' | 'car' | 'block' | 'vent';
   name: string;
   floorName: string;
   position: { x: number; y: number; z: number };

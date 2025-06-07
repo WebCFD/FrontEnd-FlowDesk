@@ -61,6 +61,17 @@ const furnitureItems: FurnitureItem[] = [
     defaultDimensions: { width: 450, height: 150, depth: 180 }
   },
   {
+    id: 'block',
+    name: 'Block',
+    icon: `
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="8" y="8" width="24" height="24" fill="#909090" stroke="#666666" stroke-width="2"/>
+        <rect x="6" y="6" width="24" height="24" fill="none" stroke="#666666" stroke-width="1" opacity="0.5"/>
+      </svg>
+    `,
+    defaultDimensions: { width: 80, height: 80, depth: 80 }
+  },
+  {
     id: 'vent',
     name: 'Vent',
     icon: `

@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import { X, Move } from "lucide-react";
 import type { FurnitureItem } from "@shared/furniture-types";
 
-type FurnitureType = 'table' | 'person' | 'armchair' | 'car' | 'vent';
+type FurnitureType = 'table' | 'person' | 'armchair' | 'car' | 'block' | 'vent';
 
 interface FurnitureDialogProps {
   type: FurnitureType;
@@ -107,6 +107,19 @@ const furnitureDefaults = {
       thermalConductivity: 45,
       density: 2700,
       heatCapacity: 900
+    }
+  },
+  block: {
+    name: "Block",
+    position: { x: 0, y: 0, z: 0 },
+    rotation: { x: 0, y: 0, z: 0 },
+    scale: { x: 1, y: 1, z: 1 },
+    properties: {
+      material: "concrete",
+      temperature: 20,
+      thermalConductivity: 1.4,
+      density: 2400,
+      heatCapacity: 880
     }
   }
 };
