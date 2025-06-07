@@ -295,6 +295,26 @@ class CustomFurnitureStore {
     return !hasOrphanedGeometries;
   }
 
+  // Complete system validation and cleanup
+  performSystemCleanup(): { 
+    memoryStats: ReturnType<typeof this.getMemoryStats>;
+    cleanupResults: ReturnType<typeof this.cleanupUnusedGeometries>;
+    integrityValid: boolean;
+  } {
+    console.log('Custom Furniture Store: Performing comprehensive system cleanup');
+    
+    const initialStats = this.getMemoryStats();
+    const cleanupResults = this.cleanupUnusedGeometries();
+    const finalIntegrity = this.validateMemoryIntegrity();
+    const finalStats = this.getMemoryStats();
+    
+    return {
+      memoryStats: finalStats,
+      cleanupResults,
+      integrityValid: finalIntegrity
+    };
+  }
+
   getCount(): number {
     return this.customFurniture.size;
   }
