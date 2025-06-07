@@ -829,7 +829,7 @@ const createFurnitureModel = (
   // Add to scene
   scene.add(model);
 
-  // Debug: Measure actual object size in scene after all transformations
+  // Debug: Trace all coordinate transformations for STL objects
   if (furnitureItem.type === 'custom') {
     // Force update transforms and measure
     model.updateMatrixWorld(true);
@@ -840,11 +840,29 @@ const createFurnitureModel = (
       depth: actualBoundingBox.max.z - actualBoundingBox.min.z
     };
     
-    console.log(`ACTUAL SCENE MEASUREMENT:`, {
+    // Compare with table dimensions for reference
+    const tableDefaultDims = getDefaultDimensions('table');
+    
+    console.log(`COORDINATE TRANSFORMATION TRACE:`, {
       name: furnitureItem.name,
+      
+      // Constants
+      PIXELS_TO_CM: PIXELS_TO_CM,
+      
+      // STL stored data
+      storedDimensions: furnitureItem.dimensions,
+      
+      // Applied scale
+      modelScale: model.scale,
+      
+      // Final measurements  
       actualSceneSize: actualSize,
-      expectedSize: 80,
-      ratio: actualSize.width / 80,
+      
+      // Reference comparison
+      tableDefaultDims: tableDefaultDims,
+      scaleVsTable: actualSize.width / tableDefaultDims.width,
+      
+      // Position
       position: model.position
     });
   }
