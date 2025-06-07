@@ -120,7 +120,8 @@ export function FurnitureMenu({ onDragStart, wallTransparency = 0.8, onWallTrans
     geometry: THREE.BufferGeometry;
     originalFile: File;
   }) => {
-    customFurnitureStore.addCustomFurniture(modelData);
+    // STLProcessor already adds to store, so we just need to trigger a refresh
+    // This prevents the double-add issue
   };
 
   // Combine built-in and custom furniture items

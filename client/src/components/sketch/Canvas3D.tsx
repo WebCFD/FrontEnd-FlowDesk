@@ -931,10 +931,14 @@ export default function Canvas3D({
       // Use default dimensions from menu data
       const dimensions = furnitureMenuData.defaultDimensions || { width: 80, height: 80, depth: 80 };
       
+      // Determine furniture type - check if it's a custom STL object
+      const isCustomObject = furnitureMenuData.id.startsWith('custom_');
+      const furnitureType = isCustomObject ? 'custom' : furnitureMenuData.id as 'table' | 'person' | 'armchair' | 'car' | 'block' | 'vent';
+      
       // Create furniture item
       const furnitureItem: FurnitureItem = {
-        id: `${furnitureMenuData.id}_${Date.now()}`,
-        type: furnitureMenuData.id as 'table' | 'person' | 'armchair' | 'car' | 'block' | 'vent',
+        id: isCustomObject ? furnitureMenuData.id : `${furnitureMenuData.id}_${Date.now()}`,
+        type: furnitureType,
         name: furnitureMenuData.name,
         floorName: surfaceDetection.floorName,
         position: calculatedPosition,
