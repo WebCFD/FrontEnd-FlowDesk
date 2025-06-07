@@ -853,7 +853,7 @@ export default function Canvas3D({
       // Create furniture item
       const furnitureItem: FurnitureItem = {
         id: `${furnitureMenuData.id}_${Date.now()}`,
-        type: furnitureMenuData.id as 'table' | 'person' | 'armchair' | 'car',
+        type: furnitureMenuData.id as 'table' | 'person' | 'armchair' | 'car' | 'vent',
         name: furnitureMenuData.name,
         floorName: surfaceDetection.floorName,
         position: calculatedPosition,
