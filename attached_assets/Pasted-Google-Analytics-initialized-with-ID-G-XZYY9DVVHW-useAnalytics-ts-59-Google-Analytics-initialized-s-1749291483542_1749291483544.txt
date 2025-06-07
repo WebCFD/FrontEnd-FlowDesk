@@ -1,0 +1,45 @@
+Google Analytics initialized with ID: G-XZYY9DVVHW
+useAnalytics.ts:59 Google Analytics initialized successfully
+js?id=G-XZYY9DVVHW:659 [Violation] 'setTimeout' handler took 54ms
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+AnalyticsProvider.tsx:21 Analytics initialized: true
+chunk-WERSD76P.js?v=1e4e45b3:18625 [Violation] 'click' handler took 291ms
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.Understand this warningAI
+Canvas3D.tsx:4998 🎯 DelFurn: Click detected in furniture eraser mode
+Canvas3D.tsx:5011 🖱️ DelFurn: Mouse coordinates: -0.09529678727743651 -0.17624603636914649
+Canvas3D.tsx:5021 🔍 DelFurn: Found furniture object: {type: 'Group', furnitureType: 'vent', furnitureId: 'vent_1749291303978', isVentFurniture: undefined, uuid: 'a379e409-5845-46ba-8fa3-63142ef694b9'}
+Canvas3D.tsx:5021 🔍 DelFurn: Found furniture object: {type: 'Mesh', furnitureType: 'vent', furnitureId: undefined, isVentFurniture: true, uuid: '89d72b11-b902-4381-8205-4e31588d731c'}
+Canvas3D.tsx:5032 📋 DelFurn: Found 2 furniture objects in scene
+Canvas3D.tsx:5036 🎯 DelFurn: Raycaster found 2 intersections
+Canvas3D.tsx:5040 ✅ DelFurn: Hit object: {type: 'Mesh', userData: {…}, position: _Vector3, uuid: '89d72b11-b902-4381-8205-4e31588d731c'}
+Canvas3D.tsx:5055 🔍 DelFurn: Hit object lacks furnitureId, checking parent
+Canvas3D.tsx:5057 🔍 DelFurn: Parent check: {type: 'Group', userData: {…}, hasFurnitureId: true}
+Canvas3D.tsx:5066 🎯 DelFurn: Found furniture group: {furnitureType: 'vent', furnitureId: 'vent_1749291303978', floorName: 'ground', isVentFurniture: undefined}
+Canvas3D.tsx:5077 🗑️ DelFurn: Deleting furniture: vent_1749291303978 from floor: ground
+Canvas3D.tsx:5085 ✅ DelFurn: Deletion completed successfully
+wizard-design.tsx:1571 Dragging furniture: {id: 'vent', name: 'Vent', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…ke="#22c55e" stroke-width="2"/>\n      </svg>\n    ', defaultDimensions: {…}}
+RoomSketchPro.tsx:797 RSP: New furniture added, re-applying textures...
+Canvas3D.tsx:4993 🚫 DelFurn: Not in furniture eraser mode
+Canvas3D.tsx:4993 🚫 DelFurn: Not in furniture eraser mode
+Canvas3D.tsx:4993 🚫 DelFurn: Not in furniture eraser mode
+Canvas3D.tsx:4993 🚫 DelFurn: Not in furniture eraser mode
+Canvas3D.tsx:4993 🚫 DelFurn: Not in furniture eraser mode
+Canvas3D.tsx:4993 🚫 DelFurn: Not in furniture eraser mode
+Canvas3D.tsx:4998 🎯 DelFurn: Click detected in furniture eraser mode
+Canvas3D.tsx:5011 🖱️ DelFurn: Mouse coordinates: -0.16115586700291795 -0.15404665496824177
+Canvas3D.tsx:5021 🔍 DelFurn: Found furniture object: {type: 'Group', furnitureType: 'vent', furnitureId: 'vent_1749291457490', isVentFurniture: undefined, uuid: 'bd142d2f-81b7-4bf2-bafc-46a050cd07fa'}
+Canvas3D.tsx:5021 🔍 DelFurn: Found furniture object: {type: 'Mesh', furnitureType: 'vent', furnitureId: undefined, isVentFurniture: true, uuid: '1d5297a4-050a-4ee4-a6cc-3d330fd0d7df'}
+Canvas3D.tsx:5032 📋 DelFurn: Found 2 furniture objects in scene
+Canvas3D.tsx:5036 🎯 DelFurn: Raycaster found 2 intersections
+Canvas3D.tsx:5040 ✅ DelFurn: Hit object: {type: 'Mesh', userData: {…}, position: _Vector3, uuid: '1d5297a4-050a-4ee4-a6cc-3d330fd0d7df'}
+Canvas3D.tsx:5055 🔍 DelFurn: Hit object lacks furnitureId, checking parent
+Canvas3D.tsx:5057 🔍 DelFurn: Parent check: {type: 'Group', userData: {…}, hasFurnitureId: true}
+Canvas3D.tsx:5066 🎯 DelFurn: Found furniture group: {furnitureType: 'vent', furnitureId: 'vent_1749291457490', floorName: 'ground', isVentFurniture: undefined}
+Canvas3D.tsx:5077 🗑️ DelFurn: Deleting furniture: vent_1749291457490 from floor: ground
+Canvas3D.tsx:5085 ✅ DelFurn: Deletion completed successfully

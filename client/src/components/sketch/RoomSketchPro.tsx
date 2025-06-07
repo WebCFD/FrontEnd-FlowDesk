@@ -802,6 +802,16 @@ export function RoomSketchPro({
     }, 100);
   }, []);
 
+  // Function to re-apply textures (called when furniture is deleted)
+  const handleFurnitureDeleted = useCallback(() => {
+    console.log('RSP: Furniture deleted, re-applying textures...');
+    
+    // Small delay to ensure the furniture mesh is fully removed from the scene
+    setTimeout(() => {
+      applyThemeTextures();
+    }, 100);
+  }, []);
+
   // Apply textures when theme changes
   useEffect(() => {
     // Force texture regeneration
@@ -877,6 +887,7 @@ export function RoomSketchPro({
         onDeleteAirEntry={undefined}
         onSceneReady={handleSceneReady}
         onFurnitureAdded={handleFurnitureAdded} // Callback to re-apply textures when furniture is added
+        onFurnitureDeleted={handleFurnitureDeleted} // Callback to re-apply textures when furniture is deleted
         onFurnitureAdd={onFurnitureAdd} // Pass furniture callback to Canvas3D
         onUpdateFurniture={onUpdateFurniture} // Enable furniture editing in RSP
         onDeleteFurniture={onDeleteFurniture} // Enable furniture deletion in RSP

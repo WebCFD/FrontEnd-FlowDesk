@@ -103,6 +103,7 @@ interface Canvas3DProps {
   onViewChange?: (callback: (direction: ViewDirection) => void) => void;
   onSceneReady?: (scene: THREE.Scene, renderer: THREE.WebGLRenderer, camera: THREE.Camera) => void; // For RSP texture access
   onFurnitureAdded?: () => void; // Callback to notify when new furniture is added to scene
+  onFurnitureDeleted?: () => void; // Callback to notify when furniture is deleted from scene
   // Furniture callbacks - Phase 2: Props pattern
   onFurnitureAdd?: (floorName: string, item: FurnitureItem) => void;
   onUpdateFurniture?: (floorName: string, index: number, item: FurnitureItem) => void;
@@ -856,6 +857,7 @@ export default function Canvas3D({
   onViewChange,
   onSceneReady,
   onFurnitureAdded,
+  onFurnitureDeleted,
   onFurnitureAdd,
   onUpdateFurniture,
   onDeleteFurniture,
@@ -5081,6 +5083,11 @@ export default function Canvas3D({
             
             // Call deletion callback with floor name and furniture ID
             onDeleteFurniture(furnitureFloorName, furnitureId);
+            
+            // Trigger texture re-application after furniture deletion
+            if (onFurnitureDeleted) {
+              onFurnitureDeleted();
+            }
             
             console.log("✅ DelFurn: Deletion completed successfully");
           } else {
