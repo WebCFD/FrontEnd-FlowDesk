@@ -805,17 +805,7 @@ const createFurnitureModel = (
       const canvasScale = 0.8; // 1cm = 0.8 scene units
       model.scale.set(canvasScale, canvasScale, canvasScale);
       
-      // Debug: Log actual scene units being used
-      console.log(`STL SCALE DEBUG:`, {
-        name: furnitureItem.name,
-        storedDimensions: furnitureItem.dimensions,
-        canvasScale: canvasScale,
-        expectedSceneUnits: {
-          width: furnitureItem.dimensions.width * canvasScale,
-          height: furnitureItem.dimensions.height * canvasScale,
-          depth: furnitureItem.dimensions.depth * canvasScale
-        }
-      });
+
     } else {
       const scaleX = furnitureItem.dimensions.width / defaultDimensions.width;
       const scaleY = furnitureItem.dimensions.depth / defaultDimensions.depth;
