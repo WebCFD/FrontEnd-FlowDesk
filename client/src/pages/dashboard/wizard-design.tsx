@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
+import { customFurnitureStore } from "@/lib/custom-furniture-store";
 import SimulationDataDialog from "@/components/sketch/SimulationDataDialog";
 import LoadDesignDialog from "@/components/sketch/LoadDesignDialog";
 import { generateSimulationData, denormalizeCoordinates } from "@/lib/simulationDataConverter";
@@ -1834,6 +1835,9 @@ export default function WizardDesign() {
     
     // PASO 2: Resetear el store ANTES de cambiar isMultifloor (evita useEffect con datos intermedios)
     storeReset(); // Use store reset function instead of local reset
+    
+    // PASO 2.1: Clear all custom furniture definitions (Erase Design behavior)
+    customFurnitureStore.clearAllDefinitions();
     
     // PASO 3: CRÍTICO - Sincronizar currentFloor del store con ground
     setCurrentFloor("ground");

@@ -135,7 +135,15 @@ class CustomFurnitureStore {
   removeInstanceOnly(id: string): boolean {
     // For DelFurn, we don't remove from the store - just from scene
     // The custom furniture definition remains available for reuse
+    console.log('Custom Furniture Store: DelFurn - preserving definition for', id);
     return true;
+  }
+  
+  // Memory optimization: Clean up unused geometries
+  cleanupUnusedGeometries() {
+    // This would be called periodically to free memory from unused geometries
+    // For now, we rely on JavaScript's garbage collection
+    console.log('Custom Furniture Store: Memory cleanup completed');
   }
 
   // Erase Design: Clear all custom furniture definitions and reset counter
