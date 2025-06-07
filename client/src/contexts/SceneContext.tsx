@@ -74,14 +74,6 @@ interface SceneContextType {
   // New methods for multifloor handling
   updateFloorData: (floorName: string, floorData: Partial<FloorData>) => void;
   setCurrentFloor: (floorName: string) => void;
-  // Scene references for cross-component access
-  sceneReferences: {
-    roomSketchProScene?: THREE.Scene;
-    canvas3DScene?: THREE.Scene;
-  };
-  registerScene: (componentName: 'roomSketchPro' | 'canvas3D', scene: THREE.Scene) => void;
-  unregisterScene: (componentName: 'roomSketchPro' | 'canvas3D') => void;
-  getAllScenes: () => THREE.Scene[];
 }
 
 const SceneContext = createContext<SceneContextType | undefined>(undefined);
@@ -100,7 +92,6 @@ export const SceneProvider: React.FC<{ children: React.ReactNode }> = ({
     currentFloor: "ground",
     floors: {},
   });
-  const [sceneReferences, setSceneReferences] = useState<SceneContextType["sceneReferences"]>({});
 
   const updateSceneData = (data: Partial<SceneContextType["sceneData"]>) => {
     setSceneData((prev) => ({ ...prev, ...data }));
@@ -163,28 +154,6 @@ export const SceneProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
-  // Scene reference management functions
-  const registerScene = (componentName: 'roomSketchPro' | 'canvas3D', scene: THREE.Scene) => {
-    setSceneReferences((prev) => ({
-      ...prev,
-      [componentName === 'roomSketchPro' ? 'roomSketchProScene' : 'canvas3DScene']: scene
-    }));
-  };
-
-  const unregisterScene = (componentName: 'roomSketchPro' | 'canvas3D') => {
-    setSceneReferences((prev) => ({
-      ...prev,
-      [componentName === 'roomSketchPro' ? 'roomSketchProScene' : 'canvas3DScene']: undefined
-    }));
-  };
-
-  const getAllScenes = (): THREE.Scene[] => {
-    const scenes: THREE.Scene[] = [];
-    if (sceneReferences.roomSketchProScene) scenes.push(sceneReferences.roomSketchProScene);
-    if (sceneReferences.canvas3DScene) scenes.push(sceneReferences.canvas3DScene);
-    return scenes;
-  };
-
   return (
     <SceneContext.Provider
       value={{
@@ -195,10 +164,6 @@ export const SceneProvider: React.FC<{ children: React.ReactNode }> = ({
         updateGeometryData,
         updateFloorData,
         setCurrentFloor,
-        sceneReferences,
-        registerScene,
-        unregisterScene,
-        getAllScenes,
       }}
     >
       {children}

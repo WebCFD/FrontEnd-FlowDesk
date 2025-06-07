@@ -2,7 +2,6 @@ import { useRef, useEffect, useState } from "react";
 import Canvas3D from "./Canvas3D";
 import * as THREE from "three";
 import { TextureGenerator } from "./textureGenerator";
-import { useSceneContext } from "../../contexts/SceneContext";
 
 interface Point {
   x: number;
@@ -101,9 +100,6 @@ export function RoomSketchPro({
   const sceneRef = useRef<THREE.Scene | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const cameraRef = useRef<THREE.Camera | null>(null);
-  
-  // Get SceneContext for cross-component scene access
-  const sceneContext = useSceneContext();
   const texturesRef = useRef<{
     brick?: THREE.Texture;
     wood?: THREE.Texture;
@@ -459,9 +455,6 @@ export function RoomSketchPro({
     rendererRef.current = renderer;
     cameraRef.current = camera;
     
-    // Register scene with SceneContext for cross-component access
-    sceneContext.registerScene('roomSketchPro', scene);
-    
     // Wait for walls to be generated before applying textures
     // Use multiple attempts with increasing delays
     const attempts = [1000, 2000, 3000];
@@ -488,54 +481,85 @@ export function RoomSketchPro({
     setTimeout(() => tryApplyTextures(), attempts[0]);
   };
 
-  // Function to apply textures to all registered scenes (RoomSketchPro + Canvas3D)
+  // Function to apply textures to Canvas3D scene materials
   const applyThemeTextures = () => {
-    // Get all registered scenes from SceneContext
-    const allScenes = sceneContext.getAllScenes();
-    
-    if (allScenes.length === 0) {
-      console.log('RSP: No scenes registered for texture application');
+    if (!sceneRef.current) {
       return;
     }
     
-    console.log(`RSP: Applying textures to ${allScenes.length} registered scenes`);
+    // Find all wall meshes in the scene
+    const wallMeshes: THREE.Mesh[] = [];
+    sceneRef.current.traverse((object) => {
+      if (object instanceof THREE.Mesh && object.userData?.type === 'wall') {
+        wallMeshes.push(object);
+      }
+    });
+
+
+
+    // Generate textures
     
-    // Find all meshes across all scenes
-    const allMeshes: { mesh: THREE.Mesh, sceneName: string }[] = [];
-    
-    allScenes.forEach((scene, index) => {
-      const sceneName = scene === sceneRef.current ? 'RoomSketchPro' : 'Canvas3D';
-      scene.traverse((object) => {
-        if (object instanceof THREE.Mesh && 
-            (object.userData?.type === 'wall' || 
-             object.userData?.furnitureType === 'vent' ||
-             object.userData?.type === 'vent')) {
-          allMeshes.push({ mesh: object, sceneName });
-        }
-      });
+    // Load your brick texture and apply it when ready
+    TextureGenerator.createBrickTexture().then((brickTexture) => {
+      texturesRef.current.brick = brickTexture;
+      
+      // Apply texture to walls for classic theme
+      if (sceneRef.current && selectedTheme === "classic") {
+        const wallMeshes: THREE.Mesh[] = [];
+        sceneRef.current.traverse((object) => {
+          if (object instanceof THREE.Mesh && object.userData?.type === 'wall') {
+            wallMeshes.push(object);
+          }
+        });
+        
+        wallMeshes.forEach((wallMesh) => {
+          const originalMaterial = wallMesh.material as THREE.MeshPhongMaterial;
+          const geometry = wallMesh.geometry as THREE.BufferGeometry;
+          
+          // Generate UV coordinates if missing
+          const uvAttribute = geometry.getAttribute('uv');
+          if (!uvAttribute) {
+            const positions = geometry.getAttribute('position');
+            const uvs = new Float32Array(positions.count * 2);
+            
+            for (let i = 0; i < positions.count; i++) {
+              const u = (i % 2);
+              const v = Math.floor(i / 2) % 2;
+              uvs[i * 2] = u;
+              uvs[i * 2 + 1] = v;
+            }
+            
+            geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+          }
+          
+          const newMaterial = new THREE.MeshPhongMaterial({
+            map: brickTexture,
+            opacity: wallTransparency,
+            transparent: wallTransparency < 1.0,
+            side: originalMaterial.side
+          });
+          
+          wallMesh.material = newMaterial;
+          wallMesh.material.needsUpdate = true;
+        });
+      }
+    }).catch((error) => {
+      console.error('Failed to load brick texture, using fallback');
+      texturesRef.current.brick = createBrickTexture();
     });
     
-    console.log(`RSP: Found ${allMeshes.length} meshes to texture across all scenes`);
+    // Generate other textures immediately
+    texturesRef.current.wood = createWoodTexture();
+    texturesRef.current.metal = createMetalTexture();
+    texturesRef.current.door = createDoorTexture();
+    texturesRef.current.window = createWindowTexture();
+    texturesRef.current.vent = createVentTexture();
 
-    // Helper function to apply texture to specific mesh types across all scenes
-    const applyTextureToMeshes = (texture: THREE.Texture, textureType: string) => {
-      allMeshes.forEach(({ mesh, sceneName }) => {
-        const meshType = mesh.userData?.type || mesh.userData?.furnitureType;
-        
-        // Apply textures based on theme and mesh type
-        if (selectedTheme === "classic" && meshType === 'wall') {
-          applyTextureToMesh(mesh, texture, textureType);
-        } else if (meshType === 'vent' && textureType === 'vent') {
-          console.log(`RSP: Applying vent texture to vent furniture in ${sceneName}`);
-          applyTextureToMesh(mesh, texture, textureType);
-        }
-      });
-    };
 
-    // Helper function to apply texture to individual mesh
-    const applyTextureToMesh = (mesh: THREE.Mesh, texture: THREE.Texture, textureType: string) => {
-      const originalMaterial = mesh.material as THREE.MeshPhongMaterial;
-      const geometry = mesh.geometry as THREE.BufferGeometry;
+    // Apply theme-specific materials to walls (only non-modern themes since modern waits for brick texture)
+    wallMeshes.forEach((wallMesh, index) => {
+      const originalMaterial = wallMesh.material as THREE.MeshPhongMaterial;
+      const geometry = wallMesh.geometry as THREE.BufferGeometry;
       
       // Generate UV coordinates if missing
       const uvAttribute = geometry.getAttribute('uv');
@@ -553,43 +577,45 @@ export function RoomSketchPro({
         geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
       }
       
-      // Create new material with texture
-      const newMaterial = new THREE.MeshPhongMaterial({
-        map: texture,
-        opacity: textureType === 'wall' ? wallTransparency : 0.8,
-        transparent: textureType === 'wall' ? wallTransparency < 1.0 : true,
-        side: originalMaterial.side || THREE.DoubleSide
-      });
+      // Create new material based on theme
+      let newMaterial: THREE.MeshPhongMaterial;
       
-      mesh.material = newMaterial;
-      mesh.material.needsUpdate = true;
-    };
-
-    // Generate textures
-    
-    // Load your brick texture and apply it when ready
-    TextureGenerator.createBrickTexture().then((brickTexture) => {
-      texturesRef.current.brick = brickTexture;
-      applyTextureToMeshes(brickTexture, 'brick');
-    }).catch((error) => {
-      console.error('Failed to load brick texture, using fallback');
-      texturesRef.current.brick = createBrickTexture();
-      applyTextureToMeshes(texturesRef.current.brick!, 'brick');
+      switch (selectedTheme) {
+        case "modern":
+          // Load marble texture for modern theme
+          const marbleTexture = new THREE.TextureLoader().load('/marble_texture.png');
+          marbleTexture.wrapS = THREE.RepeatWrapping;
+          marbleTexture.wrapT = THREE.RepeatWrapping;
+          marbleTexture.repeat.set(4, 4);
+          newMaterial = new THREE.MeshPhongMaterial({
+            map: marbleTexture,
+            opacity: wallTransparency,
+            transparent: wallTransparency < 1.0,
+            side: originalMaterial.side
+          });
+          break;
+        case "classic":
+          // Skip classic theme here - handled in brick texture promise above
+          return;
+        case "industrial":
+          // Load industrial metal texture
+          const industrialTexture = new THREE.TextureLoader().load('/industrial_wall_texture.png');
+          industrialTexture.wrapS = THREE.RepeatWrapping;
+          industrialTexture.wrapT = THREE.RepeatWrapping;
+          industrialTexture.repeat.set(4, 4);
+          newMaterial = new THREE.MeshPhongMaterial({
+            map: industrialTexture,
+            opacity: wallTransparency,
+            transparent: wallTransparency < 1.0,
+            side: originalMaterial.side
+          });
+          break;
+        default:
+          return;
+      }
+      
+      wallMesh.material = newMaterial;
     });
-    
-    // Generate other textures immediately and apply them
-    texturesRef.current.wood = createWoodTexture();
-    texturesRef.current.metal = createMetalTexture();
-    texturesRef.current.door = createDoorTexture();
-    texturesRef.current.window = createWindowTexture();
-    texturesRef.current.vent = createVentTexture();
-    
-    // Apply vent texture to vent furniture across all scenes
-    applyTextureToMeshes(texturesRef.current.vent, 'vent');
-
-
-    // Modern and industrial themes are now handled by the cross-scene texture system above
-    console.log('RSP: Texture application complete across all registered scenes');
 
 
 
@@ -669,6 +695,57 @@ export function RoomSketchPro({
         
         airEntryMesh.material = newMaterial;
         airEntryMesh.renderOrder = 2; // Render after walls
+      }
+    });
+
+    // Apply textures to vent furniture (separate from wall air entries)
+    const ventFurnitureMeshes: THREE.Mesh[] = [];
+    if (sceneRef.current) {
+      sceneRef.current.traverse((object) => {
+        if (object instanceof THREE.Mesh && object.userData && 
+            object.userData.type === 'furniture' && 
+            object.userData.furnitureType === 'vent' &&
+            object.userData.isVentFurniture) {
+          ventFurnitureMeshes.push(object);
+        }
+      });
+    }
+
+    ventFurnitureMeshes.forEach((ventMesh) => {
+      const originalMaterial = ventMesh.material as THREE.MeshPhongMaterial;
+      
+      if (texturesRef.current.vent && originalMaterial) {
+        // Add UV coordinates if missing
+        const geometry = ventMesh.geometry as THREE.BufferGeometry;
+        if (!geometry.attributes.uv) {
+          const positionAttribute = geometry.attributes.position;
+          const uvs = [];
+          
+          for (let i = 0; i < positionAttribute.count; i += 3) {
+            uvs.push(0, 0, 1, 0, 0, 1);
+          }
+          
+          const remaining = positionAttribute.count % 3;
+          for (let i = 0; i < remaining; i++) {
+            uvs.push(0, 0);
+          }
+          
+          geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+        }
+
+        // Create new material with vent texture
+        const newMaterial = new THREE.MeshPhongMaterial({
+          map: texturesRef.current.vent,
+          color: 0xB8B8B8, // Aluminum color for vent furniture
+          opacity: originalMaterial.opacity,
+          transparent: originalMaterial.transparent,
+          side: originalMaterial.side,
+          emissive: 0x222222,
+          emissiveIntensity: 0.2
+        });
+        
+        ventMesh.material = newMaterial;
+        ventMesh.renderOrder = 2;
       }
     });
 

@@ -708,12 +708,12 @@ const createVentPlaneModel = (furnitureItem: FurnitureItem): THREE.Group => {
   mesh.renderOrder = 2;
   
   // Add userData for identification and raycasting
-  // Set type to 'vent' for texture system compatibility
+  // Use furniture type to distinguish from wall-mounted vents
   mesh.userData = {
-    type: 'vent',           // Required by texture system
-    ventType: 'furniture',  // Additional metadata for furniture system
+    type: 'furniture',      // Furniture system type
+    furnitureType: 'vent',  // Specific furniture subtype
     isSelectable: true,
-    isFurniture: true       // Flag to distinguish from wall-mounted vents
+    isVentFurniture: true   // Flag for vent furniture texture system
   };
   
   group.add(mesh);
@@ -851,8 +851,7 @@ export default function Canvas3D({
   onDeleteFurniture,
 }: Canvas3DProps) {
   // Access the SceneContext to share data with RoomSketchPro
-  const sceneContext = useSceneContext();
-  const { updateGeometryData, updateSceneData, updateFloorData, setCurrentFloor: setContextCurrentFloor } = sceneContext;
+  const { updateGeometryData, updateSceneData, updateFloorData, setCurrentFloor: setContextCurrentFloor } = useSceneContext();
 
   // PHASE 5: Pure props pattern - removed Zustand store dependencies
 
@@ -2134,9 +2133,6 @@ export default function Canvas3D({
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xf8fafc);
     sceneRef.current = scene;
-
-    // Register scene with SceneContext for cross-component access
-    sceneContext.registerScene('canvas3D', scene);
 
     // Initialize camera
     const camera = new THREE.PerspectiveCamera(
@@ -4161,9 +4157,6 @@ export default function Canvas3D({
           containerRef.current.removeChild(renderer.domElement);
         }
       }
-
-      // Unregister scene from SceneContext
-      sceneContext.unregisterScene('canvas3D');
 
       // Remove global event listeners
       document.removeEventListener("mousemove", mouseMoveHandler);
