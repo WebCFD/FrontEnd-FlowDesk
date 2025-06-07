@@ -7,7 +7,7 @@ import FurnitureDialog from "./FurnitureDialog";
 import { ViewDirection } from "./Toolbar3D";
 import { useSceneContext } from "../../contexts/SceneContext";
 import { FurnitureItem, FurnitureCallbacks } from "@shared/furniture-types";
-import { createTableModel, createPersonModel, createArmchairModel, createCarModel } from "./furniture-models";
+import { createTableModel, createPersonModel, createArmchairModel, createCarModel, createBlockModel } from "./furniture-models";
 import { useRoomStore } from "@/lib/store/room-store";
 
 interface Point {
@@ -751,6 +751,9 @@ const createFurnitureModel = (
     case 'car':
       model = createCarModel();
       break;
+    case 'block':
+      model = createBlockModel();
+      break;
     case 'vent':
       model = createVentPlaneModel(furnitureItem);
       break;
@@ -801,7 +804,7 @@ const createFurnitureModel = (
 };
 
 // Helper function to get default dimensions for furniture types
-const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'car' | 'vent') => {
+const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'car' | 'block' | 'vent') => {
   switch (type) {
     case 'table':
       return { width: 120, height: 75, depth: 80 };
@@ -811,6 +814,8 @@ const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'car' | 'v
       return { width: 70, height: 85, depth: 70 };
     case 'car':
       return { width: 450, height: 150, depth: 180 };
+    case 'block':
+      return { width: 80, height: 80, depth: 80 };
     case 'vent':
       return { width: 50, height: 50, depth: 10 };
     default:

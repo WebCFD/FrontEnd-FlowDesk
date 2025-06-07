@@ -312,3 +312,21 @@ function createFallbackCar(group: THREE.Group): void {
     group.add(wheel);
   });
 }
+
+export const createBlockModel = (): THREE.Group => {
+  const group = new THREE.Group();
+
+  // Simple cube block
+  const blockGeometry = new THREE.BoxGeometry(80, 80, 80);
+  const blockMaterial = new THREE.MeshStandardMaterial({
+    color: 0x909090, // Gray color for generic block
+    roughness: 0.6,
+    metalness: 0.1
+  });
+  
+  const block = new THREE.Mesh(blockGeometry, blockMaterial);
+  block.position.z = 40; // Half height to sit on ground
+  group.add(block);
+
+  return group;
+};
