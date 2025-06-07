@@ -771,8 +771,14 @@ const createFurnitureModel = (
         
         console.log(`Created custom STL object: ${furnitureItem.name}`);
       } else {
-        // Gracefully handle missing STL objects (from previous sessions)
-        console.warn(`Custom STL object not found in store, skipping: ${furnitureItem.id}`);
+        // Custom object no longer exists in store - trigger cleanup
+        console.warn(`Custom STL object not found in store, cleaning up reference: ${furnitureItem.id}`);
+        
+        // Remove orphaned furniture from the store
+        if (onDeleteFurniture) {
+          onDeleteFurniture(furnitureItem.floorName, furnitureItem.id);
+        }
+        
         return null;
       }
       break;
