@@ -1,4 +1,4 @@
-solid TestCube
+solid test_cube
   facet normal 0.0 0.0 1.0
     outer loop
       vertex 0.0 0.0 1.0
@@ -58,22 +58,15 @@ solid TestCube
   facet normal 1.0 0.0 0.0
     outer loop
       vertex 1.0 0.0 0.0
-      vertex 1.0 1.0 0.0
       vertex 1.0 1.0 1.0
+      vertex 1.0 0.0 1.0
     endloop
   endfacet
   facet normal 1.0 0.0 0.0
     outer loop
       vertex 1.0 0.0 0.0
+      vertex 1.0 1.0 0.0
       vertex 1.0 1.0 1.0
-      vertex 1.0 0.0 1.0
-    endloop
-  endfacet
-  facet normal -1.0 0.0 0.0
-    outer loop
-      vertex 0.0 0.0 0.0
-      vertex 0.0 1.0 1.0
-      vertex 0.0 1.0 0.0
     endloop
   endfacet
   facet normal -1.0 0.0 0.0
@@ -83,4 +76,11 @@ solid TestCube
       vertex 0.0 1.0 1.0
     endloop
   endfacet
-endsolid TestCube
+  facet normal -1.0 0.0 0.0
+    outer loop
+      vertex 0.0 0.0 0.0
+      vertex 0.0 1.0 1.0
+      vertex 0.0 1.0 0.0
+    endloop
+  endfacet
+endsolid test_cube
