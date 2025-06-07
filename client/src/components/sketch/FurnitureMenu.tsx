@@ -107,7 +107,7 @@ export function FurnitureMenu({ onDragStart, wallTransparency = 0.8, onWallTrans
 
       <div className="space-y-4">
         <h3 className="font-semibold">Furniture</h3>
-        <div className="grid grid-cols-1 gap-2">
+        <div className="grid grid-cols-3 gap-2">
           {furnitureItems.map((item) => (
             <div
               key={item.id}
