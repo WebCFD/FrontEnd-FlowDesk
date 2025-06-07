@@ -30,24 +30,30 @@ class CustomFurnitureStore {
     name: string;
     geometry: THREE.BufferGeometry;
     originalFile: File;
+    dimensions?: { width: number; height: number; depth: number };
   }): string {
-    // Calculate dimensions from geometry bounding box
-    data.geometry.computeBoundingBox();
-    const boundingBox = data.geometry.boundingBox!;
+    // Use provided dimensions if available, otherwise calculate from geometry
+    let normalizedDimensions;
     
-    const width = Math.abs(boundingBox.max.x - boundingBox.min.x);
-    const height = Math.abs(boundingBox.max.y - boundingBox.min.y);
-    const depth = Math.abs(boundingBox.max.z - boundingBox.min.z);
+    if (data.dimensions) {
+      // Use the dimensions provided by STL processor (already in cm)
+      normalizedDimensions = data.dimensions;
+    } else {
+      // Fallback: Calculate dimensions from geometry bounding box
+      data.geometry.computeBoundingBox();
+      const boundingBox = data.geometry.boundingBox!;
+      
+      const width = Math.abs(boundingBox.max.x - boundingBox.min.x);
+      const height = Math.abs(boundingBox.max.y - boundingBox.min.y);
+      const depth = Math.abs(boundingBox.max.z - boundingBox.min.z);
 
-    // Normalize dimensions to reasonable furniture scale (similar to table: 120x75x80)
-    const maxDimension = Math.max(width, height, depth);
-    const scaleFactor = maxDimension > 200 ? 120 / maxDimension : 1;
-
-    const normalizedDimensions = {
-      width: Math.round(width * scaleFactor),
-      height: Math.round(height * scaleFactor),
-      depth: Math.round(depth * scaleFactor)
-    };
+      // Treat 1 unit = 1 cm
+      normalizedDimensions = {
+        width: Math.round(width * 100),
+        height: Math.round(height * 100),
+        depth: Math.round(depth * 100)
+      };
+    }
 
     // Increment counter and generate sequential name
     this.objectCounter++;
