@@ -1,0 +1,253 @@
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.Understand this warningAI
+Canvas3D.tsx:764 DEBUG: Attempting to create custom STL object with ID: custom_1749300441407_nvl9taeq3
+STLProcessor.ts:200 STL Processor: No stored data found for ID: custom_1749300441407_nvl9taeq3
+createMeshFromStored @ STLProcessor.ts:200
+createFurnitureModel @ Canvas3D.tsx:766
+(anonymous) @ Canvas3D.tsx:2051
+createFloorObjects @ Canvas3D.tsx:2033
+(anonymous) @ Canvas3D.tsx:4282
+(anonymous) @ Canvas3D.tsx:4266
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19416
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+(anonymous) @ chunk-WERSD76P.js?v=cfa7cc5f:18627Understand this errorAI
+Canvas3D.tsx:773 ERROR: Custom STL object not found in store: custom_1749300441407_nvl9taeq3
+createFurnitureModel @ Canvas3D.tsx:773
+(anonymous) @ Canvas3D.tsx:2051
+createFloorObjects @ Canvas3D.tsx:2033
+(anonymous) @ Canvas3D.tsx:4282
+(anonymous) @ Canvas3D.tsx:4266
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19416
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+(anonymous) @ chunk-WERSD76P.js?v=cfa7cc5f:18627Understand this errorAI
+Canvas3D.tsx:774 DEBUG: Available store items: []
+Canvas3D.tsx:764 DEBUG: Attempting to create custom STL object with ID: custom_1749300802966_ap057xb8p
+STLProcessor.ts:200 STL Processor: No stored data found for ID: custom_1749300802966_ap057xb8p
+createMeshFromStored @ STLProcessor.ts:200
+createFurnitureModel @ Canvas3D.tsx:766
+(anonymous) @ Canvas3D.tsx:2051
+createFloorObjects @ Canvas3D.tsx:2033
+(anonymous) @ Canvas3D.tsx:4282
+(anonymous) @ Canvas3D.tsx:4266
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19416
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+(anonymous) @ chunk-WERSD76P.js?v=cfa7cc5f:18627Understand this errorAI
+Canvas3D.tsx:773 ERROR: Custom STL object not found in store: custom_1749300802966_ap057xb8p
+createFurnitureModel @ Canvas3D.tsx:773
+(anonymous) @ Canvas3D.tsx:2051
+createFloorObjects @ Canvas3D.tsx:2033
+(anonymous) @ Canvas3D.tsx:4282
+(anonymous) @ Canvas3D.tsx:4266
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19416
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+(anonymous) @ chunk-WERSD76P.js?v=cfa7cc5f:18627Understand this errorAI
+Canvas3D.tsx:774 DEBUG: Available store items: []
+Canvas3D.tsx:764 DEBUG: Attempting to create custom STL object with ID: custom_1749300802966_ap057xb8p
+STLProcessor.ts:200 STL Processor: No stored data found for ID: custom_1749300802966_ap057xb8p
+createMeshFromStored @ STLProcessor.ts:200
+createFurnitureModel @ Canvas3D.tsx:766
+(anonymous) @ Canvas3D.tsx:2051
+createFloorObjects @ Canvas3D.tsx:2033
+(anonymous) @ Canvas3D.tsx:4282
+(anonymous) @ Canvas3D.tsx:4266
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19416
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+(anonymous) @ chunk-WERSD76P.js?v=cfa7cc5f:18627Understand this errorAI
+Canvas3D.tsx:773 ERROR: Custom STL object not found in store: custom_1749300802966_ap057xb8p
+createFurnitureModel @ Canvas3D.tsx:773
+(anonymous) @ Canvas3D.tsx:2051
+createFloorObjects @ Canvas3D.tsx:2033
+(anonymous) @ Canvas3D.tsx:4282
+(anonymous) @ Canvas3D.tsx:4266
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19416
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+(anonymous) @ chunk-WERSD76P.js?v=cfa7cc5f:18627Understand this errorAI
+Canvas3D.tsx:774 DEBUG: Available store items: []
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 240ms
+custom-furniture-store.ts:69 Custom Furniture Store: Added new item {id: 'custom_1749300968174_ttonmtoip', name: 'test stl basic', dimensions: {…}, totalItems: 1}
+STLProcessor.ts:175 STL Processor: Completed processing {name: 'Obj 1', scaleFactor: 1, dimensions: {…}, vertices: 36, hasThumbnail: true}
+STLUploader.tsx:105 STL Processor: Enhanced processing complete {name: 'Obj 1', vertexCount: 36, dimensions: {…}, fileSize: '1.7KB', hasThumbnail: true}
+wizard-design.tsx:1571 Dragging furniture: {id: 'custom_1749300968174_ttonmtoip', name: 'Obj 1', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…" cy="8" r="3" fill="#10b981"/>\n      </svg>\n    ', defaultDimensions: {…}}
+Canvas3D.tsx:941 DEBUG Drop: Furniture menu data: {id: 'custom_1749300968174_ttonmtoip', name: 'Obj 1', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…" cy="8" r="3" fill="#10b981"/>\n      </svg>\n    ', defaultDimensions: {…}}
+Canvas3D.tsx:942 DEBUG Drop: Is custom object: true
+Canvas3D.tsx:943 DEBUG Drop: Furniture type: custom
+Canvas3D.tsx:960 DEBUG Drop: Created furniture item: {id: 'custom_1749300968174_ttonmtoip', type: 'custom', name: 'Obj 1', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:764 DEBUG: Attempting to create custom STL object with ID: custom_1749300968174_ttonmtoip
+Canvas3D.tsx:770 SUCCESS: Created custom STL object: Obj 1 (custom_1749300968174_ttonmtoip)
+Canvas3D.tsx:771 DEBUG: Mesh geometry vertices: 36
+RoomSketchPro.tsx:797 RSP: New furniture added, re-applying textures...
+Canvas3D.tsx:764 DEBUG: Attempting to create custom STL object with ID: custom_1749300441407_nvl9taeq3
+STLProcessor.ts:200 STL Processor: No stored data found for ID: custom_1749300441407_nvl9taeq3
+createMeshFromStored @ STLProcessor.ts:200
+createFurnitureModel @ Canvas3D.tsx:766
+(anonymous) @ Canvas3D.tsx:2051
+createFloorObjects @ Canvas3D.tsx:2033
+(anonymous) @ Canvas3D.tsx:4282
+(anonymous) @ Canvas3D.tsx:4266
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19416
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+(anonymous) @ chunk-WERSD76P.js?v=cfa7cc5f:18627Understand this errorAI
+Canvas3D.tsx:773 ERROR: Custom STL object not found in store: custom_1749300441407_nvl9taeq3
+createFurnitureModel @ Canvas3D.tsx:773
+(anonymous) @ Canvas3D.tsx:2051
+createFloorObjects @ Canvas3D.tsx:2033
+(anonymous) @ Canvas3D.tsx:4282
+(anonymous) @ Canvas3D.tsx:4266
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19416
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+(anonymous) @ chunk-WERSD76P.js?v=cfa7cc5f:18627Understand this errorAI
+Canvas3D.tsx:774 DEBUG: Available store items: [{…}]
+Canvas3D.tsx:764 DEBUG: Attempting to create custom STL object with ID: custom_1749300802966_ap057xb8p
+STLProcessor.ts:200 STL Processor: No stored data found for ID: custom_1749300802966_ap057xb8p
+createMeshFromStored @ STLProcessor.ts:200
+createFurnitureModel @ Canvas3D.tsx:766
+(anonymous) @ Canvas3D.tsx:2051
+createFloorObjects @ Canvas3D.tsx:2033
+(anonymous) @ Canvas3D.tsx:4282
+(anonymous) @ Canvas3D.tsx:4266
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19416
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+(anonymous) @ chunk-WERSD76P.js?v=cfa7cc5f:18627Understand this errorAI
+Canvas3D.tsx:773 ERROR: Custom STL object not found in store: custom_1749300802966_ap057xb8p
+createFurnitureModel @ Canvas3D.tsx:773
+(anonymous) @ Canvas3D.tsx:2051
+createFloorObjects @ Canvas3D.tsx:2033
+(anonymous) @ Canvas3D.tsx:4282
+(anonymous) @ Canvas3D.tsx:4266
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19416
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+(anonymous) @ chunk-WERSD76P.js?v=cfa7cc5f:18627Understand this errorAI
+Canvas3D.tsx:774 DEBUG: Available store items: [{…}]
+Canvas3D.tsx:764 DEBUG: Attempting to create custom STL object with ID: custom_1749300802966_ap057xb8p
+STLProcessor.ts:200 STL Processor: No stored data found for ID: custom_1749300802966_ap057xb8p
+createMeshFromStored @ STLProcessor.ts:200
+createFurnitureModel @ Canvas3D.tsx:766
+(anonymous) @ Canvas3D.tsx:2051
+createFloorObjects @ Canvas3D.tsx:2033
+(anonymous) @ Canvas3D.tsx:4282
+(anonymous) @ Canvas3D.tsx:4266
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19416
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+(anonymous) @ chunk-WERSD76P.js?v=cfa7cc5f:18627Understand this errorAI
+Canvas3D.tsx:773 ERROR: Custom STL object not found in store: custom_1749300802966_ap057xb8p
+createFurnitureModel @ Canvas3D.tsx:773
+(anonymous) @ Canvas3D.tsx:2051
+createFloorObjects @ Canvas3D.tsx:2033
+(anonymous) @ Canvas3D.tsx:4282
+(anonymous) @ Canvas3D.tsx:4266
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19416
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+(anonymous) @ chunk-WERSD76P.js?v=cfa7cc5f:18627Understand this errorAI
+Canvas3D.tsx:774 DEBUG: Available store items: [{…}]

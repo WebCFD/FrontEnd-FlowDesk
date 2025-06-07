@@ -761,17 +761,15 @@ const createFurnitureModel = (
       break;
     case 'custom':
       // Handle custom STL objects
-      console.log(`DEBUG: Attempting to create custom STL object with ID: ${furnitureItem.id}`);
       const processor = STLProcessor.getInstance();
       const customMesh = processor.createMeshFromStored(furnitureItem.id);
       if (customMesh) {
         model = new THREE.Group();
         model.add(customMesh);
-        console.log(`SUCCESS: Created custom STL object: ${furnitureItem.name} (${furnitureItem.id})`);
-        console.log(`DEBUG: Mesh geometry vertices:`, customMesh.geometry.attributes.position.count);
+        console.log(`Created custom STL object: ${furnitureItem.name}`);
       } else {
-        console.error(`ERROR: Custom STL object not found in store: ${furnitureItem.id}`);
-        console.log(`DEBUG: Available store items:`, customFurnitureStore.getAllCustomFurniture().map(item => ({ id: item.id, name: item.name })));
+        // Gracefully handle missing STL objects (from previous sessions)
+        console.warn(`Custom STL object not found in store, skipping: ${furnitureItem.id}`);
         return null;
       }
       break;
@@ -938,10 +936,6 @@ export default function Canvas3D({
       const isCustomObject = furnitureMenuData.id.startsWith('custom_');
       const furnitureType = isCustomObject ? 'custom' : furnitureMenuData.id as 'table' | 'person' | 'armchair' | 'car' | 'block' | 'vent';
       
-      console.log(`DEBUG Drop: Furniture menu data:`, furnitureMenuData);
-      console.log(`DEBUG Drop: Is custom object:`, isCustomObject);
-      console.log(`DEBUG Drop: Furniture type:`, furnitureType);
-      
       // Create furniture item
       const furnitureItem: FurnitureItem = {
         id: isCustomObject ? furnitureMenuData.id : `${furnitureMenuData.id}_${Date.now()}`,
@@ -956,8 +950,6 @@ export default function Canvas3D({
         createdAt: Date.now(),
         updatedAt: Date.now()
       };
-      
-      console.log(`DEBUG Drop: Created furniture item:`, furnitureItem);
 
       // Create and add 3D model to scene
       const model = createFurnitureModel(furnitureItem, scene);
