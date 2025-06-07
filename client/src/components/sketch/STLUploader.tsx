@@ -91,6 +91,14 @@ export function STLUploader({ onModelLoaded }: STLUploaderProps) {
         message: `Successfully loaded "${cleanName}"`
       });
 
+      // Log geometry info for debugging
+      console.log('STL Loader: Successfully processed geometry', {
+        vertexCount: geometry.attributes.position.count,
+        boundingBox: geometry.boundingBox,
+        cleanName: cleanName,
+        fileSize: (file.size / 1024).toFixed(1) + 'KB'
+      });
+
       // Pass the processed model data
       onModelLoaded({
         name: cleanName,
