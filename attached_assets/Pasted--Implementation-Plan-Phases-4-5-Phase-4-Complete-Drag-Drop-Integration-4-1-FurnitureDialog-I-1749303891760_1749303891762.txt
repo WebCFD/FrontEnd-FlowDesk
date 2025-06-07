@@ -1,0 +1,49 @@
+
+Implementation Plan: Phases 4 & 5
+Phase 4: Complete Drag & Drop Integration
+
+
+4.1 FurnitureDialog Integration
+Enable editing STL objects through existing FurnitureDialog system
+Add position, rotation, and scale controls for custom objects
+Implement dimension editing (width, height, depth)
+Add name editing functionality
+
+
+4.2 Deletion System Integration
+
+Integrate STL objects with existing DelFurn eraser tool (this is already in place)
+Ensure proper removal from both scene and furniture store
+Add confirmation dialog for custom object deletion (this is better not)
+
+
+Phase 5: Comprehensive Memory & Store Management
+5.1 Store Cleanup Implementation
+DelFurn Tool: Remove only scene object + store entry (preserve custom furniture definitions)
+Erase Design: Clear entire scene + all furniture store entries + custom furniture definitions
+Logout: Complete reset - clear scene + furniture store + custom furniture definitions + user session
+
+
+5.2 Custom Furniture Store Management
+Track custom furniture definitions separately from placed instances
+Implement proper cleanup for unused custom furniture types
+Ensure custom furniture buttons are removed when appropriate
+
+5.3 Memory Optimization
+Implement geometry caching for reused STL objects
+Add cleanup for orphaned geometries
+Optimize memory usage for multiple custom objects
+Specific Actions:
+Extend FurnitureDialog for custom objects
+Update DelFurn to handle custom furniture deletion
+Enhance Erase Design to clear custom furniture definitions
+Improve Logout to reset all custom data
+Implement geometry caching system
+Add cleanup validation to ensure no memory leaks
+Store State Management:
+Custom furniture definitions (persistent until Erase Design/Logout)
+Placed furniture instances (cleared by DelFurn/Erase Design/Logout)
+Scene objects (cleared by DelFurn/Erase Design/Logout)
+This plan ensures proper separation between custom furniture definitions and their instances, with appropriate cleanup behavior for each action level.
+
+Should I proceed with this implementation?

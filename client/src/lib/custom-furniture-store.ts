@@ -125,6 +125,32 @@ class CustomFurnitureStore {
 
   clear() {
     this.customFurniture.clear();
+    this.objectCounter = 0; // Reset counter on full clear
+    this.notify();
+  }
+
+  // Phase 5: Cleanup methods for different application states
+  
+  // DelFurn Tool: Only remove specific furniture instance, preserve definitions
+  removeInstanceOnly(id: string): boolean {
+    // For DelFurn, we don't remove from the store - just from scene
+    // The custom furniture definition remains available for reuse
+    return true;
+  }
+
+  // Erase Design: Clear all custom furniture definitions and reset counter
+  clearAllDefinitions() {
+    console.log('Custom Furniture Store: Clearing all definitions (Erase Design)');
+    this.customFurniture.clear();
+    this.objectCounter = 0;
+    this.notify();
+  }
+
+  // Logout: Complete reset including all data and counter
+  reset() {
+    console.log('Custom Furniture Store: Complete reset (Logout)');
+    this.customFurniture.clear();
+    this.objectCounter = 0;
     this.notify();
   }
 
