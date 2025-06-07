@@ -682,11 +682,11 @@ const calculateFurniturePosition = (
 const createVentPlaneModel = (furnitureItem: FurnitureItem): THREE.Group => {
   const group = new THREE.Group();
   
-  // Get dimensions from furniture item or use defaults
-  const width = (furnitureItem.dimensions?.width || 50) / 100; // Convert cm to meters
-  const height = (furnitureItem.dimensions?.height || 50) / 100; // Convert cm to meters
+  // Use dimensions in cm (same units as other furniture) - no conversion needed
+  const width = furnitureItem.dimensions?.width || 50; // cm
+  const height = furnitureItem.dimensions?.height || 50; // cm
   
-  // Create PlaneGeometry for the vent (similar to air entries)
+  // Create PlaneGeometry for the vent (dimensions in cm like other furniture)
   const geometry = new THREE.PlaneGeometry(width, height);
   
   // Create material with vent-specific properties
@@ -701,17 +701,8 @@ const createVentPlaneModel = (furnitureItem: FurnitureItem): THREE.Group => {
   
   const mesh = new THREE.Mesh(geometry, material);
   
-  // Detect surface type based on Z position to set normal direction
-  // Low Z = floor (normal up), High Z = ceiling (normal down)
-  const isOnCeiling = furnitureItem.position.z > 200; // Above 2m considered ceiling
-  
-  if (isOnCeiling) {
-    // Ceiling placement: normal pointing down (0,0,-1)
-    mesh.rotation.set(0, 0, 0); // Plane faces down by default
-  } else {
-    // Floor placement: normal pointing up (0,0,1)
-    mesh.rotation.set(Math.PI, 0, 0); // Flip to face up
-  }
+  // Don't set rotation here - let the furniture system handle it
+  // The rotation will be applied in createFurnitureModel based on surface detection
   
   // Set render order to appear on top like air entries
   mesh.renderOrder = 2;
@@ -720,9 +711,7 @@ const createVentPlaneModel = (furnitureItem: FurnitureItem): THREE.Group => {
   mesh.userData = {
     type: 'vent',
     ventType: 'furniture',
-    isSelectable: true,
-    surfaceType: isOnCeiling ? 'ceiling' : 'floor',
-    normal: isOnCeiling ? { x: 0, y: 0, z: -1 } : { x: 0, y: 0, z: 1 }
+    isSelectable: true
   };
   
   group.add(mesh);
@@ -800,7 +789,7 @@ const createFurnitureModel = (
 };
 
 // Helper function to get default dimensions for furniture types
-const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'car') => {
+const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'car' | 'vent') => {
   switch (type) {
     case 'table':
       return { width: 120, height: 75, depth: 80 };
@@ -810,6 +799,8 @@ const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'car') => 
       return { width: 70, height: 85, depth: 70 };
     case 'car':
       return { width: 450, height: 150, depth: 180 };
+    case 'vent':
+      return { width: 50, height: 50, depth: 10 };
     default:
       return { width: 80, height: 80, depth: 80 };
   }
