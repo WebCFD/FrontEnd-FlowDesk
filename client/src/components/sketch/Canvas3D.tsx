@@ -708,12 +708,12 @@ const createVentPlaneModel = (furnitureItem: FurnitureItem): THREE.Group => {
   mesh.renderOrder = 2;
   
   // Add userData for identification and raycasting
-  // Use furniture type to distinguish from wall-mounted vents
+  // Set type to 'vent' for texture system compatibility
   mesh.userData = {
-    type: 'furniture',      // Furniture system type
-    furnitureType: 'vent',  // Specific furniture subtype
+    type: 'vent',           // Required by texture system
+    ventType: 'furniture',  // Additional metadata for furniture system
     isSelectable: true,
-    isVentFurniture: true   // Flag for vent furniture texture system
+    isFurniture: true       // Flag to distinguish from wall-mounted vents
   };
   
   group.add(mesh);
