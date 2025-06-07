@@ -14,6 +14,16 @@ class CustomFurnitureStore {
   private customFurniture: Map<string, CustomFurnitureData> = new Map();
   private listeners: Set<() => void> = new Set();
   private objectCounter: number = 0;
+  
+  // Phase 5.3: Geometry caching and memory optimization
+  private geometryCache: Map<string, THREE.BufferGeometry> = new Map();
+  private usageCounter: Map<string, number> = new Map();
+  private cleanupInterval: NodeJS.Timeout | null = null;
+
+  constructor() {
+    // Start periodic cleanup every 5 minutes
+    this.startPeriodicCleanup();
+  }
 
   subscribe(listener: () => void): () => void {
     this.listeners.add(listener);
@@ -26,12 +36,50 @@ class CustomFurnitureStore {
     this.listeners.forEach(listener => listener());
   }
 
+  // Phase 5.3: Memory optimization methods
+  private startPeriodicCleanup() {
+    this.cleanupInterval = setInterval(() => {
+      this.cleanupUnusedGeometries();
+    }, 5 * 60 * 1000); // Every 5 minutes
+  }
+
+  private stopPeriodicCleanup() {
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval);
+      this.cleanupInterval = null;
+    }
+  }
+
+  private generateGeometryKey(geometry: THREE.BufferGeometry): string {
+    // Generate a unique key based on geometry properties
+    const positionArray = geometry.getAttribute('position').array;
+    const hash = Array.from(positionArray.slice(0, 12)).join(','); // Use first 12 vertices for hash
+    return `geom_${hash}_${positionArray.length}`;
+  }
+
   addCustomFurniture(data: {
     name: string;
     geometry: THREE.BufferGeometry;
     originalFile: File;
     dimensions?: { width: number; height: number; depth: number };
   }): string {
+    // Phase 5.3: Implement geometry caching
+    const geometryKey = this.generateGeometryKey(data.geometry);
+    let cachedGeometry = this.geometryCache.get(geometryKey);
+    
+    if (!cachedGeometry) {
+      // Cache new geometry
+      cachedGeometry = data.geometry.clone();
+      this.geometryCache.set(geometryKey, cachedGeometry);
+      this.usageCounter.set(geometryKey, 1);
+      console.log('Custom Furniture Store: Cached new geometry', geometryKey);
+    } else {
+      // Increment usage counter for existing geometry
+      const currentUsage = this.usageCounter.get(geometryKey) || 0;
+      this.usageCounter.set(geometryKey, currentUsage + 1);
+      console.log('Custom Furniture Store: Reusing cached geometry', geometryKey, 'usage:', currentUsage + 1);
+    }
+    
     // Use provided dimensions if available, otherwise calculate from geometry
     let normalizedDimensions;
     
@@ -40,8 +88,8 @@ class CustomFurnitureStore {
       normalizedDimensions = data.dimensions;
     } else {
       // Fallback: Calculate dimensions from geometry bounding box
-      data.geometry.computeBoundingBox();
-      const boundingBox = data.geometry.boundingBox!;
+      cachedGeometry.computeBoundingBox();
+      const boundingBox = cachedGeometry.boundingBox!;
       
       const width = Math.abs(boundingBox.max.x - boundingBox.min.x);
       const height = Math.abs(boundingBox.max.y - boundingBox.min.y);
@@ -64,7 +112,7 @@ class CustomFurnitureStore {
     const customData: CustomFurnitureData = {
       id,
       name: objectName,
-      geometry: data.geometry.clone(), // Clone to avoid reference issues
+      geometry: cachedGeometry, // Use cached geometry
       originalFile: data.originalFile,
       dimensions: normalizedDimensions,
       createdAt: Date.now()
@@ -92,13 +140,7 @@ class CustomFurnitureStore {
     return Array.from(this.customFurniture.values());
   }
 
-  removeCustomFurniture(id: string): boolean {
-    const success = this.customFurniture.delete(id);
-    if (success) {
-      this.notify();
-    }
-    return success;
-  }
+
 
   // Convert custom furniture to menu items for the furniture menu
   getCustomFurnitureMenuItems(): FurnitureMenuItemData[] {
@@ -141,15 +183,66 @@ class CustomFurnitureStore {
   
   // Memory optimization: Clean up unused geometries
   cleanupUnusedGeometries() {
-    // This would be called periodically to free memory from unused geometries
-    // For now, we rely on JavaScript's garbage collection
-    console.log('Custom Furniture Store: Memory cleanup completed');
+    const geometriesToRemove: string[] = [];
+    let cleanedCount = 0;
+    
+    // Find geometries with zero usage
+    for (const [key, usage] of this.usageCounter.entries()) {
+      if (usage <= 0) {
+        const geometry = this.geometryCache.get(key);
+        if (geometry) {
+          geometry.dispose(); // Dispose Three.js geometry
+          geometriesToRemove.push(key);
+          cleanedCount++;
+        }
+      }
+    }
+    
+    // Remove from cache and usage counter
+    geometriesToRemove.forEach(key => {
+      this.geometryCache.delete(key);
+      this.usageCounter.delete(key);
+    });
+    
+    const totalCached = this.geometryCache.size;
+    console.log(`Custom Furniture Store: Memory cleanup completed. Cleaned ${cleanedCount} geometries, ${totalCached} remaining in cache`);
+    
+    return { cleaned: cleanedCount, remaining: totalCached };
+  }
+
+  // Enhanced removal method with proper usage tracking
+  removeCustomFurniture(id: string): boolean {
+    const item = this.customFurniture.get(id);
+    if (!item) return false;
+    
+    // Decrement usage counter for the geometry
+    const geometryKey = this.generateGeometryKey(item.geometry);
+    const currentUsage = this.usageCounter.get(geometryKey) || 0;
+    
+    if (currentUsage > 0) {
+      this.usageCounter.set(geometryKey, currentUsage - 1);
+      console.log(`Custom Furniture Store: Decremented usage for geometry ${geometryKey}, new usage: ${currentUsage - 1}`);
+    }
+    
+    const success = this.customFurniture.delete(id);
+    if (success) {
+      this.notify();
+    }
+    return success;
   }
 
   // Erase Design: Clear all custom furniture definitions and reset counter
   clearAllDefinitions() {
     console.log('Custom Furniture Store: Clearing all definitions (Erase Design)');
+    
+    // Dispose all cached geometries
+    for (const geometry of this.geometryCache.values()) {
+      geometry.dispose();
+    }
+    
     this.customFurniture.clear();
+    this.geometryCache.clear();
+    this.usageCounter.clear();
     this.objectCounter = 0;
     this.notify();
   }
@@ -157,9 +250,49 @@ class CustomFurnitureStore {
   // Logout: Complete reset including all data and counter
   reset() {
     console.log('Custom Furniture Store: Complete reset (Logout)');
+    
+    // Stop cleanup interval
+    this.stopPeriodicCleanup();
+    
+    // Dispose all cached geometries
+    for (const geometry of this.geometryCache.values()) {
+      geometry.dispose();
+    }
+    
     this.customFurniture.clear();
+    this.geometryCache.clear();
+    this.usageCounter.clear();
     this.objectCounter = 0;
+    
+    // Restart cleanup interval
+    this.startPeriodicCleanup();
+    
     this.notify();
+  }
+
+  // Memory diagnostic methods for validation
+  getMemoryStats() {
+    return {
+      customFurnitureCount: this.customFurniture.size,
+      cachedGeometriesCount: this.geometryCache.size,
+      totalUsageCount: Array.from(this.usageCounter.values()).reduce((sum, usage) => sum + usage, 0),
+      unusedGeometriesCount: Array.from(this.usageCounter.values()).filter(usage => usage <= 0).length
+    };
+  }
+
+  // Force cleanup validation - useful for debugging memory leaks
+  validateMemoryIntegrity(): boolean {
+    const stats = this.getMemoryStats();
+    console.log('Custom Furniture Store: Memory integrity check', stats);
+    
+    // Check for orphaned geometries
+    const hasOrphanedGeometries = stats.unusedGeometriesCount > 0;
+    if (hasOrphanedGeometries) {
+      console.warn('Custom Furniture Store: Found orphaned geometries, triggering cleanup');
+      this.cleanupUnusedGeometries();
+    }
+    
+    return !hasOrphanedGeometries;
   }
 
   getCount(): number {
