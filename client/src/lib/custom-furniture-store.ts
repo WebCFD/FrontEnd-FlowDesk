@@ -13,6 +13,7 @@ export interface CustomFurnitureData {
 class CustomFurnitureStore {
   private customFurniture: Map<string, CustomFurnitureData> = new Map();
   private listeners: Set<() => void> = new Set();
+  private objectCounter: number = 0;
 
   subscribe(listener: () => void): () => void {
     this.listeners.add(listener);
@@ -48,11 +49,15 @@ class CustomFurnitureStore {
       depth: Math.round(depth * scaleFactor)
     };
 
+    // Increment counter and generate sequential name
+    this.objectCounter++;
+    const objectName = `Obj ${this.objectCounter}`;
+
     const id = `custom_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
     const customData: CustomFurnitureData = {
       id,
-      name: data.name,
+      name: objectName,
       geometry: data.geometry.clone(), // Clone to avoid reference issues
       originalFile: data.originalFile,
       dimensions: normalizedDimensions,
@@ -100,13 +105,13 @@ class CustomFurnitureStore {
   }
 
   private generateCustomIcon(name: string): string {
-    // Generate a simple SVG icon for custom objects
-    const initials = name.split(' ').map(word => word[0]?.toUpperCase()).join('').slice(0, 2);
+    // Extract the object number from the name (e.g., "Obj 1" -> "1")
+    const objectNumber = name.replace('Obj ', '');
     
     return `
       <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect x="4" y="4" width="32" height="32" rx="4" fill="#e2e8f0" stroke="#64748b" stroke-width="2"/>
-        <text x="20" y="26" text-anchor="middle" font-family="Arial" font-size="12" font-weight="bold" fill="#475569">${initials}</text>
+        <text x="20" y="26" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold" fill="#475569">${objectNumber}</text>
         <circle cx="32" cy="8" r="3" fill="#10b981"/>
       </svg>
     `;
