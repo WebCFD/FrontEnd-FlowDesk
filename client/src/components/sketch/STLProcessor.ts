@@ -152,7 +152,8 @@ export class STLProcessor {
     const storeId = customFurnitureStore.addCustomFurniture({
       name: originalName,
       geometry: geometry.clone(),
-      originalFile
+      originalFile,
+      dimensions: dimensions
     });
 
     // Get the actual assigned name from store (e.g., "Obj 1")
