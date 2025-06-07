@@ -197,7 +197,7 @@ export class STLProcessor {
   createMeshFromStored(storeId: string): THREE.Mesh | null {
     const storeData = customFurnitureStore.getCustomFurniture(storeId);
     if (!storeData) {
-      console.error('STL Processor: No stored data found for ID:', storeId);
+      // Silently handle missing STL objects (likely from previous sessions)
       return null;
     }
 
