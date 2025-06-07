@@ -678,6 +678,57 @@ const calculateFurniturePosition = (
 
 // Legacy function removed - now using handleComponentFurnitureDrop inside Canvas3D component
 
+// PHASE 3: Function to create vent plane model using PlaneGeometry
+const createVentPlaneModel = (furnitureItem: FurnitureItem): THREE.Group => {
+  const group = new THREE.Group();
+  
+  // Get dimensions from furniture item or use defaults
+  const width = (furnitureItem.dimensions?.width || 50) / 100; // Convert cm to meters
+  const height = (furnitureItem.dimensions?.height || 50) / 100; // Convert cm to meters
+  
+  // Create PlaneGeometry for the vent (similar to air entries)
+  const geometry = new THREE.PlaneGeometry(width, height);
+  
+  // Create material with vent-specific properties
+  const material = new THREE.MeshPhongMaterial({
+    color: 0x22c55e, // Green color for vents (matching existing air entry system)
+    opacity: 0.8,
+    transparent: true,
+    side: THREE.DoubleSide,
+    depthTest: false,
+    depthWrite: false,
+  });
+  
+  const mesh = new THREE.Mesh(geometry, material);
+  
+  // Detect surface type based on Z position to set normal direction
+  // Low Z = floor (normal up), High Z = ceiling (normal down)
+  const isOnCeiling = furnitureItem.position.z > 200; // Above 2m considered ceiling
+  
+  if (isOnCeiling) {
+    // Ceiling placement: normal pointing down (0,0,-1)
+    mesh.rotation.set(0, 0, 0); // Plane faces down by default
+  } else {
+    // Floor placement: normal pointing up (0,0,1)
+    mesh.rotation.set(Math.PI, 0, 0); // Flip to face up
+  }
+  
+  // Set render order to appear on top like air entries
+  mesh.renderOrder = 2;
+  
+  // Add userData for identification and raycasting
+  mesh.userData = {
+    type: 'vent',
+    ventType: 'furniture',
+    isSelectable: true,
+    surfaceType: isOnCeiling ? 'ceiling' : 'floor',
+    normal: isOnCeiling ? { x: 0, y: 0, z: -1 } : { x: 0, y: 0, z: 1 }
+  };
+  
+  group.add(mesh);
+  return group;
+};
+
 // PHASE 3: Function to create and add furniture models to the scene
 const createFurnitureModel = (
   furnitureItem: FurnitureItem,
@@ -698,6 +749,9 @@ const createFurnitureModel = (
       break;
     case 'car':
       model = createCarModel();
+      break;
+    case 'vent':
+      model = createVentPlaneModel(furnitureItem);
       break;
     default:
       console.error(`Unknown furniture type: ${furnitureItem.type}`);
