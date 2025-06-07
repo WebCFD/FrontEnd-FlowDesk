@@ -2134,6 +2134,11 @@ export default function Canvas3D({
     scene.background = new THREE.Color(0xf8fafc);
     sceneRef.current = scene;
 
+    // Register scene with SceneContext for cross-component access
+    if (sceneContext) {
+      sceneContext.registerScene('canvas3D', scene);
+    }
+
     // Initialize camera
     const camera = new THREE.PerspectiveCamera(
       45,
