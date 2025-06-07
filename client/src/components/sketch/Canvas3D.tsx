@@ -800,10 +800,10 @@ const createFurnitureModel = (
     
     // Special handling for custom STL objects - apply canvas coordinate conversion
     if (furnitureItem.type === 'custom') {
-      // Convert from cm to canvas units using: 25cm = 20px, so 1cm = 0.8px
-      // STL dimensions are stored in cm, convert to scene units
-      const canvasScale = 0.8; // 1cm = 0.8 scene units
-      model.scale.set(canvasScale, canvasScale, canvasScale);
+      // The scene coordinate system appears to need larger scaling
+      // Based on actual measurements, we need ~50x larger scale
+      const sceneScale = 50; // Empirically determined from actual scene measurements
+      model.scale.set(sceneScale, sceneScale, sceneScale);
       
 
     } else {
