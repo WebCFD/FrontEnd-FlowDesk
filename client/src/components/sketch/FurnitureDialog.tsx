@@ -127,6 +127,7 @@ const furnitureDefaults = {
     position: { x: 0, y: 0, z: 0 },
     rotation: { x: 0, y: 0, z: 0 },
     scale: { x: 1, y: 1, z: 1 },
+    dimensions: { width: 100, height: 100, depth: 100 },
     properties: {
       material: "mixed",
       temperature: 20,
@@ -173,6 +174,13 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
     density: 600,
     heatCapacity: 1200
   });
+  
+  // Estado para dimensiones (especialmente para objetos custom)
+  const [dimensions, setDimensions] = useState({
+    width: 100,
+    height: 100,
+    depth: 100
+  });
 
   function getDefaultValues() {
     if (props.initialValues) return props.initialValues;
@@ -193,6 +201,11 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
         heatCapacity: defaults.properties?.heatCapacity || 1200
       });
       
+      // Initialize dimensions for custom objects
+      if (type === 'custom' && (defaults as any).dimensions) {
+        setDimensions((defaults as any).dimensions);
+      }
+      
       if (defaults.position) {
         setElementPosition(defaults.position);
       }
@@ -207,6 +220,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
       position: elementPosition,
       rotation: values.rotation,
       scale: values.scale,
+      ...(type === 'custom' && { dimensions: dimensions }),
       properties: {
         material: materialType,
         temperature: temperature,
@@ -516,6 +530,54 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                     </div>
                   </div>
                 </div>
+                
+                {/* Dimensions - Only for custom objects */}
+                {type === 'custom' && (
+                  <div>
+                    <Label className="text-xs text-slate-600 mb-2 block">Dimensions (cm)</Label>
+                    <div className="grid grid-cols-3 gap-2">
+                      <div>
+                        <Label htmlFor="dim-width" className="text-xs">Width</Label>
+                        <Input
+                          id="dim-width"
+                          type="number"
+                          value={dimensions.width}
+                          onChange={(e) => setDimensions(prev => ({
+                            ...prev,
+                            width: Number(e.target.value)
+                          }))}
+                          className="text-sm"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="dim-height" className="text-xs">Height</Label>
+                        <Input
+                          id="dim-height"
+                          type="number"
+                          value={dimensions.height}
+                          onChange={(e) => setDimensions(prev => ({
+                            ...prev,
+                            height: Number(e.target.value)
+                          }))}
+                          className="text-sm"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="dim-depth" className="text-xs">Depth</Label>
+                        <Input
+                          id="dim-depth"
+                          type="number"
+                          value={dimensions.depth}
+                          onChange={(e) => setDimensions(prev => ({
+                            ...prev,
+                            depth: Number(e.target.value)
+                          }))}
+                          className="text-sm"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
