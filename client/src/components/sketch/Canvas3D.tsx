@@ -800,10 +800,12 @@ const createFurnitureModel = (
     
     // Special handling for custom STL objects - apply proper coordinate conversion
     if (furnitureItem.type === 'custom') {
-      // STL dimensions are in cm, need to convert to scene units
-      // With corrected PIXELS_TO_CM = 0.8, we need to scale appropriately
-      const sceneScale = 1; // Use unit scale, let dimension system handle conversion
-      model.scale.set(sceneScale, sceneScale, sceneScale);
+      // STL geometry is 1x1x1 units, but stored dimensions are in cm
+      // Scale the geometry to match the stored cm dimensions
+      const scaleX = furnitureItem.dimensions.width; // 100cm for 1x1x1 cube
+      const scaleY = furnitureItem.dimensions.height;
+      const scaleZ = furnitureItem.dimensions.depth;
+      model.scale.set(scaleX, scaleY, scaleZ);
       
 
     } else {
