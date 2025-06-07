@@ -5044,21 +5044,17 @@ export default function Canvas3D({
           uuid: intersectedObject.uuid
         });
         
-        // Find the furniture group
+        // Find the furniture group - prioritize groups with furnitureId
         let furnitureGroup = intersectedObject;
-        while (furnitureGroup && furnitureGroup.userData.type !== 'furniture') {
-          console.log("🔍 DelFurn: Checking parent:", {
-            type: furnitureGroup.type,
-            userData: furnitureGroup.userData,
-            parent: furnitureGroup.parent ? "exists" : "null"
-          });
-          furnitureGroup = furnitureGroup.parent;
-        }
         
-        // If we didn't find a furniture group, try checking the parent directly
-        if (!furnitureGroup || furnitureGroup.userData.type !== 'furniture') {
+        // First check if the hit object itself has furnitureId
+        if (furnitureGroup.userData.furnitureId) {
+          console.log("🎯 DelFurn: Hit object has furnitureId directly");
+        } else {
+          // Look for parent with furnitureId
+          console.log("🔍 DelFurn: Hit object lacks furnitureId, checking parent");
           furnitureGroup = intersectedObject.parent;
-          console.log("🔍 DelFurn: Trying parent directly:", {
+          console.log("🔍 DelFurn: Parent check:", {
             type: furnitureGroup?.type,
             userData: furnitureGroup?.userData,
             hasFurnitureId: !!furnitureGroup?.userData?.furnitureId
