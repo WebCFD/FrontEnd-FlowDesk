@@ -102,6 +102,7 @@ interface Canvas3DProps {
   ) => void;
   onViewChange?: (callback: (direction: ViewDirection) => void) => void;
   onSceneReady?: (scene: THREE.Scene, renderer: THREE.WebGLRenderer, camera: THREE.Camera) => void; // For RSP texture access
+  onFurnitureAdded?: () => void; // Callback to notify when new furniture is added to scene
   // Furniture callbacks - Phase 2: Props pattern
   onFurnitureAdd?: (floorName: string, item: FurnitureItem) => void;
   onUpdateFurniture?: (floorName: string, index: number, item: FurnitureItem) => void;
@@ -919,6 +920,11 @@ export default function Canvas3D({
         // Add furniture via callback
         if (onFurnitureAdd && typeof onFurnitureAdd === 'function') {
           onFurnitureAdd(surfaceDetection.floorName, furnitureItem);
+        }
+        
+        // Notify that new furniture was added to scene (for texture re-application)
+        if (onFurnitureAdded && typeof onFurnitureAdded === 'function') {
+          onFurnitureAdded();
         }
         
         // Store for dialog
