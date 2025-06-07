@@ -1,0 +1,18 @@
+🎯 DelFurn: Click detected in furniture eraser mode
+Canvas3D.tsx:5011 🖱️ DelFurn: Mouse coordinates: -0.10241668778829938 -0.15589660341831713
+Canvas3D.tsx:5021 🔍 DelFurn: Found furniture object: {type: 'Group', furnitureType: 'vent', furnitureId: 'vent_1749291303978', isVentFurniture: undefined, uuid: 'fbf12b72-1198-4eb5-8a8f-a10283254075'}
+Canvas3D.tsx:5021 🔍 DelFurn: Found furniture object: {type: 'Mesh', furnitureType: 'vent', furnitureId: undefined, isVentFurniture: true, uuid: 'd7e582e6-9914-477c-80b2-eada434d3f07'}
+Canvas3D.tsx:5032 📋 DelFurn: Found 2 furniture objects in scene
+Canvas3D.tsx:5036 🎯 DelFurn: Raycaster found 2 intersections
+Canvas3D.tsx:5040 ✅ DelFurn: Hit object: {type: 'Mesh', userData: {…}, position: _Vector3, uuid: 'd7e582e6-9914-477c-80b2-eada434d3f07'}
+Canvas3D.tsx:5070 🎯 DelFurn: Found furniture group: {furnitureType: 'vent', furnitureId: undefined, floorName: undefined, isVentFurniture: true}
+Canvas3D.tsx:5091 ❌ DelFurn: Missing furnitureId or deletion callback: {furnitureId: undefined, onDeleteFurniture: true}
+Canvas3D.tsx:4998 🎯 DelFurn: Click detected in furniture eraser mode
+Canvas3D.tsx:5011 🖱️ DelFurn: Mouse coordinates: -0.10241668778829938 -0.15589660341831713
+Canvas3D.tsx:5021 🔍 DelFurn: Found furniture object: {type: 'Group', furnitureType: 'vent', furnitureId: 'vent_1749291303978', isVentFurniture: undefined, uuid: 'fbf12b72-1198-4eb5-8a8f-a10283254075'}
+Canvas3D.tsx:5021 🔍 DelFurn: Found furniture object: {type: 'Mesh', furnitureType: 'vent', furnitureId: undefined, isVentFurniture: true, uuid: 'd7e582e6-9914-477c-80b2-eada434d3f07'}
+Canvas3D.tsx:5032 📋 DelFurn: Found 2 furniture objects in scene
+Canvas3D.tsx:5036 🎯 DelFurn: Raycaster found 2 intersections
+Canvas3D.tsx:5040 ✅ DelFurn: Hit object: {type: 'Mesh', userData: {…}, position: _Vector3, uuid: 'd7e582e6-9914-477c-80b2-eada434d3f07'}
+Canvas3D.tsx:5070 🎯 DelFurn: Found furniture group: {furnitureType: 'vent', furnitureId: undefined, floorName: undefined, isVentFurniture: true}
+Canvas3D.tsx:5091 ❌ DelFurn: Missing furnitureId or deletion callback: {furnitureId: undefined, onDeleteFurniture: true
