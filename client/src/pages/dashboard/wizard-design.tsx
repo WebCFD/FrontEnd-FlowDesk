@@ -1564,120 +1564,15 @@ export default function WizardDesign() {
                     </div>
                   </div>
 
-                  {/* Furniture */}
-                  <div className="space-y-4 mt-4">
-                    <h3 className="font-semibold">Furniture</h3>
-                    <div className="grid grid-cols-3 gap-2">
-                      {[
-                        {
-                          id: "table",
-                          name: "Table",
-                          icon: (
-                            <rect
-                              x="4"
-                              y="14"
-                              width="16"
-                              height="6"
-                              rx="1"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                            />
-                          ),
-                        },
-                        {
-                          id: "person",
-                          name: "Person",
-                          icon: (
-                            <circle
-                              cx="12"
-                              cy="9"
-                              r="3"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                            />
-                          ),
-                        },
-                        {
-                          id: "armchair",
-                          name: "Armchair",
-                          icon: (
-                            <rect
-                              x="4"
-                              y="12"
-                              width="16"
-                              height="8"
-                              rx="1"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                            />
-                          ),
-                        },
-                        {
-                          id: "car",
-                          name: "Car",
-                          icon: (
-                            <g>
-                              <rect
-                                x="2"
-                                y="10"
-                                width="20"
-                                height="6"
-                                rx="1"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                fill="none"
-                              />
-                              <circle
-                                cx="6"
-                                cy="18"
-                                r="2"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                fill="none"
-                              />
-                              <circle
-                                cx="18"
-                                cy="18"
-                                r="2"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                fill="none"
-                              />
-                            </g>
-                          ),
-                        },
-                      ].map((item) => (
-                        <Button
-                          key={item.id}
-                          variant="outline"
-                          className="h-auto py-2 flex flex-col items-center justify-center gap-1"
-                          draggable={true}
-                          onDragStart={(e) => {
-                            // Only send the necessary data without React elements to avoid circular references
-                            const serializable = {
-                              id: item.id,
-                              name: item.name,
-                            };
-                            e.dataTransfer.setData(
-                              "application/json",
-                              JSON.stringify(serializable),
-                            );
-                            e.dataTransfer.effectAllowed = "copy";
-                          }}
-                        >
-                          <svg
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                          >
-                            {item.icon}
-                          </svg>
-                          <span className="text-xs">{item.name}</span>
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
+                  {/* Furniture - Using FurnitureMenu component */}
+                  <FurnitureMenu 
+                    onDragStart={(item) => {
+                      // Handle drag start if needed
+                      console.log("Dragging furniture:", item);
+                    }}
+                    wallTransparency={wallTransparency}
+                    onWallTransparencyChange={setWallTransparency}
+                  />
                 </div>
 
                 {/* Parameters Menu - Same as Step 1 */}
