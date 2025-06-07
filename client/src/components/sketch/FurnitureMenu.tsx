@@ -1,6 +1,10 @@
 import { cn } from "@/lib/utils";
 import { Slider } from "@/components/ui/slider";
 import { FurnitureMenuItemData } from "@shared/furniture-types";
+import { STLUploader } from "./STLUploader";
+import { customFurnitureStore } from "@/lib/custom-furniture-store";
+import { useState, useEffect } from "react";
+import * as THREE from "three";
 
 // Use the unified menu item type
 type FurnitureItem = FurnitureMenuItemData;
@@ -86,12 +90,41 @@ const furnitureItems: FurnitureItem[] = [
 ];
 
 export function FurnitureMenu({ onDragStart, wallTransparency = 0.8, onWallTransparencyChange }: FurnitureMenuProps) {
+  const [customItems, setCustomItems] = useState<FurnitureItem[]>([]);
+
+  // Subscribe to custom furniture store updates
+  useEffect(() => {
+    const updateCustomItems = () => {
+      setCustomItems(customFurnitureStore.getCustomFurnitureMenuItems());
+    };
+
+    // Initial load
+    updateCustomItems();
+
+    // Subscribe to changes
+    const unsubscribe = customFurnitureStore.subscribe(updateCustomItems);
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
   const handleTransparencyChange = (values: number[]) => {
     const newValue = values[0];
     if (onWallTransparencyChange) {
       onWallTransparencyChange(newValue);
     }
   };
+
+  const handleSTLLoaded = (modelData: {
+    name: string;
+    geometry: THREE.BufferGeometry;
+    originalFile: File;
+  }) => {
+    customFurnitureStore.addCustomFurniture(modelData);
+  };
+
+  // Combine built-in and custom furniture items
+  const allFurnitureItems = [...furnitureItems, ...customItems];
 
   // Ensure wallTransparency has a valid value before using toFixed
   const displayValue = typeof wallTransparency === 'number' ? wallTransparency.toFixed(1) : '0.8';
@@ -119,7 +152,7 @@ export function FurnitureMenu({ onDragStart, wallTransparency = 0.8, onWallTrans
       <div className="space-y-4">
         <h3 className="font-semibold">Furniture</h3>
         <div className="grid grid-cols-3 gap-2">
-          {furnitureItems.map((item) => (
+          {allFurnitureItems.map((item) => (
             <div
               key={item.id}
               draggable
@@ -142,6 +175,11 @@ export function FurnitureMenu({ onDragStart, wallTransparency = 0.8, onWallTrans
             </div>
           ))}
         </div>
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="font-semibold">Load Custom Object</h3>
+        <STLUploader onModelLoaded={handleSTLLoaded} />
       </div>
     </div>
   );
