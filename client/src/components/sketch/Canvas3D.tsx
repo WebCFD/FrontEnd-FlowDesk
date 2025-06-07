@@ -798,10 +798,12 @@ const createFurnitureModel = (
   if (furnitureItem.dimensions) {
     const defaultDimensions = getDefaultDimensions(furnitureItem.type);
     
-    // Special handling for custom STL objects - they're already scaled in STLProcessor
+    // Special handling for custom STL objects - apply canvas coordinate conversion
     if (furnitureItem.type === 'custom') {
-      // Apply additional scale to make STL objects more visible (they appear too small)
-      model.scale.set(10, 10, 10); // 10x larger for visibility
+      // Convert from cm to canvas units using: 25cm = 20px, so 1cm = 0.8px
+      // STL dimensions are stored in cm, convert to scene units
+      const canvasScale = 0.8; // 1cm = 0.8 scene units
+      model.scale.set(canvasScale, canvasScale, canvasScale);
     } else {
       const scaleX = furnitureItem.dimensions.width / defaultDimensions.width;
       const scaleY = furnitureItem.dimensions.depth / defaultDimensions.depth;

@@ -50,9 +50,9 @@ export class STLProcessor {
   }
 
   /**
-   * Auto-scale geometry to reasonable furniture dimensions
+   * Calculate dimensions treating 1 STL unit = 1 cm (no scaling applied)
    */
-  private autoScaleGeometry(geometry: THREE.BufferGeometry): { 
+  private calculateDimensions(geometry: THREE.BufferGeometry): { 
     scaleFactor: number; 
     dimensions: { width: number; height: number; depth: number } 
   } {
@@ -63,24 +63,14 @@ export class STLProcessor {
     const height = Math.abs(boundingBox.max.y - boundingBox.min.y);
     const depth = Math.abs(boundingBox.max.z - boundingBox.min.z);
 
-    // Target maximum dimension for furniture scale (larger size for visibility)
-    const maxDimension = Math.max(width, height, depth);
-    const targetMaxSize = 80; // Scale to 80 scene units for proper visibility
-    const scaleFactor = targetMaxSize / maxDimension;
-
-    // Apply scaling to geometry
-    if (scaleFactor !== 1) {
-      geometry.scale(scaleFactor, scaleFactor, scaleFactor);
-      geometry.computeBoundingBox();
-    }
-
-    const finalDimensions = {
-      width: Math.round(width * scaleFactor),
-      height: Math.round(height * scaleFactor),
-      depth: Math.round(depth * scaleFactor)
+    // Treat 1 STL unit = 1 cm, no geometry scaling applied
+    const dimensions = {
+      width: Math.round(width * 100), // Convert to cm for storage
+      height: Math.round(height * 100),
+      depth: Math.round(depth * 100)
     };
 
-    return { scaleFactor, dimensions: finalDimensions };
+    return { scaleFactor: 1, dimensions };
   }
 
   /**
@@ -149,8 +139,8 @@ export class STLProcessor {
     // Center the geometry at origin
     geometry.center();
 
-    // Auto-scale geometry
-    const { scaleFactor, dimensions } = this.autoScaleGeometry(geometry);
+    // Calculate dimensions without scaling
+    const { scaleFactor, dimensions } = this.calculateDimensions(geometry);
 
     // Create material
     const material = this.createDefaultMaterial();
