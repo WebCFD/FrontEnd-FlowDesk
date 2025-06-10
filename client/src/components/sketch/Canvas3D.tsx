@@ -5469,11 +5469,9 @@ export default function Canvas3D({
               return actualScale;
             })(),
             properties: {
-              material: "wood",
+              material: "default",
               temperature: 20,
-              thermalConductivity: 0.12,
-              density: 600,
-              heatCapacity: 1200
+              emissivity: 0.90
             }
           }}
           isEditing={true}
