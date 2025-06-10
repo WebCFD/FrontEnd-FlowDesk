@@ -189,6 +189,19 @@ export function FurnitureMenu({ onDragStart, wallTransparency = 0.8, onWallTrans
         <h3 className="font-semibold">Load Custom Object</h3>
         <STLUploader onModelLoaded={handleSTLLoaded} floorContext={floorContext} />
       </div>
+
+      {/* TEST SECTION: ID Generation Test */}
+      <div className="space-y-4 border-t pt-4">
+        <h3 className="font-semibold text-blue-600">🧪 ID System Test</h3>
+        <div className="text-xs text-gray-600 mb-2">
+          Current Floor: {floorContext?.currentFloor || 'ground'}<br/>
+          Existing Furniture: {floorContext?.floors[floorContext?.currentFloor || 'ground']?.furnitureItems?.length || 0}
+        </div>
+        <div className="text-xs text-gray-500">
+          Drag furniture above to test the new ID system.<br/>
+          Check console for logs showing: "Table 0F-1", "Chair 0F-2", etc.
+        </div>
+      </div>
     </div>
   );
 }
