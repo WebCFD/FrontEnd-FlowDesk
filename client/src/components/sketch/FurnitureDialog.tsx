@@ -441,9 +441,11 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                       <Input
                         id="rot-x"
                         type="number"
-                        value={values.rotation.x * (180 / Math.PI)}
+                        step="0.01"
+                        value={formatDisplayValue(values.rotation.x * (180 / Math.PI))}
                         onChange={(e) => {
-                          const newRotationX = Number(e.target.value) * (Math.PI / 180);
+                          const degrees = handleDecimalInput(e.target.value);
+                          const newRotationX = degrees * (Math.PI / 180);
                           const newRotation = { ...values.rotation, x: newRotationX };
                           setValues(prev => ({
                             ...prev,
@@ -462,9 +464,11 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                       <Input
                         id="rot-y"
                         type="number"
-                        value={values.rotation.y * (180 / Math.PI)}
+                        step="0.01"
+                        value={formatDisplayValue(values.rotation.y * (180 / Math.PI))}
                         onChange={(e) => {
-                          const newRotationY = Number(e.target.value) * (Math.PI / 180);
+                          const degrees = handleDecimalInput(e.target.value);
+                          const newRotationY = degrees * (Math.PI / 180);
                           const newRotation = { ...values.rotation, y: newRotationY };
                           setValues(prev => ({
                             ...prev,
@@ -483,14 +487,21 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                       <Input
                         id="rot-z"
                         type="number"
-                        value={values.rotation.z * (180 / Math.PI)}
-                        onChange={(e) => setValues(prev => ({
-                          ...prev,
-                          rotation: {
-                            ...prev.rotation,
-                            z: Number(e.target.value) * (Math.PI / 180)
+                        step="0.01"
+                        value={formatDisplayValue(values.rotation.z * (180 / Math.PI))}
+                        onChange={(e) => {
+                          const degrees = handleDecimalInput(e.target.value);
+                          const newRotationZ = degrees * (Math.PI / 180);
+                          const newRotation = { ...values.rotation, z: newRotationZ };
+                          setValues(prev => ({
+                            ...prev,
+                            rotation: newRotation
+                          }));
+                          // Real-time update
+                          if (onRotationUpdate) {
+                            onRotationUpdate(newRotation);
                           }
-                        }))}
+                        }}
                         className="text-sm"
                       />
                     </div>
@@ -506,15 +517,20 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                       <Input
                         id="scale-x"
                         type="number"
-                        step="0.1"
-                        value={values.scale.x}
-                        onChange={(e) => setValues(prev => ({
-                          ...prev,
-                          scale: {
-                            ...prev.scale,
-                            x: Number(e.target.value)
+                        step="0.01"
+                        value={formatDisplayValue(values.scale.x)}
+                        onChange={(e) => {
+                          const newScaleX = handleDecimalInput(e.target.value);
+                          const newScale = { ...values.scale, x: newScaleX };
+                          setValues(prev => ({
+                            ...prev,
+                            scale: newScale
+                          }));
+                          // Real-time update
+                          if (onScaleUpdate) {
+                            onScaleUpdate(newScale);
                           }
-                        }))}
+                        }}
                         className="text-sm"
                       />
                     </div>
@@ -523,15 +539,20 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                       <Input
                         id="scale-y"
                         type="number"
-                        step="0.1"
-                        value={values.scale.y}
-                        onChange={(e) => setValues(prev => ({
-                          ...prev,
-                          scale: {
-                            ...prev.scale,
-                            y: Number(e.target.value)
+                        step="0.01"
+                        value={formatDisplayValue(values.scale.y)}
+                        onChange={(e) => {
+                          const newScaleY = handleDecimalInput(e.target.value);
+                          const newScale = { ...values.scale, y: newScaleY };
+                          setValues(prev => ({
+                            ...prev,
+                            scale: newScale
+                          }));
+                          // Real-time update
+                          if (onScaleUpdate) {
+                            onScaleUpdate(newScale);
                           }
-                        }))}
+                        }}
                         className="text-sm"
                       />
                     </div>
@@ -540,15 +561,20 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                       <Input
                         id="scale-z"
                         type="number"
-                        step="0.1"
-                        value={values.scale.z}
-                        onChange={(e) => setValues(prev => ({
-                          ...prev,
-                          scale: {
-                            ...prev.scale,
-                            z: Number(e.target.value)
+                        step="0.01"
+                        value={formatDisplayValue(values.scale.z)}
+                        onChange={(e) => {
+                          const newScaleZ = handleDecimalInput(e.target.value);
+                          const newScale = { ...values.scale, z: newScaleZ };
+                          setValues(prev => ({
+                            ...prev,
+                            scale: newScale
+                          }));
+                          // Real-time update
+                          if (onScaleUpdate) {
+                            onScaleUpdate(newScale);
                           }
-                        }))}
+                        }}
                         className="text-sm"
                       />
                     </div>
