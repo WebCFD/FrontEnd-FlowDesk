@@ -311,17 +311,12 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
               
               <div className="space-y-4">
                 <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="furniture-name" className="text-right">
-                    Name
+                  <Label htmlFor="furniture-id" className="text-right">
+                    Furniture ID
                   </Label>
-                  <Input
-                    id="furniture-name"
-                    type="text"
-                    value={furnitureName}
-                    onChange={(e) => setFurnitureName(e.target.value)}
-                    className="col-span-3"
-                    placeholder={`Enter ${type} name`}
-                  />
+                  <div className="col-span-3 px-3 py-2 bg-gray-100 rounded text-sm text-gray-700 font-mono">
+                    {furnitureName}
+                  </div>
                 </div>
                 
                 <div className="grid grid-cols-4 items-center gap-4">

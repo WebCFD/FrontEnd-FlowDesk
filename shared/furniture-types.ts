@@ -6,7 +6,7 @@
 export interface FurnitureItem {
   id: string;
   type: 'table' | 'person' | 'armchair' | 'car' | 'block' | 'vent' | 'custom';
-  name: string;
+  name: string; // Computed property that returns id - kept for backward compatibility
   floorName: string;
   position: { x: number; y: number; z: number };
   rotation: { x: number; y: number; z: number };
@@ -21,6 +21,12 @@ export interface FurnitureItem {
   createdAt?: number;
   updatedAt?: number;
 }
+
+// Helper function to create furniture item with computed name
+export const createFurnitureItem = (data: Omit<FurnitureItem, 'name'> & { name?: string }): FurnitureItem => ({
+  ...data,
+  name: data.name || data.id, // Name defaults to ID if not provided
+});
 
 export interface FurnitureMenuItemData {
   id: string;
