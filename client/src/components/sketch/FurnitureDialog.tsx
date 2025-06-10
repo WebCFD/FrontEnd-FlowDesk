@@ -921,10 +921,81 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="low">Low</SelectItem>
-                          <SelectItem value="medium">Medium</SelectItem>
-                          <SelectItem value="high">High</SelectItem>
-                          <SelectItem value="custom">Custom</SelectItem>
+                          {simulationProperties.flowType === 'Air Mass Flow' && (
+                            <>
+                              <SelectItem value="high">
+                                <div className="flex items-center justify-between w-full">
+                                  <span>High</span>
+                                  <span className="text-xs text-gray-500 ml-2">400 m³/h</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="medium">
+                                <div className="flex items-center justify-between w-full">
+                                  <span>Medium</span>
+                                  <span className="text-xs text-gray-500 ml-2">250 m³/h</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="low">
+                                <div className="flex items-center justify-between w-full">
+                                  <span>Low</span>
+                                  <span className="text-xs text-gray-500 ml-2">150 m³/h</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="custom">
+                                <span>Custom m³/h</span>
+                              </SelectItem>
+                            </>
+                          )}
+                          {simulationProperties.flowType === 'Air Velocity' && (
+                            <>
+                              <SelectItem value="high">
+                                <div className="flex items-center justify-between w-full">
+                                  <span>High</span>
+                                  <span className="text-xs text-gray-500 ml-2">5 m/s</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="medium">
+                                <div className="flex items-center justify-between w-full">
+                                  <span>Medium</span>
+                                  <span className="text-xs text-gray-500 ml-2">2.5 m/s</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="low">
+                                <div className="flex items-center justify-between w-full">
+                                  <span>Low</span>
+                                  <span className="text-xs text-gray-500 ml-2">1 m/s</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="custom">
+                                <span>Custom m/s</span>
+                              </SelectItem>
+                            </>
+                          )}
+                          {simulationProperties.flowType === 'Pressure' && (
+                            <>
+                              <SelectItem value="high">
+                                <div className="flex items-center justify-between w-full">
+                                  <span>High</span>
+                                  <span className="text-xs text-gray-500 ml-2">25 Pa</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="medium">
+                                <div className="flex items-center justify-between w-full">
+                                  <span>Medium</span>
+                                  <span className="text-xs text-gray-500 ml-2">5 Pa</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="low">
+                                <div className="flex items-center justify-between w-full">
+                                  <span>Low</span>
+                                  <span className="text-xs text-gray-500 ml-2">0.5 Pa</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="custom">
+                                <span>Custom Pa</span>
+                              </SelectItem>
+                            </>
+                          )}
                         </SelectContent>
                       </Select>
                     </div>
@@ -947,7 +1018,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           className="col-span-2"
                         />
                         <span className="text-sm">
-                          {simulationProperties.flowType === 'Air Mass Flow' ? 'kg/s' : 
+                          {simulationProperties.flowType === 'Air Mass Flow' ? 'm³/h' : 
                            simulationProperties.flowType === 'Air Velocity' ? 'm/s' : 'Pa'}
                         </span>
                       </div>
