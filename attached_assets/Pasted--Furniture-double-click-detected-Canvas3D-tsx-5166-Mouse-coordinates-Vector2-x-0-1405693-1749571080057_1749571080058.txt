@@ -1,0 +1,41 @@
+🖱️ Furniture double-click detected!
+Canvas3D.tsx:5166 🎯 Mouse coordinates: _Vector2 {x: -0.14056939501779364, y: 0.15145005370569276}
+Canvas3D.tsx:5178 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-1', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:5178 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-1', floorName: 'ground', furnitureName: 'Vent 0F-1', …}
+Canvas3D.tsx:5187 🔍 Found 2 furniture objects in scene
+Canvas3D.tsx:5192 💥 Found 2 intersections
+Canvas3D.tsx:5206 ✅ Intersected furniture object: {furnitureId: 'Vent 0F-1', userData: {…}, position: _Vector3}
+Canvas3D.tsx:5254 🎛️ Opening furniture dialog with item: {id: 'Vent 0F-1', type: 'vent', name: 'Vent 0F-1', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:5255 🎛️ Setting editingFurniture state...
+Canvas3D.tsx:5263 🎛️ editingFurniture state set!
+FurnitureDialog.tsx:280 🔍 FURNITURE VENT DEBUG - Dialog opening:
+FurnitureDialog.tsx:281 🔍 Type: vent
+FurnitureDialog.tsx:282 🔍 Is editing: true
+FurnitureDialog.tsx:283 🔍 Props.initialValues: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+FurnitureDialog.tsx:284 🔍 Defaults object: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+FurnitureDialog.tsx:285 🔍 Defaults.simulationProperties: undefined
+FurnitureDialog.tsx:302 🔍 VENT SIMULATION PROPS - Raw from defaults: undefined
+FurnitureDialog.tsx:316 🔍 VENT SIMULATION PROPS - Setting to state: {flowType: 'Air Mass Flow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', state: 'open', …}
+FurnitureDialog.tsx:374 🔍 FURNITURE VENT DEBUG - Data being sent to onConfirm:
+FurnitureDialog.tsx:375 🔍 Full furnitureData: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+FurnitureDialog.tsx:376 🔍 Type: vent
+FurnitureDialog.tsx:377 🔍 simulationProperties in furnitureData: {flowType: 'Air Mass Flow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', state: 'closed', …}
+Canvas3D.tsx:5470 💾 Furniture data saved to store: {id: 'Vent 0F-1', properties: {…}, position: {…}, rotation: {…}}
+Canvas3D.tsx:5147 🖱️ Furniture double-click detected!
+Canvas3D.tsx:5166 🎯 Mouse coordinates: _Vector2 {x: -0.11743772241992878, y: 0.14715359828141783}
+Canvas3D.tsx:5178 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-1', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:5178 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-1', floorName: 'ground', furnitureName: 'Vent 0F-1', …}
+Canvas3D.tsx:5187 🔍 Found 2 furniture objects in scene
+Canvas3D.tsx:5192 💥 Found 2 intersections
+Canvas3D.tsx:5206 ✅ Intersected furniture object: {furnitureId: 'Vent 0F-1', userData: {…}, position: _Vector3}
+Canvas3D.tsx:5254 🎛️ Opening furniture dialog with item: {id: 'Vent 0F-1', type: 'vent', name: 'Vent 0F-1', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:5255 🎛️ Setting editingFurniture state...
+Canvas3D.tsx:5263 🎛️ editingFurniture state set!
+FurnitureDialog.tsx:280 🔍 FURNITURE VENT DEBUG - Dialog opening:
+FurnitureDialog.tsx:281 🔍 Type: vent
+FurnitureDialog.tsx:282 🔍 Is editing: true
+FurnitureDialog.tsx:283 🔍 Props.initialValues: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+FurnitureDialog.tsx:284 🔍 Defaults object: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+FurnitureDialog.tsx:285 🔍 Defaults.simulationProperties: undefined
+FurnitureDialog.tsx:302 🔍 VENT SIMULATION PROPS - Raw from defaults: undefined
+FurnitureDialog.tsx:316 🔍 VENT SIMULATION PROPS - Setting to state: {flowType: 'Air Mass Flow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', state: 'open', …}
