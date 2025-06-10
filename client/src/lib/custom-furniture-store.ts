@@ -109,11 +109,32 @@ class CustomFurnitureStore {
       };
     }
 
-    // Increment counter and generate sequential name
-    this.objectCounter++;
-    const objectName = `Obj ${this.objectCounter}`;
+    // PHASE 3: Generate floor-aware ID using same system as standard furniture
+    const getFloorPrefix = (floorName: string): string => {
+      switch (floorName) {
+        case 'ground': return '0F';
+        case 'first': return '1F';
+        case 'second': return '2F';
+        case 'third': return '3F';
+        case 'fourth': return '4F';
+        case 'fifth': return '5F';
+        default: return '0F';
+      }
+    };
 
-    const id = `custom_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const generateCustomId = (floorName: string, existingFurniture: FurnitureItem[]): string => {
+      const floorPrefix = getFloorPrefix(floorName);
+      
+      // Count existing custom furniture on this floor
+      const customCount = existingFurniture.filter(item => 
+        item.type === 'custom' && item.floorName === floorName
+      ).length + 1;
+      
+      return `Obj ${floorPrefix}-${customCount}`;
+    };
+
+    const id = generateCustomId(floorContext.floorName, floorContext.existingFurniture);
+    const objectName = id; // Name is same as ID
     
     const customData: CustomFurnitureData = {
       id,

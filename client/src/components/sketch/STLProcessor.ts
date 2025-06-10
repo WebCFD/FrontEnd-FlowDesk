@@ -129,7 +129,11 @@ export class STLProcessor {
   async processSTLGeometry(
     geometry: THREE.BufferGeometry, 
     originalName: string,
-    originalFile: File
+    originalFile: File,
+    floorContext?: {
+      floorName: string;
+      existingFurniture: any[];
+    }
   ): Promise<ProcessedSTLData> {
     // Ensure geometry has proper normals
     if (!geometry.attributes.normal) {
@@ -149,12 +153,18 @@ export class STLProcessor {
     const mesh = new THREE.Mesh(geometry, material);
 
     // Generate sequential name and add to store
-    const storeId = customFurnitureStore.addCustomFurniture({
-      name: originalName,
-      geometry: geometry.clone(),
-      originalFile,
-      dimensions: dimensions
-    });
+    const storeId = customFurnitureStore.addCustomFurniture(
+      {
+        name: originalName,
+        geometry: geometry.clone(),
+        originalFile,
+        dimensions: dimensions
+      },
+      floorContext || {
+        floorName: 'ground', // Default to ground floor if no context provided
+        existingFurniture: []
+      }
+    );
 
     // Get the actual assigned name from store (e.g., "Obj 1")
     const storeData = customFurnitureStore.getCustomFurniture(storeId);
