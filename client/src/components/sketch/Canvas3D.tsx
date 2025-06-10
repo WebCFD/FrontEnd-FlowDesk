@@ -182,6 +182,49 @@ const transform2DTo3D = (point: Point, height: number = 0): THREE.Vector3 => {
 };
 
 /**
+ * PHASE 1: Furniture ID Generation System
+ * Generates floor-aware furniture IDs in format "Table 0F-1", "Chair 0F-1", etc.
+ */
+const getFloorPrefix = (floorName: string): string => {
+  switch (floorName) {
+    case 'ground': return '0F';
+    case 'first': return '1F';
+    case 'second': return '2F';
+    case 'third': return '3F';
+    case 'fourth': return '4F';
+    case 'fifth': return '5F';
+    default: return '0F';
+  }
+};
+
+const generateFurnitureId = (
+  type: string, 
+  floorName: string, 
+  existingFurniture: FurnitureItem[]
+): string => {
+  const floorPrefix = getFloorPrefix(floorName);
+  
+  // Map furniture types to display names
+  const typeDisplayNames: Record<string, string> = {
+    'table': 'Table',
+    'armchair': 'Chair', 
+    'person': 'Person',
+    'car': 'Car',
+    'block': 'Block',
+    'vent': 'Vent',
+    'custom': 'Obj'
+  };
+  
+  // Count existing furniture of same type on this floor
+  const sameTypeCount = existingFurniture.filter(item => 
+    item.type === type && item.floorName === floorName
+  ).length + 1;
+  
+  const displayName = typeDisplayNames[type] || 'Item';
+  return `${displayName} ${floorPrefix}-${sameTypeCount}`;
+};
+
+/**
  * Applies raycaster configuration consistently
  * Dependencies: RAYCASTER_CONFIG
  * Used by: All raycaster operations for consistent thresholds
@@ -996,16 +1039,23 @@ export default function Canvas3D({
       const isCustomObject = furnitureMenuData.id.startsWith('custom_');
       const furnitureType = isCustomObject ? 'custom' : furnitureMenuData.id as 'table' | 'person' | 'armchair' | 'car' | 'block' | 'vent';
       
+      // PHASE 2: Get existing furniture from current floor for ID generation
+      const currentFloorData = migratedFloors[surfaceDetection.floorName];
+      const existingFurniture = currentFloorData?.furnitureItems || [];
+      
+      // Generate new furniture ID using the new system
+      const generatedId = generateFurnitureId(furnitureType, surfaceDetection.floorName, existingFurniture);
+      
       // Create furniture item
       const furnitureItem: FurnitureItem = {
-        id: isCustomObject ? furnitureMenuData.id : `${furnitureMenuData.id}_${Date.now()}`,
+        id: generatedId,
         type: furnitureType,
-        name: furnitureMenuData.name,
+        name: generatedId, // Name is same as ID
         floorName: surfaceDetection.floorName,
         position: calculatedPosition,
         rotation: surfaceDetection.surfaceType === 'ceiling' ? { x: Math.PI, y: 0, z: 0 } : { x: 0, y: 0, z: 0 },
         dimensions: dimensions,
-        information: `${furnitureMenuData.name} placed on ${surfaceDetection.surfaceType} of ${surfaceDetection.floorName}`,
+        information: `${generatedId} placed on ${surfaceDetection.surfaceType} of ${surfaceDetection.floorName}`,
         meshId: `furniture_${Date.now()}`,
         createdAt: Date.now(),
         updatedAt: Date.now()
