@@ -5261,7 +5261,6 @@ export default function Canvas3D({
 
     if (furnitureGroup) {
       furnitureGroup.position.set(newPosition.x, newPosition.y, newPosition.z);
-      console.log("🔄 Real-time position update:", newPosition);
     }
   };
 
