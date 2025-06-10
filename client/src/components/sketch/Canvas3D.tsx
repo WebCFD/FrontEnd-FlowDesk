@@ -5466,7 +5466,14 @@ export default function Canvas3D({
         console.log("💾 onUpdateFurniture callback type:", typeof onUpdateFurniture);
 
         // Save to the store using the correct callback signature
-        onUpdateFurniture(editingFurniture.item.floorName, editingFurniture.item.id, updatedFurnitureItem);
+        try {
+          console.log("💾 EXECUTING onUpdateFurniture callback...");
+          onUpdateFurniture(editingFurniture.item.floorName, editingFurniture.item.id, updatedFurnitureItem);
+          console.log("💾 onUpdateFurniture callback completed successfully!");
+        } catch (error) {
+          console.error("❌ Error in onUpdateFurniture callback:", error);
+          console.error("❌ Error stack:", error?.stack);
+        }
         
 
       } else {
