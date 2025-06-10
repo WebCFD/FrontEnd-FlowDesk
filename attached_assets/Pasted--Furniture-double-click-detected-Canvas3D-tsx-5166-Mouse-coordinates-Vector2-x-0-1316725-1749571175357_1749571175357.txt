@@ -1,0 +1,48 @@
+🖱️ Furniture double-click detected!
+Canvas3D.tsx:5166 🎯 Mouse coordinates: _Vector2 {x: -0.1316725978647687, y: 0.4607948442534908}
+Canvas3D.tsx:5178 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-1', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:5178 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-1', floorName: 'ground', furnitureName: 'Vent 0F-1', …}
+Canvas3D.tsx:5187 🔍 Found 2 furniture objects in scene
+Canvas3D.tsx:5192 💥 Found 2 intersections
+Canvas3D.tsx:5206 ✅ Intersected furniture object: {furnitureId: 'Vent 0F-1', userData: {…}, position: _Vector3}
+Canvas3D.tsx:5254 🎛️ Opening furniture dialog with item: {id: 'Vent 0F-1', type: 'vent', name: 'Vent 0F-1', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:5255 🎛️ Setting editingFurniture state...
+Canvas3D.tsx:5263 🎛️ editingFurniture state set!
+FurnitureDialog.tsx:292 🔍 FURNITURE VENT DEBUG - Dialog opening:
+FurnitureDialog.tsx:293 🔍 Type: vent
+FurnitureDialog.tsx:294 🔍 Is editing: true
+FurnitureDialog.tsx:295 🔍 Props.initialValues: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+FurnitureDialog.tsx:296 🔍 Defaults object: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+FurnitureDialog.tsx:297 🔍 Defaults.simulationProperties: {flowType: 'Air Mass Flow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', state: 'open', …}
+FurnitureDialog.tsx:314 🔍 VENT SIMULATION PROPS - Raw from defaults: {flowType: 'Air Mass Flow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', state: 'open', …}
+FurnitureDialog.tsx:328 🔍 VENT SIMULATION PROPS - Setting to state: {flowType: 'Air Mass Flow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', state: 'open', …}
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.Understand this warningAI
+[Violation] Forced reflow while executing JavaScript took 30ms
+FurnitureDialog.tsx:386 🔍 FURNITURE VENT DEBUG - Data being sent to onConfirm:
+FurnitureDialog.tsx:387 🔍 Full furnitureData: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+FurnitureDialog.tsx:388 🔍 Type: vent
+FurnitureDialog.tsx:389 🔍 simulationProperties in furnitureData: {flowType: 'Air Mass Flow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', state: 'closed', …}
+Canvas3D.tsx:5470 💾 Furniture data saved to store: {id: 'Vent 0F-1', properties: {…}, position: {…}, rotation: {…}}
+Canvas3D.tsx:5147 🖱️ Furniture double-click detected!
+Canvas3D.tsx:5166 🎯 Mouse coordinates: _Vector2 {x: -0.11387900355871883, y: 0.47798066595059074}
+Canvas3D.tsx:5178 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-1', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:5178 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-1', floorName: 'ground', furnitureName: 'Vent 0F-1', …}
+Canvas3D.tsx:5187 🔍 Found 2 furniture objects in scene
+Canvas3D.tsx:5192 💥 Found 2 intersections
+Canvas3D.tsx:5206 ✅ Intersected furniture object: {furnitureId: 'Vent 0F-1', userData: {…}, position: _Vector3}
+Canvas3D.tsx:5254 🎛️ Opening furniture dialog with item: {id: 'Vent 0F-1', type: 'vent', name: 'Vent 0F-1', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:5255 🎛️ Setting editingFurniture state...
+Canvas3D.tsx:5263 🎛️ editingFurniture state set!
+FurnitureDialog.tsx:292 🔍 FURNITURE VENT DEBUG - Dialog opening:
+FurnitureDialog.tsx:293 🔍 Type: vent
+FurnitureDialog.tsx:294 🔍 Is editing: true
+FurnitureDialog.tsx:295 🔍 Props.initialValues: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+FurnitureDialog.tsx:296 🔍 Defaults object: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+FurnitureDialog.tsx:297 🔍 Defaults.simulationProperties: {flowType: 'Air Mass Flow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', state: 'open', …}
+FurnitureDialog.tsx:314 🔍 VENT SIMULATION PROPS - Raw from defaults: {flowType: 'Air Mass Flow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', state: 'open', …}
+FurnitureDialog.tsx:328 🔍 VENT SIMULATION PROPS - Setting to state: {flowType: 'Air Mass Flow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', state: 'open', …}

@@ -289,12 +289,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
     if (dialogOpen) {
       const defaults = getDefaultValues();
       
-      console.log("🔍 FURNITURE VENT DEBUG - Dialog opening:");
-      console.log("🔍 Type:", type);
-      console.log("🔍 Is editing:", isEditing);
-      console.log("🔍 Props.initialValues:", props.initialValues);
-      console.log("🔍 Defaults object:", defaults);
-      console.log("🔍 Defaults.simulationProperties:", (defaults as any)?.simulationProperties);
+
       
       setValues(defaults);
       setFurnitureName(defaults.name);
@@ -311,7 +306,6 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
       // Initialize simulation properties for vent furniture
       if (type === 'vent') {
         const simProps = (defaults as any).simulationProperties;
-        console.log("🔍 VENT SIMULATION PROPS - Raw from defaults:", simProps);
         
         const newSimulationProperties = {
           flowType: simProps?.flowType || 'Air Mass Flow',
@@ -325,7 +319,6 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
           airTemperature: simProps?.airTemperature || 20
         };
         
-        console.log("🔍 VENT SIMULATION PROPS - Setting to state:", newSimulationProperties);
         setSimulationProperties(newSimulationProperties);
       }
       
@@ -383,10 +376,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
       })
     };
     
-    console.log("🔍 FURNITURE VENT DEBUG - Data being sent to onConfirm:");
-    console.log("🔍 Full furnitureData:", furnitureData);
-    console.log("🔍 Type:", type);
-    console.log("🔍 simulationProperties in furnitureData:", furnitureData.simulationProperties);
+
     
     props.onConfirm(furnitureData);
     onClose();

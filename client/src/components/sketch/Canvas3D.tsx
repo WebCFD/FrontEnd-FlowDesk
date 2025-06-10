@@ -1156,11 +1156,6 @@ export default function Canvas3D({
       
       if (model) {
         // Add furniture via callback
-        console.log("🔍 CANVAS3D DEBUG - About to call onFurnitureAdd callback:");
-        console.log("🔍 Floor name:", surfaceDetection.floorName);
-        console.log("🔍 Furniture item being passed:", furnitureItem);
-        console.log("🔍 simulationProperties in furnitureItem:", furnitureItem.simulationProperties);
-        
         if (onFurnitureAdd && typeof onFurnitureAdd === 'function') {
           onFurnitureAdd(surfaceDetection.floorName, furnitureItem);
         }
