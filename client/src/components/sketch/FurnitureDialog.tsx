@@ -377,7 +377,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                       <Input
                         id="pos-x"
                         type="number"
-                        step="0.01"
+                        step="1"
                         value={Math.round(elementPosition.x * 100) / 100}
                         onChange={(e) => {
                           const newX = Number(e.target.value);
@@ -396,7 +396,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                       <Input
                         id="pos-y"
                         type="number"
-                        step="0.01"
+                        step="1"
                         value={Math.round(elementPosition.y * 100) / 100}
                         onChange={(e) => {
                           const newY = Number(e.target.value);
@@ -415,7 +415,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                       <Input
                         id="pos-z"
                         type="number"
-                        step="0.01"
+                        step="1"
                         value={Math.round(elementPosition.z * 100) / 100}
                         onChange={(e) => {
                           const newZ = Number(e.target.value);
