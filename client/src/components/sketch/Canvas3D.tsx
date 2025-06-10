@@ -775,15 +775,9 @@ const createVentPlaneModel = (furnitureItem: FurnitureItem): THREE.Group => {
   
   const mesh = new THREE.Mesh(geometry, material);
   
-  // Position mesh at origin - group will handle world positioning
+  // Table approach: mesh at group origin, no local transformations
   mesh.position.set(0, 0, 0);
-  
-  // Apply rotation to mesh for proper surface orientation
-  mesh.rotation.set(
-    furnitureItem.rotation.x,
-    furnitureItem.rotation.y,
-    furnitureItem.rotation.z
-  );
+  mesh.rotation.set(0, 0, 0);
   
   // Set render order to appear on top like air entries
   mesh.renderOrder = 2;
@@ -800,7 +794,7 @@ const createVentPlaneModel = (furnitureItem: FurnitureItem): THREE.Group => {
     isVentFurniture: true   // Flag for vent furniture texture system
   };
   
-  // Keep group at origin since mesh handles all positioning
+  // Group handles all transformations (like table)
   group.userData = {
     type: 'furniture',
     furnitureType: 'vent',
@@ -872,29 +866,17 @@ const createFurnitureModel = (
   }
 
   // Apply position, rotation, and scale from furniture item
-  // For FornVent: Group positioning is handled in user coordinates
-  if (furnitureItem.type === 'vent') {
-    // Position group at user coordinates for FornVent
-    model.position.set(
-      furnitureItem.position.x,
-      furnitureItem.position.y,
-      furnitureItem.position.z
-    );
-    // Group rotation stays neutral for FornVent - mesh handles orientation
-    model.rotation.set(0, 0, 0);
-  } else {
-    // Standard positioning for other furniture
-    model.position.set(
-      furnitureItem.position.x,
-      furnitureItem.position.y,
-      furnitureItem.position.z
-    );
-    model.rotation.set(
-      furnitureItem.rotation.x,
-      furnitureItem.rotation.y,
-      furnitureItem.rotation.z
-    );
-  }
+  // Table approach: group handles ALL transformations for all furniture types
+  model.position.set(
+    furnitureItem.position.x,
+    furnitureItem.position.y,
+    furnitureItem.position.z
+  );
+  model.rotation.set(
+    furnitureItem.rotation.x,
+    furnitureItem.rotation.y,
+    furnitureItem.rotation.z
+  );
 
   // Apply scaling based on dimensions if different from defaults
   if (furnitureItem.dimensions) {
@@ -5248,35 +5230,17 @@ export default function Canvas3D({
               // Use the actual stored item with all its properties including simulationProperties
               const furnitureItemWithCurrentPosition: FurnitureItem = {
                 ...actualFurnitureItem,
-                // For FornVent: Read coordinates from group (user coordinates)
-                // For other furniture: Read from group (also user coordinates)
+                // Table approach: read all transformations from group for all furniture types
                 position: {
                   x: furnitureGroup.position.x,
                   y: furnitureGroup.position.y,
                   z: furnitureGroup.position.z
                 },
-                // For FornVent: Read rotation from mesh inside group
-                // For other furniture: Read from group
-                rotation: furnitureGroup.userData.furnitureType === 'vent' 
-                  ? (() => {
-                      const ventMesh = furnitureGroup.children.find(child => 
-                        child.userData && child.userData.furnitureType === 'vent'
-                      ) as THREE.Mesh;
-                      return ventMesh ? {
-                        x: ventMesh.rotation.x,
-                        y: ventMesh.rotation.y,
-                        z: ventMesh.rotation.z
-                      } : {
-                        x: furnitureGroup.rotation.x,
-                        y: furnitureGroup.rotation.y,
-                        z: furnitureGroup.rotation.z
-                      };
-                    })()
-                  : {
-                      x: furnitureGroup.rotation.x,
-                      y: furnitureGroup.rotation.y,
-                      z: furnitureGroup.rotation.z
-                    }
+                rotation: {
+                  x: furnitureGroup.rotation.x,
+                  y: furnitureGroup.rotation.y,
+                  z: furnitureGroup.rotation.z
+                }
               };
               
               setEditingFurniture({
@@ -5483,31 +5447,10 @@ export default function Canvas3D({
     });
 
     if (furnitureGroup) {
-      // For FornVent: Position group in user coordinate system, reset mesh to origin
-      if (furnitureGroup.userData.furnitureType === 'vent') {
-        // Find the vent mesh inside the group
-        const ventMesh = furnitureGroup.children.find(child => 
-          child.userData && child.userData.furnitureType === 'vent'
-        ) as THREE.Mesh;
-        
-        if (ventMesh) {
-          // Reset mesh to origin - all positioning handled by group
-          ventMesh.position.set(0, 0, 0);
-          ventMesh.rotation.set(data.rotation.x, data.rotation.y, data.rotation.z);
-          ventMesh.scale.set(data.scale.x, data.scale.y, data.scale.z);
-        }
-        
-        // Apply dialog coordinates to group - this moves vent to user coordinate position
-        furnitureGroup.position.set(data.position.x, data.position.y, data.position.z);
-        furnitureGroup.rotation.set(0, 0, 0); // Group rotation stays neutral
-        furnitureGroup.scale.set(1, 1, 1);
-      } else {
-        // For other furniture types: Use standard coordinate application
-        furnitureGroup.position.set(data.position.x, data.position.y, data.position.z);
-        furnitureGroup.rotation.set(data.rotation.x, data.rotation.y, data.rotation.z);
-        furnitureGroup.scale.set(data.scale.x, data.scale.y, data.scale.z);
-      }
-      
+      // Table approach: treat all furniture types identically - group handles all transformations
+      furnitureGroup.position.set(data.position.x, data.position.y, data.position.z);
+      furnitureGroup.rotation.set(data.rotation.x, data.rotation.y, data.rotation.z);
+      furnitureGroup.scale.set(data.scale.x, data.scale.y, data.scale.z);
       furnitureGroup.userData.furnitureName = data.name;
       
       // Store properties in userData for reference
