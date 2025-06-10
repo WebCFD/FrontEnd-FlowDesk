@@ -288,15 +288,6 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
   useEffect(() => {
     if (dialogOpen) {
       const defaults = getDefaultValues();
-      
-      console.log("🔍 DIALOG LOADING CHECK:");
-      console.log("🔍 Type:", type);
-      console.log("🔍 Is editing:", isEditing);
-      console.log("🔍 Props.initialValues:", props.initialValues);
-      console.log("🔍 Defaults from getDefaultValues():", defaults);
-      console.log("🔍 Defaults.simulationProperties:", defaults.simulationProperties);
-
-      
       setValues(defaults);
       setFurnitureName(defaults.name);
       if (type !== 'vent') {
