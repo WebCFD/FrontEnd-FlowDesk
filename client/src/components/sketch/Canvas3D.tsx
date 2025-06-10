@@ -1283,6 +1283,9 @@ export default function Canvas3D({
   // Create a ref to track the current isEraserMode value to ensure it's always up-to-date in event handlers
   const isEraserModeRef = useRef(isEraserMode);
   
+  // Track current dragging furniture type for surface restrictions during drag over
+  const currentDragFurnitureTypeRef = useRef<string | undefined>(undefined);
+  
   // Synchronize the ref with isEraserMode state immediately
   // This needs to happen in a separate useEffect to ensure proper sequence of operations
   useEffect(() => {
@@ -5033,6 +5036,26 @@ export default function Canvas3D({
     let lastRaycastTime = 0;
     const RAYCAST_THROTTLE = 50; // ms
 
+    const handleDragEnter = (event: DragEvent) => {
+      event.preventDefault();
+      
+      // Capture furniture type from drag data during drag enter
+      const itemData = event.dataTransfer?.getData("application/json");
+      if (itemData) {
+        try {
+          const furnitureMenuData = JSON.parse(itemData);
+          const isCustomObject = furnitureMenuData.id.startsWith('custom_');
+          const furnitureType = isCustomObject ? 'custom' : furnitureMenuData.id;
+          currentDragFurnitureTypeRef.current = furnitureType;
+          
+          console.log("🔍 DRAG ENTER DEBUG - Captured furniture type:", furnitureType);
+        } catch (error) {
+          currentDragFurnitureTypeRef.current = undefined;
+          console.log("🔍 DRAG ENTER DEBUG - Parse error:", error);
+        }
+      }
+    };
+
     const handleDragOver = (event: DragEvent) => {
       event.preventDefault();
       event.dataTransfer!.dropEffect = "copy";
@@ -5046,38 +5069,16 @@ export default function Canvas3D({
       
       // Enhanced raycasting logic: respect furniture type restrictions for highlighting
       if (cameraRef.current && sceneRef.current) {
-        // Extract furniture type from drag data
-        const itemData = event.dataTransfer?.getData("application/json");
-        let furnitureType: string | undefined;
-        
-        console.log("🔍 DRAG OVER DEBUG - Item data:", itemData);
-        
-        if (itemData) {
-          try {
-            const furnitureMenuData = JSON.parse(itemData);
-            const isCustomObject = furnitureMenuData.id.startsWith('custom_');
-            furnitureType = isCustomObject ? 'custom' : furnitureMenuData.id;
-            
-            console.log("🔍 DRAG OVER DEBUG - Parsed data:", {
-              furnitureMenuData,
-              isCustomObject,
-              extractedFurnitureType: furnitureType
-            });
-          } catch (error) {
-            console.log("🔍 DRAG OVER DEBUG - Parse error:", error);
-            // If parsing fails, allow all surfaces
-            furnitureType = undefined;
-          }
-        }
+        // Use the furniture type captured during drag enter
+        const furnitureType = currentDragFurnitureTypeRef.current;
         
         // Determine if this furniture type is restricted to floors only
         const isFloorOnlyFurniture = furnitureType && FLOOR_ONLY_FURNITURE.includes(furnitureType);
         
-        console.log("🔍 DRAG OVER DEBUG - Restriction check:", {
+        console.log("🔍 DRAG OVER DEBUG - Using captured type:", {
           furnitureType,
           FLOOR_ONLY_FURNITURE,
-          isFloorOnlyFurniture,
-          constantAccessible: typeof FLOOR_ONLY_FURNITURE !== 'undefined'
+          isFloorOnlyFurniture
         });
         
         const rect = container.getBoundingClientRect();
@@ -5123,11 +5124,16 @@ export default function Canvas3D({
 
     const handleDragLeave = (event: DragEvent) => {
       clearAllHighlights();
+      // Clear the captured furniture type when leaving drag area
+      currentDragFurnitureTypeRef.current = undefined;
     };
 
     const handleDrop = (event: DragEvent) => {
       // Clear highlight when dropping
       clearAllHighlights();
+      
+      // Clear the captured furniture type after dropping
+      currentDragFurnitureTypeRef.current = undefined;
       
       if (sceneRef.current && cameraRef.current) {
         // FASE 5A: Use the new component-level furniture drop handler
@@ -5330,6 +5336,7 @@ export default function Canvas3D({
       }
     };
 
+    container.addEventListener("dragenter", handleDragEnter);
     container.addEventListener("dragover", handleDragOver);
     container.addEventListener("dragleave", handleDragLeave);
     container.addEventListener("drop", handleDrop);
@@ -5337,6 +5344,7 @@ export default function Canvas3D({
     container.addEventListener("click", handleClick);
 
     return () => {
+      container.removeEventListener("dragenter", handleDragEnter);
       container.removeEventListener("dragover", handleDragOver);
       container.removeEventListener("dragleave", handleDragLeave);
       container.removeEventListener("drop", handleDrop);
