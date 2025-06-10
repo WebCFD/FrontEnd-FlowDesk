@@ -775,8 +775,20 @@ const createVentPlaneModel = (furnitureItem: FurnitureItem): THREE.Group => {
   
   const mesh = new THREE.Mesh(geometry, material);
   
-  // Don't set rotation here - let the furniture system handle it
-  // The rotation will be applied in createFurnitureModel based on surface detection
+  // CRITICAL: Position mesh at user coordinates directly, not relative to group
+  // This ensures coordinates are always in user reference system
+  mesh.position.set(
+    furnitureItem.position.x,
+    furnitureItem.position.y, 
+    furnitureItem.position.z
+  );
+  
+  // Apply rotation directly to mesh for proper surface orientation
+  mesh.rotation.set(
+    furnitureItem.rotation.x,
+    furnitureItem.rotation.y,
+    furnitureItem.rotation.z
+  );
   
   // Set render order to appear on top like air entries
   mesh.renderOrder = 2;
@@ -793,7 +805,7 @@ const createVentPlaneModel = (furnitureItem: FurnitureItem): THREE.Group => {
     isVentFurniture: true   // Flag for vent furniture texture system
   };
   
-  // Add userData to the group as well for deletion detection
+  // Keep group at origin since mesh handles all positioning
   group.userData = {
     type: 'furniture',
     furnitureType: 'vent',
@@ -5446,10 +5458,31 @@ export default function Canvas3D({
     });
 
     if (furnitureGroup) {
-      // Update 3D scene visuals
-      furnitureGroup.position.set(data.position.x, data.position.y, data.position.z);
-      furnitureGroup.rotation.set(data.rotation.x, data.rotation.y, data.rotation.z);
-      furnitureGroup.scale.set(data.scale.x, data.scale.y, data.scale.z);
+      // For FornVent: Apply coordinates directly to the mesh in user coordinate system
+      if (furnitureGroup.userData.furnitureType === 'vent') {
+        // Find the vent mesh inside the group
+        const ventMesh = furnitureGroup.children.find(child => 
+          child.userData && child.userData.furnitureType === 'vent'
+        ) as THREE.Mesh;
+        
+        if (ventMesh) {
+          // Apply dialog coordinates directly to mesh in user coordinate system
+          ventMesh.position.set(data.position.x, data.position.y, data.position.z);
+          ventMesh.rotation.set(data.rotation.x, data.rotation.y, data.rotation.z);
+          ventMesh.scale.set(data.scale.x, data.scale.y, data.scale.z);
+        }
+        
+        // Keep group at origin since mesh handles positioning
+        furnitureGroup.position.set(0, 0, 0);
+        furnitureGroup.rotation.set(0, 0, 0);
+        furnitureGroup.scale.set(1, 1, 1);
+      } else {
+        // For other furniture types: Use standard coordinate application
+        furnitureGroup.position.set(data.position.x, data.position.y, data.position.z);
+        furnitureGroup.rotation.set(data.rotation.x, data.rotation.y, data.rotation.z);
+        furnitureGroup.scale.set(data.scale.x, data.scale.y, data.scale.z);
+      }
+      
       furnitureGroup.userData.furnitureName = data.name;
       
       // Store properties in userData for reference
