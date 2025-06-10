@@ -276,6 +276,14 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
   useEffect(() => {
     if (dialogOpen) {
       const defaults = getDefaultValues();
+      
+      console.log("🔍 FURNITURE VENT DEBUG - Dialog opening:");
+      console.log("🔍 Type:", type);
+      console.log("🔍 Is editing:", isEditing);
+      console.log("🔍 Props.initialValues:", props.initialValues);
+      console.log("🔍 Defaults object:", defaults);
+      console.log("🔍 Defaults.simulationProperties:", (defaults as any)?.simulationProperties);
+      
       setValues(defaults);
       setFurnitureName(defaults.name);
       if (type !== 'vent') {
@@ -290,17 +298,23 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
       
       // Initialize simulation properties for vent furniture
       if (type === 'vent') {
-        setSimulationProperties({
-          flowType: (defaults as any).simulationProperties?.flowType || 'Air Mass Flow',
-          flowValue: (defaults as any).simulationProperties?.flowValue || 0.5,
-          flowIntensity: (defaults as any).simulationProperties?.flowIntensity || 'medium',
-          airOrientation: (defaults as any).simulationProperties?.airOrientation || 'inflow',
-          state: (defaults as any).simulationProperties?.state || 'open',
-          customIntensityValue: (defaults as any).simulationProperties?.customIntensityValue || 0.5,
-          verticalAngle: (defaults as any).simulationProperties?.verticalAngle || 0,
-          horizontalAngle: (defaults as any).simulationProperties?.horizontalAngle || 0,
-          airTemperature: (defaults as any).simulationProperties?.airTemperature || 20
-        });
+        const simProps = (defaults as any).simulationProperties;
+        console.log("🔍 VENT SIMULATION PROPS - Raw from defaults:", simProps);
+        
+        const newSimulationProperties = {
+          flowType: simProps?.flowType || 'Air Mass Flow',
+          flowValue: simProps?.flowValue || 0.5,
+          flowIntensity: simProps?.flowIntensity || 'medium',
+          airOrientation: simProps?.airOrientation || 'inflow',
+          state: simProps?.state || 'open',
+          customIntensityValue: simProps?.customIntensityValue || 0.5,
+          verticalAngle: simProps?.verticalAngle || 0,
+          horizontalAngle: simProps?.horizontalAngle || 0,
+          airTemperature: simProps?.airTemperature || 20
+        };
+        
+        console.log("🔍 VENT SIMULATION PROPS - Setting to state:", newSimulationProperties);
+        setSimulationProperties(newSimulationProperties);
       }
       
       // Initialize dimensions for custom objects
@@ -356,6 +370,11 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
         }
       })
     };
+    
+    console.log("🔍 FURNITURE VENT DEBUG - Data being sent to onConfirm:");
+    console.log("🔍 Full furnitureData:", furnitureData);
+    console.log("🔍 Type:", type);
+    console.log("🔍 simulationProperties in furnitureData:", furnitureData.simulationProperties);
     
     props.onConfirm(furnitureData);
     onClose();
