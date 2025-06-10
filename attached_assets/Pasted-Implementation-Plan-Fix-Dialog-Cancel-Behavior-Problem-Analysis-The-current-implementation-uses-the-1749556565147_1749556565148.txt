@@ -1,0 +1,92 @@
+Implementation Plan: Fix Dialog Cancel Behavior
+Problem Analysis
+The current implementation uses the same onCancel handler for both creation mode (drag&drop) and edit mode (double-click), causing incorrect deletion behavior when canceling during edit mode.
+
+Solution Architecture
+Phase 1: Dialog Mode Detection
+Location: Canvas3D.tsx - FurnitureDialog component instantiation
+Goal: Add mode tracking to distinguish between creation and edit scenarios
+
+Implementation:
+
+Add isCreationMode boolean flag to FurnitureDialog props
+Track creation vs edit mode in the editingFurniture state
+Pass mode information when opening the dialog
+Phase 2: Enhanced State Management
+Location: Canvas3D.tsx - editingFurniture state structure
+Goal: Extend state to include mode information
+
+Current Structure:
+
+editingFurniture: {
+  index: number;
+  item: FurnitureItem;
+}
+Enhanced Structure:
+
+editingFurniture: {
+  index: number;
+  item: FurnitureItem;
+  mode: 'creation' | 'edit';
+}
+Phase 3: Conditional Cancel Logic
+Location: Canvas3D.tsx - FurnitureDialog onCancel handler
+Goal: Implement mode-specific cancel behavior
+
+Logic Flow:
+
+Creation Mode: Execute deletion sequence (current behavior)
+Remove from 3D scene
+Remove from data store via callback
+Close dialog
+Edit Mode: Simple dialog closure
+Only call setEditingFurniture(null)
+No deletion operations
+Phase 4: Update Dialog Triggers
+Location: Canvas3D.tsx - Multiple trigger points
+Goal: Set correct mode when opening dialog
+
+Trigger Points to Update:
+
+Drag&Drop Handler: Set mode to 'creation'
+Double-Click Handler: Set mode to 'edit'
+useEffect (newFurnitureForDialog): Set mode to 'creation'
+Phase 5: FurnitureDialog Interface Update
+Location: FurnitureDialog.tsx - Component props interface
+Goal: Accept and utilize mode information
+
+Props Addition:
+
+interface FurnitureDialogProps {
+  // ... existing props
+  isCreationMode?: boolean;
+}
+Optional Enhancement:
+
+Display mode indicator in dialog header
+Adjust button labels based on mode ("Cancel" vs "Close")
+Implementation Sequence
+First: Update FurnitureDialog props interface
+Second: Modify editingFurniture state structure
+Third: Update all setEditingFurniture calls to include mode
+Fourth: Implement conditional onCancel logic
+Fifth: Test both scenarios thoroughly
+Testing Strategy
+Creation Mode Test:
+
+Drag furniture from menu to canvas
+Dialog should open
+Click Cancel
+Furniture should be deleted (current correct behavior)
+Edit Mode Test:
+
+Double-click existing furniture
+Dialog should open
+Click Cancel
+Furniture should remain (currently broken, will be fixed)
+Risk Mitigation
+Maintain backward compatibility with existing dialog behavior
+Ensure real-time updates continue working during edit mode
+Preserve all existing furniture manipulation functionality
+Add fallback logic for undefined mode scenarios
+This plan addresses the root cause while maintaining system stability and existing functionality.

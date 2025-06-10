@@ -30,6 +30,7 @@ interface FurnitureDialogProps {
   }) => void;
   onCancel?: () => void; // New prop for cancel handling
   isEditing?: boolean;
+  isCreationMode?: boolean; // Phase 1: Add mode detection flag
   initialValues?: {
     name: string;
     position: { x: number; y: number; z: number };

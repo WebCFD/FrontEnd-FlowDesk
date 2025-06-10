@@ -1186,6 +1186,7 @@ export default function Canvas3D({
   const [editingFurniture, setEditingFurniture] = useState<{
     index: number;
     item: FurnitureItem;
+    mode: 'creation' | 'edit'; // Phase 2: Add mode tracking
   } | null>(null);
   
   // Reference to store newly created furniture for auto-opening dialog
@@ -1199,7 +1200,8 @@ export default function Canvas3D({
     if (newFurnitureForDialog.current) {
       setEditingFurniture({
         index: 0, // This would be the actual index in a real furniture list
-        item: newFurnitureForDialog.current
+        item: newFurnitureForDialog.current,
+        mode: 'creation' // Phase 2: Mark as creation mode for drag&drop
       });
       
       // Clear the reference
@@ -5148,7 +5150,8 @@ export default function Canvas3D({
             
             setEditingFurniture({
               index: 0, // This would need to be the actual index from the furniture list
-              item: mockFurnitureItem
+              item: mockFurnitureItem,
+              mode: 'edit' // Phase 2: Mark as edit mode for double-click
             });
             
             console.log("🎛️ editingFurniture state set!");
