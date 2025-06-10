@@ -93,7 +93,7 @@ interface Canvas3DProps {
   presentationMode?: boolean; // New: disables editing tools
   lightingIntensity?: number; // New: lighting intensity control
   floorParameters?: Record<string, { ceilingHeight: number; floorDeck: number }>;
-  currentDraggingFurnitureType?: string; // New: current furniture type being dragged
+
   onUpdateAirEntry?: (
     floorName: string,
     index: number,
@@ -1284,14 +1284,7 @@ export default function Canvas3D({
   // Create a ref to track the current isEraserMode value to ensure it's always up-to-date in event handlers
   const isEraserModeRef = useRef(isEraserMode);
   
-  // Track current dragging furniture type for surface restrictions during drag over
-  const currentDragFurnitureTypeRef = useRef<string | undefined>(undefined);
-  
-  // Get furniture type from parent component via onDragStart callback
-  useEffect(() => {
-    // This effect will be called when furniture dragging starts from the menu
-    // The furniture type will be set by the parent component through a callback
-  }, []);
+
   
   // Synchronize the ref with isEraserMode state immediately
   // This needs to happen in a separate useEffect to ensure proper sequence of operations
@@ -5045,22 +5038,6 @@ export default function Canvas3D({
 
     const handleDragEnter = (event: DragEvent) => {
       event.preventDefault();
-      
-      // Capture furniture type from drag data during drag enter
-      const itemData = event.dataTransfer?.getData("application/json");
-      if (itemData) {
-        try {
-          const furnitureMenuData = JSON.parse(itemData);
-          const isCustomObject = furnitureMenuData.id.startsWith('custom_');
-          const furnitureType = isCustomObject ? 'custom' : furnitureMenuData.id;
-          currentDragFurnitureTypeRef.current = furnitureType;
-          
-          console.log("🔍 DRAG ENTER DEBUG - Captured furniture type:", furnitureType);
-        } catch (error) {
-          currentDragFurnitureTypeRef.current = undefined;
-          console.log("🔍 DRAG ENTER DEBUG - Parse error:", error);
-        }
-      }
     };
 
     const handleDragOver = (event: DragEvent) => {
@@ -5074,19 +5051,28 @@ export default function Canvas3D({
       }
       lastRaycastTime = now;
       
-      // Enhanced raycasting logic: respect furniture type restrictions for highlighting
+      // Simple approach: Check drag source element to determine furniture type
       if (cameraRef.current && sceneRef.current) {
-        // Use the furniture type captured during drag enter
-        const furnitureType = currentDragFurnitureTypeRef.current;
+        // Get furniture type from drag source element
+        let furnitureType: string | undefined;
+        let isFloorOnlyFurniture = false;
+        
+        // Check if we can identify the furniture type from the drag source
+        const draggedElement = document.querySelector('[draggable="true"]:hover');
+        if (draggedElement) {
+          const titleAttr = draggedElement.getAttribute('title') || '';
+          // Extract furniture type from title or other attributes
+          if (titleAttr.includes('Table')) furnitureType = 'table';
+          else if (titleAttr.includes('Person')) furnitureType = 'person';
+          else if (titleAttr.includes('Armchair')) furnitureType = 'armchair';
+          else if (titleAttr.includes('Car')) furnitureType = 'car';
+          else if (titleAttr.includes('Vent')) furnitureType = 'vent';
+          else if (titleAttr.includes('Block')) furnitureType = 'block';
+          else if (titleAttr.includes('Custom')) furnitureType = 'custom';
+        }
         
         // Determine if this furniture type is restricted to floors only
-        const isFloorOnlyFurniture = furnitureType && FLOOR_ONLY_FURNITURE.includes(furnitureType);
-        
-        console.log("🔍 DRAG OVER DEBUG - Using captured type:", {
-          furnitureType,
-          FLOOR_ONLY_FURNITURE,
-          isFloorOnlyFurniture
-        });
+        isFloorOnlyFurniture = furnitureType ? FLOOR_ONLY_FURNITURE.includes(furnitureType) : false;
         
         const rect = container.getBoundingClientRect();
         const mouse = new THREE.Vector2(
@@ -5104,7 +5090,7 @@ export default function Canvas3D({
               object.userData.type && 
               (object.userData.type === 'floor' || object.userData.type === 'ceiling')) {
             
-            // Filter surfaces based on furniture type restrictions
+            // Simple check: Skip ceiling surfaces for floor-only furniture
             if (isFloorOnlyFurniture && object.userData.type === 'ceiling') {
               return; // Skip ceiling surfaces for floor-only furniture
             }
@@ -5131,16 +5117,11 @@ export default function Canvas3D({
 
     const handleDragLeave = (event: DragEvent) => {
       clearAllHighlights();
-      // Clear the captured furniture type when leaving drag area
-      currentDragFurnitureTypeRef.current = undefined;
     };
 
     const handleDrop = (event: DragEvent) => {
       // Clear highlight when dropping
       clearAllHighlights();
-      
-      // Clear the captured furniture type after dropping
-      currentDragFurnitureTypeRef.current = undefined;
       
       if (sceneRef.current && cameraRef.current) {
         // FASE 5A: Use the new component-level furniture drop handler
