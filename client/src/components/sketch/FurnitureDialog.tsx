@@ -338,7 +338,19 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
       scale: values.scale,
       ...(type === 'custom' && { dimensions: dimensions }),
       properties,
-      ...(type === 'vent' && { simulationProperties })
+      ...(type === 'vent' && { 
+        simulationProperties: {
+          ...simulationProperties,
+          // Only include angles if vent is open and airOrientation is inflow (mimicking AirEntry logic)
+          ...(simulationProperties.state === 'open' && simulationProperties.airOrientation === 'inflow' ? {
+            verticalAngle: simulationProperties.verticalAngle,
+            horizontalAngle: simulationProperties.horizontalAngle
+          } : {
+            verticalAngle: 0,
+            horizontalAngle: 0
+          })
+        }
+      })
     };
     
     props.onConfirm(furnitureData);
@@ -838,20 +850,47 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
 
                     {/* Flow Type */}
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="flow-type" className="text-right">
+                      <Label className="text-right text-xs text-slate-600">
                         Flow Type
                       </Label>
-                      <Select value={simulationProperties.flowType} onValueChange={(value: 'Air Mass Flow' | 'Air Velocity' | 'Pressure') => 
-                        setSimulationProperties(prev => ({...prev, flowType: value}))}>
-                        <SelectTrigger className="col-span-3">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Air Mass Flow">Air Mass Flow</SelectItem>
-                          <SelectItem value="Air Velocity">Air Velocity</SelectItem>
-                          <SelectItem value="Pressure">Pressure</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <div className="col-span-3 flex space-x-4">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="massflow"
+                            name="flowType"
+                            value="Air Mass Flow"
+                            checked={simulationProperties.flowType === 'Air Mass Flow'}
+                            onChange={(e) => setSimulationProperties(prev => ({...prev, flowType: e.target.value as 'Air Mass Flow' | 'Air Velocity' | 'Pressure'}))}
+                            className="w-4 h-4 text-blue-600"
+                          />
+                          <Label htmlFor="massflow" className="text-xs">Mass Flow</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="velocity"
+                            name="flowType"
+                            value="Air Velocity"
+                            checked={simulationProperties.flowType === 'Air Velocity'}
+                            onChange={(e) => setSimulationProperties(prev => ({...prev, flowType: e.target.value as 'Air Mass Flow' | 'Air Velocity' | 'Pressure'}))}
+                            className="w-4 h-4 text-blue-600"
+                          />
+                          <Label htmlFor="velocity" className="text-xs">Velocity</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="pressure"
+                            name="flowType"
+                            value="Pressure"
+                            checked={simulationProperties.flowType === 'Pressure'}
+                            onChange={(e) => setSimulationProperties(prev => ({...prev, flowType: e.target.value as 'Air Mass Flow' | 'Air Velocity' | 'Pressure'}))}
+                            className="w-4 h-4 text-blue-600"
+                          />
+                          <Label htmlFor="pressure" className="text-xs">Pressure</Label>
+                        </div>
+                      </div>
                     </div>
 
                     {/* Air Direction */}
@@ -914,44 +953,62 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                       </div>
                     )}
 
-                    {/* Air Angles */}
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="vertical-angle" className="text-right">
-                        Vertical Angle
-                      </Label>
-                      <Input
-                        id="vertical-angle"
-                        type="number"
-                        min="-90"
-                        max="90"
-                        value={simulationProperties.verticalAngle}
-                        onChange={(e) => setSimulationProperties(prev => ({
-                          ...prev, 
-                          verticalAngle: Number(e.target.value)
-                        }))}
-                        className="col-span-2"
-                      />
-                      <span className="text-sm">°</span>
-                    </div>
+                    {/* Air Orientation - Solo para vents con state open y airOrientation inflow */}
+                    {simulationProperties.state === 'open' && simulationProperties.airOrientation === 'inflow' && (
+                      <div className="col-span-4 space-y-3 border-t border-slate-300 pt-3 mt-3">
+                        <h6 className="font-medium text-sm text-slate-600">Air Orientation</h6>
+                        
+                        {/* Vertical Angle */}
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="vertical-angle" className="text-right">
+                            Vertical Angle
+                          </Label>
+                          <Input
+                            id="vertical-angle"
+                            type="number"
+                            min="-45"
+                            max="45"
+                            step="1"
+                            value={simulationProperties.verticalAngle}
+                            onChange={(e) => setSimulationProperties(prev => ({
+                              ...prev, 
+                              verticalAngle: Number(e.target.value)
+                            }))}
+                            className="col-span-2"
+                            placeholder="0"
+                          />
+                          <span className="text-sm">°</span>
+                        </div>
+                        <p className="text-xs text-gray-500 col-span-4 text-right">
+                          Up +45° to Down -45°
+                        </p>
 
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="horizontal-angle" className="text-right">
-                        Horizontal Angle
-                      </Label>
-                      <Input
-                        id="horizontal-angle"
-                        type="number"
-                        min="-180"
-                        max="180"
-                        value={simulationProperties.horizontalAngle}
-                        onChange={(e) => setSimulationProperties(prev => ({
-                          ...prev, 
-                          horizontalAngle: Number(e.target.value)
-                        }))}
-                        className="col-span-2"
-                      />
-                      <span className="text-sm">°</span>
-                    </div>
+                        {/* Horizontal Angle */}
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="horizontal-angle" className="text-right">
+                            Horizontal Angle
+                          </Label>
+                          <Input
+                            id="horizontal-angle"
+                            type="number"
+                            min="-45"
+                            max="45"
+                            step="1"
+                            value={simulationProperties.horizontalAngle}
+                            onChange={(e) => setSimulationProperties(prev => ({
+                              ...prev, 
+                              horizontalAngle: Number(e.target.value)
+                            }))}
+                            className="col-span-2"
+                            placeholder="0"
+                          />
+                          <span className="text-sm">°</span>
+                        </div>
+                        <p className="text-xs text-gray-500 col-span-4 text-right">
+                          Left -45° to Right +45°
+                        </p>
+                      </div>
+                    )}
                   </>
                 )}
               </div>
