@@ -14,6 +14,10 @@ interface STLUploaderProps {
     geometry: THREE.BufferGeometry;
     originalFile: File;
   }) => void;
+  floorContext?: {
+    currentFloor: string;
+    floors: Record<string, any>;
+  };
 }
 
 interface UploadState {
@@ -24,7 +28,7 @@ interface UploadState {
 
 const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB in bytes
 
-export function STLUploader({ onModelLoaded }: STLUploaderProps) {
+export function STLUploader({ onModelLoaded, floorContext }: STLUploaderProps) {
   const [uploadState, setUploadState] = useState<UploadState>({
     status: 'idle',
     progress: 0,
@@ -83,9 +87,16 @@ export function STLUploader({ onModelLoaded }: STLUploaderProps) {
       // Generate clean name from filename
       const cleanName = file.name.replace(/\.stl$/i, '').replace(/[^a-zA-Z0-9\s]/g, ' ').trim();
 
-      // Use enhanced STL processor
+      // Use enhanced STL processor with floor context
       const processor = STLProcessor.getInstance();
-      const processedData = await processor.processSTLGeometry(geometry, cleanName, file);
+      
+      // Prepare floor context if available
+      const processingFloorContext = floorContext ? {
+        floorName: floorContext.currentFloor,
+        existingFurniture: floorContext.floors[floorContext.currentFloor]?.furnitureItems || []
+      } : undefined;
+      
+      const processedData = await processor.processSTLGeometry(geometry, cleanName, file, processingFloorContext);
 
       setUploadState({
         status: 'processing',
