@@ -426,7 +426,8 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                             onPositionUpdate(newPosition);
                           }
                         }}
-                        className="text-sm"
+                        disabled={type !== 'block' && type !== 'vent'}
+                        className={`text-sm ${type !== 'block' && type !== 'vent' ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
                       />
                     </div>
                   </div>
