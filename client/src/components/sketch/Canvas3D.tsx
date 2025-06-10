@@ -1046,6 +1046,15 @@ export default function Canvas3D({
       // Generate new furniture ID using the new system
       const generatedId = generateFurnitureId(furnitureType, surfaceDetection.floorName, existingFurniture);
       
+      // TEST: Log the ID generation process
+      console.log('🆔 FURNITURE ID TEST:', {
+        furnitureType,
+        floorName: surfaceDetection.floorName,
+        existingCount: existingFurniture.length,
+        generatedId,
+        timestamp: new Date().toISOString()
+      });
+      
       // Create furniture item
       const furnitureItem: FurnitureItem = {
         id: generatedId,

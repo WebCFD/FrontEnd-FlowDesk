@@ -136,6 +136,17 @@ class CustomFurnitureStore {
     const id = generateCustomId(floorContext.floorName, floorContext.existingFurniture);
     const objectName = id; // Name is same as ID
     
+    // TEST: Log custom furniture ID generation
+    console.log('🎯 CUSTOM FURNITURE ID TEST:', {
+      originalName: data.name,
+      floorName: floorContext.floorName,
+      existingCustomCount: floorContext.existingFurniture.filter(item => 
+        item.type === 'custom' && item.floorName === floorContext.floorName
+      ).length,
+      generatedId: id,
+      timestamp: new Date().toISOString()
+    });
+    
     const customData: CustomFurnitureData = {
       id,
       name: objectName,
