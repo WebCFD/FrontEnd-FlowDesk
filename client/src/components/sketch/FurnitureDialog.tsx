@@ -66,11 +66,9 @@ const furnitureDefaults = {
     rotation: { x: 0, y: 0, z: 0 },
     scale: { x: 1, y: 1, z: 1 },
     properties: {
-      material: "wood",
+      material: "default",
       temperature: 20,
-      thermalConductivity: 0.12,
-      density: 600,
-      heatCapacity: 1200
+      emissivity: 0.90
     }
   },
   armchair: {
@@ -79,11 +77,9 @@ const furnitureDefaults = {
     rotation: { x: 0, y: 0, z: 0 },
     scale: { x: 1, y: 1, z: 1 },
     properties: {
-      material: "wood",
+      material: "default",
       temperature: 20,
-      thermalConductivity: 0.12,
-      density: 600,
-      heatCapacity: 1200
+      emissivity: 0.90
     }
   },
   person: {
@@ -92,11 +88,9 @@ const furnitureDefaults = {
     rotation: { x: 0, y: 0, z: 0 },
     scale: { x: 1, y: 1, z: 1 },
     properties: {
-      material: "human",
+      material: "fabric",
       temperature: 37,
-      thermalConductivity: 0.5,
-      density: 1000,
-      heatCapacity: 3500
+      emissivity: 0.90
     }
   },
   car: {
@@ -107,9 +101,7 @@ const furnitureDefaults = {
     properties: {
       material: "metal",
       temperature: 20,
-      thermalConductivity: 45,
-      density: 2700,
-      heatCapacity: 900
+      emissivity: 0.25
     }
   },
   block: {
@@ -120,9 +112,7 @@ const furnitureDefaults = {
     properties: {
       material: "concrete",
       temperature: 20,
-      thermalConductivity: 1.4,
-      density: 2400,
-      heatCapacity: 880
+      emissivity: 0.90
     }
   },
   custom: {
@@ -132,11 +122,22 @@ const furnitureDefaults = {
     scale: { x: 1, y: 1, z: 1 },
     dimensions: { width: 100, height: 100, depth: 100 },
     properties: {
-      material: "mixed",
+      material: "default",
       temperature: 20,
-      thermalConductivity: 1.0,
-      density: 1500,
-      heatCapacity: 1000
+      emissivity: 0.90
+    }
+  },
+  vent: {
+    name: "Vent",
+    position: { x: 0, y: 0, z: 0 },
+    rotation: { x: 0, y: 0, z: 0 },
+    scale: { x: 1, y: 1, z: 1 },
+    properties: {
+      material: "metal",
+      temperature: 20,
+      thermalConductivity: 45,
+      density: 2700,
+      heatCapacity: 900
     }
   }
 };
