@@ -190,7 +190,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
   
   // Estados para propiedades específicas del furniture
   const [furnitureName, setFurnitureName] = useState("");
-  const [materialType, setMaterialType] = useState("wood");
+  const [materialType, setMaterialType] = useState("default");
   const [temperature, setTemperature] = useState(20);
   const [customEmissivity, setCustomEmissivity] = useState(0.85);
   const [thermalProperties, setThermalProperties] = useState({
@@ -201,6 +201,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
 
   // Material definitions with emissivity values (not applied to vents)
   const materialDefinitions = {
+    default: { name: "Default", emissivity: 0.90 },
     wood: { name: "Wood", emissivity: 0.90 },
     metal: { name: "Metal (Steel)", emissivity: 0.25 },
     glass: { name: "Glass", emissivity: 0.92 },
@@ -235,7 +236,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
       const defaults = getDefaultValues();
       setValues(defaults);
       setFurnitureName(defaults.name);
-      setMaterialType(defaults.properties?.material || "wood");
+      setMaterialType(defaults.properties?.material || "default");
       setTemperature(defaults.properties?.temperature || 20);
       
       // Initialize emissivity for non-vent furniture
@@ -697,14 +698,35 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                 {type !== 'vent' && (
                   <>
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="material" className="text-right">
-                        Material
-                      </Label>
+                      <div className="text-right flex items-center gap-2">
+                        <Label htmlFor="material">Material</Label>
+                        <div className="group relative">
+                          <svg
+                            className="w-4 h-4 text-gray-400 cursor-help"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                            <path d="M12 17h.01"></path>
+                          </svg>
+                          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none w-64 z-50">
+                            <div className="text-center">
+                              <strong>Emissivity (ε)</strong> controls how much thermal radiation the surface emits in CFD simulations. Higher values (0.8-0.95) represent better heat emission. Use Default (0.9) if unsure - it works well for most materials.
+                            </div>
+                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                          </div>
+                        </div>
+                      </div>
                       <Select value={materialType} onValueChange={setMaterialType}>
                         <SelectTrigger className="col-span-3">
                           <SelectValue placeholder="Select material" />
                         </SelectTrigger>
                         <SelectContent>
+                          <SelectItem value="default">
+                            Default (ε = 0.90)
+                          </SelectItem>
                           <SelectItem value="wood">
                             Wood (ε = 0.90)
                           </SelectItem>
