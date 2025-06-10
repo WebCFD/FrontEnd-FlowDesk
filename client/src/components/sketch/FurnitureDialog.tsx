@@ -268,8 +268,20 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
   });
 
   function getDefaultValues() {
-    if (props.initialValues) return props.initialValues;
-    return (furnitureDefaults as any)[type] || furnitureDefaults.table;
+    const baseDefaults = (furnitureDefaults as any)[type] || furnitureDefaults.table;
+    
+    if (props.initialValues) {
+      // For vent types, ensure simulationProperties exist by merging with defaults
+      if (type === 'vent' && !props.initialValues.simulationProperties) {
+        return {
+          ...props.initialValues,
+          simulationProperties: baseDefaults.simulationProperties
+        };
+      }
+      return props.initialValues;
+    }
+    
+    return baseDefaults;
   }
 
   // Reset values when dialog opens with new type or initialValues
