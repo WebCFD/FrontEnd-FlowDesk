@@ -207,40 +207,26 @@ export const useRoomStore = create<RoomState>()(
           }
         })),
 
-        addFurnitureToFloor: (floorName, item) => {
-          console.log("🔍 ROOM STORE DEBUG - Adding furniture to floor:");
-          console.log("🔍 Floor name:", floorName);
-          console.log("🔍 Item being added:", item);
-          console.log("🔍 Item type:", item.type);
-          console.log("🔍 simulationProperties in item:", item.simulationProperties);
+        addFurnitureToFloor: (floorName, item) => set((state) => {
+          // Clean existing array - remove any invalid items (strings, nulls, etc.)
+          const existingItems = state.floors[floorName]?.furnitureItems || [];
+          const cleanedItems = existingItems.filter(furnitureItem => 
+            furnitureItem && 
+            typeof furnitureItem === 'object' && 
+            furnitureItem.type && 
+            furnitureItem.position
+          );
           
-          return set((state) => {
-            // Clean existing array - remove any invalid items (strings, nulls, etc.)
-            const existingItems = state.floors[floorName]?.furnitureItems || [];
-            const cleanedItems = existingItems.filter(furnitureItem => 
-              furnitureItem && 
-              typeof furnitureItem === 'object' && 
-              furnitureItem.type && 
-              furnitureItem.position
-            );
-            
-            const newState = {
-              floors: {
-                ...state.floors,
-                [floorName]: {
-                  ...state.floors[floorName],
-                  furnitureItems: [...cleanedItems, item]
-                }
+          return {
+            floors: {
+              ...state.floors,
+              [floorName]: {
+                ...state.floors[floorName],
+                furnitureItems: [...cleanedItems, item]
               }
-            };
-            
-            console.log("🔍 ROOM STORE DEBUG - New state after adding furniture:");
-            console.log("🔍 New furniture item in state:", newState.floors[floorName].furnitureItems[newState.floors[floorName].furnitureItems.length - 1]);
-            console.log("🔍 simulationProperties in stored item:", newState.floors[floorName].furnitureItems[newState.floors[floorName].furnitureItems.length - 1].simulationProperties);
-            
-            return newState;
-          });
-        },
+            }
+          };
+        }),
 
         updateFurnitureInFloor: (floorName, itemId, item) => set((state) => {
           return {
