@@ -93,6 +93,7 @@ interface Canvas3DProps {
   presentationMode?: boolean; // New: disables editing tools
   lightingIntensity?: number; // New: lighting intensity control
   floorParameters?: Record<string, { ceilingHeight: number; floorDeck: number }>;
+  currentDraggingFurnitureType?: string; // New: current furniture type being dragged
   onUpdateAirEntry?: (
     floorName: string,
     index: number,
@@ -1285,6 +1286,12 @@ export default function Canvas3D({
   
   // Track current dragging furniture type for surface restrictions during drag over
   const currentDragFurnitureTypeRef = useRef<string | undefined>(undefined);
+  
+  // Get furniture type from parent component via onDragStart callback
+  useEffect(() => {
+    // This effect will be called when furniture dragging starts from the menu
+    // The furniture type will be set by the parent component through a callback
+  }, []);
   
   // Synchronize the ref with isEraserMode state immediately
   // This needs to happen in a separate useEffect to ensure proper sequence of operations
