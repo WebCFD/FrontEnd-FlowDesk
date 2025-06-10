@@ -91,6 +91,7 @@ interface Canvas3DProps {
   simulationType?: string;
   isMultifloor?: boolean;
   presentationMode?: boolean; // New: disables editing tools
+  allowAirEntryEditing?: boolean; // New: allows AirEntry editing even in presentation mode
   lightingIntensity?: number; // New: lighting intensity control
   floorParameters?: Record<string, { ceilingHeight: number; floorDeck: number }>;
 
@@ -1002,6 +1003,7 @@ export default function Canvas3D({
   simulationType = "Comfort Simulation (steady run)",
   isMultifloor = false,
   presentationMode = false,
+  allowAirEntryEditing = false,
   lightingIntensity = 1.5,
   floorParameters = {},
   onUpdateAirEntry,
@@ -4265,7 +4267,7 @@ export default function Canvas3D({
 
     // Add double-click handler for air entry editing - only in interactive mode
     const handleDoubleClick = (event: MouseEvent) => {
-      if (presentationMode) return; // Disable editing in presentation mode
+      if (presentationMode && !allowAirEntryEditing) return; // Allow AirEntry editing even in presentation mode if specified
       
       // Set flag to ignore the next click (which is part of the double-click)
       setIgnoreNextClick(true);
