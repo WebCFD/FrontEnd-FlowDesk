@@ -26,6 +26,7 @@ interface FurnitureDialogProps {
       thermalConductivity?: number;
       density?: number;
       heatCapacity?: number;
+      emissivity?: number;
     };
   }) => void;
   onCancel?: () => void; // New prop for cancel handling
@@ -42,6 +43,7 @@ interface FurnitureDialogProps {
       thermalConductivity?: number;
       density?: number;
       heatCapacity?: number;
+      emissivity?: number;
     };
   };
   floorContext?: {
@@ -190,11 +192,30 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
   const [furnitureName, setFurnitureName] = useState("");
   const [materialType, setMaterialType] = useState("wood");
   const [temperature, setTemperature] = useState(20);
+  const [customEmissivity, setCustomEmissivity] = useState(0.85);
   const [thermalProperties, setThermalProperties] = useState({
     thermalConductivity: 0.12,
     density: 600,
     heatCapacity: 1200
   });
+
+  // Material definitions with emissivity values (not applied to vents)
+  const materialDefinitions = {
+    wood: { name: "Wood", emissivity: 0.90 },
+    metal: { name: "Metal (Steel)", emissivity: 0.25 },
+    glass: { name: "Glass", emissivity: 0.92 },
+    fabric: { name: "Fabric/Textile", emissivity: 0.90 },
+    plastic: { name: "Plastic", emissivity: 0.90 },
+    ceramic: { name: "Ceramic/Tile", emissivity: 0.90 },
+    concrete: { name: "Concrete", emissivity: 0.90 },
+    custom: { name: "Custom", emissivity: customEmissivity }
+  };
+
+  // Get current emissivity value (only for non-vent furniture)
+  const getCurrentEmissivity = () => {
+    if (type === 'vent') return undefined;
+    return materialType === 'custom' ? customEmissivity : materialDefinitions[materialType as keyof typeof materialDefinitions]?.emissivity || 0.85;
+  };
   
   // Estado para dimensiones (especialmente para objetos custom)
   const [dimensions, setDimensions] = useState({
@@ -216,11 +237,20 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
       setFurnitureName(defaults.name);
       setMaterialType(defaults.properties?.material || "wood");
       setTemperature(defaults.properties?.temperature || 20);
-      setThermalProperties({
-        thermalConductivity: defaults.properties?.thermalConductivity || 0.12,
-        density: defaults.properties?.density || 600,
-        heatCapacity: defaults.properties?.heatCapacity || 1200
-      });
+      
+      // Initialize emissivity for non-vent furniture
+      if (type !== 'vent' && defaults.properties?.emissivity !== undefined) {
+        setCustomEmissivity(defaults.properties.emissivity);
+      }
+      
+      // Initialize thermal properties for vent furniture
+      if (type === 'vent') {
+        setThermalProperties({
+          thermalConductivity: defaults.properties?.thermalConductivity || 0.12,
+          density: defaults.properties?.density || 600,
+          heatCapacity: defaults.properties?.heatCapacity || 1200
+        });
+      }
       
       // Initialize dimensions for custom objects
       if (type === 'custom' && (defaults as any).dimensions) {
@@ -241,19 +271,30 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Build properties object based on furniture type
+    const properties = type === 'vent' 
+      ? {
+          // Vent furniture: Keep original thermal properties
+          material: materialType,
+          temperature: temperature,
+          thermalConductivity: thermalProperties.thermalConductivity,
+          density: thermalProperties.density,
+          heatCapacity: thermalProperties.heatCapacity
+        }
+      : {
+          // Non-vent furniture: Use new material/emissivity system
+          material: materialType,
+          temperature: temperature,
+          emissivity: getCurrentEmissivity()
+        };
+    
     const furnitureData = {
       name: furnitureName,
       position: elementPosition,
       rotation: values.rotation,
       scale: values.scale,
       ...(type === 'custom' && { dimensions: dimensions }),
-      properties: {
-        material: materialType,
-        temperature: temperature,
-        thermalConductivity: thermalProperties.thermalConductivity,
-        density: thermalProperties.density,
-        heatCapacity: thermalProperties.heatCapacity
-      }
+      properties
     };
     
     props.onConfirm(furnitureData);
@@ -637,26 +678,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
               <h4 className="font-medium text-sm mb-4 text-slate-700 border-b border-slate-200 pb-2">Simulation Properties</h4>
               
               <div className="space-y-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="material" className="text-right">
-                    Material
-                  </Label>
-                  <Select value={materialType} onValueChange={setMaterialType}>
-                    <SelectTrigger className="col-span-3">
-                      <SelectValue placeholder="Select material" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="wood">Wood</SelectItem>
-                      <SelectItem value="metal">Metal</SelectItem>
-                      <SelectItem value="plastic">Plastic</SelectItem>
-                      <SelectItem value="fabric">Fabric</SelectItem>
-                      <SelectItem value="glass">Glass</SelectItem>
-                      <SelectItem value="human">Human Body</SelectItem>
-                      <SelectItem value="concrete">Concrete</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
+                {/* Temperature - First position for all furniture types */}
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="temperature" className="text-right">
                     Temperature
@@ -671,57 +693,144 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                   <span className="text-sm">°C</span>
                 </div>
 
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="thermal-conductivity" className="text-right">
-                    Thermal Conductivity
-                  </Label>
-                  <Input
-                    id="thermal-conductivity"
-                    type="number"
-                    step="0.01"
-                    value={thermalProperties.thermalConductivity}
-                    onChange={(e) => setThermalProperties(prev => ({
-                      ...prev,
-                      thermalConductivity: Number(e.target.value)
-                    }))}
-                    className="col-span-2"
-                  />
-                  <span className="text-sm">W/m·K</span>
-                </div>
+                {/* Material/Emissivity system for non-vent furniture */}
+                {type !== 'vent' && (
+                  <>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="material" className="text-right">
+                        Material
+                      </Label>
+                      <Select value={materialType} onValueChange={setMaterialType}>
+                        <SelectTrigger className="col-span-3">
+                          <SelectValue placeholder="Select material" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="wood">
+                            Wood (ε = 0.90)
+                          </SelectItem>
+                          <SelectItem value="metal">
+                            Metal (Steel) (ε = 0.25)
+                          </SelectItem>
+                          <SelectItem value="glass">
+                            Glass (ε = 0.92)
+                          </SelectItem>
+                          <SelectItem value="fabric">
+                            Fabric/Textile (ε = 0.90)
+                          </SelectItem>
+                          <SelectItem value="plastic">
+                            Plastic (ε = 0.90)
+                          </SelectItem>
+                          <SelectItem value="ceramic">
+                            Ceramic/Tile (ε = 0.90)
+                          </SelectItem>
+                          <SelectItem value="concrete">
+                            Concrete (ε = 0.90)
+                          </SelectItem>
+                          <SelectItem value="custom">
+                            Custom
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="density" className="text-right">
-                    Density
-                  </Label>
-                  <Input
-                    id="density"
-                    type="number"
-                    value={thermalProperties.density}
-                    onChange={(e) => setThermalProperties(prev => ({
-                      ...prev,
-                      density: Number(e.target.value)
-                    }))}
-                    className="col-span-2"
-                  />
-                  <span className="text-sm">kg/m³</span>
-                </div>
+                    {/* Custom emissivity input when Custom material is selected */}
+                    {materialType === 'custom' && (
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="custom-emissivity" className="text-right">
+                          Emissivity
+                        </Label>
+                        <Input
+                          id="custom-emissivity"
+                          type="number"
+                          min="0"
+                          max="1"
+                          step="0.01"
+                          value={Math.round(customEmissivity * 100) / 100}
+                          onChange={(e) => setCustomEmissivity(Math.max(0, Math.min(1, Number(e.target.value))))}
+                          className="col-span-2"
+                        />
+                        <span className="text-sm">ε (0.00-1.00)</span>
+                      </div>
+                    )}
+                  </>
+                )}
 
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="heat-capacity" className="text-right">
-                    Heat Capacity
-                  </Label>
-                  <Input
-                    id="heat-capacity"
-                    type="number"
-                    value={thermalProperties.heatCapacity}
-                    onChange={(e) => setThermalProperties(prev => ({
-                      ...prev,
-                      heatCapacity: Number(e.target.value)
-                    }))}
-                    className="col-span-2"
-                  />
-                  <span className="text-sm">J/kg·K</span>
-                </div>
+                {/* Original thermal properties for vents only */}
+                {type === 'vent' && (
+                  <>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="material" className="text-right">
+                        Material
+                      </Label>
+                      <Select value={materialType} onValueChange={setMaterialType}>
+                        <SelectTrigger className="col-span-3">
+                          <SelectValue placeholder="Select material" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="wood">Wood</SelectItem>
+                          <SelectItem value="metal">Metal</SelectItem>
+                          <SelectItem value="plastic">Plastic</SelectItem>
+                          <SelectItem value="fabric">Fabric</SelectItem>
+                          <SelectItem value="glass">Glass</SelectItem>
+                          <SelectItem value="human">Human Body</SelectItem>
+                          <SelectItem value="concrete">Concrete</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="thermal-conductivity" className="text-right">
+                        Thermal Conductivity
+                      </Label>
+                      <Input
+                        id="thermal-conductivity"
+                        type="number"
+                        step="0.01"
+                        value={thermalProperties.thermalConductivity}
+                        onChange={(e) => setThermalProperties((prev: any) => ({
+                          ...prev,
+                          thermalConductivity: Number(e.target.value)
+                        }))}
+                        className="col-span-2"
+                      />
+                      <span className="text-sm">W/m·K</span>
+                    </div>
+
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="density" className="text-right">
+                        Density
+                      </Label>
+                      <Input
+                        id="density"
+                        type="number"
+                        value={thermalProperties.density}
+                        onChange={(e) => setThermalProperties((prev: any) => ({
+                          ...prev,
+                          density: Number(e.target.value)
+                        }))}
+                        className="col-span-2"
+                      />
+                      <span className="text-sm">kg/m³</span>
+                    </div>
+
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="heat-capacity" className="text-right">
+                        Heat Capacity
+                      </Label>
+                      <Input
+                        id="heat-capacity"
+                        type="number"
+                        value={thermalProperties.heatCapacity}
+                        onChange={(e) => setThermalProperties((prev: any) => ({
+                          ...prev,
+                          heatCapacity: Number(e.target.value)
+                        }))}
+                        className="col-span-2"
+                      />
+                      <span className="text-sm">J/kg·K</span>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
