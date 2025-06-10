@@ -5461,7 +5461,7 @@ export default function Canvas3D({
         };
 
         // Save to the store using the correct callback signature
-        onUpdateFurniture(editingFurniture.item.floorName, 0, updatedFurnitureItem);
+        onUpdateFurniture(editingFurniture.item.floorName, editingFurniture.item.id, updatedFurnitureItem);
         
 
       } else {
