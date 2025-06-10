@@ -5248,17 +5248,35 @@ export default function Canvas3D({
               // Use the actual stored item with all its properties including simulationProperties
               const furnitureItemWithCurrentPosition: FurnitureItem = {
                 ...actualFurnitureItem,
-                // Update position from 3D scene in case it was moved
+                // For FornVent: Read coordinates from group (user coordinates)
+                // For other furniture: Read from group (also user coordinates)
                 position: {
                   x: furnitureGroup.position.x,
                   y: furnitureGroup.position.y,
                   z: furnitureGroup.position.z
                 },
-                rotation: {
-                  x: furnitureGroup.rotation.x,
-                  y: furnitureGroup.rotation.y,
-                  z: furnitureGroup.rotation.z
-                }
+                // For FornVent: Read rotation from mesh inside group
+                // For other furniture: Read from group
+                rotation: furnitureGroup.userData.furnitureType === 'vent' 
+                  ? (() => {
+                      const ventMesh = furnitureGroup.children.find(child => 
+                        child.userData && child.userData.furnitureType === 'vent'
+                      ) as THREE.Mesh;
+                      return ventMesh ? {
+                        x: ventMesh.rotation.x,
+                        y: ventMesh.rotation.y,
+                        z: ventMesh.rotation.z
+                      } : {
+                        x: furnitureGroup.rotation.x,
+                        y: furnitureGroup.rotation.y,
+                        z: furnitureGroup.rotation.z
+                      };
+                    })()
+                  : {
+                      x: furnitureGroup.rotation.x,
+                      y: furnitureGroup.rotation.y,
+                      z: furnitureGroup.rotation.z
+                    }
               };
               
               setEditingFurniture({
