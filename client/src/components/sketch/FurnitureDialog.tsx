@@ -289,7 +289,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
           <div className="flex items-center gap-2">
             <Move className="h-4 w-4 text-gray-400" />
             <h3 className="text-lg font-semibold capitalize">
-              {isEditing ? `Edit ${type}` : `Creation ${type}`}
+              {props.isCreationMode ? `Creation ${type}` : `Edit ${type}`}
             </h3>
           </div>
           <Button
