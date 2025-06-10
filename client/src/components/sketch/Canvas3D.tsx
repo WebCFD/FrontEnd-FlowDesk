@@ -5517,11 +5517,21 @@ export default function Canvas3D({
               
               return actualScale;
             })(),
-            properties: {
+            // CRITICAL FIX: Use actual furniture properties instead of hardcoded defaults
+            properties: editingFurniture.item.properties || (editingFurniture.item.type === 'vent' ? {
+              temperature: 20,
+              thermalConductivity: 0.12,
+              density: 600,
+              heatCapacity: 1200,
+              emissivity: 0.85
+            } : {
               material: "default",
               temperature: 20,
-              emissivity: 0.90
-            }
+              emissivity: 0.90,
+              thermalConductivity: 0.12,
+              density: 600,
+              heatCapacity: 1200
+            })
           }}
           isEditing={true}
           floorContext={{
