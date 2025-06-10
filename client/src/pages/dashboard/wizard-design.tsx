@@ -1156,8 +1156,15 @@ export default function WizardDesign() {
     });
   }, [addFurnitureToFloor, toast]);
 
-  const handleFurnitureUpdate = (floorName: string, index: number, item: FurnitureItem) => {
-    updateFurnitureInFloor(floorName, index, item);
+  const handleFurnitureUpdate = (floorName: string, itemId: string, item: FurnitureItem) => {
+    console.log("🔗 PARENT CALLBACK - handleFurnitureUpdate called:");
+    console.log("🔗 Floor:", floorName);
+    console.log("🔗 Item ID:", itemId);
+    console.log("🔗 Item data:", item);
+    console.log("🔗 Item simulationProperties:", item.simulationProperties);
+    
+    updateFurnitureInFloor(floorName, itemId, item);
+    
     toast({
       title: "Furniture Updated",
       description: `Updated ${item.type} in ${formatFloorText(floorName)}`,
@@ -2349,7 +2356,7 @@ export default function WizardDesign() {
               onDeleteAirEntry={handleDeleteAirEntryFrom3D}
               onViewChange={handleViewChange}
               onFurnitureAdd={handleFurnitureAdd}
-              onFurnitureUpdate={handleFurnitureUpdate}
+              onUpdateFurniture={handleFurnitureUpdate}
               onFurnitureDelete={handleFurnitureDelete}
             />
           )}
