@@ -288,9 +288,19 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
         <div className="dialog-header flex items-center justify-between p-4 border-b border-gray-200 cursor-move select-none">
           <div className="flex items-center gap-2">
             <Move className="h-4 w-4 text-gray-400" />
-            <h3 className="text-lg font-semibold capitalize">
-              {isEditing ? `Edit ${type}` : `Add ${type}`}
-            </h3>
+            <div className="flex items-center gap-3">
+              <h3 className="text-lg font-semibold capitalize">
+                {isEditing ? `Edit ${type}` : `Add ${type}`}
+              </h3>
+              {/* Phase 5: Mode indicator enhancement */}
+              <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                props.isCreationMode 
+                  ? 'bg-green-100 text-green-700 border border-green-200' 
+                  : 'bg-blue-100 text-blue-700 border border-blue-200'
+              }`}>
+                {props.isCreationMode ? 'Creating' : 'Editing'}
+              </span>
+            </div>
           </div>
           <Button
             variant="ghost"
@@ -683,7 +693,8 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                 onClose();
               }}
             >
-              Cancel
+              {/* Phase 5: Adjust button labels based on mode */}
+              {props.isCreationMode ? 'Cancel' : 'Close'}
             </Button>
             <Button type="submit">
               {isEditing ? 'Update' : 'Add'} {type}
