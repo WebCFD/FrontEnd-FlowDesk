@@ -2295,12 +2295,7 @@ export default function WizardDesign() {
                 setAirEntryTransparency(value);
               }}
               onFurnitureAdd={handleFurnitureAdd}
-              onUpdateFurniture={(item) => {
-                toast({
-                  title: "Furniture Updated",
-                  description: `${item.name} has been modified`,
-                });
-              }}
+              onUpdateFurniture={handleFurnitureUpdate}
               onDeleteFurniture={handleFurnitureDelete}
               isFurnitureEraserMode={isFurnitureEraserMode}
               onToggleFurnitureEraserMode={handleToggleFurnitureEraserMode}
