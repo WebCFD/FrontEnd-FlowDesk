@@ -1573,6 +1573,10 @@ export default function WizardDesign() {
                     }}
                     wallTransparency={wallTransparency}
                     onWallTransparencyChange={setWallTransparency}
+                    floorContext={{
+                      currentFloor: currentFloor,
+                      floors: floors
+                    }}
                   />
                 </div>
 
