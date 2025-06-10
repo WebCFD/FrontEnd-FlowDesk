@@ -5411,31 +5411,36 @@ export default function Canvas3D({
           isOpen={true}
           onClose={() => setEditingFurniture(null)}
           onConfirm={(data) => handleFurnitureEdit(editingFurniture.index, data)}
+          isCreationMode={editingFurniture.mode === 'creation'} // Phase 1: Pass mode to dialog
           onCancel={() => {
             if (!editingFurniture) return;
             
-            const furnitureId = editingFurniture.item.id;
-            
-            // First: Remove from 3D scene (like handleClick does)
-            try {
-              if (sceneRef.current && typeof sceneRef.current.traverse === 'function') {
-                sceneRef.current.traverse((child) => {
-                  if (child.userData?.furnitureId === furnitureId && child.userData?.type === 'furniture') {
-                    sceneRef.current?.remove(child);
-                  }
-                });
+            // Phase 3: Conditional cancel logic based on mode
+            if (editingFurniture.mode === 'creation') {
+              // Creation mode: Delete the item (current behavior for drag&drop)
+              const furnitureId = editingFurniture.item.id;
+              
+              // First: Remove from 3D scene
+              try {
+                if (sceneRef.current && typeof sceneRef.current.traverse === 'function') {
+                  sceneRef.current.traverse((child) => {
+                    if (child.userData?.furnitureId === furnitureId && child.userData?.type === 'furniture') {
+                      sceneRef.current?.remove(child);
+                    }
+                  });
+                }
+              } catch (error) {
+                console.warn("Could not remove furniture from scene:", error);
               }
-            } catch (error) {
-              console.warn("Could not remove furniture from scene:", error);
-              // Continue with data store cleanup even if scene removal fails
+              
+              // Second: Remove from data store via callback
+              if (onDeleteFurniture) {
+                onDeleteFurniture(editingFurniture.item.floorName, editingFurniture.item.id);
+              }
             }
+            // Edit mode: Just close dialog without deletion
             
-            // Second: Remove from data store via callback
-            if (onDeleteFurniture) {
-              onDeleteFurniture(editingFurniture.item.floorName, editingFurniture.item.id);
-            }
-            
-            // Third: Close dialog
+            // Close dialog for both modes
             setEditingFurniture(null);
           }}
           onPositionUpdate={handleRealTimePositionUpdate}
