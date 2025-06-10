@@ -5288,6 +5288,30 @@ export default function Canvas3D({
             // Find the furniture floor for the callback
             const furnitureFloorName = furnitureGroup.userData.floorName || currentFloor;
             
+            // Special cleanup for vents with special rendering properties
+            if (furnitureGroup.userData.furnitureType === 'vent') {
+              // Find and dispose mesh inside the vent group
+              furnitureGroup.traverse((child) => {
+                if (child instanceof THREE.Mesh) {
+                  // Dispose geometry and material to clear WebGL state
+                  if (child.geometry) {
+                    child.geometry.dispose();
+                  }
+                  if (child.material) {
+                    if (Array.isArray(child.material)) {
+                      child.material.forEach(material => material.dispose());
+                    } else {
+                      child.material.dispose();
+                    }
+                  }
+                  // Remove mesh from its parent first
+                  if (child.parent) {
+                    child.parent.remove(child);
+                  }
+                }
+              });
+            }
+            
             // Remove from scene
             sceneRef.current.remove(furnitureGroup);
             
