@@ -1,0 +1,39 @@
+
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:1104 🆔 UNIFIED FURNITURE ID TEST: {furnitureType: 'table', floorName: 'ground', existingCount: 1, existingByType: 1, generatedId: 'Table 0F-2', …}
+RoomSketchPro.tsx:797 RSP: New furniture added, re-applying textures...
+wizard-design.tsx:1572 Dragging furniture: {id: 'table', name: 'Table', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…"4" height="8" fill="#8B4513"/>\n      </svg>\n    ', defaultDimensions: {…}}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:5078 🔍 DRAG OVER DEBUG - Using captured type: {furnitureType: undefined, FLOOR_ONLY_FURNITURE: Array(4), isFloorOnlyFurniture: undefined}
+Canvas3D.tsx:1104 🆔 UNIFIED FURNITURE ID TEST: {furnitureType: 'table', floorName: 'ground', existingCount: 2, existingByType: 2, generatedId: 'Table 0F-3', …}
+RoomSketchPro.tsx:797 RSP: New furniture added, re-applying texture
