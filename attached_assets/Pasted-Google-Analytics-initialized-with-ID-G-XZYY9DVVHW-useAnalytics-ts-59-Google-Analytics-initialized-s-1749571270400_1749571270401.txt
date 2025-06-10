@@ -1,0 +1,35 @@
+Google Analytics initialized with ID: G-XZYY9DVVHW
+useAnalytics.ts:59 Google Analytics initialized successfully
+js?id=G-XZYY9DVVHW:660 [Violation] 'setTimeout' handler took 61ms
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+AnalyticsProvider.tsx:21 Analytics initialized: true
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 298ms
+Canvas3D.tsx:5142 🖱️ Furniture double-click detected!
+Canvas3D.tsx:5161 🎯 Mouse coordinates: _Vector2 {x: -0.10142348754448394, y: 0.4672395273899034}
+Canvas3D.tsx:5173 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-1', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:5173 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-1', floorName: 'ground', furnitureName: 'Vent 0F-1', …}
+Canvas3D.tsx:5182 🔍 Found 2 furniture objects in scene
+Canvas3D.tsx:5187 💥 Found 2 intersections
+Canvas3D.tsx:5201 ✅ Intersected furniture object: {furnitureId: 'Vent 0F-1', userData: {…}, position: _Vector3}
+Canvas3D.tsx:5249 🎛️ Opening furniture dialog with item: {id: 'Vent 0F-1', type: 'vent', name: 'Vent 0F-1', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:5250 🎛️ Setting editingFurniture state...
+Canvas3D.tsx:5258 🎛️ editingFurniture state set!
+[Violation] Forced reflow while executing JavaScript took 33ms
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.Understand this warningAI
+Canvas3D.tsx:5465 💾 Furniture data saved to store: {id: 'Vent 0F-1', properties: {…}, position: {…}, rotation: {…}}
+Canvas3D.tsx:5142 🖱️ Furniture double-click detected!
+Canvas3D.tsx:5161 🎯 Mouse coordinates: _Vector2 {x: -0.11565836298932386, y: 0.4758324382384532}
+Canvas3D.tsx:5173 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-1', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:5173 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-1', floorName: 'ground', furnitureName: 'Vent 0F-1', …}
+Canvas3D.tsx:5182 🔍 Found 2 furniture objects in scene
+Canvas3D.tsx:5187 💥 Found 2 intersections
+Canvas3D.tsx:5201 ✅ Intersected furniture object: {furnitureId: 'Vent 0F-1', userData: {…}, position: _Vector3}
+Canvas3D.tsx:5249 🎛️ Opening furniture dialog with item: {id: 'Vent 0F-1', type: 'vent', name: 'Vent 0F-1', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:5250 🎛️ Setting editingFurniture state...
+Canvas3D.tsx:5258 🎛️ editingFurniture state set!
