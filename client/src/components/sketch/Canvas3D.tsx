@@ -5463,13 +5463,7 @@ export default function Canvas3D({
         // Save to the store using the correct callback signature
         onUpdateFurniture(editingFurniture.item.floorName, 0, updatedFurnitureItem);
         
-        console.log("💾 Furniture data saved to store:", {
-          id: furnitureId,
-          properties: data.properties,
-          simulationProperties: data.simulationProperties,
-          position: data.position,
-          rotation: data.rotation
-        });
+
       } else {
         console.warn("⚠️ onUpdateFurniture callback not available - properties not saved!");
       }
