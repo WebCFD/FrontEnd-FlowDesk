@@ -5468,6 +5468,8 @@ export default function Canvas3D({
         console.log("💾 About to call onUpdateFurniture with floor:", editingFurniture.item.floorName, "id:", editingFurniture.item.id);
         console.log("💾 onUpdateFurniture callback exists:", !!onUpdateFurniture);
         console.log("💾 onUpdateFurniture callback type:", typeof onUpdateFurniture);
+        console.log("💾 onUpdateFurniture function name:", onUpdateFurniture?.name);
+        console.log("💾 onUpdateFurniture function toString:", onUpdateFurniture?.toString().substring(0, 100));
 
         // Save to the store using the correct callback signature
         try {

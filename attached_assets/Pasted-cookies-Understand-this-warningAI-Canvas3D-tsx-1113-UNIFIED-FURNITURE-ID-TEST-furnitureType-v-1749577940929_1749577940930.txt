@@ -1,0 +1,50 @@
+cookies.Understand this warningAI
+Canvas3D.tsx:1113 🆔 UNIFIED FURNITURE ID TEST: {furnitureType: 'vent', floorName: 'ground', existingCount: 0, existingByType: 0, generatedId: 'Vent 0F-1', …}
+RoomSketchPro.tsx:797 RSP: New furniture added, re-applying textures...
+FurnitureDialog.tsx:292 🔍 DIALOG LOADING CHECK:
+FurnitureDialog.tsx:293 🔍 Type: vent
+FurnitureDialog.tsx:294 🔍 Is editing: true
+FurnitureDialog.tsx:295 🔍 Props.initialValues: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+FurnitureDialog.tsx:296 🔍 Defaults from getDefaultValues(): {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+FurnitureDialog.tsx:297 🔍 Defaults.simulationProperties: {flowType: 'Air Mass Flow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', state: 'open', …}
+[Violation] Forced reflow while executing JavaScript took 31ms
+Canvas3D.tsx:5449 💾 CANVAS3D SAVE - Creating updated furniture item:
+Canvas3D.tsx:5450 💾 Original editing item: {id: 'Vent 0F-1', type: 'vent', name: 'Vent 0F-1', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:5451 💾 New data from dialog: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+Canvas3D.tsx:5452 💾 New data simulationProperties: {flowType: 'Air Mass Flow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', state: 'closed', …}
+Canvas3D.tsx:5465 💾 CANVAS3D SAVE - Final updated item:
+Canvas3D.tsx:5466 💾 Updated item: {id: 'Vent 0F-1', type: 'vent', name: 'Vent 0F-1', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:5467 💾 Updated item simulationProperties: {flowType: 'Air Mass Flow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', state: 'closed', …}
+Canvas3D.tsx:5468 💾 About to call onUpdateFurniture with floor: ground id: Vent 0F-1
+Canvas3D.tsx:5469 💾 onUpdateFurniture callback exists: true
+Canvas3D.tsx:5470 💾 onUpdateFurniture callback type: function
+Canvas3D.tsx:5474 💾 EXECUTING onUpdateFurniture callback...
+Canvas3D.tsx:5476 💾 onUpdateFurniture callback completed successfully!
+Canvas3D.tsx:5142 🖱️ Furniture double-click detected!
+Canvas3D.tsx:5161 🎯 Mouse coordinates: _Vector2 {x: -0.47153024911032027, y: -0.0032223415682062218}
+Canvas3D.tsx:5173 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-1', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:5173 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-1', floorName: 'ground', furnitureName: 'Vent 0F-1', …}
+Canvas3D.tsx:5182 🔍 Found 2 furniture objects in scene
+Canvas3D.tsx:5187 💥 Found 2 intersections
+Canvas3D.tsx:5201 ✅ Intersected furniture object: {furnitureId: 'Vent 0F-1', userData: {…}, position: _Vector3}
+Canvas3D.tsx:5210 📦 STORE QUERY - Getting furniture for floor: ground
+Canvas3D.tsx:5212 📦 STORE QUERY - All furniture items: [{…}]
+Canvas3D.tsx:5213 📦 STORE QUERY - Looking for ID: Vent 0F-1
+Canvas3D.tsx:5215 📦 STORE QUERY - Found item: {id: 'Vent 0F-1', type: 'vent', name: 'Vent 0F-1', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:5218 📦 STORE RETRIEVAL - Found furniture item in store:
+Canvas3D.tsx:5219 📦 Item ID: Vent 0F-1
+Canvas3D.tsx:5220 📦 Item type: vent
+Canvas3D.tsx:5221 📦 Item properties: {temperature: 20, thermalConductivity: 0.12, density: 600, heatCapacity: 1200, emissivity: 0.85}
+Canvas3D.tsx:5222 📦 Item simulationProperties: undefined
+Canvas3D.tsx:5223 📦 Full stored item: {id: 'Vent 0F-1', type: 'vent', name: 'Vent 0F-1', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:5241 🎛️ FINAL ITEM PASSED TO DIALOG:
+Canvas3D.tsx:5242 🎛️ Item simulationProperties: undefined
+Canvas3D.tsx:5243 🎛️ Full item: {id: 'Vent 0F-1', type: 'vent', name: 'Vent 0F-1', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:5244 🎛️ Setting editingFurniture state...
+Canvas3D.tsx:5252 🎛️ editingFurniture state set!
+FurnitureDialog.tsx:292 🔍 DIALOG LOADING CHECK:
+FurnitureDialog.tsx:293 🔍 Type: vent
+FurnitureDialog.tsx:294 🔍 Is editing: true
+FurnitureDialog.tsx:295 🔍 Props.initialValues: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+FurnitureDialog.tsx:296 🔍 Defaults from getDefaultValues(): {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+FurnitureDialog.tsx:297 🔍 Defaults.simulationProperties: {flowType: 'Air Mass Flow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', state: 'open', …}
