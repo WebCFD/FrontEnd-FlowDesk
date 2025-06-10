@@ -350,7 +350,8 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
       rotation: values.rotation,
       scale: values.scale,
       ...(type === 'custom' && { dimensions: dimensions }),
-      properties
+      properties,
+      ...(type === 'vent' && { simulationProperties })
     };
     
     props.onConfirm(furnitureData);
@@ -896,6 +897,145 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                         className="col-span-2"
                       />
                       <span className="text-sm">J/kg·K</span>
+                    </div>
+
+                    {/* Separator for simulation properties */}
+                    <div className="border-t border-slate-300 pt-4 mt-4">
+                      <h5 className="font-medium text-sm mb-3 text-slate-600">Airflow Simulation</h5>
+                    </div>
+
+                    {/* Vent State */}
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="vent-state" className="text-right">
+                        State
+                      </Label>
+                      <Select value={simulationProperties.state} onValueChange={(value: 'open' | 'closed') => 
+                        setSimulationProperties(prev => ({...prev, state: value}))}>
+                        <SelectTrigger className="col-span-3">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="open">Open</SelectItem>
+                          <SelectItem value="closed">Closed</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Flow Type */}
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="flow-type" className="text-right">
+                        Flow Type
+                      </Label>
+                      <Select value={simulationProperties.flowType} onValueChange={(value: 'Air Mass Flow' | 'Air Velocity' | 'Pressure') => 
+                        setSimulationProperties(prev => ({...prev, flowType: value}))}>
+                        <SelectTrigger className="col-span-3">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Air Mass Flow">Air Mass Flow</SelectItem>
+                          <SelectItem value="Air Velocity">Air Velocity</SelectItem>
+                          <SelectItem value="Pressure">Pressure</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Air Direction */}
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="air-direction" className="text-right">
+                        Air Direction
+                      </Label>
+                      <Select value={simulationProperties.airOrientation} onValueChange={(value: 'inflow' | 'outflow') => 
+                        setSimulationProperties(prev => ({...prev, airOrientation: value}))}>
+                        <SelectTrigger className="col-span-3">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="inflow">Inflow</SelectItem>
+                          <SelectItem value="outflow">Outflow</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Flow Intensity */}
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="flow-intensity" className="text-right">
+                        Flow Intensity
+                      </Label>
+                      <Select value={simulationProperties.flowIntensity} onValueChange={(value: 'low' | 'medium' | 'high' | 'custom') => 
+                        setSimulationProperties(prev => ({...prev, flowIntensity: value}))}>
+                        <SelectTrigger className="col-span-3">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="low">Low</SelectItem>
+                          <SelectItem value="medium">Medium</SelectItem>
+                          <SelectItem value="high">High</SelectItem>
+                          <SelectItem value="custom">Custom</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Custom Flow Value - only show when custom intensity is selected */}
+                    {simulationProperties.flowIntensity === 'custom' && (
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="custom-flow-value" className="text-right">
+                          Flow Value
+                        </Label>
+                        <Input
+                          id="custom-flow-value"
+                          type="number"
+                          step="0.1"
+                          value={simulationProperties.customIntensityValue}
+                          onChange={(e) => setSimulationProperties(prev => ({
+                            ...prev, 
+                            customIntensityValue: Number(e.target.value)
+                          }))}
+                          className="col-span-2"
+                        />
+                        <span className="text-sm">
+                          {simulationProperties.flowType === 'Air Mass Flow' ? 'kg/s' : 
+                           simulationProperties.flowType === 'Air Velocity' ? 'm/s' : 'Pa'}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Air Angles */}
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="vertical-angle" className="text-right">
+                        Vertical Angle
+                      </Label>
+                      <Input
+                        id="vertical-angle"
+                        type="number"
+                        min="-90"
+                        max="90"
+                        value={simulationProperties.verticalAngle}
+                        onChange={(e) => setSimulationProperties(prev => ({
+                          ...prev, 
+                          verticalAngle: Number(e.target.value)
+                        }))}
+                        className="col-span-2"
+                      />
+                      <span className="text-sm">°</span>
+                    </div>
+
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="horizontal-angle" className="text-right">
+                        Horizontal Angle
+                      </Label>
+                      <Input
+                        id="horizontal-angle"
+                        type="number"
+                        min="-180"
+                        max="180"
+                        value={simulationProperties.horizontalAngle}
+                        onChange={(e) => setSimulationProperties(prev => ({
+                          ...prev, 
+                          horizontalAngle: Number(e.target.value)
+                        }))}
+                        className="col-span-2"
+                      />
+                      <span className="text-sm">°</span>
                     </div>
                   </>
                 )}
