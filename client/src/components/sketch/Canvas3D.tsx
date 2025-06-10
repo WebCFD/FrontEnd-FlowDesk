@@ -5050,12 +5050,21 @@ export default function Canvas3D({
         const itemData = event.dataTransfer?.getData("application/json");
         let furnitureType: string | undefined;
         
+        console.log("🔍 DRAG OVER DEBUG - Item data:", itemData);
+        
         if (itemData) {
           try {
             const furnitureMenuData = JSON.parse(itemData);
             const isCustomObject = furnitureMenuData.id.startsWith('custom_');
             furnitureType = isCustomObject ? 'custom' : furnitureMenuData.id;
+            
+            console.log("🔍 DRAG OVER DEBUG - Parsed data:", {
+              furnitureMenuData,
+              isCustomObject,
+              extractedFurnitureType: furnitureType
+            });
           } catch (error) {
+            console.log("🔍 DRAG OVER DEBUG - Parse error:", error);
             // If parsing fails, allow all surfaces
             furnitureType = undefined;
           }
@@ -5063,6 +5072,13 @@ export default function Canvas3D({
         
         // Determine if this furniture type is restricted to floors only
         const isFloorOnlyFurniture = furnitureType && FLOOR_ONLY_FURNITURE.includes(furnitureType);
+        
+        console.log("🔍 DRAG OVER DEBUG - Restriction check:", {
+          furnitureType,
+          FLOOR_ONLY_FURNITURE,
+          isFloorOnlyFurniture,
+          constantAccessible: typeof FLOOR_ONLY_FURNITURE !== 'undefined'
+        });
         
         const rect = container.getBoundingClientRect();
         const mouse = new THREE.Vector2(
