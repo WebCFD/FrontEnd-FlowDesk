@@ -5211,6 +5211,13 @@ export default function Canvas3D({
             const actualFurnitureItem = allFurnitureItems.find(item => item.id === furnitureId);
             
             if (actualFurnitureItem) {
+              console.log("📦 STORE RETRIEVAL - Found furniture item in store:");
+              console.log("📦 Item ID:", actualFurnitureItem.id);
+              console.log("📦 Item type:", actualFurnitureItem.type);
+              console.log("📦 Item properties:", actualFurnitureItem.properties);
+              console.log("📦 Item simulationProperties:", actualFurnitureItem.simulationProperties);
+              console.log("📦 Full stored item:", actualFurnitureItem);
+              
               // Use the actual stored item with all its properties including simulationProperties
               const furnitureItemWithCurrentPosition: FurnitureItem = {
                 ...actualFurnitureItem,
@@ -5227,7 +5234,9 @@ export default function Canvas3D({
                 }
               };
             
-              console.log("🎛️ Opening furniture dialog with actual item:", furnitureItemWithCurrentPosition);
+              console.log("🎛️ FINAL ITEM PASSED TO DIALOG:");
+              console.log("🎛️ Item simulationProperties:", furnitureItemWithCurrentPosition.simulationProperties);
+              console.log("🎛️ Full item:", furnitureItemWithCurrentPosition);
               console.log("🎛️ Setting editingFurniture state...");
               
               setEditingFurniture({
@@ -5433,6 +5442,11 @@ export default function Canvas3D({
 
       // CRITICAL: Save data to persistent store - this was missing!
       if (onUpdateFurniture) {
+        console.log("💾 CANVAS3D SAVE - Creating updated furniture item:");
+        console.log("💾 Original editing item:", editingFurniture.item);
+        console.log("💾 New data from dialog:", data);
+        console.log("💾 New data simulationProperties:", data.simulationProperties);
+        
         const updatedFurnitureItem: FurnitureItem = {
           ...editingFurniture.item,
           name: data.name,
@@ -5443,6 +5457,11 @@ export default function Canvas3D({
           simulationProperties: data.simulationProperties,
           updatedAt: Date.now()
         };
+
+        console.log("💾 CANVAS3D SAVE - Final updated item:");
+        console.log("💾 Updated item:", updatedFurnitureItem);
+        console.log("💾 Updated item simulationProperties:", updatedFurnitureItem.simulationProperties);
+        console.log("💾 About to call onUpdateFurniture with floor:", editingFurniture.item.floorName, "id:", editingFurniture.item.id);
 
         // Save to the store using the correct callback signature
         onUpdateFurniture(editingFurniture.item.floorName, editingFurniture.item.id, updatedFurnitureItem);
