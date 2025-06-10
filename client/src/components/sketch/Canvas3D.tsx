@@ -110,7 +110,7 @@ interface Canvas3DProps {
   onFurnitureDeleted?: () => void; // Callback to notify when furniture is deleted from scene
   // Furniture callbacks - Phase 2: Props pattern
   onFurnitureAdd?: (floorName: string, item: FurnitureItem) => void;
-  onUpdateFurniture?: (floorName: string, index: number, item: FurnitureItem) => void;
+  onUpdateFurniture?: (floorName: string, itemId: string, item: FurnitureItem) => void;
   onDeleteFurniture?: (floorName: string, itemId: string) => void;
 }
 

@@ -1,0 +1,44 @@
+
+Canvas3D.tsx:5214 📦 STORE RETRIEVAL - Found furniture item in store:
+Canvas3D.tsx:5215 📦 Item ID: Vent 0F-1
+Canvas3D.tsx:5216 📦 Item type: vent
+Canvas3D.tsx:5217 📦 Item properties: {temperature: 20, thermalConductivity: 0.12, density: 600, heatCapacity: 1200, emissivity: 0.85}
+Canvas3D.tsx:5218 📦 Item simulationProperties: undefined
+Canvas3D.tsx:5219 📦 Full stored item: {id: 'Vent 0F-1', type: 'vent', name: 'Vent 0F-1', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:5237 🎛️ FINAL ITEM PASSED TO DIALOG:
+Canvas3D.tsx:5238 🎛️ Item simulationProperties: undefined
+Canvas3D.tsx:5239 🎛️ Full item: {id: 'Vent 0F-1', type: 'vent', name: 'Vent 0F-1', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:5240 🎛️ Setting editingFurniture state...
+Canvas3D.tsx:5248 🎛️ editingFurniture state set!
+Canvas3D.tsx:5445 💾 CANVAS3D SAVE - Creating updated furniture item:
+Canvas3D.tsx:5446 💾 Original editing item: {id: 'Vent 0F-1', type: 'vent', name: 'Vent 0F-1', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:5447 💾 New data from dialog: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+Canvas3D.tsx:5448 💾 New data simulationProperties: {flowType: 'Air Mass Flow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', state: 'open', …}
+Canvas3D.tsx:5461 💾 CANVAS3D SAVE - Final updated item:
+Canvas3D.tsx:5462 💾 Updated item: {id: 'Vent 0F-1', type: 'vent', name: 'Vent 0F-1', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:5463 💾 Updated item simulationProperties: {flowType: 'Air Mass Flow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', state: 'open', …}
+Canvas3D.tsx:5464 💾 About to call onUpdateFurniture with floor: ground id: Vent 0F-1
+Canvas3D.tsx:5142 🖱️ Furniture double-click detected!
+Canvas3D.tsx:5161 🎯 Mouse coordinates: _Vector2 {x: -0.12277580071174377, y: 0.2824919441460795}
+Canvas3D.tsx:5173 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-1', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:5173 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-1', floorName: 'ground', furnitureName: 'Vent 0F-1', …}
+Canvas3D.tsx:5182 🔍 Found 2 furniture objects in scene
+Canvas3D.tsx:5187 💥 Found 2 intersections
+Canvas3D.tsx:5201 ✅ Intersected furniture object: {furnitureId: 'Vent 0F-1', userData: {…}, position: _Vector3}
+Canvas3D.tsx:5214 📦 STORE RETRIEVAL - Found furniture item in store:
+Canvas3D.tsx:5215 📦 Item ID: Vent 0F-1
+Canvas3D.tsx:5216 📦 Item type: vent
+Canvas3D.tsx:5217 📦 Item properties: {temperature: 20, thermalConductivity: 0.12, density: 600, heatCapacity: 1200, emissivity: 0.85}
+Canvas3D.tsx:5218 📦 Item simulationProperties: undefined
+Canvas3D.tsx:5219 📦 Full stored item: {id: 'Vent 0F-1', type: 'vent', name: 'Vent 0F-1', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:5237 🎛️ FINAL ITEM PASSED TO DIALOG:
+Canvas3D.tsx:5238 🎛️ Item simulationProperties: undefined
+Canvas3D.tsx:5239 🎛️ Full item: {id: 'Vent 0F-1', type: 'vent', name: 'Vent 0F-1', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:5240 🎛️ Setting editingFurniture state...
+Canvas3D.tsx:5248 🎛️ editingFurniture state set!
+FurnitureDialog.tsx:292 🔍 DIALOG LOADING CHECK:
+FurnitureDialog.tsx:293 🔍 Type: vent
+FurnitureDialog.tsx:294 🔍 Is editing: true
+FurnitureDialog.tsx:295 🔍 Props.initialValues: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+FurnitureDialog.tsx:296 🔍 Defaults from getDefaultValues(): {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+FurnitureDialog.tsx:297 🔍 Defaults.simulationProperties: {flowType: 'Air Mass Flow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', state: 'open', …}
