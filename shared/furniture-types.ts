@@ -23,7 +23,18 @@ export interface FurnitureItem {
     heatCapacity?: number;
     emissivity?: number;
   };
-  simulationProperties?: Record<string, any>; // Legacy field for backward compatibility
+  
+  // Simulation properties for vent furniture (matches AirEntry simulation capabilities)
+  simulationProperties?: {
+    flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
+    flowValue?: number;
+    flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
+    airOrientation?: 'inflow' | 'outflow';
+    state?: 'open' | 'closed';
+    customIntensityValue?: number;
+    verticalAngle?: number;
+    horizontalAngle?: number;
+  };
   
   // Internal tracking
   meshId?: string; // THREE.js mesh UUID for scene identification
