@@ -441,10 +441,10 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                       <Input
                         id="rot-x"
                         type="number"
-                        step="0.01"
-                        value={formatDisplayValue(values.rotation.x * (180 / Math.PI))}
+                        step="1"
+                        value={Math.round((values.rotation.x * (180 / Math.PI)) * 100) / 100}
                         onChange={(e) => {
-                          const degrees = handleDecimalInput(e.target.value);
+                          const degrees = Number(e.target.value);
                           const newRotationX = degrees * (Math.PI / 180);
                           const newRotation = { ...values.rotation, x: newRotationX };
                           setValues(prev => ({
@@ -464,10 +464,10 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                       <Input
                         id="rot-y"
                         type="number"
-                        step="0.01"
-                        value={formatDisplayValue(values.rotation.y * (180 / Math.PI))}
+                        step="1"
+                        value={Math.round((values.rotation.y * (180 / Math.PI)) * 100) / 100}
                         onChange={(e) => {
-                          const degrees = handleDecimalInput(e.target.value);
+                          const degrees = Number(e.target.value);
                           const newRotationY = degrees * (Math.PI / 180);
                           const newRotation = { ...values.rotation, y: newRotationY };
                           setValues(prev => ({
@@ -487,10 +487,10 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                       <Input
                         id="rot-z"
                         type="number"
-                        step="0.01"
-                        value={formatDisplayValue(values.rotation.z * (180 / Math.PI))}
+                        step="1"
+                        value={Math.round((values.rotation.z * (180 / Math.PI)) * 100) / 100}
                         onChange={(e) => {
-                          const degrees = handleDecimalInput(e.target.value);
+                          const degrees = Number(e.target.value);
                           const newRotationZ = degrees * (Math.PI / 180);
                           const newRotation = { ...values.rotation, z: newRotationZ };
                           setValues(prev => ({
@@ -517,10 +517,10 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                       <Input
                         id="scale-x"
                         type="number"
-                        step="0.01"
-                        value={formatDisplayValue(values.scale.x)}
+                        step="0.1"
+                        value={Math.round(values.scale.x * 100) / 100}
                         onChange={(e) => {
-                          const newScaleX = handleDecimalInput(e.target.value);
+                          const newScaleX = Number(e.target.value);
                           const newScale = { ...values.scale, x: newScaleX };
                           setValues(prev => ({
                             ...prev,
@@ -539,10 +539,10 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                       <Input
                         id="scale-y"
                         type="number"
-                        step="0.01"
-                        value={formatDisplayValue(values.scale.y)}
+                        step="0.1"
+                        value={Math.round(values.scale.y * 100) / 100}
                         onChange={(e) => {
-                          const newScaleY = handleDecimalInput(e.target.value);
+                          const newScaleY = Number(e.target.value);
                           const newScale = { ...values.scale, y: newScaleY };
                           setValues(prev => ({
                             ...prev,
@@ -561,10 +561,10 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                       <Input
                         id="scale-z"
                         type="number"
-                        step="0.01"
-                        value={formatDisplayValue(values.scale.z)}
+                        step="0.1"
+                        value={Math.round(values.scale.z * 100) / 100}
                         onChange={(e) => {
-                          const newScaleZ = handleDecimalInput(e.target.value);
+                          const newScaleZ = Number(e.target.value);
                           const newScale = { ...values.scale, z: newScaleZ };
                           setValues(prev => ({
                             ...prev,
