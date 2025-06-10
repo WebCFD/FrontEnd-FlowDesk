@@ -380,7 +380,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                         step="0.01"
                         value={formatDisplayValue(elementPosition.x)}
                         onChange={(e) => {
-                          const newX = handleDecimalInput(e.target.value);
+                          const newX = Number(e.target.value);
                           const newPosition = { ...elementPosition, x: newX };
                           setElementPosition(newPosition);
                           // Real-time update
@@ -399,7 +399,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                         step="0.01"
                         value={formatDisplayValue(elementPosition.y)}
                         onChange={(e) => {
-                          const newY = handleDecimalInput(e.target.value);
+                          const newY = Number(e.target.value);
                           const newPosition = { ...elementPosition, y: newY };
                           setElementPosition(newPosition);
                           // Real-time update
@@ -418,7 +418,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                         step="0.01"
                         value={formatDisplayValue(elementPosition.z)}
                         onChange={(e) => {
-                          const newZ = handleDecimalInput(e.target.value);
+                          const newZ = Number(e.target.value);
                           const newPosition = { ...elementPosition, z: newZ };
                           setElementPosition(newPosition);
                           // Real-time update
