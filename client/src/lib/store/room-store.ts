@@ -229,19 +229,9 @@ export const useRoomStore = create<RoomState>()(
         }),
 
         updateFurnitureInFloor: (floorName, itemId, item) => set((state) => {
-          console.log("💾 STORE UPDATE - Updating furniture in floor:");
-          console.log("💾 Floor name:", floorName);
-          console.log("💾 Item ID:", itemId);
-          console.log("💾 New item data:", item);
-          console.log("💾 New item simulationProperties:", item.simulationProperties);
-          
           const updatedItems = state.floors[floorName]?.furnitureItems?.map(existing => {
             if (existing.id === itemId) {
-              const updatedItem = { ...existing, ...item, updatedAt: Date.now() };
-              console.log("💾 BEFORE UPDATE - existing item:", existing);
-              console.log("💾 AFTER UPDATE - updated item:", updatedItem);
-              console.log("💾 AFTER UPDATE - simulationProperties:", updatedItem.simulationProperties);
-              return updatedItem;
+              return { ...existing, ...item, updatedAt: Date.now() };
             }
             return existing;
           }) || [];

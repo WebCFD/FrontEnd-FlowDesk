@@ -5207,21 +5207,10 @@ export default function Canvas3D({
           if (furnitureId) {
             // Get the actual furniture item from the store
             const floorName = furnitureGroup.userData.floorName || currentFloor;
-            console.log("📦 STORE QUERY - Getting furniture for floor:", floorName);
             const allFurnitureItems = getAllFurnitureForFloor(floorName);
-            console.log("📦 STORE QUERY - All furniture items:", allFurnitureItems);
-            console.log("📦 STORE QUERY - Looking for ID:", furnitureId);
             const actualFurnitureItem = allFurnitureItems.find(item => item.id === furnitureId);
-            console.log("📦 STORE QUERY - Found item:", actualFurnitureItem);
             
             if (actualFurnitureItem) {
-              console.log("📦 STORE RETRIEVAL - Found furniture item in store:");
-              console.log("📦 Item ID:", actualFurnitureItem.id);
-              console.log("📦 Item type:", actualFurnitureItem.type);
-              console.log("📦 Item properties:", actualFurnitureItem.properties);
-              console.log("📦 Item simulationProperties:", actualFurnitureItem.simulationProperties);
-              console.log("📦 Full stored item:", actualFurnitureItem);
-              
               // Use the actual stored item with all its properties including simulationProperties
               const furnitureItemWithCurrentPosition: FurnitureItem = {
                 ...actualFurnitureItem,
@@ -5237,30 +5226,15 @@ export default function Canvas3D({
                   z: furnitureGroup.rotation.z
                 }
               };
-            
-              console.log("🎛️ FINAL ITEM PASSED TO DIALOG:");
-              console.log("🎛️ Item simulationProperties:", furnitureItemWithCurrentPosition.simulationProperties);
-              console.log("🎛️ Full item:", furnitureItemWithCurrentPosition);
-              console.log("🎛️ Setting editingFurniture state...");
               
               setEditingFurniture({
                 index: 0, // This would need to be the actual index from the furniture list
                 item: furnitureItemWithCurrentPosition,
                 mode: 'edit' // Phase 2: Mark as edit mode for double-click
               });
-              
-              console.log("🎛️ editingFurniture state set!");
-            } else {
-              console.log("❌ Furniture item not found in store for ID:", furnitureId);
             }
-          } else {
-            console.log("❌ No furnitureId found in userData");
           }
-        } else {
-          console.log("❌ No furniture group found");
         }
-      } else {
-        console.log("❌ No furniture intersections found");
       }
     };
 
@@ -5444,13 +5418,8 @@ export default function Canvas3D({
         furnitureGroup.userData.properties = data.properties;
       }
 
-      // CRITICAL: Save data to persistent store - this was missing!
+      // Save data to persistent store
       if (onUpdateFurniture) {
-        console.log("💾 CANVAS3D SAVE - Creating updated furniture item:");
-        console.log("💾 Original editing item:", editingFurniture.item);
-        console.log("💾 New data from dialog:", data);
-        console.log("💾 New data simulationProperties:", data.simulationProperties);
-        
         const updatedFurnitureItem: FurnitureItem = {
           ...editingFurniture.item,
           name: data.name,
@@ -5462,28 +5431,7 @@ export default function Canvas3D({
           updatedAt: Date.now()
         };
 
-        console.log("💾 CANVAS3D SAVE - Final updated item:");
-        console.log("💾 Updated item:", updatedFurnitureItem);
-        console.log("💾 Updated item simulationProperties:", updatedFurnitureItem.simulationProperties);
-        console.log("💾 About to call onUpdateFurniture with floor:", editingFurniture.item.floorName, "id:", editingFurniture.item.id);
-        console.log("💾 onUpdateFurniture callback exists:", !!onUpdateFurniture);
-        console.log("💾 onUpdateFurniture callback type:", typeof onUpdateFurniture);
-        console.log("💾 onUpdateFurniture function name:", onUpdateFurniture?.name);
-        console.log("💾 onUpdateFurniture function toString:", onUpdateFurniture?.toString().substring(0, 100));
-
-        // Save to the store using the correct callback signature
-        try {
-          console.log("💾 EXECUTING onUpdateFurniture callback...");
-          onUpdateFurniture(editingFurniture.item.floorName, editingFurniture.item.id, updatedFurnitureItem);
-          console.log("💾 onUpdateFurniture callback completed successfully!");
-        } catch (error) {
-          console.error("❌ Error in onUpdateFurniture callback:", error);
-          console.error("❌ Error stack:", error?.stack);
-        }
-        
-
-      } else {
-        console.warn("⚠️ onUpdateFurniture callback not available - properties not saved!");
+        onUpdateFurniture(editingFurniture.item.floorName, editingFurniture.item.id, updatedFurnitureItem);
       }
 
     } else {
