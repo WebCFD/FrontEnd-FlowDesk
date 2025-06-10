@@ -728,20 +728,22 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
               <h4 className="font-medium text-sm mb-4 text-slate-700 border-b border-slate-200 pb-2">Simulation Properties</h4>
               
               <div className="space-y-4">
-                {/* Temperature - First position for all furniture types */}
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="temperature" className="text-right">
-                    Temperature
-                  </Label>
-                  <Input
-                    id="temperature"
-                    type="number"
-                    value={temperature}
-                    onChange={(e) => setTemperature(Number(e.target.value))}
-                    className="col-span-2"
-                  />
-                  <span className="text-sm">°C</span>
-                </div>
+                {/* Temperature - Only for non-vent furniture */}
+                {type !== 'vent' && (
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="temperature" className="text-right">
+                      Temperature
+                    </Label>
+                    <Input
+                      id="temperature"
+                      type="number"
+                      value={temperature}
+                      onChange={(e) => setTemperature(Number(e.target.value))}
+                      className="col-span-2"
+                    />
+                    <span className="text-sm">°C</span>
+                  </div>
+                )}
 
                 {/* Material/Emissivity system for non-vent furniture */}
                 {type !== 'vent' && (
