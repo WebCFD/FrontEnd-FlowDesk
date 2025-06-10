@@ -5207,8 +5207,12 @@ export default function Canvas3D({
           if (furnitureId) {
             // Get the actual furniture item from the store
             const floorName = furnitureGroup.userData.floorName || currentFloor;
+            console.log("📦 STORE QUERY - Getting furniture for floor:", floorName);
             const allFurnitureItems = getAllFurnitureForFloor(floorName);
+            console.log("📦 STORE QUERY - All furniture items:", allFurnitureItems);
+            console.log("📦 STORE QUERY - Looking for ID:", furnitureId);
             const actualFurnitureItem = allFurnitureItems.find(item => item.id === furnitureId);
+            console.log("📦 STORE QUERY - Found item:", actualFurnitureItem);
             
             if (actualFurnitureItem) {
               console.log("📦 STORE RETRIEVAL - Found furniture item in store:");

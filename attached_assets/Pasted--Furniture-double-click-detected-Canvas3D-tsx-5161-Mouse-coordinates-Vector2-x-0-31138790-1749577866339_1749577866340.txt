@@ -1,0 +1,24 @@
+🖱️ Furniture double-click detected!
+Canvas3D.tsx:5161 🎯 Mouse coordinates: _Vector2 {x: 0.31138790035587194, y: 0.40923737916219116}
+Canvas3D.tsx:5173 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-1', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:5173 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-1', floorName: 'ground', furnitureName: 'Vent 0F-1', …}
+Canvas3D.tsx:5173 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-2', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:5173 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-2', floorName: 'ground', furnitureName: 'Vent 0F-2', …}
+Canvas3D.tsx:5173 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-3', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:5173 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-3', floorName: 'ground', furnitureName: 'Vent 0F-3', …}
+Canvas3D.tsx:5182 🔍 Found 6 furniture objects in scene
+Canvas3D.tsx:5187 💥 Found 2 intersections
+Canvas3D.tsx:5201 ✅ Intersected furniture object: {furnitureId: 'Vent 0F-2', userData: {…}, position: _Vector3}
+Canvas3D.tsx:5250 ❌ Furniture item not found in store for ID: Vent 0F-2
+Canvas3D.tsx:5142 🖱️ Furniture double-click detected!
+Canvas3D.tsx:5161 🎯 Mouse coordinates: _Vector2 {x: 0.31138790035587194, y: 0.40923737916219116}
+Canvas3D.tsx:5173 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-1', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:5173 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-1', floorName: 'ground', furnitureName: 'Vent 0F-1', …}
+Canvas3D.tsx:5173 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-2', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:5173 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-2', floorName: 'ground', furnitureName: 'Vent 0F-2', …}
+Canvas3D.tsx:5173 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-3', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:5173 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-3', floorName: 'ground', furnitureName: 'Vent 0F-3', …}
+Canvas3D.tsx:5182 🔍 Found 6 furniture objects in scene
+Canvas3D.tsx:5187 💥 Found 2 intersections
+Canvas3D.tsx:5201 ✅ Intersected furniture object: {furnitureId: 'Vent 0F-2', userData: {…}, position: _Vector3}
+Canvas3D.tsx:5250 ❌ Furniture item not found in store for ID: Vent 0F-2
