@@ -13,6 +13,10 @@ interface FurnitureMenuProps {
   onDragStart: (item: FurnitureItem) => void;
   wallTransparency: number;
   onWallTransparencyChange: (value: number) => void;
+  floorContext?: {
+    currentFloor: string;
+    floors: Record<string, any>;
+  };
 }
 
 const furnitureItems: FurnitureItem[] = [
@@ -89,7 +93,7 @@ const furnitureItems: FurnitureItem[] = [
   }
 ];
 
-export function FurnitureMenu({ onDragStart, wallTransparency = 0.8, onWallTransparencyChange }: FurnitureMenuProps) {
+export function FurnitureMenu({ onDragStart, wallTransparency = 0.8, onWallTransparencyChange, floorContext }: FurnitureMenuProps) {
   const [customItems, setCustomItems] = useState<FurnitureItem[]>([]);
 
   // Subscribe to custom furniture store updates
@@ -183,7 +187,7 @@ export function FurnitureMenu({ onDragStart, wallTransparency = 0.8, onWallTrans
 
       <div className="space-y-4">
         <h3 className="font-semibold">Load Custom Object</h3>
-        <STLUploader onModelLoaded={handleSTLLoaded} />
+        <STLUploader onModelLoaded={handleSTLLoaded} floorContext={floorContext} />
       </div>
     </div>
   );
