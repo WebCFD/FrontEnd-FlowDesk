@@ -905,7 +905,11 @@ const createFurnitureModel = (
     furnitureType: furnitureItem.type,
     furnitureId: furnitureItem.id,
     floorName: furnitureItem.floorName,
-    isSelectable: true
+    furnitureName: furnitureItem.name,
+    isSelectable: true,
+    properties: furnitureItem.properties,
+    dimensions: furnitureItem.dimensions,
+    ...(furnitureItem.simulationProperties && { simulationProperties: furnitureItem.simulationProperties })
   };
 
   // Set the meshId in the furniture item for reference
@@ -5228,18 +5232,25 @@ export default function Canvas3D({
               information: furnitureGroup.userData.information || '',
               // Include properties from scene userData or use defaults
               properties: furnitureGroup.userData.properties || (furnitureType === 'vent' ? {
-                temperature: 20,
-                thermalConductivity: 0.12,
-                density: 600,
-                heatCapacity: 1200,
-                emissivity: 0.85
+                temperature: 20
               } : {
                 material: "default",
                 temperature: 20,
-                emissivity: 0.90,
-                thermalConductivity: 0.12,
-                density: 600,
-                heatCapacity: 1200
+                emissivity: 0.90
+              }),
+              // Include simulation properties for vent furniture
+              ...(furnitureType === 'vent' && {
+                simulationProperties: furnitureGroup.userData.simulationProperties || {
+                  flowType: 'Air Mass Flow',
+                  flowValue: 0.5,
+                  flowIntensity: 'medium',
+                  airOrientation: 'inflow',
+                  state: 'open',
+                  customIntensityValue: 0.5,
+                  verticalAngle: 0,
+                  horizontalAngle: 0,
+                  airTemperature: 20
+                }
               }),
               meshId: furnitureGroup.userData.meshId || furnitureId,
               createdAt: furnitureGroup.userData.createdAt || Date.now(),
@@ -5421,6 +5432,17 @@ export default function Canvas3D({
         heatCapacity?: number;
         emissivity?: number;
       };
+      simulationProperties?: {
+        flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
+        flowValue?: number;
+        flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
+        airOrientation?: 'inflow' | 'outflow';
+        state?: 'open' | 'closed';
+        customIntensityValue?: number;
+        verticalAngle?: number;
+        horizontalAngle?: number;
+        airTemperature?: number;
+      };
     }
   ) => {
     if (!editingFurniture || !sceneRef.current) return;
@@ -5446,6 +5468,11 @@ export default function Canvas3D({
       if (data.properties) {
         furnitureGroup.userData.properties = data.properties;
       }
+      
+      // Store simulation properties in userData for vent furniture
+      if (data.simulationProperties) {
+        furnitureGroup.userData.simulationProperties = data.simulationProperties;
+      }
 
       // CRITICAL: Save data to persistent store - this was missing!
       if (onUpdateFurniture) {
@@ -5456,6 +5483,7 @@ export default function Canvas3D({
           rotation: data.rotation,
           scale: data.scale,
           properties: data.properties,
+          ...(data.simulationProperties && { simulationProperties: data.simulationProperties }),
           updatedAt: Date.now()
         };
 
