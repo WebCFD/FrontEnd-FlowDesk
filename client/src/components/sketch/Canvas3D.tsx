@@ -5044,8 +5044,26 @@ export default function Canvas3D({
       }
       lastRaycastTime = now;
       
-      // Simple raycasting logic: highlight the last surface intersected
+      // Enhanced raycasting logic: respect furniture type restrictions for highlighting
       if (cameraRef.current && sceneRef.current) {
+        // Extract furniture type from drag data
+        const itemData = event.dataTransfer?.getData("application/json");
+        let furnitureType: string | undefined;
+        
+        if (itemData) {
+          try {
+            const furnitureMenuData = JSON.parse(itemData);
+            const isCustomObject = furnitureMenuData.id.startsWith('custom_');
+            furnitureType = isCustomObject ? 'custom' : furnitureMenuData.id;
+          } catch (error) {
+            // If parsing fails, allow all surfaces
+            furnitureType = undefined;
+          }
+        }
+        
+        // Determine if this furniture type is restricted to floors only
+        const isFloorOnlyFurniture = furnitureType && FLOOR_ONLY_FURNITURE.includes(furnitureType);
+        
         const rect = container.getBoundingClientRect();
         const mouse = new THREE.Vector2(
           ((event.clientX - rect.left) / rect.width) * 2 - 1,
@@ -5055,17 +5073,23 @@ export default function Canvas3D({
         const raycaster = new THREE.Raycaster();
         raycaster.setFromCamera(mouse, cameraRef.current);
 
-        // Get all floor and ceiling meshes
+        // Get floor and ceiling meshes, filtered by furniture type restrictions
         const surfaces: THREE.Mesh[] = [];
         sceneRef.current.traverse((object: THREE.Object3D) => {
           if (object instanceof THREE.Mesh && 
               object.userData.type && 
               (object.userData.type === 'floor' || object.userData.type === 'ceiling')) {
+            
+            // Filter surfaces based on furniture type restrictions
+            if (isFloorOnlyFurniture && object.userData.type === 'ceiling') {
+              return; // Skip ceiling surfaces for floor-only furniture
+            }
+            
             surfaces.push(object);
           }
         });
 
-        // Get intersections with surfaces only
+        // Get intersections with allowed surfaces only
         const intersects = raycaster.intersectObjects(surfaces);
         
         // Clear all highlights first
