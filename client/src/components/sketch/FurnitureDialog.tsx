@@ -28,6 +28,16 @@ interface FurnitureDialogProps {
       heatCapacity?: number;
       emissivity?: number;
     };
+    simulationProperties?: {
+      flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
+      flowValue?: number;
+      flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
+      airOrientation?: 'inflow' | 'outflow';
+      state?: 'open' | 'closed';
+      customIntensityValue?: number;
+      verticalAngle?: number;
+      horizontalAngle?: number;
+    };
   }) => void;
   onCancel?: () => void; // New prop for cancel handling
   isEditing?: boolean;
@@ -44,6 +54,16 @@ interface FurnitureDialogProps {
       density?: number;
       heatCapacity?: number;
       emissivity?: number;
+    };
+    simulationProperties?: {
+      flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
+      flowValue?: number;
+      flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
+      airOrientation?: 'inflow' | 'outflow';
+      state?: 'open' | 'closed';
+      customIntensityValue?: number;
+      verticalAngle?: number;
+      horizontalAngle?: number;
     };
   };
   floorContext?: {
@@ -138,6 +158,16 @@ const furnitureDefaults = {
       thermalConductivity: 45,
       density: 2700,
       heatCapacity: 900
+    },
+    simulationProperties: {
+      flowType: "Air Mass Flow" as const,
+      flowValue: 0.5,
+      flowIntensity: "medium" as const,
+      airOrientation: "inflow" as const,
+      state: "open" as const,
+      customIntensityValue: 0.5,
+      verticalAngle: 0,
+      horizontalAngle: 0
     }
   }
 };
@@ -200,6 +230,18 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
     heatCapacity: 1200
   });
 
+  // Estados para propiedades de simulación de vents
+  const [simulationProperties, setSimulationProperties] = useState({
+    flowType: 'Air Mass Flow' as 'Air Mass Flow' | 'Air Velocity' | 'Pressure',
+    flowValue: 0.5,
+    flowIntensity: 'medium' as 'low' | 'medium' | 'high' | 'custom',
+    airOrientation: 'inflow' as 'inflow' | 'outflow',
+    state: 'open' as 'open' | 'closed',
+    customIntensityValue: 0.5,
+    verticalAngle: 0,
+    horizontalAngle: 0
+  });
+
   // Material definitions with emissivity values (not applied to vents)
   const materialDefinitions = {
     default: { name: "Default", emissivity: 0.90 },
@@ -251,6 +293,18 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
           thermalConductivity: defaults.properties?.thermalConductivity || 0.12,
           density: defaults.properties?.density || 600,
           heatCapacity: defaults.properties?.heatCapacity || 1200
+        });
+        
+        // Initialize simulation properties for vent furniture
+        setSimulationProperties({
+          flowType: (defaults as any).simulationProperties?.flowType || 'Air Mass Flow',
+          flowValue: (defaults as any).simulationProperties?.flowValue || 0.5,
+          flowIntensity: (defaults as any).simulationProperties?.flowIntensity || 'medium',
+          airOrientation: (defaults as any).simulationProperties?.airOrientation || 'inflow',
+          state: (defaults as any).simulationProperties?.state || 'open',
+          customIntensityValue: (defaults as any).simulationProperties?.customIntensityValue || 0.5,
+          verticalAngle: (defaults as any).simulationProperties?.verticalAngle || 0,
+          horizontalAngle: (defaults as any).simulationProperties?.horizontalAngle || 0
         });
       }
       
