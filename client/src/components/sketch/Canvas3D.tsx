@@ -5316,12 +5316,11 @@ export default function Canvas3D({
         thermalConductivity?: number;
         density?: number;
         heatCapacity?: number;
+        emissivity?: number;
       };
     }
   ) => {
     if (!editingFurniture || !sceneRef.current) return;
-
-
 
     // Find the furniture object in the scene by ID
     const furnitureId = editingFurniture.item.id;
@@ -5334,27 +5333,45 @@ export default function Canvas3D({
     });
 
     if (furnitureGroup) {
-
-      
-      // Update position
+      // Update 3D scene visuals
       furnitureGroup.position.set(data.position.x, data.position.y, data.position.z);
-      
-      // Update rotation
       furnitureGroup.rotation.set(data.rotation.x, data.rotation.y, data.rotation.z);
-      
-      // Update scale
       furnitureGroup.scale.set(data.scale.x, data.scale.y, data.scale.z);
-      
-      // Update userData
       furnitureGroup.userData.furnitureName = data.name;
       
+      // Store properties in userData for reference
+      if (data.properties) {
+        furnitureGroup.userData.properties = data.properties;
+      }
+
+      // CRITICAL: Save data to persistent store - this was missing!
+      if (onUpdateFurniture) {
+        const updatedFurnitureItem: FurnitureItem = {
+          ...editingFurniture.item,
+          name: data.name,
+          position: data.position,
+          rotation: data.rotation,
+          scale: data.scale,
+          properties: data.properties,
+          updatedAt: Date.now()
+        };
+
+        // Save to the store using the correct callback signature
+        onUpdateFurniture(editingFurniture.item.floorName, 0, updatedFurnitureItem);
+        
+        console.log("💾 Furniture data saved to store:", {
+          id: furnitureId,
+          properties: data.properties,
+          position: data.position,
+          rotation: data.rotation
+        });
+      } else {
+        console.warn("⚠️ onUpdateFurniture callback not available - properties not saved!");
+      }
 
     } else {
       console.error("❌ Could not find furniture object in scene with ID:", furnitureId);
     }
-
-    // For newly dropped furniture, only update scene visual properties
-    // Don't create data objects or call persistence callbacks since furniture is already saved
     
     setEditingFurniture(null);
   };

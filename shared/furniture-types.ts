@@ -10,11 +10,20 @@ export interface FurnitureItem {
   floorName: string;
   position: { x: number; y: number; z: number };
   rotation: { x: number; y: number; z: number };
+  scale?: { x: number; y: number; z: number };
   dimensions: { width: number; height: number; depth: number };
   
   // Fields for furniture dialog
   information?: string;
-  simulationProperties?: Record<string, any>;
+  properties?: {
+    material?: string;
+    temperature?: number;
+    thermalConductivity?: number;
+    density?: number;
+    heatCapacity?: number;
+    emissivity?: number;
+  };
+  simulationProperties?: Record<string, any>; // Legacy field for backward compatibility
   
   // Internal tracking
   meshId?: string; // THREE.js mesh UUID for scene identification
