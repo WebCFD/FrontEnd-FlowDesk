@@ -1084,7 +1084,7 @@ export default function Canvas3D({
         timestamp: new Date().toISOString()
       });
       
-      // Create furniture item
+      // Create furniture item with proper default properties
       const furnitureItem: FurnitureItem = {
         id: generatedId,
         type: furnitureType,
@@ -1094,6 +1094,22 @@ export default function Canvas3D({
         rotation: surfaceDetection.surfaceType === 'ceiling' ? { x: Math.PI, y: 0, z: 0 } : { x: 0, y: 0, z: 0 },
         dimensions: dimensions,
         information: `${generatedId} placed on ${surfaceDetection.surfaceType} of ${surfaceDetection.floorName}`,
+        properties: furnitureType === 'vent' ? {
+          // Vent type maintains original thermal properties system
+          temperature: 20,
+          thermalConductivity: 0.12,
+          density: 600,
+          heatCapacity: 1200,
+          emissivity: 0.85
+        } : {
+          // All other furniture types use new material/emissivity system with "Default" material as default
+          material: "default",
+          temperature: 20,
+          emissivity: 0.90,
+          thermalConductivity: 0.12,
+          density: 600,
+          heatCapacity: 1200
+        },
         meshId: `furniture_${Date.now()}`,
         createdAt: Date.now(),
         updatedAt: Date.now()
@@ -5123,9 +5139,10 @@ export default function Canvas3D({
             // Find the furniture item data
             // This would need to be passed from the parent component
             // For now, we'll create a mock furniture item based on the mesh
+            const furnitureType = furnitureGroup.userData.furnitureType || 'table';
             const mockFurnitureItem: FurnitureItem = {
               id: furnitureId,
-              type: furnitureGroup.userData.furnitureType || 'table',
+              type: furnitureType,
               name: furnitureGroup.userData.furnitureName || 'Furniture',
               floorName: furnitureGroup.userData.floorName || currentFloor,
               position: {
@@ -5140,6 +5157,21 @@ export default function Canvas3D({
               },
               dimensions: furnitureGroup.userData.dimensions || { width: 80, height: 80, depth: 80 },
               information: furnitureGroup.userData.information || '',
+              // Include properties from scene userData or use defaults
+              properties: furnitureGroup.userData.properties || (furnitureType === 'vent' ? {
+                temperature: 20,
+                thermalConductivity: 0.12,
+                density: 600,
+                heatCapacity: 1200,
+                emissivity: 0.85
+              } : {
+                material: "default",
+                temperature: 20,
+                emissivity: 0.90,
+                thermalConductivity: 0.12,
+                density: 600,
+                heatCapacity: 1200
+              }),
               meshId: furnitureGroup.userData.meshId || furnitureId,
               createdAt: furnitureGroup.userData.createdAt || Date.now(),
               updatedAt: Date.now()
