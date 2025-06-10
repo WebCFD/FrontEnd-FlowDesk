@@ -37,6 +37,7 @@ interface FurnitureDialogProps {
       customIntensityValue?: number;
       verticalAngle?: number;
       horizontalAngle?: number;
+      normalVector?: { x: number; y: number; z: number };
     };
   }) => void;
   onCancel?: () => void; // New prop for cancel handling
@@ -65,6 +66,7 @@ interface FurnitureDialogProps {
       verticalAngle?: number;
       horizontalAngle?: number;
       airTemperature?: number;
+      normalVector?: { x: number; y: number; z: number };
     };
   };
   floorContext?: {
@@ -468,6 +470,21 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                   <div className="p-2 bg-gray-100 rounded text-xs text-gray-600">
                     <div>Floor: {props.floorContext.floorName}</div>
                     <div>Floor Height: {props.floorContext.floorHeight}cm</div>
+                  </div>
+                )}
+
+                {/* Normal Vector Information for Vent Furniture */}
+                {type === 'vent' && props.initialValues?.simulationProperties?.normalVector && (
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right text-sm">Normal Vector</Label>
+                    <div className="col-span-3 px-3 py-2 bg-blue-50 rounded text-sm text-blue-800 font-mono">
+                      ({props.initialValues.simulationProperties.normalVector.x}, {props.initialValues.simulationProperties.normalVector.y}, {props.initialValues.simulationProperties.normalVector.z})
+                      <div className="text-xs text-blue-600 mt-1">
+                        {props.initialValues.simulationProperties.normalVector.z === 1 ? 'Floor placement (upward)' : 
+                         props.initialValues.simulationProperties.normalVector.z === -1 ? 'Ceiling placement (downward)' : 
+                         'Custom orientation'}
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>

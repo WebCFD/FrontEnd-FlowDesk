@@ -35,6 +35,7 @@ export interface FurnitureItem {
     verticalAngle?: number;
     horizontalAngle?: number;
     airTemperature?: number;
+    normalVector?: { x: number; y: number; z: number };
   };
   
   // Internal tracking

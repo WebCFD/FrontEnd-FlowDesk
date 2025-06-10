@@ -1146,6 +1146,21 @@ export default function Canvas3D({
           density: 600,
           heatCapacity: 1200
         },
+        // Add simulation properties for vent furniture with automatic normal vector assignment
+        simulationProperties: furnitureType === 'vent' ? {
+          flowType: 'Air Mass Flow',
+          flowValue: 0.5,
+          flowIntensity: 'medium',
+          airOrientation: 'inflow',
+          state: 'open',
+          verticalAngle: 0,
+          horizontalAngle: 0,
+          airTemperature: 20,
+          // Automatic normal vector assignment based on surface type
+          normalVector: surfaceDetection.surfaceType === 'ceiling' 
+            ? { x: 0, y: 0, z: -1 } // Ceiling: pointing down
+            : { x: 0, y: 0, z: 1 }   // Floor: pointing up
+        } : undefined,
         meshId: `furniture_${Date.now()}`,
         createdAt: Date.now(),
         updatedAt: Date.now()
