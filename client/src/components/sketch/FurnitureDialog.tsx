@@ -167,7 +167,8 @@ const furnitureDefaults = {
       state: "open" as const,
       customIntensityValue: 0.5,
       verticalAngle: 0,
-      horizontalAngle: 0
+      horizontalAngle: 0,
+      airTemperature: 20
     }
   }
 };
@@ -235,7 +236,8 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
     state: 'open' as 'open' | 'closed',
     customIntensityValue: 0.5,
     verticalAngle: 0,
-    horizontalAngle: 0
+    horizontalAngle: 0,
+    airTemperature: 20
   });
 
   // Material definitions with emissivity values (not applied to vents)
@@ -295,7 +297,8 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
           state: (defaults as any).simulationProperties?.state || 'open',
           customIntensityValue: (defaults as any).simulationProperties?.customIntensityValue || 0.5,
           verticalAngle: (defaults as any).simulationProperties?.verticalAngle || 0,
-          horizontalAngle: (defaults as any).simulationProperties?.horizontalAngle || 0
+          horizontalAngle: (defaults as any).simulationProperties?.horizontalAngle || 0,
+          airTemperature: (defaults as any).simulationProperties?.airTemperature || 20
         });
       }
       
@@ -826,15 +829,15 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                 {/* Vent-specific simulation properties only */}
                 {type === 'vent' && (
                   <>
-                    {/* Airflow Simulation section header */}
+                    {/* Simulation Conditions section header */}
                     <div className="border-t border-slate-300 pt-4 mt-4">
-                      <h5 className="font-medium text-sm mb-3 text-slate-600">Airflow Simulation</h5>
+                      <h5 className="font-medium text-sm mb-3 text-slate-600">Simulation Conditions</h5>
                     </div>
 
-                    {/* Vent State */}
+                    {/* Element Status */}
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="vent-state" className="text-right">
-                        State
+                        Element Status
                       </Label>
                       <Select value={simulationProperties.state} onValueChange={(value: 'open' | 'closed') => 
                         setSimulationProperties(prev => ({...prev, state: value}))}>
@@ -842,11 +845,109 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="open">Open</SelectItem>
+                          <SelectItem value="open">Vent is open and allows airflow</SelectItem>
                           <SelectItem value="closed">Closed</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
+
+                    {/* Air Inflow Temperature */}
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="air-temp" className="text-right">
+                        Air Inflow Temperature
+                      </Label>
+                      <Input
+                        id="air-temp"
+                        type="number"
+                        value={simulationProperties.airTemperature}
+                        onChange={(e) => setSimulationProperties(prev => ({
+                          ...prev, 
+                          airTemperature: Number(e.target.value)
+                        }))}
+                        className="col-span-2"
+                        placeholder="20"
+                      />
+                      <span className="text-sm">°C</span>
+                    </div>
+                    <p className="text-xs text-gray-500 col-span-4 text-right">
+                      Temperature of air entering the room
+                    </p>
+
+                    {/* Air Direction */}
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="air-direction" className="text-right">
+                        Air Direction
+                      </Label>
+                      <Select value={simulationProperties.airOrientation} onValueChange={(value: 'inflow' | 'outflow') => 
+                        setSimulationProperties(prev => ({...prev, airOrientation: value}))}>
+                        <SelectTrigger className="col-span-3">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="inflow">Inflow (Air enters)</SelectItem>
+                          <SelectItem value="outflow">Outflow (Air exits)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Air Orientation - Solo para vents con state open y airOrientation inflow */}
+                    {simulationProperties.state === 'open' && simulationProperties.airOrientation === 'inflow' && (
+                      <>
+                        <div className="col-span-4 space-y-3 border-t border-slate-300 pt-3 mt-3">
+                          <h6 className="font-medium text-sm text-slate-600">Air Orientation</h6>
+                        </div>
+                        
+                        {/* Vertical Angle */}
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="vertical-angle" className="text-right">
+                            Vertical Angle
+                          </Label>
+                          <Input
+                            id="vertical-angle"
+                            type="number"
+                            min="-45"
+                            max="45"
+                            step="1"
+                            value={simulationProperties.verticalAngle}
+                            onChange={(e) => setSimulationProperties(prev => ({
+                              ...prev, 
+                              verticalAngle: Number(e.target.value)
+                            }))}
+                            className="col-span-2"
+                            placeholder="0"
+                          />
+                          <span className="text-sm">degrees</span>
+                        </div>
+                        <p className="text-xs text-gray-500 col-span-4 text-right">
+                          Up +45° to Down -45°
+                        </p>
+
+                        {/* Horizontal Angle */}
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="horizontal-angle" className="text-right">
+                            Horizontal Angle
+                          </Label>
+                          <Input
+                            id="horizontal-angle"
+                            type="number"
+                            min="-45"
+                            max="45"
+                            step="1"
+                            value={simulationProperties.horizontalAngle}
+                            onChange={(e) => setSimulationProperties(prev => ({
+                              ...prev, 
+                              horizontalAngle: Number(e.target.value)
+                            }))}
+                            className="col-span-2"
+                            placeholder="0"
+                          />
+                          <span className="text-sm">degrees</span>
+                        </div>
+                        <p className="text-xs text-gray-500 col-span-4 text-right">
+                          Left -45° to Right +45°
+                        </p>
+                      </>
+                    )}
 
                     {/* Flow Type */}
                     <div className="grid grid-cols-4 items-center gap-4">
@@ -891,23 +992,6 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           <Label htmlFor="pressure" className="text-xs">Pressure</Label>
                         </div>
                       </div>
-                    </div>
-
-                    {/* Air Direction */}
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="air-direction" className="text-right">
-                        Air Direction
-                      </Label>
-                      <Select value={simulationProperties.airOrientation} onValueChange={(value: 'inflow' | 'outflow') => 
-                        setSimulationProperties(prev => ({...prev, airOrientation: value}))}>
-                        <SelectTrigger className="col-span-3">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="inflow">Inflow</SelectItem>
-                          <SelectItem value="outflow">Outflow</SelectItem>
-                        </SelectContent>
-                      </Select>
                     </div>
 
                     {/* Flow Intensity */}
