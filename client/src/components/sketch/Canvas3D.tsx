@@ -574,6 +574,10 @@ const calculateFloorBaseHeight = (
   return baseHeight;
 };
 
+// Furniture type restrictions for surface placement
+const FLOOR_ONLY_FURNITURE = ['table', 'person', 'armchair', 'car'];
+const FLEXIBLE_FURNITURE = ['vent', 'block', 'custom'];
+
 // Detect which floor to place furniture based on mouse position and 3D context
 // Enhanced surface detection that returns both floor and surface type
 const detectSurfaceFromPosition = (
@@ -583,7 +587,8 @@ const detectSurfaceFromPosition = (
   currentFloor: string,
   availableFloors: Record<string, FloorData>,
   isMultifloor: boolean,
-  floorParameters: Record<string, { ceilingHeight: number; floorDeck: number }>
+  floorParameters: Record<string, { ceilingHeight: number; floorDeck: number }>,
+  furnitureType?: string
 ): { floorName: string; surfaceType: 'floor' | 'ceiling'; fallbackUsed: boolean } => {
   // If not multifloor, always use current floor
   if (!isMultifloor) {
@@ -600,12 +605,21 @@ const detectSurfaceFromPosition = (
   const raycaster = new THREE.Raycaster();
   raycaster.setFromCamera(new THREE.Vector2(mouseX, mouseY), camera);
 
-  // Find floor and ceiling meshes in the scene
+  // Determine which surface types are allowed for this furniture type
+  const isFloorOnlyFurniture = furnitureType && FLOOR_ONLY_FURNITURE.includes(furnitureType);
+  
+  // Find floor and ceiling meshes in the scene, filtered by furniture type restrictions
   const surfaceMeshes: Array<{ mesh: THREE.Mesh; floorName: string; surfaceType: 'floor' | 'ceiling' }> = [];
   scene.traverse((object) => {
     if (object instanceof THREE.Mesh && (object.userData.type === 'floor' || object.userData.type === 'ceiling')) {
       const floorName = object.userData.floorName || 'ground';
       const surfaceType = object.userData.type as 'floor' | 'ceiling';
+      
+      // Filter surfaces based on furniture type restrictions
+      if (isFloorOnlyFurniture && surfaceType === 'ceiling') {
+        return; // Skip ceiling surfaces for floor-only furniture
+      }
+      
       surfaceMeshes.push({ mesh: object, floorName, surfaceType });
     }
   });
@@ -660,7 +674,9 @@ const detectSurfaceFromPosition = (
     }
   }
   
-  return { floorName: bestFloor, surfaceType: 'floor', fallbackUsed: true };
+  // For floor-only furniture, always default to floor surface type
+  const fallbackSurfaceType = isFloorOnlyFurniture ? 'floor' : 'floor';
+  return { floorName: bestFloor, surfaceType: fallbackSurfaceType, fallbackUsed: true };
 };
 
 // Enhanced position calculation for furniture placement with surface support
@@ -670,7 +686,8 @@ const calculateFurniturePosition = (
   scene: THREE.Scene,
   targetFloor: string,
   surfaceType: 'floor' | 'ceiling',
-  floorParameters: Record<string, { ceilingHeight: number; floorDeck: number }>
+  floorParameters: Record<string, { ceilingHeight: number; floorDeck: number }>,
+  furnitureType?: string
 ): { x: number; y: number; z: number } => {
   const container = mouseEvent.currentTarget as HTMLElement;
   const rect = container.getBoundingClientRect();
@@ -681,10 +698,18 @@ const calculateFurniturePosition = (
   const raycaster = new THREE.Raycaster();
   raycaster.setFromCamera(new THREE.Vector2(mouseX, mouseY), camera);
 
-  // Try to intersect with the specific surface type (floor or ceiling)
+  // Determine which surface types are allowed for this furniture type
+  const isFloorOnlyFurniture = furnitureType && FLOOR_ONLY_FURNITURE.includes(furnitureType);
+  
+  // Try to intersect with the specific surface type, filtered by furniture restrictions
   const surfaceMeshes: THREE.Mesh[] = [];
   scene.traverse((object) => {
     if (object instanceof THREE.Mesh && object.userData.type === surfaceType) {
+      // Skip ceiling surfaces for floor-only furniture
+      if (isFloorOnlyFurniture && surfaceType === 'ceiling') {
+        return;
+      }
+      
       // Normalize floor name for matching (same logic as detection)
       let meshFloorName = object.userData.floorName;
       let normalizedMeshName = meshFloorName.toLowerCase().replace(/\s+/g, '');
@@ -1039,8 +1064,15 @@ export default function Canvas3D({
 
     try {
       const furnitureMenuData = JSON.parse(itemData);
+
+      // Use default dimensions from menu data
+      const dimensions = furnitureMenuData.defaultDimensions || { width: 80, height: 80, depth: 80 };
       
-      // FASE 2 TEST: Sistema de raycasting y detección de piso
+      // Determine furniture type - check if it's a custom STL object
+      const isCustomObject = furnitureMenuData.id.startsWith('custom_');
+      const furnitureType = isCustomObject ? 'custom' : furnitureMenuData.id as 'table' | 'person' | 'armchair' | 'car' | 'block' | 'vent';
+      
+      // FASE 2 TEST: Sistema de raycasting y detección de piso con restricciones de tipo
       const surfaceDetection = detectSurfaceFromPosition(
         event,
         camera,
@@ -1048,7 +1080,8 @@ export default function Canvas3D({
         currentFloor,
         migratedFloors,
         isMultifloor,
-        floorParameters
+        floorParameters,
+        furnitureType // Pass furniture type for surface restrictions
       );
       
       const calculatedPosition = calculateFurniturePosition(
@@ -1057,15 +1090,9 @@ export default function Canvas3D({
         scene,
         surfaceDetection.floorName,
         surfaceDetection.surfaceType,
-        floorParameters
+        floorParameters,
+        furnitureType // Pass furniture type for position calculation
       );
-
-      // Use default dimensions from menu data
-      const dimensions = furnitureMenuData.defaultDimensions || { width: 80, height: 80, depth: 80 };
-      
-      // Determine furniture type - check if it's a custom STL object
-      const isCustomObject = furnitureMenuData.id.startsWith('custom_');
-      const furnitureType = isCustomObject ? 'custom' : furnitureMenuData.id as 'table' | 'person' | 'armchair' | 'car' | 'block' | 'vent';
       
       // PHASE 6: Get all existing furniture from current floor (including custom items)
       const existingFurniture = getAllFurnitureForFloor(surfaceDetection.floorName);
