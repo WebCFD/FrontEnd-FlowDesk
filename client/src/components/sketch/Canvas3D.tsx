@@ -775,15 +775,10 @@ const createVentPlaneModel = (furnitureItem: FurnitureItem): THREE.Group => {
   
   const mesh = new THREE.Mesh(geometry, material);
   
-  // CRITICAL: Position mesh at user coordinates directly, not relative to group
-  // This ensures coordinates are always in user reference system
-  mesh.position.set(
-    furnitureItem.position.x,
-    furnitureItem.position.y, 
-    furnitureItem.position.z
-  );
+  // Position mesh at origin - group will handle world positioning
+  mesh.position.set(0, 0, 0);
   
-  // Apply rotation directly to mesh for proper surface orientation
+  // Apply rotation to mesh for proper surface orientation
   mesh.rotation.set(
     furnitureItem.rotation.x,
     furnitureItem.rotation.y,
@@ -877,17 +872,29 @@ const createFurnitureModel = (
   }
 
   // Apply position, rotation, and scale from furniture item
-  model.position.set(
-    furnitureItem.position.x,
-    furnitureItem.position.y,
-    furnitureItem.position.z
-  );
-
-  model.rotation.set(
-    furnitureItem.rotation.x,
-    furnitureItem.rotation.y,
-    furnitureItem.rotation.z
-  );
+  // For FornVent: Group positioning is handled in user coordinates
+  if (furnitureItem.type === 'vent') {
+    // Position group at user coordinates for FornVent
+    model.position.set(
+      furnitureItem.position.x,
+      furnitureItem.position.y,
+      furnitureItem.position.z
+    );
+    // Group rotation stays neutral for FornVent - mesh handles orientation
+    model.rotation.set(0, 0, 0);
+  } else {
+    // Standard positioning for other furniture
+    model.position.set(
+      furnitureItem.position.x,
+      furnitureItem.position.y,
+      furnitureItem.position.z
+    );
+    model.rotation.set(
+      furnitureItem.rotation.x,
+      furnitureItem.rotation.y,
+      furnitureItem.rotation.z
+    );
+  }
 
   // Apply scaling based on dimensions if different from defaults
   if (furnitureItem.dimensions) {
@@ -5458,7 +5465,7 @@ export default function Canvas3D({
     });
 
     if (furnitureGroup) {
-      // For FornVent: Apply coordinates directly to the mesh in user coordinate system
+      // For FornVent: Position group in user coordinate system, reset mesh to origin
       if (furnitureGroup.userData.furnitureType === 'vent') {
         // Find the vent mesh inside the group
         const ventMesh = furnitureGroup.children.find(child => 
@@ -5466,15 +5473,15 @@ export default function Canvas3D({
         ) as THREE.Mesh;
         
         if (ventMesh) {
-          // Apply dialog coordinates directly to mesh in user coordinate system
-          ventMesh.position.set(data.position.x, data.position.y, data.position.z);
+          // Reset mesh to origin - all positioning handled by group
+          ventMesh.position.set(0, 0, 0);
           ventMesh.rotation.set(data.rotation.x, data.rotation.y, data.rotation.z);
           ventMesh.scale.set(data.scale.x, data.scale.y, data.scale.z);
         }
         
-        // Keep group at origin since mesh handles positioning
-        furnitureGroup.position.set(0, 0, 0);
-        furnitureGroup.rotation.set(0, 0, 0);
+        // Apply dialog coordinates to group - this moves vent to user coordinate position
+        furnitureGroup.position.set(data.position.x, data.position.y, data.position.z);
+        furnitureGroup.rotation.set(0, 0, 0); // Group rotation stays neutral
         furnitureGroup.scale.set(1, 1, 1);
       } else {
         // For other furniture types: Use standard coordinate application
