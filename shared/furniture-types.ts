@@ -34,6 +34,7 @@ export interface FurnitureItem {
     customIntensityValue?: number;
     verticalAngle?: number;
     horizontalAngle?: number;
+    airTemperature?: number;
   };
   
   // Internal tracking
