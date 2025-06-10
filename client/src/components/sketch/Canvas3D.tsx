@@ -996,6 +996,34 @@ export default function Canvas3D({
   // PHASE 1: Migrate floors data to ensure backward compatibility
   const migratedFloors = useMemo(() => migrateFloorsData(floors), [floors]);
 
+  // PHASE 6: Unified furniture counting across standard and custom items
+  const getAllFurnitureForFloor = useCallback((floorName: string): FurnitureItem[] => {
+    const floorData = migratedFloors[floorName];
+    if (!floorData) return [];
+    
+    // Combine floor furniture with custom furniture from store
+    const floorFurniture = floorData.furnitureItems || [];
+    const customFurnitureItems = customFurnitureStore.getAllCustomFurniture()
+      .filter(custom => {
+        // Check if this custom item is already in floor furniture
+        return !floorFurniture.some(item => item.id === custom.id);
+      })
+      .map(custom => ({
+        id: custom.id,
+        type: 'custom' as const,
+        name: custom.name,
+        floorName: floorName,
+        position: { x: 0, y: 0, z: 0 }, // Default position
+        rotation: { x: 0, y: 0, z: 0 },
+        dimensions: custom.dimensions,
+        meshId: custom.id,
+        createdAt: custom.createdAt,
+        updatedAt: custom.createdAt
+      }));
+    
+    return [...floorFurniture, ...customFurnitureItems];
+  }, [migratedFloors]);
+
   // FASE 5A: Component-level furniture drop handler with store access
   const handleComponentFurnitureDrop = useCallback((
     event: DragEvent,
@@ -1039,19 +1067,20 @@ export default function Canvas3D({
       const isCustomObject = furnitureMenuData.id.startsWith('custom_');
       const furnitureType = isCustomObject ? 'custom' : furnitureMenuData.id as 'table' | 'person' | 'armchair' | 'car' | 'block' | 'vent';
       
-      // PHASE 2: Get existing furniture from current floor for ID generation
-      const currentFloorData = migratedFloors[surfaceDetection.floorName];
-      const existingFurniture = currentFloorData?.furnitureItems || [];
+      // PHASE 6: Get all existing furniture from current floor (including custom items)
+      const existingFurniture = getAllFurnitureForFloor(surfaceDetection.floorName);
       
       // Generate new furniture ID using the new system
       const generatedId = generateFurnitureId(furnitureType, surfaceDetection.floorName, existingFurniture);
       
-      // TEST: Log the ID generation process
-      console.log('🆔 FURNITURE ID TEST:', {
+      // TEST: Log the unified ID generation process
+      console.log('🆔 UNIFIED FURNITURE ID TEST:', {
         furnitureType,
         floorName: surfaceDetection.floorName,
         existingCount: existingFurniture.length,
+        existingByType: existingFurniture.filter(item => item.type === furnitureType).length,
         generatedId,
+        isCustom: isCustomObject,
         timestamp: new Date().toISOString()
       });
       
