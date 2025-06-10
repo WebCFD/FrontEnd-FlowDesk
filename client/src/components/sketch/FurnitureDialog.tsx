@@ -387,15 +387,6 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                     {furnitureName}
                   </div>
                 </div>
-                
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="furniture-type" className="text-right">
-                    Type
-                  </Label>
-                  <div className="col-span-3 px-3 py-2 bg-gray-100 rounded text-sm text-gray-600 capitalize">
-                    {type}
-                  </div>
-                </div>
 
                 {props.floorContext && (
                   <div className="p-2 bg-gray-100 rounded text-xs text-gray-600">
