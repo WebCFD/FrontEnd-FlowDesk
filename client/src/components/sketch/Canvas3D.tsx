@@ -786,6 +786,9 @@ const createVentPlaneModel = (furnitureItem: FurnitureItem): THREE.Group => {
   mesh.userData = {
     type: 'furniture',      // Furniture system type
     furnitureType: 'vent',  // Specific furniture subtype
+    furnitureId: furnitureItem.id, // Essential ID for double-click editing
+    floorName: furnitureItem.floorName,
+    furnitureName: furnitureItem.name,
     isSelectable: true,
     isVentFurniture: true   // Flag for vent furniture texture system
   };
@@ -794,6 +797,9 @@ const createVentPlaneModel = (furnitureItem: FurnitureItem): THREE.Group => {
   group.userData = {
     type: 'furniture',
     furnitureType: 'vent',
+    furnitureId: furnitureItem.id, // Essential ID for double-click editing
+    floorName: furnitureItem.floorName,
+    furnitureName: furnitureItem.name,
     isSelectable: true,
     isVentFurniture: true
   };
