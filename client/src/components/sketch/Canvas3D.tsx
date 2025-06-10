@@ -113,8 +113,8 @@ interface Canvas3DProps {
 }
 
 
-// Constants - corrected to match actual canvas scale: 25cm = 20px
-const PIXELS_TO_CM = 20 / 25; // 0.8 - correct conversion factor
+// Constants - corrected to match Canvas2D standard: 25cm = 20px
+const PIXELS_TO_CM = 25 / 20; // 1.25 - correct conversion factor matching Canvas2D
 const GRID_SIZE = 1000;
 const GRID_DIVISIONS = 40;
 
