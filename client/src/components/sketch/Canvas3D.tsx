@@ -4266,7 +4266,7 @@ export default function Canvas3D({
 
 
     // Add double-click handler for air entry editing - only in interactive mode
-    const handleDoubleClick = (event: MouseEvent) => {
+    const handleAirEntryDoubleClick = (event: MouseEvent) => {
       if (presentationMode && !allowAirEntryEditing) return; // Allow AirEntry editing even in presentation mode if specified
       
       // Set flag to ignore the next click (which is part of the double-click)
@@ -4371,7 +4371,7 @@ export default function Canvas3D({
     };
 
     // Add the double-click event listener
-    canvas.addEventListener("dblclick", handleDoubleClick);
+    canvas.addEventListener("dblclick", handleAirEntryDoubleClick);
 
     return () => {
       window.removeEventListener("resize", handleResize);
@@ -4389,7 +4389,7 @@ export default function Canvas3D({
           "mousedown",
           mouseDownWrapper,
         );
-        renderer.domElement.removeEventListener("dblclick", handleDoubleClick);
+        renderer.domElement.removeEventListener("dblclick", handleAirEntryDoubleClick);
 
         // Dispose renderer
         renderer.dispose();
@@ -5132,8 +5132,8 @@ export default function Canvas3D({
     };
 
     // Double-click handler for furniture editing
-    const handleDoubleClick = (event: MouseEvent) => {
-      console.log("🖱️ Double-click detected!");
+    const handleFurnitureDoubleClick = (event: MouseEvent) => {
+      console.log("🖱️ Furniture double-click detected!");
       
       // Allow furniture editing even in presentation mode for selective editing
       // Other editing interactions remain disabled in presentation mode
@@ -5330,7 +5330,7 @@ export default function Canvas3D({
     container.addEventListener("dragover", handleDragOver);
     container.addEventListener("dragleave", handleDragLeave);
     container.addEventListener("drop", handleDrop);
-    container.addEventListener("dblclick", handleDoubleClick);
+    container.addEventListener("dblclick", handleFurnitureDoubleClick);
     container.addEventListener("click", handleClick);
 
     return () => {
@@ -5338,7 +5338,7 @@ export default function Canvas3D({
       container.removeEventListener("dragover", handleDragOver);
       container.removeEventListener("dragleave", handleDragLeave);
       container.removeEventListener("drop", handleDrop);
-      container.removeEventListener("dblclick", handleDoubleClick);
+      container.removeEventListener("dblclick", handleFurnitureDoubleClick);
       container.removeEventListener("click", handleClick);
     };
   }, [currentFloor, onFurnitureAdd, isMultifloor, floorParameters, isFurnitureEraserMode, onDeleteFurniture]);
