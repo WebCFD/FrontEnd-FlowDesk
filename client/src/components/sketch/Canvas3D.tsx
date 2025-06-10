@@ -5602,7 +5602,9 @@ export default function Canvas3D({
               thermalConductivity: 0.12,
               density: 600,
               heatCapacity: 1200
-            })
+            }),
+            // Add simulation properties for vent furniture persistence
+            simulationProperties: editingFurniture.item.simulationProperties
           }}
           isEditing={true}
           floorContext={{
