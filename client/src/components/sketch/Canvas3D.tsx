@@ -5456,6 +5456,11 @@ export default function Canvas3D({
         };
 
         onUpdateFurniture(editingFurniture.item.floorName, editingFurniture.item.id, updatedFurnitureItem);
+        
+        // Trigger texture recovery for RSP
+        if (onFurnitureAdded) {
+          onFurnitureAdded();
+        }
       }
 
     } else {
@@ -5541,6 +5546,11 @@ export default function Canvas3D({
               // Second: Remove from data store via callback
               if (onDeleteFurniture) {
                 onDeleteFurniture(editingFurniture.item.floorName, editingFurniture.item.id);
+              }
+              
+              // Third: Trigger texture recovery for RSP
+              if (onFurnitureDeleted) {
+                onFurnitureDeleted();
               }
             }
             // Edit mode: Just close dialog without deletion
