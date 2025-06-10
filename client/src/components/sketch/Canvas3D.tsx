@@ -5456,6 +5456,7 @@ export default function Canvas3D({
           rotation: data.rotation,
           scale: data.scale,
           properties: data.properties,
+          simulationProperties: data.simulationProperties,
           updatedAt: Date.now()
         };
 
@@ -5465,6 +5466,7 @@ export default function Canvas3D({
         console.log("💾 Furniture data saved to store:", {
           id: furnitureId,
           properties: data.properties,
+          simulationProperties: data.simulationProperties,
           position: data.position,
           rotation: data.rotation
         });
