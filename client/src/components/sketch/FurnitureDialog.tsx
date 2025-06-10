@@ -64,6 +64,7 @@ interface FurnitureDialogProps {
       customIntensityValue?: number;
       verticalAngle?: number;
       horizontalAngle?: number;
+      airTemperature?: number;
     };
   };
   floorContext?: {
