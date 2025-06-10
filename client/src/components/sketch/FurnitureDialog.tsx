@@ -150,6 +150,26 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
     onRotationUpdate,
     onScaleUpdate
   } = props;
+
+  // Helper function to truncate to 2 decimals
+  const truncateToTwoDecimals = (value: number): number => {
+    return Math.floor(value * 100) / 100;
+  };
+
+  // Helper function to format display value with 2 decimals
+  const formatDisplayValue = (value: number): string => {
+    return truncateToTwoDecimals(value).toFixed(2);
+  };
+
+  // Helper function to handle user input with decimal validation
+  const handleDecimalInput = (inputValue: string, maxDecimals: number = 2): number => {
+    const num = parseFloat(inputValue);
+    if (isNaN(num)) return 0;
+    
+    // Truncate to specified decimals
+    const factor = Math.pow(10, maxDecimals);
+    return Math.floor(num * factor) / factor;
+  };
   
   // Estado unificado para manejar todas las propiedades del furniture
   const [values, setValues] = useState(() => getDefaultValues());
@@ -208,7 +228,12 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
       }
       
       if (defaults.position) {
-        setElementPosition(defaults.position);
+        // Apply decimal truncation to initial position values
+        setElementPosition({
+          x: truncateToTwoDecimals(defaults.position.x),
+          y: truncateToTwoDecimals(defaults.position.y),
+          z: truncateToTwoDecimals(defaults.position.z)
+        });
       }
     }
   }, [dialogOpen, type, isEditing]);
@@ -352,9 +377,10 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                       <Input
                         id="pos-x"
                         type="number"
-                        value={elementPosition.x}
+                        step="0.01"
+                        value={formatDisplayValue(elementPosition.x)}
                         onChange={(e) => {
-                          const newX = Number(e.target.value);
+                          const newX = handleDecimalInput(e.target.value);
                           const newPosition = { ...elementPosition, x: newX };
                           setElementPosition(newPosition);
                           // Real-time update
@@ -370,9 +396,10 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                       <Input
                         id="pos-y"
                         type="number"
-                        value={elementPosition.y}
+                        step="0.01"
+                        value={formatDisplayValue(elementPosition.y)}
                         onChange={(e) => {
-                          const newY = Number(e.target.value);
+                          const newY = handleDecimalInput(e.target.value);
                           const newPosition = { ...elementPosition, y: newY };
                           setElementPosition(newPosition);
                           // Real-time update
@@ -388,9 +415,10 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                       <Input
                         id="pos-z"
                         type="number"
-                        value={elementPosition.z}
+                        step="0.01"
+                        value={formatDisplayValue(elementPosition.z)}
                         onChange={(e) => {
-                          const newZ = Number(e.target.value);
+                          const newZ = handleDecimalInput(e.target.value);
                           const newPosition = { ...elementPosition, z: newZ };
                           setElementPosition(newPosition);
                           // Real-time update
