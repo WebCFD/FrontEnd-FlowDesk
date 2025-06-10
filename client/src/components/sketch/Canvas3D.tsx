@@ -5205,57 +5205,41 @@ export default function Canvas3D({
           });
           
           if (furnitureId) {
-            // Find the furniture item data
-            // This would need to be passed from the parent component
-            // For now, we'll create a mock furniture item based on the mesh
-            const furnitureType = furnitureGroup.userData.furnitureType || 'table';
-            const mockFurnitureItem: FurnitureItem = {
-              id: furnitureId,
-              type: furnitureType,
-              name: furnitureGroup.userData.furnitureName || 'Furniture',
-              floorName: furnitureGroup.userData.floorName || currentFloor,
-              position: {
-                x: furnitureGroup.position.x,
-                y: furnitureGroup.position.y,
-                z: furnitureGroup.position.z
-              },
-              rotation: {
-                x: furnitureGroup.rotation.x,
-                y: furnitureGroup.rotation.y,
-                z: furnitureGroup.rotation.z
-              },
-              dimensions: furnitureGroup.userData.dimensions || { width: 80, height: 80, depth: 80 },
-              information: furnitureGroup.userData.information || '',
-              // Include properties from scene userData or use defaults
-              properties: furnitureGroup.userData.properties || (furnitureType === 'vent' ? {
-                temperature: 20,
-                thermalConductivity: 0.12,
-                density: 600,
-                heatCapacity: 1200,
-                emissivity: 0.85
-              } : {
-                material: "default",
-                temperature: 20,
-                emissivity: 0.90,
-                thermalConductivity: 0.12,
-                density: 600,
-                heatCapacity: 1200
-              }),
-              meshId: furnitureGroup.userData.meshId || furnitureId,
-              createdAt: furnitureGroup.userData.createdAt || Date.now(),
-              updatedAt: Date.now()
-            };
+            // Get the actual furniture item from the store
+            const floorName = furnitureGroup.userData.floorName || currentFloor;
+            const allFurnitureItems = getAllFurnitureForFloor(floorName);
+            const actualFurnitureItem = allFurnitureItems.find(item => item.id === furnitureId);
             
-            console.log("🎛️ Opening furniture dialog with item:", mockFurnitureItem);
-            console.log("🎛️ Setting editingFurniture state...");
+            if (actualFurnitureItem) {
+              // Use the actual stored item with all its properties including simulationProperties
+              const furnitureItemWithCurrentPosition: FurnitureItem = {
+                ...actualFurnitureItem,
+                // Update position from 3D scene in case it was moved
+                position: {
+                  x: furnitureGroup.position.x,
+                  y: furnitureGroup.position.y,
+                  z: furnitureGroup.position.z
+                },
+                rotation: {
+                  x: furnitureGroup.rotation.x,
+                  y: furnitureGroup.rotation.y,
+                  z: furnitureGroup.rotation.z
+                }
+              };
             
-            setEditingFurniture({
-              index: 0, // This would need to be the actual index from the furniture list
-              item: mockFurnitureItem,
-              mode: 'edit' // Phase 2: Mark as edit mode for double-click
-            });
-            
-            console.log("🎛️ editingFurniture state set!");
+              console.log("🎛️ Opening furniture dialog with actual item:", furnitureItemWithCurrentPosition);
+              console.log("🎛️ Setting editingFurniture state...");
+              
+              setEditingFurniture({
+                index: 0, // This would need to be the actual index from the furniture list
+                item: furnitureItemWithCurrentPosition,
+                mode: 'edit' // Phase 2: Mark as edit mode for double-click
+              });
+              
+              console.log("🎛️ editingFurniture state set!");
+            } else {
+              console.log("❌ Furniture item not found in store for ID:", furnitureId);
+            }
           } else {
             console.log("❌ No furnitureId found in userData");
           }
