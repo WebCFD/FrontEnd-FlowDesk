@@ -877,6 +877,7 @@ export function RoomSketchPro({
         ceilingHeight={ceilingHeightCm}
         wallTransparency={themeAdjustedTransparency}
         presentationMode={true} // Modo presentación para RSP
+        allowAirEntryEditing={true} // Allow AirEntry editing in RSP presentation mode
         lightingIntensity={lightingIntensity} // Control de intensidad de iluminación
         isMeasureMode={false}
         isEraserMode={false}
