@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { FurnitureMenuItemData } from '@shared/furniture-types';
+import { FurnitureMenuItemData, FurnitureItem } from '@shared/furniture-types';
 
 export interface CustomFurnitureData {
   id: string;
@@ -57,12 +57,18 @@ class CustomFurnitureStore {
     return `geom_${hash}_${positionArray.length}`;
   }
 
-  addCustomFurniture(data: {
-    name: string;
-    geometry: THREE.BufferGeometry;
-    originalFile: File;
-    dimensions?: { width: number; height: number; depth: number };
-  }): string {
+  addCustomFurniture(
+    data: {
+      name: string;
+      geometry: THREE.BufferGeometry;
+      originalFile: File;
+      dimensions?: { width: number; height: number; depth: number };
+    },
+    floorContext: {
+      floorName: string;
+      existingFurniture: FurnitureItem[];
+    }
+  ): string {
     // Phase 5.3: Implement geometry caching
     const geometryKey = this.generateGeometryKey(data.geometry);
     let cachedGeometry = this.geometryCache.get(geometryKey);
