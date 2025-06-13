@@ -188,11 +188,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
     onScaleUpdate
   } = props;
 
-  // LOG 6: Dialog box apertura
-  if (dialogOpen && type === 'vent') {
-    console.log(`🔷 FURNITURE DIALOG OPENING: type=${type}, isEditing=${isEditing}`);
-    console.log(`🔷 INITIAL VALUES:`, props.initialValues);
-  }
+
 
   // Helper function to truncate to 2 decimals
   const truncateToTwoDecimals = (value: number): number => {
@@ -341,10 +337,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
         };
         setElementPosition(dialogPosition);
         
-        // LOG 5: Coordenadas que aparecen en el dialog box cuando se abre tras el drop
-        if (type === 'vent') {
-          console.log(`💬 DIALOG BOX INITIAL COORDINATES: x=${dialogPosition.x}, y=${dialogPosition.y}, z=${dialogPosition.z} (type: ${type})`);
-        }
+
       }
     }
   }, [dialogOpen, type, isEditing]);
@@ -561,8 +554,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           const newPosition = { ...elementPosition, z: newZ };
                           setElementPosition(newPosition);
                           
-                          // LOG 1: Coordenada Z del dialog box cuando se modifica
-                          console.log(`📋 DIALOG BOX Z COORD CHANGE: ${newZ} (type: ${type}, name: ${furnitureName})`);
+
                           
                           // Real-time update
                           if (onPositionUpdate) {

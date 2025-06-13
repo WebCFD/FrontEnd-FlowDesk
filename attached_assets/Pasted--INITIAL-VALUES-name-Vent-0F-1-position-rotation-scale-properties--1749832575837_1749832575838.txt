@@ -1,0 +1,22 @@
+🔷 INITIAL VALUES: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+FurnitureDialog.tsx:193 🔷 FURNITURE DIALOG OPENING: type=vent, isEditing=true
+FurnitureDialog.tsx:194 🔷 INITIAL VALUES: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+FurnitureDialog.tsx:565 📋 DIALOG BOX Z COORD CHANGE: 1 (type: vent, name: Vent 0F-1)
+Canvas3D.tsx:5399 🎯 3D SPACE Z POSITION CHANGE: 1 (id: Vent 0F-1, type: vent)
+FurnitureDialog.tsx:193 🔷 FURNITURE DIALOG OPENING: type=vent, isEditing=true
+FurnitureDialog.tsx:194 🔷 INITIAL VALUES: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+FurnitureDialog.tsx:193 🔷 FURNITURE DIALOG OPENING: type=vent, isEditing=true
+FurnitureDialog.tsx:194 🔷 INITIAL VALUES: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+Canvas3D.tsx:5399 🎯 3D SPACE Z POSITION CHANGE: 1 (id: Vent 0F-1, type: vent)
+FurnitureDialog.tsx:193 🔷 FURNITURE DIALOG OPENING: type=vent, isEditing=true
+FurnitureDialog.tsx:194 🔷 INITIAL VALUES: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+Canvas3D.tsx:5399 🎯 3D SPACE Z POSITION CHANGE: 1 (id: Vent 0F-1, type: vent)
+FurnitureDialog.tsx:193 🔷 FURNITURE DIALOG OPENING: type=vent, isEditing=true
+FurnitureDialog.tsx:194 🔷 INITIAL VALUES: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+Canvas3D.tsx:5399 🎯 3D SPACE Z POSITION CHANGE: 1 (id: Vent 0F-1, type: vent)
+FurnitureDialog.tsx:193 🔷 FURNITURE DIALOG OPENING: type=vent, isEditing=true
+FurnitureDialog.tsx:194 🔷 INITIAL VALUES: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+FurnitureDialog.tsx:565 📋 DIALOG BOX Z COORD CHANGE: 0 (type: vent, name: Vent 0F-1)
+Canvas3D.tsx:5399 🎯 3D SPACE Z POSITION CHANGE: 0 (id: Vent 0F-1, type: vent)
+FurnitureDialog.tsx:193 🔷 FURNITURE DIALOG OPENING: type=vent, isEditing=true
+FurnitureDialog.tsx:194 🔷 INITIAL VALUES: 
