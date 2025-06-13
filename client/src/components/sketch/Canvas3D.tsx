@@ -1178,6 +1178,13 @@ export default function Canvas3D({
         
         // Store for dialog
         newFurnitureForDialog.current = furnitureItem;
+        
+        // Log when vent is dropped into scene
+        if (furnitureType === 'vent') {
+          console.log(`Vent Added to Scene - ID: ${furnitureItem.id} | X: ${furnitureItem.position.x}, Y: ${furnitureItem.position.y}, Z: ${furnitureItem.position.z}`);
+          // Log all vents after drop
+          setTimeout(() => logAllVentsInScene(), 200);
+        }
       }
       
     } catch (error) {
@@ -1233,6 +1240,33 @@ export default function Canvas3D({
     hovering: false,
     lastIntersection: "None",
   });
+  
+  // Log all vents in scene with coordinates
+  const logAllVentsInScene = useCallback(() => {
+    if (!sceneRef.current) return;
+    
+    const vents: { id: string; x: number; y: number; z: number }[] = [];
+    
+    sceneRef.current.traverse((child) => {
+      if (child.userData.type === 'furniture' && child.userData.furnitureId && 
+          child.userData.furnitureId.includes('vent')) {
+        vents.push({
+          id: child.userData.furnitureId,
+          x: Math.round(child.position.x * 100) / 100,
+          y: Math.round(child.position.y * 100) / 100,
+          z: Math.round(child.position.z * 100) / 100
+        });
+      }
+    });
+    
+    if (vents.length > 0) {
+      console.log('=== ALL VENTS IN SCENE ===');
+      vents.forEach(vent => {
+        console.log(`Vent ID: ${vent.id} | X: ${vent.x}, Y: ${vent.y}, Z: ${vent.z}`);
+      });
+      console.log('========================');
+    }
+  }, []);
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
@@ -5365,7 +5399,12 @@ export default function Canvas3D({
     if (furnitureGroup) {
       furnitureGroup.position.set(newPosition.x, newPosition.y, newPosition.z);
       
-
+      // Log vent coordinate changes
+      if (editingFurniture.item.type === 'vent') {
+        console.log(`Vent Position Update - ID: ${furnitureId} | X: ${newPosition.x}, Y: ${newPosition.y}, Z: ${newPosition.z}`);
+        // Log all vents after position update
+        setTimeout(() => logAllVentsInScene(), 100);
+      }
     }
   };
 
