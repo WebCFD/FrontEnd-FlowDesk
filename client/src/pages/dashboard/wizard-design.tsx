@@ -1157,16 +1157,7 @@ export default function WizardDesign() {
   }, [addFurnitureToFloor, toast]);
 
   const handleFurnitureUpdate = (floorName: string, itemId: string, item: FurnitureItem) => {
-    console.log("🔗 PARENT CALLBACK - handleFurnitureUpdate called with params:");
-    console.log("🔗 Floor:", floorName, "Type:", typeof floorName);
-    console.log("🔗 Item ID:", itemId, "Type:", typeof itemId);
-    console.log("🔗 Item data:", item, "Type:", typeof item);
-    console.log("🔗 Item simulationProperties:", item.simulationProperties);
-    console.log("🔗 About to call updateFurnitureInFloor...");
-    
     updateFurnitureInFloor(floorName, itemId, item);
-    
-    console.log("🔗 updateFurnitureInFloor completed, showing toast...");
     
     toast({
       title: "Furniture Updated",
