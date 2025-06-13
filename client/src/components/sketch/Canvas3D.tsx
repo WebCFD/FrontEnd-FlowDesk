@@ -1081,7 +1081,8 @@ export default function Canvas3D({
       const dimensions = furnitureMenuData.defaultDimensions || { width: 80, height: 80, depth: 80 };
       
       // Determine furniture type - check if it's a custom STL object
-      const isCustomObject = furnitureMenuData.id.startsWith('custom_');
+      // Custom objects have IDs like "Obj 0F-1", "Obj 1F-2", etc.
+      const isCustomObject = furnitureMenuData.id.startsWith('Obj ') && furnitureMenuData.id.includes('F-');
       const furnitureType = isCustomObject ? 'custom' : furnitureMenuData.id as 'table' | 'person' | 'armchair' | 'car' | 'block' | 'vent';
       
       // FASE 2 TEST: Sistema de raycasting y detección de piso con restricciones de tipo
