@@ -5418,9 +5418,30 @@ export default function Canvas3D({
     });
 
     if (furnitureGroup) {
-      furnitureGroup.position.set(newPosition.x, newPosition.y, newPosition.z);
-      
-
+      // COORDINATE SYSTEM FIX: Apply same conversion as confirm button
+      if (editingFurniture.item.type === 'vent') {
+        // For vents: Convert world coordinates to local coordinates
+        const parentPosition = new THREE.Vector3();
+        
+        if (furnitureGroup.parent) {
+          furnitureGroup.parent.getWorldPosition(parentPosition);
+        }
+        
+        const localPosition = {
+          x: newPosition.x - parentPosition.x,
+          y: newPosition.y - parentPosition.y,
+          z: newPosition.z - parentPosition.z
+        };
+        
+        furnitureGroup.position.set(localPosition.x, localPosition.y, localPosition.z);
+        
+        console.log('Real-time position update (VENT):');
+        console.log('- Dialog world position:', newPosition);
+        console.log('- Applied local position:', localPosition);
+      } else {
+        // For tables and other furniture: direct application
+        furnitureGroup.position.set(newPosition.x, newPosition.y, newPosition.z);
+      }
     }
   };
 
@@ -5437,7 +5458,32 @@ export default function Canvas3D({
     });
 
     if (furnitureGroup) {
-      furnitureGroup.rotation.set(newRotation.x, newRotation.y, newRotation.z);
+      // COORDINATE SYSTEM FIX: Apply same conversion as confirm button
+      if (editingFurniture.item.type === 'vent') {
+        // For vents: Convert world rotation to local rotation
+        const parentQuaternion = new THREE.Quaternion();
+        const parentRotation = new THREE.Euler();
+        
+        if (furnitureGroup.parent) {
+          furnitureGroup.parent.getWorldQuaternion(parentQuaternion);
+          parentRotation.setFromQuaternion(parentQuaternion);
+        }
+        
+        const localRotation = {
+          x: newRotation.x - parentRotation.x,
+          y: newRotation.y - parentRotation.y,
+          z: newRotation.z - parentRotation.z
+        };
+        
+        furnitureGroup.rotation.set(localRotation.x, localRotation.y, localRotation.z);
+        
+        console.log('Real-time rotation update (VENT):');
+        console.log('- Dialog world rotation:', newRotation);
+        console.log('- Applied local rotation:', localRotation);
+      } else {
+        // For tables and other furniture: direct application
+        furnitureGroup.rotation.set(newRotation.x, newRotation.y, newRotation.z);
+      }
       console.log("🔄 Real-time rotation update:", newRotation);
     }
   };
