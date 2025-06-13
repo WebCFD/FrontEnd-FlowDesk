@@ -5148,7 +5148,7 @@ export default function Canvas3D({
 
     // Double-click handler for furniture editing
     const handleFurnitureDoubleClick = (event: MouseEvent) => {
-      console.log("🖱️ Furniture double-click detected!");
+
       
       // Allow furniture editing even in presentation mode for selective editing
       // Other editing interactions remain disabled in presentation mode
@@ -5167,7 +5167,7 @@ export default function Canvas3D({
         -((event.clientY - rect.top) / rect.height) * 2 + 1
       );
       
-      console.log("🎯 Mouse coordinates:", mouse);
+
       
       // Create raycaster
       const raycaster = new THREE.Raycaster();
@@ -5179,7 +5179,7 @@ export default function Canvas3D({
         // Check for furniture groups (main containers)
         if (object.userData.type === 'furniture') {
           furnitureObjects.push(object);
-          console.log("🪑 Found furniture group:", object.userData);
+
         }
         // Also check for meshes within furniture groups
         else if (object instanceof THREE.Mesh && object.parent?.userData.type === 'furniture') {
@@ -5188,12 +5188,12 @@ export default function Canvas3D({
         }
       });
       
-      console.log(`🔍 Found ${furnitureObjects.length} furniture objects in scene`);
+
       
       // Check for intersections (recursive to handle group children)
       const intersects = raycaster.intersectObjects(furnitureObjects, true);
       
-      console.log(`💥 Found ${intersects.length} intersections`);
+
       
       if (intersects.length > 0) {
         const intersectedObject = intersects[0].object;
@@ -5207,11 +5207,7 @@ export default function Canvas3D({
         if (furnitureGroup && furnitureGroup.userData.type === 'furniture') {
           const furnitureId = furnitureGroup.userData.furnitureId;
           
-          console.log("✅ Intersected furniture object:", {
-            furnitureId,
-            userData: furnitureGroup.userData,
-            position: furnitureGroup.position
-          });
+
           
           if (furnitureId) {
             // Get the actual furniture item from the store

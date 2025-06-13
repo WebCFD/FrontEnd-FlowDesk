@@ -1,0 +1,40 @@
+Dragging furniture: {id: 'vent', name: 'Vent', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…ke="#22c55e" stroke-width="2"/>\n      </svg>\n    ', defaultDimensions: {…}}
+RoomSketchPro.tsx:797 RSP: New furniture added, re-applying textures...
+wizard-design.tsx:1160 🔗 PARENT CALLBACK - handleFurnitureUpdate called with params:
+wizard-design.tsx:1161 🔗 Floor: ground Type: string
+wizard-design.tsx:1162 🔗 Item ID: Vent 0F-2 Type: string
+wizard-design.tsx:1163 🔗 Item data: {id: 'Vent 0F-2', type: 'vent', name: 'Vent 0F-2', floorName: 'ground', position: {…}, …} Type: object
+wizard-design.tsx:1164 🔗 Item simulationProperties: {flowType: 'Air Mass Flow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', state: 'open', …}
+wizard-design.tsx:1165 🔗 About to call updateFurnitureInFloor...
+wizard-design.tsx:1169 🔗 updateFurnitureInFloor completed, showing toast...
+RoomSketchPro.tsx:797 RSP: New furniture added, re-applying textures...
+Canvas3D.tsx:5151 🖱️ Furniture double-click detected!
+Canvas3D.tsx:5170 🎯 Mouse coordinates: _Vector2 {x: -0.47153024911032027, y: -0.12567132116004287}
+Canvas3D.tsx:5182 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-1', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:5182 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-2', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:5182 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-1', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:5182 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-1', floorName: 'ground', furnitureName: 'Vent 0F-1', …}
+Canvas3D.tsx:5182 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-2', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:5182 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-2', floorName: 'ground', furnitureName: 'Vent 0F-2', …}
+Canvas3D.tsx:5191 🔍 Found 6 furniture objects in scene
+Canvas3D.tsx:5196 💥 Found 2 intersections
+Canvas3D.tsx:5210 ✅ Intersected furniture object: {furnitureId: 'Vent 0F-2', userData: {…}, position: _Vector3}
+wizard-design.tsx:1160 🔗 PARENT CALLBACK - handleFurnitureUpdate called with params:
+wizard-design.tsx:1161 🔗 Floor: ground Type: string
+wizard-design.tsx:1162 🔗 Item ID: Vent 0F-2 Type: string
+wizard-design.tsx:1163 🔗 Item data: {id: 'Vent 0F-2', type: 'vent', name: 'Vent 0F-2', floorName: 'ground', position: {…}, …} Type: object
+wizard-design.tsx:1164 🔗 Item simulationProperties: {flowType: 'Air Mass Flow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', state: 'open', …}
+wizard-design.tsx:1165 🔗 About to call updateFurnitureInFloor...
+wizard-design.tsx:1169 🔗 updateFurnitureInFloor completed, showing toast...
+RoomSketchPro.tsx:797 RSP: New furniture added, re-applying textures...
+Canvas3D.tsx:5151 🖱️ Furniture double-click detected!
+Canvas3D.tsx:5170 🎯 Mouse coordinates: _Vector2 {x: -0.33274021352313166, y: -0.018259935553168738}
+Canvas3D.tsx:5182 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-1', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:5182 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-2', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:5182 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-1', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:5182 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-1', floorName: 'ground', furnitureName: 'Vent 0F-1', …}
+Canvas3D.tsx:5182 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-2', floorName: 'ground', isSelectable: true}
+Canvas3D.tsx:5182 🪑 Found furniture group: {type: 'furniture', furnitureType: 'vent', furnitureId: 'Vent 0F-2', floorName: 'ground', furnitureName: 'Vent 0F-2', …}
+Canvas3D.tsx:5191 🔍 Found 6 furniture objects in scene
+Canvas3D.tsx:5196 💥 Found 2 intersections
+Canvas3D.tsx:5210 ✅ Intersected furniture object: {furnitureId: 'Vent 0F-2', userData: {…}, position: _Vecto
