@@ -5184,7 +5184,7 @@ export default function Canvas3D({
         // Also check for meshes within furniture groups
         else if (object instanceof THREE.Mesh && object.parent?.userData.type === 'furniture') {
           furnitureObjects.push(object);
-          console.log("🪑 Found furniture mesh:", object.parent?.userData);
+
         }
       });
       
