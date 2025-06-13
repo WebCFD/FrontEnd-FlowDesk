@@ -1276,9 +1276,13 @@ export default function Canvas3D({
   
   // Effect to auto-open dialog for newly created furniture
   useEffect(() => {
-
+    // LOG 7: useEffect para auto-abrir dialog ejecutándose
+    console.log(`🔄 AUTO-DIALOG USEEFFECT: Checking for newFurnitureForDialog...`);
     
     if (newFurnitureForDialog.current) {
+      console.log(`🚀 AUTO-DIALOG TRIGGER: Opening dialog for furniture:`, newFurnitureForDialog.current);
+      console.log(`🎯 FURNITURE TO EDIT: type=${newFurnitureForDialog.current.type}, position=x:${newFurnitureForDialog.current.position.x}, y:${newFurnitureForDialog.current.position.y}, z:${newFurnitureForDialog.current.position.z}`);
+      
       setEditingFurniture({
         index: 0, // This would be the actual index in a real furniture list
         item: newFurnitureForDialog.current,
@@ -1287,6 +1291,8 @@ export default function Canvas3D({
       
       // Clear the reference
       newFurnitureForDialog.current = null;
+    } else {
+      console.log(`⚪ AUTO-DIALOG: No furniture waiting for dialog`);
     }
   }, [floors, currentFloor]); // Trigger when floors update (after furniture is added)
 
