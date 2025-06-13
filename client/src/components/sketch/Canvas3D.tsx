@@ -1110,8 +1110,10 @@ export default function Canvas3D({
       // PHASE 6: Get all existing furniture from current floor (including custom items)
       const existingFurniture = getAllFurnitureForFloor(surfaceDetection.floorName);
       
-      // Generate new furniture ID using the new system
-      const generatedId = generateFurnitureId(furnitureType, surfaceDetection.floorName, existingFurniture);
+      // For custom objects, use the pre-assigned ID from the store; for others, generate new ID
+      const generatedId = isCustomObject 
+        ? furnitureMenuData.id  // Use existing custom object ID
+        : generateFurnitureId(furnitureType, surfaceDetection.floorName, existingFurniture);
       
 
       
