@@ -5375,6 +5375,9 @@ export default function Canvas3D({
 
     if (furnitureGroup) {
       furnitureGroup.position.set(newPosition.x, newPosition.y, newPosition.z);
+      
+      // LOG 2: Posición Z del objeto en el espacio 3D cuando cambia
+      console.log(`🎯 3D SPACE Z POSITION CHANGE: ${furnitureGroup.position.z} (id: ${furnitureId}, type: ${editingFurniture.item.type})`);
     }
   };
 

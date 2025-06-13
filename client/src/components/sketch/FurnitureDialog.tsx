@@ -548,6 +548,10 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           const newZ = Number(e.target.value);
                           const newPosition = { ...elementPosition, z: newZ };
                           setElementPosition(newPosition);
+                          
+                          // LOG 1: Coordenada Z del dialog box cuando se modifica
+                          console.log(`📋 DIALOG BOX Z COORD CHANGE: ${newZ} (type: ${type}, name: ${furnitureName})`);
+                          
                           // Real-time update
                           if (onPositionUpdate) {
                             onPositionUpdate(newPosition);
