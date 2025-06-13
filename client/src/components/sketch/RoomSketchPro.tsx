@@ -794,7 +794,7 @@ export function RoomSketchPro({
 
   // Function to re-apply textures (called when new furniture is added)
   const handleFurnitureAdded = useCallback(() => {
-    console.log('RSP: New furniture added, re-applying textures...');
+
     
     // Small delay to ensure the furniture mesh is fully added to the scene
     setTimeout(() => {
