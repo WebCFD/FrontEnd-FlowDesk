@@ -188,6 +188,12 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
     onScaleUpdate
   } = props;
 
+  // LOG 6: Dialog box apertura
+  if (dialogOpen && type === 'vent') {
+    console.log(`🔷 FURNITURE DIALOG OPENING: type=${type}, isEditing=${isEditing}`);
+    console.log(`🔷 INITIAL VALUES:`, props.initialValues);
+  }
+
   // Helper function to truncate to 2 decimals
   const truncateToTwoDecimals = (value: number): number => {
     return Math.floor(value * 100) / 100;
