@@ -5252,8 +5252,8 @@ export default function Canvas3D({
                 z: furnitureGroup.rotation.z
               };
 
-              if (actualFurnitureItem.type === 'vent') {
-                // For vents, use world coordinates and rotation to match visual positioning
+              if (actualFurnitureItem.type === 'vent' || actualFurnitureItem.type === 'custom') {
+                // For vents and custom objects, use world coordinates and rotation to match visual positioning
                 const worldPosition = new THREE.Vector3();
                 const worldQuaternion = new THREE.Quaternion();
                 const worldRotation = new THREE.Euler();
@@ -5274,7 +5274,7 @@ export default function Canvas3D({
                   z: Math.round(worldRotation.z * 100) / 100
                 };
                 
-                console.log('Using world coordinates for vent dialog:');
+                console.log(`Using world coordinates for ${actualFurnitureItem.type} dialog:`);
                 console.log('- Position:', dialogPosition);
                 console.log('- Rotation:', dialogRotation);
               }
@@ -5419,8 +5419,8 @@ export default function Canvas3D({
 
     if (furnitureGroup) {
       // COORDINATE SYSTEM FIX: Apply same conversion as confirm button
-      if (editingFurniture.item.type === 'vent') {
-        // For vents: Convert world coordinates to local coordinates
+      if (editingFurniture.item.type === 'vent' || editingFurniture.item.type === 'custom') {
+        // For vents and custom objects: Convert world coordinates to local coordinates
         const parentPosition = new THREE.Vector3();
         
         if (furnitureGroup.parent) {
@@ -5435,7 +5435,7 @@ export default function Canvas3D({
         
         furnitureGroup.position.set(localPosition.x, localPosition.y, localPosition.z);
         
-        console.log('Real-time position update (VENT):');
+        console.log(`Real-time position update (${editingFurniture.item.type.toUpperCase()}):`);
         console.log('- Dialog world position:', newPosition);
         console.log('- Applied local position:', localPosition);
       } else {
@@ -5459,8 +5459,8 @@ export default function Canvas3D({
 
     if (furnitureGroup) {
       // COORDINATE SYSTEM FIX: Apply same conversion as confirm button
-      if (editingFurniture.item.type === 'vent') {
-        // For vents: Convert world rotation to local rotation
+      if (editingFurniture.item.type === 'vent' || editingFurniture.item.type === 'custom') {
+        // For vents and custom objects: Convert world rotation to local rotation
         const parentQuaternion = new THREE.Quaternion();
         const parentRotation = new THREE.Euler();
         
@@ -5477,7 +5477,7 @@ export default function Canvas3D({
         
         furnitureGroup.rotation.set(localRotation.x, localRotation.y, localRotation.z);
         
-        console.log('Real-time rotation update (VENT):');
+        console.log(`Real-time rotation update (${editingFurniture.item.type.toUpperCase()}):`);
         console.log('- Dialog world rotation:', newRotation);
         console.log('- Applied local rotation:', localRotation);
       } else {
@@ -5539,9 +5539,9 @@ export default function Canvas3D({
     });
 
     if (furnitureGroup) {
-      // COORDINATE SYSTEM FIX: Handle vents differently than tables
-      if (editingFurniture.item.type === 'vent') {
-        // For vents: Convert world coordinates back to local coordinates
+      // COORDINATE SYSTEM FIX: Handle vents and custom objects differently than tables
+      if (editingFurniture.item.type === 'vent' || editingFurniture.item.type === 'custom') {
+        // For vents and custom objects: Convert world coordinates back to local coordinates
         const parentPosition = new THREE.Vector3();
         const parentQuaternion = new THREE.Quaternion();
         const parentRotation = new THREE.Euler();
@@ -5570,7 +5570,7 @@ export default function Canvas3D({
         furnitureGroup.rotation.set(localRotation.x, localRotation.y, localRotation.z);
         furnitureGroup.scale.set(data.scale.x, data.scale.y, data.scale.z);
         
-        console.log('VENT COORDINATE CONVERSION:');
+        console.log(`${editingFurniture.item.type.toUpperCase()} COORDINATE CONVERSION:`);
         console.log('- Dialog values (world):', { position: data.position, rotation: data.rotation });
         console.log('- Parent transform:', { position: parentPosition, rotation: parentRotation });
         console.log('- Applied values (local):', { position: localPosition, rotation: localRotation });
