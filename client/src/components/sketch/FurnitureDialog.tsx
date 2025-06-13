@@ -328,11 +328,17 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
       
       if (defaults.position) {
         // Apply decimal truncation to initial position values
-        setElementPosition({
+        const dialogPosition = {
           x: truncateToTwoDecimals(defaults.position.x),
           y: truncateToTwoDecimals(defaults.position.y),
           z: truncateToTwoDecimals(defaults.position.z)
-        });
+        };
+        setElementPosition(dialogPosition);
+        
+        // LOG 5: Coordenadas que aparecen en el dialog box cuando se abre tras el drop
+        if (type === 'vent') {
+          console.log(`💬 DIALOG BOX INITIAL COORDINATES: x=${dialogPosition.x}, y=${dialogPosition.y}, z=${dialogPosition.z} (type: ${type})`);
+        }
       }
     }
   }, [dialogOpen, type, isEditing]);
