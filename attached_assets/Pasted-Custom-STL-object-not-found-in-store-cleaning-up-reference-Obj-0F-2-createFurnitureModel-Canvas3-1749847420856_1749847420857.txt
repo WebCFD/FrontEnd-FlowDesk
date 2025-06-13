@@ -1,0 +1,19 @@
+Custom STL object not found in store, cleaning up reference: Obj 0F-2
+createFurnitureModel @ Canvas3D.tsx:853
+(anonymous) @ Canvas3D.tsx:1167
+handleDrop @ Canvas3D.tsx:5146Understand this warningAI
+wizard-design.tsx:1573 Dragging furniture: {id: 'Obj 0F-1', name: 'Obj 0F-1', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…" cy="8" r="3" fill="#10b981"/>\n      </svg>\n    ', defaultDimensions: {…}}
+Canvas3D.tsx:853 Custom STL object not found in store, cleaning up reference: Obj 0F-2
+createFurnitureModel @ Canvas3D.tsx:853
+(anonymous) @ Canvas3D.tsx:1167
+handleDrop @ Canvas3D.tsx:5146Understand this warningAI
+custom-furniture-store.ts:81 Custom Furniture Store: Cached new geometry geom_-3.2782554626464844e-7,0.5555704832077026,-0.8314696550369263,-3.2782554626464844e-7,0.7071070671081543,-0.7071067690849304,0.1379493772983551,0.693520188331604,-0.7071067690849304,-3.2782554626464844e-7,0.5555704832077026,-0.8314696550369263_8640
+custom-furniture-store.ts:140 🎯 CUSTOM FURNITURE ID TEST: {originalName: 'uploads files 3593527 Gray sphere', floorName: 'ground', existingCustomCount: 0, generatedId: 'Obj 0F-1', timestamp: '2025-06-13T20:43:05.438Z'}
+custom-furniture-store.ts:161 Custom Furniture Store: Added new item {id: 'Obj 0F-1', name: 'uploads files 3593527 Gray sphere', dimensions: {…}, totalItems: 1}
+STLProcessor.ts:176 STL Processor: Completed processing {name: 'Obj 0F-1', scaleFactor: 1, dimensions: {…}, vertices: 2880, hasThumbnail: true}
+STLUploader.tsx:117 STL Processor: Enhanced processing complete {name: 'Obj 0F-1', vertexCount: 2880, dimensions: {…}, fileSize: '47.0KB', hasThumbnail: true}
+wizard-design.tsx:1573 Dragging furniture: {id: 'Obj 0F-1', name: 'Obj 0F-1', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…" cy="8" r="3" fill="#10b981"/>\n      </svg>\n    ', defaultDimensions: {…}}
+Canvas3D.tsx:853 Custom STL object not found in store, cleaning up reference: Obj 0F-2
+createFurnitureModel @ Canvas3D.tsx:853
+(anonymous) @ Canvas3D.tsx:1167
+handleDrop @ Canvas3D.tsx:5146Understand this warningAI
