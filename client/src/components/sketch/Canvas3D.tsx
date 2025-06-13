@@ -5216,6 +5216,21 @@ export default function Canvas3D({
             const actualFurnitureItem = allFurnitureItems.find(item => item.id === furnitureId);
             
             if (actualFurnitureItem) {
+              // ROOT CAUSE INVESTIGATION: Log the position data flow
+              if (actualFurnitureItem.type === 'vent') {
+                console.log('=== ROOT CAUSE INVESTIGATION ===');
+                console.log('Vent Double-Click Analysis:');
+                console.log('- Stored position in data store:', actualFurnitureItem.position);
+                console.log('- 3D scene furnitureGroup.position:', {
+                  x: furnitureGroup.position.x,
+                  y: furnitureGroup.position.y, 
+                  z: furnitureGroup.position.z
+                });
+                console.log('- Visual position appears high (ceiling), but reading Z =', furnitureGroup.position.z);
+                console.log('- This Z value will be sent to dialog as initialValues');
+                console.log('================================');
+              }
+              
               // Use the actual stored item with all its properties including simulationProperties
               const furnitureItemWithCurrentPosition: FurnitureItem = {
                 ...actualFurnitureItem,
