@@ -335,9 +335,18 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
           y: truncateToTwoDecimals(defaults.position.y),
           z: truncateToTwoDecimals(defaults.position.z)
         };
-        setElementPosition(dialogPosition);
         
-
+        // ROOT CAUSE INVESTIGATION: Log dialog initialization
+        if (type === 'vent') {
+          console.log('=== DIALOG INITIALIZATION ===');
+          console.log('FurnitureDialog receiving position from Canvas3D:');
+          console.log('- props.initialValues.position:', props.initialValues?.position);
+          console.log('- Setting dialog elementPosition to:', dialogPosition);
+          console.log('- Dialog will display Z =', dialogPosition.z, 'in UI input field');
+          console.log('==============================');
+        }
+        
+        setElementPosition(dialogPosition);
       }
     }
   }, [dialogOpen, type, isEditing]);
@@ -380,7 +389,15 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
       })
     };
     
-
+    // ROOT CAUSE INVESTIGATION: Log dialog submission
+    if (type === 'vent') {
+      console.log('=== DIALOG SUBMISSION ===');
+      console.log('FurnitureDialog sending data back to Canvas3D:');
+      console.log('- Submitting position:', elementPosition);
+      console.log('- This position (Z =', elementPosition.z, ') will update both 3D scene and data store');
+      console.log('- Canvas3D handleFurnitureEdit will receive this data');
+      console.log('==========================');
+    }
     
     props.onConfirm(furnitureData);
     onClose();
