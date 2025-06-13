@@ -1,0 +1,42 @@
+{x: 184.74347957504892, y: 43.70089649655006, z: 220.0000000000001}x: 184.74347957504892y: 43.70089649655006z: 220.0000000000001[[Prototype]]: Object
+Canvas3D.tsx:5256 - 3D scene furnitureGroup.position (local): {x: 0, y: 0, z: 0}
+Canvas3D.tsx:5261 - ACTUAL VISUAL POSITION (world coordinates): {x: 184.74, y: 43.7, z: 220}
+Canvas3D.tsx:5266 - Group rotation (may affect visual positioning): {x: 0, y: 0, z: 0}
+Canvas3D.tsx:5275 - PARENT HIERARCHY ANALYSIS:
+Canvas3D.tsx:5277   [0] Group "unnamed": {type: 'Group', name: 'unnamed', position: {…}, rotation: {…}, scale: {…}}name: "unnamed"position: {x: 184.74347957504892, y: 43.70089649655006, z: 220.0000000000001}rotation: {x: 0, y: 0, z: 0}scale: {x: 1, y: 1, z: 1}type: "Group"[[Prototype]]: Object
+Canvas3D.tsx:5277   [1] Scene "unnamed": {type: 'Scene', name: 'unnamed', position: {…}, rotation: {…}, scale: {…}}name: "unnamed"position: {x: 0, y: 0, z: 0}rotation: {x: 0, y: 0, z: 0}scale: {x: 1, y: 1, z: 1}type: "Scene"[[Prototype]]: Object
+Canvas3D.tsx:5289 - SCALING ANALYSIS:
+Canvas3D.tsx:5290   X scaling: Infinityx (0 → 184.74)
+Canvas3D.tsx:5291   Y scaling: Infinityx (0 → 43.7)
+Canvas3D.tsx:5292   Z scaling: Infinityx (0 → 220)
+Canvas3D.tsx:5293 - DISCREPANCY: Visual Z = 220 vs Stored Z = 0
+Canvas3D.tsx:5294 - This stored Z value will be sent to dialog as initialValues
+Canvas3D.tsx:5295 ================================
+FurnitureDialog.tsx:394 === DIALOG SUBMISSION ===
+FurnitureDialog.tsx:395 FurnitureDialog sending data back to Canvas3D:
+FurnitureDialog.tsx:396 - Submitting position: {x: -8.72, y: -49.89, z: 220}
+FurnitureDialog.tsx:397 - This position (Z = 220 ) will update both 3D scene and data store
+FurnitureDialog.tsx:398 - Canvas3D handleFurnitureEdit will receive this data
+FurnitureDialog.tsx:399 ==========================
+Canvas3D.tsx:5253 === ROOT CAUSE INVESTIGATION ===
+Canvas3D.tsx:5254 Vent Double-Click Analysis:
+Canvas3D.tsx:5255 - Stored position in data store: {x: -8.72, y: -49.89, z: 220}
+Canvas3D.tsx:5256 - 3D scene furnitureGroup.position (local): {x: -8.72, y: -49.89, z: 220}
+Canvas3D.tsx:5261 - ACTUAL VISUAL POSITION (world coordinates): {x: 176.02, y: -6.19, z: 440}
+Canvas3D.tsx:5266 - Group rotation (may affect visual positioning): {x: 0, y: 0, z: 0}
+Canvas3D.tsx:5275 - PARENT HIERARCHY ANALYSIS:
+Canvas3D.tsx:5277   [0] Group "unnamed": {type: 'Group', name: 'unnamed', position: {…}, rotation: {…}, scale: {…}}name: "unnamed"position: {x: 184.74347957504892, y: 43.70089649655006, z: 220.0000000000001}rotation: {x: 0, y: 0, z: 0}scale: {x: 1, y: 1, z: 1}type: "Group"[[Prototype]]: Object
+Canvas3D.tsx:5277   [1] Scene "unnamed": {type: 'Scene', name: 'unnamed', position: {…}, rotation: {…}, scale: {…}}name: "unnamed"position: {x: 0, y: 0, z: 0}rotation: {x: 0, y: 0, z: 0}scale: {x: 1, y: 1, z: 1}type: "Scene"[[Prototype]]: Object
+Canvas3D.tsx:5289 - SCALING ANALYSIS:
+Canvas3D.tsx:5290   X scaling: 20.19x (-8.72 → 176.02)
+Canvas3D.tsx:5291   Y scaling: 0.12x (-49.89 → -6.19)
+Canvas3D.tsx:5292   Z scaling: 2x (220 → 440)
+Canvas3D.tsx:5293 - DISCREPANCY: Visual Z = 440 vs Stored Z = 220
+Canvas3D.tsx:5294 - This stored Z value will be sent to dialog as initialValues
+Canvas3D.tsx:5295 ================================
+FurnitureDialog.tsx:341 === DIALOG INITIALIZATION ===
+FurnitureDialog.tsx:342 FurnitureDialog receiving position from Canvas3D:
+FurnitureDialog.tsx:343 - props.initialValues.position: {x: -8.72, y: -49.89, z: 220}
+FurnitureDialog.tsx:344 - Setting dialog elementPosition to: {x: -8.73, y: -49.89, z: 220}
+FurnitureDialog.tsx:345 - Dialog will display Z = 220 in UI input field
+FurnitureDialog.tsx:346 ==============================

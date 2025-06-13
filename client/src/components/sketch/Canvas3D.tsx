@@ -5216,94 +5216,53 @@ export default function Canvas3D({
             const actualFurnitureItem = allFurnitureItems.find(item => item.id === furnitureId);
             
             if (actualFurnitureItem) {
-              // ROOT CAUSE INVESTIGATION: Log the position data flow
+              // COORDINATE SYSTEM FIX: Use world coordinates for dialog consistency
               if (actualFurnitureItem.type === 'vent') {
-                // Measure actual visual position using world coordinates
+                // Get the actual visual position using world coordinates
                 const worldPosition = new THREE.Vector3();
                 furnitureGroup.getWorldPosition(worldPosition);
                 
-                // Check parent hierarchy for scaling factors
-                let parentHierarchy: any[] = [];
-                let currentParent = furnitureGroup.parent;
-                while (currentParent) {
-                  parentHierarchy.push({
-                    type: currentParent.type,
-                    name: currentParent.name || 'unnamed',
-                    position: { x: currentParent.position.x, y: currentParent.position.y, z: currentParent.position.z },
-                    rotation: { x: currentParent.rotation.x, y: currentParent.rotation.y, z: currentParent.rotation.z },
-                    scale: { x: currentParent.scale.x, y: currentParent.scale.y, z: currentParent.scale.z }
-                  });
-                  currentParent = currentParent.parent;
-                }
-
-                // Check if there are child meshes with different positions
-                let childPositions: any[] = [];
-                furnitureGroup.traverse((child) => {
-                  if (child !== furnitureGroup && child.position) {
-                    const childWorldPos = new THREE.Vector3();
-                    child.getWorldPosition(childWorldPos);
-                    childPositions.push({
-                      type: child.type,
-                      localPos: { x: child.position.x, y: child.position.y, z: child.position.z },
-                      worldPos: { x: childWorldPos.x, y: childWorldPos.y, z: childWorldPos.z }
-                    });
-                  }
-                });
-                
-                console.log('=== ROOT CAUSE INVESTIGATION ===');
+                console.log('=== COORDINATE SYSTEM FIX ===');
                 console.log('Vent Double-Click Analysis:');
-                console.log('- Stored position in data store:', actualFurnitureItem.position);
-                console.log('- 3D scene furnitureGroup.position (local):', {
+                console.log('- Original stored position:', actualFurnitureItem.position);
+                console.log('- Local furnitureGroup.position:', {
                   x: furnitureGroup.position.x,
                   y: furnitureGroup.position.y, 
                   z: furnitureGroup.position.z
                 });
-                console.log('- ACTUAL VISUAL POSITION (world coordinates):', {
+                console.log('- World position (visual):', {
                   x: Math.round(worldPosition.x * 100) / 100,
                   y: Math.round(worldPosition.y * 100) / 100,
                   z: Math.round(worldPosition.z * 100) / 100
                 });
-                console.log('- Group rotation (may affect visual positioning):', {
-                  x: furnitureGroup.rotation.x,
-                  y: furnitureGroup.rotation.y,
-                  z: furnitureGroup.rotation.z
-                });
-                if (childPositions.length > 0) {
-                  console.log('- Child mesh positions:', childPositions);
-                }
-                if (parentHierarchy.length > 0) {
-                  console.log('- PARENT HIERARCHY ANALYSIS:');
-                  parentHierarchy.forEach((parent, index) => {
-                    console.log(`  [${index}] ${parent.type || 'Group'} "${parent.name}":`, parent);
-                    if (parent.scale.x !== 1 || parent.scale.y !== 1 || parent.scale.z !== 1) {
-                      console.log(`      ⚠️  SCALING DETECTED: ${parent.scale.x}x, ${parent.scale.y}x, ${parent.scale.z}x`);
-                    }
-                  });
-                }
-                
-                // Calculate scaling factor based on coordinate difference
-                const scalingFactorX = Math.abs(worldPosition.x / furnitureGroup.position.x);
-                const scalingFactorY = Math.abs(worldPosition.y / furnitureGroup.position.y);
-                const scalingFactorZ = Math.abs(worldPosition.z / furnitureGroup.position.z);
-                
-                console.log('- SCALING ANALYSIS:');
-                console.log(`  X scaling: ${Math.round(scalingFactorX * 100) / 100}x (${furnitureGroup.position.x} → ${Math.round(worldPosition.x * 100) / 100})`);
-                console.log(`  Y scaling: ${Math.round(scalingFactorY * 100) / 100}x (${furnitureGroup.position.y} → ${Math.round(worldPosition.y * 100) / 100})`);
-                console.log(`  Z scaling: ${Math.round(scalingFactorZ * 100) / 100}x (${furnitureGroup.position.z} → ${Math.round(worldPosition.z * 100) / 100})`);
-                console.log('- DISCREPANCY: Visual Z =', Math.round(worldPosition.z * 100) / 100, 'vs Stored Z =', furnitureGroup.position.z);
-                console.log('- This stored Z value will be sent to dialog as initialValues');
-                console.log('================================');
+                console.log('- USING WORLD COORDINATES for dialog consistency');
+                console.log('===============================');
               }
               
+              // COORDINATE SYSTEM FIX: Use world coordinates for vents to match visual positioning
+              let dialogPosition = {
+                x: furnitureGroup.position.x,
+                y: furnitureGroup.position.y,
+                z: furnitureGroup.position.z
+              };
+              
+              if (actualFurnitureItem.type === 'vent') {
+                // For vents, use world coordinates to match visual positioning
+                const worldPosition = new THREE.Vector3();
+                furnitureGroup.getWorldPosition(worldPosition);
+                dialogPosition = {
+                  x: Math.round(worldPosition.x * 100) / 100,
+                  y: Math.round(worldPosition.y * 100) / 100,
+                  z: Math.round(worldPosition.z * 100) / 100
+                };
+                console.log('Using world coordinates for vent dialog:', dialogPosition);
+              }
+
               // Use the actual stored item with all its properties including simulationProperties
               const furnitureItemWithCurrentPosition: FurnitureItem = {
                 ...actualFurnitureItem,
                 // Table approach: read all transformations from group for all furniture types
-                position: {
-                  x: furnitureGroup.position.x,
-                  y: furnitureGroup.position.y,
-                  z: furnitureGroup.position.z
-                },
+                position: dialogPosition,
                 rotation: {
                   x: furnitureGroup.rotation.x,
                   y: furnitureGroup.rotation.y,
