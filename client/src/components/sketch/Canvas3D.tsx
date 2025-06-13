@@ -878,11 +878,7 @@ const createFurnitureModel = (
     furnitureItem.rotation.z
   );
 
-  // LOG 3: Rotación aplicada al crear el objeto
-  if (furnitureItem.type === 'vent') {
-    console.log(`🔄 VENT ROTATION APPLIED: x=${furnitureItem.rotation.x} (${furnitureItem.rotation.x * (180/Math.PI)}°), y=${furnitureItem.rotation.y}, z=${furnitureItem.rotation.z} | Surface: ${furnitureItem.userData?.surfaceType || 'unknown'}`);
-    console.log(`📍 VENT POSITION AFTER ROTATION: x=${model.position.x}, y=${model.position.y}, z=${model.position.z}`);
-  }
+
 
   // Apply scaling based on dimensions if different from defaults
   if (furnitureItem.dimensions) {
@@ -1127,12 +1123,7 @@ export default function Canvas3D({
         timestamp: new Date().toISOString()
       });
       
-      // LOG 4: Información de superficie detectada y rotación aplicada
-      if (furnitureType === 'vent') {
-        console.log(`🎯 SURFACE DETECTION: ${surfaceDetection.surfaceType} on floor ${surfaceDetection.floorName}`);
-        console.log(`📐 CALCULATED POSITION FROM RAYCAST: x=${calculatedPosition.x}, y=${calculatedPosition.y}, z=${calculatedPosition.z}`);
-        console.log(`🔄 ROTATION TO BE APPLIED: ${surfaceDetection.surfaceType === 'ceiling' ? 'Math.PI (180°) on X-axis' : 'No rotation (0,0,0)'}`);
-      }
+
 
       // Create furniture item with proper default properties
       const furnitureItem: FurnitureItem = {
@@ -1276,13 +1267,7 @@ export default function Canvas3D({
   
   // Effect to auto-open dialog for newly created furniture
   useEffect(() => {
-    // LOG 7: useEffect para auto-abrir dialog ejecutándose
-    console.log(`🔄 AUTO-DIALOG USEEFFECT: Checking for newFurnitureForDialog...`);
-    
     if (newFurnitureForDialog.current) {
-      console.log(`🚀 AUTO-DIALOG TRIGGER: Opening dialog for furniture:`, newFurnitureForDialog.current);
-      console.log(`🎯 FURNITURE TO EDIT: type=${newFurnitureForDialog.current.type}, position=x:${newFurnitureForDialog.current.position.x}, y:${newFurnitureForDialog.current.position.y}, z:${newFurnitureForDialog.current.position.z}`);
-      
       setEditingFurniture({
         index: 0, // This would be the actual index in a real furniture list
         item: newFurnitureForDialog.current,
@@ -1291,8 +1276,6 @@ export default function Canvas3D({
       
       // Clear the reference
       newFurnitureForDialog.current = null;
-    } else {
-      console.log(`⚪ AUTO-DIALOG: No furniture waiting for dialog`);
     }
   }, [floors, currentFloor]); // Trigger when floors update (after furniture is added)
 
@@ -5395,8 +5378,7 @@ export default function Canvas3D({
     if (furnitureGroup) {
       furnitureGroup.position.set(newPosition.x, newPosition.y, newPosition.z);
       
-      // LOG 2: Posición Z del objeto en el espacio 3D cuando cambia
-      console.log(`🎯 3D SPACE Z POSITION CHANGE: ${furnitureGroup.position.z} (id: ${furnitureId}, type: ${editingFurniture.item.type})`);
+
     }
   };
 
