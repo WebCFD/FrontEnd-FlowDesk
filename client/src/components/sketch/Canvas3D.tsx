@@ -1123,7 +1123,7 @@ export default function Canvas3D({
         name: generatedId, // Name is same as ID
         floorName: surfaceDetection.floorName,
         position: calculatedPosition,
-        rotation: surfaceDetection.surfaceType === 'ceiling' ? { x: Math.PI, y: 0, z: 0 } : { x: 0, y: 0, z: 0 },
+        rotation: surfaceDetection.surfaceType === 'ceiling' && furnitureType !== 'vent' ? { x: Math.PI, y: 0, z: 0 } : { x: 0, y: 0, z: 0 },
         dimensions: dimensions,
         information: `${generatedId} placed on ${surfaceDetection.surfaceType} of ${surfaceDetection.floorName}`,
         properties: furnitureType === 'vent' ? {
