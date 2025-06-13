@@ -516,9 +516,6 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           const newPosition = { ...elementPosition, x: newX };
                           setElementPosition(newPosition);
                           
-                          // Log coordinate changes
-                          console.log(`Dialog Coordinates - X modified: ${newX} (furniture: ${furnitureName})`);
-                          
                           // Real-time update
                           if (onPositionUpdate) {
                             onPositionUpdate(newPosition);
@@ -538,9 +535,6 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           const newY = Number(e.target.value);
                           const newPosition = { ...elementPosition, y: newY };
                           setElementPosition(newPosition);
-                          
-                          // Log coordinate changes
-                          console.log(`Dialog Coordinates - Y modified: ${newY} (furniture: ${furnitureName})`);
                           
                           // Real-time update
                           if (onPositionUpdate) {
@@ -562,8 +556,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           const newPosition = { ...elementPosition, z: newZ };
                           setElementPosition(newPosition);
                           
-                          // Log coordinate changes
-                          console.log(`Dialog Coordinates - Z modified: ${newZ} (furniture: ${furnitureName})`);
+
                           
                           // Real-time update
                           if (onPositionUpdate) {
