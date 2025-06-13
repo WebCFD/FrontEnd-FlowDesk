@@ -1112,16 +1112,7 @@ export default function Canvas3D({
       // Generate new furniture ID using the new system
       const generatedId = generateFurnitureId(furnitureType, surfaceDetection.floorName, existingFurniture);
       
-      // TEST: Log the unified ID generation process
-      console.log('🆔 UNIFIED FURNITURE ID TEST:', {
-        furnitureType,
-        floorName: surfaceDetection.floorName,
-        existingCount: existingFurniture.length,
-        existingByType: existingFurniture.filter(item => item.type === furnitureType).length,
-        generatedId,
-        isCustom: isCustomObject,
-        timestamp: new Date().toISOString()
-      });
+
       
 
 
