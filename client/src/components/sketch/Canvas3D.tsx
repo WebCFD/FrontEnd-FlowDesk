@@ -5222,6 +5222,20 @@ export default function Canvas3D({
                 const worldPosition = new THREE.Vector3();
                 furnitureGroup.getWorldPosition(worldPosition);
                 
+                // Check parent hierarchy for scaling factors
+                let parentHierarchy: any[] = [];
+                let currentParent = furnitureGroup.parent;
+                while (currentParent) {
+                  parentHierarchy.push({
+                    type: currentParent.type,
+                    name: currentParent.name || 'unnamed',
+                    position: { x: currentParent.position.x, y: currentParent.position.y, z: currentParent.position.z },
+                    rotation: { x: currentParent.rotation.x, y: currentParent.rotation.y, z: currentParent.rotation.z },
+                    scale: { x: currentParent.scale.x, y: currentParent.scale.y, z: currentParent.scale.z }
+                  });
+                  currentParent = currentParent.parent;
+                }
+
                 // Check if there are child meshes with different positions
                 let childPositions: any[] = [];
                 furnitureGroup.traverse((child) => {
@@ -5257,6 +5271,25 @@ export default function Canvas3D({
                 if (childPositions.length > 0) {
                   console.log('- Child mesh positions:', childPositions);
                 }
+                if (parentHierarchy.length > 0) {
+                  console.log('- PARENT HIERARCHY ANALYSIS:');
+                  parentHierarchy.forEach((parent, index) => {
+                    console.log(`  [${index}] ${parent.type || 'Group'} "${parent.name}":`, parent);
+                    if (parent.scale.x !== 1 || parent.scale.y !== 1 || parent.scale.z !== 1) {
+                      console.log(`      ⚠️  SCALING DETECTED: ${parent.scale.x}x, ${parent.scale.y}x, ${parent.scale.z}x`);
+                    }
+                  });
+                }
+                
+                // Calculate scaling factor based on coordinate difference
+                const scalingFactorX = Math.abs(worldPosition.x / furnitureGroup.position.x);
+                const scalingFactorY = Math.abs(worldPosition.y / furnitureGroup.position.y);
+                const scalingFactorZ = Math.abs(worldPosition.z / furnitureGroup.position.z);
+                
+                console.log('- SCALING ANALYSIS:');
+                console.log(`  X scaling: ${Math.round(scalingFactorX * 100) / 100}x (${furnitureGroup.position.x} → ${Math.round(worldPosition.x * 100) / 100})`);
+                console.log(`  Y scaling: ${Math.round(scalingFactorY * 100) / 100}x (${furnitureGroup.position.y} → ${Math.round(worldPosition.y * 100) / 100})`);
+                console.log(`  Z scaling: ${Math.round(scalingFactorZ * 100) / 100}x (${furnitureGroup.position.z} → ${Math.round(worldPosition.z * 100) / 100})`);
                 console.log('- DISCREPANCY: Visual Z =', Math.round(worldPosition.z * 100) / 100, 'vs Stored Z =', furnitureGroup.position.z);
                 console.log('- This stored Z value will be sent to dialog as initialValues');
                 console.log('================================');
