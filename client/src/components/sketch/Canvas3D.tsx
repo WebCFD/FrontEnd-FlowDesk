@@ -5218,16 +5218,47 @@ export default function Canvas3D({
             if (actualFurnitureItem) {
               // ROOT CAUSE INVESTIGATION: Log the position data flow
               if (actualFurnitureItem.type === 'vent') {
+                // Measure actual visual position using world coordinates
+                const worldPosition = new THREE.Vector3();
+                furnitureGroup.getWorldPosition(worldPosition);
+                
+                // Check if there are child meshes with different positions
+                let childPositions: any[] = [];
+                furnitureGroup.traverse((child) => {
+                  if (child !== furnitureGroup && child.position) {
+                    const childWorldPos = new THREE.Vector3();
+                    child.getWorldPosition(childWorldPos);
+                    childPositions.push({
+                      type: child.type,
+                      localPos: { x: child.position.x, y: child.position.y, z: child.position.z },
+                      worldPos: { x: childWorldPos.x, y: childWorldPos.y, z: childWorldPos.z }
+                    });
+                  }
+                });
+                
                 console.log('=== ROOT CAUSE INVESTIGATION ===');
                 console.log('Vent Double-Click Analysis:');
                 console.log('- Stored position in data store:', actualFurnitureItem.position);
-                console.log('- 3D scene furnitureGroup.position:', {
+                console.log('- 3D scene furnitureGroup.position (local):', {
                   x: furnitureGroup.position.x,
                   y: furnitureGroup.position.y, 
                   z: furnitureGroup.position.z
                 });
-                console.log('- Visual position appears high (ceiling), but reading Z =', furnitureGroup.position.z);
-                console.log('- This Z value will be sent to dialog as initialValues');
+                console.log('- ACTUAL VISUAL POSITION (world coordinates):', {
+                  x: Math.round(worldPosition.x * 100) / 100,
+                  y: Math.round(worldPosition.y * 100) / 100,
+                  z: Math.round(worldPosition.z * 100) / 100
+                });
+                console.log('- Group rotation (may affect visual positioning):', {
+                  x: furnitureGroup.rotation.x,
+                  y: furnitureGroup.rotation.y,
+                  z: furnitureGroup.rotation.z
+                });
+                if (childPositions.length > 0) {
+                  console.log('- Child mesh positions:', childPositions);
+                }
+                console.log('- DISCREPANCY: Visual Z =', Math.round(worldPosition.z * 100) / 100, 'vs Stored Z =', furnitureGroup.position.z);
+                console.log('- This stored Z value will be sent to dialog as initialValues');
                 console.log('================================');
               }
               
