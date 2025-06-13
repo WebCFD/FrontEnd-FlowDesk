@@ -5246,28 +5246,45 @@ export default function Canvas3D({
                 z: furnitureGroup.position.z
               };
               
+              let dialogRotation = {
+                x: furnitureGroup.rotation.x,
+                y: furnitureGroup.rotation.y,
+                z: furnitureGroup.rotation.z
+              };
+
               if (actualFurnitureItem.type === 'vent') {
-                // For vents, use world coordinates to match visual positioning
+                // For vents, use world coordinates and rotation to match visual positioning
                 const worldPosition = new THREE.Vector3();
+                const worldQuaternion = new THREE.Quaternion();
+                const worldRotation = new THREE.Euler();
+                
                 furnitureGroup.getWorldPosition(worldPosition);
+                furnitureGroup.getWorldQuaternion(worldQuaternion);
+                worldRotation.setFromQuaternion(worldQuaternion);
+                
                 dialogPosition = {
                   x: Math.round(worldPosition.x * 100) / 100,
                   y: Math.round(worldPosition.y * 100) / 100,
                   z: Math.round(worldPosition.z * 100) / 100
                 };
-                console.log('Using world coordinates for vent dialog:', dialogPosition);
+                
+                dialogRotation = {
+                  x: Math.round(worldRotation.x * 100) / 100,
+                  y: Math.round(worldRotation.y * 100) / 100,
+                  z: Math.round(worldRotation.z * 100) / 100
+                };
+                
+                console.log('Using world coordinates for vent dialog:');
+                console.log('- Position:', dialogPosition);
+                console.log('- Rotation:', dialogRotation);
               }
 
               // Use the actual stored item with all its properties including simulationProperties
               const furnitureItemWithCurrentPosition: FurnitureItem = {
                 ...actualFurnitureItem,
-                // Table approach: read all transformations from group for all furniture types
+                // For all furniture types: position and rotation from appropriate coordinate system
                 position: dialogPosition,
-                rotation: {
-                  x: furnitureGroup.rotation.x,
-                  y: furnitureGroup.rotation.y,
-                  z: furnitureGroup.rotation.z
-                }
+                rotation: dialogRotation
               };
               
               setEditingFurniture({
@@ -5476,10 +5493,48 @@ export default function Canvas3D({
     });
 
     if (furnitureGroup) {
-      // Table approach: treat all furniture types identically - group handles all transformations
-      furnitureGroup.position.set(data.position.x, data.position.y, data.position.z);
-      furnitureGroup.rotation.set(data.rotation.x, data.rotation.y, data.rotation.z);
-      furnitureGroup.scale.set(data.scale.x, data.scale.y, data.scale.z);
+      // COORDINATE SYSTEM FIX: Handle vents differently than tables
+      if (editingFurniture.item.type === 'vent') {
+        // For vents: Convert world coordinates back to local coordinates
+        const parentPosition = new THREE.Vector3();
+        const parentQuaternion = new THREE.Quaternion();
+        const parentRotation = new THREE.Euler();
+        
+        if (furnitureGroup.parent) {
+          furnitureGroup.parent.getWorldPosition(parentPosition);
+          furnitureGroup.parent.getWorldQuaternion(parentQuaternion);
+          parentRotation.setFromQuaternion(parentQuaternion);
+        }
+        
+        // Convert world coordinates to local coordinates
+        const localPosition = {
+          x: data.position.x - parentPosition.x,
+          y: data.position.y - parentPosition.y,
+          z: data.position.z - parentPosition.z
+        };
+        
+        // Convert world rotation to local rotation
+        const localRotation = {
+          x: data.rotation.x - parentRotation.x,
+          y: data.rotation.y - parentRotation.y,
+          z: data.rotation.z - parentRotation.z
+        };
+        
+        furnitureGroup.position.set(localPosition.x, localPosition.y, localPosition.z);
+        furnitureGroup.rotation.set(localRotation.x, localRotation.y, localRotation.z);
+        furnitureGroup.scale.set(data.scale.x, data.scale.y, data.scale.z);
+        
+        console.log('VENT COORDINATE CONVERSION:');
+        console.log('- Dialog values (world):', { position: data.position, rotation: data.rotation });
+        console.log('- Parent transform:', { position: parentPosition, rotation: parentRotation });
+        console.log('- Applied values (local):', { position: localPosition, rotation: localRotation });
+      } else {
+        // For tables and other furniture: use existing approach (local coordinates)
+        furnitureGroup.position.set(data.position.x, data.position.y, data.position.z);
+        furnitureGroup.rotation.set(data.rotation.x, data.rotation.y, data.rotation.z);
+        furnitureGroup.scale.set(data.scale.x, data.scale.y, data.scale.z);
+      }
+      
       furnitureGroup.userData.furnitureName = data.name;
       
       // Store properties in userData for reference
