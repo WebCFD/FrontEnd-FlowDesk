@@ -616,7 +616,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           const degrees = Number(e.target.value);
                           const newRotationX = degrees * (Math.PI / 180);
                           const newRotation = { ...values.rotation, x: newRotationX };
-                          setValues(prev => ({
+                          setValues((prev: any) => ({
                             ...prev,
                             rotation: newRotation
                           }));
@@ -639,7 +639,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           const degrees = Number(e.target.value);
                           const newRotationY = degrees * (Math.PI / 180);
                           const newRotation = { ...values.rotation, y: newRotationY };
-                          setValues(prev => ({
+                          setValues((prev: any) => ({
                             ...prev,
                             rotation: newRotation
                           }));
@@ -662,7 +662,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           const degrees = Number(e.target.value);
                           const newRotationZ = degrees * (Math.PI / 180);
                           const newRotation = { ...values.rotation, z: newRotationZ };
-                          setValues(prev => ({
+                          setValues((prev: any) => ({
                             ...prev,
                             rotation: newRotation
                           }));
