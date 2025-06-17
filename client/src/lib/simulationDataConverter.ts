@@ -447,20 +447,61 @@ export function generateSimulationData(
     });
 
     // Filtrar el mobiliario que pertenece a este piso con coordenadas normalizadas
-    const floorFurniture: FurnitureExport[] = furniture
-      .filter(obj => obj.userData?.floor === floorName && obj.userData?.type === 'furniture')
-      .map((obj, index) => {
-        // Normalizar posición del mobiliario (Three.js ya usa coordenadas 3D)
-        const normalizedPos = normalizeCoordinates({ x: obj.position.x, y: obj.position.z });
-        return {
-          id: obj.userData?.id || `furniture_${index}`,
-          position: {
-            x: cmToM(normalizedPos.x),
-            y: cmToM(normalizedPos.y)
-          },
-          rotation: obj.rotation.y
-        };
-      });
+    const floorFurnitureObjects = furniture.filter(obj => obj.userData?.floor === floorName && obj.userData?.type === 'furniture');
+    
+    // Initialize furniture type counters for this floor
+    const furnitureTypeCounts = { 
+      table: 0, 
+      person: 0, 
+      armchair: 0, 
+      car: 0, 
+      block: 0, 
+      vent_furniture: 0,
+      custom: 0 
+    };
+    
+    // Count existing furniture by type on this floor to get proper sequential numbering
+    floorFurnitureObjects.forEach(obj => {
+      if (obj.userData?.id) {
+        const floorPrefix = getFloorPrefix(floorName);
+        // Match pattern: type_0F_1, type_1F_2, etc.
+        const match = obj.userData.id.match(new RegExp(`^([a-z_]+)_${floorPrefix}_(\\d+)$`));
+        if (match) {
+          const type = match[1] as keyof typeof furnitureTypeCounts;
+          const num = parseInt(match[2]);
+          if (furnitureTypeCounts[type] !== undefined && furnitureTypeCounts[type] < num) {
+            furnitureTypeCounts[type] = num;
+          }
+        }
+      }
+    });
+    
+    const floorFurniture: FurnitureExport[] = floorFurnitureObjects.map((obj, index) => {
+      // Normalizar posición del mobiliario (Three.js ya usa coordenadas 3D)
+      const normalizedPos = normalizeCoordinates({ x: obj.position.x, y: obj.position.z });
+      
+      // Generate new ID using furniture type and floor prefix
+      let furnitureId: string;
+      if (obj.userData?.id && obj.userData.id.includes('_' + getFloorPrefix(floorName) + '_')) {
+        // Use existing ID if it already follows the new format
+        furnitureId = obj.userData.id;
+      } else {
+        // Generate new ID with type_floor_number format
+        const furnitureType = getFurnitureTypeForId(obj.userData?.furnitureType);
+        const floorPrefix = getFloorPrefix(floorName);
+        furnitureTypeCounts[furnitureType as keyof typeof furnitureTypeCounts]++;
+        furnitureId = `${furnitureType}_${floorPrefix}_${furnitureTypeCounts[furnitureType as keyof typeof furnitureTypeCounts]}`;
+      }
+      
+      return {
+        id: furnitureId,
+        position: {
+          x: cmToM(normalizedPos.x),
+          y: cmToM(normalizedPos.y)
+        },
+        rotation: obj.rotation.y
+      };
+    });
 
     // Obtener los parámetros específicos del piso actual
     const currentFloorParams = floorParameters?.[floorName] || { ceilingHeight: 220, floorDeck: 0 };
@@ -717,6 +758,22 @@ export function prepareSynchronizedWalls(
 }
 
 // ================== STAIR CONVERSION SYSTEM ==================
+
+/**
+ * Maps furniture types to their ID representation
+ */
+function getFurnitureTypeForId(furnitureType?: string): string {
+  switch (furnitureType) {
+    case 'table': return 'table';
+    case 'person': return 'person';
+    case 'armchair': return 'armchair';
+    case 'car': return 'car';
+    case 'block': return 'block';
+    case 'vent': return 'vent_furniture';
+    case 'custom': return 'custom';
+    default: return 'block'; // Default fallback
+  }
+}
 
 /**
  * Generates the next stair number for a given floor using prefix-based matching
