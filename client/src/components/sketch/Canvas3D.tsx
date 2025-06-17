@@ -5714,25 +5714,7 @@ export default function Canvas3D({
             name: editingFurniture.item.name,
             position: editingFurniture.item.position,
             rotation: editingFurniture.item.rotation,
-            scale: (() => {
-              // Get the actual scale from the 3D object in the scene
-              let actualScale = { x: 1, y: 1, z: 1 };
-              
-              if (sceneRef.current) {
-                sceneRef.current.traverse((child) => {
-                  if (child.userData?.furnitureId === editingFurniture.item.id && child.userData?.type === 'furniture') {
-                    // Found the furniture object, get its actual scale
-                    actualScale = {
-                      x: child.scale.x,
-                      y: child.scale.y,
-                      z: child.scale.z
-                    };
-                  }
-                });
-              }
-              
-              return actualScale;
-            })(),
+            scale: editingFurniture.item.scale || { x: 1, y: 1, z: 1 },
             // CRITICAL FIX: Use actual furniture properties instead of hardcoded defaults
             properties: editingFurniture.item.properties || (editingFurniture.item.type === 'vent' ? {
               temperature: 20,
