@@ -902,6 +902,17 @@ const createFurnitureModel = (
     }
   }
 
+  // CRITICAL FIX: Apply user-defined scale after dimensions-based scaling
+  // This ensures scale modifications from the dialog persist across view changes
+  if (furnitureItem.scale) {
+    const currentScale = model.scale.clone();
+    model.scale.set(
+      currentScale.x * furnitureItem.scale.x,
+      currentScale.y * furnitureItem.scale.y,
+      currentScale.z * furnitureItem.scale.z
+    );
+  }
+
   // Add metadata to the model for identification
   model.userData = {
     type: 'furniture',
