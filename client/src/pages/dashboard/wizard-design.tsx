@@ -1773,7 +1773,14 @@ export default function WizardDesign() {
               z: furnitureItem.position.z
             },
             rotation: {
-              y: furnitureItem.rotation.y
+              x: furnitureItem.rotation.x || 0,
+              y: furnitureItem.rotation.y || 0,
+              z: furnitureItem.rotation.z || 0
+            },
+            scale: {
+              x: furnitureItem.scale?.x || 1,
+              y: furnitureItem.scale?.y || 1,
+              z: furnitureItem.scale?.z || 1
             }
           };
           furnitureObjects.push(mockObject3D as any);
