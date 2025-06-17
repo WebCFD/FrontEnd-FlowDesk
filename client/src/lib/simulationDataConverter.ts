@@ -175,8 +175,17 @@ interface WallExport {
 
 interface FurnitureExport {
   id: string;
-  position: Position;
-  rotation: number;
+  position: Position3D;
+  rotation: {
+    x: number;
+    y: number;
+    z: number;
+  };
+  scale: {
+    x: number;
+    y: number;
+    z: number;
+  };
   state?: string;
 }
 
@@ -497,9 +506,19 @@ export function generateSimulationData(
         id: furnitureId,
         position: {
           x: cmToM(normalizedPos.x),
-          y: cmToM(normalizedPos.y)
+          y: cmToM(normalizedPos.y),
+          z: cmToM(obj.position.y) // Y in Three.js is Z in our coordinate system
         },
-        rotation: obj.rotation.y
+        rotation: {
+          x: obj.rotation.x || 0,
+          y: obj.rotation.y || 0,
+          z: obj.rotation.z || 0
+        },
+        scale: {
+          x: obj.scale?.x || 1,
+          y: obj.scale?.y || 1,
+          z: obj.scale?.z || 1
+        }
       };
     });
 
