@@ -1751,20 +1751,37 @@ export default function WizardDesign() {
 
   // Función central que genera los datos de simulación
   const generateSimulationDataForExport = () => {
-    // Recopilar datos de mobiliario
+    // Recopilar datos de mobiliario desde el store de pisos
     const furnitureObjects: THREE.Object3D[] = [];
 
-    // Intentar obtener elementos 3D de la escena
-    try {
-      // Buscar todos los objetos relevantes de mobiliario
-      document.querySelectorAll("[data-furniture]").forEach((elem: any) => {
-        if (elem.userData && elem.userData.type === "furniture") {
-          furnitureObjects.push(elem);
-        }
-      });
-    } catch (err) {
-      console.log("No se pudieron encontrar objetos de mobiliario", err);
-    }
+    // Recopilar todos los elementos de mobiliario de todos los pisos
+    Object.entries(floors).forEach(([floorName, floorData]) => {
+      if (floorData.furnitureItems && floorData.furnitureItems.length > 0) {
+        floorData.furnitureItems.forEach((furnitureItem) => {
+          // Crear un objeto THREE.Object3D simulado con la información necesaria
+          const mockObject3D = {
+            userData: {
+              id: furnitureItem.id,
+              type: 'furniture',
+              furnitureType: furnitureItem.type,
+              floor: floorName,
+              floorName: floorName
+            },
+            position: {
+              x: furnitureItem.position.x,
+              y: furnitureItem.position.y,
+              z: furnitureItem.position.z
+            },
+            rotation: {
+              y: furnitureItem.rotation.y
+            }
+          };
+          furnitureObjects.push(mockObject3D as any);
+        });
+      }
+    });
+
+    console.log(`Found ${furnitureObjects.length} furniture objects for export:`, furnitureObjects);
 
     // Generar los datos de simulación completos
     return generateSimulationData(
