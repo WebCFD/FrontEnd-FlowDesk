@@ -225,6 +225,9 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
   // Estado para las coordenadas del elemento en el canvas 3D
   const [elementPosition, setElementPosition] = useState({ x: 0, y: 0, z: 0 });
   
+  // Estado dedicado para la escala del elemento (igual patrón que position)
+  const [elementScale, setElementScale] = useState({ x: 1, y: 1, z: 1 });
+  
   // Estados para propiedades específicas del furniture
   const [furnitureName, setFurnitureName] = useState("");
   const [materialType, setMaterialType] = useState("default");
@@ -348,6 +351,17 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
         
         setElementPosition(dialogPosition);
       }
+      
+      if (defaults.scale) {
+        // Apply decimal truncation to initial scale values
+        const dialogScale = {
+          x: truncateToTwoDecimals(defaults.scale.x),
+          y: truncateToTwoDecimals(defaults.scale.y),
+          z: truncateToTwoDecimals(defaults.scale.z)
+        };
+        
+        setElementScale(dialogScale);
+      }
     }
   }, [dialogOpen, type, isEditing]);
 
@@ -371,7 +385,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
       name: furnitureName,
       position: elementPosition,
       rotation: values.rotation,
-      scale: values.scale,
+      scale: elementScale,
       ...(type === 'custom' && { dimensions: dimensions }),
       properties,
       ...(type === 'vent' && { 
@@ -673,14 +687,11 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                         id="scale-x"
                         type="number"
                         step="0.1"
-                        value={Math.round(values.scale.x * 100) / 100}
+                        value={Math.round(elementScale.x * 100) / 100}
                         onChange={(e) => {
                           const newScaleX = Number(e.target.value);
-                          const newScale = { ...values.scale, x: newScaleX };
-                          setValues(prev => ({
-                            ...prev,
-                            scale: newScale
-                          }));
+                          const newScale = { ...elementScale, x: newScaleX };
+                          setElementScale(newScale);
                           // Real-time update
                           if (onScaleUpdate) {
                             onScaleUpdate(newScale);
@@ -695,14 +706,11 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                         id="scale-y"
                         type="number"
                         step="0.1"
-                        value={Math.round(values.scale.y * 100) / 100}
+                        value={Math.round(elementScale.y * 100) / 100}
                         onChange={(e) => {
                           const newScaleY = Number(e.target.value);
-                          const newScale = { ...values.scale, y: newScaleY };
-                          setValues(prev => ({
-                            ...prev,
-                            scale: newScale
-                          }));
+                          const newScale = { ...elementScale, y: newScaleY };
+                          setElementScale(newScale);
                           // Real-time update
                           if (onScaleUpdate) {
                             onScaleUpdate(newScale);
@@ -717,14 +725,11 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                         id="scale-z"
                         type="number"
                         step="0.1"
-                        value={Math.round(values.scale.z * 100) / 100}
+                        value={Math.round(elementScale.z * 100) / 100}
                         onChange={(e) => {
                           const newScaleZ = Number(e.target.value);
-                          const newScale = { ...values.scale, z: newScaleZ };
-                          setValues(prev => ({
-                            ...prev,
-                            scale: newScale
-                          }));
+                          const newScale = { ...elementScale, z: newScaleZ };
+                          setElementScale(newScale);
                           // Real-time update
                           if (onScaleUpdate) {
                             onScaleUpdate(newScale);
