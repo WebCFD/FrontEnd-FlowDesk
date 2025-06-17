@@ -352,15 +352,16 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
         setElementPosition(dialogPosition);
       }
       
-      // Always initialize scale (use stored values or fallback to defaults)
-      const scaleToUse = defaults.scale || { x: 1, y: 1, z: 1 };
-      const dialogScale = {
-        x: truncateToTwoDecimals(scaleToUse.x),
-        y: truncateToTwoDecimals(scaleToUse.y),
-        z: truncateToTwoDecimals(scaleToUse.z)
-      };
-      
-      setElementScale(dialogScale);
+      if (defaults.scale) {
+        // Apply decimal truncation to initial scale values
+        const dialogScale = {
+          x: truncateToTwoDecimals(defaults.scale.x),
+          y: truncateToTwoDecimals(defaults.scale.y),
+          z: truncateToTwoDecimals(defaults.scale.z)
+        };
+        
+        setElementScale(dialogScale);
+      }
     }
   }, [dialogOpen, type, isEditing]);
 
