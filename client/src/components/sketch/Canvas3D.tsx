@@ -2790,8 +2790,8 @@ export default function Canvas3D({
     };
     animate();
 
-    // Notify RSP that scene is ready for texture modifications
-    if (onSceneReady && presentationMode) {
+    // Notify parent component that scene is ready (for both RSP and wizard design)
+    if (onSceneReady) {
       onSceneReady(scene, renderer, camera);
     }
 
