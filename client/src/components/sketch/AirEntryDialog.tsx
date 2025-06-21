@@ -754,6 +754,11 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               // Redondear a 2 decimales máximo
                               const rounded = Math.round(value * 100) / 100;
                               setDistanceToFloor(rounded);
+                              
+                              // Trigger real-time updates for Canvas3D
+                              if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
+                                props.onDimensionsUpdate({ distanceToFloor: rounded });
+                              }
                             }
                           }}
                           className={`h-8 text-sm ${type === 'door' ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
