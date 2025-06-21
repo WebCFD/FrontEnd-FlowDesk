@@ -948,6 +948,11 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                                 width: diameter,
                                 height: diameter // Set height equal to width for circular elements
                               }));
+                              
+                              // Actualizar en tiempo real en Canvas2D para elementos circulares
+                              if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
+                                props.onDimensionsUpdate({ width: diameter, height: diameter });
+                              }
                             }}
                             className="h-8 text-sm"
                           />
