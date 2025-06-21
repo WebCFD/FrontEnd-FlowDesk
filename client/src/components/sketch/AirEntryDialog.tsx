@@ -715,7 +715,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                         <Input
                           id="distance-floor"
                           type="number"
-                          step="1"
+                          step="any"
                           inputMode="decimal"
                           value={distanceToFloor}
                           onChange={(e) => {
@@ -765,7 +765,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           type="number"
                           min="0"
                           max="100"
-                          step="1"
+                          step="any"
                           inputMode="decimal"
                           value={parseFloat(wallPosition.toFixed(2))}
                           onChange={(e) => {
