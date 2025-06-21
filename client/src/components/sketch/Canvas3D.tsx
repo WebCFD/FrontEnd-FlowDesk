@@ -2290,7 +2290,7 @@ export default function Canvas3D({
       // Add coordinate label
       const coordText = `(${Math.round(position.x)}, ${Math.round(position.y)}, ${Math.round(zPosition)}) cm`;
       const labelSprite = makeTextSprite(coordText, {
-        fontsize: 28,
+        fontsize: 140,
         fontface: "Arial",
         textColor: { r: 160, g: 160, b: 160, a: 1.0 },
         backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 },
