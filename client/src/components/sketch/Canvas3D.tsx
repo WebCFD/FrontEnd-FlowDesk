@@ -2292,7 +2292,7 @@ export default function Canvas3D({
       const labelSprite = makeTextSprite(coordText, {
         fontsize: 140,
         fontface: "Arial",
-        textColor: { r: 160, g: 160, b: 160, a: 1.0 },
+        textColor: { r: 0, g: 0, b: 0, a: 1.0 },
         backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 },
       });
       labelSprite.position.set(position.x, position.y, zPosition + 15);
