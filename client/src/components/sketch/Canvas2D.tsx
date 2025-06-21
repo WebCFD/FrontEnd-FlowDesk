@@ -3184,7 +3184,11 @@ export default function Canvas2D({
       };
     },
   ) => {
-    if (!editingAirEntry) return;
+    console.log('🟢 SAVE CHANGES: Called with data:', data);
+    if (!editingAirEntry) {
+      console.log('🟢 SAVE CHANGES: No editingAirEntry, returning');
+      return;
+    }
 
     const updatedAirEntries = [...airEntries];
     updatedAirEntries[index] = {
@@ -3198,12 +3202,17 @@ export default function Canvas2D({
       ...(data.properties && { properties: data.properties }),
     };
 
+    console.log('🟢 SAVE CHANGES: Updated element:', updatedAirEntries[index]);
     onAirEntriesUpdate?.(updatedAirEntries);
+    console.log('🟢 SAVE CHANGES: Array updated, total elements:', updatedAirEntries.length);
+    
+    // Close dialog directly without using handleDialogClose (which would delete element)
     setEditingAirEntry(null);
+    console.log('🟢 SAVE CHANGES: Dialog closed successfully');
   };
 
-  // Handle dialog close with eraser behavior
-  const handleDialogClose = () => {
+  // Handle dialog X button close with eraser behavior
+  const handleDialogXClose = () => {
     if (editingAirEntry) {
       eraseAirEntryAtIndex(editingAirEntry.index);
     }
@@ -3334,10 +3343,10 @@ export default function Canvas2D({
         <AirEntryDialog
           type={editingAirEntry.entry.type}
           isOpen={true}
-          onClose={handleDialogClose}
-          onConfirm={(data) =>
-            handleAirEntryEdit(editingAirEntry.index, data as any)
-          }
+          onClose={() => setEditingAirEntry(null)}
+          onConfirm={(data) => {
+            handleAirEntryEdit(editingAirEntry.index, data as any);
+          }}
           initialValues={{
             ...editingAirEntry.entry.dimensions,
             shape: (editingAirEntry.entry.dimensions as any).shape,
