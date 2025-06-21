@@ -363,6 +363,9 @@ export default function Canvas2D({
     entry: AirEntry;
     isNewlyCreated?: boolean; // Track if this is a newly created element
   } | null>(null);
+  
+  // Flag to track if we just confirmed (to ignore subsequent onClose)
+  const [justConfirmed, setJustConfirmed] = useState(false);
   const [editingWall, setEditingWall] = useState<Wall | null>(null);
   const [wallPropertiesDialogOpen, setWallPropertiesDialogOpen] = useState(false);
   const [hoveredEndpoint, setHoveredEndpoint] = useState<{
@@ -3209,18 +3212,9 @@ export default function Canvas2D({
 
     onAirEntriesUpdate?.(updatedAirEntries);
     
-    // Reset isNewlyCreated flag before closing to prevent handleAirEntryCancel from removing it
-    if (editingAirEntry.isNewlyCreated) {
-      console.log('🔸 Resetting isNewlyCreated flag to prevent deletion on dialog close');
-      setEditingAirEntry({ ...editingAirEntry, isNewlyCreated: false });
-      
-      // Use timeout to ensure the flag is set before dialog closes
-      setTimeout(() => {
-        setEditingAirEntry(null);
-      }, 0);
-    } else {
-      setEditingAirEntry(null);
-    }
+    // Set flag to indicate we just confirmed
+    setJustConfirmed(true);
+    setEditingAirEntry(null);
     
     console.log('🔸 CONFIRM LOG: Process completed');
   };
@@ -3228,6 +3222,14 @@ export default function Canvas2D({
   const handleAirEntryCancel = () => {
     console.log('🔺 CANCEL LOG: handleAirEntryCancel called');
     console.log('🔺 editingAirEntry:', editingAirEntry);
+    console.log('🔺 justConfirmed flag:', justConfirmed);
+    
+    // If we just confirmed, ignore this cancel call
+    if (justConfirmed) {
+      console.log('🔺 Ignoring cancel because we just confirmed');
+      setJustConfirmed(false);
+      return;
+    }
     
     if (editingAirEntry?.isNewlyCreated) {
       console.log('🔺 Removing newly created element at index:', editingAirEntry.index);
