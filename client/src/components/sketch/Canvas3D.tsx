@@ -2287,16 +2287,18 @@ export default function Canvas3D({
       // Add the axis meshes to the objects array
       objects.push(xAxis, yAxis, zAxis);
 
-      // Add coordinate label
-      const coordText = `(${Math.round(position.x)}, ${Math.round(position.y)}, ${Math.round(zPosition)}) cm`;
-      const labelSprite = makeTextSprite(coordText, {
-        fontsize: 140,
-        fontface: "Arial",
-        textColor: { r: 0, g: 0, b: 0, a: 1.0 },
-        backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 },
-      });
-      labelSprite.position.set(position.x, position.y, zPosition + 15);
-      objects.push(labelSprite);
+      // Add coordinate label - only show when not in presentation mode
+      if (!presentationMode) {
+        const coordText = `(${Math.round(position.x)}, ${Math.round(position.y)}, ${Math.round(zPosition)}) cm`;
+        const labelSprite = makeTextSprite(coordText, {
+          fontsize: 140,
+          fontface: "Arial",
+          textColor: { r: 0, g: 0, b: 0, a: 1.0 },
+          backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 },
+        });
+        labelSprite.position.set(position.x, position.y, zPosition + 15);
+        objects.push(labelSprite);
+      }
     });
 
     // Create stairs
