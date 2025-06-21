@@ -2359,6 +2359,7 @@ export default function WizardDesign() {
               wallTransparency={wallTransparency}
               isMeasureMode={isMeasureMode}
               isEraserMode={isEraserMode}
+              walls={walls} // Phase 1: Pass walls for AirEntry dialog unification
               simulationName={simulationName}
               simulationType={
                 simulationType === "comfort"
