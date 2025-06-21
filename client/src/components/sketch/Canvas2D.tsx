@@ -1608,7 +1608,9 @@ export default function Canvas2D({
           const selectedLine = selectedLines[0];
           const exactPoint = getPointOnLine(selectedLine, point);
 
-          // Instead of creating the air entry immediately, store the details and show dialog
+          // Create the air entry immediately when wall is clicked
+          console.log('Creating AirEntry immediately on wall click');
+          
           // Find the wall associated with this line to get wall ID and ceiling height
           const lineId = selectedLine.id?.toString() || lineToUniqueId(selectedLine);
           const associatedWall = walls?.find(wall => 
@@ -1621,11 +1623,60 @@ export default function Canvas2D({
           );
           const wallId = associatedWall?.id || `${floorText}_wall_unknown`;
           const currentCeilingHeight = ceilingHeight; // Use the prop value
+
+          // Generate unique ID with floor format
+          const floorPrefix = currentFloor === 'ground' ? '0F' : 
+                             currentFloor === 'first' ? '1F' :
+                             currentFloor === 'second' ? '2F' :
+                             currentFloor === 'third' ? '3F' :
+                             currentFloor === 'fourth' ? '4F' :
+                             currentFloor === 'fifth' ? '5F' : '0F';
           
-          setNewAirEntryDetails({
+          const typeCounters = { window: 1, door: 1, vent: 1 };
+          
+          // Count existing entries to get next available number
+          airEntries.forEach(entry => {
+            const anyEntry = entry as any;
+            if (anyEntry.id) {
+              // Look for new format: window_0F_1
+              let match = anyEntry.id.match(new RegExp(`^(window|door|vent)_${floorPrefix}_(\\d+)$`));
+              
+              // If not found, look for old format: window_1 (for compatibility)
+              if (!match) {
+                match = anyEntry.id.match(/^(window|door|vent)_(\d+)$/);
+              }
+              
+              if (match) {
+                const type = match[1] as keyof typeof typeCounters;
+                const num = parseInt(match[2]);
+                if (typeCounters[type] <= num) {
+                  typeCounters[type] = num + 1;
+                }
+              }
+            }
+          });
+
+          // Create new AirEntry with default values
+          const newAirEntry: AirEntry = {
             type: currentAirEntry,
-            position: exactPoint,
+            position: calculatePositionAlongWall(selectedLine, exactPoint),
+            dimensions: {
+              width: currentAirEntry === 'door' ? 80 : 60, // Default width in cm
+              height: currentAirEntry === 'door' ? 200 : 40, // Default height in cm
+              distanceToFloor: currentAirEntry === 'door' ? 0 : 110, // Default distance to floor in cm
+              shape: 'rectangular',
+            },
             line: selectedLine,
+            lineId: selectedLine.id,
+            properties: {
+              state: 'closed',
+              temperature: 20,
+              flowType: 'Air Mass Flow',
+              flowValue: 0.5,
+              flowIntensity: 'medium',
+              airOrientation: 'inflow',
+            },
+            id: `${currentAirEntry}_${floorPrefix}_${typeCounters[currentAirEntry]}`,
             wallContext: {
               wallId: wallId,
               floorName: floorText,
@@ -1634,6 +1685,18 @@ export default function Canvas2D({
               clickPosition: { x: point.x, y: point.y },
               ceilingHeight: currentCeilingHeight * 100 // Convert to cm
             }
+          } as any;
+
+          console.log('Created AirEntry:', newAirEntry);
+
+          // Add to airEntries array immediately
+          const newAirEntries = [...airEntries, newAirEntry];
+          onAirEntriesUpdate?.(newAirEntries);
+
+          // Set editing mode for the newly created element
+          setEditingAirEntry({
+            index: airEntries.length, // Index of the newly added element
+            entry: newAirEntry,
           });
         }
         return;
@@ -3400,7 +3463,7 @@ export default function Canvas2D({
           }}
         />
       )}
-      {/* Add new dialog for creating air entries */}
+      {/* Keep existing newAirEntryDetails dialog for legacy support */}
       {newAirEntryDetails && (
         <AirEntryDialog
           type={newAirEntryDetails.type}
