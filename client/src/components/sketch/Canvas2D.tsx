@@ -361,23 +361,8 @@ export default function Canvas2D({
   const [editingAirEntry, setEditingAirEntry] = useState<{
     index: number;
     entry: AirEntry;
+    isNewlyCreated?: boolean; // Track if this is a newly created element
   } | null>(null);
-  const [newAirEntryDetails, setNewAirEntryDetails] = useState<{
-    type: "window" | "door" | "vent";
-    position: Point;
-    line: Line;
-    wallContext?: {
-      wallId: string;
-      floorName: string;
-      wallStart: { x: number; y: number };
-      wallEnd: { x: number; y: number };
-      clickPosition: { x: number; y: number };
-      ceilingHeight: number;
-    };
-  } | null>(null);
-  
-  // Preview AirEntry that appears immediately when dialog opens
-  const [previewAirEntry, setPreviewAirEntry] = useState<AirEntry | null>(null);
   const [editingWall, setEditingWall] = useState<Wall | null>(null);
   const [wallPropertiesDialogOpen, setWallPropertiesDialogOpen] = useState(false);
   const [hoveredEndpoint, setHoveredEndpoint] = useState<{
@@ -869,22 +854,13 @@ export default function Canvas2D({
     ctx: CanvasRenderingContext2D,
     entry: AirEntry,
     index: number,
-    isPreview: boolean = false
   ) => {
     const normal = calculateNormal(entry.line);
-    const isHighlighted = !isPreview && highlightState.airEntry?.index === index;
-    const isHovered = !isPreview && hoveredAirEntry?.index === index;
+    const isHighlighted = highlightState.airEntry?.index === index;
+    const isHovered = hoveredAirEntry?.index === index;
     let color = getAirEntryColor(entry.type);
 
-    if (isPreview) {
-      // Preview gets a semi-transparent version with dashed border
-      const previewColors = {
-        window: "#3b82f6", // Blue
-        door: "#f59e0b", // Amber  
-        vent: "#10b981", // Green
-      };
-      color = previewColors[entry.type];
-    } else if (isHighlighted) {
+    if (isHighlighted) {
       color = "#ef4444"; // Red for deletion highlight
     } else if (isHovered) {
       // Apply a brighter version of the color when hovered
@@ -902,9 +878,6 @@ export default function Canvas2D({
     ctx.save();
     ctx.strokeStyle = color;
     ctx.lineWidth = isHovered ? 6 / zoom : 4 / zoom; // Thicker line when hovered
-    
-    // Always use solid lines - no dashing
-    ctx.setLineDash([]);
 
     // Draw the main line
     ctx.beginPath();
@@ -1637,23 +1610,33 @@ export default function Canvas2D({
           const wallId = associatedWall?.id || `${floorText}_wall_unknown`;
           const currentCeilingHeight = ceilingHeight; // Use the prop value
           
-          const newAirEntryData = {
-            type: currentAirEntry,
-            position: exactPoint,
-            line: selectedLine,
-            wallContext: {
-              wallId: wallId,
-              floorName: floorText,
-              wallStart: { x: selectedLine.start.x, y: selectedLine.start.y },
-              wallEnd: { x: selectedLine.end.x, y: selectedLine.end.y },
-              clickPosition: { x: point.x, y: point.y },
-              ceilingHeight: currentCeilingHeight * 100 // Convert to cm
+          // Create real AirEntry immediately with default values
+          const floorPrefix = currentFloor === 'ground' ? '0F' : 
+                             currentFloor === 'first' ? '1F' :
+                             currentFloor === 'second' ? '2F' :
+                             currentFloor === 'third' ? '3F' :
+                             currentFloor === 'fourth' ? '4F' :
+                             currentFloor === 'fifth' ? '5F' : '0F';
+          
+          const typeCounters = { window: 1, door: 1, vent: 1 };
+          
+          // Count existing entries to get next available number
+          airEntries.forEach(entry => {
+            const anyEntry = entry as any;
+            if (anyEntry.id) {
+              let match = anyEntry.id.match(new RegExp(`^(window|door|vent)_${floorPrefix}_(\\d+)$`));
+              if (!match) {
+                match = anyEntry.id.match(/^(window|door|vent)_(\d+)$/);
+              }
+              if (match && match[1] === currentAirEntry) {
+                const currentNumber = parseInt(match[2]);
+                if (currentNumber >= typeCounters[currentAirEntry]) {
+                  typeCounters[currentAirEntry] = currentNumber + 1;
+                }
+              }
             }
-          };
-          
-          setNewAirEntryDetails(newAirEntryData);
-          
-          // Create immediate preview with default values
+          });
+
           const defaultValues = {
             window: { width: 80, height: 120, distanceToFloor: 90 }, // cm
             door: { width: 80, height: 200, distanceToFloor: 0 }, // cm  
@@ -1661,8 +1644,8 @@ export default function Canvas2D({
           };
           
           const defaults = defaultValues[currentAirEntry];
-          const previewEntry: AirEntry = {
-            id: `preview_${currentAirEntry}`,
+          const newAirEntry: AirEntry = {
+            id: `${currentAirEntry}_${floorPrefix}_${typeCounters[currentAirEntry]}`,
             type: currentAirEntry,
             position: exactPoint,
             dimensions: {
@@ -1672,9 +1655,18 @@ export default function Canvas2D({
             },
             line: selectedLine,
             lineId: selectedLine.id
-          };
-          
-          setPreviewAirEntry(previewEntry);
+          } as any;
+
+          // Add to airEntries array immediately
+          const updatedAirEntries = [...airEntries, newAirEntry];
+          onAirEntriesUpdate?.(updatedAirEntries);
+
+          // Open dialog in editing mode
+          setEditingAirEntry({
+            index: updatedAirEntries.length - 1,
+            entry: newAirEntry,
+            isNewlyCreated: true
+          });
         }
         return;
       }
@@ -2430,11 +2422,6 @@ export default function Canvas2D({
       airEntries.forEach((entry, index) => {
         drawAirEntry(ctx, entry, index);
       });
-      
-      // Draw preview AirEntry if it exists
-      if (previewAirEntry) {
-        drawAirEntry(ctx, previewAirEntry, -1, true); // -1 index indicates preview, true for isPreview
-      }
 
       const drawEndpoints = () => {
         const drawnPoints = new Set<string>();
@@ -3395,7 +3382,7 @@ export default function Canvas2D({
         <AirEntryDialog
           type={editingAirEntry.entry.type}
           isOpen={true}
-          onClose={() => setEditingAirEntry(null)}
+          onClose={handleAirEntryCancel}
           onConfirm={(data) =>
             handleAirEntryEdit(editingAirEntry.index, data as any)
           }
@@ -3427,7 +3414,7 @@ export default function Canvas2D({
             ceilingHeight: ceilingHeight * 100 // Convert to cm
           }}
           onPositionUpdate={(newPosition) => {
-            // Actualizar la posición del Air Entry en tiempo real
+            // Update the Air Entry position in real-time
             const updatedAirEntries = [...airEntries];
             updatedAirEntries[editingAirEntry.index] = {
               ...editingAirEntry.entry,
@@ -3435,7 +3422,7 @@ export default function Canvas2D({
             };
             onAirEntriesUpdate?.(updatedAirEntries);
             
-            // También actualizar el estado local para que el diálogo mantenga la referencia correcta
+            // Also update local state so dialog maintains correct reference
             setEditingAirEntry({
               ...editingAirEntry,
               entry: {
@@ -3443,44 +3430,6 @@ export default function Canvas2D({
                 position: newPosition
               }
             });
-          }}
-        />
-      )}
-      {/* Add new dialog for creating air entries */}
-      {newAirEntryDetails && (
-        <AirEntryDialog
-          type={newAirEntryDetails.type}
-          isOpen={true}
-          onClose={() => {
-            setNewAirEntryDetails(null);
-            setPreviewAirEntry(null); // Clear preview on cancel
-          }}
-          onConfirm={handleNewAirEntryConfirm as any}
-          wallContext={newAirEntryDetails.wallContext}
-          onPositionUpdate={(newPosition) => {
-            // Update preview position in real-time
-            if (previewAirEntry) {
-              setPreviewAirEntry({
-                ...previewAirEntry,
-                position: newPosition
-              });
-            }
-          }}
-          onDimensionsUpdate={(dimensions) => {
-            // Update preview dimensions in real-time
-            if (previewAirEntry) {
-              setPreviewAirEntry({
-                ...previewAirEntry,
-                dimensions: {
-                  ...previewAirEntry.dimensions,
-                  width: dimensions.width / PIXELS_TO_CM, // Convert to pixels
-                  height: dimensions.height / PIXELS_TO_CM,
-                  ...(dimensions.distanceToFloor !== undefined && { 
-                    distanceToFloor: dimensions.distanceToFloor 
-                  })
-                }
-              });
-            }
           }}
         />
       )}
