@@ -1871,6 +1871,45 @@ export default function WizardDesign() {
     // PASO 2.1: Clear all custom furniture definitions (Erase Design behavior)
     customFurnitureStore.clearAllDefinitions();
     
+    // PASO 2.2: Clear all furniture from 3D scene
+    if (sceneRef) {
+      const furnitureObjectsToRemove: THREE.Object3D[] = [];
+      
+      // Find all furniture objects in the scene
+      sceneRef.traverse((object) => {
+        if (object.userData.type === 'furniture') {
+          furnitureObjectsToRemove.push(object);
+        }
+      });
+      
+      // Remove each furniture object with proper cleanup
+      furnitureObjectsToRemove.forEach((furnitureGroup) => {
+        // Special cleanup for vents with special rendering properties
+        if (furnitureGroup.userData.furnitureType === 'vent') {
+          furnitureGroup.traverse((child) => {
+            if (child instanceof THREE.Mesh) {
+              // Dispose geometry and material to clear WebGL state
+              if (child.geometry) {
+                child.geometry.dispose();
+              }
+              if (child.material) {
+                if (Array.isArray(child.material)) {
+                  child.material.forEach(material => material.dispose());
+                } else {
+                  child.material.dispose();
+                }
+              }
+            }
+          });
+        }
+        
+        // Remove furniture object from scene
+        sceneRef.remove(furnitureGroup);
+      });
+      
+      console.log(`Erase Design: Removed ${furnitureObjectsToRemove.length} furniture objects from 3D scene`);
+    }
+    
     // PASO 3: CRÍTICO - Sincronizar currentFloor del store con ground
     setCurrentFloor("ground");
     
@@ -2372,6 +2411,7 @@ export default function WizardDesign() {
               onUpdateAirEntry={handleUpdateAirEntryFrom3D}
               onDeleteAirEntry={handleDeleteAirEntryFrom3D}
               onViewChange={handleViewChange}
+              onSceneReady={(scene) => setSceneRef(scene)}
               onFurnitureAdd={handleFurnitureAdd}
               onUpdateFurniture={handleFurnitureUpdate}
               onFurnitureDelete={handleFurnitureDelete}
