@@ -27,6 +27,7 @@ interface AirEntryDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onCancel?: () => void; // Optional separate handler for X button
+  isCreating?: boolean; // Indicates if this is creating a new element vs editing existing
   onConfirm: (data: {
     width: number;
     height: number;
@@ -116,6 +117,7 @@ const wallDefaults = {
 export default function AirEntryDialog(props: PropertyDialogProps) {
   const { type, isOpen: dialogOpen, onClose, isEditing = false } = props;
   const onCancel = 'onCancel' in props ? props.onCancel : undefined;
+  const isCreating = 'isCreating' in props ? props.isCreating : false;
   const { updateAirEntryProperties, floors } = useRoomStore();
   
   // Estado unificado para manejar tanto dimensiones como temperatura
@@ -582,7 +584,15 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           {onCancel && (
             <button
               className="absolute -right-2 -top-2 rounded-sm opacity-70 hover:opacity-100 transition-opacity text-red-500 hover:text-red-600 bg-white border border-red-200 hover:border-red-300 shadow-sm"
-              onClick={onCancel}
+              onClick={() => {
+                if (isCreating) {
+                  // Create mode: Delete element and close dialog
+                  onCancel();
+                } else {
+                  // Edit mode: Just close dialog, preserve element
+                  onClose();
+                }
+              }}
               type="button"
               style={{ zIndex: 60 }}
             >
