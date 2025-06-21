@@ -17,7 +17,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { HelpCircle } from "lucide-react";
+import { HelpCircle, X } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useRoomStore } from "@/lib/store/room-store";
 
@@ -569,7 +569,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
       >
         <DialogHeader 
           data-drag-handle
-          className="cursor-grab select-none"
+          className="cursor-grab select-none relative"
           title="Drag to move"
         >
           {/* Visual drag indicator */}
@@ -579,6 +579,16 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           />
           <DialogTitle>{titles[type]}</DialogTitle>
           <DialogDescription>{descriptions[type]}</DialogDescription>
+          {onCancel && (
+            <button
+              className="absolute right-4 top-4 rounded-sm opacity-70 hover:opacity-100 transition-opacity"
+              onClick={onCancel}
+              type="button"
+            >
+              <X className="h-4 w-4" />
+              <span className="sr-only">Close</span>
+            </button>
+          )}
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="space-y-6 py-4 max-h-[70vh] overflow-y-auto pr-2">
