@@ -1034,6 +1034,7 @@ export default function Canvas3D({
   allowAirEntryEditing = false,
   lightingIntensity = 1.5,
   floorParameters = {},
+  walls = [], // Phase 1: Add walls prop with default
   onUpdateAirEntry,
   onDeleteAirEntry,
   onViewChange,
@@ -1051,6 +1052,38 @@ export default function Canvas3D({
 
   // PHASE 1: Migrate floors data to ensure backward compatibility
   const migratedFloors = useMemo(() => migrateFloorsData(floors), [floors]);
+
+  // Phase 2: Wall Association Helper Functions for AirEntry Dialog Unification
+  const lineToUniqueId = (line: Line): string => {
+    return `${line.start.x.toFixed(2)},${line.start.y.toFixed(2)}-${line.end.x.toFixed(2)},${line.end.y.toFixed(2)}`;
+  };
+
+  const findAssociatedWall = (airEntry: AirEntry) => {
+    const lineId = airEntry.line.id?.toString() || lineToUniqueId(airEntry.line);
+    return walls.find(wall => 
+      wall.lineRef === lineId || 
+      wall.lineRef === lineToUniqueId(airEntry.line) ||
+      (wall.startPoint.x === airEntry.line.start.x && 
+       wall.startPoint.y === airEntry.line.start.y &&
+       wall.endPoint.x === airEntry.line.end.x && 
+       wall.endPoint.y === airEntry.line.end.y)
+    );
+  };
+
+  const createWallContext = (airEntry: AirEntry) => {
+    const associatedWall = findAssociatedWall(airEntry);
+    const wallId = associatedWall?.id || `${currentFloor}_wall_unknown`;
+    const currentCeilingHeight = floorParameters[currentFloor]?.ceilingHeight || ceilingHeight;
+    
+    return {
+      wallId,
+      floorName: currentFloor,
+      wallStart: { x: airEntry.line.start.x, y: airEntry.line.start.y },
+      wallEnd: { x: airEntry.line.end.x, y: airEntry.line.end.y },
+      clickPosition: { x: airEntry.position.x, y: airEntry.position.y },
+      ceilingHeight: currentCeilingHeight * 100 // Convert to cm
+    };
+  };
 
   // PHASE 6: Unified furniture counting across standard and custom items
   const getAllFurnitureForFloor = useCallback((floorName: string): FurnitureItem[] => {
@@ -1597,17 +1630,33 @@ export default function Canvas3D({
   // Handler for updating air entries
   const handleAirEntryEdit = (
     index: number,
-    dimensions: {
+    data: {
       width: number;
       height: number;
       distanceToFloor?: number;
+      shape?: 'rectangular' | 'circular';
+      properties?: {
+        state?: 'open' | 'closed';
+        temperature?: number;
+        flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
+        flowValue?: number;
+        flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
+        airOrientation?: 'inflow' | 'outflow';
+        customIntensityValue?: number;
+      };
     },
   ) => {
     if (!editingAirEntry || !onUpdateAirEntry) return;
 
     const updatedEntry = {
       ...editingAirEntry.entry,
-      dimensions: dimensions,
+      dimensions: {
+        width: data.width,
+        height: data.height,
+        distanceToFloor: data.distanceToFloor,
+        ...(data.shape && { shape: data.shape }),
+      },
+      ...(data.properties && { properties: data.properties }),
     };
 
     // Store the dimensions in our ref to preserve them during scene rebuilds
@@ -1623,11 +1672,11 @@ export default function Canvas3D({
       // If no position data exists yet, initialize with the current position
       updatedAirEntryPositionsRef.current[normalizedFloorName][index] = {
         position: { ...editingAirEntry.entry.position },
-        dimensions: dimensions
+        dimensions: updatedEntry.dimensions
       };
     } else {
       // If position data exists, just update the dimensions
-      updatedAirEntryPositionsRef.current[normalizedFloorName][index].dimensions = dimensions;
+      updatedAirEntryPositionsRef.current[normalizedFloorName][index].dimensions = updatedEntry.dimensions;
     }
 
     console.log(`[DIMENSION STORAGE] Stored dimensions for entry ${index}:`, 
@@ -4406,9 +4455,13 @@ export default function Canvas3D({
               dimensions: updatedData?.dimensions || baseEntry.dimensions
             };
             
+            // Phase 3: Create wall context for unified dialog experience
+            const wallContext = createWallContext(mergedEntry);
+            
             setEditingAirEntry({
               index: foundIndex,
               entry: mergedEntry,
+              wallContext
             });
           }
         }
@@ -5676,17 +5729,42 @@ export default function Canvas3D({
         </div>
       </div>
 
-      {/* Dialog for editing air entries */}
+      {/* Dialog for editing air entries - Phase 4: Unified with Canvas2D */}
       {editingAirEntry && (
         <AirEntryDialog
           type={editingAirEntry.entry.type}
           isOpen={true}
           onClose={() => setEditingAirEntry(null)}
-          onConfirm={(dimensions) =>
-            handleAirEntryEdit(editingAirEntry.index, dimensions)
+          onConfirm={(data) =>
+            handleAirEntryEdit(editingAirEntry.index, data as any)
           }
-          initialValues={editingAirEntry.entry.dimensions}
+          initialValues={{
+            ...editingAirEntry.entry.dimensions,
+            shape: (editingAirEntry.entry.dimensions as any).shape,
+            properties: (editingAirEntry.entry as any).properties
+          } as any}
+          airEntryIndex={editingAirEntry.index}
+          currentFloor={currentFloor}
           isEditing={true}
+          wallContext={editingAirEntry.wallContext}
+          onPositionUpdate={(newPosition) => {
+            // Phase 5: Real-time position updates in 3D scene
+            if (!editingAirEntry || !onUpdateAirEntry) return;
+            
+            const updatedEntry = {
+              ...editingAirEntry.entry,
+              position: newPosition
+            };
+            
+            // Update the entry via parent callback
+            onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
+            
+            // Update local state for dialog consistency
+            setEditingAirEntry({
+              ...editingAirEntry,
+              entry: updatedEntry
+            });
+          }}
         />
       )}
 
