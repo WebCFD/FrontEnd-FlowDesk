@@ -3211,83 +3211,16 @@ export default function Canvas2D({
     setEditingAirEntry(null);
   };
 
-  const handleNewAirEntryConfirm = (data: {
-    width: number;
-    height: number;
-    distanceToFloor?: number;
-    shape?: 'rectangular' | 'circular';
-    properties?: {
-      state?: 'open' | 'closed';
-      temperature?: number;
-      flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
-      flowValue?: number;
-      flowIntensity?: 'low' | 'medium' | 'high';
-      airOrientation?: 'inflow' | 'outflow';
-    };
-  }) => {
-    if (!newAirEntryDetails || !currentAirEntry) return;
-
-    // Convert dimensions from cm to pixels
-    const pixelDimensions = {
-      width: data.width / PIXELS_TO_CM,
-      height: data.height / PIXELS_TO_CM,
-      distanceToFloor: data.distanceToFloor
-        ? data.distanceToFloor / PIXELS_TO_CM
-        : undefined,
-    };
-
-    // Generate unique ID with floor format
-    const floorPrefix = currentFloor === 'ground' ? '0F' : 
-                       currentFloor === 'first' ? '1F' :
-                       currentFloor === 'second' ? '2F' :
-                       currentFloor === 'third' ? '3F' :
-                       currentFloor === 'fourth' ? '4F' :
-                       currentFloor === 'fifth' ? '5F' : '0F';
-    
-    const typeCounters = { window: 1, door: 1, vent: 1 };
-    
-    // Count existing entries to get next available number
-    airEntries.forEach(entry => {
-      const anyEntry = entry as any;
-      if (anyEntry.id) {
-        // Look for new format: window_0F_1
-        let match = anyEntry.id.match(new RegExp(`^(window|door|vent)_${floorPrefix}_(\\d+)$`));
-        
-        // If not found, look for old format: window_1 (for compatibility)
-        if (!match) {
-          match = anyEntry.id.match(/^(window|door|vent)_(\d+)$/);
-        }
-        
-        if (match) {
-          const type = match[1] as keyof typeof typeCounters;
-          const num = parseInt(match[2]);
-          if (typeCounters[type] <= num) {
-            typeCounters[type] = num + 1;
-          }
-        }
-      }
-    });
-
-    const newAirEntry: AirEntry = {
-      type: currentAirEntry,
-      position: calculatePositionAlongWall(
-        newAirEntryDetails.line,
-        newAirEntryDetails.position,
-      ),
-      dimensions: {
-        width: data.width,
-        height: data.height,
-        distanceToFloor: data.distanceToFloor,
-        ...(data.shape && { shape: data.shape }),
-      },
-      line: newAirEntryDetails.line,
-      lineId: newAirEntryDetails.line.id,
-      ...(data.properties && { properties: data.properties }),
-      id: `${currentAirEntry}_${floorPrefix}_${typeCounters[currentAirEntry]}`,
-    } as any;
-
-    onAirEntriesUpdate?.([...airEntries, newAirEntry]);
-    setNewAirEntryDetails(null);
+  const handleNewAirEntryConfirm = () => {
+    // Step 3: Simplified confirm handler - just close dialog
+    // Element already exists and has been updated in real-time
+    console.log('Confirm clicked - closing dialog, element already exists');
+    if (editingAirEntry) {
+      setEditingAirEntry(null);
+    }
+    if (newAirEntryDetails) {
+      setNewAirEntryDetails(null);
+    }
   };
 
   const handleContextMenu = (e: Event) => {
@@ -3412,10 +3345,28 @@ export default function Canvas2D({
         <AirEntryDialog
           type={editingAirEntry.entry.type}
           isOpen={true}
-          onClose={() => setEditingAirEntry(null)}
-          onConfirm={(data) =>
-            handleAirEntryEdit(editingAirEntry.index, data as any)
-          }
+          onClose={() => {
+            // Step 4: Check if this is a newly created element (from wall click)
+            // If so, delete it when canceled
+            console.log('Dialog closed/canceled - checking if element should be deleted');
+            
+            // Check if this element was just created (has default values)
+            const entry = editingAirEntry.entry;
+            const hasDefaultValues = (
+              (entry.type === 'door' && entry.dimensions.width === 80 && entry.dimensions.height === 200) ||
+              (entry.type !== 'door' && entry.dimensions.width === 60 && entry.dimensions.height === 40)
+            ) && entry.properties?.state === 'closed' && entry.properties?.temperature === 20;
+            
+            if (hasDefaultValues) {
+              console.log('Deleting newly created element on cancel');
+              // Delete the element from array
+              const newAirEntries = airEntries.filter((_, index) => index !== editingAirEntry.index);
+              onAirEntriesUpdate?.(newAirEntries);
+            }
+            
+            setEditingAirEntry(null);
+          }}
+          onConfirm={handleNewAirEntryConfirm}
           initialValues={{
             ...editingAirEntry.entry.dimensions,
             shape: (editingAirEntry.entry.dimensions as any).shape,
