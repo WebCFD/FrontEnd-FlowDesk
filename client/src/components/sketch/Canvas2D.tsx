@@ -3170,64 +3170,32 @@ export default function Canvas2D({
       };
     },
   ) => {
-    console.log('🔸 CONFIRM LOG: handleAirEntryEdit called');
-    console.log('🔸 Target index:', index);
-    console.log('🔸 Current airEntries length:', airEntries.length);
-    console.log('🔸 editingAirEntry:', editingAirEntry);
-    console.log('🔸 Data received:', data);
+    console.log('🔸 CONFIRM LOG: handleAirEntryEdit called - NEW SIMPLIFIED VERSION');
+    console.log('🔸 All changes were already applied in real-time, just closing dialog');
     
     if (!editingAirEntry) {
       console.log('🔸 ERROR: No editingAirEntry found!');
       return;
     }
 
-    console.log('🔸 Current airEntries before update:');
-    airEntries.forEach((entry, i) => {
-      console.log(`🔸   [${i}]:`, (entry as any).id, entry.type);
-    });
-
-    const updatedAirEntries = [...airEntries];
-    
-    if (index >= updatedAirEntries.length) {
-      console.log('🔸 ERROR: Index out of bounds!', index, 'vs length', updatedAirEntries.length);
-      return;
-    }
-    
-    updatedAirEntries[index] = {
-      ...editingAirEntry.entry,
-      dimensions: {
-        width: data.width,
-        height: data.height,
-        distanceToFloor: data.distanceToFloor,
-        ...(data.shape && { shape: data.shape }),
-      },
-      ...(data.properties && { properties: data.properties }),
-    };
-
-    console.log('🔸 Updated entry at index', index, ':', updatedAirEntries[index]);
-    console.log('🔸 Final array length:', updatedAirEntries.length);
-
-    onAirEntriesUpdate?.(updatedAirEntries);
-    
-    // Clear editing state without triggering cancel logic
-    console.log('🔸 Setting editingAirEntry to null (confirmed)');
+    // No need to update airEntries - changes were applied in real-time
+    // Just close the dialog
     setEditingAirEntry(null);
     
-    console.log('🔸 CONFIRM LOG: Process completed');
+    console.log('🔸 CONFIRM LOG: Process completed - dialog closed');
   };
 
   const handleAirEntryCancel = () => {
     console.log('🔺 CANCEL LOG: handleAirEntryCancel called');
     console.log('🔺 editingAirEntry:', editingAirEntry);
     
-    // Only handle real cancellations - if editingAirEntry exists
     if (!editingAirEntry) {
-      console.log('🔺 No editingAirEntry, this is a confirm-triggered close');
+      console.log('🔺 No editingAirEntry, ignoring cancel call');
       return;
     }
     
     if (editingAirEntry.isNewlyCreated) {
-      console.log('🔺 Removing newly created element at index:', editingAirEntry.index);
+      console.log('🔺 User cancelled creation - removing newly created element at index:', editingAirEntry.index);
       console.log('🔺 Current airEntries length:', airEntries.length);
       
       // Remove the newly created element
@@ -3411,6 +3379,37 @@ export default function Canvas2D({
                 ...editingAirEntry.entry,
                 position: newPosition
               }
+            });
+          }}
+          onDimensionsUpdate={(dimensions) => {
+            console.log('🔶 DIMENSIONS UPDATE: Real-time dimensions change');
+            console.log('🔶 New dimensions:', dimensions);
+            console.log('🔶 Updating element at index:', editingAirEntry.index);
+            
+            // Update the Air Entry dimensions in real-time
+            const updatedAirEntries = [...airEntries];
+            const currentEntry = updatedAirEntries[editingAirEntry.index];
+            
+            updatedAirEntries[editingAirEntry.index] = {
+              ...currentEntry,
+              dimensions: {
+                ...currentEntry.dimensions,
+                width: dimensions.width / PIXELS_TO_CM, // Convert cm to pixels
+                height: dimensions.height / PIXELS_TO_CM,
+                ...(dimensions.distanceToFloor !== undefined && { 
+                  distanceToFloor: dimensions.distanceToFloor 
+                }),
+                ...(dimensions.shape && { shape: dimensions.shape })
+              }
+            };
+            
+            console.log('🔶 Updated entry:', updatedAirEntries[editingAirEntry.index]);
+            onAirEntriesUpdate?.(updatedAirEntries);
+            
+            // Also update local state so dialog maintains correct reference
+            setEditingAirEntry({
+              ...editingAirEntry,
+              entry: updatedAirEntries[editingAirEntry.index]
             });
           }}
         />
