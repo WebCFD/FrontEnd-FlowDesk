@@ -3161,6 +3161,12 @@ export default function Canvas2D({
     setIgnoreNextClick(false);
   };
 
+  // Reusable eraser function that mimics eraser tool behavior
+  const eraseAirEntryAtIndex = (index: number) => {
+    const newAirEntries = airEntries.filter((_, i) => i !== index);
+    onAirEntriesUpdate?.(newAirEntries);
+  };
+
   const handleAirEntryEdit = (
     index: number,
     data: {
@@ -3193,6 +3199,14 @@ export default function Canvas2D({
     };
 
     onAirEntriesUpdate?.(updatedAirEntries);
+    setEditingAirEntry(null);
+  };
+
+  // Handle dialog close with eraser behavior
+  const handleDialogClose = () => {
+    if (editingAirEntry) {
+      eraseAirEntryAtIndex(editingAirEntry.index);
+    }
     setEditingAirEntry(null);
   };
 
@@ -3320,7 +3334,7 @@ export default function Canvas2D({
         <AirEntryDialog
           type={editingAirEntry.entry.type}
           isOpen={true}
-          onClose={() => setEditingAirEntry(null)}
+          onClose={handleDialogClose}
           onConfirm={(data) =>
             handleAirEntryEdit(editingAirEntry.index, data as any)
           }
