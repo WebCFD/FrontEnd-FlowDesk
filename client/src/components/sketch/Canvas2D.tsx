@@ -361,7 +361,6 @@ export default function Canvas2D({
   const [editingAirEntry, setEditingAirEntry] = useState<{
     index: number;
     entry: AirEntry;
-    isNewlyCreated?: boolean;
   } | null>(null);
 
   const [editingWall, setEditingWall] = useState<Wall | null>(null);
@@ -1683,7 +1682,6 @@ export default function Canvas2D({
           setEditingAirEntry({
             index: airEntries.length, // Index of the newly added element
             entry: newAirEntry,
-            isNewlyCreated: true, // Flag to track this was just created
           });
         }
         return;
@@ -3322,14 +3320,7 @@ export default function Canvas2D({
         <AirEntryDialog
           type={editingAirEntry.entry.type}
           isOpen={true}
-          onClose={() => {
-            // If newly created element, delete it when dialog is closed via X button
-            if (editingAirEntry.isNewlyCreated) {
-              const filteredAirEntries = airEntries.filter((_, i) => i !== editingAirEntry.index);
-              onAirEntriesUpdate?.(filteredAirEntries);
-            }
-            setEditingAirEntry(null);
-          }}
+          onClose={() => setEditingAirEntry(null)}
           onConfirm={(data) =>
             handleAirEntryEdit(editingAirEntry.index, data as any)
           }
@@ -3369,7 +3360,7 @@ export default function Canvas2D({
             };
             onAirEntriesUpdate?.(updatedAirEntries);
             
-            // Update local state to maintain correct dialog reference
+            // También actualizar el estado local para que el diálogo mantenga la referencia correcta
             setEditingAirEntry({
               ...editingAirEntry,
               entry: {
