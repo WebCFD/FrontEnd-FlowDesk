@@ -363,9 +363,6 @@ export default function Canvas2D({
     entry: AirEntry;
     isNewlyCreated?: boolean; // Track if this is a newly created element
   } | null>(null);
-  
-  // Flag to track if we just confirmed (to ignore subsequent onClose)
-  const [justConfirmed, setJustConfirmed] = useState(false);
   const [editingWall, setEditingWall] = useState<Wall | null>(null);
   const [wallPropertiesDialogOpen, setWallPropertiesDialogOpen] = useState(false);
   const [hoveredEndpoint, setHoveredEndpoint] = useState<{
@@ -3212,8 +3209,8 @@ export default function Canvas2D({
 
     onAirEntriesUpdate?.(updatedAirEntries);
     
-    // Set flag to indicate we just confirmed
-    setJustConfirmed(true);
+    // Clear editing state without triggering cancel logic
+    console.log('🔸 Setting editingAirEntry to null (confirmed)');
     setEditingAirEntry(null);
     
     console.log('🔸 CONFIRM LOG: Process completed');
@@ -3222,16 +3219,14 @@ export default function Canvas2D({
   const handleAirEntryCancel = () => {
     console.log('🔺 CANCEL LOG: handleAirEntryCancel called');
     console.log('🔺 editingAirEntry:', editingAirEntry);
-    console.log('🔺 justConfirmed flag:', justConfirmed);
     
-    // If we just confirmed, ignore this cancel call
-    if (justConfirmed) {
-      console.log('🔺 Ignoring cancel because we just confirmed');
-      setJustConfirmed(false);
+    // Only handle real cancellations - if editingAirEntry exists
+    if (!editingAirEntry) {
+      console.log('🔺 No editingAirEntry, this is a confirm-triggered close');
       return;
     }
     
-    if (editingAirEntry?.isNewlyCreated) {
+    if (editingAirEntry.isNewlyCreated) {
       console.log('🔺 Removing newly created element at index:', editingAirEntry.index);
       console.log('🔺 Current airEntries length:', airEntries.length);
       
