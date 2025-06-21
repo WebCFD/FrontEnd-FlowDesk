@@ -2861,7 +2861,7 @@ export default function Canvas2D({
     draggedAirEntry,
     onAirEntriesUpdate,
     highlightState,
-    editingAirEntry,
+    editingAirEntries,
     hoveredAirEntry,
     hoveredEndpoint,
     measureStart,
