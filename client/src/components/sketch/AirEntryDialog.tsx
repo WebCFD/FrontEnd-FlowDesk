@@ -218,8 +218,8 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   const updatePropertiesRealTime = () => {
     if (props.type !== 'wall' && 'onPropertyUpdate' in props && props.onPropertyUpdate) {
       props.onPropertyUpdate({
-        width: width,
-        height: height,
+        width: (values as any).width,
+        height: (values as any).height,
         distanceToFloor: distanceToFloor,
         shape: shape,
         properties: {
@@ -348,7 +348,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     if (dialogOpen && props.type !== 'wall') {
       updatePropertiesRealTime();
     }
-  }, [width, height, distanceToFloor, shape, isElementOpen, elementTemperature, flowType, intensityLevel, customIntensity, airDirection, dialogOpen]);
+  }, [(values as any).width, (values as any).height, distanceToFloor, shape, isElementOpen, elementTemperature, flowType, intensityLevel, customIntensity, airDirection, dialogOpen]);
 
   function getDefaultValues() {
     // Obtener valores iniciales según el tipo de props
