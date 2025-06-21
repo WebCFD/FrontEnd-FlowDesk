@@ -903,12 +903,8 @@ export default function Canvas2D({
     ctx.strokeStyle = color;
     ctx.lineWidth = isHovered ? 6 / zoom : 4 / zoom; // Thicker line when hovered
     
-    // Set dashed line for preview
-    if (isPreview) {
-      ctx.setLineDash([8 / zoom, 4 / zoom]);
-    } else {
-      ctx.setLineDash([]);
-    }
+    // Always use solid lines - no dashing
+    ctx.setLineDash([]);
 
     // Draw the main line
     ctx.beginPath();
