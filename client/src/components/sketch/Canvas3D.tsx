@@ -5768,6 +5768,27 @@ export default function Canvas3D({
               entry: updatedEntry
             });
           }}
+          onDimensionsUpdate={(newDimensions) => {
+            // Real-time dimension updates in 3D scene
+            if (!editingAirEntry || !onUpdateAirEntry) return;
+            
+            const updatedEntry = {
+              ...editingAirEntry.entry,
+              dimensions: {
+                ...editingAirEntry.entry.dimensions,
+                ...newDimensions
+              }
+            };
+            
+            // Update the entry via parent callback
+            onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
+            
+            // Update local state for dialog consistency
+            setEditingAirEntry({
+              ...editingAirEntry,
+              entry: updatedEntry
+            });
+          }}
         />
       )}
 
