@@ -73,9 +73,6 @@ interface AirEntryDialogProps {
   // Campos necesarios para persistir propiedades
   airEntryIndex?: number;
   currentFloor?: string;
-  // Multi-dialog support
-  multiDialogMode?: boolean;
-  dialogPosition?: { x: number; y: number };
 }
 
 // Props para propiedades de pared
@@ -122,11 +119,6 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   // Estado unificado para manejar tanto dimensiones como temperatura
   const [values, setValues] = useState(getDefaultValues());
   const [position, setPosition] = useState(() => {
-    // Check if custom position is provided for multi-dialog mode
-    if (props.type !== 'wall' && 'dialogPosition' in props && props.dialogPosition) {
-      return props.dialogPosition;
-    }
-    
     // Position dialog at top-right of the screen
     const dialogWidth = 425;
     const rightOffset = 20; // 20px from right edge
@@ -565,7 +557,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           onClose(); // Save Changes or fallback - keep element
         }
       }
-    }} modal={props.type !== 'wall' && 'multiDialogMode' in props && props.multiDialogMode ? false : true}>
+    }} modal={false}>
       <DialogContent 
         className="sm:max-w-[425px]"
         style={{
