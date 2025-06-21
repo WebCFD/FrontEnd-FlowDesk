@@ -362,11 +362,6 @@ export default function Canvas2D({
     index: number;
     entry: AirEntry;
   } | null>(null);
-  const [openDialogs, setOpenDialogs] = useState<Array<{
-    id: string;
-    index: number;
-    entry: AirEntry;
-  }>>([]);
 
   const [editingWall, setEditingWall] = useState<Wall | null>(null);
   const [wallPropertiesDialogOpen, setWallPropertiesDialogOpen] = useState(false);
@@ -2927,18 +2922,13 @@ export default function Canvas2D({
     const mouseEvent = e as MouseEvent;
     const clickPoint = getCanvasPoint(mouseEvent);
 
-    // First check for air entries - support both single and multiple dialog modes
+    // First check for air entries (existing functionality)
     const airEntryInfo = findAirEntryAtLocation(clickPoint);
     if (airEntryInfo) {
-      // Check if Shift key is held for multiple dialog mode
-      if (mouseEvent.shiftKey) {
-        openMultipleDialog(airEntryInfo.index, airEntryInfo.entry);
-      } else {
-        setEditingAirEntry({
-          index: airEntryInfo.index,
-          entry: airEntryInfo.entry,
-        });
-      }
+      setEditingAirEntry({
+        index: airEntryInfo.index,
+        entry: airEntryInfo.entry,
+      });
       return;
     }
 
@@ -3223,69 +3213,6 @@ export default function Canvas2D({
     setEditingAirEntry(null); // Close dialog - element is preserved
   };
 
-  const openMultipleDialog = (index: number, entry: AirEntry) => {
-    // Check if dialog for this entry is already open
-    const existingDialog = openDialogs.find(d => d.index === index);
-    if (existingDialog) return; // Don't open duplicate
-    
-    const dialogId = `dialog_${index}_${Date.now()}`;
-    setOpenDialogs(prev => [...prev, { id: dialogId, index, entry }]);
-  };
-
-  const closeMultipleDialog = (dialogId: string) => {
-    setOpenDialogs(prev => prev.filter(d => d.id !== dialogId));
-  };
-
-  const handleMultipleDialogEdit = (
-    dialogId: string,
-    index: number,
-    data: {
-      width: number;
-      height: number;
-      distanceToFloor?: number;
-      shape?: 'rectangular' | 'circular';
-      properties?: {
-        state?: 'open' | 'closed';
-        temperature?: number;
-        flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
-        flowValue?: number;
-        flowIntensity?: 'low' | 'medium' | 'high';
-        airOrientation?: 'inflow' | 'outflow';
-      };
-    },
-  ) => {
-    const dialog = openDialogs.find(d => d.id === dialogId);
-    if (!dialog) return;
-
-    // Update the existing element in the array
-    const updatedAirEntries = [...airEntries];
-    updatedAirEntries[index] = {
-      ...dialog.entry,
-      dimensions: {
-        width: data.width,
-        height: data.height,
-        distanceToFloor: data.distanceToFloor,
-        ...(data.shape && { shape: data.shape }),
-      },
-      ...(data.properties && { properties: data.properties }),
-    };
-
-    onAirEntriesUpdate?.(updatedAirEntries);
-    // Note: Don't auto-close dialog for multiple mode
-  };
-
-  const eraseAirEntryFromMultipleDialog = (dialogId: string, index: number) => {
-    const updatedAirEntries = airEntries.filter((_, i) => i !== index);
-    onAirEntriesUpdate?.(updatedAirEntries);
-    closeMultipleDialog(dialogId);
-    
-    // Update indices for remaining dialogs since we removed an entry
-    setOpenDialogs(prev => prev.map(dialog => ({
-      ...dialog,
-      index: dialog.index > index ? dialog.index - 1 : dialog.index
-    })));
-  };
-
   // Handle dialog X button close with eraser behavior
   const handleDialogXClose = () => {
     if (editingAirEntry) {
@@ -3502,90 +3429,6 @@ export default function Canvas2D({
           }}
         />
       )}
-      
-      {/* Multiple dialogs for simultaneous editing */}
-      {openDialogs.map((dialog, dialogIndex) => (
-        <AirEntryDialog
-          key={dialog.id}
-          type={dialog.entry.type}
-          isOpen={true}
-          onClose={() => closeMultipleDialog(dialog.id)}
-          onCancel={() => {
-            eraseAirEntryFromMultipleDialog(dialog.id, dialog.index);
-          }}
-          onConfirm={(data) => {
-            handleMultipleDialogEdit(dialog.id, dialog.index, data as any);
-          }}
-          initialValues={{
-            ...dialog.entry.dimensions,
-            shape: (dialog.entry.dimensions as any).shape,
-            properties: (dialog.entry as any).properties
-          } as any}
-          airEntryIndex={dialog.index}
-          currentFloor={currentFloor}
-          isEditing={true}
-          wallContext={{
-            wallId: (() => {
-              const lineId = dialog.entry.line.id?.toString() || lineToUniqueId(dialog.entry.line);
-              const associatedWall = walls?.find(wall => 
-                wall.lineRef === lineId || 
-                wall.lineRef === lineToUniqueId(dialog.entry.line) ||
-                (wall.startPoint.x === dialog.entry.line.start.x && 
-                 wall.startPoint.y === dialog.entry.line.start.y &&
-                 wall.endPoint.x === dialog.entry.line.end.x && 
-                 wall.endPoint.y === dialog.entry.line.end.y)
-              );
-              return associatedWall?.id || `${floorText}_wall_unknown`;
-            })(),
-            floorName: floorText,
-            wallStart: { x: dialog.entry.line.start.x, y: dialog.entry.line.start.y },
-            wallEnd: { x: dialog.entry.line.end.x, y: dialog.entry.line.end.y },
-            clickPosition: { x: dialog.entry.position.x, y: dialog.entry.position.y },
-            ceilingHeight: ceilingHeight * 100
-          }}
-          onPositionUpdate={(newPosition) => {
-            const updatedAirEntries = [...airEntries];
-            updatedAirEntries[dialog.index] = {
-              ...dialog.entry,
-              position: newPosition
-            };
-            onAirEntriesUpdate?.(updatedAirEntries);
-            
-            // Update dialog state to maintain consistency
-            setOpenDialogs(prev => prev.map(d => 
-              d.id === dialog.id 
-                ? { ...d, entry: { ...d.entry, position: newPosition } }
-                : d
-            ));
-          }}
-          onDimensionsUpdate={(newDimensions) => {
-            const updatedAirEntries = [...airEntries];
-            updatedAirEntries[dialog.index] = {
-              ...dialog.entry,
-              dimensions: {
-                ...dialog.entry.dimensions,
-                ...newDimensions
-              }
-            };
-            onAirEntriesUpdate?.(updatedAirEntries);
-            
-            // Update dialog state to maintain consistency
-            setOpenDialogs(prev => prev.map(d => 
-              d.id === dialog.id 
-                ? { 
-                    ...d, 
-                    entry: { 
-                      ...d.entry, 
-                      dimensions: { ...d.entry.dimensions, ...newDimensions } 
-                    } 
-                  }
-                : d
-            ));
-          }}
-          multiDialogMode={true}
-          dialogPosition={{ x: 50 + (dialogIndex * 450), y: 50 + (dialogIndex * 50) }}
-        />
-      ))}
 
 
       {editingPoint && (
