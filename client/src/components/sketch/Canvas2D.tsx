@@ -1687,11 +1687,13 @@ export default function Canvas2D({
             }
           } as any;
 
-          console.log('Created AirEntry:', newAirEntry);
+          console.log('🟢 WALL CLICK: Created AirEntry:', newAirEntry);
+          console.log('🟢 WALL CLICK: Adding element to array with ID:', newAirEntry.id);
 
           // Add to airEntries array immediately
           const newAirEntries = [...airEntries, newAirEntry];
           onAirEntriesUpdate?.(newAirEntries);
+          console.log('🟢 WALL CLICK: Array updated, total elements:', newAirEntries.length);
 
           // Set editing mode for the newly created element
           setEditingAirEntry({
@@ -3193,7 +3195,11 @@ export default function Canvas2D({
       };
     },
   ) => {
-    if (!editingAirEntry) return;
+    console.log('🟡 EDIT HANDLER: Called for index:', index, 'with data:', data);
+    if (!editingAirEntry) {
+      console.log('🟡 EDIT HANDLER: Early return - no editingAirEntry');
+      return;
+    }
 
     const updatedAirEntries = [...airEntries];
     updatedAirEntries[index] = {
@@ -3207,8 +3213,14 @@ export default function Canvas2D({
       ...(data.properties && { properties: data.properties }),
     };
 
+    console.log('🟡 EDIT HANDLER: Updated element at index:', index);
+    console.log('🟡 EDIT HANDLER: Updated element:', updatedAirEntries[index]);
+    
     onAirEntriesUpdate?.(updatedAirEntries);
+    console.log('🟡 EDIT HANDLER: Array updated, total elements:', updatedAirEntries.length);
+    
     setEditingAirEntry(null);
+    console.log('🟡 EDIT HANDLER: Cleared editingAirEntry');
   };
 
   const handleNewAirEntryConfirm = (data: {
@@ -3225,7 +3237,11 @@ export default function Canvas2D({
       airOrientation?: 'inflow' | 'outflow';
     };
   }) => {
-    if (!newAirEntryDetails || !currentAirEntry) return;
+    console.log('🔴 CONFIRM HANDLER: Called with data:', data);
+    if (!newAirEntryDetails || !currentAirEntry) {
+      console.log('🔴 CONFIRM HANDLER: Early return - no newAirEntryDetails or currentAirEntry');
+      return;
+    }
 
     // Convert dimensions from cm to pixels
     const pixelDimensions = {
@@ -3286,8 +3302,14 @@ export default function Canvas2D({
       id: `${currentAirEntry}_${floorPrefix}_${typeCounters[currentAirEntry]}`,
     } as any;
 
+    console.log('🔴 CONFIRM HANDLER: Created AirEntry:', newAirEntry);
+    console.log('🔴 CONFIRM HANDLER: Adding element to array with ID:', newAirEntry.id);
+    
     onAirEntriesUpdate?.([...airEntries, newAirEntry]);
+    console.log('🔴 CONFIRM HANDLER: Array updated, total elements:', [...airEntries, newAirEntry].length);
+    
     setNewAirEntryDetails(null);
+    console.log('🔴 CONFIRM HANDLER: Cleared newAirEntryDetails');
   };
 
   const handleContextMenu = (e: Event) => {
