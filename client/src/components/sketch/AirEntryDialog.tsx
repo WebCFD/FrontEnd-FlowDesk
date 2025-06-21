@@ -69,6 +69,7 @@ interface AirEntryDialogProps {
   };
   // Callback para actualización en tiempo real
   onPositionUpdate?: (newPosition: { x: number; y: number }) => void;
+  onDimensionsUpdate?: (newDimensions: { width?: number; height?: number; distanceToFloor?: number }) => void;
   // Campos necesarios para persistir propiedades
   airEntryIndex?: number;
   currentFloor?: string;
@@ -865,7 +866,15 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               id="width"
                               type="number"
                               value={(values as { width: number }).width}
-                              onChange={(e) => setValues(prev => ({ ...prev, width: Number(e.target.value) }))}
+                              onChange={(e) => {
+                                const newWidth = Number(e.target.value);
+                                setValues(prev => ({ ...prev, width: newWidth }));
+                                
+                                // Actualizar en tiempo real en Canvas2D
+                                if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
+                                  props.onDimensionsUpdate({ width: newWidth });
+                                }
+                              }}
                               className="h-8 text-sm"
                             />
                             <span className="text-xs text-slate-500">cm</span>
@@ -892,7 +901,15 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               id="height"
                               type="number"
                               value={(values as { height: number }).height}
-                              onChange={(e) => setValues(prev => ({ ...prev, height: Number(e.target.value) }))}
+                              onChange={(e) => {
+                                const newHeight = Number(e.target.value);
+                                setValues(prev => ({ ...prev, height: newHeight }));
+                                
+                                // Actualizar en tiempo real en Canvas2D
+                                if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
+                                  props.onDimensionsUpdate({ height: newHeight });
+                                }
+                              }}
                               className="h-8 text-sm"
                             />
                             <span className="text-xs text-slate-500">cm</span>

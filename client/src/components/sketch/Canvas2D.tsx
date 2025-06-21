@@ -3403,6 +3403,30 @@ export default function Canvas2D({
               }
             });
           }}
+          onDimensionsUpdate={(newDimensions) => {
+            // Actualizar las dimensiones del Air Entry en tiempo real
+            const updatedAirEntries = [...airEntries];
+            updatedAirEntries[editingAirEntry.index] = {
+              ...editingAirEntry.entry,
+              dimensions: {
+                ...editingAirEntry.entry.dimensions,
+                ...newDimensions
+              }
+            };
+            onAirEntriesUpdate?.(updatedAirEntries);
+            
+            // También actualizar el estado local para que el diálogo mantenga la referencia correcta
+            setEditingAirEntry({
+              ...editingAirEntry,
+              entry: {
+                ...editingAirEntry.entry,
+                dimensions: {
+                  ...editingAirEntry.entry.dimensions,
+                  ...newDimensions
+                }
+              }
+            });
+          }}
         />
       )}
 
