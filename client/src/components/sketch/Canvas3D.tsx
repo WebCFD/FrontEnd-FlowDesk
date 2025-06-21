@@ -5737,6 +5737,7 @@ export default function Canvas3D({
           type={editingAirEntry.entry.type}
           isOpen={true}
           onClose={() => setEditingAirEntry(null)}
+          onCancel={() => setEditingAirEntry(null)}
           onConfirm={(data) =>
             handleAirEntryEdit(editingAirEntry.index, data as any)
           }
