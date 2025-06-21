@@ -1,0 +1,62 @@
+Step 1: Move Element Creation Logic
+Objective: Move AirEntry creation from confirm handler to wall click handler
+Changes:
+
+Extract creation logic from handleNewAirEntryConfirm
+Move to wall click detection section
+Keep dialog opening for now (minimal change)
+Test: Click wall → Element should appear immediately, dialog still opens
+Debug: Verify element appears in 2D view, check console for creation logs
+
+Step 2: Switch to Edit Mode
+Objective: Replace newAirEntryDetails with editingAirEntry
+Changes:
+
+Replace setNewAirEntryDetails with setEditingAirEntry in wall click
+Update dialog rendering to use editingAirEntry instead of newAirEntryDetails
+Keep current confirm handler intact
+Test: Click wall → Element appears, dialog opens in edit mode
+Debug: Verify dialog shows correct initial values, real-time updates work
+
+
+
+
+Step 3: Simplify Confirm Handler
+Objective: Remove creation logic from confirm handler
+Changes:
+
+Replace handleNewAirEntryConfirm with simple dialog close
+Remove all element creation code from this function
+Test: Confirm dialog → Should just close, element remains
+Debug: Verify no duplicate elements created, confirm button works
+
+Step 4: Add Delete on Cancel
+Objective: Implement element deletion when dialog is canceled
+Changes:
+
+Add onDelete prop to AirEntryDialog
+Implement delete logic in Canvas2D
+Connect cancel button to delete function
+Test: Cancel dialog → Element should disappear, dialog closes
+Debug: Verify element removed from array, no memory leaks
+
+Step 5: Cleanup State
+Objective: Remove unused newAirEntryDetails state
+Changes:
+
+Remove newAirEntryDetails state declaration
+Remove related type definitions
+Clean up any remaining references
+Test: Full workflow → Create, edit, confirm/cancel
+Debug: No console errors, clean state management
+
+Step 6: Integration Test
+Objective: Test complete workflow across multiple scenarios
+Changes: None - pure testing
+Test Cases:
+
+Create window → Modify → Confirm
+Create door → Modify → Cancel
+Create vent → Real-time updates → Confirm
+Create multiple elements in sequence
+Debug: Performance, memory usage, state consistency
