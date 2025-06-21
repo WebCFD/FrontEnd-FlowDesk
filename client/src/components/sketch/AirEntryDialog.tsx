@@ -145,6 +145,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   // Estado para el tipo de forma (rectangular/circular)
   const [shapeType, setShapeType] = useState<'rectangular' | 'circular'>('rectangular');
   
+  // Track close source to differentiate between X button and outside clicks
+  const [isExplicitClose, setIsExplicitClose] = useState(false);
+  
 
   
   // Estado para la distancia al suelo
@@ -552,9 +555,25 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
 
   return (
-    <Dialog open={dialogOpen} modal={false} onOpenChange={() => {}}>
+    <Dialog open={dialogOpen} onOpenChange={(open) => {
+      if (!open) {
+        // If this is an explicit close (X button), handle it
+        if (isExplicitClose) {
+          setIsExplicitClose(false); // Reset flag
+          if (onCancel) {
+            onCancel(); // X button clicked - delete element using eraser logic
+          } else {
+            onClose(); // Fallback to regular close
+          }
+        }
+        // Otherwise, ignore (outside click) - do nothing
+      }
+    }}>
       <DialogContent 
         className="sm:max-w-[425px]"
+        onPointerDownOutside={(e) => e.preventDefault()} // Prevent outside clicks from closing
+        onEscapeKeyDown={(e) => e.preventDefault()} // Prevent escape key from closing
+        onInteractOutside={(e) => e.preventDefault()} // Additional protection
         style={{
           position: hasBeenDragged ? 'fixed' : undefined,
           top: hasBeenDragged ? `${position.y}px` : undefined,
@@ -571,6 +590,13 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           data-drag-handle
           className="cursor-grab select-none"
           title="Drag to move"
+          onClick={(e) => {
+            // Check if click is on the X button (close button)
+            const target = e.target as HTMLElement;
+            if (target.closest('[data-radix-dialog-close]')) {
+              setIsExplicitClose(true); // Mark as explicit close for X button
+            }
+          }}
         >
           {/* Visual drag indicator */}
           <div 
