@@ -68,6 +68,7 @@ interface AirEntryDialogProps {
   };
   // Callback para actualización en tiempo real
   onPositionUpdate?: (newPosition: { x: number; y: number }) => void;
+  onDimensionsUpdate?: (dimensions: { width: number; height: number; distanceToFloor?: number; shape?: 'rectangular' | 'circular' }) => void;
   // Campos necesarios para persistir propiedades
   airEntryIndex?: number;
   currentFloor?: string;
@@ -724,6 +725,17 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               // Redondear a 2 decimales máximo
                               const rounded = Math.round(value * 100) / 100;
                               setDistanceToFloor(rounded);
+                              
+                              // Trigger real-time update
+                              const airEntryProps = props as AirEntryDialogProps;
+                              if (airEntryProps.onDimensionsUpdate) {
+                                airEntryProps.onDimensionsUpdate({
+                                  width: (values as any).width || 80,
+                                  height: (values as any).height || 120,
+                                  distanceToFloor: rounded,
+                                  shape: shapeType
+                                });
+                              }
                             }
                           }}
                           className={`h-8 text-sm ${type === 'door' ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
@@ -806,7 +818,20 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               name="shape"
                               value="rectangular"
                               checked={shapeType === 'rectangular'}
-                              onChange={() => setShapeType('rectangular')}
+                              onChange={() => {
+                                setShapeType('rectangular');
+                                
+                                // Trigger real-time update
+                                const airEntryProps = props as AirEntryDialogProps;
+                                if (airEntryProps.onDimensionsUpdate) {
+                                  airEntryProps.onDimensionsUpdate({
+                                    width: (values as any).width || 80,
+                                    height: (values as any).height || 120,
+                                    distanceToFloor: distanceToFloor,
+                                    shape: 'rectangular'
+                                  });
+                                }
+                              }}
                               className="text-blue-600"
                             />
                             <span className="text-xs text-slate-600">Rectangular</span>
@@ -817,7 +842,20 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               name="shape"
                               value="circular"
                               checked={shapeType === 'circular'}
-                              onChange={() => setShapeType('circular')}
+                              onChange={() => {
+                                setShapeType('circular');
+                                
+                                // Trigger real-time update
+                                const airEntryProps = props as AirEntryDialogProps;
+                                if (airEntryProps.onDimensionsUpdate) {
+                                  airEntryProps.onDimensionsUpdate({
+                                    width: (values as any).width || 80,
+                                    height: (values as any).width || 80, // Use width for both dimensions in circular
+                                    distanceToFloor: distanceToFloor,
+                                    shape: 'circular'
+                                  });
+                                }
+                              }}
                               className="text-blue-600"
                             />
                             <span className="text-xs text-slate-600">Circular</span>
@@ -855,6 +893,17 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               onChange={(e) => {
                                 const newWidth = Number(e.target.value);
                                 setValues(prev => ({ ...prev, width: newWidth }));
+                                
+                                // Trigger real-time update
+                                const airEntryProps = props as AirEntryDialogProps;
+                                if (airEntryProps.onDimensionsUpdate) {
+                                  airEntryProps.onDimensionsUpdate({
+                                    width: newWidth,
+                                    height: (values as any).height || 120,
+                                    distanceToFloor: distanceToFloor,
+                                    shape: shapeType
+                                  });
+                                }
                               }}
                               className="h-8 text-sm"
                             />
@@ -885,6 +934,17 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               onChange={(e) => {
                                 const newHeight = Number(e.target.value);
                                 setValues(prev => ({ ...prev, height: newHeight }));
+                                
+                                // Trigger real-time update
+                                const airEntryProps = props as AirEntryDialogProps;
+                                if (airEntryProps.onDimensionsUpdate) {
+                                  airEntryProps.onDimensionsUpdate({
+                                    width: (values as any).width || 80,
+                                    height: newHeight,
+                                    distanceToFloor: distanceToFloor,
+                                    shape: shapeType
+                                  });
+                                }
                               }}
                               className="h-8 text-sm"
                             />
@@ -924,6 +984,17 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                                 width: diameter,
                                 height: diameter // Set height equal to width for circular elements
                               }));
+                              
+                              // Trigger real-time update
+                              const airEntryProps = props as AirEntryDialogProps;
+                              if (airEntryProps.onDimensionsUpdate) {
+                                airEntryProps.onDimensionsUpdate({
+                                  width: diameter,
+                                  height: diameter,
+                                  distanceToFloor: distanceToFloor,
+                                  shape: 'circular'
+                                });
+                              }
                             }}
                             className="h-8 text-sm"
                           />
