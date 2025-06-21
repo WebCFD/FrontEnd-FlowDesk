@@ -361,6 +361,7 @@ export default function Canvas2D({
   const [editingAirEntries, setEditingAirEntries] = useState<{
     index: number;
     entry: AirEntry;
+    position?: { x: number; y: number };
   }[]>([]);
 
   const [editingWall, setEditingWall] = useState<Wall | null>(null);
@@ -1235,14 +1236,10 @@ export default function Canvas2D({
     const airEntryInfo = findAirEntryAtLocation(point);
     if (airEntryInfo) {
       debugLog(`Double-click detected on air entry - opening air entry editor`);
-      // Check if dialog for this air entry is already open
-      const isAlreadyOpen = editingAirEntries.some(entry => entry.index === airEntryInfo.index);
-      if (!isAlreadyOpen) {
-        setEditingAirEntries(prev => [...prev, {
-          index: airEntryInfo.index,
-          entry: airEntryInfo.entry,
-        }]);
-      }
+      openAirEntryDialog({
+        index: airEntryInfo.index,
+        entry: airEntryInfo.entry,
+      });
       return;
     }
     
@@ -1688,7 +1685,7 @@ export default function Canvas2D({
           // Open dialog in "edit mode" for the just-created element
           // This makes the dialog function as parameter adjustment rather than creation
           // User perceives this as "configuring" the element they just placed
-          setEditingAirEntry({
+          openAirEntryDialog({
             index: airEntries.length, // Index of the newly added element
             entry: newAirEntry,
           });
@@ -3218,10 +3215,53 @@ export default function Canvas2D({
     setEditingAirEntries(prev => prev.filter(entry => entry.index !== index)); // Close dialog - element is preserved
   };
 
+  // Phase 2: Dialog Management Functions
+  const openAirEntryDialog = (airEntry: { index: number; entry: AirEntry }) => {
+    const isAlreadyOpen = editingAirEntries.some(entry => entry.index === airEntry.index);
+    if (!isAlreadyOpen) {
+      // Phase 3: Calculate position for new dialog
+      const dialogPosition = calculateDialogPosition(editingAirEntries.length);
+      setEditingAirEntries(prev => [...prev, { ...airEntry, position: dialogPosition }]);
+    }
+  };
+
+  // Phase 3: Dialog Positioning System
+  const calculateDialogPosition = (dialogCount: number) => {
+    const dialogWidth = 425;
+    const dialogHeight = 600;
+    const rightOffset = 20;
+    const topOffset = 40;
+    const cascadeOffset = 30;
+
+    // Start from top-right and cascade down/left
+    const baseX = typeof window !== 'undefined' ? (window.innerWidth - dialogWidth - rightOffset) : 0;
+    const baseY = topOffset;
+
+    const cascadeX = baseX - (cascadeOffset * dialogCount);
+    const cascadeY = baseY + (cascadeOffset * dialogCount);
+
+    // Bounds checking to keep dialogs within viewport
+    const maxX = typeof window !== 'undefined' ? (window.innerWidth - dialogWidth - 10) : cascadeX;
+    const maxY = typeof window !== 'undefined' ? (window.innerHeight - dialogHeight - 10) : cascadeY;
+
+    return {
+      x: Math.max(10, Math.min(cascadeX, maxX)),
+      y: Math.max(10, Math.min(cascadeY, maxY))
+    };
+  };
+
+  const closeAirEntryDialog = (airEntryIndex: number) => {
+    setEditingAirEntries(prev => prev.filter(entry => entry.index !== airEntryIndex));
+  };
+
+  const isDialogOpen = (airEntryIndex: number): boolean => {
+    return editingAirEntries.some(entry => entry.index === airEntryIndex);
+  };
+
   // Handle dialog X button close with eraser behavior
   const handleDialogXClose = (airEntryIndex: number) => {
     eraseAirEntryAtIndex(airEntryIndex);
-    setEditingAirEntries(prev => prev.filter(entry => entry.index !== airEntryIndex));
+    closeAirEntryDialog(airEntryIndex);
   };
 
 
@@ -3349,6 +3389,7 @@ export default function Canvas2D({
           key={`dialog-${editingAirEntry.index}`}
           type={editingAirEntry.entry.type}
           isOpen={true}
+          dialogPosition={editingAirEntry.position}
           onClose={() => setEditingAirEntries(prev => prev.filter((_, i) => i !== dialogIndex))} // Save Changes: Keep element, close dialog
           onCancel={() => {
             // X Button: Delete element using eraser logic, close dialog
