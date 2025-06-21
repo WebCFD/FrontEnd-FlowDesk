@@ -362,6 +362,11 @@ export default function Canvas2D({
     index: number;
     entry: AirEntry;
   } | null>(null);
+  const [openDialogs, setOpenDialogs] = useState<Array<{
+    id: string;
+    index: number;
+    entry: AirEntry;
+  }>>([]);
 
   const [editingWall, setEditingWall] = useState<Wall | null>(null);
   const [wallPropertiesDialogOpen, setWallPropertiesDialogOpen] = useState(false);
@@ -3211,6 +3216,69 @@ export default function Canvas2D({
 
     onAirEntriesUpdate?.(updatedAirEntries);
     setEditingAirEntry(null); // Close dialog - element is preserved
+  };
+
+  const openMultipleDialog = (index: number, entry: AirEntry) => {
+    // Check if dialog for this entry is already open
+    const existingDialog = openDialogs.find(d => d.index === index);
+    if (existingDialog) return; // Don't open duplicate
+    
+    const dialogId = `dialog_${index}_${Date.now()}`;
+    setOpenDialogs(prev => [...prev, { id: dialogId, index, entry }]);
+  };
+
+  const closeMultipleDialog = (dialogId: string) => {
+    setOpenDialogs(prev => prev.filter(d => d.id !== dialogId));
+  };
+
+  const handleMultipleDialogEdit = (
+    dialogId: string,
+    index: number,
+    data: {
+      width: number;
+      height: number;
+      distanceToFloor?: number;
+      shape?: 'rectangular' | 'circular';
+      properties?: {
+        state?: 'open' | 'closed';
+        temperature?: number;
+        flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
+        flowValue?: number;
+        flowIntensity?: 'low' | 'medium' | 'high';
+        airOrientation?: 'inflow' | 'outflow';
+      };
+    },
+  ) => {
+    const dialog = openDialogs.find(d => d.id === dialogId);
+    if (!dialog) return;
+
+    // Update the existing element in the array
+    const updatedAirEntries = [...airEntries];
+    updatedAirEntries[index] = {
+      ...dialog.entry,
+      dimensions: {
+        width: data.width,
+        height: data.height,
+        distanceToFloor: data.distanceToFloor,
+        ...(data.shape && { shape: data.shape }),
+      },
+      ...(data.properties && { properties: data.properties }),
+    };
+
+    onAirEntriesUpdate?.(updatedAirEntries);
+    // Note: Don't auto-close dialog for multiple mode
+  };
+
+  const eraseAirEntryFromMultipleDialog = (dialogId: string, index: number) => {
+    const updatedAirEntries = airEntries.filter((_, i) => i !== index);
+    onAirEntriesUpdate?.(updatedAirEntries);
+    closeMultipleDialog(dialogId);
+    
+    // Update indices for remaining dialogs since we removed an entry
+    setOpenDialogs(prev => prev.map(dialog => ({
+      ...dialog,
+      index: dialog.index > index ? dialog.index - 1 : dialog.index
+    })));
   };
 
   // Handle dialog X button close with eraser behavior
