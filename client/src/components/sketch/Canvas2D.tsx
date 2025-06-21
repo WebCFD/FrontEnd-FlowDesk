@@ -362,6 +362,7 @@ export default function Canvas2D({
     index: number;
     entry: AirEntry;
     position?: { x: number; y: number };
+    isCreating?: boolean;
   }[]>([]);
 
   const [editingWall, setEditingWall] = useState<Wall | null>(null);
@@ -1685,10 +1686,13 @@ export default function Canvas2D({
           // Open dialog in "edit mode" for the just-created element
           // This makes the dialog function as parameter adjustment rather than creation
           // User perceives this as "configuring" the element they just placed
-          openAirEntryDialog({
+          // Open dialog in "create mode" for the just-created element
+          setEditingAirEntries(prev => [...prev, {
             index: airEntries.length, // Index of the newly added element
             entry: newAirEntry,
-          });
+            position: calculateDialogPosition(prev.length),
+            isCreating: true // Mark as creation mode
+          }]);
         }
         return;
       }
@@ -3400,6 +3404,7 @@ export default function Canvas2D({
           type={editingAirEntry.entry.type}
           isOpen={true}
           dialogPosition={editingAirEntry.position}
+          isCreating={editingAirEntry.isCreating}
           onClose={() => closeAirEntryDialog(editingAirEntry.index)} // Save Changes: Keep element, close dialog
           onCancel={() => {
             // X Button: Delete element using eraser logic, close dialog
