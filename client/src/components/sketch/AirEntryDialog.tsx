@@ -221,7 +221,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         width: (values as any).width,
         height: (values as any).height,
         distanceToFloor: distanceToFloor,
-        shape: shape,
+        shape: (values as any).shape,
         properties: {
           state: isElementOpen ? 'open' : 'closed',
           temperature: elementTemperature,
@@ -348,7 +348,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     if (dialogOpen && props.type !== 'wall') {
       updatePropertiesRealTime();
     }
-  }, [(values as any).width, (values as any).height, distanceToFloor, shape, isElementOpen, elementTemperature, flowType, intensityLevel, customIntensity, airDirection, dialogOpen]);
+  }, [(values as any).width, (values as any).height, distanceToFloor, (values as any).shape, isElementOpen, elementTemperature, flowType, intensityLevel, customIntensity, airDirection, dialogOpen]);
 
   function getDefaultValues() {
     // Obtener valores iniciales según el tipo de props
