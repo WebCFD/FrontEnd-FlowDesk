@@ -215,6 +215,16 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     }
   };
 
+  // Función para obtener valor de intensidad según el nivel
+  const getIntensityValue = (level: 'high' | 'medium' | 'low') => {
+    switch (level) {
+      case 'high': return 1.0;
+      case 'medium': return 0.5;
+      case 'low': return 0.2;
+      default: return 0.5;
+    }
+  };
+
   // Función para actualizar propiedades en tiempo real
   const updatePropertiesRealTime = () => {
     if (props.type !== 'wall' && 'onPropertyUpdate' in props && props.onPropertyUpdate) {
