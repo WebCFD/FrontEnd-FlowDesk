@@ -362,19 +362,7 @@ export default function Canvas2D({
     index: number;
     entry: AirEntry;
   } | null>(null);
-  const [newAirEntryDetails, setNewAirEntryDetails] = useState<{
-    type: "window" | "door" | "vent";
-    position: Point;
-    line: Line;
-    wallContext?: {
-      wallId: string;
-      floorName: string;
-      wallStart: { x: number; y: number };
-      wallEnd: { x: number; y: number };
-      clickPosition: { x: number; y: number };
-      ceilingHeight: number;
-    };
-  } | null>(null);
+
   const [editingWall, setEditingWall] = useState<Wall | null>(null);
   const [wallPropertiesDialogOpen, setWallPropertiesDialogOpen] = useState(false);
   const [hoveredEndpoint, setHoveredEndpoint] = useState<{
@@ -1609,7 +1597,6 @@ export default function Canvas2D({
           const exactPoint = getPointOnLine(selectedLine, point);
 
           // Create the air entry immediately when wall is clicked
-          console.log('Creating AirEntry immediately on wall click');
           
           // Find the wall associated with this line to get wall ID and ceiling height
           const lineId = selectedLine.id?.toString() || lineToUniqueId(selectedLine);
@@ -1687,13 +1674,9 @@ export default function Canvas2D({
             }
           } as any;
 
-          console.log('🟢 WALL CLICK: Created AirEntry:', newAirEntry);
-          console.log('🟢 WALL CLICK: Adding element to array with ID:', newAirEntry.id);
-
           // Add to airEntries array immediately
           const newAirEntries = [...airEntries, newAirEntry];
           onAirEntriesUpdate?.(newAirEntries);
-          console.log('🟢 WALL CLICK: Array updated, total elements:', newAirEntries.length);
 
           // Set editing mode for the newly created element
           setEditingAirEntry({
@@ -3195,11 +3178,7 @@ export default function Canvas2D({
       };
     },
   ) => {
-    console.log('🟡 EDIT HANDLER: Called for index:', index, 'with data:', data);
-    if (!editingAirEntry) {
-      console.log('🟡 EDIT HANDLER: Early return - no editingAirEntry');
-      return;
-    }
+    if (!editingAirEntry) return;
 
     const updatedAirEntries = [...airEntries];
     updatedAirEntries[index] = {
@@ -3213,104 +3192,11 @@ export default function Canvas2D({
       ...(data.properties && { properties: data.properties }),
     };
 
-    console.log('🟡 EDIT HANDLER: Updated element at index:', index);
-    console.log('🟡 EDIT HANDLER: Updated element:', updatedAirEntries[index]);
-    
     onAirEntriesUpdate?.(updatedAirEntries);
-    console.log('🟡 EDIT HANDLER: Array updated, total elements:', updatedAirEntries.length);
-    
     setEditingAirEntry(null);
-    console.log('🟡 EDIT HANDLER: Cleared editingAirEntry');
   };
 
-  const handleNewAirEntryConfirm = (data: {
-    width: number;
-    height: number;
-    distanceToFloor?: number;
-    shape?: 'rectangular' | 'circular';
-    properties?: {
-      state?: 'open' | 'closed';
-      temperature?: number;
-      flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
-      flowValue?: number;
-      flowIntensity?: 'low' | 'medium' | 'high';
-      airOrientation?: 'inflow' | 'outflow';
-    };
-  }) => {
-    console.log('🔴 CONFIRM HANDLER: Called with data:', data);
-    if (!newAirEntryDetails || !currentAirEntry) {
-      console.log('🔴 CONFIRM HANDLER: Early return - no newAirEntryDetails or currentAirEntry');
-      return;
-    }
 
-    // Convert dimensions from cm to pixels
-    const pixelDimensions = {
-      width: data.width / PIXELS_TO_CM,
-      height: data.height / PIXELS_TO_CM,
-      distanceToFloor: data.distanceToFloor
-        ? data.distanceToFloor / PIXELS_TO_CM
-        : undefined,
-    };
-
-    // Generate unique ID with floor format
-    const floorPrefix = currentFloor === 'ground' ? '0F' : 
-                       currentFloor === 'first' ? '1F' :
-                       currentFloor === 'second' ? '2F' :
-                       currentFloor === 'third' ? '3F' :
-                       currentFloor === 'fourth' ? '4F' :
-                       currentFloor === 'fifth' ? '5F' : '0F';
-    
-    const typeCounters = { window: 1, door: 1, vent: 1 };
-    
-    // Count existing entries to get next available number
-    airEntries.forEach(entry => {
-      const anyEntry = entry as any;
-      if (anyEntry.id) {
-        // Look for new format: window_0F_1
-        let match = anyEntry.id.match(new RegExp(`^(window|door|vent)_${floorPrefix}_(\\d+)$`));
-        
-        // If not found, look for old format: window_1 (for compatibility)
-        if (!match) {
-          match = anyEntry.id.match(/^(window|door|vent)_(\d+)$/);
-        }
-        
-        if (match) {
-          const type = match[1] as keyof typeof typeCounters;
-          const num = parseInt(match[2]);
-          if (typeCounters[type] <= num) {
-            typeCounters[type] = num + 1;
-          }
-        }
-      }
-    });
-
-    const newAirEntry: AirEntry = {
-      type: currentAirEntry,
-      position: calculatePositionAlongWall(
-        newAirEntryDetails.line,
-        newAirEntryDetails.position,
-      ),
-      dimensions: {
-        width: data.width,
-        height: data.height,
-        distanceToFloor: data.distanceToFloor,
-        ...(data.shape && { shape: data.shape }),
-      },
-      line: newAirEntryDetails.line,
-      lineId: newAirEntryDetails.line.id,
-      ...(data.properties && { properties: data.properties }),
-      id: `${currentAirEntry}_${floorPrefix}_${typeCounters[currentAirEntry]}`,
-    } as any;
-
-    console.log('🔴 CONFIRM HANDLER: Created AirEntry:', newAirEntry);
-    console.log('🔴 CONFIRM HANDLER: Adding element to array with ID:', newAirEntry.id);
-    
-    onAirEntriesUpdate?.([...airEntries, newAirEntry]);
-    console.log('🔴 CONFIRM HANDLER: Array updated, total elements:', [...airEntries, newAirEntry].length);
-    
-    setNewAirEntryDetails(null);
-    console.log('🔴 CONFIRM HANDLER: Cleared newAirEntryDetails');
-  };
 
   const handleContextMenu = (e: Event) => {
     console.log("Context menu prevented");
@@ -3485,16 +3371,7 @@ export default function Canvas2D({
           }}
         />
       )}
-      {/* Keep existing newAirEntryDetails dialog for legacy support */}
-      {newAirEntryDetails && (
-        <AirEntryDialog
-          type={newAirEntryDetails.type}
-          isOpen={true}
-          onClose={() => setNewAirEntryDetails(null)}
-          onConfirm={handleNewAirEntryConfirm as any}
-          wallContext={newAirEntryDetails.wallContext}
-        />
-      )}
+
 
       {editingPoint && (
         <CoordinateEditorDialog
