@@ -26,6 +26,7 @@ interface AirEntryDialogProps {
   type: 'window' | 'door' | 'vent';
   isOpen: boolean;
   onClose: () => void;
+  onCancel?: () => void; // Optional separate handler for X button
   onConfirm: (data: {
     width: number;
     height: number;
@@ -111,6 +112,7 @@ const wallDefaults = {
 
 export default function AirEntryDialog(props: PropertyDialogProps) {
   const { type, isOpen: dialogOpen, onClose, isEditing = false } = props;
+  const onCancel = 'onCancel' in props ? props.onCancel : undefined;
   const { updateAirEntryProperties, floors } = useRoomStore();
   
   // Estado unificado para manejar tanto dimensiones como temperatura
@@ -543,7 +545,16 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
 
   return (
-    <Dialog open={dialogOpen} onOpenChange={onClose} modal={false}>
+    <Dialog open={dialogOpen} onOpenChange={(open) => {
+      if (!open) {
+        // Dialog is being closed - check if we have a separate cancel handler
+        if (onCancel) {
+          onCancel(); // Use cancel handler for X button
+        } else {
+          onClose(); // Fallback to regular close
+        }
+      }
+    }} modal={false}>
       <DialogContent 
         className="sm:max-w-[425px]"
         style={{
