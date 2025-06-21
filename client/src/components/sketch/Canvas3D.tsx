@@ -1221,6 +1221,12 @@ export default function Canvas3D({
       const model = createFurnitureModel(furnitureItem, scene, onDeleteFurniture);
       
       if (model) {
+        console.log('🪑 Furniture added to scene:', {
+          id: furnitureItem.id,
+          type: furnitureItem.type,
+          userData: model.userData
+        });
+        
         // Add furniture via callback
         if (onFurnitureAdd && typeof onFurnitureAdd === 'function') {
           onFurnitureAdd(surfaceDetection.floorName, furnitureItem);

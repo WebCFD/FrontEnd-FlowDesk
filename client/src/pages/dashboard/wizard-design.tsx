@@ -1883,6 +1883,18 @@ export default function WizardDesign() {
       let totalObjects = 0;
       sceneRef.traverse((object) => {
         totalObjects++;
+        
+        // Log all objects with userData to understand the scene structure
+        if (object.userData && Object.keys(object.userData).length > 0) {
+          console.log('🔍 Object with userData:', {
+            type: object.userData.type,
+            furnitureType: object.userData.furnitureType,
+            furnitureId: object.userData.furnitureId,
+            name: object.userData.furnitureName || object.userData.name,
+            allUserData: object.userData
+          });
+        }
+        
         if (object.userData?.type === 'furniture') {
           console.log('🧹 Found furniture object:', {
             type: object.userData.type,
