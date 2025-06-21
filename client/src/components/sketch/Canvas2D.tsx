@@ -1596,7 +1596,10 @@ export default function Canvas2D({
           const selectedLine = selectedLines[0];
           const exactPoint = getPointOnLine(selectedLine, point);
 
-          // Create the air entry immediately when wall is clicked
+          // UNCONVENTIONAL WORKFLOW: Create element immediately on wall click
+          // This provides instant visual feedback to users - they see the element appear right away
+          // The dialog then functions as an "edit mode" rather than "creation mode"
+          // Benefits: Better UX, immediate feedback, intuitive workflow
           
           // Find the wall associated with this line to get wall ID and ceiling height
           const lineId = selectedLine.id?.toString() || lineToUniqueId(selectedLine);
@@ -1678,7 +1681,9 @@ export default function Canvas2D({
           const newAirEntries = [...airEntries, newAirEntry];
           onAirEntriesUpdate?.(newAirEntries);
 
-          // Set editing mode for the newly created element
+          // Open dialog in "edit mode" for the just-created element
+          // This makes the dialog function as parameter adjustment rather than creation
+          // User perceives this as "configuring" the element they just placed
           setEditingAirEntry({
             index: airEntries.length, // Index of the newly added element
             entry: newAirEntry,
@@ -3161,12 +3166,17 @@ export default function Canvas2D({
     setIgnoreNextClick(false);
   };
 
-  // Reusable eraser function that mimics eraser tool behavior
+  // ERASER LOGIC: Reusable function that mimics the eraser tool behavior
+  // This ensures consistent deletion logic between eraser tool and dialog cancel
+  // Used for: 1) Eraser tool clicks, 2) Dialog X button (cancel creation)
   const eraseAirEntryAtIndex = (index: number) => {
     const newAirEntries = airEntries.filter((_, i) => i !== index);
     onAirEntriesUpdate?.(newAirEntries);
   };
 
+  // SAVE CHANGES LOGIC: Updates existing element properties
+  // This is called for BOTH newly created elements (from wall click) and existing elements (from double-click)
+  // The workflow treats both cases identically - just updating an existing element in the array
   const handleAirEntryEdit = (
     index: number,
     data: {
@@ -3186,6 +3196,7 @@ export default function Canvas2D({
   ) => {
     if (!editingAirEntry) return;
 
+    // Update the existing element in the array (whether just created or pre-existing)
     const updatedAirEntries = [...airEntries];
     updatedAirEntries[index] = {
       ...editingAirEntry.entry,
@@ -3199,7 +3210,7 @@ export default function Canvas2D({
     };
 
     onAirEntriesUpdate?.(updatedAirEntries);
-    setEditingAirEntry(null);
+    setEditingAirEntry(null); // Close dialog - element is preserved
   };
 
   // Handle dialog X button close with eraser behavior
@@ -3334,14 +3345,17 @@ export default function Canvas2D({
         <AirEntryDialog
           type={editingAirEntry.entry.type}
           isOpen={true}
-          onClose={() => setEditingAirEntry(null)}
+          onClose={() => setEditingAirEntry(null)} // Save Changes: Keep element, close dialog
           onCancel={() => {
+            // X Button: Delete element using eraser logic, close dialog
+            // This gives users the feeling that "canceling" removes the element they just placed
             if (editingAirEntry) {
               eraseAirEntryAtIndex(editingAirEntry.index);
             }
             setEditingAirEntry(null);
           }}
           onConfirm={(data) => {
+            // Save Changes: Update element properties and close dialog
             handleAirEntryEdit(editingAirEntry.index, data as any);
           }}
           initialValues={{

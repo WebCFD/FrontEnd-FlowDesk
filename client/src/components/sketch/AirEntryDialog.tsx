@@ -547,11 +547,13 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   return (
     <Dialog open={dialogOpen} onOpenChange={(open) => {
       if (!open) {
-        // Dialog is being closed - check if we have a separate cancel handler
+        // DIALOG CLOSE LOGIC: Distinguish between X button and Save Changes
+        // X button (onCancel): Delete element - user feels like they're "canceling creation"
+        // Save Changes (onClose): Keep element - user feels like they're "confirming creation"
         if (onCancel) {
-          onCancel(); // Use cancel handler for X button
+          onCancel(); // X button clicked - delete element using eraser logic
         } else {
-          onClose(); // Fallback to regular close
+          onClose(); // Save Changes or fallback - keep element
         }
       }
     }} modal={false}>
