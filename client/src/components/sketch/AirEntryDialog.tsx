@@ -68,6 +68,21 @@ interface AirEntryDialogProps {
   };
   // Callback para actualización en tiempo real
   onPositionUpdate?: (newPosition: { x: number; y: number }) => void;
+  // Callback para actualización en tiempo real de todas las propiedades
+  onPropertyUpdate?: (data: {
+    width: number;
+    height: number;
+    distanceToFloor?: number;
+    shape?: 'rectangular' | 'circular';
+    properties?: {
+      state?: 'open' | 'closed';
+      temperature?: number;
+      flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
+      flowValue?: number;
+      flowIntensity?: 'low' | 'medium' | 'high';
+      airOrientation?: 'inflow' | 'outflow';
+    };
+  }) => void;
   // Campos necesarios para persistir propiedades
   airEntryIndex?: number;
   currentFloor?: string;
@@ -196,6 +211,26 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     const newPosition = calculatePositionFromPercentage(newPercentage);
     if (newPosition && props.type !== 'wall' && 'onPositionUpdate' in props && props.onPositionUpdate) {
       props.onPositionUpdate(newPosition);
+    }
+  };
+
+  // Función para actualizar propiedades en tiempo real
+  const updatePropertiesRealTime = () => {
+    if (props.type !== 'wall' && 'onPropertyUpdate' in props && props.onPropertyUpdate) {
+      props.onPropertyUpdate({
+        width: width,
+        height: height,
+        distanceToFloor: distanceToFloor,
+        shape: shape,
+        properties: {
+          state: isElementOpen ? 'open' : 'closed',
+          temperature: elementTemperature,
+          flowType: flowType,
+          flowValue: intensityLevel === 'custom' ? customIntensity : getIntensityValue(intensityLevel),
+          flowIntensity: intensityLevel,
+          airOrientation: airDirection,
+        }
+      });
     }
   };
 

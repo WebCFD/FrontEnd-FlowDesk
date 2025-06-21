@@ -3366,9 +3366,11 @@ export default function Canvas2D({
             
             setEditingAirEntry(null);
           }}
-          onConfirm={(data) =>
-            handleAirEntryEdit(editingAirEntry.index, data as any)
-          }
+          onConfirm={() => {
+            // Step 3: Just close dialog - element already exists and has been updated in real-time
+            console.log('Save Changes clicked - just closing dialog');
+            setEditingAirEntry(null);
+          }}
           initialValues={{
             ...editingAirEntry.entry.dimensions,
             shape: (editingAirEntry.entry.dimensions as any).shape,
