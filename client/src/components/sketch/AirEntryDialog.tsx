@@ -581,9 +581,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           <DialogDescription>{descriptions[type]}</DialogDescription>
           {onCancel && (
             <button
-              className="absolute right-4 top-4 rounded-sm opacity-70 hover:opacity-100 transition-opacity text-red-500 hover:text-red-600"
+              className="absolute -right-2 -top-2 rounded-sm opacity-70 hover:opacity-100 transition-opacity text-red-500 hover:text-red-600 bg-white border border-red-200 hover:border-red-300 shadow-sm"
               onClick={onCancel}
               type="button"
+              style={{ zIndex: 60 }}
             >
               <X className="h-4 w-4" />
               <span className="sr-only">Close</span>
