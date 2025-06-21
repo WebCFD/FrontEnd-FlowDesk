@@ -1235,10 +1235,14 @@ export default function Canvas2D({
     const airEntryInfo = findAirEntryAtLocation(point);
     if (airEntryInfo) {
       debugLog(`Double-click detected on air entry - opening air entry editor`);
-      setEditingAirEntry({
-        index: airEntryInfo.index,
-        entry: airEntryInfo.entry,
-      });
+      // Check if dialog for this air entry is already open
+      const isAlreadyOpen = editingAirEntries.some(entry => entry.index === airEntryInfo.index);
+      if (!isAlreadyOpen) {
+        setEditingAirEntries(prev => [...prev, {
+          index: airEntryInfo.index,
+          entry: airEntryInfo.entry,
+        }]);
+      }
       return;
     }
     
@@ -3194,12 +3198,13 @@ export default function Canvas2D({
       };
     },
   ) => {
-    if (!editingAirEntry) return;
+    const editingEntry = editingAirEntries.find(entry => entry.index === index);
+    if (!editingEntry) return;
 
     // Update the existing element in the array (whether just created or pre-existing)
     const updatedAirEntries = [...airEntries];
     updatedAirEntries[index] = {
-      ...editingAirEntry.entry,
+      ...editingEntry.entry,
       dimensions: {
         width: data.width,
         height: data.height,
@@ -3210,15 +3215,13 @@ export default function Canvas2D({
     };
 
     onAirEntriesUpdate?.(updatedAirEntries);
-    setEditingAirEntry(null); // Close dialog - element is preserved
+    setEditingAirEntries(prev => prev.filter(entry => entry.index !== index)); // Close dialog - element is preserved
   };
 
   // Handle dialog X button close with eraser behavior
-  const handleDialogXClose = () => {
-    if (editingAirEntry) {
-      eraseAirEntryAtIndex(editingAirEntry.index);
-    }
-    setEditingAirEntry(null);
+  const handleDialogXClose = (airEntryIndex: number) => {
+    eraseAirEntryAtIndex(airEntryIndex);
+    setEditingAirEntries(prev => prev.filter(entry => entry.index !== airEntryIndex));
   };
 
 
@@ -3432,7 +3435,6 @@ export default function Canvas2D({
           }}
         />
       ))}
-
 
       {editingPoint && (
         <CoordinateEditorDialog
