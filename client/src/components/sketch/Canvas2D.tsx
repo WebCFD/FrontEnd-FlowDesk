@@ -1659,11 +1659,19 @@ export default function Canvas2D({
 
           // Add to airEntries array immediately
           const updatedAirEntries = [...airEntries, newAirEntry];
+          console.log('🔹 CREATION LOG: About to add new AirEntry');
+          console.log('🔹 Current airEntries length:', airEntries.length);
+          console.log('🔹 New entry:', newAirEntry);
+          console.log('🔹 Updated array length:', updatedAirEntries.length);
+          console.log('🔹 New entry index will be:', updatedAirEntries.length - 1);
+          
           onAirEntriesUpdate?.(updatedAirEntries);
 
           // Open dialog in editing mode
+          const newIndex = updatedAirEntries.length - 1;
+          console.log('🔹 Opening dialog with index:', newIndex);
           setEditingAirEntry({
-            index: updatedAirEntries.length - 1,
+            index: newIndex,
             entry: newAirEntry,
             isNewlyCreated: true
           });
@@ -3162,9 +3170,29 @@ export default function Canvas2D({
       };
     },
   ) => {
-    if (!editingAirEntry) return;
+    console.log('🔸 CONFIRM LOG: handleAirEntryEdit called');
+    console.log('🔸 Target index:', index);
+    console.log('🔸 Current airEntries length:', airEntries.length);
+    console.log('🔸 editingAirEntry:', editingAirEntry);
+    console.log('🔸 Data received:', data);
+    
+    if (!editingAirEntry) {
+      console.log('🔸 ERROR: No editingAirEntry found!');
+      return;
+    }
+
+    console.log('🔸 Current airEntries before update:');
+    airEntries.forEach((entry, i) => {
+      console.log(`🔸   [${i}]:`, (entry as any).id, entry.type);
+    });
 
     const updatedAirEntries = [...airEntries];
+    
+    if (index >= updatedAirEntries.length) {
+      console.log('🔸 ERROR: Index out of bounds!', index, 'vs length', updatedAirEntries.length);
+      return;
+    }
+    
     updatedAirEntries[index] = {
       ...editingAirEntry.entry,
       dimensions: {
@@ -3176,19 +3204,32 @@ export default function Canvas2D({
       ...(data.properties && { properties: data.properties }),
     };
 
+    console.log('🔸 Updated entry at index', index, ':', updatedAirEntries[index]);
+    console.log('🔸 Final array length:', updatedAirEntries.length);
+
     onAirEntriesUpdate?.(updatedAirEntries);
     setEditingAirEntry(null);
+    console.log('🔸 CONFIRM LOG: Process completed');
   };
 
   const handleAirEntryCancel = () => {
+    console.log('🔺 CANCEL LOG: handleAirEntryCancel called');
+    console.log('🔺 editingAirEntry:', editingAirEntry);
+    
     if (editingAirEntry?.isNewlyCreated) {
+      console.log('🔺 Removing newly created element at index:', editingAirEntry.index);
+      console.log('🔺 Current airEntries length:', airEntries.length);
+      
       // Remove the newly created element
       const updatedAirEntries = airEntries.filter(
         (_, i) => i !== editingAirEntry.index
       );
+      
+      console.log('🔺 New array length after removal:', updatedAirEntries.length);
       onAirEntriesUpdate?.(updatedAirEntries);
     }
     setEditingAirEntry(null);
+    console.log('🔺 CANCEL LOG: Process completed');
   };
 
   const handleContextMenu = (e: Event) => {
