@@ -2926,7 +2926,7 @@ export default function Canvas2D({
     // First check for air entries (existing functionality)
     const airEntryInfo = findAirEntryAtLocation(clickPoint);
     if (airEntryInfo) {
-      setEditingAirEntry({
+      openAirEntryDialog({
         index: airEntryInfo.index,
         entry: airEntryInfo.entry,
       });
