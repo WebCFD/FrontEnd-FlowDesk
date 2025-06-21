@@ -552,18 +552,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
 
   return (
-    <Dialog open={dialogOpen} onOpenChange={(open) => {
-      if (!open) {
-        // DIALOG CLOSE LOGIC: Distinguish between X button and Save Changes
-        // X button (onCancel): Delete element - user feels like they're "canceling creation"
-        // Save Changes (onClose): Keep element - user feels like they're "confirming creation"
-        if (onCancel) {
-          onCancel(); // X button clicked - delete element using eraser logic
-        } else {
-          onClose(); // Save Changes or fallback - keep element
-        }
-      }
-    }}>
+    <Dialog open={dialogOpen} modal={false} onOpenChange={() => {}}>
       <DialogContent 
         className="sm:max-w-[425px]"
         style={{
