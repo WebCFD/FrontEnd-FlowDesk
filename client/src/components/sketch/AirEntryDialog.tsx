@@ -68,6 +68,7 @@ interface AirEntryDialogProps {
   };
   // Callback para actualización en tiempo real
   onPositionUpdate?: (newPosition: { x: number; y: number }) => void;
+  onDimensionsUpdate?: (dimensions: { width: number; height: number; distanceToFloor?: number }) => void;
   // Campos necesarios para persistir propiedades
   airEntryIndex?: number;
   currentFloor?: string;
@@ -724,6 +725,16 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               // Redondear a 2 decimales máximo
                               const rounded = Math.round(value * 100) / 100;
                               setDistanceToFloor(rounded);
+                              
+                              // Trigger real-time preview update
+                              const airEntryProps = props as AirEntryDialogProps;
+                              if (airEntryProps.onDimensionsUpdate) {
+                                airEntryProps.onDimensionsUpdate({
+                                  width: (values as any).width || 80,
+                                  height: (values as any).height || 120,
+                                  distanceToFloor: rounded
+                                });
+                              }
                             }
                           }}
                           className={`h-8 text-sm ${type === 'door' ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
@@ -852,7 +863,20 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               id="width"
                               type="number"
                               value={(values as { width: number }).width}
-                              onChange={(e) => setValues(prev => ({ ...prev, width: Number(e.target.value) }))}
+                              onChange={(e) => {
+                                const newWidth = Number(e.target.value);
+                                setValues(prev => ({ ...prev, width: newWidth }));
+                                
+                                // Trigger real-time preview update
+                                const airEntryProps = props as AirEntryDialogProps;
+                                if (airEntryProps.onDimensionsUpdate) {
+                                  airEntryProps.onDimensionsUpdate({
+                                    width: newWidth,
+                                    height: (values as any).height || 120,
+                                    distanceToFloor: distanceToFloor
+                                  });
+                                }
+                              }}
                               className="h-8 text-sm"
                             />
                             <span className="text-xs text-slate-500">cm</span>
@@ -879,7 +903,20 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               id="height"
                               type="number"
                               value={(values as { height: number }).height}
-                              onChange={(e) => setValues(prev => ({ ...prev, height: Number(e.target.value) }))}
+                              onChange={(e) => {
+                                const newHeight = Number(e.target.value);
+                                setValues(prev => ({ ...prev, height: newHeight }));
+                                
+                                // Trigger real-time preview update
+                                const airEntryProps = props as AirEntryDialogProps;
+                                if (airEntryProps.onDimensionsUpdate) {
+                                  airEntryProps.onDimensionsUpdate({
+                                    width: (values as any).width || 80,
+                                    height: newHeight,
+                                    distanceToFloor: distanceToFloor
+                                  });
+                                }
+                              }}
                               className="h-8 text-sm"
                             />
                             <span className="text-xs text-slate-500">cm</span>
