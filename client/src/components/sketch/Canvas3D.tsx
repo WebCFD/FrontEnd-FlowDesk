@@ -2792,7 +2792,10 @@ export default function Canvas3D({
 
     // Notify parent component that scene is ready (for both RSP and wizard design)
     if (onSceneReady) {
+      console.log('🎬 Canvas3D: Calling onSceneReady callback with scene');
       onSceneReady(scene, renderer, camera);
+    } else {
+      console.log('🎬 Canvas3D: No onSceneReady callback provided');
     }
 
     // Handle resize

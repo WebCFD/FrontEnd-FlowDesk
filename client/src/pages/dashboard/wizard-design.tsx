@@ -1872,20 +1872,38 @@ export default function WizardDesign() {
     customFurnitureStore.clearAllDefinitions();
     
     // PASO 2.2: Clear all furniture from 3D scene
+    console.log('🧹 Erase Design: Starting 3D scene furniture cleanup...');
+    console.log('🧹 Scene reference available:', !!sceneRef);
+    
     if (sceneRef) {
       const furnitureObjectsToRemove: THREE.Object3D[] = [];
       
-      // Find all furniture objects in the scene
+      // First, let's see what objects are in the scene
+      console.log('🧹 Scanning scene for furniture objects...');
+      let totalObjects = 0;
       sceneRef.traverse((object) => {
-        if (object.userData.type === 'furniture') {
+        totalObjects++;
+        if (object.userData?.type === 'furniture') {
+          console.log('🧹 Found furniture object:', {
+            type: object.userData.type,
+            furnitureType: object.userData.furnitureType,
+            furnitureId: object.userData.furnitureId,
+            name: object.userData.furnitureName
+          });
           furnitureObjectsToRemove.push(object);
         }
       });
       
+      console.log(`🧹 Total objects in scene: ${totalObjects}`);
+      console.log(`🧹 Furniture objects found: ${furnitureObjectsToRemove.length}`);
+      
       // Remove each furniture object with proper cleanup
-      furnitureObjectsToRemove.forEach((furnitureGroup) => {
+      furnitureObjectsToRemove.forEach((furnitureGroup, index) => {
+        console.log(`🧹 Removing furniture ${index + 1}/${furnitureObjectsToRemove.length}:`, furnitureGroup.userData);
+        
         // Special cleanup for vents with special rendering properties
         if (furnitureGroup.userData.furnitureType === 'vent') {
+          console.log('🧹 Special vent cleanup for:', furnitureGroup.userData.furnitureId);
           furnitureGroup.traverse((child) => {
             if (child instanceof THREE.Mesh) {
               // Dispose geometry and material to clear WebGL state
@@ -1905,9 +1923,12 @@ export default function WizardDesign() {
         
         // Remove furniture object from scene
         sceneRef.remove(furnitureGroup);
+        console.log(`🧹 Removed furniture object:`, furnitureGroup.userData.furnitureId);
       });
       
-      console.log(`Erase Design: Removed ${furnitureObjectsToRemove.length} furniture objects from 3D scene`);
+      console.log(`🧹 Erase Design: Removed ${furnitureObjectsToRemove.length} furniture objects from 3D scene`);
+    } else {
+      console.log('❌ Erase Design: No scene reference available for furniture cleanup');
     }
     
     // PASO 3: CRÍTICO - Sincronizar currentFloor del store con ground
@@ -2411,7 +2432,11 @@ export default function WizardDesign() {
               onUpdateAirEntry={handleUpdateAirEntryFrom3D}
               onDeleteAirEntry={handleDeleteAirEntryFrom3D}
               onViewChange={handleViewChange}
-              onSceneReady={(scene) => setSceneRef(scene)}
+              onSceneReady={(scene) => {
+                console.log('🎬 Canvas3D scene ready callback triggered, scene:', !!scene);
+                setSceneRef(scene);
+                console.log('🎬 Scene reference set in wizard state');
+              }}
               onFurnitureAdd={handleFurnitureAdd}
               onUpdateFurniture={handleFurnitureUpdate}
               onFurnitureDelete={handleFurnitureDelete}
