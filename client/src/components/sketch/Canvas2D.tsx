@@ -358,10 +358,10 @@ export default function Canvas2D({
     measurement: null,
     stairPolygon: null, // Add this line
   });
-  const [editingAirEntry, setEditingAirEntry] = useState<{
+  const [editingAirEntries, setEditingAirEntries] = useState<{
     index: number;
     entry: AirEntry;
-  } | null>(null);
+  }[]>([]);
 
   const [editingWall, setEditingWall] = useState<Wall | null>(null);
   const [wallPropertiesDialogOpen, setWallPropertiesDialogOpen] = useState(false);
@@ -3341,18 +3341,17 @@ export default function Canvas2D({
           <Move className="h-4 w-4" />
         </Button>
       </div>
-      {editingAirEntry && (
+      {editingAirEntries.map((editingAirEntry, dialogIndex) => (
         <AirEntryDialog
+          key={`dialog-${editingAirEntry.index}`}
           type={editingAirEntry.entry.type}
           isOpen={true}
-          onClose={() => setEditingAirEntry(null)} // Save Changes: Keep element, close dialog
+          onClose={() => setEditingAirEntries(prev => prev.filter((_, i) => i !== dialogIndex))} // Save Changes: Keep element, close dialog
           onCancel={() => {
             // X Button: Delete element using eraser logic, close dialog
             // This gives users the feeling that "canceling" removes the element they just placed
-            if (editingAirEntry) {
-              eraseAirEntryAtIndex(editingAirEntry.index);
-            }
-            setEditingAirEntry(null);
+            eraseAirEntryAtIndex(editingAirEntry.index);
+            setEditingAirEntries(prev => prev.filter((_, i) => i !== dialogIndex));
           }}
           onConfirm={(data) => {
             // Save Changes: Update element properties and close dialog
@@ -3395,13 +3394,15 @@ export default function Canvas2D({
             onAirEntriesUpdate?.(updatedAirEntries);
             
             // También actualizar el estado local para que el diálogo mantenga la referencia correcta
-            setEditingAirEntry({
-              ...editingAirEntry,
-              entry: {
-                ...editingAirEntry.entry,
-                position: newPosition
-              }
-            });
+            setEditingAirEntries(prev => prev.map((item, i) => 
+              i === dialogIndex ? {
+                ...item,
+                entry: {
+                  ...item.entry,
+                  position: newPosition
+                }
+              } : item
+            ));
           }}
           onDimensionsUpdate={(newDimensions) => {
             // Actualizar las dimensiones del Air Entry en tiempo real
@@ -3416,19 +3417,21 @@ export default function Canvas2D({
             onAirEntriesUpdate?.(updatedAirEntries);
             
             // También actualizar el estado local para que el diálogo mantenga la referencia correcta
-            setEditingAirEntry({
-              ...editingAirEntry,
-              entry: {
-                ...editingAirEntry.entry,
-                dimensions: {
-                  ...editingAirEntry.entry.dimensions,
-                  ...newDimensions
+            setEditingAirEntries(prev => prev.map((item, i) => 
+              i === dialogIndex ? {
+                ...item,
+                entry: {
+                  ...item.entry,
+                  dimensions: {
+                    ...item.entry.dimensions,
+                    ...newDimensions
+                  }
                 }
-              }
-            });
+              } : item
+            ));
           }}
         />
-      )}
+      ))}
 
 
       {editingPoint && (
