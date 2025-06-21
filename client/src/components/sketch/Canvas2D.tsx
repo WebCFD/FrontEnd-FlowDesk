@@ -3412,8 +3412,39 @@ export default function Canvas2D({
               ...editingAirEntry,
               entry: {
                 ...editingAirEntry.entry,
-                position: newPosition
-              }
+                position: newPosition,
+              },
+            });
+          }}
+          onPropertyUpdate={(data) => {
+            // Actualizar todas las propiedades del Air Entry en tiempo real
+            console.log('Real-time property update:', data);
+            const updatedAirEntries = [...airEntries];
+            updatedAirEntries[editingAirEntry.index] = {
+              ...editingAirEntry.entry,
+              dimensions: {
+                width: data.width,
+                height: data.height,
+                distanceToFloor: data.distanceToFloor,
+                shape: data.shape,
+              },
+              properties: data.properties,
+            };
+            onAirEntriesUpdate?.(updatedAirEntries);
+            
+            // También actualizar el estado local
+            setEditingAirEntry({
+              ...editingAirEntry,
+              entry: {
+                ...editingAirEntry.entry,
+                dimensions: {
+                  width: data.width,
+                  height: data.height,
+                  distanceToFloor: data.distanceToFloor,
+                  shape: data.shape,
+                },
+                properties: data.properties,
+              },
             });
           }}
         />

@@ -343,6 +343,13 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     }
   }, [(values as any).height, type]);
 
+  // Actualizar propiedades en tiempo real cuando cualquier valor cambie
+  useEffect(() => {
+    if (dialogOpen && props.type !== 'wall') {
+      updatePropertiesRealTime();
+    }
+  }, [width, height, distanceToFloor, shape, isElementOpen, elementTemperature, flowType, intensityLevel, customIntensity, airDirection, dialogOpen]);
+
   function getDefaultValues() {
     // Obtener valores iniciales según el tipo de props
     const initialValues = props.type === 'wall' 
