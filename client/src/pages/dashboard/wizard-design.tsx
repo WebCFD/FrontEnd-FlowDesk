@@ -316,6 +316,9 @@ export default function WizardDesign() {
   const [isEraserMode, setIsEraserMode] = useState(false);
   const [isFurnitureEraserMode, setIsFurnitureEraserMode] = useState(false);
 
+  // Reference to the 3D scene for furniture cleanup
+  const [sceneRef, setSceneRef] = useState<THREE.Scene | null>(null);
+
   // Estado para el diálogo de datos de simulación
   const [showSimulationDataDialog, setShowSimulationDataDialog] =
     useState(false);
