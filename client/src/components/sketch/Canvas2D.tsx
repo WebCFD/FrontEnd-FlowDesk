@@ -3366,7 +3366,9 @@ export default function Canvas2D({
             
             setEditingAirEntry(null);
           }}
-          onConfirm={handleNewAirEntryConfirm}
+          onConfirm={(data) =>
+            handleAirEntryEdit(editingAirEntry.index, data as any)
+          }
           initialValues={{
             ...editingAirEntry.entry.dimensions,
             shape: (editingAirEntry.entry.dimensions as any).shape,
