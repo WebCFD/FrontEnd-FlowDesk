@@ -94,6 +94,14 @@ interface Canvas3DProps {
   allowAirEntryEditing?: boolean; // New: allows AirEntry editing even in presentation mode
   lightingIntensity?: number; // New: lighting intensity control
   floorParameters?: Record<string, { ceilingHeight: number; floorDeck: number }>;
+  // Phase 1: Add walls support for AirEntry dialog unification
+  walls?: Array<{
+    id: string;
+    lineRef: string;
+    startPoint: { x: number; y: number };
+    endPoint: { x: number; y: number };
+    properties: { temperature: number };
+  }>;
 
   onUpdateAirEntry?: (
     floorName: string,
@@ -1253,10 +1261,18 @@ export default function Canvas3D({
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<TrackballControls | null>(null);
   const needsRenderRef = useRef<boolean>(true);
-  // State for editing air entries
+  // State for editing air entries - Phase 2: Extended with wall context
   const [editingAirEntry, setEditingAirEntry] = useState<{
     index: number;
     entry: AirEntry;
+    wallContext?: {
+      wallId: string;
+      floorName: string;
+      wallStart: { x: number; y: number };
+      wallEnd: { x: number; y: number };
+      clickPosition: { x: number; y: number };
+      ceilingHeight: number;
+    };
   } | null>(null);
   
   // State for editing furniture
