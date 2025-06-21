@@ -164,6 +164,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   const [customIntensity, setCustomIntensity] = useState(0.5);
   
   // Estados específicos para vents
+  const [ventFlowType, setVentFlowType] = useState<'Air Mass Flow' | 'Air Velocity' | 'Pressure'>('Air Mass Flow');
   const [ventMeasurementType, setVentMeasurementType] = useState<'massflow' | 'velocity' | 'pressure'>('massflow');
   const [verticalAngle, setVerticalAngle] = useState(0);
   const [horizontalAngle, setHorizontalAngle] = useState(0);
@@ -225,7 +226,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         properties: {
           state: isElementOpen ? 'open' : 'closed',
           temperature: elementTemperature,
-          flowType: flowType,
+          flowType: ventFlowType,
           flowValue: intensityLevel === 'custom' ? customIntensity : getIntensityValue(intensityLevel),
           flowIntensity: intensityLevel,
           airOrientation: airDirection,
@@ -348,7 +349,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     if (dialogOpen && props.type !== 'wall') {
       updatePropertiesRealTime();
     }
-  }, [(values as any).width, (values as any).height, distanceToFloor, (values as any).shape, isElementOpen, elementTemperature, flowType, intensityLevel, customIntensity, airDirection, dialogOpen]);
+  }, [(values as any).width, (values as any).height, distanceToFloor, (values as any).shape, isElementOpen, elementTemperature, ventFlowType, intensityLevel, customIntensity, airDirection, dialogOpen]);
 
   function getDefaultValues() {
     // Obtener valores iniciales según el tipo de props
