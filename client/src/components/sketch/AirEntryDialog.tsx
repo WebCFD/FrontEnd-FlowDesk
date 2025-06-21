@@ -554,7 +554,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   return (
     <Dialog open={dialogOpen} modal={false} onOpenChange={() => {}}>
       <DialogContent 
-        className="sm:max-w-[425px]"
+        className="sm:max-w-[425px] [&>button]:hidden"
         style={{
           position: hasBeenDragged ? 'fixed' : undefined,
           top: hasBeenDragged ? `${position.y}px` : undefined,
@@ -581,7 +581,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           <DialogDescription>{descriptions[type]}</DialogDescription>
           {onCancel && (
             <button
-              className="absolute right-4 top-4 rounded-sm opacity-70 hover:opacity-100 transition-opacity"
+              className="absolute right-4 top-4 rounded-sm opacity-70 hover:opacity-100 transition-opacity text-red-500 hover:text-red-600"
               onClick={onCancel}
               type="button"
             >
