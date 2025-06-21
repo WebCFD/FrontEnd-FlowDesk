@@ -3208,7 +3208,20 @@ export default function Canvas2D({
     console.log('🔸 Final array length:', updatedAirEntries.length);
 
     onAirEntriesUpdate?.(updatedAirEntries);
-    setEditingAirEntry(null);
+    
+    // Reset isNewlyCreated flag before closing to prevent handleAirEntryCancel from removing it
+    if (editingAirEntry.isNewlyCreated) {
+      console.log('🔸 Resetting isNewlyCreated flag to prevent deletion on dialog close');
+      setEditingAirEntry({ ...editingAirEntry, isNewlyCreated: false });
+      
+      // Use timeout to ensure the flag is set before dialog closes
+      setTimeout(() => {
+        setEditingAirEntry(null);
+      }, 0);
+    } else {
+      setEditingAirEntry(null);
+    }
+    
     console.log('🔸 CONFIRM LOG: Process completed');
   };
 
