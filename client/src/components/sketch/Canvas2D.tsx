@@ -3254,6 +3254,11 @@ export default function Canvas2D({
     setEditingAirEntries(prev => prev.filter(entry => entry.index !== airEntryIndex));
   };
 
+  // Phase 5: Visual feedback for multiple dialogs
+  const getActiveDialogsInfo = () => {
+    return `${editingAirEntries.length} dialog${editingAirEntries.length !== 1 ? 's' : ''} open`;
+  };
+
   const isDialogOpen = (airEntryIndex: number): boolean => {
     return editingAirEntries.some(entry => entry.index === airEntryIndex);
   };
@@ -3383,6 +3388,11 @@ export default function Canvas2D({
         >
           <Move className="h-4 w-4" />
         </Button>
+        {editingAirEntries.length > 0 && (
+          <div className="ml-4 text-xs text-muted-foreground bg-background/80 px-2 py-1 rounded border">
+            {getActiveDialogsInfo()}
+          </div>
+        )}
       </div>
       {editingAirEntries.map((editingAirEntry, dialogIndex) => (
         <AirEntryDialog
@@ -3390,12 +3400,11 @@ export default function Canvas2D({
           type={editingAirEntry.entry.type}
           isOpen={true}
           dialogPosition={editingAirEntry.position}
-          onClose={() => setEditingAirEntries(prev => prev.filter((_, i) => i !== dialogIndex))} // Save Changes: Keep element, close dialog
+          onClose={() => closeAirEntryDialog(editingAirEntry.index)} // Save Changes: Keep element, close dialog
           onCancel={() => {
             // X Button: Delete element using eraser logic, close dialog
             // This gives users the feeling that "canceling" removes the element they just placed
-            eraseAirEntryAtIndex(editingAirEntry.index);
-            setEditingAirEntries(prev => prev.filter((_, i) => i !== dialogIndex));
+            handleDialogXClose(editingAirEntry.index);
           }}
           onConfirm={(data) => {
             // Save Changes: Update element properties and close dialog
@@ -3438,8 +3447,8 @@ export default function Canvas2D({
             onAirEntriesUpdate?.(updatedAirEntries);
             
             // También actualizar el estado local para que el diálogo mantenga la referencia correcta
-            setEditingAirEntries(prev => prev.map((item, i) => 
-              i === dialogIndex ? {
+            setEditingAirEntries(prev => prev.map(item => 
+              item.index === editingAirEntry.index ? {
                 ...item,
                 entry: {
                   ...item.entry,
@@ -3461,8 +3470,8 @@ export default function Canvas2D({
             onAirEntriesUpdate?.(updatedAirEntries);
             
             // También actualizar el estado local para que el diálogo mantenga la referencia correcta
-            setEditingAirEntries(prev => prev.map((item, i) => 
-              i === dialogIndex ? {
+            setEditingAirEntries(prev => prev.map(item => 
+              item.index === editingAirEntry.index ? {
                 ...item,
                 entry: {
                   ...item.entry,
