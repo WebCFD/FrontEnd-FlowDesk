@@ -2802,10 +2802,12 @@ export default function Canvas3D({
     // Notify parent component that scene is ready (for both RSP and wizard design)
     console.log('🎬 Canvas3D: About to check onSceneReady callback, available:', !!onSceneReady);
     console.log('🎬 Canvas3D: onSceneReady function type:', typeof onSceneReady);
+    console.log('🎬 Canvas3D: onSceneReady function string:', onSceneReady?.toString().substring(0, 100));
     if (onSceneReady) {
       console.log('🎬 Canvas3D: Calling onSceneReady callback with scene');
       try {
-        onSceneReady(scene, renderer, camera);
+        const result = onSceneReady(scene, renderer, camera);
+        console.log('🎬 Canvas3D: onSceneReady callback result:', result);
         console.log('🎬 Canvas3D: onSceneReady callback completed successfully');
       } catch (error) {
         console.error('🎬 Canvas3D: Error in onSceneReady callback:', error);
