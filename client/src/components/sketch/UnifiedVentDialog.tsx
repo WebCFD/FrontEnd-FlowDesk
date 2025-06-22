@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import AirEntryDialog from './AirEntryDialog';
 import type { FurnitureItem } from '@shared/furniture-types';
 
@@ -70,19 +70,8 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
     };
   });
 
-  // Sync dimensions when props change (for external updates)
-  useEffect(() => {
-    const scale = props.initialValues?.scale || { x: 1, y: 1, z: 1 };
-    const newDimensions = {
-      width: scale.x * 50,
-      height: scale.y * 50  // Corrected: Height maps to Y (vertical) not Z (depth)
-    };
-    
-    if (newDimensions.width !== currentDimensions.width || 
-        newDimensions.height !== currentDimensions.height) {
-      setCurrentDimensions(newDimensions);
-    }
-  }, [props.initialValues?.scale, currentDimensions.width, currentDimensions.height]);
+  // No useEffect needed - state is initialized correctly and should not reset to initial values
+  // The currentDimensions state should maintain user changes, not be overridden by props
 
   // Map FurnitureItem simulationProperties to AirEntry properties format
   const mapToAirEntryFormat = () => {
