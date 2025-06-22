@@ -986,6 +986,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                     )}
                   </div>
                 </div>
+                )}
 
                 {/* 3. SIMULATION CONDITIONS SECTION */}
                 <div className="border rounded-lg p-4 bg-slate-50/50">

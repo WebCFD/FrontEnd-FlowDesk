@@ -5797,7 +5797,66 @@ export default function Canvas3D({
       )}
 
       {/* Dialog for editing furniture */}
-      {editingFurniture && (
+      {editingFurniture && editingFurniture.item.type === 'vent' ? (
+        <UnifiedVentDialog
+          isOpen={true}
+          onClose={() => setEditingFurniture(null)}
+          onConfirm={(data) => handleFurnitureEdit(editingFurniture.index, data)}
+          isCreationMode={editingFurniture.mode === 'creation'}
+          onCancel={() => {
+            if (!editingFurniture) return;
+            
+            if (editingFurniture.mode === 'creation') {
+              const furnitureId = editingFurniture.item.id;
+              
+              try {
+                if (sceneRef.current && typeof sceneRef.current.traverse === 'function') {
+                  sceneRef.current.traverse((child) => {
+                    if (child.userData?.furnitureId === furnitureId && child.userData?.type === 'furniture') {
+                      sceneRef.current?.remove(child);
+                    }
+                  });
+                }
+              } catch (error) {
+                console.warn("Could not remove furniture from scene:", error);
+              }
+              
+              if (onDeleteFurniture) {
+                onDeleteFurniture(editingFurniture.item.floorName, editingFurniture.item.id);
+              }
+              
+              if (onFurnitureDeleted) {
+                onFurnitureDeleted();
+              }
+            }
+            
+            setEditingFurniture(null);
+          }}
+          onPositionUpdate={handleRealTimePositionUpdate}
+          onRotationUpdate={handleRealTimeRotationUpdate}
+          onScaleUpdate={handleRealTimeScaleUpdate}
+          initialValues={{
+            name: editingFurniture.item.name,
+            position: editingFurniture.item.position,
+            rotation: editingFurniture.item.rotation,
+            scale: editingFurniture.item.scale || { x: 1, y: 1, z: 1 },
+            properties: editingFurniture.item.properties || {
+              temperature: 20,
+              thermalConductivity: 0.12,
+              density: 600,
+              heatCapacity: 1200,
+              emissivity: 0.85
+            },
+            simulationProperties: editingFurniture.item.simulationProperties
+          }}
+          isEditing={true}
+          floorContext={{
+            floorName: editingFurniture.item.floorName,
+            floorHeight: 220,
+            clickPosition: editingFurniture.item.position
+          }}
+        />
+      ) : editingFurniture ? (
         <FurnitureDialog
           type={editingFurniture.item.type}
           isOpen={true}
@@ -5875,7 +5934,7 @@ export default function Canvas3D({
           furnitureIndex={editingFurniture.index}
           currentFloor={currentFloor}
         />
-      )}
+      ) : null}
     </>
   );
 }
