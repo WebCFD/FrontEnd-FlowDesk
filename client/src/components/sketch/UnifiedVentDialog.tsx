@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import AirEntryDialog from './AirEntryDialog';
 import type { FurnitureItem } from '@shared/furniture-types';
 
@@ -61,14 +61,36 @@ interface UnifiedVentDialogProps {
 }
 
 export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
+  // State to track current dimensions for accurate real-time updates
+  const [currentDimensions, setCurrentDimensions] = useState(() => {
+    const scale = props.initialValues?.scale || { x: 1, y: 1, z: 1 };
+    return {
+      width: scale.x * 50,
+      height: scale.z * 50
+    };
+  });
+
+  // Sync dimensions when props change (for external updates)
+  useEffect(() => {
+    const scale = props.initialValues?.scale || { x: 1, y: 1, z: 1 };
+    const newDimensions = {
+      width: scale.x * 50,
+      height: scale.z * 50
+    };
+    
+    if (newDimensions.width !== currentDimensions.width || 
+        newDimensions.height !== currentDimensions.height) {
+      setCurrentDimensions(newDimensions);
+    }
+  }, [props.initialValues?.scale, currentDimensions.width, currentDimensions.height]);
+
   // Map FurnitureItem simulationProperties to AirEntry properties format
   const mapToAirEntryFormat = () => {
     const simProps = props.initialValues?.simulationProperties;
-    const scale = props.initialValues?.scale || { x: 1, y: 1, z: 1 };
     
     return {
-      width: scale.x * 50, // Map scale.x to width in cm (base size 50cm)
-      height: scale.z * 50, // Map scale.z to height in cm (base size 50cm)
+      width: currentDimensions.width, // Use current state instead of initial values
+      height: currentDimensions.height, // Use current state instead of initial values
       distanceToFloor: 120, // Default (not used in 3D)
       shape: 'rectangular' as const,
       properties: {
@@ -86,9 +108,9 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
 
   // Map AirEntry format back to FurnitureItem format
   const mapFromAirEntryFormat = (airEntryData: any) => {
-    // Calculate scale from dimensions: width/height -> scale.x/scale.z
-    const newScaleX = (airEntryData.width || 50) / 50; // width to scale.x
-    const newScaleZ = (airEntryData.height || 50) / 50; // height to scale.z
+    // Calculate scale from current dimensions state
+    const newScaleX = (airEntryData.width || currentDimensions.width) / 50; // width to scale.x
+    const newScaleZ = (airEntryData.height || currentDimensions.height) / 50; // height to scale.z
     
     const furnitureData = {
       name: props.initialValues?.name || 'Vent',
@@ -135,9 +157,17 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
       initialValues={mapToAirEntryFormat()}
       // Add dimensions update callback for real-time updates
       onDimensionsUpdate={(newDimensions) => {
-        if (props.onScaleUpdate && (newDimensions.width || newDimensions.height)) {
-          const newScaleX = (newDimensions.width || (props.initialValues?.scale?.x || 1) * 50) / 50;
-          const newScaleZ = (newDimensions.height || (props.initialValues?.scale?.z || 1) * 50) / 50;
+        // Update current dimensions state with proper fallbacks
+        const updatedDimensions = {
+          width: newDimensions.width ?? currentDimensions.width,
+          height: newDimensions.height ?? currentDimensions.height
+        };
+        
+        setCurrentDimensions(updatedDimensions);
+        
+        if (props.onScaleUpdate) {
+          const newScaleX = updatedDimensions.width / 50;
+          const newScaleZ = updatedDimensions.height / 50;
           
           props.onScaleUpdate({
             x: newScaleX,
