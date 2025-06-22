@@ -70,8 +70,17 @@ interface AirEntryDialogProps {
     ceilingHeight: number;
   };
   // Callback para actualización en tiempo real
-  onPositionUpdate?: (newPosition: { x: number; y: number }) => void;
+  onPositionUpdate?: (newPosition: { x: number; y: number }) => void | ((newPosition: { x: number; y: number; z: number }) => void);
+  onRotationUpdate?: (newRotation: { x: number; y: number; z: number }) => void;
   onDimensionsUpdate?: (newDimensions: { width?: number; height?: number; distanceToFloor?: number }) => void;
+  // 3D specific props for furnVent mode
+  position?: { x: number; y: number; z: number };
+  rotation?: { x: number; y: number; z: number };
+  floorContext?: {
+    floorName: string;
+    floorHeight: number;
+    clickPosition: { x: number; y: number; z: number };
+  };
   // Campos necesarios para persistir propiedades
   airEntryIndex?: number;
   currentFloor?: string;
@@ -142,6 +151,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   
   // Estado para las coordenadas del elemento en el canvas
   const [elementPosition, setElementPosition] = useState({ x: 0, y: 0 });
+  
+  // Estado para las coordenadas 3D del elemento (para modo furnVent)
+  const [element3DPosition, setElement3DPosition] = useState({ x: 0, y: 0, z: 0 });
+  const [element3DRotation, setElement3DRotation] = useState({ x: 0, y: 0, z: 0 });
   
   // Estado para la posición a lo largo del wall (0-100%)
   const [wallPosition, setWallPosition] = useState(50);
@@ -623,9 +636,166 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                 </div>
               </div>
             ) : (
-              // Nueva estructura con 3 secciones para entradas de aire
+              // Nueva estructura con secciones variables según el modo
               <>
-                {/* 1. POSITION SECTION - Only show for airEntry mode */}
+                {/* 1. INFORMATION SECTION - Only show for furnVent mode */}
+                {mode === 'furnVent' && (
+                  <div className="border rounded-lg p-4 bg-slate-50/50">
+                    <h4 className="font-medium text-sm mb-4 text-slate-700 border-b border-slate-200 pb-2">Information</h4>
+                    
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <label className="text-right text-sm">Furniture ID</label>
+                        <div className="col-span-3 px-3 py-2 bg-gray-100 rounded text-sm text-gray-700 font-mono">
+                          {(props as AirEntryDialogProps).initialValues?.name || 'Vent'}
+                        </div>
+                      </div>
+                      
+                      {(props as AirEntryDialogProps).floorContext && (
+                        <div className="p-2 bg-gray-100 rounded text-xs text-gray-600">
+                          <div>Floor: {(props as AirEntryDialogProps).floorContext.floorName}</div>
+                          <div>Floor Height: {(props as AirEntryDialogProps).floorContext.floorHeight}cm</div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* 2. POSITION & TRANSFORM SECTION - Only show for furnVent mode */}
+                {mode === 'furnVent' && (
+                  <div className="border rounded-lg p-4 bg-slate-50/50">
+                    <h4 className="font-medium text-sm mb-4 text-slate-700 border-b border-slate-200 pb-2">Position & Transform</h4>
+                    
+                    <div className="space-y-4">
+                      {/* Position */}
+                      <div>
+                        <label className="text-xs text-slate-600 mb-2 block">Position (cm)</label>
+                        <div className="grid grid-cols-3 gap-2">
+                          <div>
+                            <label className="text-xs">X</label>
+                            <Input
+                              type="number"
+                              step="1"
+                              value={Math.round(element3DPosition.x * 100) / 100}
+                              onChange={(e) => {
+                                const newX = Number(e.target.value);
+                                const newPosition = { ...element3DPosition, x: newX };
+                                setElement3DPosition(newPosition);
+                                
+                                if ('onPositionUpdate' in props && props.onPositionUpdate) {
+                                  (props.onPositionUpdate as (pos: { x: number; y: number; z: number }) => void)(newPosition);
+                                }
+                              }}
+                              className="text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs">Y</label>
+                            <Input
+                              type="number"
+                              step="1"
+                              value={Math.round(element3DPosition.y * 100) / 100}
+                              onChange={(e) => {
+                                const newY = Number(e.target.value);
+                                const newPosition = { ...element3DPosition, y: newY };
+                                setElement3DPosition(newPosition);
+                                
+                                if ('onPositionUpdate' in props && props.onPositionUpdate) {
+                                  (props.onPositionUpdate as (pos: { x: number; y: number; z: number }) => void)(newPosition);
+                                }
+                              }}
+                              className="text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs">Z</label>
+                            <Input
+                              type="number"
+                              step="1"
+                              value={Math.round(element3DPosition.z * 100) / 100}
+                              onChange={(e) => {
+                                const newZ = Number(e.target.value);
+                                const newPosition = { ...element3DPosition, z: newZ };
+                                setElement3DPosition(newPosition);
+                                
+                                if ('onPositionUpdate' in props && props.onPositionUpdate) {
+                                  (props.onPositionUpdate as (pos: { x: number; y: number; z: number }) => void)(newPosition);
+                                }
+                              }}
+                              className="text-sm"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Rotation */}
+                      <div>
+                        <label className="text-xs text-slate-600 mb-2 block">Rotation (degrees)</label>
+                        <div className="grid grid-cols-3 gap-2">
+                          <div>
+                            <label className="text-xs">X</label>
+                            <Input
+                              type="number"
+                              step="1"
+                              value={Math.round((element3DRotation.x * 180 / Math.PI) * 100) / 100}
+                              onChange={(e) => {
+                                const newXDegrees = Number(e.target.value);
+                                const newXRadians = newXDegrees * Math.PI / 180;
+                                const newRotation = { ...element3DRotation, x: newXRadians };
+                                setElement3DRotation(newRotation);
+                                
+                                if ('onRotationUpdate' in props && props.onRotationUpdate) {
+                                  props.onRotationUpdate(newRotation);
+                                }
+                              }}
+                              className="text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs">Y</label>
+                            <Input
+                              type="number"
+                              step="1"
+                              value={Math.round((element3DRotation.y * 180 / Math.PI) * 100) / 100}
+                              onChange={(e) => {
+                                const newYDegrees = Number(e.target.value);
+                                const newYRadians = newYDegrees * Math.PI / 180;
+                                const newRotation = { ...element3DRotation, y: newYRadians };
+                                setElement3DRotation(newRotation);
+                                
+                                if ('onRotationUpdate' in props && props.onRotationUpdate) {
+                                  props.onRotationUpdate(newRotation);
+                                }
+                              }}
+                              className="text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs">Z</label>
+                            <Input
+                              type="number"
+                              step="1"
+                              value={Math.round((element3DRotation.z * 180 / Math.PI) * 100) / 100}
+                              onChange={(e) => {
+                                const newZDegrees = Number(e.target.value);
+                                const newZRadians = newZDegrees * Math.PI / 180;
+                                const newRotation = { ...element3DRotation, z: newZRadians };
+                                setElement3DRotation(newRotation);
+                                
+                                if ('onRotationUpdate' in props && props.onRotationUpdate) {
+                                  props.onRotationUpdate(newRotation);
+                                }
+                              }}
+                              className="text-sm"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* 3. POSITION SECTION - Only show for airEntry mode */}
                 {mode === 'airEntry' && (
                   <div className="border rounded-lg p-4 bg-slate-50/50">
                     <h4 className="font-medium text-sm mb-4 text-slate-700 border-b border-slate-200 pb-2">Position</h4>
@@ -827,7 +997,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                 </div>
                 )}
 
-                {/* 2. DIMENSIONS SECTION - Show for both airEntry and furnVent modes */}
+                {/* 4. DIMENSIONS SECTION - Show for both airEntry and furnVent modes */}
                 {(mode === 'airEntry' || mode === 'furnVent') && (
                   <div className="border rounded-lg p-4 bg-slate-50/50">
                     <h4 className="font-medium text-sm mb-4 text-slate-700 border-b border-slate-200 pb-2">Dimensions</h4>
@@ -988,7 +1158,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                 </div>
                 )}
 
-                {/* 3. SIMULATION CONDITIONS SECTION */}
+                {/* 5. SIMULATION CONDITIONS SECTION */}
                 <div className="border rounded-lg p-4 bg-slate-50/50">
                   <h4 className="font-medium text-sm mb-4 text-slate-700 border-b border-slate-200 pb-2">Simulation Conditions</h4>
                   <div className="space-y-4">
