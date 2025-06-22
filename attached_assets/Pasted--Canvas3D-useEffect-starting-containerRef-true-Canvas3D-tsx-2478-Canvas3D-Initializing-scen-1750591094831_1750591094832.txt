@@ -1,0 +1,29 @@
+🎬 Canvas3D: useEffect starting, containerRef: true
+Canvas3D.tsx:2478 🎬 Canvas3D: Initializing scene...
+Canvas3D.tsx:2803 🎬 Canvas3D: About to check onSceneReady callback, available: true
+Canvas3D.tsx:2804 🎬 Canvas3D: onSceneReady function type: function
+Canvas3D.tsx:2805 🎬 Canvas3D: onSceneReady function string: (scene, renderer, camera) => {
+    sceneRef.current = scene;
+    rendererRef.current = renderer;
+   
+Canvas3D.tsx:2807 🎬 Canvas3D: Calling onSceneReady callback with scene
+wizard-design.tsx:2380 🧙‍♂️ WIZARD: onSceneReady callback triggered via RoomSketchPro, scene: true
+wizard-design.tsx:2382 🧙‍♂️ WIZARD: Scene reference set in wizard state, wizardSceneRef.current: true
+Canvas3D.tsx:2810 🎬 Canvas3D: onSceneReady callback result: undefined
+Canvas3D.tsx:2811 🎬 Canvas3D: onSceneReady callback completed successfully
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 331ms
+wizard-design.tsx:1577 Dragging furniture: {id: 'table', name: 'Table', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…"4" height="8" fill="#8B4513"/>\n      </svg>\n    ', defaultDimensions: {…}}
+Canvas3D.tsx:1224 🪑 Furniture added to scene: {id: 'Table 0F-1', type: 'table', userData: {…}}
+[Violation] Forced reflow while executing JavaScript took 32ms
+wizard-design.tsx:1870 🧹 Erase Design: Starting 3D scene furniture cleanup...
+wizard-design.tsx:1871 🧹 Scene reference available: true
+wizard-design.tsx:1877 🧹 Scanning scene for furniture objects...
+wizard-design.tsx:1880 🧹 Found furniture object: {id: 'Table 0F-1', type: 'table', name: undefined}
+wizard-design.tsx:1889 🧹 Furniture objects found: 1
+wizard-design.tsx:1893 🧹 Removing furniture 1/1: Table 0F-1
+wizard-design.tsx:1916 🧹 Removed furniture object: Table 0F-1
+wizard-design.tsx:1919 🧹 3D scene cleanup complete: 1 furniture objects removed
+wizard-design.tsx:1925 🧹 Resetting room store...
+wizard-design.tsx:1929 🧹 Clearing custom furniture definitions...
+custom-furniture-store.ts:274 Custom Furniture Store: Clearing all definitions (Erase Design)
+analytics.ts:62 📊 Analytics Event: {category: 'simulation', action: 'save_simulation', label: 'design_erased', value: 1, status: 'sent'}
