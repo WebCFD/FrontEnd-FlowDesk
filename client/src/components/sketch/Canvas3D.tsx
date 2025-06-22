@@ -2469,10 +2469,13 @@ export default function Canvas3D({
   }, [onViewChange, handleViewChange]);
 
   useEffect(() => {
+    console.log('🎬 Canvas3D: useEffect starting, containerRef:', !!containerRef.current);
     if (!containerRef.current) {
+      console.log('🎬 Canvas3D: No container ref, exiting useEffect');
       return;
     }
 
+    console.log('🎬 Canvas3D: Initializing scene...');
     // Initialize scene
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xf8fafc);
@@ -2797,9 +2800,11 @@ export default function Canvas3D({
     animate();
 
     // Notify parent component that scene is ready (for both RSP and wizard design)
+    console.log('🎬 Canvas3D: About to check onSceneReady callback, available:', !!onSceneReady);
     if (onSceneReady) {
       console.log('🎬 Canvas3D: Calling onSceneReady callback with scene');
       onSceneReady(scene, renderer, camera);
+      console.log('🎬 Canvas3D: onSceneReady callback completed');
     } else {
       console.log('🎬 Canvas3D: No onSceneReady callback provided');
     }
