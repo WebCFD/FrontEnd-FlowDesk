@@ -70,6 +70,15 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
     };
   });
 
+  // State to track current position and rotation for accurate real-time updates
+  const [currentPosition, setCurrentPosition] = useState(() => {
+    return props.initialValues?.position || { x: 0, y: 0, z: 0 };
+  });
+  
+  const [currentRotation, setCurrentRotation] = useState(() => {
+    return props.initialValues?.rotation || { x: 0, y: 0, z: 0 };
+  });
+
   // No useEffect needed - state is initialized correctly and should not reset to initial values
   // The currentDimensions state should maintain user changes, not be overridden by props
 
@@ -81,8 +90,8 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
       width: currentDimensions.width, // Use current state instead of initial values
       height: currentDimensions.height, // Use current state instead of initial values
       distanceToFloor: 120, // Default (not used in 3D)
-      position: props.initialValues?.position || { x: 0, y: 0, z: 0 }, // Add position for 3D
-      rotation: props.initialValues?.rotation || { x: 0, y: 0, z: 0 }, // Add rotation for 3D
+      position: currentPosition, // Use current state instead of initial values
+      rotation: currentRotation, // Use current state instead of initial values
       shape: 'rectangular' as const,
       properties: {
         state: simProps?.state || 'open',
@@ -169,11 +178,13 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
       }}
       // Add position and rotation update callbacks for real-time updates
       onPositionUpdate={(newPosition) => {
+        setCurrentPosition(newPosition); // Update current state
         if (props.onPositionUpdate) {
           props.onPositionUpdate(newPosition);
         }
       }}
       onRotationUpdate={(newRotation) => {
+        setCurrentRotation(newRotation); // Update current state
         if (props.onRotationUpdate) {
           props.onRotationUpdate(newRotation);
         }
