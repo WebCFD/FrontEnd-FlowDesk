@@ -1865,57 +1865,34 @@ export default function WizardDesign() {
       ground: { ceilingHeight: 220, floorDeck: 35 }
     });
     
-    // PASO 2: Resetear el store ANTES de cambiar isMultifloor (evita useEffect con datos intermedios)
-    storeReset(); // Use store reset function instead of local reset
-    
-    // PASO 2.1: Clear all custom furniture definitions (Erase Design behavior)
-    customFurnitureStore.clearAllDefinitions();
-    
-    // PASO 2.2: Clear all furniture from 3D scene
+    // PASO 2: Clear all furniture from 3D scene BEFORE resetting store to avoid useEffect interference
     console.log('🧹 Erase Design: Starting 3D scene furniture cleanup...');
     console.log('🧹 Scene reference available:', !!sceneRef);
     
     if (sceneRef) {
       const furnitureObjectsToRemove: THREE.Object3D[] = [];
       
-      // First, let's see what objects are in the scene
+      // Scan scene for furniture objects
       console.log('🧹 Scanning scene for furniture objects...');
-      let totalObjects = 0;
       sceneRef.traverse((object) => {
-        totalObjects++;
-        
-        // Log all objects with userData to understand the scene structure
-        if (object.userData && Object.keys(object.userData).length > 0) {
-          console.log('🔍 Object with userData:', {
-            type: object.userData.type,
-            furnitureType: object.userData.furnitureType,
-            furnitureId: object.userData.furnitureId,
-            name: object.userData.furnitureName || object.userData.name,
-            allUserData: object.userData
-          });
-        }
-        
         if (object.userData?.type === 'furniture') {
           console.log('🧹 Found furniture object:', {
-            type: object.userData.type,
-            furnitureType: object.userData.furnitureType,
-            furnitureId: object.userData.furnitureId,
+            id: object.userData.furnitureId,
+            type: object.userData.furnitureType,
             name: object.userData.furnitureName
           });
           furnitureObjectsToRemove.push(object);
         }
       });
       
-      console.log(`🧹 Total objects in scene: ${totalObjects}`);
       console.log(`🧹 Furniture objects found: ${furnitureObjectsToRemove.length}`);
       
       // Remove each furniture object with proper cleanup
       furnitureObjectsToRemove.forEach((furnitureGroup, index) => {
-        console.log(`🧹 Removing furniture ${index + 1}/${furnitureObjectsToRemove.length}:`, furnitureGroup.userData);
+        console.log(`🧹 Removing furniture ${index + 1}/${furnitureObjectsToRemove.length}:`, furnitureGroup.userData.furnitureId);
         
         // Special cleanup for vents with special rendering properties
         if (furnitureGroup.userData.furnitureType === 'vent') {
-          console.log('🧹 Special vent cleanup for:', furnitureGroup.userData.furnitureId);
           furnitureGroup.traverse((child) => {
             if (child instanceof THREE.Mesh) {
               // Dispose geometry and material to clear WebGL state
@@ -1938,20 +1915,28 @@ export default function WizardDesign() {
         console.log(`🧹 Removed furniture object:`, furnitureGroup.userData.furnitureId);
       });
       
-      console.log(`🧹 Erase Design: Removed ${furnitureObjectsToRemove.length} furniture objects from 3D scene`);
+      console.log(`🧹 3D scene cleanup complete: ${furnitureObjectsToRemove.length} furniture objects removed`);
     } else {
-      console.log('❌ Erase Design: No scene reference available for furniture cleanup');
+      console.log('❌ No scene reference available for furniture cleanup');
     }
     
-    // PASO 3: CRÍTICO - Sincronizar currentFloor del store con ground
+    // PASO 3: NOW reset the store (this will trigger Canvas3D useEffect but furniture already removed)
+    console.log('🧹 Resetting room store...');
+    storeReset();
+    
+    // PASO 4: Clear all custom furniture definitions
+    console.log('🧹 Clearing custom furniture definitions...');
+    customFurnitureStore.clearAllDefinitions();
+    
+    // PASO 5: CRÍTICO - Sincronizar currentFloor del store con ground
     setCurrentFloor("ground");
     
-    // PASO 4: Mantener multifloor SIEMPRE activo (ya no es parámetro de usuario)
+    // PASO 6: Mantener multifloor SIEMPRE activo (ya no es parámetro de usuario)
     setIsMultifloor(true);
     setSelectedFloor("ground");
     setLoadFromFloor("ground");
     
-    // PASO 4: Resetear todos los estados locales del wizard
+    // PASO 7: Resetear todos los estados locales del wizard
     setSimulationName("");
     setSimulationType("comfort");
     setGridSize(20);
@@ -1965,11 +1950,11 @@ export default function WizardDesign() {
     setCeilingHeight(220);
     setFloorDeckThickness(35);
     
-    // PASO 5: Limpiar mediciones y escalones locales
+    // PASO 8: Limpiar mediciones y escalones locales
     setMeasurements([]);
     setStairPolygons([]);
     
-    // PASO 6: Cerrar el diálogo
+    // PASO 9: Cerrar el diálogo
     setShowEraseDesignDialog(false);
     
     // PASO 7: Mostrar mensaje de confirmación
