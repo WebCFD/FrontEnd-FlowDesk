@@ -827,8 +827,8 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                 </div>
                 )}
 
-                {/* 2. DIMENSIONS SECTION - Only show for airEntry mode */}
-                {mode === 'airEntry' && (
+                {/* 2. DIMENSIONS SECTION - Show for both airEntry and furnVent modes */}
+                {(mode === 'airEntry' || mode === 'furnVent') && (
                   <div className="border rounded-lg p-4 bg-slate-50/50">
                     <h4 className="font-medium text-sm mb-4 text-slate-700 border-b border-slate-200 pb-2">Dimensions</h4>
                   

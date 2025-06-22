@@ -64,10 +64,11 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
   // Map FurnitureItem simulationProperties to AirEntry properties format
   const mapToAirEntryFormat = () => {
     const simProps = props.initialValues?.simulationProperties;
+    const scale = props.initialValues?.scale || { x: 1, y: 1, z: 1 };
     
     return {
-      width: 50, // Default vent dimensions (not used in 3D, but required by AirEntryDialog)
-      height: 50,
+      width: scale.x * 50, // Map scale.x to width in cm (base size 50cm)
+      height: scale.z * 50, // Map scale.z to height in cm (base size 50cm)
       distanceToFloor: 120, // Default (not used in 3D)
       shape: 'rectangular' as const,
       properties: {
@@ -85,11 +86,19 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
 
   // Map AirEntry format back to FurnitureItem format
   const mapFromAirEntryFormat = (airEntryData: any) => {
+    // Calculate scale from dimensions: width/height -> scale.x/scale.z
+    const newScaleX = (airEntryData.width || 50) / 50; // width to scale.x
+    const newScaleZ = (airEntryData.height || 50) / 50; // height to scale.z
+    
     const furnitureData = {
       name: props.initialValues?.name || 'Vent',
       position: props.initialValues?.position || { x: 0, y: 0, z: 0 },
       rotation: props.initialValues?.rotation || { x: 0, y: 0, z: 0 },
-      scale: props.initialValues?.scale || { x: 1, y: 1, z: 1 },
+      scale: { 
+        x: newScaleX, 
+        y: props.initialValues?.scale?.y || 1, // Keep Y scale unchanged
+        z: newScaleZ 
+      },
       properties: {
         temperature: airEntryData.properties?.temperature || 20
       },
@@ -124,6 +133,19 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
         props.onConfirm(furnitureData);
       }}
       initialValues={mapToAirEntryFormat()}
+      // Add dimensions update callback for real-time updates
+      onDimensionsUpdate={(newDimensions) => {
+        if (props.onScaleUpdate && (newDimensions.width || newDimensions.height)) {
+          const newScaleX = (newDimensions.width || (props.initialValues?.scale?.x || 1) * 50) / 50;
+          const newScaleZ = (newDimensions.height || (props.initialValues?.scale?.z || 1) * 50) / 50;
+          
+          props.onScaleUpdate({
+            x: newScaleX,
+            y: props.initialValues?.scale?.y || 1,
+            z: newScaleZ
+          });
+        }
+      }}
       // For 3D vents, we don't need wall context, but AirEntryDialog expects it
       // We'll provide minimal context to avoid errors
       wallContext={{
