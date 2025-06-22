@@ -511,8 +511,8 @@ export function generateSimulationData(
     });
     
     const floorFurniture: FurnitureExport[] = floorFurnitureObjects.map((obj, index) => {
-      // Normalizar posición del mobiliario (Three.js ya usa coordenadas 3D)
-      const normalizedPos = normalizeCoordinates({ x: obj.position.x, y: obj.position.z });
+      // Use local coordinates directly from Three.js object (no normalization)
+      // Dialog box shows coordinates in cm, JSON uses same coordinates but in meters
       
       // Generate new ID using furniture type and floor prefix
       let furnitureId: string;
@@ -530,9 +530,9 @@ export function generateSimulationData(
       return {
         id: furnitureId,
         position: {
-          x: cmToM(normalizedPos.x),
-          y: cmToM(normalizedPos.y),
-          z: cmToM(obj.position.y) // Y in Three.js is Z in our coordinate system
+          x: cmToM(obj.position.x), // Direct conversion: cm to meters
+          y: cmToM(obj.position.y), // Direct conversion: cm to meters  
+          z: cmToM(obj.position.z)  // Direct conversion: cm to meters
         },
         rotation: {
           x: obj.rotation.x || 0,
