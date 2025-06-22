@@ -832,6 +832,32 @@ export function RoomSketchPro({
     }
   }, [airEntryTransparency]);
 
+  // Handle air entry updates from 3D Canvas (real-time updates for 2D vents)
+  const handleUpdateAirEntryFrom3D = useCallback((
+    floorName: string,
+    index: number,
+    updatedEntry: AirEntry,
+  ) => {
+    // Create a deep clone of the updated entry to prevent reference issues
+    const deepClonedEntry = JSON.parse(JSON.stringify(updatedEntry));
+    
+    // Update the floors data
+    const updatedFloors = { ...floors };
+    if (updatedFloors[floorName] && updatedFloors[floorName].airEntries) {
+      const updatedAirEntries = updatedFloors[floorName].airEntries.map((entry, i) =>
+        i === index ? deepClonedEntry : entry
+      );
+      
+      updatedFloors[floorName] = {
+        ...updatedFloors[floorName],
+        airEntries: updatedAirEntries,
+      };
+      
+      // Update floors state to trigger re-render
+      setFloors(updatedFloors);
+    }
+  }, [floors, setFloors]);
+
   // Theme configurations with different Canvas3D parameters
   const themeConfig = {
     modern: {
