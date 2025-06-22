@@ -165,6 +165,9 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
         props.onConfirm(furnitureData);
       }}
       initialValues={mapToAirEntryFormat()}
+      // Pass position and rotation as direct props for 3D mode
+      position={currentPosition}
+      rotation={currentRotation}
       // Add dimensions update callback for real-time updates
       onDimensionsUpdate={(newDimensions) => {
         // Update current dimensions state with proper fallbacks
