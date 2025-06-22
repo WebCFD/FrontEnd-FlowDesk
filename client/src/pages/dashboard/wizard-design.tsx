@@ -317,7 +317,7 @@ export default function WizardDesign() {
   const [isFurnitureEraserMode, setIsFurnitureEraserMode] = useState(false);
 
   // Reference to the 3D scene for furniture cleanup
-  const [sceneRef, setSceneRef] = useState<THREE.Scene | null>(null);
+  const sceneRef = useRef<THREE.Scene | null>(null);
 
   // Estado para el diálogo de datos de simulación
   const [showSimulationDataDialog, setShowSimulationDataDialog] =
@@ -1867,14 +1867,14 @@ export default function WizardDesign() {
     
     // PASO 2: Clear all furniture from 3D scene BEFORE resetting store to avoid useEffect interference
     console.log('🧹 Erase Design: Starting 3D scene furniture cleanup...');
-    console.log('🧹 Scene reference available:', !!sceneRef);
+    console.log('🧹 Scene reference available:', !!sceneRef.current);
     
-    if (sceneRef) {
+    if (sceneRef.current) {
       const furnitureObjectsToRemove: THREE.Object3D[] = [];
       
       // Scan scene for furniture objects
       console.log('🧹 Scanning scene for furniture objects...');
-      sceneRef.traverse((object) => {
+      sceneRef.current.traverse((object) => {
         if (object.userData?.type === 'furniture') {
           console.log('🧹 Found furniture object:', {
             id: object.userData.furnitureId,
@@ -1911,7 +1911,7 @@ export default function WizardDesign() {
         }
         
         // Remove furniture object from scene
-        sceneRef.remove(furnitureGroup);
+        sceneRef.current.remove(furnitureGroup);
         console.log(`🧹 Removed furniture object:`, furnitureGroup.userData.furnitureId);
       });
       
@@ -2431,7 +2431,7 @@ export default function WizardDesign() {
               onViewChange={handleViewChange}
               onSceneReady={(scene) => {
                 console.log('🎬 Canvas3D scene ready callback triggered, scene:', !!scene);
-                setSceneRef(scene);
+                sceneRef.current = scene;
                 console.log('🎬 Scene reference set in wizard state');
               }}
               onFurnitureAdd={handleFurnitureAdd}
