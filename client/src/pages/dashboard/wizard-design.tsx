@@ -2429,7 +2429,7 @@ export default function WizardDesign() {
               onUpdateAirEntry={handleUpdateAirEntryFrom3D}
               onDeleteAirEntry={handleDeleteAirEntryFrom3D}
               onViewChange={handleViewChange}
-              onSceneReady={(scene) => {
+              onSceneReady={(scene, renderer, camera) => {
                 console.log('🎬 Canvas3D scene ready callback triggered, scene:', !!scene);
                 sceneRef.current = scene;
                 console.log('🎬 Scene reference set in wizard state');
