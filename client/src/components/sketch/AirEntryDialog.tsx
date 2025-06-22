@@ -28,6 +28,7 @@ interface AirEntryDialogProps {
   onClose: () => void;
   onCancel?: () => void; // Optional separate handler for X button
   isCreating?: boolean; // Indicates if this is creating a new element vs editing existing
+  mode?: 'airEntry' | 'furnVent'; // New: Mode to distinguish between 2D air entries and 3D furniture vents
   onConfirm: (data: {
     width: number;
     height: number;
@@ -118,6 +119,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   const { type, isOpen: dialogOpen, onClose, isEditing = false } = props;
   const onCancel = 'onCancel' in props ? props.onCancel : undefined;
   const isCreating = 'isCreating' in props ? props.isCreating : false;
+  const mode = (props as AirEntryDialogProps).mode || 'airEntry'; // Default to airEntry for backward compatibility
   const { updateAirEntryProperties, floors } = useRoomStore();
   
   // Estado unificado para manejar tanto dimensiones como temperatura
@@ -579,8 +581,8 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
             className="absolute top-3 left-3 h-1 w-8 bg-muted-foreground/20 rounded-sm" 
             style={{ pointerEvents: 'none' }}
           />
-          <DialogTitle>{titles[type]}</DialogTitle>
-          <DialogDescription>{descriptions[type]}</DialogDescription>
+          <DialogTitle>{mode === 'furnVent' ? 'Vent Furniture Properties' : titles[type]}</DialogTitle>
+          <DialogDescription>{mode === 'furnVent' ? 'Configure 3D vent furniture simulation properties' : descriptions[type]}</DialogDescription>
           {onCancel && (
             <button
               className="absolute -right-2 -top-2 rounded-sm opacity-70 hover:opacity-100 transition-opacity text-red-500 hover:text-red-600 bg-white border border-red-200 hover:border-red-300 shadow-sm"
@@ -623,9 +625,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
             ) : (
               // Nueva estructura con 3 secciones para entradas de aire
               <>
-                {/* 1. POSITION SECTION */}
-                <div className="border rounded-lg p-4 bg-slate-50/50">
-                  <h4 className="font-medium text-sm mb-4 text-slate-700 border-b border-slate-200 pb-2">Position</h4>
+                {/* 1. POSITION SECTION - Only show for airEntry mode */}
+                {mode === 'airEntry' && (
+                  <div className="border rounded-lg p-4 bg-slate-50/50">
+                    <h4 className="font-medium text-sm mb-4 text-slate-700 border-b border-slate-200 pb-2">Position</h4>
                   
                   {/* Information subsection */}
                   <div className="mb-4">
@@ -821,13 +824,13 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                       </div>
                     </div>
                   </div>
-                  
-
                 </div>
+                )}
 
-                {/* 2. DIMENSIONS SECTION */}
-                <div className="border rounded-lg p-4 bg-slate-50/50">
-                  <h4 className="font-medium text-sm mb-4 text-slate-700 border-b border-slate-200 pb-2">Dimensions</h4>
+                {/* 2. DIMENSIONS SECTION - Only show for airEntry mode */}
+                {mode === 'airEntry' && (
+                  <div className="border rounded-lg p-4 bg-slate-50/50">
+                    <h4 className="font-medium text-sm mb-4 text-slate-700 border-b border-slate-200 pb-2">Dimensions</h4>
                   
                   {/* Shape selector - only for windows and vents, not doors */}
                   {type !== 'door' && (
