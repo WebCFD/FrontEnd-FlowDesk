@@ -543,7 +543,11 @@ export function generateSimulationData(
           x: obj.scale?.x || 1,
           y: obj.scale?.y || 1,
           z: obj.scale?.z || 1
-        }
+        },
+        // Add simulation properties for vent furniture
+        ...(obj.userData?.furnitureType === 'vent' && obj.userData?.simulationProperties && {
+          simulationProperties: obj.userData.simulationProperties
+        })
       };
     });
 
