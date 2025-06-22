@@ -860,7 +860,7 @@ export function RoomSketchPro({
         onFloorsUpdate(updatedFloors);
       }
     }
-  }, [floors]);
+  }, [floors, onFloorsUpdate]);
 
   // Theme configurations with different Canvas3D parameters
   const themeConfig = {
