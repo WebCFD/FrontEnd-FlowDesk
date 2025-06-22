@@ -113,6 +113,7 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
   return (
     <AirEntryDialog
       type="vent"
+      mode="furnVent"
       isOpen={props.isOpen}
       onClose={props.onClose}
       onCancel={props.onCancel}
