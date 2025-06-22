@@ -81,6 +81,8 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
       width: currentDimensions.width, // Use current state instead of initial values
       height: currentDimensions.height, // Use current state instead of initial values
       distanceToFloor: 120, // Default (not used in 3D)
+      position: props.initialValues?.position || { x: 0, y: 0, z: 0 }, // Add position for 3D
+      rotation: props.initialValues?.rotation || { x: 0, y: 0, z: 0 }, // Add rotation for 3D
       shape: 'rectangular' as const,
       properties: {
         state: simProps?.state || 'open',
@@ -165,6 +167,19 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
           });
         }
       }}
+      // Add position and rotation update callbacks for real-time updates
+      onPositionUpdate={(newPosition) => {
+        if (props.onPositionUpdate) {
+          props.onPositionUpdate(newPosition);
+        }
+      }}
+      onRotationUpdate={(newRotation) => {
+        if (props.onRotationUpdate) {
+          props.onRotationUpdate(newRotation);
+        }
+      }}
+      // Pass floor context for Information section
+      floorContext={props.floorContext}
       // For 3D vents, we don't need wall context, but AirEntryDialog expects it
       // We'll provide minimal context to avoid errors
       wallContext={{
