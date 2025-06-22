@@ -480,6 +480,11 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         height: shapeType === 'rectangular' ? (values as any).height : (values as any).width, // For circular, height = diameter
         distanceToFloor: distanceToFloor,
         shape: shapeType,
+        // Include position and rotation for 3D furniture vents (furnVent mode)
+        ...(mode === 'furnVent' && {
+          position: element3DPosition,
+          rotation: element3DRotation,
+        }),
         properties: {
           state: (isElementOpen ? 'open' : 'closed') as 'open' | 'closed',
           temperature: elementTemperature,
