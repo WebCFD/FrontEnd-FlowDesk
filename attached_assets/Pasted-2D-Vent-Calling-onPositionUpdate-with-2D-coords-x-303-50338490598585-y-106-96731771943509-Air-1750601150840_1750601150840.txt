@@ -1,0 +1,48 @@
+2D Vent: Calling onPositionUpdate with 2D coords: {x: 303.50338490598585, y: 106.96731771943509}
+AirEntryDialog.tsx:238 2D Vent: Mode is: airEntry
+Canvas3D.tsx:5760 Canvas3D: 2D AirEntry onPositionUpdate called with: {x: 303.50338490598585, y: 106.96731771943509}
+Canvas3D.tsx:5761 Canvas3D: editingAirEntry exists: true
+Canvas3D.tsx:5762 Canvas3D: onUpdateAirEntry exists: false
+Canvas3D.tsx:5765 Canvas3D: Missing editingAirEntry or onUpdateAirEntry - skipping update
+AirEntryDialog.tsx:237 2D Vent: Calling onPositionUpdate with 2D coords: {x: 306.40756820585847, y: 106.90418329987264}
+AirEntryDialog.tsx:238 2D Vent: Mode is: airEntry
+Canvas3D.tsx:5760 Canvas3D: 2D AirEntry onPositionUpdate called with: {x: 306.40756820585847, y: 106.90418329987264}
+Canvas3D.tsx:5761 Canvas3D: editingAirEntry exists: true
+Canvas3D.tsx:5762 Canvas3D: onUpdateAirEntry exists: false
+Canvas3D.tsx:5765 Canvas3D: Missing editingAirEntry or onUpdateAirEntry - skipping update
+AirEntryDialog.tsx:237 2D Vent: Calling onPositionUpdate with 2D coords: {x: 309.31175150573114, y: 106.8410488803102}
+AirEntryDialog.tsx:238 2D Vent: Mode is: airEntry
+Canvas3D.tsx:5760 Canvas3D: 2D AirEntry onPositionUpdate called with: {x: 309.31175150573114, y: 106.8410488803102}
+Canvas3D.tsx:5761 Canvas3D: editingAirEntry exists: true
+Canvas3D.tsx:5762 Canvas3D: onUpdateAirEntry exists: false
+Canvas3D.tsx:5765 Canvas3D: Missing editingAirEntry or onUpdateAirEntry - skipping update
+AirEntryDialog.tsx:237 2D Vent: Calling onPositionUpdate with 2D coords: {x: 312.21593480560375, y: 106.77791446074774}
+AirEntryDialog.tsx:238 2D Vent: Mode is: airEntry
+Canvas3D.tsx:5760 Canvas3D: 2D AirEntry onPositionUpdate called with: {x: 312.21593480560375, y: 106.77791446074774}
+Canvas3D.tsx:5761 Canvas3D: editingAirEntry exists: true
+Canvas3D.tsx:5762 Canvas3D: onUpdateAirEntry exists: false
+Canvas3D.tsx:5765 Canvas3D: Missing editingAirEntry or onUpdateAirEntry - skipping update
+AirEntryDialog.tsx:237 2D Vent: Calling onPositionUpdate with 2D coords: {x: 315.1201181054764, y: 106.71478004118529}
+AirEntryDialog.tsx:238 2D Vent: Mode is: airEntry
+Canvas3D.tsx:5760 Canvas3D: 2D AirEntry onPositionUpdate called with: {x: 315.1201181054764, y: 106.71478004118529}
+Canvas3D.tsx:5761 Canvas3D: editingAirEntry exists: true
+Canvas3D.tsx:5762 Canvas3D: onUpdateAirEntry exists: false
+Canvas3D.tsx:5765 Canvas3D: Missing editingAirEntry or onUpdateAirEntry - skipping update
+AirEntryDialog.tsx:237 2D Vent: Calling onPositionUpdate with 2D coords: {x: 318.02430140534904, y: 106.65164562162285}
+AirEntryDialog.tsx:238 2D Vent: Mode is: airEntry
+Canvas3D.tsx:5760 Canvas3D: 2D AirEntry onPositionUpdate called with: {x: 318.02430140534904, y: 106.65164562162285}
+Canvas3D.tsx:5761 Canvas3D: editingAirEntry exists: true
+Canvas3D.tsx:5762 Canvas3D: onUpdateAirEntry exists: false
+Canvas3D.tsx:5765 Canvas3D: Missing editingAirEntry or onUpdateAirEntry - skipping update
+AirEntryDialog.tsx:237 2D Vent: Calling onPositionUpdate with 2D coords: {x: 320.92848470522165, y: 106.5885112020604}
+AirEntryDialog.tsx:238 2D Vent: Mode is: airEntry
+Canvas3D.tsx:5760 Canvas3D: 2D AirEntry onPositionUpdate called with: {x: 320.92848470522165, y: 106.5885112020604}
+Canvas3D.tsx:5761 Canvas3D: editingAirEntry exists: true
+Canvas3D.tsx:5762 Canvas3D: onUpdateAirEntry exists: false
+Canvas3D.tsx:5765 Canvas3D: Missing editingAirEntry or onUpdateAirEntry - skipping update
+AirEntryDialog.tsx:237 2D Vent: Calling onPositionUpdate with 2D coords: {x: 323.83266800509426, y: 106.52537678249794}
+AirEntryDialog.tsx:238 2D Vent: Mode is: airEntry
+Canvas3D.tsx:5760 Canvas3D: 2D AirEntry onPositionUpdate called with: {x: 323.83266800509426, y: 106.52537678249794}
+Canvas3D.tsx:5761 Canvas3D: editingAirEntry exists: true
+Canvas3D.tsx:5762 Canvas3D: onUpdateAirEntry exists: false
+Canvas3D.tsx:5765 Canvas3D: Missing editingAirEntry or onUpdateAirEntry - skipping update

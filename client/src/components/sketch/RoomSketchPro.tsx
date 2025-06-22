@@ -890,7 +890,7 @@ export function RoomSketchPro({
         isFurnitureEraserMode={isFurnitureEraserMode}
         isMultifloor={isMultifloor}
         floorParameters={floorParameters}
-        onUpdateAirEntry={undefined}
+        onUpdateAirEntry={handleUpdateAirEntryFrom3D}
         onDeleteAirEntry={undefined}
         onSceneReady={handleSceneReady}
         onFurnitureAdded={handleFurnitureAdded} // Callback to re-apply textures when furniture is added
