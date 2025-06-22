@@ -72,15 +72,11 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
 
   // State to track current position and rotation for accurate real-time updates
   const [currentPosition, setCurrentPosition] = useState(() => {
-    const pos = props.initialValues?.position || { x: 0, y: 0, z: 0 };
-    console.log('UnifiedVentDialog: Initial position from props:', pos);
-    return pos;
+    return props.initialValues?.position || { x: 0, y: 0, z: 0 };
   });
   
   const [currentRotation, setCurrentRotation] = useState(() => {
-    const rot = props.initialValues?.rotation || { x: 0, y: 0, z: 0 };
-    console.log('UnifiedVentDialog: Initial rotation from props:', rot);
-    return rot;
+    return props.initialValues?.rotation || { x: 0, y: 0, z: 0 };
   });
 
   // No useEffect needed - state is initialized correctly and should not reset to initial values
@@ -155,13 +151,7 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
       isCreating={props.isCreationMode}
       isEditing={props.isEditing}
       onConfirm={(data) => {
-        console.log('UnifiedVentDialog: Received data from AirEntryDialog:', data);
-        console.log('UnifiedVentDialog: Position in data:', data.position);
-        console.log('UnifiedVentDialog: Rotation in data:', data.rotation);
         const furnitureData = mapFromAirEntryFormat(data);
-        console.log('UnifiedVentDialog: Mapped furniture data:', furnitureData);
-        console.log('UnifiedVentDialog: Final position being sent:', furnitureData.position);
-        console.log('UnifiedVentDialog: Final rotation being sent:', furnitureData.rotation);
         props.onConfirm(furnitureData);
       }}
       initialValues={mapToAirEntryFormat()}
