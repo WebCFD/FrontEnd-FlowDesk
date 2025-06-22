@@ -1866,31 +1866,19 @@ export default function WizardDesign() {
       ground: { ceilingHeight: 220, floorDeck: 35 }
     });
     
-    // PASO 2: Clear all furniture from 3D scene BEFORE resetting store to avoid useEffect interference
-    console.log('🧹 Erase Design: Starting 3D scene furniture cleanup...');
-    console.log('🧹 Scene reference available:', !!wizardSceneRef.current);
-    
+    // Clear all furniture from 3D scene BEFORE resetting store to avoid useEffect interference
     if (wizardSceneRef.current) {
       const furnitureObjectsToRemove: THREE.Object3D[] = [];
       
       // Scan scene for furniture objects
-      console.log('🧹 Scanning scene for furniture objects...');
       wizardSceneRef.current.traverse((object) => {
         if (object.userData?.type === 'furniture') {
-          console.log('🧹 Found furniture object:', {
-            id: object.userData.furnitureId,
-            type: object.userData.furnitureType,
-            name: object.userData.furnitureName
-          });
           furnitureObjectsToRemove.push(object);
         }
       });
       
-      console.log(`🧹 Furniture objects found: ${furnitureObjectsToRemove.length}`);
-      
       // Remove each furniture object with proper cleanup
-      furnitureObjectsToRemove.forEach((furnitureGroup, index) => {
-        console.log(`🧹 Removing furniture ${index + 1}/${furnitureObjectsToRemove.length}:`, furnitureGroup.userData.furnitureId);
+      furnitureObjectsToRemove.forEach((furnitureGroup) => {
         
         // Special cleanup for vents with special rendering properties
         if (furnitureGroup.userData.furnitureType === 'vent') {
@@ -1913,20 +1901,13 @@ export default function WizardDesign() {
         
         // Remove furniture object from scene
         wizardSceneRef.current.remove(furnitureGroup);
-        console.log(`🧹 Removed furniture object:`, furnitureGroup.userData.furnitureId);
       });
-      
-      console.log(`🧹 3D scene cleanup complete: ${furnitureObjectsToRemove.length} furniture objects removed`);
-    } else {
-      console.log('❌ No scene reference available for furniture cleanup');
     }
     
-    // PASO 3: NOW reset the store (this will trigger Canvas3D useEffect but furniture already removed)
-    console.log('🧹 Resetting room store...');
+    // Reset the store (this will trigger Canvas3D useEffect but furniture already removed)
     storeReset();
     
-    // PASO 4: Clear all custom furniture definitions
-    console.log('🧹 Clearing custom furniture definitions...');
+    // Clear all custom furniture definitions
     customFurnitureStore.clearAllDefinitions();
     
     // PASO 5: CRÍTICO - Sincronizar currentFloor del store con ground
@@ -2377,9 +2358,7 @@ export default function WizardDesign() {
               onToggleFurnitureEraserMode={handleToggleFurnitureEraserMode}
               // Pass wizard scene callback to RoomSketchPro for proper scene reference
               onWizardSceneReady={(scene) => {
-                console.log('🧙‍♂️ WIZARD: onSceneReady callback triggered via RoomSketchPro, scene:', !!scene);
                 wizardSceneRef.current = scene;
-                console.log('🧙‍♂️ WIZARD: Scene reference set in wizard state, wizardSceneRef.current:', !!wizardSceneRef.current);
               }}
             />
           ) : tab === "2d-editor" ? (
@@ -2437,9 +2416,7 @@ export default function WizardDesign() {
               onDeleteAirEntry={handleDeleteAirEntryFrom3D}
               onViewChange={handleViewChange}
               onSceneReady={(scene, renderer, camera) => {
-                console.log('🧙‍♂️ WIZARD: onSceneReady callback triggered, scene:', !!scene, 'renderer:', !!renderer, 'camera:', !!camera);
                 wizardSceneRef.current = scene;
-                console.log('🧙‍♂️ WIZARD: Scene reference set in wizard state, wizardSceneRef.current:', !!wizardSceneRef.current);
               }}
               onFurnitureAdd={handleFurnitureAdd}
               onUpdateFurniture={handleFurnitureUpdate}

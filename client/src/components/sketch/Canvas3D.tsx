@@ -1221,11 +1221,6 @@ export default function Canvas3D({
       const model = createFurnitureModel(furnitureItem, scene, onDeleteFurniture);
       
       if (model) {
-        console.log('🪑 Furniture added to scene:', {
-          id: furnitureItem.id,
-          type: furnitureItem.type,
-          userData: model.userData
-        });
         
         // Add furniture via callback
         if (onFurnitureAdd && typeof onFurnitureAdd === 'function') {
@@ -2469,13 +2464,9 @@ export default function Canvas3D({
   }, [onViewChange, handleViewChange]);
 
   useEffect(() => {
-    console.log('🎬 Canvas3D: useEffect starting, containerRef:', !!containerRef.current);
     if (!containerRef.current) {
-      console.log('🎬 Canvas3D: No container ref, exiting useEffect');
       return;
     }
-
-    console.log('🎬 Canvas3D: Initializing scene...');
     // Initialize scene
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xf8fafc);
@@ -2800,20 +2791,12 @@ export default function Canvas3D({
     animate();
 
     // Notify parent component that scene is ready (for both RSP and wizard design)
-    console.log('🎬 Canvas3D: About to check onSceneReady callback, available:', !!onSceneReady);
-    console.log('🎬 Canvas3D: onSceneReady function type:', typeof onSceneReady);
-    console.log('🎬 Canvas3D: onSceneReady function string:', onSceneReady?.toString().substring(0, 100));
     if (onSceneReady) {
-      console.log('🎬 Canvas3D: Calling onSceneReady callback with scene');
       try {
-        const result = onSceneReady(scene, renderer, camera);
-        console.log('🎬 Canvas3D: onSceneReady callback result:', result);
-        console.log('🎬 Canvas3D: onSceneReady callback completed successfully');
+        onSceneReady(scene, renderer, camera);
       } catch (error) {
-        console.error('🎬 Canvas3D: Error in onSceneReady callback:', error);
+        console.error('Canvas3D: Error in onSceneReady callback:', error);
       }
-    } else {
-      console.log('🎬 Canvas3D: No onSceneReady callback provided');
     }
 
     // Handle resize
