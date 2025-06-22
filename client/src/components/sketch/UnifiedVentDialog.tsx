@@ -66,7 +66,7 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
     const scale = props.initialValues?.scale || { x: 1, y: 1, z: 1 };
     return {
       width: scale.x * 50,
-      height: scale.z * 50
+      height: scale.y * 50  // Corrected: Height maps to Y (vertical) not Z (depth)
     };
   });
 
@@ -75,7 +75,7 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
     const scale = props.initialValues?.scale || { x: 1, y: 1, z: 1 };
     const newDimensions = {
       width: scale.x * 50,
-      height: scale.z * 50
+      height: scale.y * 50  // Corrected: Height maps to Y (vertical) not Z (depth)
     };
     
     if (newDimensions.width !== currentDimensions.width || 
@@ -110,7 +110,7 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
   const mapFromAirEntryFormat = (airEntryData: any) => {
     // Calculate scale from current dimensions state
     const newScaleX = (airEntryData.width || currentDimensions.width) / 50; // width to scale.x
-    const newScaleZ = (airEntryData.height || currentDimensions.height) / 50; // height to scale.z
+    const newScaleY = (airEntryData.height || currentDimensions.height) / 50; // height to scale.y (corrected)
     
     const furnitureData = {
       name: props.initialValues?.name || 'Vent',
@@ -118,8 +118,8 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
       rotation: props.initialValues?.rotation || { x: 0, y: 0, z: 0 },
       scale: { 
         x: newScaleX, 
-        y: props.initialValues?.scale?.y || 1, // Keep Y scale unchanged
-        z: newScaleZ 
+        y: newScaleY, // Height controls Y scale (vertical)
+        z: props.initialValues?.scale?.z || 1  // Keep Z scale unchanged (depth)
       },
       properties: {
         temperature: airEntryData.properties?.temperature || 20
@@ -167,12 +167,12 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
         
         if (props.onScaleUpdate) {
           const newScaleX = updatedDimensions.width / 50;
-          const newScaleZ = updatedDimensions.height / 50;
+          const newScaleY = updatedDimensions.height / 50;  // Corrected: Height to Y scale
           
           props.onScaleUpdate({
             x: newScaleX,
-            y: props.initialValues?.scale?.y || 1,
-            z: newScaleZ
+            y: newScaleY,  // Height controls Y scale (vertical)
+            z: props.initialValues?.scale?.z || 1  // Keep Z scale unchanged (depth)
           });
         }
       }}
