@@ -452,7 +452,6 @@ export function RoomSketchPro({
 
   // Callback when Canvas3D scene is ready
   const handleSceneReady = (scene: THREE.Scene, renderer: THREE.WebGLRenderer, camera: THREE.Camera) => {
-
     sceneRef.current = scene;
     rendererRef.current = renderer;
     cameraRef.current = camera;
