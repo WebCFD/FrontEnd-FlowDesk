@@ -5757,13 +5757,21 @@ export default function Canvas3D({
           wallContext={editingAirEntry.wallContext}
           onPositionUpdate={(newPosition) => {
             // Phase 5: Real-time position updates in 3D scene
-            if (!editingAirEntry || !onUpdateAirEntry) return;
+            console.log('Canvas3D: 2D AirEntry onPositionUpdate called with:', newPosition);
+            console.log('Canvas3D: editingAirEntry exists:', !!editingAirEntry);
+            console.log('Canvas3D: onUpdateAirEntry exists:', !!onUpdateAirEntry);
+            
+            if (!editingAirEntry || !onUpdateAirEntry) {
+              console.log('Canvas3D: Missing editingAirEntry or onUpdateAirEntry - skipping update');
+              return;
+            }
             
             const updatedEntry = {
               ...editingAirEntry.entry,
               position: newPosition
             };
             
+            console.log('Canvas3D: Calling onUpdateAirEntry for 2D vent with:', updatedEntry);
             // Update the entry via parent callback
             onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
             

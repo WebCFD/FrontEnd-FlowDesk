@@ -1,0 +1,35 @@
+Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4426 Double-click found entry using stored entryIndex: 0
+Canvas3D.tsx:4416 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4426 Double-click found entry using stored entryIndex: 0
+AirEntryDialog.tsx:161 AirEntryDialog: Mode is airEntry using default position
+AirEntryDialog.tsx:237 2D Vent: Calling onPositionUpdate with 2D coords: {x: 426.3212966575998, y: 104.29736311613914}
+AirEntryDialog.tsx:238 2D Vent: Mode is: airEntry
+AirEntryDialog.tsx:237 2D Vent: Calling onPositionUpdate with 2D coords: {x: 423.4171133577272, y: 104.36049753570158}
+AirEntryDialog.tsx:238 2D Vent: Mode is: airEntry
+AirEntryDialog.tsx:237 2D Vent: Calling onPositionUpdate with 2D coords: {x: 420.51293005785453, y: 104.42363195526403}
+AirEntryDialog.tsx:238 2D Vent: Mode is: airEntry
+AirEntryDialog.tsx:237 2D Vent: Calling onPositionUpdate with 2D coords: {x: 417.60874675798186, y: 104.48676637482649}
+AirEntryDialog.tsx:238 2D Vent: Mode is: airEntry
+AirEntryDialog.tsx:237 2D Vent: Calling onPositionUpdate with 2D coords: {x: 414.7045634581093, y: 104.54990079438893}
+AirEntryDialog.tsx:238 2D Vent: Mode is: airEntry
+AirEntryDialog.tsx:237 2D Vent: Calling onPositionUpdate with 2D coords: {x: 411.80038015823663, y: 104.61303521395138}
+AirEntryDialog.tsx:238 2D Vent: Mode is: airEntry
+AirEntryDialog.tsx:237 2D Vent: Calling onPositionUpdate with 2D coords: {x: 408.89619685836396, y: 104.67616963351382}
+AirEntryDialog.tsx:238 2D Vent: Mode is: airEntry
+AirEntryDialog.tsx:237 2D Vent: Calling onPositionUpdate with 2D coords: {x: 405.99201355849135, y: 104.73930405307627}
+AirEntryDialog.tsx:238 2D Vent: Mode is: airEntry
+AirEntryDialog.tsx:237 2D Vent: Calling onPositionUpdate with 2D coords: {x: 403.08783025861874, y: 104.80243847263873}
+AirEntryDialog.tsx:238 2D Vent: Mode is: airEntry
+AirEntryDialog.tsx:237 2D Vent: Calling onPositionUpdate with 2D coords: {x: 400.18364695874607, y: 104.86557289220117}
+AirEntryDialog.tsx:238 2D Vent: Mode is: airEntry
+AirEntryDialog.tsx:237 2D Vent: Calling onPositionUpdate with 2D coords: {x: 397.2794636588734, y: 104.92870731176362}
+AirEntryDialog.tsx:238 2D Vent: Mode is: airEntry
+AirEntryDialog.tsx:237 2D Vent: Calling onPositionUpdate with 2D coords: {x: 394.37528035900084, y: 104.99184173132608}
+AirEntryDialog.tsx:238 2D Vent: Mode is: airEntry
+AirEntryDialog.tsx:237 2D Vent: Calling onPositionUpdate with 2D coords: {x: 391.47109705912817, y: 105.05497615088852}
+AirEntryDialog.tsx:238 2D Vent: Mode is: airEntry
+AirEntryDialog.tsx:237 2D Vent: Calling onPositionUpdate with 2D coords: {x: 388.56691375925556, y: 105.11811057045097}
+AirEntryDialog.tsx:238 2D Vent: Mode is: airEntry
+AirEntryDialog.tsx:237 2D Vent: Calling onPositionUpdate with 2D coords: {x: 385.6627304593829, y: 105.18124499001341}
+AirEntryDialog.tsx:238 2D Vent: Mode is: airEntry
