@@ -2356,6 +2356,11 @@ export default function WizardDesign() {
               onDeleteFurniture={handleFurnitureDelete}
               isFurnitureEraserMode={isFurnitureEraserMode}
               onToggleFurnitureEraserMode={handleToggleFurnitureEraserMode}
+              // Add onFloorsUpdate callback to enable 2D vent real-time updates in RSP
+              onFloorsUpdate={(updatedFloors) => {
+                console.log('wizard-design: Received floors update from RSP:', updatedFloors);
+                useRoomStore.getState().setFloors(updatedFloors);
+              }}
               // Pass wizard scene callback to RoomSketchPro for proper scene reference
               onWizardSceneReady={(scene) => {
                 wizardSceneRef.current = scene;
