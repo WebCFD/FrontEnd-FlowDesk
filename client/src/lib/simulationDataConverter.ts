@@ -535,9 +535,9 @@ export function generateSimulationData(
           z: cmToM(obj.position.z)  // Direct conversion: cm to meters
         },
         rotation: {
-          x: obj.rotation.x || 0,
-          y: obj.rotation.y || 0,
-          z: obj.rotation.z || 0
+          x: (obj.rotation.x || 0) * (180 / Math.PI), // Convert radians to degrees
+          y: (obj.rotation.y || 0) * (180 / Math.PI), // Convert radians to degrees
+          z: (obj.rotation.z || 0) * (180 / Math.PI)  // Convert radians to degrees
         },
         scale: {
           x: obj.scale?.x || 1,
