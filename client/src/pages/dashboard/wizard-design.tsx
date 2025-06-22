@@ -1874,7 +1874,7 @@ export default function WizardDesign() {
       
       // Scan scene for furniture objects
       console.log('🧹 Scanning scene for furniture objects...');
-      sceneRef.current.traverse((object) => {
+      wizardSceneRef.current.traverse((object) => {
         if (object.userData?.type === 'furniture') {
           console.log('🧹 Found furniture object:', {
             id: object.userData.furnitureId,
@@ -2431,8 +2431,8 @@ export default function WizardDesign() {
               onViewChange={handleViewChange}
               onSceneReady={(scene, renderer, camera) => {
                 console.log('🧙‍♂️ WIZARD: onSceneReady callback triggered, scene:', !!scene, 'renderer:', !!renderer, 'camera:', !!camera);
-                sceneRef.current = scene;
-                console.log('🧙‍♂️ WIZARD: Scene reference set in wizard state, sceneRef.current:', !!sceneRef.current);
+                wizardSceneRef.current = scene;
+                console.log('🧙‍♂️ WIZARD: Scene reference set in wizard state, wizardSceneRef.current:', !!wizardSceneRef.current);
               }}
               onFurnitureAdd={handleFurnitureAdd}
               onUpdateFurniture={handleFurnitureUpdate}
