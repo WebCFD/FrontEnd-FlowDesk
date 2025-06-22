@@ -153,8 +153,19 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   const [elementPosition, setElementPosition] = useState({ x: 0, y: 0 });
   
   // Estado para las coordenadas 3D del elemento (para modo furnVent)
-  const [element3DPosition, setElement3DPosition] = useState({ x: 0, y: 0, z: 0 });
-  const [element3DRotation, setElement3DRotation] = useState({ x: 0, y: 0, z: 0 });
+  const [element3DPosition, setElement3DPosition] = useState(() => {
+    if (mode === 'furnVent' && (props as AirEntryDialogProps).position) {
+      return (props as AirEntryDialogProps).position!;
+    }
+    return { x: 0, y: 0, z: 0 };
+  });
+  
+  const [element3DRotation, setElement3DRotation] = useState(() => {
+    if (mode === 'furnVent' && (props as AirEntryDialogProps).rotation) {
+      return (props as AirEntryDialogProps).rotation!;
+    }
+    return { x: 0, y: 0, z: 0 };
+  });
   
   // Estado para la posición a lo largo del wall (0-100%)
   const [wallPosition, setWallPosition] = useState(50);
