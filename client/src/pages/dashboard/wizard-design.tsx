@@ -317,7 +317,8 @@ export default function WizardDesign() {
   const [isFurnitureEraserMode, setIsFurnitureEraserMode] = useState(false);
 
   // Reference to the 3D scene for furniture cleanup
-  const sceneRef = useRef<THREE.Scene | null>(null);
+  // Use a separate key to ensure this ref is isolated from RoomSketchPro's scene ref
+  const wizardSceneRef = useRef<THREE.Scene | null>(null);
 
   // Estado para el diálogo de datos de simulación
   const [showSimulationDataDialog, setShowSimulationDataDialog] =
@@ -1867,9 +1868,9 @@ export default function WizardDesign() {
     
     // PASO 2: Clear all furniture from 3D scene BEFORE resetting store to avoid useEffect interference
     console.log('🧹 Erase Design: Starting 3D scene furniture cleanup...');
-    console.log('🧹 Scene reference available:', !!sceneRef.current);
+    console.log('🧹 Scene reference available:', !!wizardSceneRef.current);
     
-    if (sceneRef.current) {
+    if (wizardSceneRef.current) {
       const furnitureObjectsToRemove: THREE.Object3D[] = [];
       
       // Scan scene for furniture objects
@@ -1911,7 +1912,7 @@ export default function WizardDesign() {
         }
         
         // Remove furniture object from scene
-        sceneRef.current.remove(furnitureGroup);
+        wizardSceneRef.current.remove(furnitureGroup);
         console.log(`🧹 Removed furniture object:`, furnitureGroup.userData.furnitureId);
       });
       
