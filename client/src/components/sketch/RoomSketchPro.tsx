@@ -61,6 +61,7 @@ interface RoomSketchProProps {
   materialTheme?: "modern" | "classic" | "industrial";
   isFurnitureEraserMode?: boolean;
   onToggleFurnitureEraserMode?: () => void;
+  onWizardSceneReady?: (scene: THREE.Scene) => void; // New prop for wizard scene callback
 }
 
 /**
@@ -90,7 +91,8 @@ export function RoomSketchPro({
   onComponentMount,
   materialTheme = "modern",
   isFurnitureEraserMode = false,
-  onToggleFurnitureEraserMode
+  onToggleFurnitureEraserMode,
+  onWizardSceneReady
 }: RoomSketchProProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedTheme, setSelectedTheme] = useState(materialTheme);
@@ -454,6 +456,11 @@ export function RoomSketchPro({
     sceneRef.current = scene;
     rendererRef.current = renderer;
     cameraRef.current = camera;
+    
+    // Also notify wizard if callback provided
+    if (onWizardSceneReady) {
+      onWizardSceneReady(scene);
+    }
     
     // Wait for walls to be generated before applying textures
     // Use multiple attempts with increasing delays

@@ -2375,6 +2375,12 @@ export default function WizardDesign() {
               onDeleteFurniture={handleFurnitureDelete}
               isFurnitureEraserMode={isFurnitureEraserMode}
               onToggleFurnitureEraserMode={handleToggleFurnitureEraserMode}
+              // Pass wizard scene callback to RoomSketchPro for proper scene reference
+              onWizardSceneReady={(scene) => {
+                console.log('🧙‍♂️ WIZARD: onSceneReady callback triggered via RoomSketchPro, scene:', !!scene);
+                wizardSceneRef.current = scene;
+                console.log('🧙‍♂️ WIZARD: Scene reference set in wizard state, wizardSceneRef.current:', !!wizardSceneRef.current);
+              }}
             />
           ) : tab === "2d-editor" ? (
             <Canvas2D
