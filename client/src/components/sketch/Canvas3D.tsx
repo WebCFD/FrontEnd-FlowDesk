@@ -5802,12 +5802,7 @@ export default function Canvas3D({
         <UnifiedVentDialog
           isOpen={true}
           onClose={() => setEditingFurniture(null)}
-          onConfirm={(data) => {
-            console.log('Canvas3D: Received data from dialog:', data);
-            console.log('Canvas3D: Position from dialog:', data.position);
-            console.log('Canvas3D: Rotation from dialog:', data.rotation);
-            handleFurnitureEdit(editingFurniture.index, data);
-          }}
+          onConfirm={(data) => handleFurnitureEdit(editingFurniture.index, data)}
           isCreationMode={editingFurniture.mode === 'creation'}
           onCancel={() => {
             if (!editingFurniture) return;
@@ -5843,14 +5838,8 @@ export default function Canvas3D({
           onScaleUpdate={handleRealTimeScaleUpdate}
           initialValues={{
             name: editingFurniture.item.name,
-            position: (() => {
-              console.log('Canvas3D: Sending initial position to dialog:', editingFurniture.item.position);
-              return editingFurniture.item.position;
-            })(),
-            rotation: (() => {
-              console.log('Canvas3D: Sending initial rotation to dialog:', editingFurniture.item.rotation);
-              return editingFurniture.item.rotation;
-            })(),
+            position: editingFurniture.item.position,
+            rotation: editingFurniture.item.rotation,
             scale: editingFurniture.item.scale || { x: 1, y: 1, z: 1 },
             properties: editingFurniture.item.properties || {
               temperature: 20,

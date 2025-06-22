@@ -155,19 +155,15 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   // Estado para las coordenadas 3D del elemento (para modo furnVent)
   const [element3DPosition, setElement3DPosition] = useState(() => {
     if (mode === 'furnVent' && (props as AirEntryDialogProps).position) {
-      console.log('AirEntryDialog: Initializing position from props:', (props as AirEntryDialogProps).position);
       return (props as AirEntryDialogProps).position!;
     }
-    console.log('AirEntryDialog: Using default position (0,0,0) - no props.position found');
     return { x: 0, y: 0, z: 0 };
   });
   
   const [element3DRotation, setElement3DRotation] = useState(() => {
     if (mode === 'furnVent' && (props as AirEntryDialogProps).rotation) {
-      console.log('AirEntryDialog: Initializing rotation from props:', (props as AirEntryDialogProps).rotation);
       return (props as AirEntryDialogProps).rotation!;
     }
-    console.log('AirEntryDialog: Using default rotation (0,0,0) - no props.rotation found');
     return { x: 0, y: 0, z: 0 };
   });
   
@@ -696,15 +692,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                             <Input
                               type="number"
                               step="1"
-                              value={(() => {
-                                const val = Math.round(element3DPosition.x * 100) / 100;
-                                console.log('AirEntryDialog: Displaying X position value:', val);
-                                return val;
-                              })()}
+                              value={Math.round(element3DPosition.x * 100) / 100}
                               onChange={(e) => {
                                 const newX = Number(e.target.value);
                                 const newPosition = { ...element3DPosition, x: newX };
-                                console.log('AirEntryDialog: User changed X position to:', newX);
                                 setElement3DPosition(newPosition);
                                 
                                 if ('onPositionUpdate' in props && props.onPositionUpdate) {
