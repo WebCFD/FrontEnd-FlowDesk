@@ -187,6 +187,18 @@ interface FurnitureExport {
     z: number;
   };
   state?: string;
+  simulationProperties?: {
+    flowType?: string;
+    flowValue?: number;
+    flowIntensity?: string;
+    airOrientation?: string;
+    state?: string;
+    customIntensityValue?: number;
+    verticalAngle?: number;
+    horizontalAngle?: number;
+    airTemperature?: number;
+    normalVector?: { x: number; y: number; z: number };
+  };
 }
 
 interface FloorExport {

@@ -4,6 +4,7 @@ import { TrackballControls } from "three/addons/controls/TrackballControls.js";
 import { makeTextSprite } from "@/lib/three-utils";
 import AirEntryDialog from "./AirEntryDialog";
 import FurnitureDialog from "./FurnitureDialog";
+import UnifiedVentDialog from "./UnifiedVentDialog";
 import { ViewDirection } from "./Toolbar3D";
 import { useSceneContext } from "../../contexts/SceneContext";
 import { FurnitureItem, FurnitureCallbacks } from "@shared/furniture-types";
