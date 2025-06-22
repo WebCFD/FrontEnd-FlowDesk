@@ -55,6 +55,7 @@ interface RoomSketchProProps {
   onAirEntryTransparencyChange?: (value: number) => void;
   currentFloor?: string;
   floors?: Record<string, FloorData>;
+  onFloorsUpdate?: (floors: Record<string, FloorData>) => void;
   isMultifloor?: boolean;
   floorParameters?: Record<string, { ceilingHeight: number; floorDeck: number }>;
   onComponentMount?: () => void;
@@ -86,6 +87,7 @@ export function RoomSketchPro({
   onAirEntryTransparencyChange,
   currentFloor = "ground",
   floors,
+  onFloorsUpdate,
   isMultifloor = true,
   floorParameters = {},
   onComponentMount,
@@ -853,10 +855,12 @@ export function RoomSketchPro({
         airEntries: updatedAirEntries,
       };
       
-      // Update floors state to trigger re-render
-      setFloors(updatedFloors);
+      // Update floors via parent callback if available
+      if (onFloorsUpdate) {
+        onFloorsUpdate(updatedFloors);
+      }
     }
-  }, [floors, setFloors]);
+  }, [floors]);
 
   // Theme configurations with different Canvas3D parameters
   const themeConfig = {
