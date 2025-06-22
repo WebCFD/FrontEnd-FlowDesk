@@ -155,10 +155,8 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   // Estado para las coordenadas 3D del elemento (para modo furnVent)
   const [element3DPosition, setElement3DPosition] = useState(() => {
     if (mode === 'furnVent' && (props as AirEntryDialogProps).position) {
-      console.log('AirEntryDialog: Mode is', mode, 'with position props:', (props as AirEntryDialogProps).position);
       return (props as AirEntryDialogProps).position!;
     }
-    console.log('AirEntryDialog: Mode is', mode, 'using default position');
     return { x: 0, y: 0, z: 0 };
   });
   
@@ -234,8 +232,6 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     // Calcular la nueva posición y actualizar en tiempo real
     const newPosition = calculatePositionFromPercentage(newPercentage);
     if (newPosition && props.type !== 'wall' && 'onPositionUpdate' in props && props.onPositionUpdate) {
-      console.log('2D Vent: Calling onPositionUpdate with 2D coords:', newPosition);
-      console.log('2D Vent: Mode is:', mode);
       props.onPositionUpdate(newPosition);
     }
   };
@@ -703,15 +699,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                                 setElement3DPosition(newPosition);
                                 
                                 if ('onPositionUpdate' in props && props.onPositionUpdate) {
-                                  console.log('3D Vent X: Calling onPositionUpdate with 3D coords:', newPosition);
-                                  console.log('3D Vent X: Mode is:', mode);
-                                  console.log('3D Vent X: Callback type:', typeof props.onPositionUpdate);
-                                  try {
-                                    (props.onPositionUpdate as (pos: { x: number; y: number; z: number }) => void)(newPosition);
-                                    console.log('3D Vent X: Callback executed successfully');
-                                  } catch (error) {
-                                    console.error('3D Vent X: Callback failed:', error);
-                                  }
+                                  (props.onPositionUpdate as (pos: { x: number; y: number; z: number }) => void)(newPosition);
                                 }
                               }}
                               className="text-sm"
@@ -729,14 +717,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                                 setElement3DPosition(newPosition);
                                 
                                 if ('onPositionUpdate' in props && props.onPositionUpdate) {
-                                  console.log('3D Vent Y: Calling onPositionUpdate with 3D coords:', newPosition);
-                                  console.log('3D Vent Y: Mode is:', mode);
-                                  try {
-                                    (props.onPositionUpdate as (pos: { x: number; y: number; z: number }) => void)(newPosition);
-                                    console.log('3D Vent Y: Callback executed successfully');
-                                  } catch (error) {
-                                    console.error('3D Vent Y: Callback failed:', error);
-                                  }
+                                  (props.onPositionUpdate as (pos: { x: number; y: number; z: number }) => void)(newPosition);
                                 }
                               }}
                               className="text-sm"
@@ -754,14 +735,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                                 setElement3DPosition(newPosition);
                                 
                                 if ('onPositionUpdate' in props && props.onPositionUpdate) {
-                                  console.log('3D Vent Z: Calling onPositionUpdate with 3D coords:', newPosition);
-                                  console.log('3D Vent Z: Mode is:', mode);
-                                  try {
-                                    (props.onPositionUpdate as (pos: { x: number; y: number; z: number }) => void)(newPosition);
-                                    console.log('3D Vent Z: Callback executed successfully');
-                                  } catch (error) {
-                                    console.error('3D Vent Z: Callback failed:', error);
-                                  }
+                                  (props.onPositionUpdate as (pos: { x: number; y: number; z: number }) => void)(newPosition);
                                 }
                               }}
                               className="text-sm"
