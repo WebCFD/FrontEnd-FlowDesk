@@ -58,9 +58,46 @@ interface UnifiedVentDialogProps {
   onPositionUpdate?: (newPosition: { x: number; y: number; z: number }) => void;
   onRotationUpdate?: (newRotation: { x: number; y: number; z: number }) => void;
   onScaleUpdate?: (newScale: { x: number; y: number; z: number }) => void;
+  debugKey?: string;
 }
 
 export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
+  const {
+    onPositionUpdate,
+    onRotationUpdate,
+    onScaleUpdate,
+    debugKey
+  } = props;
+
+  // Stable callback references to prevent stale closures
+  const stableOnPositionUpdate = useCallback((position: { x: number; y: number; z: number }) => {
+    if (onPositionUpdate) {
+      onPositionUpdate(position);
+    }
+  }, [onPositionUpdate]);
+
+  const stableOnRotationUpdate = useCallback((rotation: { x: number; y: number; z: number }) => {
+    if (onRotationUpdate) {
+      onRotationUpdate(rotation);
+    }
+  }, [onRotationUpdate]);
+
+  const stableOnScaleUpdate = useCallback((scale: { x: number; y: number; z: number }) => {
+    if (onScaleUpdate) {
+      onScaleUpdate(scale);
+    }
+  }, [onScaleUpdate]);
+
+  // Debug effect to track callback updates
+  useEffect(() => {
+    console.log('UnifiedVentDialog: Callbacks updated', {
+      debugKey,
+      hasOnPositionUpdate: !!onPositionUpdate,
+      hasOnRotationUpdate: !!onRotationUpdate,
+      hasOnScaleUpdate: !!onScaleUpdate
+    });
+  }, [onPositionUpdate, onRotationUpdate, onScaleUpdate, debugKey]);
+
   // State to track current dimensions for accurate real-time updates
   const [currentDimensions, setCurrentDimensions] = useState(() => {
     const scale = props.initialValues?.scale || { x: 1, y: 1, z: 1 };
@@ -168,29 +205,23 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
         
         setCurrentDimensions(updatedDimensions);
         
-        if (props.onScaleUpdate) {
-          const newScaleX = updatedDimensions.width / 50;
-          const newScaleY = updatedDimensions.height / 50;  // Corrected: Height to Y scale
-          
-          props.onScaleUpdate({
-            x: newScaleX,
-            y: newScaleY,  // Height controls Y scale (vertical)
-            z: props.initialValues?.scale?.z || 1  // Keep Z scale unchanged (depth)
-          });
-        }
+        const newScaleX = updatedDimensions.width / 50;
+        const newScaleY = updatedDimensions.height / 50;  // Corrected: Height to Y scale
+        
+        stableOnScaleUpdate({
+          x: newScaleX,
+          y: newScaleY,  // Height controls Y scale (vertical)
+          z: props.initialValues?.scale?.z || 1  // Keep Z scale unchanged (depth)
+        });
       }}
       // Add position and rotation update callbacks for real-time updates
       onPositionUpdate={(newPosition) => {
-        setCurrentPosition(newPosition); // Update current state
-        if (props.onPositionUpdate) {
-          props.onPositionUpdate(newPosition);
-        }
+        setCurrentPosition(newPosition);
+        stableOnPositionUpdate(newPosition);
       }}
       onRotationUpdate={(newRotation) => {
-        setCurrentRotation(newRotation); // Update current state
-        if (props.onRotationUpdate) {
-          props.onRotationUpdate(newRotation);
-        }
+        setCurrentRotation(newRotation);
+        stableOnRotationUpdate(newRotation);
       }}
       // Pass floor context for Information section
       floorContext={props.floorContext}
