@@ -1794,6 +1794,7 @@ export default function Canvas3D({
       height: number;
       distanceToFloor?: number;
       shape?: 'rectangular' | 'circular';
+      wallPosition?: number;
       properties?: {
         state?: 'open' | 'closed';
         temperature?: number;
@@ -1814,6 +1815,7 @@ export default function Canvas3D({
         height: data.height,
         distanceToFloor: data.distanceToFloor,
         ...(data.shape && { shape: data.shape }),
+        ...(data.wallPosition !== undefined && { wallPosition: data.wallPosition }),
       },
       ...(data.properties && { properties: data.properties }),
     };
@@ -1840,6 +1842,8 @@ export default function Canvas3D({
 
     console.log(`[DIMENSION STORAGE] Stored dimensions for entry ${index}:`, 
       JSON.stringify(updatedAirEntryPositionsRef.current[normalizedFloorName][index]));
+    console.log(`[WALL POSITION STORAGE] wallPosition in data:`, data.wallPosition);
+    console.log(`[WALL POSITION STORAGE] wallPosition in updatedEntry.dimensions:`, updatedEntry.dimensions.wallPosition);
 
     // Call the parent component's handler
     onUpdateAirEntry(currentFloor, index, updatedEntry);
