@@ -1,0 +1,24 @@
+wizard-design.tsx:1014 Updating air entry in floor ground, index 0
+wizard-design.tsx:1017 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1068 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+wizard-design.tsx:1014 Updating air entry in floor ground, index 0
+wizard-design.tsx:1017 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1068 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+wizard-design.tsx:1014 Updating air entry in floor ground, index 0
+wizard-design.tsx:1017 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1068 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+wizard-design.tsx:1014 Updating air entry in floor ground, index 0
+wizard-design.tsx:1017 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1068 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+wizard-design.tsx:1014 Updating air entry in floor ground, index 0
+wizard-design.tsx:1017 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1068 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+wizard-design.tsx:1014 Updating air entry in floor ground, index 0
+wizard-design.tsx:1017 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1068 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+wizard-design.tsx:1014 Updating air entry in floor ground, index 0
+wizard-design.tsx:1017 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1068 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+wizard-design.tsx:1014 Updating air entry in floor ground, index 0
+wizard-design.tsx:1017 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1068 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
