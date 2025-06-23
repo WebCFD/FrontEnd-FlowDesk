@@ -1400,11 +1400,62 @@ export default function Canvas3D({
       }
     };
     
+    // Store the updated dimensions in the reference for immediate visual update
+    const normalizedFloorName = normalizeFloorName(currentFloor);
+    if (!updatedAirEntryPositionsRef.current[normalizedFloorName]) {
+      updatedAirEntryPositionsRef.current[normalizedFloorName] = {};
+    }
+    
+    // Update or create entry with new dimensions
+    if (!updatedAirEntryPositionsRef.current[normalizedFloorName][editingAirEntry.index]) {
+      updatedAirEntryPositionsRef.current[normalizedFloorName][editingAirEntry.index] = {
+        position: editingAirEntry.entry.position,
+        dimensions: updatedEntry.dimensions
+      };
+    } else {
+      updatedAirEntryPositionsRef.current[normalizedFloorName][editingAirEntry.index].dimensions = updatedEntry.dimensions;
+    }
+    
     // Update local state immediately for responsiveness
     setEditingAirEntry(prev => prev ? {
       ...prev,
       entry: updatedEntry
     } : null);
+    
+    // Force immediate geometry and position updates for visual feedback
+    const currentFloorData = migratedFloors[currentFloor];
+    if (currentFloorData && sceneRef.current) {
+      // Find and update the specific air entry mesh
+      sceneRef.current.traverse((object) => {
+        if (object instanceof THREE.Mesh && 
+            object.userData?.type === editingAirEntry.entry.type &&
+            object.userData?.entryIndex === editingAirEntry.index) {
+          
+          // Update geometry if width or height changed
+          if (newDimensions.width !== undefined || newDimensions.height !== undefined) {
+            const newWidth = newDimensions.width || updatedEntry.dimensions.width;
+            const newHeight = newDimensions.height || updatedEntry.dimensions.height;
+            
+            const newGeometry = new THREE.PlaneGeometry(newWidth, newHeight);
+            object.geometry.dispose(); // Clean up old geometry
+            object.geometry = newGeometry;
+          }
+          
+          // Update Z-position if distanceToFloor changed
+          if (newDimensions.distanceToFloor !== undefined && editingAirEntry.entry.type !== "door") {
+            const baseHeight = getFloorBaseHeight(currentFloor);
+            const newDistanceToFloor = newDimensions.distanceToFloor;
+            const height = newDimensions.height || updatedEntry.dimensions.height;
+            const newZPosition = baseHeight + newDistanceToFloor + height / 2;
+            
+            object.position.setZ(newZPosition);
+          }
+          
+          // Update userData with new dimensions
+          object.userData.dimensions = updatedEntry.dimensions;
+        }
+      });
+    }
     
     // Debounce parent callback to prevent excessive updates
     updateTimeoutRef.current = setTimeout(() => {
@@ -1412,7 +1463,7 @@ export default function Canvas3D({
         onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
       }
     }, 150);
-  }, [editingAirEntry, onUpdateAirEntry, currentFloor]);
+  }, [editingAirEntry, onUpdateAirEntry, currentFloor, migratedFloors]);
 
   // Cleanup timeout on unmount
   useEffect(() => {
