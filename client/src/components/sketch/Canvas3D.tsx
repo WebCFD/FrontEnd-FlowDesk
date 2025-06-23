@@ -1322,21 +1322,17 @@ export default function Canvas3D({
     // State change monitoring for air entry dialogs
   }, [editingAirEntry]);
 
-  // Debounce mechanism to prevent infinite loops
+  // Debounce mechanism to prevent excessive parent updates
   const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const isUpdatingRef = useRef(false);
 
   // Stable callbacks for AirEntry dialog real-time updates
   const handleAirEntryPositionUpdate = useCallback((newPosition: any) => {
-    if (!editingAirEntry || !onUpdateAirEntry || isUpdatingRef.current) return;
+    if (!editingAirEntry || !onUpdateAirEntry) return;
     
     // Clear any pending updates
     if (updateTimeoutRef.current) {
       clearTimeout(updateTimeoutRef.current);
     }
-    
-    // Set updating flag to prevent cascading updates
-    isUpdatingRef.current = true;
     
     const updatedEntry = {
       ...editingAirEntry.entry,
@@ -1349,29 +1345,21 @@ export default function Canvas3D({
       entry: updatedEntry
     } : null);
     
-    // Debounce parent callback to prevent loops
+    // Debounce parent callback to prevent excessive updates
     updateTimeoutRef.current = setTimeout(() => {
-      onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
-      isUpdatingRef.current = false;
-    }, 100);
+      if (onUpdateAirEntry && editingAirEntry) {
+        onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
+      }
+    }, 150);
   }, [editingAirEntry, onUpdateAirEntry, currentFloor]);
 
   const handleAirEntryDimensionsUpdate = useCallback((newDimensions: any) => {
-    if (!editingAirEntry || !onUpdateAirEntry || isUpdatingRef.current) return;
-    
-    console.log('[REALTIME-TEST] Canvas3D received dimensions update', { 
-      newDimensions, 
-      currentEntry: editingAirEntry.entry.dimensions,
-      timestamp: Date.now() 
-    });
+    if (!editingAirEntry || !onUpdateAirEntry) return;
     
     // Clear any pending updates
     if (updateTimeoutRef.current) {
       clearTimeout(updateTimeoutRef.current);
     }
-    
-    // Set updating flag to prevent cascading updates
-    isUpdatingRef.current = true;
     
     const updatedEntry = {
       ...editingAirEntry.entry,
@@ -1381,20 +1369,18 @@ export default function Canvas3D({
       }
     };
     
-    console.log('[REALTIME-TEST] About to update 3D visualization', { updatedEntry: updatedEntry.dimensions });
-    
     // Update local state immediately for responsiveness
     setEditingAirEntry(prev => prev ? {
       ...prev,
       entry: updatedEntry
     } : null);
     
-    // Debounce parent callback to prevent loops
+    // Debounce parent callback to prevent excessive updates
     updateTimeoutRef.current = setTimeout(() => {
-      console.log('[REALTIME-TEST] Calling parent onUpdateAirEntry after debounce');
-      onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
-      isUpdatingRef.current = false;
-    }, 100);
+      if (onUpdateAirEntry && editingAirEntry) {
+        onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
+      }
+    }, 150);
   }, [editingAirEntry, onUpdateAirEntry, currentFloor]);
 
   // Cleanup timeout on unmount
