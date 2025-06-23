@@ -5896,9 +5896,17 @@ export default function Canvas3D({
           isOpen={true}
           onClose={() => setEditingAirEntry(null)}
           onCancel={() => setEditingAirEntry(null)}
-          onConfirm={(data) =>
-            handleAirEntryEdit(editingAirEntry.index, data as any)
-          }
+          onConfirm={(data) => {
+            console.log('[CANVAS3D ONCONFIRM] Received data from dialog:', data);
+            handleAirEntryEdit(editingAirEntry.index, {
+              width: data.width,
+              height: data.height,
+              distanceToFloor: data.distanceToFloor,
+              shape: data.shape,
+              wallPosition: data.wallPosition,
+              properties: data.properties
+            } as any);
+          }}
           initialValues={{
             ...editingAirEntry.entry.dimensions,
             shape: (editingAirEntry.entry.dimensions as any).shape,
