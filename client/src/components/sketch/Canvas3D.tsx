@@ -5758,45 +5758,79 @@ export default function Canvas3D({
           currentFloor={currentFloor}
           isEditing={true}
           wallContext={editingAirEntry.wallContext}
-          onPositionUpdate={(newPosition) => {
-            // Phase 5: Real-time position updates in 3D scene
-            if (!editingAirEntry || !onUpdateAirEntry) return;
-            
-            const updatedEntry = {
-              ...editingAirEntry.entry,
-              position: newPosition
-            };
-            
-            // Update the entry via parent callback
-            onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
-            
-            // Update local state for dialog consistency
-            setEditingAirEntry({
-              ...editingAirEntry,
-              entry: updatedEntry
+          onPositionUpdate={(() => {
+            console.log('[AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog', {
+              timestamp: Date.now(),
+              entryIndex: editingAirEntry.index,
+              entryType: editingAirEntry.entry.type
             });
-          }}
-          onDimensionsUpdate={(newDimensions) => {
-            // Real-time dimension updates in 3D scene
-            if (!editingAirEntry || !onUpdateAirEntry) return;
-            
-            const updatedEntry = {
-              ...editingAirEntry.entry,
-              dimensions: {
-                ...editingAirEntry.entry.dimensions,
-                ...newDimensions
+            return (newPosition: any) => {
+              console.log('[AIRENTRY-CALLBACK-DEBUG] onPositionUpdate called', {
+                timestamp: Date.now(),
+                newPosition,
+                hasCallback: !!onUpdateAirEntry,
+                hasEditingAirEntry: !!editingAirEntry
+              });
+              
+              // Phase 5: Real-time position updates in 3D scene
+              if (!editingAirEntry || !onUpdateAirEntry) {
+                console.log('[AIRENTRY-CALLBACK-DEBUG] WARNING: Missing editingAirEntry or onUpdateAirEntry callback');
+                return;
               }
+              
+              const updatedEntry = {
+                ...editingAirEntry.entry,
+                position: newPosition
+              };
+              
+              // Update the entry via parent callback
+              onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
+              
+              // Update local state for dialog consistency
+              setEditingAirEntry({
+                ...editingAirEntry,
+                entry: updatedEntry
+              });
             };
-            
-            // Update the entry via parent callback
-            onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
-            
-            // Update local state for dialog consistency
-            setEditingAirEntry({
-              ...editingAirEntry,
-              entry: updatedEntry
+          })()}
+          onDimensionsUpdate={(() => {
+            console.log('[AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog', {
+              timestamp: Date.now(),
+              entryIndex: editingAirEntry.index,
+              entryType: editingAirEntry.entry.type
             });
-          }}
+            return (newDimensions: any) => {
+              console.log('[AIRENTRY-CALLBACK-DEBUG] onDimensionsUpdate called', {
+                timestamp: Date.now(),
+                newDimensions,
+                hasCallback: !!onUpdateAirEntry,
+                hasEditingAirEntry: !!editingAirEntry
+              });
+              
+              // Real-time dimension updates in 3D scene
+              if (!editingAirEntry || !onUpdateAirEntry) {
+                console.log('[AIRENTRY-CALLBACK-DEBUG] WARNING: Missing editingAirEntry or onUpdateAirEntry callback');
+                return;
+              }
+              
+              const updatedEntry = {
+                ...editingAirEntry.entry,
+                dimensions: {
+                  ...editingAirEntry.entry.dimensions,
+                  ...newDimensions
+                }
+              };
+              
+              // Update the entry via parent callback
+              onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
+              
+              // Update local state for dialog consistency
+              setEditingAirEntry({
+                ...editingAirEntry,
+                entry: updatedEntry
+              });
+            };
+          })()}
         />
       )}
 

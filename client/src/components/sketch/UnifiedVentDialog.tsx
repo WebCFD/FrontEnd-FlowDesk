@@ -71,58 +71,26 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
 
   // Stable callback references to prevent stale closures
   const stableOnPositionUpdate = useCallback((position: { x: number; y: number; z: number }) => {
-    console.log('[UNIFIED-VENT-DEBUG] stableOnPositionUpdate called', {
-      timestamp: Date.now(),
-      position,
-      hasCallback: !!onPositionUpdate
-    });
     if (onPositionUpdate) {
       onPositionUpdate(position);
-    } else {
-      console.log('[UNIFIED-VENT-DEBUG] WARNING: onPositionUpdate callback is null/undefined');
     }
   }, [onPositionUpdate]);
 
   const stableOnRotationUpdate = useCallback((rotation: { x: number; y: number; z: number }) => {
-    console.log('[UNIFIED-VENT-DEBUG] stableOnRotationUpdate called', {
-      timestamp: Date.now(),
-      rotation,
-      hasCallback: !!onRotationUpdate
-    });
     if (onRotationUpdate) {
       onRotationUpdate(rotation);
-    } else {
-      console.log('[UNIFIED-VENT-DEBUG] WARNING: onRotationUpdate callback is null/undefined');
     }
   }, [onRotationUpdate]);
 
   const stableOnScaleUpdate = useCallback((scale: { x: number; y: number; z: number }) => {
-    console.log('[UNIFIED-VENT-DEBUG] stableOnScaleUpdate called', {
-      timestamp: Date.now(),
-      scale,
-      hasCallback: !!onScaleUpdate
-    });
     if (onScaleUpdate) {
       onScaleUpdate(scale);
-    } else {
-      console.log('[UNIFIED-VENT-DEBUG] WARNING: onScaleUpdate callback is null/undefined');
     }
   }, [onScaleUpdate]);
 
-  // Debug effect to track callback updates
+  // Track callback updates (cleaned up)
   useEffect(() => {
-    console.log('[UNIFIED-VENT-DEBUG] Callbacks updated', {
-      timestamp: Date.now(),
-      debugKey,
-      hasOnPositionUpdate: !!onPositionUpdate,
-      hasOnRotationUpdate: !!onRotationUpdate,
-      hasOnScaleUpdate: !!onScaleUpdate,
-      callbackFunctions: {
-        onPositionUpdate: onPositionUpdate?.toString().slice(0, 100),
-        onRotationUpdate: onRotationUpdate?.toString().slice(0, 100),
-        onScaleUpdate: onScaleUpdate?.toString().slice(0, 100)
-      }
-    });
+    // Callback monitoring for debugging
   }, [onPositionUpdate, onRotationUpdate, onScaleUpdate, debugKey]);
 
   // State to track current dimensions for accurate real-time updates
