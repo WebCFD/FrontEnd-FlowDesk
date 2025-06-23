@@ -602,10 +602,12 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   useEffect(() => {
     return () => {
       console.log('🎭 AirEntryDialog: Component unmounting - cleaning up all event listeners');
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      // Event listeners are cleaned up within handleMouseDown's handleMouseUp function
+      // This is just a safety cleanup for any potential remaining listeners
+      draggingRef.current = false;
+      setIsDragging(false);
     };
-  }, [handleMouseMove, handleMouseUp]);
+  }, []);
 
 
 
