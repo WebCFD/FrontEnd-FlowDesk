@@ -5238,7 +5238,8 @@ export default function Canvas3D({
 
     // Double-click handler for furniture editing
     const handleFurnitureDoubleClick = (event: MouseEvent) => {
-
+      console.log('🎯 Canvas3D: Double-click detected');
+      console.log('🎯 Canvas3D: Current editingFurniture state:', editingFurniture);
       
       // Allow furniture editing even in presentation mode for selective editing
       // Other editing interactions remain disabled in presentation mode
@@ -5496,7 +5497,15 @@ export default function Canvas3D({
 
   // Real-time update functions for furniture editing
   const handleRealTimePositionUpdate = (newPosition: { x: number; y: number; z: number }) => {
-    if (!editingFurniture || !sceneRef.current) return;
+    console.log('🔄 Canvas3D: handleRealTimePositionUpdate called');
+    console.log('🔄 Canvas3D: newPosition:', newPosition);
+    console.log('🔄 Canvas3D: editingFurniture exists:', !!editingFurniture);
+    console.log('🔄 Canvas3D: sceneRef.current exists:', !!sceneRef.current);
+    
+    if (!editingFurniture || !sceneRef.current) {
+      console.log('❌ Canvas3D: Exiting handleRealTimePositionUpdate - missing editingFurniture or scene');
+      return;
+    }
 
     const furnitureId = editingFurniture.item.id;
     let furnitureGroup: THREE.Group | null = null;
@@ -5536,7 +5545,14 @@ export default function Canvas3D({
   };
 
   const handleRealTimeRotationUpdate = (newRotation: { x: number; y: number; z: number }) => {
-    if (!editingFurniture || !sceneRef.current) return;
+    console.log('🔄 Canvas3D: handleRealTimeRotationUpdate called');
+    console.log('🔄 Canvas3D: newRotation:', newRotation);
+    console.log('🔄 Canvas3D: editingFurniture exists:', !!editingFurniture);
+    
+    if (!editingFurniture || !sceneRef.current) {
+      console.log('❌ Canvas3D: Exiting handleRealTimeRotationUpdate - missing editingFurniture or scene');
+      return;
+    }
 
     const furnitureId = editingFurniture.item.id;
     let furnitureGroup: THREE.Group | null = null;
