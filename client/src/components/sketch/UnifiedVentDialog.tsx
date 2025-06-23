@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import AirEntryDialog from './AirEntryDialog';
 import type { FurnitureItem } from '@shared/furniture-types';
 
