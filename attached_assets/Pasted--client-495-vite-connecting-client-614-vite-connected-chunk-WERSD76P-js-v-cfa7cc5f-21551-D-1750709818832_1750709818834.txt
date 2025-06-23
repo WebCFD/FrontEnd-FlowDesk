@@ -1,0 +1,268 @@
+
+﻿
+client:495 [vite] connecting...
+client:614 [vite] connected.
+chunk-WERSD76P.js?v=cfa7cc5f:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+AnalyticsProvider.tsx:21 Analytics initialized: false
+chunk-WERSD76P.js?v=cfa7cc5f:377 [Violation] 'message' handler took 267ms
+analytics.ts:26 Google Analytics initialized with ID: G-XZYY9DVVHW
+useAnalytics.ts:59 Google Analytics initialized successfully
+dashboard-sidebar.tsx:65 
+ GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+AnalyticsProvider.tsx:21 Analytics initialized: true
+
+ Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
+analytics.ts:62 📊 Analytics Event: 
+{category: 'ui_interaction', action: 'change_tab', label: 'view_3d_preview', value: undefined, status: 'sent'}
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 183ms
+Canvas3D.tsx:4573 Double-click position search: 
+{airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4583 Double-click found entry using stored entryIndex: 0
+AirEntryDialog.tsx:335 🔍 LOADING EDITING VALUES - Full initialValues: {
+  "width": 155,
+  "height": 118,
+  "distanceToFloor": 139,
+  "shape": "rectangular",
+  "properties": {
+    "state": "closed",
+    "temperature": 20,
+    "flowIntensity": "medium",
+    "airOrientation": "inflow",
+    "flowType": "Air Mass Flow",
+    "flowValue": 0.5
+  },
+  "position": {
+    "x": 339.2394907036544,
+    "y": 79.6784349442033
+  }
+}
+AirEntryDialog.tsx:342 ✅ WIDTH LOADING - Found saved width: 155
+AirEntryDialog.tsx:348 🔍 WALL POSITION LOADING - Checking sources:
+AirEntryDialog.tsx:349   - properties?.wallPosition: undefined
+AirEntryDialog.tsx:350   - direct wallPosition: undefined
+AirEntryDialog.tsx:351   - Final savedWallPosition: undefined
+AirEntryDialog.tsx:1104 📝 INPUT CHANGE - Wall position input changed to: 56.03
+AirEntryDialog.tsx:241 🔄 WALL POSITION CHANGE - New value: 56.03
+AirEntryDialog.tsx:254 💾 WALL POSITION CHANGE - Updated form values: 
+{width: 155, height: 118, distanceToFloor: 139, shape: 'rectangular', properties: {…}, …}
+AirEntryDialog.tsx:1104 📝 INPUT CHANGE - Wall position input changed to: 57.03
+AirEntryDialog.tsx:241 🔄 WALL POSITION CHANGE - New value: 57.03
+AirEntryDialog.tsx:254 💾 WALL POSITION CHANGE - Updated form values: 
+{width: 155, height: 118, distanceToFloor: 139, shape: 'rectangular', properties: {…}, …}
+AirEntryDialog.tsx:1104 📝 INPUT CHANGE - Wall position input changed to: 58.03
+AirEntryDialog.tsx:241 🔄 WALL POSITION CHANGE - New value: 58.03
+AirEntryDialog.tsx:254 💾 WALL POSITION CHANGE - Updated form values: 
+{width: 155, height: 118, distanceToFloor: 139, shape: 'rectangular', properties: {…}, …}
+AirEntryDialog.tsx:519 📝 FORM SUBMIT - Current form values: 
+{width: 158, height: 120, distanceToFloor: 139, shape: 'rectangular', properties: {…}, …}
+AirEntryDialog.tsx:520 📝 FORM SUBMIT - Current wallPosition state: 58.03
+AirEntryDialog.tsx:521 📝 FORM SUBMIT - Current distanceToFloor state: 139
+AirEntryDialog.tsx:549 📦 FORM SUBMIT - Final airEntryData being sent: {
+  "width": 158,
+  "height": 120,
+  "diameter": null,
+  "distanceToFloor": 139,
+  "shape": "rectangular",
+  "isOpen": false,
+  "temperature": 20,
+  "airDirection": "inflow",
+  "flowIntensity": "medium",
+  "customIntensityValue": null,
+  "ventFlowType": "massflow",
+  "airOrientation": null,
+  "wallPosition": 58.03,
+  "position": {
+    "x": 324.4915604030509,
+    "y": 79.4869033818578
+  }
+}
+AirEntryDialog.tsx:572 💾 SIMULATION PROPERTIES SAVE - Final properties: 
+{flowType: 'massflow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', wallPosition: 58.03}
+Canvas3D.tsx:1841 [DIMENSION STORAGE] Stored dimensions for entry 0: {"position":{"x":324.4915604030509,"y":79.4869033818578},"dimensions":{"width":158,"height":120,"distanceToFloor":139,"shape":"rectangular"}}
+Canvas3D.tsx:4573 Double-click position search: 
+{airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4583 Double-click found entry using stored entryIndex: 0
+AirEntryDialog.tsx:335 🔍 LOADING EDITING VALUES - Full initialValues: {
+  "width": 158,
+  "height": 120,
+  "distanceToFloor": 139,
+  "shape": "rectangular",
+  "properties": {
+    "state": "closed",
+    "temperature": 20,
+    "flowIntensity": "medium",
+    "airOrientation": "inflow",
+    "flowType": "Air Mass Flow",
+    "flowValue": 0.5
+  },
+  "position": {
+    "x": 339.2394907036544,
+    "y": 79.6784349442033
+  }
+}
+AirEntryDialog.tsx:342 ✅ WIDTH LOADING - Found saved width: 158
+AirEntryDialog.tsx:348 🔍 WALL POSITION LOADING - Checking sources:
+AirEntryDialog.tsx:349   - properties?.wallPosition: undefined
+AirEntryDialog.tsx:350   - direct wallPosition: undefined
+AirEntryDialog.tsx:351   - Final savedWallPosition: undefined
+AirEntryDialog.tsx:1104 📝 INPUT CHANGE - Wall position input changed to: 56.06
+AirEntryDialog.tsx:241 🔄 WALL POSITION CHANGE - New value: 56.06
+AirEntryDialog.tsx:254 💾 WALL POSITION CHANGE - Updated form values: 
+{width: 158, height: 120, distanceToFloor: 139, shape: 'rectangular', properties: {…}, …}
+AirEntryDialog.tsx:1104 📝 INPUT CHANGE - Wall position input changed to: 57.06
+AirEntryDialog.tsx:241 🔄 WALL POSITION CHANGE - New value: 57.06
+AirEntryDialog.tsx:254 💾 WALL POSITION CHANGE - Updated form values: 
+{width: 158, height: 120, distanceToFloor: 139, shape: 'rectangular', properties: {…}, …}
+AirEntryDialog.tsx:1104 📝 INPUT CHANGE - Wall position input changed to: 58.06
+AirEntryDialog.tsx:241 🔄 WALL POSITION CHANGE - New value: 58.06
+AirEntryDialog.tsx:254 💾 WALL POSITION CHANGE - Updated form values: 
+{width: 158, height: 120, distanceToFloor: 139, shape: 'rectangular', properties: {…}, …}
+AirEntryDialog.tsx:1104 📝 INPUT CHANGE - Wall position input changed to: 59.06
+AirEntryDialog.tsx:241 🔄 WALL POSITION CHANGE - New value: 59.06
+AirEntryDialog.tsx:254 💾 WALL POSITION CHANGE - Updated form values: 
+{width: 158, height: 120, distanceToFloor: 139, shape: 'rectangular', properties: {…}, …}
+AirEntryDialog.tsx:1104 📝 INPUT CHANGE - Wall position input changed to: 60.06
+AirEntryDialog.tsx:241 🔄 WALL POSITION CHANGE - New value: 60.06
+AirEntryDialog.tsx:254 💾 WALL POSITION CHANGE - Updated form values: 
+{width: 158, height: 120, distanceToFloor: 139, shape: 'rectangular', properties: {…}, …}
+AirEntryDialog.tsx:1104 📝 INPUT CHANGE - Wall position input changed to: 61.06
+AirEntryDialog.tsx:241 🔄 WALL POSITION CHANGE - New value: 61.06
+AirEntryDialog.tsx:254 💾 WALL POSITION CHANGE - Updated form values: 
+{width: 158, height: 120, distanceToFloor: 139, shape: 'rectangular', properties: {…}, …}
+AirEntryDialog.tsx:519 📝 FORM SUBMIT - Current form values: 
+{width: 158, height: 120, distanceToFloor: 139, shape: 'rectangular', properties: {…}, …}
+AirEntryDialog.tsx:520 📝 FORM SUBMIT - Current wallPosition state: 61.06
+AirEntryDialog.tsx:521 📝 FORM SUBMIT - Current distanceToFloor state: 139
+AirEntryDialog.tsx:549 📦 FORM SUBMIT - Final airEntryData being sent: {
+  "width": 158,
+  "height": 120,
+  "diameter": null,
+  "distanceToFloor": 139,
+  "shape": "rectangular",
+  "isOpen": false,
+  "temperature": 20,
+  "airDirection": "inflow",
+  "flowIntensity": "medium",
+  "customIntensityValue": null,
+  "ventFlowType": "massflow",
+  "airOrientation": null,
+  "wallPosition": 61.06,
+  "position": {
+    "x": 309.8490612116847,
+    "y": 79.29674105469721
+  }
+}
+AirEntryDialog.tsx:572 💾 SIMULATION PROPERTIES SAVE - Final properties: 
+{flowType: 'massflow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', wallPosition: 61.06}
+Canvas3D.tsx:1841 [DIMENSION STORAGE] Stored dimensions for entry 0: {"position":{"x":309.8490612116847,"y":79.29674105469721},"dimensions":{"width":158,"height":120,"distanceToFloor":139,"shape":"rectangular"}}
+Canvas3D.tsx:4573 Double-click position search: 
+{airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4583 Double-click found entry using stored entryIndex: 0
+AirEntryDialog.tsx:335 🔍 LOADING EDITING VALUES - Full initialValues: {
+  "width": 158,
+  "height": 120,
+  "distanceToFloor": 139,
+  "shape": "rectangular",
+  "properties": {
+    "state": "closed",
+    "temperature": 20,
+    "flowIntensity": "medium",
+    "airOrientation": "inflow",
+    "flowType": "Air Mass Flow",
+    "flowValue": 0.5
+  },
+  "position": {
+    "x": 339.2394907036544,
+    "y": 79.6784349442033
+  }
+}
+AirEntryDialog.tsx:342 ✅ WIDTH LOADING - Found saved width: 158
+AirEntryDialog.tsx:348 🔍 WALL POSITION LOADING - Checking sources:
+AirEntryDialog.tsx:349   - properties?.wallPosition: undefined
+AirEntryDialog.tsx:350   - direct wallPosition: undefined
+AirEntryDialog.tsx:351   - Final savedWallPosition: undefined
+AirEntryDialog.tsx:1104 📝 INPUT CHANGE - Wall position input changed to: 56.06
+AirEntryDialog.tsx:241 🔄 WALL POSITION CHANGE - New value: 56.06
+AirEntryDialog.tsx:254 💾 WALL POSITION CHANGE - Updated form values: 
+{width: 158, height: 120, distanceToFloor: 139, shape: 'rectangular', properties: {…}, …}
+AirEntryDialog.tsx:519 📝 FORM SUBMIT - Current form values: 
+{width: 186, height: 120, distanceToFloor: 139, shape: 'rectangular', properties: {…}, …}
+AirEntryDialog.tsx:520 📝 FORM SUBMIT - Current wallPosition state: 56.06
+AirEntryDialog.tsx:521 📝 FORM SUBMIT - Current distanceToFloor state: 139
+AirEntryDialog.tsx:549 📦 FORM SUBMIT - Final airEntryData being sent: {
+  "width": 186,
+  "height": 120,
+  "diameter": null,
+  "distanceToFloor": 139,
+  "shape": "rectangular",
+  "isOpen": false,
+  "temperature": 20,
+  "airDirection": "inflow",
+  "flowIntensity": "medium",
+  "customIntensityValue": null,
+  "ventFlowType": "massflow",
+  "airOrientation": null,
+  "wallPosition": 56.06,
+  "position": {
+    "x": 334.3295941177947,
+    "y": 79.61467005347785
+  }
+}
+AirEntryDialog.tsx:572 💾 SIMULATION PROPERTIES SAVE - Final properties: 
+{flowType: 'massflow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', wallPosition: 56.06}
+Canvas3D.tsx:1841 [DIMENSION STORAGE] Stored dimensions for entry 0: {"position":{"x":334.3295941177947,"y":79.61467005347785},"dimensions":{"width":186,"height":120,"distanceToFloor":139,"shape":"rectangular"}}
+Canvas3D.tsx:4573 Double-click position search: 
+{airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4583 Double-click found entry using stored entryIndex: 0
+AirEntryDialog.tsx:335 🔍 LOADING EDITING VALUES - Full initialValues: {
+  "width": 186,
+  "height": 120,
+  "distanceToFloor": 139,
+  "shape": "rectangular",
+  "properties": {
+    "state": "closed",
+    "temperature": 20,
+    "flowIntensity": "medium",
+    "airOrientation": "inflow",
+    "flowType": "Air Mass Flow",
+    "flowValue": 0.5
+  },
+  "position": {
+    "x": 339.2394907036544,
+    "y": 79.6784349442033
+  }
+}
+AirEntryDialog.tsx:342 ✅ WIDTH LOADING - Found saved width: 186
+AirEntryDialog.tsx:348 🔍 WALL POSITION LOADING - Checking sources:
+AirEntryDialog.tsx:349   - properties?.wallPosition: undefined
+AirEntryDialog.tsx:350   - direct wallPosition: undefined
+AirEntryDialog.tsx:351   - Final savedWallPosition: undefined
+AirEntryDialog.tsx:519 📝 FORM SUBMIT - Current form values: 
+{width: 186, height: 120, distanceToFloor: 139, shape: 'rectangular', properties: {…}, …}
+AirEntryDialog.tsx:520 📝 FORM SUBMIT - Current wallPosition state: 55.29962422038033
+AirEntryDialog.tsx:521 📝 FORM SUBMIT - Current distanceToFloor state: 139
+AirEntryDialog.tsx:549 📦 FORM SUBMIT - Final airEntryData being sent: {
+  "width": 186,
+  "height": 120,
+  "diameter": null,
+  "distanceToFloor": 139,
+  "shape": "rectangular",
+  "isOpen": false,
+  "temperature": 20,
+  "airDirection": "inflow",
+  "flowIntensity": "medium",
+  "customIntensityValue": null,
+  "ventFlowType": "massflow",
+  "airOrientation": null,
+  "wallPosition": 55.29962422038033,
+  "position": {
+    "x": 339.2394907036544,
+    "y": 79.6784349442033
+  }
+}
+AirEntryDialog.tsx:572 💾 SIMULATION PROPERTIES SAVE - Final properties: 
+{flowType: 'massflow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', wallPosition: 55.29962422038033}
+Canvas3D.tsx:1841 [DIMENSION STORAGE] Stored dimensions for entry 0: {"position":{"x":334.3295941177947,"y":79.61467005347785},"dimensions":{"width":186,"height":120,"distanceToFloor":139,"shape":"rectangular"}}
