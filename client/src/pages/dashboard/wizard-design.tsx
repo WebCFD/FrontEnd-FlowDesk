@@ -1011,6 +1011,9 @@ export default function WizardDesign() {
     updatedEntry: AirEntry,
   ) => {
     // Create a copy of the floors data
+    console.log('🏢 wizard-design: handleUpdateAirEntry called');
+    console.log('🏢 wizard-design: floorName:', floorName, 'index:', index);
+    console.log('🏢 wizard-design: Call stack:', new Error().stack?.split('\n').slice(1, 4));
     console.log(`Updating air entry in floor ${floorName}, index ${index}`);
 
     // Log all entries before updating
