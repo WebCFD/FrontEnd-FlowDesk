@@ -1011,9 +1011,6 @@ export default function WizardDesign() {
     updatedEntry: AirEntry,
   ) => {
     // Create a copy of the floors data
-    console.log('🏢 wizard-design: handleUpdateAirEntry called');
-    console.log('🏢 wizard-design: floorName:', floorName, 'index:', index);
-    console.log('🏢 wizard-design: Call stack:', new Error().stack?.split('\n').slice(1, 4));
     console.log(`Updating air entry in floor ${floorName}, index ${index}`);
 
     // Log all entries before updating
@@ -2361,7 +2358,7 @@ export default function WizardDesign() {
               onToggleFurnitureEraserMode={handleToggleFurnitureEraserMode}
               // Add onFloorsUpdate callback to enable 2D vent real-time updates in RSP
               onFloorsUpdate={(updatedFloors) => {
-                console.log('🏢 wizard-design: Received floors update from RSP:', updatedFloors);
+                console.log('wizard-design: Received floors update from RSP:', updatedFloors);
                 useRoomStore.getState().setFloors(updatedFloors);
               }}
               // Pass wizard scene callback to RoomSketchPro for proper scene reference

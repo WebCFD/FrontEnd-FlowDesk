@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import AirEntryDialog from './AirEntryDialog';
 import type { FurnitureItem } from '@shared/furniture-types';
 
@@ -58,9 +58,46 @@ interface UnifiedVentDialogProps {
   onPositionUpdate?: (newPosition: { x: number; y: number; z: number }) => void;
   onRotationUpdate?: (newRotation: { x: number; y: number; z: number }) => void;
   onScaleUpdate?: (newScale: { x: number; y: number; z: number }) => void;
+  debugKey?: string;
 }
 
 export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
+  const {
+    onPositionUpdate,
+    onRotationUpdate,
+    onScaleUpdate,
+    debugKey
+  } = props;
+
+  // Stable callback references to prevent stale closures
+  const stableOnPositionUpdate = useCallback((position: { x: number; y: number; z: number }) => {
+    if (onPositionUpdate) {
+      onPositionUpdate(position);
+    }
+  }, [onPositionUpdate]);
+
+  const stableOnRotationUpdate = useCallback((rotation: { x: number; y: number; z: number }) => {
+    if (onRotationUpdate) {
+      onRotationUpdate(rotation);
+    }
+  }, [onRotationUpdate]);
+
+  const stableOnScaleUpdate = useCallback((scale: { x: number; y: number; z: number }) => {
+    if (onScaleUpdate) {
+      onScaleUpdate(scale);
+    }
+  }, [onScaleUpdate]);
+
+  // Debug effect to track callback updates
+  useEffect(() => {
+    console.log('UnifiedVentDialog: Callbacks updated', {
+      debugKey,
+      hasOnPositionUpdate: !!onPositionUpdate,
+      hasOnRotationUpdate: !!onRotationUpdate,
+      hasOnScaleUpdate: !!onScaleUpdate
+    });
+  }, [onPositionUpdate, onRotationUpdate, onScaleUpdate, debugKey]);
+
   // State to track current dimensions for accurate real-time updates
   const [currentDimensions, setCurrentDimensions] = useState(() => {
     const scale = props.initialValues?.scale || { x: 1, y: 1, z: 1 };
@@ -168,46 +205,23 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
         
         setCurrentDimensions(updatedDimensions);
         
-        if (props.onScaleUpdate) {
-          const newScaleX = updatedDimensions.width / 50;
-          const newScaleY = updatedDimensions.height / 50;  // Corrected: Height to Y scale
-          
-          console.log('🔗 UnifiedVentDialog: onScaleUpdate called');
-          console.log('🔗 UnifiedVentDialog: updatedDimensions:', updatedDimensions);
-          console.log('🔗 UnifiedVentDialog: newScale:', { x: newScaleX, y: newScaleY, z: props.initialValues?.scale?.z || 1 });
-          
-          props.onScaleUpdate({
-            x: newScaleX,
-            y: newScaleY,  // Height controls Y scale (vertical)
-            z: props.initialValues?.scale?.z || 1  // Keep Z scale unchanged (depth)
-          });
-        }
+        const newScaleX = updatedDimensions.width / 50;
+        const newScaleY = updatedDimensions.height / 50;  // Corrected: Height to Y scale
+        
+        stableOnScaleUpdate({
+          x: newScaleX,
+          y: newScaleY,  // Height controls Y scale (vertical)
+          z: props.initialValues?.scale?.z || 1  // Keep Z scale unchanged (depth)
+        });
       }}
       // Add position and rotation update callbacks for real-time updates
       onPositionUpdate={(newPosition) => {
-        console.log('🔗 UnifiedVentDialog: onPositionUpdate called');
-        console.log('🔗 UnifiedVentDialog: newPosition:', newPosition);
-        console.log('🔗 UnifiedVentDialog: props.onPositionUpdate exists:', !!props.onPositionUpdate);
-        console.log('🔗 UnifiedVentDialog: props.onPositionUpdate function:', props.onPositionUpdate?.toString().substring(0, 100));
-        
-        setCurrentPosition(newPosition); // Update current state
-        if (props.onPositionUpdate) {
-          console.log('🔗 UnifiedVentDialog: Calling props.onPositionUpdate');
-          props.onPositionUpdate(newPosition);
-          console.log('🔗 UnifiedVentDialog: props.onPositionUpdate called successfully');
-        } else {
-          console.log('❌ UnifiedVentDialog: No props.onPositionUpdate callback available');
-        }
+        setCurrentPosition(newPosition);
+        stableOnPositionUpdate(newPosition);
       }}
       onRotationUpdate={(newRotation) => {
-        console.log('🔗 UnifiedVentDialog: onRotationUpdate called');
-        console.log('🔗 UnifiedVentDialog: newRotation:', newRotation);
-        console.log('🔗 UnifiedVentDialog: props.onRotationUpdate exists:', !!props.onRotationUpdate);
-        
-        setCurrentRotation(newRotation); // Update current state
-        if (props.onRotationUpdate) {
-          props.onRotationUpdate(newRotation);
-        }
+        setCurrentRotation(newRotation);
+        stableOnRotationUpdate(newRotation);
       }}
       // Pass floor context for Information section
       floorContext={props.floorContext}
