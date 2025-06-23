@@ -1324,45 +1324,47 @@ export default function Canvas3D({
 
   // Stable callbacks for AirEntry dialog real-time updates
   const handleAirEntryPositionUpdate = useCallback((newPosition: any) => {
-    // Real-time position updates in 3D scene
-    if (!editingAirEntry || !onUpdateAirEntry) return;
-    
-    const updatedEntry = {
-      ...editingAirEntry.entry,
-      position: newPosition
-    };
-    
-    // Update the entry via parent callback
-    onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
-    
-    // Update local state for dialog consistency
-    setEditingAirEntry({
-      ...editingAirEntry,
-      entry: updatedEntry
+    setEditingAirEntry(prev => {
+      if (!prev || !onUpdateAirEntry) return prev;
+      
+      const updatedEntry = {
+        ...prev.entry,
+        position: newPosition
+      };
+      
+      // Update the entry via parent callback
+      onUpdateAirEntry(currentFloor, prev.index, updatedEntry);
+      
+      // Return updated local state
+      return {
+        ...prev,
+        entry: updatedEntry
+      };
     });
-  }, [editingAirEntry, onUpdateAirEntry, currentFloor]);
+  }, [onUpdateAirEntry, currentFloor]);
 
   const handleAirEntryDimensionsUpdate = useCallback((newDimensions: any) => {
-    // Real-time dimension updates in 3D scene
-    if (!editingAirEntry || !onUpdateAirEntry) return;
-    
-    const updatedEntry = {
-      ...editingAirEntry.entry,
-      dimensions: {
-        ...editingAirEntry.entry.dimensions,
-        ...newDimensions
-      }
-    };
-    
-    // Update the entry via parent callback
-    onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
-    
-    // Update local state for dialog consistency
-    setEditingAirEntry({
-      ...editingAirEntry,
-      entry: updatedEntry
+    setEditingAirEntry(prev => {
+      if (!prev || !onUpdateAirEntry) return prev;
+      
+      const updatedEntry = {
+        ...prev.entry,
+        dimensions: {
+          ...prev.entry.dimensions,
+          ...newDimensions
+        }
+      };
+      
+      // Update the entry via parent callback
+      onUpdateAirEntry(currentFloor, prev.index, updatedEntry);
+      
+      // Return updated local state
+      return {
+        ...prev,
+        entry: updatedEntry
+      };
     });
-  }, [editingAirEntry, onUpdateAirEntry, currentFloor]);
+  }, [onUpdateAirEntry, currentFloor]);
   
   // Reference to store newly created furniture for auto-opening dialog
   const newFurnitureForDialog = useRef<FurnitureItem | null>(null);
