@@ -1685,12 +1685,8 @@ export default function Canvas3D({
       JSON.stringify(updatedAirEntryPositionsRef.current[normalizedFloorName][index]));
 
     // Call the parent component's handler
-    console.log('🔧 Canvas3D: Calling onUpdateAirEntry for final update');
     onUpdateAirEntry(currentFloor, index, updatedEntry);
-    
-    console.log('🔧 Canvas3D: Setting editingAirEntry to null after confirm');
     setEditingAirEntry(null);
-    console.log('🔧 Canvas3D: handleAirEntryEdit completed');
   };
 
   // New function to create stair mesh
@@ -5242,8 +5238,7 @@ export default function Canvas3D({
 
     // Double-click handler for furniture editing
     const handleFurnitureDoubleClick = (event: MouseEvent) => {
-      console.log('🎯 Canvas3D: Double-click detected');
-      console.log('🎯 Canvas3D: Current editingFurniture state:', editingFurniture);
+
       
       // Allow furniture editing even in presentation mode for selective editing
       // Other editing interactions remain disabled in presentation mode
@@ -5382,25 +5377,10 @@ export default function Canvas3D({
                 rotation: dialogRotation
               };
               
-              console.log('🎯 Canvas3D: Setting editingFurniture state');
-              console.log('🎯 Canvas3D: Furniture item:', furnitureItemWithCurrentPosition);
-              console.log('🎯 Canvas3D: Mode: edit');
-              console.log('🎯 Canvas3D: Current scene state:', {
-                sceneChildren: sceneRef.current?.children.length,
-                previousEditingFurniture: editingFurniture
-              });
-              
               setEditingFurniture({
                 index: 0, // This would need to be the actual index from the furniture list
                 item: furnitureItemWithCurrentPosition,
                 mode: 'edit' // Phase 2: Mark as edit mode for double-click
-              });
-              
-              console.log('🎯 Canvas3D: editingFurniture state set');
-              console.log('🎯 Canvas3D: Real-time callback functions exist:', {
-                positionUpdate: !!handleRealTimePositionUpdate,
-                rotationUpdate: !!handleRealTimeRotationUpdate,
-                scaleUpdate: !!handleRealTimeScaleUpdate
               });
             }
           }
@@ -5516,17 +5496,7 @@ export default function Canvas3D({
 
   // Real-time update functions for furniture editing
   const handleRealTimePositionUpdate = (newPosition: { x: number; y: number; z: number }) => {
-    console.log('🔄 Canvas3D: handleRealTimePositionUpdate called');
-    console.log('🔄 Canvas3D: newPosition:', newPosition);
-    console.log('🔄 Canvas3D: editingFurniture exists:', !!editingFurniture);
-    console.log('🔄 Canvas3D: editingFurniture ID:', editingFurniture?.item?.id);
-    console.log('🔄 Canvas3D: sceneRef.current exists:', !!sceneRef.current);
-    console.log('🔄 Canvas3D: Function reference:', handleRealTimePositionUpdate.toString().substring(0, 100));
-    
-    if (!editingFurniture || !sceneRef.current) {
-      console.log('❌ Canvas3D: Exiting handleRealTimePositionUpdate - missing editingFurniture or scene');
-      return;
-    }
+    if (!editingFurniture || !sceneRef.current) return;
 
     const furnitureId = editingFurniture.item.id;
     let furnitureGroup: THREE.Group | null = null;
@@ -5555,26 +5525,18 @@ export default function Canvas3D({
         
         furnitureGroup.position.set(localPosition.x, localPosition.y, localPosition.z);
         
-        console.log(`🔄 Canvas3D: Real-time position update (${editingFurniture.item.type.toUpperCase()}):`);
-        console.log('🔄 Canvas3D: Dialog world position:', newPosition);
-        console.log('🔄 Canvas3D: Applied local position:', localPosition);
+        console.log(`Real-time position update (${editingFurniture.item.type.toUpperCase()}):`);
+        console.log('- Dialog world position:', newPosition);
+        console.log('- Applied local position:', localPosition);
       } else {
         // For tables and other furniture: direct application
         furnitureGroup.position.set(newPosition.x, newPosition.y, newPosition.z);
-        console.log('🔄 Canvas3D: Real-time position update (table/other):', newPosition);
       }
     }
   };
 
   const handleRealTimeRotationUpdate = (newRotation: { x: number; y: number; z: number }) => {
-    console.log('🔄 Canvas3D: handleRealTimeRotationUpdate called');
-    console.log('🔄 Canvas3D: newRotation:', newRotation);
-    console.log('🔄 Canvas3D: editingFurniture exists:', !!editingFurniture);
-    
-    if (!editingFurniture || !sceneRef.current) {
-      console.log('❌ Canvas3D: Exiting handleRealTimeRotationUpdate - missing editingFurniture or scene');
-      return;
-    }
+    if (!editingFurniture || !sceneRef.current) return;
 
     const furnitureId = editingFurniture.item.id;
     let furnitureGroup: THREE.Group | null = null;
@@ -5605,25 +5567,19 @@ export default function Canvas3D({
         
         furnitureGroup.rotation.set(localRotation.x, localRotation.y, localRotation.z);
         
-        console.log(`🔄 Canvas3D: Real-time rotation update (${editingFurniture.item.type.toUpperCase()}):`);
-        console.log('🔄 Canvas3D: Dialog world rotation:', newRotation);
-        console.log('🔄 Canvas3D: Applied local rotation:', localRotation);
+        console.log(`Real-time rotation update (${editingFurniture.item.type.toUpperCase()}):`);
+        console.log('- Dialog world rotation:', newRotation);
+        console.log('- Applied local rotation:', localRotation);
       } else {
         // For tables and other furniture: direct application
         furnitureGroup.rotation.set(newRotation.x, newRotation.y, newRotation.z);
-        console.log("🔄 Canvas3D: Real-time rotation update (table/other):", newRotation);
       }
+      console.log("🔄 Real-time rotation update:", newRotation);
     }
   };
 
   const handleRealTimeScaleUpdate = (newScale: { x: number; y: number; z: number }) => {
-    console.log('🔄 Canvas3D: handleRealTimeScaleUpdate called');
-    console.log('🔄 Canvas3D: newScale:', newScale);
-    
-    if (!editingFurniture || !sceneRef.current) {
-      console.log('❌ Canvas3D: Exiting handleRealTimeScaleUpdate - missing editingFurniture or scene');
-      return;
-    }
+    if (!editingFurniture || !sceneRef.current) return;
 
     const furnitureId = editingFurniture.item.id;
     let furnitureGroup: THREE.Group | null = null;
@@ -5636,9 +5592,7 @@ export default function Canvas3D({
 
     if (furnitureGroup) {
       furnitureGroup.scale.set(newScale.x, newScale.y, newScale.z);
-      console.log("🔄 Canvas3D: Real-time scale update applied:", newScale);
-    } else {
-      console.log('❌ Canvas3D: Furniture group not found for scale update, ID:', furnitureId);
+      console.log("🔄 Real-time scale update:", newScale);
     }
   };
 
@@ -5662,14 +5616,7 @@ export default function Canvas3D({
       };
     }
   ) => {
-    console.log('🔧 Canvas3D: handleFurnitureEdit called');
-    console.log('🔧 Canvas3D: editingFurniture exists:', !!editingFurniture);
-    console.log('🔧 Canvas3D: sceneRef.current exists:', !!sceneRef.current);
-    
-    if (!editingFurniture || !sceneRef.current) {
-      console.log('❌ Canvas3D: handleFurnitureEdit - missing editingFurniture or scene');
-      return;
-    }
+    if (!editingFurniture || !sceneRef.current) return;
 
     // Find the furniture object in the scene by ID
     const furnitureId = editingFurniture.item.id;
@@ -5756,15 +5703,7 @@ export default function Canvas3D({
       console.error("❌ Could not find furniture object in scene with ID:", furnitureId);
     }
     
-    console.log('🔧 Canvas3D: handleFurnitureEdit - setting editingFurniture to null');
-    console.log('🔧 Canvas3D: Scene state before cleanup:', {
-      sceneChildren: sceneRef.current?.children.length,
-      editingFurnitureId: editingFurniture?.item?.id
-    });
-    
     setEditingFurniture(null);
-    
-    console.log('🔧 Canvas3D: handleFurnitureEdit completed, editingFurniture set to null');
   };
 
   return (
@@ -5802,24 +5741,11 @@ export default function Canvas3D({
         <AirEntryDialog
           type={editingAirEntry.entry.type}
           isOpen={true}
-          onClose={() => {
-            console.log('🚪 Canvas3D: AirEntryDialog onClose called');
-            console.log('🚪 Canvas3D: editingAirEntry before cleanup:', editingAirEntry);
-            setEditingAirEntry(null);
-            console.log('🚪 Canvas3D: editingAirEntry set to null');
-          }}
-          onCancel={() => {
-            console.log('❌ Canvas3D: AirEntryDialog onCancel called');
-            console.log('❌ Canvas3D: editingAirEntry before cleanup:', editingAirEntry);
-            setEditingAirEntry(null);
-            console.log('❌ Canvas3D: editingAirEntry set to null after cancel');
-          }}
-          onConfirm={(data) => {
-            console.log('✅ Canvas3D: AirEntryDialog onConfirm called');
-            console.log('✅ Canvas3D: Confirm data:', data);
-            console.log('✅ Canvas3D: editingAirEntry before confirm:', editingAirEntry);
-            handleAirEntryEdit(editingAirEntry.index, data as any);
-          }}
+          onClose={() => setEditingAirEntry(null)}
+          onCancel={() => setEditingAirEntry(null)}
+          onConfirm={(data) =>
+            handleAirEntryEdit(editingAirEntry.index, data as any)
+          }
           initialValues={{
             ...editingAirEntry.entry.dimensions,
             shape: (editingAirEntry.entry.dimensions as any).shape,
@@ -5830,23 +5756,14 @@ export default function Canvas3D({
           isEditing={true}
           wallContext={editingAirEntry.wallContext}
           onPositionUpdate={(newPosition) => {
-            console.log('🔗 Canvas3D: AirEntryDialog onPositionUpdate called');
-            console.log('🔗 Canvas3D: newPosition:', newPosition);
-            console.log('🔗 Canvas3D: editingAirEntry exists:', !!editingAirEntry);
-            console.log('🔗 Canvas3D: onUpdateAirEntry exists:', !!onUpdateAirEntry);
-            
             // Phase 5: Real-time position updates in 3D scene
-            if (!editingAirEntry || !onUpdateAirEntry) {
-              console.log('❌ Canvas3D: Missing editingAirEntry or onUpdateAirEntry callback');
-              return;
-            }
+            if (!editingAirEntry || !onUpdateAirEntry) return;
             
             const updatedEntry = {
               ...editingAirEntry.entry,
               position: newPosition
             };
             
-            console.log('🔗 Canvas3D: Calling onUpdateAirEntry for floor:', currentFloor, 'index:', editingAirEntry.index);
             // Update the entry via parent callback
             onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
             
@@ -5855,18 +5772,10 @@ export default function Canvas3D({
               ...editingAirEntry,
               entry: updatedEntry
             });
-            console.log('🔗 Canvas3D: Position update completed');
           }}
           onDimensionsUpdate={(newDimensions) => {
-            console.log('🔗 Canvas3D: AirEntryDialog onDimensionsUpdate called');
-            console.log('🔗 Canvas3D: newDimensions:', newDimensions);
-            console.log('🔗 Canvas3D: editingAirEntry exists:', !!editingAirEntry);
-            
             // Real-time dimension updates in 3D scene
-            if (!editingAirEntry || !onUpdateAirEntry) {
-              console.log('❌ Canvas3D: Missing editingAirEntry or onUpdateAirEntry for dimensions');
-              return;
-            }
+            if (!editingAirEntry || !onUpdateAirEntry) return;
             
             const updatedEntry = {
               ...editingAirEntry.entry,
@@ -5876,7 +5785,6 @@ export default function Canvas3D({
               }
             };
             
-            console.log('🔗 Canvas3D: Calling onUpdateAirEntry for dimensions update');
             // Update the entry via parent callback
             onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
             
@@ -5885,7 +5793,6 @@ export default function Canvas3D({
               ...editingAirEntry,
               entry: updatedEntry
             });
-            console.log('🔗 Canvas3D: Dimensions update completed');
           }}
         />
       )}
@@ -5893,21 +5800,10 @@ export default function Canvas3D({
       {/* Dialog for editing furniture */}
       {editingFurniture && editingFurniture.item.type === 'vent' ? (
         <UnifiedVentDialog
+          key={`vent-dialog-${editingFurniture.item.id}-${editingFurniture.mode || 'edit'}`}
           isOpen={true}
-          onClose={() => {
-            console.log('🚪 Canvas3D: Dialog onClose called - UnifiedVentDialog');
-            console.log('🚪 Canvas3D: editingFurniture before cleanup:', editingFurniture);
-            console.log('🚪 Canvas3D: Scene objects before cleanup:', sceneRef.current ? sceneRef.current.children.length : 'no scene');
-            setEditingFurniture(null);
-            console.log('🚪 Canvas3D: editingFurniture set to null');
-          }}
-          onConfirm={(data) => {
-            console.log('✅ Canvas3D: Dialog onConfirm called - UnifiedVentDialog');
-            console.log('✅ Canvas3D: Confirm data:', data);
-            console.log('✅ Canvas3D: editingFurniture before confirm:', editingFurniture);
-            handleFurnitureEdit(editingFurniture.index, data);
-            console.log('✅ Canvas3D: handleFurnitureEdit completed');
-          }}
+          onClose={() => setEditingFurniture(null)}
+          onConfirm={(data) => handleFurnitureEdit(editingFurniture.index, data)}
           isCreationMode={editingFurniture.mode === 'creation'}
           onCancel={() => {
             if (!editingFurniture) return;
@@ -5936,27 +5832,11 @@ export default function Canvas3D({
               }
             }
             
-            console.log('❌ Canvas3D: Dialog onCancel called - UnifiedVentDialog');
-            console.log('❌ Canvas3D: editingFurniture before cancel cleanup:', editingFurniture);
             setEditingFurniture(null);
-            console.log('❌ Canvas3D: editingFurniture set to null after cancel');
           }}
-          onPositionUpdate={(newPos) => {
-            console.log('🔗 Canvas3D: Position update callback triggered (UnifiedVentDialog)');
-            console.log('🔗 Canvas3D: Callback editingFurniture exists:', !!editingFurniture);
-            console.log('🔗 Canvas3D: Callback editingFurniture ID:', editingFurniture?.item?.id);
-            handleRealTimePositionUpdate(newPos);
-          }}
-          onRotationUpdate={(newRot) => {
-            console.log('🔗 Canvas3D: Rotation update callback triggered (UnifiedVentDialog)');
-            console.log('🔗 Canvas3D: Callback editingFurniture exists:', !!editingFurniture);
-            handleRealTimeRotationUpdate(newRot);
-          }}
-          onScaleUpdate={(newScale) => {
-            console.log('🔗 Canvas3D: Scale update callback triggered (UnifiedVentDialog)');
-            console.log('🔗 Canvas3D: Callback editingFurniture exists:', !!editingFurniture);
-            handleRealTimeScaleUpdate(newScale);
-          }}
+          onPositionUpdate={handleRealTimePositionUpdate}
+          onRotationUpdate={handleRealTimeRotationUpdate}
+          onScaleUpdate={handleRealTimeScaleUpdate}
           initialValues={{
             name: editingFurniture.item.name,
             position: editingFurniture.item.position,
@@ -5982,15 +5862,8 @@ export default function Canvas3D({
         <FurnitureDialog
           type={editingFurniture.item.type}
           isOpen={true}
-          onClose={() => {
-            console.log('🚪 Canvas3D: Dialog onClose called - FurnitureDialog');
-            setEditingFurniture(null);
-          }}
-          onConfirm={(data) => {
-            console.log('✅ Canvas3D: Dialog onConfirm called - FurnitureDialog');
-            console.log('✅ Canvas3D: Confirm data:', data);
-            handleFurnitureEdit(editingFurniture.index, data);
-          }}
+          onClose={() => setEditingFurniture(null)}
+          onConfirm={(data) => handleFurnitureEdit(editingFurniture.index, data)}
           isCreationMode={editingFurniture.mode === 'creation'} // Phase 1: Pass mode to dialog
           onCancel={() => {
             if (!editingFurniture) return;
@@ -6026,25 +5899,11 @@ export default function Canvas3D({
             // Edit mode: Just close dialog without deletion
             
             // Close dialog for both modes
-            console.log('❌ Canvas3D: Dialog onCancel called - FurnitureDialog');
             setEditingFurniture(null);
           }}
-          onPositionUpdate={(newPos) => {
-            console.log('🔗 Canvas3D: Position update callback triggered (FurnitureDialog)');
-            console.log('🔗 Canvas3D: Callback editingFurniture exists:', !!editingFurniture);
-            console.log('🔗 Canvas3D: Callback editingFurniture ID:', editingFurniture?.item?.id);
-            handleRealTimePositionUpdate(newPos);
-          }}
-          onRotationUpdate={(newRot) => {
-            console.log('🔗 Canvas3D: Rotation update callback triggered (FurnitureDialog)');
-            console.log('🔗 Canvas3D: Callback editingFurniture exists:', !!editingFurniture);
-            handleRealTimeRotationUpdate(newRot);
-          }}
-          onScaleUpdate={(newScale) => {
-            console.log('🔗 Canvas3D: Scale update callback triggered (FurnitureDialog)');
-            console.log('🔗 Canvas3D: Callback editingFurniture exists:', !!editingFurniture);
-            handleRealTimeScaleUpdate(newScale);
-          }}
+          onPositionUpdate={handleRealTimePositionUpdate}
+          onRotationUpdate={handleRealTimeRotationUpdate}
+          onScaleUpdate={handleRealTimeScaleUpdate}
           initialValues={{
             name: editingFurniture.item.name,
             position: editingFurniture.item.position,

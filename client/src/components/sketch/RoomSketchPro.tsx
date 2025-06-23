@@ -840,18 +840,12 @@ export function RoomSketchPro({
     index: number,
     updatedEntry: AirEntry,
   ) => {
-    console.log('🏠 RSP: handleUpdateAirEntryFrom3D called');
-    console.log('🏠 RSP: floorName:', floorName, 'index:', index);
-    console.log('🏠 RSP: updatedEntry:', updatedEntry);
-    console.log('🏠 RSP: onFloorsUpdate exists:', !!onFloorsUpdate);
-    
     // Create a deep clone of the updated entry to prevent reference issues
     const deepClonedEntry = JSON.parse(JSON.stringify(updatedEntry));
     
     // Update the floors data
     const updatedFloors = { ...floors };
     if (updatedFloors[floorName] && updatedFloors[floorName].airEntries) {
-      console.log('🏠 RSP: Floor exists, updating air entries');
       const updatedAirEntries = updatedFloors[floorName].airEntries.map((entry, i) =>
         i === index ? deepClonedEntry : entry
       );
@@ -861,18 +855,10 @@ export function RoomSketchPro({
         airEntries: updatedAirEntries,
       };
       
-      console.log('🏠 RSP: Updated floors data:', updatedFloors);
-      
       // Update floors via parent callback if available
       if (onFloorsUpdate) {
-        console.log('🏠 RSP: Calling onFloorsUpdate with updated floors');
         onFloorsUpdate(updatedFloors);
-      } else {
-        console.log('❌ RSP: No onFloorsUpdate callback - RSP will not update');
       }
-    } else {
-      console.log('❌ RSP: Floor or airEntries not found');
-      console.log('🏠 RSP: Available floors:', Object.keys(updatedFloors));
     }
   }, [floors, onFloorsUpdate]);
 
