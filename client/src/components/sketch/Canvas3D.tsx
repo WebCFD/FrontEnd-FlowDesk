@@ -5898,6 +5898,7 @@ export default function Canvas3D({
           onCancel={() => setEditingAirEntry(null)}
           onConfirm={(data) => {
             console.log('[CANVAS3D ONCONFIRM] Received data from dialog:', data);
+            console.log('[CANVAS3D ONCONFIRM] wallPosition in received data:', data.wallPosition);
             handleAirEntryEdit(editingAirEntry.index, {
               width: data.width,
               height: data.height,
@@ -5912,7 +5913,7 @@ export default function Canvas3D({
             shape: (editingAirEntry.entry.dimensions as any).shape,
             properties: (editingAirEntry.entry as any).properties,
             position: editingAirEntry.entry.position,
-            wallPosition: (editingAirEntry.entry as any).properties?.wallPosition
+            wallPosition: (editingAirEntry.entry.dimensions as any).wallPosition || (editingAirEntry.entry as any).properties?.wallPosition
           } as any}
           airEntryIndex={editingAirEntry.index}
           currentFloor={currentFloor}
