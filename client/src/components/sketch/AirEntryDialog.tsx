@@ -330,10 +330,23 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           const initialDistanceToFloor = airEntryProps.initialValues.distanceToFloor || 0;
           setDistanceToFloor(initialDistanceToFloor);
           
+          // Check if we have a saved wallPosition value from properties
+          const savedWallPosition = (airEntryProps.initialValues as any).properties?.wallPosition || 
+                                  (airEntryProps.initialValues as any).wallPosition;
+          
           // Also set in form values for persistence
-          setValues(prev => ({ ...prev, distanceToFloor: initialDistanceToFloor }));
-          // Para calcular la posición en el wall basada en la posición ACTUAL del elemento
-          if (airEntryProps.wallContext && airEntryProps.initialValues.position) {
+          setValues(prev => ({ 
+            ...prev, 
+            distanceToFloor: initialDistanceToFloor,
+            wallPosition: savedWallPosition 
+          }));
+          
+          // If we have a saved wallPosition, use it directly
+          if (savedWallPosition !== undefined && savedWallPosition !== null) {
+            setWallPosition(savedWallPosition);
+          }
+          // Otherwise, calculate from current position
+          else if (airEntryProps.wallContext && airEntryProps.initialValues.position) {
             const { wallStart, wallEnd } = airEntryProps.wallContext;
             const currentPosition = airEntryProps.initialValues.position;
             
@@ -371,6 +384,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
             }));
           } else {
             setWallPosition(50); // Default center
+            setValues(prev => ({ ...prev, wallPosition: 50 }));
           }
         }
       } else {
