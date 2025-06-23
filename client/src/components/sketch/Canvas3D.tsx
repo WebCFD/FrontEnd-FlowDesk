@@ -5388,6 +5388,15 @@ export default function Canvas3D({
                 rotation: dialogRotation
               };
               
+              console.log('[DOUBLE-CLICK-DEBUG] Setting editingFurniture state', {
+                timestamp: Date.now(),
+                furnitureId: actualFurnitureItem.id,
+                furnitureType: actualFurnitureItem.type,
+                mode: 'edit',
+                position: dialogPosition,
+                rotation: dialogRotation
+              });
+              
               setEditingFurniture({
                 index: 0, // This would need to be the actual index from the furniture list
                 item: furnitureItemWithCurrentPosition,

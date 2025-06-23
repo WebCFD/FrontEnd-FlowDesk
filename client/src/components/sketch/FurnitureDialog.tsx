@@ -548,8 +548,15 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           setElementPosition(newPosition);
                           
                           // Real-time update
+                          console.log('[FURNITURE-DIALOG-DEBUG] Position X input changed, calling onPositionUpdate', {
+                            timestamp: Date.now(),
+                            newPosition,
+                            hasCallback: !!onPositionUpdate
+                          });
                           if (onPositionUpdate) {
                             onPositionUpdate(newPosition);
+                          } else {
+                            console.log('[FURNITURE-DIALOG-DEBUG] WARNING: onPositionUpdate callback is null/undefined');
                           }
                         }}
                         className="text-sm"
@@ -568,8 +575,15 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           setElementPosition(newPosition);
                           
                           // Real-time update
+                          console.log('[FURNITURE-DIALOG-DEBUG] Position Y input changed, calling onPositionUpdate', {
+                            timestamp: Date.now(),
+                            newPosition,
+                            hasCallback: !!onPositionUpdate
+                          });
                           if (onPositionUpdate) {
                             onPositionUpdate(newPosition);
+                          } else {
+                            console.log('[FURNITURE-DIALOG-DEBUG] WARNING: onPositionUpdate callback is null/undefined');
                           }
                         }}
                         className="text-sm"
@@ -590,8 +604,15 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
 
                           
                           // Real-time update
+                          console.log('[FURNITURE-DIALOG-DEBUG] Position Z input changed, calling onPositionUpdate', {
+                            timestamp: Date.now(),
+                            newPosition,
+                            hasCallback: !!onPositionUpdate
+                          });
                           if (onPositionUpdate) {
                             onPositionUpdate(newPosition);
+                          } else {
+                            console.log('[FURNITURE-DIALOG-DEBUG] WARNING: onPositionUpdate callback is null/undefined');
                           }
                         }}
                         disabled={type !== 'block' && type !== 'vent'}
@@ -621,8 +642,15 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                             rotation: newRotation
                           }));
                           // Real-time update
+                          console.log('[FURNITURE-DIALOG-DEBUG] Rotation X input changed, calling onRotationUpdate', {
+                            timestamp: Date.now(),
+                            newRotation,
+                            hasCallback: !!onRotationUpdate
+                          });
                           if (onRotationUpdate) {
                             onRotationUpdate(newRotation);
+                          } else {
+                            console.log('[FURNITURE-DIALOG-DEBUG] WARNING: onRotationUpdate callback is null/undefined');
                           }
                         }}
                         className="text-sm"
@@ -693,8 +721,15 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           const newScale = { ...elementScale, x: newScaleX };
                           setElementScale(newScale);
                           // Real-time update
+                          console.log('[FURNITURE-DIALOG-DEBUG] Scale X input changed, calling onScaleUpdate', {
+                            timestamp: Date.now(),
+                            newScale,
+                            hasCallback: !!onScaleUpdate
+                          });
                           if (onScaleUpdate) {
                             onScaleUpdate(newScale);
+                          } else {
+                            console.log('[FURNITURE-DIALOG-DEBUG] WARNING: onScaleUpdate callback is null/undefined');
                           }
                         }}
                         className="text-sm"
