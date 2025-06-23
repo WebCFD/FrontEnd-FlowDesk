@@ -1322,49 +1322,80 @@ export default function Canvas3D({
     // State change monitoring for air entry dialogs
   }, [editingAirEntry]);
 
+  // Debounce mechanism to prevent infinite loops
+  const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isUpdatingRef = useRef(false);
+
   // Stable callbacks for AirEntry dialog real-time updates
   const handleAirEntryPositionUpdate = useCallback((newPosition: any) => {
-    setEditingAirEntry(prev => {
-      if (!prev || !onUpdateAirEntry) return prev;
-      
-      const updatedEntry = {
-        ...prev.entry,
-        position: newPosition
-      };
-      
-      // Update the entry via parent callback
-      onUpdateAirEntry(currentFloor, prev.index, updatedEntry);
-      
-      // Return updated local state
-      return {
-        ...prev,
-        entry: updatedEntry
-      };
-    });
-  }, [onUpdateAirEntry, currentFloor]);
+    if (!editingAirEntry || !onUpdateAirEntry || isUpdatingRef.current) return;
+    
+    // Clear any pending updates
+    if (updateTimeoutRef.current) {
+      clearTimeout(updateTimeoutRef.current);
+    }
+    
+    // Set updating flag to prevent cascading updates
+    isUpdatingRef.current = true;
+    
+    const updatedEntry = {
+      ...editingAirEntry.entry,
+      position: newPosition
+    };
+    
+    // Update local state immediately for responsiveness
+    setEditingAirEntry(prev => prev ? {
+      ...prev,
+      entry: updatedEntry
+    } : null);
+    
+    // Debounce parent callback to prevent loops
+    updateTimeoutRef.current = setTimeout(() => {
+      onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
+      isUpdatingRef.current = false;
+    }, 100);
+  }, [editingAirEntry, onUpdateAirEntry, currentFloor]);
 
   const handleAirEntryDimensionsUpdate = useCallback((newDimensions: any) => {
-    setEditingAirEntry(prev => {
-      if (!prev || !onUpdateAirEntry) return prev;
-      
-      const updatedEntry = {
-        ...prev.entry,
-        dimensions: {
-          ...prev.entry.dimensions,
-          ...newDimensions
-        }
-      };
-      
-      // Update the entry via parent callback
-      onUpdateAirEntry(currentFloor, prev.index, updatedEntry);
-      
-      // Return updated local state
-      return {
-        ...prev,
-        entry: updatedEntry
-      };
-    });
-  }, [onUpdateAirEntry, currentFloor]);
+    if (!editingAirEntry || !onUpdateAirEntry || isUpdatingRef.current) return;
+    
+    // Clear any pending updates
+    if (updateTimeoutRef.current) {
+      clearTimeout(updateTimeoutRef.current);
+    }
+    
+    // Set updating flag to prevent cascading updates
+    isUpdatingRef.current = true;
+    
+    const updatedEntry = {
+      ...editingAirEntry.entry,
+      dimensions: {
+        ...editingAirEntry.entry.dimensions,
+        ...newDimensions
+      }
+    };
+    
+    // Update local state immediately for responsiveness
+    setEditingAirEntry(prev => prev ? {
+      ...prev,
+      entry: updatedEntry
+    } : null);
+    
+    // Debounce parent callback to prevent loops
+    updateTimeoutRef.current = setTimeout(() => {
+      onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
+      isUpdatingRef.current = false;
+    }, 100);
+  }, [editingAirEntry, onUpdateAirEntry, currentFloor]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current);
+      }
+    };
+  }, []);
   
   // Reference to store newly created furniture for auto-opening dialog
   const newFurnitureForDialog = useRef<FurnitureItem | null>(null);

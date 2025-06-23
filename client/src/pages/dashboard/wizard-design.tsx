@@ -1011,34 +1011,6 @@ export default function WizardDesign() {
     updatedEntry: AirEntry,
   ) => {
     // Create a copy of the floors data
-    console.log(`Updating air entry in floor ${floorName}, index ${index}`);
-
-    // Log all entries before updating
-    console.log("PARENT COMPONENT DEBUG - BEFORE UPDATE:", {
-      updateRequestedFor: {
-        floorName,
-        index,
-        entryType: updatedEntry.type,
-        oldPosition:
-          floorName === currentFloor
-            ? airEntries[index]?.position
-            : floors[floorName]?.airEntries[index]?.position,
-        newPosition: updatedEntry.position,
-      },
-      currentFloor,
-      allEntries:
-        floorName === currentFloor
-          ? airEntries.map((entry, i) => ({
-              index: i,
-              type: entry.type,
-              position: entry.position,
-            }))
-          : floors[floorName]?.airEntries.map((entry, i) => ({
-              index: i,
-              type: entry.type,
-              position: entry.position,
-            })),
-    });
 
     // Create a deep clone of the updated entry to prevent reference issues
     const deepClonedEntry = JSON.parse(JSON.stringify(updatedEntry));
@@ -1064,16 +1036,7 @@ export default function WizardDesign() {
         useRoomStore.getState().setFloors(updatedFloors);
       }
 
-      // Log entries after updating
-      console.log("PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR):", {
-        updatedIndex: index,
-        allEntries: updatedAirEntries.map((entry, i) => ({
-          index: i,
-          type: entry.type,
-          position: entry.position,
-          isUpdated: i === index,
-        })),
-      });
+      // Entry updated successfully
 
       toast({
         title: "Air Entry Updated",
