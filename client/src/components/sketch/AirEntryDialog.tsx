@@ -244,19 +244,23 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   const handleWallPositionChange = (newPercentage: number) => {
     console.log('🎭 AirEntryDialog: handleWallPositionChange called with:', newPercentage);
     console.log('🎭 AirEntryDialog: Current wallPosition:', wallPosition);
+    console.log('🎭 AirEntryDialog: Call stack:', new Error().stack?.split('\n').slice(1, 4));
     
     // Only update if the value actually changed to prevent infinite loops
     if (Math.abs(wallPosition - newPercentage) > 0.01) {
+      console.log('🎭 AirEntryDialog: Updating wallPosition from', wallPosition, 'to', newPercentage);
       setWallPosition(newPercentage);
       
-      // Calcular la nueva posición y actualizar en tiempo real
-      const newPosition = calculatePositionFromPercentage(newPercentage);
-      if (newPosition && props.type !== 'wall' && 'onPositionUpdate' in props && props.onPositionUpdate) {
-        console.log('🎭 AirEntryDialog: Calling onPositionUpdate with:', newPosition);
-        props.onPositionUpdate(newPosition);
+      // Calcular la nueva posición y actualizar en tiempo real (only for 2D airEntry mode)
+      if (mode === 'airEntry') {
+        const newPosition = calculatePositionFromPercentage(newPercentage);
+        if (newPosition && props.type !== 'wall' && 'onPositionUpdate' in props && props.onPositionUpdate) {
+          console.log('🎭 AirEntryDialog: Calling 2D onPositionUpdate for airEntry mode with:', newPosition);
+          (props.onPositionUpdate as (pos: { x: number; y: number }) => void)(newPosition);
+        }
       }
     } else {
-      console.log('🎭 AirEntryDialog: Skipping update - same value');
+      console.log('🎭 AirEntryDialog: Skipping update - same value (diff:', Math.abs(wallPosition - newPercentage), ')');
     }
   };
 
@@ -965,8 +969,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               const rounded = Math.round(value * 100) / 100;
                               setDistanceToFloor(rounded);
                               
-                              // Trigger real-time updates for Canvas3D
+                              // Trigger real-time updates for Canvas3D (both modes)
                               if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
+                                console.log('🎭 AirEntryDialog: Triggering onDimensionsUpdate with distanceToFloor:', rounded);
                                 props.onDimensionsUpdate({ distanceToFloor: rounded });
                               }
                             }
@@ -1010,18 +1015,27 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           type="number"
                           min="0"
                           max="100"
-                          step="any"
+                          step="0.01"
                           inputMode="decimal"
                           value={wallPosition.toFixed(2)}
-                          onChange={(e) => {
-                            const value = parseFloat(e.target.value);
+                          onInput={(e) => {
+                            console.log('🎭 AirEntryDialog: Input onInput event triggered');
+                            const target = e.target as HTMLInputElement;
+                            const value = parseFloat(target.value);
+                            console.log('🎭 AirEntryDialog: Input value:', value, 'current wallPosition:', wallPosition);
                             if (!isNaN(value) && value >= 0 && value <= 100) {
-                              // Only update if significantly different to prevent micro-changes
                               const roundedValue = Math.round(value * 100) / 100;
-                              if (Math.abs(wallPosition - roundedValue) >= 0.01) {
+                              const diff = Math.abs(wallPosition - roundedValue);
+                              console.log('🎭 AirEntryDialog: Difference:', diff);
+                              if (diff >= 0.01) {
+                                console.log('🎭 AirEntryDialog: Input triggering handleWallPositionChange');
                                 handleWallPositionChange(roundedValue);
                               }
                             }
+                          }}
+                          onChange={(e) => {
+                            console.log('🎭 AirEntryDialog: Input onChange event triggered');
+                            // Prevent onChange from also triggering updates
                           }}
                           className="h-8 text-sm"
                           placeholder="50.00"
