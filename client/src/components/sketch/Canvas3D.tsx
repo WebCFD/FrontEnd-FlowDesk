@@ -5898,7 +5898,9 @@ export default function Canvas3D({
           initialValues={{
             ...editingAirEntry.entry.dimensions,
             shape: (editingAirEntry.entry.dimensions as any).shape,
-            properties: (editingAirEntry.entry as any).properties
+            properties: (editingAirEntry.entry as any).properties,
+            position: editingAirEntry.entry.position,
+            wallPosition: (editingAirEntry.entry as any).properties?.wallPosition
           } as any}
           airEntryIndex={editingAirEntry.index}
           currentFloor={currentFloor}
