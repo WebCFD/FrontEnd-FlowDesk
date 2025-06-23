@@ -18,7 +18,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { HelpCircle, X } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRoomStore } from "@/lib/store/room-store";
 
 // Props para entrada de aire (compatibilidad hacia atrás)
@@ -594,6 +594,15 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     document.addEventListener('mouseup', handleMouseUp);
   };
 
+  // Cleanup effect to remove any lingering event listeners
+  useEffect(() => {
+    return () => {
+      console.log('🎭 AirEntryDialog: Component unmounting - cleaning up all event listeners');
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [handleMouseMove, handleMouseUp]);
+
 
 
   return (
@@ -1003,13 +1012,15 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           max="100"
                           step="any"
                           inputMode="decimal"
-                          value={parseFloat(wallPosition.toFixed(2))}
+                          value={wallPosition.toFixed(2)}
                           onChange={(e) => {
                             const value = parseFloat(e.target.value);
-                            if (!isNaN(value)) {
-                              // Permitir hasta 2 decimales
+                            if (!isNaN(value) && value >= 0 && value <= 100) {
+                              // Only update if significantly different to prevent micro-changes
                               const roundedValue = Math.round(value * 100) / 100;
-                              handleWallPositionChange(roundedValue);
+                              if (Math.abs(wallPosition - roundedValue) >= 0.01) {
+                                handleWallPositionChange(roundedValue);
+                              }
                             }
                           }}
                           className="h-8 text-sm"
