@@ -318,17 +318,35 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         const airEntryProps = props as AirEntryDialogProps;
         if (airEntryProps.initialValues) {
           setDistanceToFloor(airEntryProps.initialValues.distanceToFloor || 0);
-          // Para calcular la posición en el wall basada en la posición actual
-          if (airEntryProps.wallContext) {
-            const { wallStart, wallEnd, clickPosition } = airEntryProps.wallContext;
+          // Para calcular la posición en el wall basada en la posición ACTUAL del elemento
+          if (airEntryProps.wallContext && airEntryProps.initialValues.position) {
+            const { wallStart, wallEnd } = airEntryProps.wallContext;
+            const currentPosition = airEntryProps.initialValues.position;
+            
             const wallLength = Math.sqrt(
               Math.pow(wallEnd.x - wallStart.x, 2) + Math.pow(wallEnd.y - wallStart.y, 2)
             );
-            const clickDistance = Math.sqrt(
-              Math.pow(clickPosition.x - wallStart.x, 2) + Math.pow(clickPosition.y - wallStart.y, 2)
+            
+            // Usar la posición ACTUAL del air entry, no la clickPosition original
+            const currentDistance = Math.sqrt(
+              Math.pow(currentPosition.x - wallStart.x, 2) + Math.pow(currentPosition.y - wallStart.y, 2)
             );
-            const percentage = Math.min(100, Math.max(0, (clickDistance / wallLength) * 100));
-            setWallPosition(percentage);
+            
+            // Ajustar el cálculo considerando el ancho del elemento
+            const elementWidth = airEntryProps.initialValues.width || 50;
+            const PIXELS_TO_CM = 1.25;
+            const elementWidthPixels = elementWidth / PIXELS_TO_CM;
+            const halfElementWidth = elementWidthPixels / 2;
+            
+            // Calcular la longitud efectiva disponible para el elemento
+            const effectiveLength = Math.max(0, wallLength - elementWidthPixels);
+            
+            // Convertir la distancia actual a porcentaje efectivo
+            const adjustedDistance = Math.max(halfElementWidth, Math.min(wallLength - halfElementWidth, currentDistance));
+            const effectiveDistance = adjustedDistance - halfElementWidth;
+            const percentage = effectiveLength > 0 ? (effectiveDistance / effectiveLength) * 100 : 0;
+            
+            setWallPosition(Math.min(100, Math.max(0, percentage)));
           } else {
             setWallPosition(50); // Default center
           }
