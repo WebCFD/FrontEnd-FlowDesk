@@ -1317,15 +1317,9 @@ export default function Canvas3D({
     mode: 'creation' | 'edit'; // Phase 2: Add mode tracking
   } | null>(null);
 
-  // Debug: Track when editingAirEntry changes
+  // Track editingAirEntry state changes
   useEffect(() => {
-    console.log('[AIRENTRY-STATE-DEBUG] editingAirEntry state changed', {
-      timestamp: Date.now(),
-      hasEditingAirEntry: !!editingAirEntry,
-      entryIndex: editingAirEntry?.index,
-      entryType: editingAirEntry?.entry.type,
-      hasWallContext: !!editingAirEntry?.wallContext
-    });
+    // State change monitoring for air entry dialogs
   }, [editingAirEntry]);
   
   // Reference to store newly created furniture for auto-opening dialog
@@ -5759,18 +5753,8 @@ export default function Canvas3D({
           isEditing={true}
           wallContext={editingAirEntry.wallContext}
           onPositionUpdate={useCallback((newPosition: any) => {
-            console.log('[AIRENTRY-CALLBACK-DEBUG] onPositionUpdate called', {
-              timestamp: Date.now(),
-              newPosition,
-              hasCallback: !!onUpdateAirEntry,
-              hasEditingAirEntry: !!editingAirEntry
-            });
-            
-            // Phase 5: Real-time position updates in 3D scene
-            if (!editingAirEntry || !onUpdateAirEntry) {
-              console.log('[AIRENTRY-CALLBACK-DEBUG] WARNING: Missing editingAirEntry or onUpdateAirEntry callback');
-              return;
-            }
+            // Real-time position updates in 3D scene
+            if (!editingAirEntry || !onUpdateAirEntry) return;
             
             const updatedEntry = {
               ...editingAirEntry.entry,
@@ -5787,18 +5771,8 @@ export default function Canvas3D({
             });
           }, [editingAirEntry, onUpdateAirEntry, currentFloor])}
           onDimensionsUpdate={useCallback((newDimensions: any) => {
-            console.log('[AIRENTRY-CALLBACK-DEBUG] onDimensionsUpdate called', {
-              timestamp: Date.now(),
-              newDimensions,
-              hasCallback: !!onUpdateAirEntry,
-              hasEditingAirEntry: !!editingAirEntry
-            });
-            
             // Real-time dimension updates in 3D scene
-            if (!editingAirEntry || !onUpdateAirEntry) {
-              console.log('[AIRENTRY-CALLBACK-DEBUG] WARNING: Missing editingAirEntry or onUpdateAirEntry callback');
-              return;
-            }
+            if (!editingAirEntry || !onUpdateAirEntry) return;
             
             const updatedEntry = {
               ...editingAirEntry.entry,

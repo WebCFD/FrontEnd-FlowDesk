@@ -1091,17 +1091,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                                 const newWidth = Number(e.target.value);
                                 setValues(prev => ({ ...prev, width: newWidth }));
                                 
-                                console.log('[AIRENTRY-INPUT-DEBUG] Width input changed, calling onDimensionsUpdate', {
-                                  timestamp: Date.now(),
-                                  newWidth,
-                                  hasCallback: !!(props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate)
-                                });
-                                
-                                // Actualizar en tiempo real en Canvas2D
+                                // Real-time dimension updates
                                 if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
                                   props.onDimensionsUpdate({ width: newWidth });
-                                } else {
-                                  console.log('[AIRENTRY-INPUT-DEBUG] WARNING: onDimensionsUpdate callback not available');
                                 }
                               }}
                               className="h-8 text-sm"
@@ -1134,17 +1126,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                                 const newHeight = Number(e.target.value);
                                 setValues(prev => ({ ...prev, height: newHeight }));
                                 
-                                console.log('[AIRENTRY-INPUT-DEBUG] Height input changed, calling onDimensionsUpdate', {
-                                  timestamp: Date.now(),
-                                  newHeight,
-                                  hasCallback: !!(props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate)
-                                });
-                                
-                                // Actualizar en tiempo real en Canvas2D
+                                // Real-time dimension updates
                                 if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
                                   props.onDimensionsUpdate({ height: newHeight });
-                                } else {
-                                  console.log('[AIRENTRY-INPUT-DEBUG] WARNING: onDimensionsUpdate callback not available');
                                 }
                               }}
                               className="h-8 text-sm"
@@ -1186,17 +1170,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                                 height: diameter // Set height equal to width for circular elements
                               }));
                               
-                              console.log('[AIRENTRY-INPUT-DEBUG] Diameter input changed, calling onDimensionsUpdate', {
-                                timestamp: Date.now(),
-                                diameter,
-                                hasCallback: !!(props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate)
-                              });
-                              
-                              // Actualizar en tiempo real en Canvas2D para elementos circulares
+                              // Real-time dimension updates for circular elements
                               if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
                                 props.onDimensionsUpdate({ width: diameter, height: diameter });
-                              } else {
-                                console.log('[AIRENTRY-INPUT-DEBUG] WARNING: onDimensionsUpdate callback not available');
                               }
                             }}
                             className="h-8 text-sm"
