@@ -581,6 +581,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         height: shapeType === 'rectangular' ? (values as any).height : (values as any).width, // For circular, height = diameter
         distanceToFloor: distanceToFloor,
         shape: shapeType,
+        wallPosition: (values as any).wallPosition || wallPosition, // Include wallPosition for Canvas3D
         // Include position and rotation for 3D furniture vents (furnVent mode)
         ...(mode === 'furnVent' && {
           position: element3DPosition,
