@@ -5378,6 +5378,10 @@ export default function Canvas3D({
                 rotation: dialogRotation
               };
               
+              console.log('🎯 Canvas3D: Setting editingFurniture state');
+              console.log('🎯 Canvas3D: Furniture item:', furnitureItemWithCurrentPosition);
+              console.log('🎯 Canvas3D: Mode: edit');
+              
               setEditingFurniture({
                 index: 0, // This would need to be the actual index from the furniture list
                 item: furnitureItemWithCurrentPosition,
@@ -5534,12 +5538,13 @@ export default function Canvas3D({
         
         furnitureGroup.position.set(localPosition.x, localPosition.y, localPosition.z);
         
-        console.log(`Real-time position update (${editingFurniture.item.type.toUpperCase()}):`);
-        console.log('- Dialog world position:', newPosition);
-        console.log('- Applied local position:', localPosition);
+        console.log(`🔄 Canvas3D: Real-time position update (${editingFurniture.item.type.toUpperCase()}):`);
+        console.log('🔄 Canvas3D: Dialog world position:', newPosition);
+        console.log('🔄 Canvas3D: Applied local position:', localPosition);
       } else {
         // For tables and other furniture: direct application
         furnitureGroup.position.set(newPosition.x, newPosition.y, newPosition.z);
+        console.log('🔄 Canvas3D: Real-time position update (table/other):', newPosition);
       }
     }
   };
@@ -5583,19 +5588,25 @@ export default function Canvas3D({
         
         furnitureGroup.rotation.set(localRotation.x, localRotation.y, localRotation.z);
         
-        console.log(`Real-time rotation update (${editingFurniture.item.type.toUpperCase()}):`);
-        console.log('- Dialog world rotation:', newRotation);
-        console.log('- Applied local rotation:', localRotation);
+        console.log(`🔄 Canvas3D: Real-time rotation update (${editingFurniture.item.type.toUpperCase()}):`);
+        console.log('🔄 Canvas3D: Dialog world rotation:', newRotation);
+        console.log('🔄 Canvas3D: Applied local rotation:', localRotation);
       } else {
         // For tables and other furniture: direct application
         furnitureGroup.rotation.set(newRotation.x, newRotation.y, newRotation.z);
+        console.log("🔄 Canvas3D: Real-time rotation update (table/other):", newRotation);
       }
-      console.log("🔄 Real-time rotation update:", newRotation);
     }
   };
 
   const handleRealTimeScaleUpdate = (newScale: { x: number; y: number; z: number }) => {
-    if (!editingFurniture || !sceneRef.current) return;
+    console.log('🔄 Canvas3D: handleRealTimeScaleUpdate called');
+    console.log('🔄 Canvas3D: newScale:', newScale);
+    
+    if (!editingFurniture || !sceneRef.current) {
+      console.log('❌ Canvas3D: Exiting handleRealTimeScaleUpdate - missing editingFurniture or scene');
+      return;
+    }
 
     const furnitureId = editingFurniture.item.id;
     let furnitureGroup: THREE.Group | null = null;
@@ -5608,7 +5619,9 @@ export default function Canvas3D({
 
     if (furnitureGroup) {
       furnitureGroup.scale.set(newScale.x, newScale.y, newScale.z);
-      console.log("🔄 Real-time scale update:", newScale);
+      console.log("🔄 Canvas3D: Real-time scale update applied:", newScale);
+    } else {
+      console.log('❌ Canvas3D: Furniture group not found for scale update, ID:', furnitureId);
     }
   };
 
@@ -5817,8 +5830,15 @@ export default function Canvas3D({
       {editingFurniture && editingFurniture.item.type === 'vent' ? (
         <UnifiedVentDialog
           isOpen={true}
-          onClose={() => setEditingFurniture(null)}
-          onConfirm={(data) => handleFurnitureEdit(editingFurniture.index, data)}
+          onClose={() => {
+            console.log('🚪 Canvas3D: Dialog onClose called - UnifiedVentDialog');
+            setEditingFurniture(null);
+          }}
+          onConfirm={(data) => {
+            console.log('✅ Canvas3D: Dialog onConfirm called - UnifiedVentDialog');
+            console.log('✅ Canvas3D: Confirm data:', data);
+            handleFurnitureEdit(editingFurniture.index, data);
+          }}
           isCreationMode={editingFurniture.mode === 'creation'}
           onCancel={() => {
             if (!editingFurniture) return;
@@ -5847,6 +5867,7 @@ export default function Canvas3D({
               }
             }
             
+            console.log('❌ Canvas3D: Dialog onCancel called - UnifiedVentDialog');
             setEditingFurniture(null);
           }}
           onPositionUpdate={handleRealTimePositionUpdate}
@@ -5877,8 +5898,15 @@ export default function Canvas3D({
         <FurnitureDialog
           type={editingFurniture.item.type}
           isOpen={true}
-          onClose={() => setEditingFurniture(null)}
-          onConfirm={(data) => handleFurnitureEdit(editingFurniture.index, data)}
+          onClose={() => {
+            console.log('🚪 Canvas3D: Dialog onClose called - FurnitureDialog');
+            setEditingFurniture(null);
+          }}
+          onConfirm={(data) => {
+            console.log('✅ Canvas3D: Dialog onConfirm called - FurnitureDialog');
+            console.log('✅ Canvas3D: Confirm data:', data);
+            handleFurnitureEdit(editingFurniture.index, data);
+          }}
           isCreationMode={editingFurniture.mode === 'creation'} // Phase 1: Pass mode to dialog
           onCancel={() => {
             if (!editingFurniture) return;
@@ -5914,6 +5942,7 @@ export default function Canvas3D({
             // Edit mode: Just close dialog without deletion
             
             // Close dialog for both modes
+            console.log('❌ Canvas3D: Dialog onCancel called - FurnitureDialog');
             setEditingFurniture(null);
           }}
           onPositionUpdate={handleRealTimePositionUpdate}
