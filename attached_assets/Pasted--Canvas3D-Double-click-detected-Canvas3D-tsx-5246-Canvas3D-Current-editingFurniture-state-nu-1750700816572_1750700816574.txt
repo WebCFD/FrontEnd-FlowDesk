@@ -1,0 +1,134 @@
+🎯 Canvas3D: Double-click detected
+Canvas3D.tsx:5246 🎯 Canvas3D: Current editingFurniture state: null
+Canvas3D.tsx:5833 🔗 Canvas3D: AirEntryDialog onPositionUpdate called
+Canvas3D.tsx:5834 🔗 Canvas3D: newPosition: {x: 356.92788991104163, y: 79.9081544144291}
+Canvas3D.tsx:5835 🔗 Canvas3D: editingAirEntry exists: true
+Canvas3D.tsx:5836 🔗 Canvas3D: onUpdateAirEntry exists: true
+Canvas3D.tsx:5849 🔗 Canvas3D: Calling onUpdateAirEntry for floor: ground index: 0
+wizard-design.tsx:1014 🏢 wizard-design: handleUpdateAirEntry called
+wizard-design.tsx:1015 🏢 wizard-design: floorName: ground index: 0
+wizard-design.tsx:1016 🏢 wizard-design: Call stack: (3) ['    at handleUpdateAirEntryFrom3D (https://e6d70a7…dev/src/pages/dashboard/wizard-design.tsx:729:50)', '    at Object.onPositionUpdate (https://e6d70a7c-6…t.dev/src/components/sketch/Canvas3D.tsx:3727:11)', '    at handleWallPositionChange (https://e6d70a7c-…/src/components/sketch/AirEntryDialog.tsx:125:13)']
+wizard-design.tsx:1017 Updating air entry in floor ground, index 0
+wizard-design.tsx:1020 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1071 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+Canvas3D.tsx:5858 🔗 Canvas3D: Position update completed
+Canvas3D.tsx:5833 🔗 Canvas3D: AirEntryDialog onPositionUpdate called
+Canvas3D.tsx:5834 🔗 Canvas3D: newPosition: {x: 351.7278089632781, y: 79.84062089562698}
+Canvas3D.tsx:5835 🔗 Canvas3D: editingAirEntry exists: true
+Canvas3D.tsx:5836 🔗 Canvas3D: onUpdateAirEntry exists: true
+Canvas3D.tsx:5849 🔗 Canvas3D: Calling onUpdateAirEntry for floor: ground index: 0
+wizard-design.tsx:1014 🏢 wizard-design: handleUpdateAirEntry called
+wizard-design.tsx:1015 🏢 wizard-design: floorName: ground index: 0
+wizard-design.tsx:1016 🏢 wizard-design: Call stack: (3) ['    at handleUpdateAirEntryFrom3D (https://e6d70a7…dev/src/pages/dashboard/wizard-design.tsx:729:50)', '    at Object.onPositionUpdate (https://e6d70a7c-6…t.dev/src/components/sketch/Canvas3D.tsx:3727:11)', '    at handleWallPositionChange (https://e6d70a7c-…/src/components/sketch/AirEntryDialog.tsx:125:13)']
+wizard-design.tsx:1017 Updating air entry in floor ground, index 0
+wizard-design.tsx:1020 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1071 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+Canvas3D.tsx:5858 🔗 Canvas3D: Position update completed
+Canvas3D.tsx:5833 🔗 Canvas3D: AirEntryDialog onPositionUpdate called
+Canvas3D.tsx:5834 🔗 Canvas3D: newPosition: {x: 346.5277280155145, y: 79.77308737682486}
+Canvas3D.tsx:5835 🔗 Canvas3D: editingAirEntry exists: true
+Canvas3D.tsx:5836 🔗 Canvas3D: onUpdateAirEntry exists: true
+Canvas3D.tsx:5849 🔗 Canvas3D: Calling onUpdateAirEntry for floor: ground index: 0
+wizard-design.tsx:1014 🏢 wizard-design: handleUpdateAirEntry called
+wizard-design.tsx:1015 🏢 wizard-design: floorName: ground index: 0
+wizard-design.tsx:1016 🏢 wizard-design: Call stack: (3) ['    at handleUpdateAirEntryFrom3D (https://e6d70a7…dev/src/pages/dashboard/wizard-design.tsx:729:50)', '    at Object.onPositionUpdate (https://e6d70a7c-6…t.dev/src/components/sketch/Canvas3D.tsx:3727:11)', '    at handleWallPositionChange (https://e6d70a7c-…/src/components/sketch/AirEntryDialog.tsx:125:13)']
+wizard-design.tsx:1017 Updating air entry in floor ground, index 0
+wizard-design.tsx:1020 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1071 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+Canvas3D.tsx:5858 🔗 Canvas3D: Position update completed
+Canvas3D.tsx:5833 🔗 Canvas3D: AirEntryDialog onPositionUpdate called
+Canvas3D.tsx:5834 🔗 Canvas3D: newPosition: {x: 341.327647067751, y: 79.70555385802274}
+Canvas3D.tsx:5835 🔗 Canvas3D: editingAirEntry exists: true
+Canvas3D.tsx:5836 🔗 Canvas3D: onUpdateAirEntry exists: true
+Canvas3D.tsx:5849 🔗 Canvas3D: Calling onUpdateAirEntry for floor: ground index: 0
+wizard-design.tsx:1014 🏢 wizard-design: handleUpdateAirEntry called
+wizard-design.tsx:1015 🏢 wizard-design: floorName: ground index: 0
+wizard-design.tsx:1016 🏢 wizard-design: Call stack: (3) ['    at handleUpdateAirEntryFrom3D (https://e6d70a7…dev/src/pages/dashboard/wizard-design.tsx:729:50)', '    at Object.onPositionUpdate (https://e6d70a7c-6…t.dev/src/components/sketch/Canvas3D.tsx:3727:11)', '    at handleWallPositionChange (https://e6d70a7c-…/src/components/sketch/AirEntryDialog.tsx:125:13)']
+wizard-design.tsx:1017 Updating air entry in floor ground, index 0
+wizard-design.tsx:1020 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1071 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+Canvas3D.tsx:5858 🔗 Canvas3D: Position update completed
+Canvas3D.tsx:5818 ✅ Canvas3D: AirEntryDialog onConfirm called
+Canvas3D.tsx:5819 ✅ Canvas3D: Confirm data: {width: 120, height: 87, distanceToFloor: 123, shape: 'rectangular', properties: {…}}
+Canvas3D.tsx:5820 ✅ Canvas3D: editingAirEntry before confirm: {index: 0, entry: {…}, wallContext: {…}}
+Canvas3D.tsx:1684 [DIMENSION STORAGE] Stored dimensions for entry 0: {"position":{"x":341.327647067751,"y":79.70555385802274},"dimensions":{"width":120,"height":87,"distanceToFloor":123,"shape":"rectangular"}}
+Canvas3D.tsx:1688 🔧 Canvas3D: Calling onUpdateAirEntry for final update
+wizard-design.tsx:1014 🏢 wizard-design: handleUpdateAirEntry called
+wizard-design.tsx:1015 🏢 wizard-design: floorName: ground index: 0
+wizard-design.tsx:1016 🏢 wizard-design: Call stack: (3) ['    at handleUpdateAirEntryFrom3D (https://e6d70a7…dev/src/pages/dashboard/wizard-design.tsx:729:50)', '    at handleAirEntryEdit (https://e6d70a7c-6e99-4…lit.dev/src/components/sketch/Canvas3D.tsx:993:5)', '    at Object.onConfirm (https://e6d70a7c-6e99-426…t.dev/src/components/sketch/Canvas3D.tsx:3702:11)']
+wizard-design.tsx:1017 Updating air entry in floor ground, index 0
+wizard-design.tsx:1020 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1071 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+Canvas3D.tsx:1691 🔧 Canvas3D: Setting editingAirEntry to null after confirm
+Canvas3D.tsx:1693 🔧 Canvas3D: handleAirEntryEdit completed
+Canvas3D.tsx:5806 🚪 Canvas3D: AirEntryDialog onClose called
+Canvas3D.tsx:5807 🚪 Canvas3D: editingAirEntry before cleanup: {index: 0, entry: {…}, wallContext: {…}}
+Canvas3D.tsx:5809 🚪 Canvas3D: editingAirEntry set to null
+Canvas3D.tsx:4420 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4430 Double-click found entry using stored entryIndex: 0
+Canvas3D.tsx:5245 🎯 Canvas3D: Double-click detected
+Canvas3D.tsx:5246 🎯 Canvas3D: Current editingFurniture state: null
+Canvas3D.tsx:5833 🔗 Canvas3D: AirEntryDialog onPositionUpdate called
+Canvas3D.tsx:5834 🔗 Canvas3D: newPosition: {x: 356.92788991104163, y: 79.9081544144291}
+Canvas3D.tsx:5835 🔗 Canvas3D: editingAirEntry exists: true
+Canvas3D.tsx:5836 🔗 Canvas3D: onUpdateAirEntry exists: true
+Canvas3D.tsx:5849 🔗 Canvas3D: Calling onUpdateAirEntry for floor: ground index: 0
+wizard-design.tsx:1014 🏢 wizard-design: handleUpdateAirEntry called
+wizard-design.tsx:1015 🏢 wizard-design: floorName: ground index: 0
+wizard-design.tsx:1016 🏢 wizard-design: Call stack: (3) ['    at handleUpdateAirEntryFrom3D (https://e6d70a7…dev/src/pages/dashboard/wizard-design.tsx:729:50)', '    at Object.onPositionUpdate (https://e6d70a7c-6…t.dev/src/components/sketch/Canvas3D.tsx:3727:11)', '    at handleWallPositionChange (https://e6d70a7c-…/src/components/sketch/AirEntryDialog.tsx:125:13)']
+wizard-design.tsx:1017 Updating air entry in floor ground, index 0
+wizard-design.tsx:1020 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1071 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+Canvas3D.tsx:5858 🔗 Canvas3D: Position update completed
+Canvas3D.tsx:5833 🔗 Canvas3D: AirEntryDialog onPositionUpdate called
+Canvas3D.tsx:5834 🔗 Canvas3D: newPosition: {x: 351.7278089632781, y: 79.84062089562698}
+Canvas3D.tsx:5835 🔗 Canvas3D: editingAirEntry exists: true
+Canvas3D.tsx:5836 🔗 Canvas3D: onUpdateAirEntry exists: true
+Canvas3D.tsx:5849 🔗 Canvas3D: Calling onUpdateAirEntry for floor: ground index: 0
+wizard-design.tsx:1014 🏢 wizard-design: handleUpdateAirEntry called
+wizard-design.tsx:1015 🏢 wizard-design: floorName: ground index: 0
+wizard-design.tsx:1016 🏢 wizard-design: Call stack: (3) ['    at handleUpdateAirEntryFrom3D (https://e6d70a7…dev/src/pages/dashboard/wizard-design.tsx:729:50)', '    at Object.onPositionUpdate (https://e6d70a7c-6…t.dev/src/components/sketch/Canvas3D.tsx:3727:11)', '    at handleWallPositionChange (https://e6d70a7c-…/src/components/sketch/AirEntryDialog.tsx:125:13)']
+wizard-design.tsx:1017 Updating air entry in floor ground, index 0
+wizard-design.tsx:1020 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1071 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+Canvas3D.tsx:5858 🔗 Canvas3D: Position update completed
+Canvas3D.tsx:5833 🔗 Canvas3D: AirEntryDialog onPositionUpdate called
+Canvas3D.tsx:5834 🔗 Canvas3D: newPosition: {x: 346.5277280155145, y: 79.77308737682486}
+Canvas3D.tsx:5835 🔗 Canvas3D: editingAirEntry exists: true
+Canvas3D.tsx:5836 🔗 Canvas3D: onUpdateAirEntry exists: true
+Canvas3D.tsx:5849 🔗 Canvas3D: Calling onUpdateAirEntry for floor: ground index: 0
+wizard-design.tsx:1014 🏢 wizard-design: handleUpdateAirEntry called
+wizard-design.tsx:1015 🏢 wizard-design: floorName: ground index: 0
+wizard-design.tsx:1016 🏢 wizard-design: Call stack: (3) ['    at handleUpdateAirEntryFrom3D (https://e6d70a7…dev/src/pages/dashboard/wizard-design.tsx:729:50)', '    at Object.onPositionUpdate (https://e6d70a7c-6…t.dev/src/components/sketch/Canvas3D.tsx:3727:11)', '    at handleWallPositionChange (https://e6d70a7c-…/src/components/sketch/AirEntryDialog.tsx:125:13)']
+wizard-design.tsx:1017 Updating air entry in floor ground, index 0
+wizard-design.tsx:1020 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1071 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+Canvas3D.tsx:5858 🔗 Canvas3D: Position update completed
+Canvas3D.tsx:5833 🔗 Canvas3D: AirEntryDialog onPositionUpdate called
+Canvas3D.tsx:5834 🔗 Canvas3D: newPosition: {x: 341.327647067751, y: 79.70555385802274}
+Canvas3D.tsx:5835 🔗 Canvas3D: editingAirEntry exists: true
+Canvas3D.tsx:5836 🔗 Canvas3D: onUpdateAirEntry exists: true
+Canvas3D.tsx:5849 🔗 Canvas3D: Calling onUpdateAirEntry for floor: ground index: 0
+wizard-design.tsx:1014 🏢 wizard-design: handleUpdateAirEntry called
+wizard-design.tsx:1015 🏢 wizard-design: floorName: ground index: 0
+wizard-design.tsx:1016 🏢 wizard-design: Call stack: (3) ['    at handleUpdateAirEntryFrom3D (https://e6d70a7…dev/src/pages/dashboard/wizard-design.tsx:729:50)', '    at Object.onPositionUpdate (https://e6d70a7c-6…t.dev/src/components/sketch/Canvas3D.tsx:3727:11)', '    at handleWallPositionChange (https://e6d70a7c-…/src/components/sketch/AirEntryDialog.tsx:125:13)']
+wizard-design.tsx:1017 Updating air entry in floor ground, index 0
+wizard-design.tsx:1020 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1071 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+Canvas3D.tsx:5858 🔗 Canvas3D: Position update completed
+Canvas3D.tsx:5818 ✅ Canvas3D: AirEntryDialog onConfirm called
+Canvas3D.tsx:5819 ✅ Canvas3D: Confirm data: {width: 120, height: 87, distanceToFloor: 123, shape: 'rectangular', properties: {…}}
+Canvas3D.tsx:5820 ✅ Canvas3D: editingAirEntry before confirm: {index: 0, entry: {…}, wallContext: {…}}
+Canvas3D.tsx:1684 [DIMENSION STORAGE] Stored dimensions for entry 0: {"position":{"x":341.327647067751,"y":79.70555385802274},"dimensions":{"width":120,"height":87,"distanceToFloor":123,"shape":"rectangular"}}
+Canvas3D.tsx:1688 🔧 Canvas3D: Calling onUpdateAirEntry for final update
+wizard-design.tsx:1014 🏢 wizard-design: handleUpdateAirEntry called
+wizard-design.tsx:1015 🏢 wizard-design: floorName: ground index: 0
+wizard-design.tsx:1016 🏢 wizard-design: Call stack: (3) ['    at handleUpdateAirEntryFrom3D (https://e6d70a7…dev/src/pages/dashboard/wizard-design.tsx:729:50)', '    at handleAirEntryEdit (https://e6d70a7c-6e99-4…lit.dev/src/components/sketch/Canvas3D.tsx:993:5)', '    at Object.onConfirm (https://e6d70a7c-6e99-426…t.dev/src/components/sketch/Canvas3D.tsx:3702:11)']
+wizard-design.tsx:1017 Updating air entry in floor ground, index 0
+wizard-design.tsx:1020 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1071 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+Canvas3D.tsx:1691 🔧 Canvas3D: Setting editingAirEntry to null after confirm
+Canvas3D.tsx:1693 🔧 Canvas3D: handleAirEntryEdit completed
+Canvas3D.tsx:5806 🚪 Canvas3D: AirEntryDialog onClose called
+Canvas3D.tsx:5807 🚪 Canvas3D: editingAirEntry before cleanup: {index: 0, entry: {…}, wallContext: {…}}
+Canvas3D.tsx:5809 🚪 Canvas3D: editingAirEntry set to null

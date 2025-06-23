@@ -168,7 +168,22 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   });
   
   // Estado para la posición a lo largo del wall (0-100%)
-  const [wallPosition, setWallPosition] = useState(50);
+  const [wallPosition, setWallPosition] = useState(() => {
+    // Initialize only once when component mounts
+    if (!('wallContext' in props)) return 50;
+    const airEntryProps = props as AirEntryDialogProps;
+    if (!airEntryProps.wallContext) return 50;
+    
+    // Calculate initial position only on mount
+    const { wallStart, wallEnd, clickPosition } = airEntryProps.wallContext;
+    const wallLength = Math.sqrt(
+      Math.pow(wallEnd.x - wallStart.x, 2) + Math.pow(wallEnd.y - wallStart.y, 2)
+    );
+    const clickDistance = Math.sqrt(
+      Math.pow(clickPosition.x - wallStart.x, 2) + Math.pow(clickPosition.y - wallStart.y, 2)
+    );
+    return Math.min(100, Math.max(0, (clickDistance / wallLength) * 100));
+  });
   
   // Estado para el tipo de forma (rectangular/circular)
   const [shapeType, setShapeType] = useState<'rectangular' | 'circular'>('rectangular');
@@ -227,12 +242,21 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
   // Función para manejar el cambio de posición a lo largo del wall
   const handleWallPositionChange = (newPercentage: number) => {
-    setWallPosition(newPercentage);
+    console.log('🎭 AirEntryDialog: handleWallPositionChange called with:', newPercentage);
+    console.log('🎭 AirEntryDialog: Current wallPosition:', wallPosition);
     
-    // Calcular la nueva posición y actualizar en tiempo real
-    const newPosition = calculatePositionFromPercentage(newPercentage);
-    if (newPosition && props.type !== 'wall' && 'onPositionUpdate' in props && props.onPositionUpdate) {
-      props.onPositionUpdate(newPosition);
+    // Only update if the value actually changed to prevent infinite loops
+    if (Math.abs(wallPosition - newPercentage) > 0.01) {
+      setWallPosition(newPercentage);
+      
+      // Calcular la nueva posición y actualizar en tiempo real
+      const newPosition = calculatePositionFromPercentage(newPercentage);
+      if (newPosition && props.type !== 'wall' && 'onPositionUpdate' in props && props.onPositionUpdate) {
+        console.log('🎭 AirEntryDialog: Calling onPositionUpdate with:', newPosition);
+        props.onPositionUpdate(newPosition);
+      }
+    } else {
+      console.log('🎭 AirEntryDialog: Skipping update - same value');
     }
   };
 
@@ -307,27 +331,13 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         const airEntryProps = props as AirEntryDialogProps;
         if (airEntryProps.initialValues) {
           setDistanceToFloor(airEntryProps.initialValues.distanceToFloor || 0);
-          // Para calcular la posición en el wall basada en la posición actual
-          if (airEntryProps.wallContext) {
-            const { wallStart, wallEnd, clickPosition } = airEntryProps.wallContext;
-            const wallLength = Math.sqrt(
-              Math.pow(wallEnd.x - wallStart.x, 2) + Math.pow(wallEnd.y - wallStart.y, 2)
-            );
-            const clickDistance = Math.sqrt(
-              Math.pow(clickPosition.x - wallStart.x, 2) + Math.pow(clickPosition.y - wallStart.y, 2)
-            );
-            const percentage = Math.min(100, Math.max(0, (clickDistance / wallLength) * 100));
-            setWallPosition(percentage);
-          } else {
-            setWallPosition(50); // Default center
-          }
+          // Don't recalculate wallPosition here - it causes infinite loops
+          // wallPosition is already initialized properly in useState
         }
       } else {
-        // En modo creación, calcular valores iniciales
-        const initialWallPos = calculateInitialWallPosition();
+        // En modo creación, only set distance to floor
+        // wallPosition is already initialized in useState
         const initialDistToFloor = calculateInitialDistanceToFloor();
-        
-        setWallPosition(initialWallPos);
         setDistanceToFloor(initialDistToFloor);
       }
       
