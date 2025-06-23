@@ -1339,11 +1339,42 @@ export default function Canvas3D({
       position: newPosition
     };
     
+    // Store the updated position in the reference for immediate visual update
+    const normalizedFloorName = normalizeFloorName(currentFloor);
+    if (!updatedAirEntryPositionsRef.current[normalizedFloorName]) {
+      updatedAirEntryPositionsRef.current[normalizedFloorName] = {};
+    }
+    
+    // Update or create entry with new position
+    if (!updatedAirEntryPositionsRef.current[normalizedFloorName][editingAirEntry.index]) {
+      updatedAirEntryPositionsRef.current[normalizedFloorName][editingAirEntry.index] = {
+        position: newPosition,
+        dimensions: editingAirEntry.entry.dimensions
+      };
+    } else {
+      updatedAirEntryPositionsRef.current[normalizedFloorName][editingAirEntry.index].position = newPosition;
+    }
+    
     // Update local state immediately for responsiveness
     setEditingAirEntry(prev => prev ? {
       ...prev,
       entry: updatedEntry
     } : null);
+    
+    // Force immediate position update for visual feedback
+    if (sceneRef.current) {
+      sceneRef.current.traverse((object) => {
+        if (object instanceof THREE.Mesh && 
+            object.userData?.type === editingAirEntry.entry.type &&
+            object.userData?.entryIndex === editingAirEntry.index) {
+          
+          // Update the mesh position
+          const position3D = transform2DTo3D(newPosition);
+          object.position.set(position3D.x, position3D.y, object.position.z);
+          object.userData.position = newPosition;
+        }
+      });
+    }
     
     // Debounce parent callback to prevent excessive updates
     updateTimeoutRef.current = setTimeout(() => {
