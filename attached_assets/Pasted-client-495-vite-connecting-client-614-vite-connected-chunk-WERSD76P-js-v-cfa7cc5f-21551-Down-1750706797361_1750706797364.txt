@@ -1,0 +1,582 @@
+client:495 [vite] connecting...
+client:614 [vite] connected.
+chunk-WERSD76P.js?v=cfa7cc5f:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+AnalyticsProvider.tsx:21 Analytics initialized: false
+chunk-WERSD76P.js?v=cfa7cc5f:377 [Violation] 'message' handler took 177ms
+dashboard-sidebar.tsx:65 
+            
+            
+           GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+fetchUserData @ dashboard-sidebar.tsx:65
+(anonymous) @ dashboard-sidebar.tsx:80
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18868
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19432
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+finishConcurrentRender @ chunk-WERSD76P.js?v=cfa7cc5f:18805
+performConcurrentWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18718
+workLoop @ chunk-WERSD76P.js?v=cfa7cc5f:197
+flushWork @ chunk-WERSD76P.js?v=cfa7cc5f:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=cfa7cc5f:384Understand this errorAI
+analytics.ts:26 Google Analytics initialized with ID: G-XZYY9DVVHW
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+AnalyticsProvider.tsx:21 Analytics initialized: true
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.Understand this warningAI
+analytics.ts:62 📊 Analytics Event: {category: 'ui_interaction', action: 'change_tab', label: 'view_3d_preview', value: undefined, status: 'sent'}
+Canvas3D.tsx:1322 [AIRENTRY-STATE-DEBUG] editingAirEntry state changed {timestamp: 1750706774332, hasEditingAirEntry: false, entryIndex: undefined, entryType: undefined, hasWallContext: false}
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 157ms
+Canvas3D.tsx:4427 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4437 Double-click found entry using stored entryIndex: 0
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706776962, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706776962, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:1322 [AIRENTRY-STATE-DEBUG] editingAirEntry state changed {timestamp: 1750706776964, hasEditingAirEntry: true, entryIndex: 0, entryType: 'vent', hasWallContext: true}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706777050, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706777050, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706777091, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706777091, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706777132, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706777133, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706777189, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706777191, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706777288, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706777289, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706777346, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706777348, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706777390, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706777391, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706777422, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706777423, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706777459, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706777459, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706777491, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706777491, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706777516, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706777517, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706777552, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706777552, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706777588, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706777588, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706777632, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706777632, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706777683, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706777684, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706777721, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706777722, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706777762, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706777764, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706777804, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706777806, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706777838, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706777839, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706777875, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706777876, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706777945, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706777945, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706778032, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706778033, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706778064, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706778064, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706778095, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706778096, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706778116, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706778117, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706778139, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706778140, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706778182, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706778182, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706778207, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706778208, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706778242, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706778243, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706778277, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706778278, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706778312, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706778312, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706778347, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706778348, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706778396, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706778397, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706778445, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706778446, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706778543, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706778544, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706778570, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706778570, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706778631, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706778633, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706778700, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706778700, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706778721, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706778721, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706778746, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706778747, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706778799, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706778800, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706778825, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706778826, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706778854, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706778855, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706778885, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706778887, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706778916, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706778918, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706778944, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706778946, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706778968, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706778968, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706778987, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706778989, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706779013, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706779014, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706779061, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706779066, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706779114, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706779114, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706779134, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706779135, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706779158, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706779159, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706779187, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706779188, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706779215, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706779216, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706779277, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706779277, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706779302, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706779303, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706779343, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706779344, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706779373, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706779374, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706779409, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706779410, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706779443, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706779444, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706779467, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706779468, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706779496, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706779496, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706779529, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706779530, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706779559, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706779560, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706779582, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706779583, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706779607, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706779608, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706779648, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706779649, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706779694, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706779694, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706779772, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706779772, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706779807, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706779808, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5803 [AIRENTRY-CALLBACK-DEBUG] onDimensionsUpdate called {timestamp: 1750706779819, newDimensions: {…}, hasCallback: true, hasEditingAirEntry: true}
+wizard-design.tsx:1014 Updating air entry in floor ground, index 0
+wizard-design.tsx:1017 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1068 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706779831, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706779832, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:1322 [AIRENTRY-STATE-DEBUG] editingAirEntry state changed {timestamp: 1750706779842, hasEditingAirEntry: true, entryIndex: 0, entryType: 'vent', hasWallContext: true}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706779876, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706779877, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706779967, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706779968, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780006, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780006, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780058, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780059, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780078, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780080, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780110, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780111, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780137, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780139, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780163, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780163, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5803 [AIRENTRY-CALLBACK-DEBUG] onDimensionsUpdate called {timestamp: 1750706780194, newDimensions: {…}, hasCallback: true, hasEditingAirEntry: true}
+wizard-design.tsx:1014 Updating air entry in floor ground, index 0
+wizard-design.tsx:1017 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1068 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780225, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780229, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:1322 [AIRENTRY-STATE-DEBUG] editingAirEntry state changed {timestamp: 1750706780240, hasEditingAirEntry: true, entryIndex: 0, entryType: 'vent', hasWallContext: true}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780266, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780266, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780291, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780292, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780312, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780313, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780378, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780379, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780418, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780419, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780447, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780448, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780470, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780471, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780495, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780496, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780527, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780528, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780573, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780573, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780658, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780658, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780692, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780694, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780715, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780716, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780741, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780741, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780772, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780772, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780825, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780825, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780851, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780852, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780881, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780882, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780903, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780904, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780940, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780941, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780964, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780965, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706780985, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706780986, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706781011, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706781011, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706781059, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706781060, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706781081, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706781082, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706781112, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706781112, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706781134, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706781135, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706781157, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706781158, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706781190, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706781191, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706781215, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706781216, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706781241, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706781241, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706781275, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706781275, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:1695 [DIMENSION STORAGE] Stored dimensions for entry 0: {"position":{"x":244.4501390109162,"y":78.44740440273917},"dimensions":{"width":120,"height":87,"distanceToFloor":150,"shape":"rectangular"}}
+wizard-design.tsx:1014 Updating air entry in floor ground, index 0
+wizard-design.tsx:1017 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1068 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+Canvas3D.tsx:1322 [AIRENTRY-STATE-DEBUG] editingAirEntry state changed {timestamp: 1750706781302, hasEditingAirEntry: false, entryIndex: undefined, entryType: undefined, hasWallContext: false}
+Canvas3D.tsx:4427 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4437 Double-click found entry using stored entryIndex: 0
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706785850, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706785850, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:1322 [AIRENTRY-STATE-DEBUG] editingAirEntry state changed {timestamp: 1750706785852, hasEditingAirEntry: true, entryIndex: 0, entryType: 'vent', hasWallContext: true}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706785923, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706785923, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706785953, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706785953, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706785978, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706785978, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786014, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786015, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786062, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786063, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786088, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786091, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786134, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786135, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786167, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786168, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786202, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786202, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786229, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786230, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786262, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786263, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786290, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786290, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786335, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786335, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786360, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786360, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786389, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786389, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786433, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786434, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786478, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786479, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786518, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786519, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786552, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786553, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786586, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786587, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786647, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786649, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786689, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786689, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786719, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786720, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786750, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786751, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786783, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786783, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786810, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786811, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786835, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786836, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786869, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786869, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786906, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786906, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786928, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786929, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786950, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786951, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786975, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786975, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706786999, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706786999, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787023, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787023, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787050, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787051, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787086, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787086, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787128, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787129, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787156, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787157, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787184, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787184, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787205, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787206, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787225, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787226, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787244, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787245, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787266, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787266, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787298, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787299, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787316, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787317, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787337, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787338, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787358, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787359, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787389, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787390, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787428, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787429, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787453, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787453, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787478, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787478, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787509, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787510, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787534, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787534, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787560, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787560, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787604, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787604, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787628, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787628, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787647, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787647, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787675, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787676, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787718, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787719, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787751, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787752, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787775, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787776, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787798, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787799, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787819, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787820, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787840, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787842, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5803 [AIRENTRY-CALLBACK-DEBUG] onDimensionsUpdate called {timestamp: 1750706787854, newDimensions: {…}, hasCallback: true, hasEditingAirEntry: true}
+wizard-design.tsx:1014 Updating air entry in floor ground, index 0
+wizard-design.tsx:1017 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1068 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787865, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787866, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:1322 [AIRENTRY-STATE-DEBUG] editingAirEntry state changed {timestamp: 1750706787873, hasEditingAirEntry: true, entryIndex: 0, entryType: 'vent', hasWallContext: true}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787901, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787902, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787939, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787940, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706787973, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706787974, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5803 [AIRENTRY-CALLBACK-DEBUG] onDimensionsUpdate called {timestamp: 1750706787993, newDimensions: {…}, hasCallback: true, hasEditingAirEntry: true}
+wizard-design.tsx:1014 Updating air entry in floor ground, index 0
+wizard-design.tsx:1017 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1068 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788014, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788015, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:1322 [AIRENTRY-STATE-DEBUG] editingAirEntry state changed {timestamp: 1750706788029, hasEditingAirEntry: true, entryIndex: 0, entryType: 'vent', hasWallContext: true}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788067, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788068, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788107, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788108, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788130, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788131, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788157, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788157, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788189, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788190, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788219, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788220, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788239, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788239, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788256, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788257, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5803 [AIRENTRY-CALLBACK-DEBUG] onDimensionsUpdate called {timestamp: 1750706788269, newDimensions: {…}, hasCallback: true, hasEditingAirEntry: true}
+wizard-design.tsx:1014 Updating air entry in floor ground, index 0
+wizard-design.tsx:1017 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1068 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788286, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788286, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:1322 [AIRENTRY-STATE-DEBUG] editingAirEntry state changed {timestamp: 1750706788302, hasEditingAirEntry: true, entryIndex: 0, entryType: 'vent', hasWallContext: true}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788338, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788339, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788364, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788365, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788393, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788394, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788420, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788421, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788456, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788457, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788487, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788488, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5803 [AIRENTRY-CALLBACK-DEBUG] onDimensionsUpdate called {timestamp: 1750706788504, newDimensions: {…}, hasCallback: true, hasEditingAirEntry: true}
+wizard-design.tsx:1014 Updating air entry in floor ground, index 0
+wizard-design.tsx:1017 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1068 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788518, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788519, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:1322 [AIRENTRY-STATE-DEBUG] editingAirEntry state changed {timestamp: 1750706788527, hasEditingAirEntry: true, entryIndex: 0, entryType: 'vent', hasWallContext: true}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788556, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788557, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788599, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788599, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788642, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788643, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788689, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788689, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788729, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788730, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788770, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788770, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788795, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788796, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788816, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788816, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788845, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788846, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5803 [AIRENTRY-CALLBACK-DEBUG] onDimensionsUpdate called {timestamp: 1750706788858, newDimensions: {…}, hasCallback: true, hasEditingAirEntry: true}
+wizard-design.tsx:1014 Updating air entry in floor ground, index 0
+wizard-design.tsx:1017 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1068 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788876, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788877, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:1322 [AIRENTRY-STATE-DEBUG] editingAirEntry state changed {timestamp: 1750706788883, hasEditingAirEntry: true, entryIndex: 0, entryType: 'vent', hasWallContext: true}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788908, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788908, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788932, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788933, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788964, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788964, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706788991, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706788991, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789010, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789011, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789046, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789048, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789094, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789096, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789137, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789138, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789172, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789172, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789214, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789215, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789251, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789251, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789279, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789280, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789305, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789306, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789326, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789326, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789345, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789346, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789365, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789365, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789388, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789389, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789419, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789419, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789444, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789444, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789480, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789481, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789517, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789517, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789545, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789546, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789572, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789572, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789596, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789597, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789620, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789621, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789640, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789641, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789662, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789662, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789686, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789688, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789736, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789736, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789772, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789772, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789803, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789804, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789839, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789840, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789864, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789865, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789887, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789888, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5762 [AIRENTRY-CALLBACK-DEBUG] Creating onPositionUpdate callback for AirEntryDialog {timestamp: 1750706789912, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:5797 [AIRENTRY-CALLBACK-DEBUG] Creating onDimensionsUpdate callback for AirEntryDialog {timestamp: 1750706789912, entryIndex: 0, entryType: 'vent'}
+Canvas3D.tsx:1695 [DIMENSION STORAGE] Stored dimensions for entry 0: {"position":{"x":244.4501390109162,"y":78.44740440273917},"dimensions":{"width":120,"height":87,"distanceToFloor":155,"shape":"rectangular"}}
+wizard-design.tsx:1014 Updating air entry in floor ground, index 0
+wizard-design.tsx:1017 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1068 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+Canvas3D.tsx:1322 [AIRENTRY-STATE-DEBUG] editingAirEntry state changed {timestamp: 1750706789934, hasEditingAirEntry: false, entryIndex: undefined, entryType: undefined, hasWallContext: false}
