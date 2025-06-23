@@ -238,17 +238,22 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
   // Función para manejar el cambio de posición a lo largo del wall
   const handleWallPositionChange = (newPercentage: number) => {
+    console.log('🔄 WALL POSITION CHANGE - New value:', newPercentage);
     setWallPosition(newPercentage);
     
     // Calcular la nueva posición y actualizar en tiempo real
     const newPosition = calculatePositionFromPercentage(newPercentage);
     if (newPosition) {
       // Update form values for persistence
-      setValues(prev => ({ 
-        ...prev, 
-        position: newPosition,
-        wallPosition: newPercentage 
-      }));
+      setValues(prev => {
+        const newValues = { 
+          ...prev, 
+          position: newPosition,
+          wallPosition: newPercentage 
+        };
+        console.log('💾 WALL POSITION CHANGE - Updated form values:', newValues);
+        return newValues;
+      });
       
       // Trigger real-time position updates
       if (props.type !== 'wall' && 'onPositionUpdate' in props && props.onPositionUpdate) {
@@ -327,12 +332,23 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         // En modo edición, usar los valores actuales del elemento
         const airEntryProps = props as AirEntryDialogProps;
         if (airEntryProps.initialValues) {
+          console.log('🔍 LOADING EDITING VALUES - Full initialValues:', JSON.stringify(airEntryProps.initialValues, null, 2));
+          
           const initialDistanceToFloor = airEntryProps.initialValues.distanceToFloor || 0;
           setDistanceToFloor(initialDistanceToFloor);
+          
+          // DEBUG: Width loading (working parameter)
+          const savedWidth = airEntryProps.initialValues.width;
+          console.log('✅ WIDTH LOADING - Found saved width:', savedWidth);
           
           // Check if we have a saved wallPosition value from properties
           const savedWallPosition = (airEntryProps.initialValues as any).properties?.wallPosition || 
                                   (airEntryProps.initialValues as any).wallPosition;
+          
+          console.log('🔍 WALL POSITION LOADING - Checking sources:');
+          console.log('  - properties?.wallPosition:', (airEntryProps.initialValues as any).properties?.wallPosition);
+          console.log('  - direct wallPosition:', (airEntryProps.initialValues as any).wallPosition);
+          console.log('  - Final savedWallPosition:', savedWallPosition);
           
           // Also set in form values for persistence
           setValues(prev => ({ 
@@ -343,6 +359,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           
           // If we have a saved wallPosition, use it directly
           if (savedWallPosition !== undefined && savedWallPosition !== null) {
+            console.log('✅ WALL POSITION LOADING - Using saved value:', savedWallPosition);
             setWallPosition(savedWallPosition);
           }
           // Otherwise, calculate from current position
@@ -499,13 +516,17 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     if (props.type === 'wall') {
       props.onConfirm((values as { temperature: number }).temperature);
     } else {
+      console.log('📝 FORM SUBMIT - Current form values:', values);
+      console.log('📝 FORM SUBMIT - Current wallPosition state:', wallPosition);
+      console.log('📝 FORM SUBMIT - Current distanceToFloor state:', distanceToFloor);
+      
       // Collect all air entry data for JSON structure
       const airEntryData = {
         // Basic dimensions
         width: shapeType === 'rectangular' ? (values as any).width : null,
         height: shapeType === 'rectangular' ? (values as any).height : null,
         diameter: shapeType === 'circular' ? (values as any).width : null,
-        distanceToFloor: distanceToFloor,
+        distanceToFloor: (values as any).distanceToFloor || distanceToFloor,
         
         // Extended properties for JSON
         shape: shapeType,
@@ -525,6 +546,8 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         position: (values as any).position
       };
       
+      console.log('📦 FORM SUBMIT - Final airEntryData being sent:', JSON.stringify(airEntryData, null, 2));
+      
       // Persist simulation properties in the store if we have the necessary info
       if ((props.type === 'window' || props.type === 'door' || props.type === 'vent') && 'airEntryIndex' in props && props.airEntryIndex !== undefined && props.currentFloor) {
         const simulationProperties: any = {};
@@ -542,6 +565,11 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           simulationProperties.flowIntensity = intensityLevel === 'custom' ? 'medium' : intensityLevel;
           simulationProperties.airOrientation = airDirection;
         }
+        
+        // Always save wallPosition for all air entry types
+        simulationProperties.wallPosition = (values as any).wallPosition || wallPosition;
+        
+        console.log('💾 SIMULATION PROPERTIES SAVE - Final properties:', simulationProperties);
         
         // Store the properties
         updateAirEntryProperties(props.currentFloor, props.airEntryIndex, simulationProperties);
@@ -1073,6 +1101,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                             if (!isNaN(value)) {
                               // Permitir hasta 2 decimales
                               const roundedValue = Math.round(value * 100) / 100;
+                              console.log('📝 INPUT CHANGE - Wall position input changed to:', roundedValue);
                               handleWallPositionChange(roundedValue);
                             }
                           }}
