@@ -1093,7 +1093,6 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                                 
                                 // Real-time dimension updates
                                 if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
-                                  console.log('[REALTIME-TEST] Width changed, calling onDimensionsUpdate', { newWidth, timestamp: Date.now() });
                                   props.onDimensionsUpdate({ width: newWidth });
                                 }
                               }}
@@ -1129,7 +1128,6 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                                 
                                 // Real-time dimension updates
                                 if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
-                                  console.log('[REALTIME-TEST] Height changed, calling onDimensionsUpdate', { newHeight, timestamp: Date.now() });
                                   props.onDimensionsUpdate({ height: newHeight });
                                 }
                               }}

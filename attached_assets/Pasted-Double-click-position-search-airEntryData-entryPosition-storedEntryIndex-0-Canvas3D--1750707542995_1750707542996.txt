@@ -1,0 +1,41 @@
+Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4515 Double-click found entry using stored entryIndex: 0
+Canvas3D.tsx:1362 [REALTIME-TEST] Canvas3D received dimensions update {newDimensions: {…}, currentEntry: {…}, timestamp: 1750707521989}
+Canvas3D.tsx:1384 [REALTIME-TEST] About to update 3D visualization {updatedEntry: {…}}
+Canvas3D.tsx:1394 [REALTIME-TEST] Calling parent onUpdateAirEntry after debounce
+Canvas3D.tsx:1362 [REALTIME-TEST] Canvas3D received dimensions update {newDimensions: {…}, currentEntry: {…}, timestamp: 1750707522198}
+Canvas3D.tsx:1384 [REALTIME-TEST] About to update 3D visualization {updatedEntry: {…}}
+Canvas3D.tsx:1394 [REALTIME-TEST] Calling parent onUpdateAirEntry after debounce
+Canvas3D.tsx:1362 [REALTIME-TEST] Canvas3D received dimensions update {newDimensions: {…}, currentEntry: {…}, timestamp: 1750707523475}
+Canvas3D.tsx:1384 [REALTIME-TEST] About to update 3D visualization {updatedEntry: {…}}
+Canvas3D.tsx:1394 [REALTIME-TEST] Calling parent onUpdateAirEntry after debounce
+Canvas3D.tsx:1362 [REALTIME-TEST] Canvas3D received dimensions update {newDimensions: {…}, currentEntry: {…}, timestamp: 1750707523945}
+Canvas3D.tsx:1384 [REALTIME-TEST] About to update 3D visualization {updatedEntry: {…}}
+Canvas3D.tsx:1394 [REALTIME-TEST] Calling parent onUpdateAirEntry after debounce
+Canvas3D.tsx:1362 [REALTIME-TEST] Canvas3D received dimensions update {newDimensions: {…}, currentEntry: {…}, timestamp: 1750707524162}
+Canvas3D.tsx:1384 [REALTIME-TEST] About to update 3D visualization {updatedEntry: {…}}
+Canvas3D.tsx:1394 [REALTIME-TEST] Calling parent onUpdateAirEntry after debounce
+Canvas3D.tsx:1362 [REALTIME-TEST] Canvas3D received dimensions update {newDimensions: {…}, currentEntry: {…}, timestamp: 1750707524627}
+Canvas3D.tsx:1384 [REALTIME-TEST] About to update 3D visualization {updatedEntry: {…}}
+Canvas3D.tsx:1394 [REALTIME-TEST] Calling parent onUpdateAirEntry after debounce
+Canvas3D.tsx:1773 [DIMENSION STORAGE] Stored dimensions for entry 0: {"position":{"x":208.93358613769124,"y":77.98615046932066},"dimensions":{"width":120,"height":87,"distanceToFloor":176,"shape":"rectangular"}}
+Canvas3D.tsx:4505 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4515 Double-click found entry using stored entryIndex: 0
+Canvas3D.tsx:1362 [REALTIME-TEST] Canvas3D received dimensions update {newDimensions: {…}, currentEntry: {…}, timestamp: 1750707531553}
+Canvas3D.tsx:1384 [REALTIME-TEST] About to update 3D visualization {updatedEntry: {…}}
+Canvas3D.tsx:1394 [REALTIME-TEST] Calling parent onUpdateAirEntry after debounce
+Canvas3D.tsx:1362 [REALTIME-TEST] Canvas3D received dimensions update {newDimensions: {…}, currentEntry: {…}, timestamp: 1750707531835}
+Canvas3D.tsx:1384 [REALTIME-TEST] About to update 3D visualization {updatedEntry: {…}}
+Canvas3D.tsx:1394 [REALTIME-TEST] Calling parent onUpdateAirEntry after debounce
+Canvas3D.tsx:1362 [REALTIME-TEST] Canvas3D received dimensions update {newDimensions: {…}, currentEntry: {…}, timestamp: 1750707532088}
+Canvas3D.tsx:1384 [REALTIME-TEST] About to update 3D visualization {updatedEntry: {…}}
+Canvas3D.tsx:1394 [REALTIME-TEST] Calling parent onUpdateAirEntry after debounce
+Canvas3D.tsx:1362 [REALTIME-TEST] Canvas3D received dimensions update {newDimensions: {…}, currentEntry: {…}, timestamp: 1750707532703}
+Canvas3D.tsx:1384 [REALTIME-TEST] About to update 3D visualization {updatedEntry: {…}}
+Canvas3D.tsx:1394 [REALTIME-TEST] Calling parent onUpdateAirEntry after debounce
+Canvas3D.tsx:1362 [REALTIME-TEST] Canvas3D received dimensions update {newDimensions: {…}, currentEntry: {…}, timestamp: 1750707533089}
+Canvas3D.tsx:1384 [REALTIME-TEST] About to update 3D visualization {updatedEntry: {…}}
+Canvas3D.tsx:1394 [REALTIME-TEST] Calling parent onUpdateAirEntry after debounce
+Canvas3D.tsx:1362 [REALTIME-TEST] Canvas3D received dimensions update {newDimensions: {…}, currentEntry: {…}, timestamp: 1750707533319}
+Canvas3D.tsx:1384 [REALTIME-TEST] About to update 3D visualization {updatedEntry: {…}}
+Canvas3D.tsx:1394 [REALTIME-TEST] Calling parent onUpdateAirEntry after debounce
