@@ -5905,9 +5905,22 @@ export default function Canvas3D({
             setEditingFurniture(null);
             console.log('❌ Canvas3D: editingFurniture set to null after cancel');
           }}
-          onPositionUpdate={handleRealTimePositionUpdate}
-          onRotationUpdate={handleRealTimeRotationUpdate}
-          onScaleUpdate={handleRealTimeScaleUpdate}
+          onPositionUpdate={(newPos) => {
+            console.log('🔗 Canvas3D: Position update callback triggered (UnifiedVentDialog)');
+            console.log('🔗 Canvas3D: Callback editingFurniture exists:', !!editingFurniture);
+            console.log('🔗 Canvas3D: Callback editingFurniture ID:', editingFurniture?.item?.id);
+            handleRealTimePositionUpdate(newPos);
+          }}
+          onRotationUpdate={(newRot) => {
+            console.log('🔗 Canvas3D: Rotation update callback triggered (UnifiedVentDialog)');
+            console.log('🔗 Canvas3D: Callback editingFurniture exists:', !!editingFurniture);
+            handleRealTimeRotationUpdate(newRot);
+          }}
+          onScaleUpdate={(newScale) => {
+            console.log('🔗 Canvas3D: Scale update callback triggered (UnifiedVentDialog)');
+            console.log('🔗 Canvas3D: Callback editingFurniture exists:', !!editingFurniture);
+            handleRealTimeScaleUpdate(newScale);
+          }}
           initialValues={{
             name: editingFurniture.item.name,
             position: editingFurniture.item.position,
@@ -5980,9 +5993,22 @@ export default function Canvas3D({
             console.log('❌ Canvas3D: Dialog onCancel called - FurnitureDialog');
             setEditingFurniture(null);
           }}
-          onPositionUpdate={handleRealTimePositionUpdate}
-          onRotationUpdate={handleRealTimeRotationUpdate}
-          onScaleUpdate={handleRealTimeScaleUpdate}
+          onPositionUpdate={(newPos) => {
+            console.log('🔗 Canvas3D: Position update callback triggered (FurnitureDialog)');
+            console.log('🔗 Canvas3D: Callback editingFurniture exists:', !!editingFurniture);
+            console.log('🔗 Canvas3D: Callback editingFurniture ID:', editingFurniture?.item?.id);
+            handleRealTimePositionUpdate(newPos);
+          }}
+          onRotationUpdate={(newRot) => {
+            console.log('🔗 Canvas3D: Rotation update callback triggered (FurnitureDialog)');
+            console.log('🔗 Canvas3D: Callback editingFurniture exists:', !!editingFurniture);
+            handleRealTimeRotationUpdate(newRot);
+          }}
+          onScaleUpdate={(newScale) => {
+            console.log('🔗 Canvas3D: Scale update callback triggered (FurnitureDialog)');
+            console.log('🔗 Canvas3D: Callback editingFurniture exists:', !!editingFurniture);
+            handleRealTimeScaleUpdate(newScale);
+          }}
           initialValues={{
             name: editingFurniture.item.name,
             position: editingFurniture.item.position,
