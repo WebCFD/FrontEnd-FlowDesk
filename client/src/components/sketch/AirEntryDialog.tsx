@@ -571,10 +571,12 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
     // Function to handle the end of dragging
     const handleMouseUp = () => {
+      console.log('🎭 AirEntryDialog: Cleaning up drag event listeners');
       draggingRef.current = false;
       setIsDragging(false);
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
+      console.log('🎭 AirEntryDialog: Drag cleanup completed');
     };
 
     // Add global event listeners
