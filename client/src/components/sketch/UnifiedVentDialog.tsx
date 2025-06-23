@@ -188,10 +188,15 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
         console.log('🔗 UnifiedVentDialog: onPositionUpdate called');
         console.log('🔗 UnifiedVentDialog: newPosition:', newPosition);
         console.log('🔗 UnifiedVentDialog: props.onPositionUpdate exists:', !!props.onPositionUpdate);
+        console.log('🔗 UnifiedVentDialog: props.onPositionUpdate function:', props.onPositionUpdate?.toString().substring(0, 100));
         
         setCurrentPosition(newPosition); // Update current state
         if (props.onPositionUpdate) {
+          console.log('🔗 UnifiedVentDialog: Calling props.onPositionUpdate');
           props.onPositionUpdate(newPosition);
+          console.log('🔗 UnifiedVentDialog: props.onPositionUpdate called successfully');
+        } else {
+          console.log('❌ UnifiedVentDialog: No props.onPositionUpdate callback available');
         }
       }}
       onRotationUpdate={(newRotation) => {

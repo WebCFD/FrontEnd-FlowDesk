@@ -5381,11 +5381,22 @@ export default function Canvas3D({
               console.log('🎯 Canvas3D: Setting editingFurniture state');
               console.log('🎯 Canvas3D: Furniture item:', furnitureItemWithCurrentPosition);
               console.log('🎯 Canvas3D: Mode: edit');
+              console.log('🎯 Canvas3D: Current scene state:', {
+                sceneChildren: sceneRef.current?.children.length,
+                previousEditingFurniture: editingFurniture
+              });
               
               setEditingFurniture({
                 index: 0, // This would need to be the actual index from the furniture list
                 item: furnitureItemWithCurrentPosition,
                 mode: 'edit' // Phase 2: Mark as edit mode for double-click
+              });
+              
+              console.log('🎯 Canvas3D: editingFurniture state set');
+              console.log('🎯 Canvas3D: Real-time callback functions exist:', {
+                positionUpdate: !!handleRealTimePositionUpdate,
+                rotationUpdate: !!handleRealTimeRotationUpdate,
+                scaleUpdate: !!handleRealTimeScaleUpdate
               });
             }
           }
@@ -5504,7 +5515,9 @@ export default function Canvas3D({
     console.log('🔄 Canvas3D: handleRealTimePositionUpdate called');
     console.log('🔄 Canvas3D: newPosition:', newPosition);
     console.log('🔄 Canvas3D: editingFurniture exists:', !!editingFurniture);
+    console.log('🔄 Canvas3D: editingFurniture ID:', editingFurniture?.item?.id);
     console.log('🔄 Canvas3D: sceneRef.current exists:', !!sceneRef.current);
+    console.log('🔄 Canvas3D: Function reference:', handleRealTimePositionUpdate.toString().substring(0, 100));
     
     if (!editingFurniture || !sceneRef.current) {
       console.log('❌ Canvas3D: Exiting handleRealTimePositionUpdate - missing editingFurniture or scene');
@@ -5645,7 +5658,14 @@ export default function Canvas3D({
       };
     }
   ) => {
-    if (!editingFurniture || !sceneRef.current) return;
+    console.log('🔧 Canvas3D: handleFurnitureEdit called');
+    console.log('🔧 Canvas3D: editingFurniture exists:', !!editingFurniture);
+    console.log('🔧 Canvas3D: sceneRef.current exists:', !!sceneRef.current);
+    
+    if (!editingFurniture || !sceneRef.current) {
+      console.log('❌ Canvas3D: handleFurnitureEdit - missing editingFurniture or scene');
+      return;
+    }
 
     // Find the furniture object in the scene by ID
     const furnitureId = editingFurniture.item.id;
@@ -5732,7 +5752,15 @@ export default function Canvas3D({
       console.error("❌ Could not find furniture object in scene with ID:", furnitureId);
     }
     
+    console.log('🔧 Canvas3D: handleFurnitureEdit - setting editingFurniture to null');
+    console.log('🔧 Canvas3D: Scene state before cleanup:', {
+      sceneChildren: sceneRef.current?.children.length,
+      editingFurnitureId: editingFurniture?.item?.id
+    });
+    
     setEditingFurniture(null);
+    
+    console.log('🔧 Canvas3D: handleFurnitureEdit completed, editingFurniture set to null');
   };
 
   return (
@@ -5832,12 +5860,17 @@ export default function Canvas3D({
           isOpen={true}
           onClose={() => {
             console.log('🚪 Canvas3D: Dialog onClose called - UnifiedVentDialog');
+            console.log('🚪 Canvas3D: editingFurniture before cleanup:', editingFurniture);
+            console.log('🚪 Canvas3D: Scene objects before cleanup:', sceneRef.current ? sceneRef.current.children.length : 'no scene');
             setEditingFurniture(null);
+            console.log('🚪 Canvas3D: editingFurniture set to null');
           }}
           onConfirm={(data) => {
             console.log('✅ Canvas3D: Dialog onConfirm called - UnifiedVentDialog');
             console.log('✅ Canvas3D: Confirm data:', data);
+            console.log('✅ Canvas3D: editingFurniture before confirm:', editingFurniture);
             handleFurnitureEdit(editingFurniture.index, data);
+            console.log('✅ Canvas3D: handleFurnitureEdit completed');
           }}
           isCreationMode={editingFurniture.mode === 'creation'}
           onCancel={() => {
@@ -5868,7 +5901,9 @@ export default function Canvas3D({
             }
             
             console.log('❌ Canvas3D: Dialog onCancel called - UnifiedVentDialog');
+            console.log('❌ Canvas3D: editingFurniture before cancel cleanup:', editingFurniture);
             setEditingFurniture(null);
+            console.log('❌ Canvas3D: editingFurniture set to null after cancel');
           }}
           onPositionUpdate={handleRealTimePositionUpdate}
           onRotationUpdate={handleRealTimeRotationUpdate}
