@@ -242,8 +242,18 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     
     // Calcular la nueva posición y actualizar en tiempo real
     const newPosition = calculatePositionFromPercentage(newPercentage);
-    if (newPosition && props.type !== 'wall' && 'onPositionUpdate' in props && props.onPositionUpdate) {
-      props.onPositionUpdate(newPosition);
+    if (newPosition) {
+      // Update form values for persistence
+      setValues(prev => ({ 
+        ...prev, 
+        position: newPosition,
+        wallPosition: newPercentage 
+      }));
+      
+      // Trigger real-time position updates
+      if (props.type !== 'wall' && 'onPositionUpdate' in props && props.onPositionUpdate) {
+        props.onPositionUpdate(newPosition);
+      }
     }
   };
 
@@ -317,7 +327,11 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         // En modo edición, usar los valores actuales del elemento
         const airEntryProps = props as AirEntryDialogProps;
         if (airEntryProps.initialValues) {
-          setDistanceToFloor(airEntryProps.initialValues.distanceToFloor || 0);
+          const initialDistanceToFloor = airEntryProps.initialValues.distanceToFloor || 0;
+          setDistanceToFloor(initialDistanceToFloor);
+          
+          // Also set in form values for persistence
+          setValues(prev => ({ ...prev, distanceToFloor: initialDistanceToFloor }));
           // Para calcular la posición en el wall basada en la posición ACTUAL del elemento
           if (airEntryProps.wallContext && airEntryProps.initialValues.position) {
             const { wallStart, wallEnd } = airEntryProps.wallContext;
@@ -346,7 +360,15 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
             const effectiveDistance = adjustedDistance - halfElementWidth;
             const percentage = effectiveLength > 0 ? (effectiveDistance / effectiveLength) * 100 : 0;
             
-            setWallPosition(Math.min(100, Math.max(0, percentage)));
+            const finalPercentage = Math.min(100, Math.max(0, percentage));
+            setWallPosition(finalPercentage);
+            
+            // Also set in form values for persistence
+            setValues(prev => ({ 
+              ...prev, 
+              wallPosition: finalPercentage,
+              position: currentPosition 
+            }));
           } else {
             setWallPosition(50); // Default center
           }
@@ -358,6 +380,13 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         
         setWallPosition(initialWallPos);
         setDistanceToFloor(initialDistToFloor);
+        
+        // Also set in form values for persistence
+        setValues(prev => ({ 
+          ...prev, 
+          distanceToFloor: initialDistToFloor,
+          wallPosition: initialWallPos 
+        }));
       }
       
       // Inicializar temperatura del elemento
@@ -478,7 +507,8 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         } : null,
         
         // Position data will be calculated by parent component
-        wallPosition: wallPosition
+        wallPosition: (values as any).wallPosition || wallPosition,
+        position: (values as any).position
       };
       
       // Persist simulation properties in the store if we have the necessary info
@@ -972,6 +1002,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               // Redondear a 2 decimales máximo
                               const rounded = Math.round(value * 100) / 100;
                               setDistanceToFloor(rounded);
+                              
+                              // Update form values for persistence
+                              setValues(prev => ({ ...prev, distanceToFloor: rounded }));
                               
                               // Trigger real-time updates for Canvas3D
                               if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
