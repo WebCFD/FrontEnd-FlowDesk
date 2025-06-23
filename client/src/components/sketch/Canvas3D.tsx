@@ -5800,7 +5800,6 @@ export default function Canvas3D({
       {/* Dialog for editing furniture */}
       {editingFurniture && editingFurniture.item.type === 'vent' ? (
         <UnifiedVentDialog
-          key={`vent-dialog-${editingFurniture.item.id}-${editingFurniture.mode || 'edit'}`}
           isOpen={true}
           onClose={() => setEditingFurniture(null)}
           onConfirm={(data) => handleFurnitureEdit(editingFurniture.index, data)}

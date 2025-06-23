@@ -177,17 +177,6 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   
   // Estado para la distancia al suelo
   const [distanceToFloor, setDistanceToFloor] = useState(0);
-
-  // Effect to ensure callback connections are re-established when props change
-  useEffect(() => {
-    if (mode === 'furnVent' && ('onPositionUpdate' in props || 'onRotationUpdate' in props || 'onScaleUpdate' in props)) {
-      console.log('AirEntryDialog: Real-time callbacks connected for furnVent mode', {
-        hasOnPositionUpdate: !!('onPositionUpdate' in props && props.onPositionUpdate),
-        hasOnRotationUpdate: !!('onRotationUpdate' in props && props.onRotationUpdate),
-        hasOnScaleUpdate: !!('onScaleUpdate' in props && props.onScaleUpdate)
-      });
-    }
-  }, [mode, props]);
   
   // Estados para condiciones de simulación
   const [isElementOpen, setIsElementOpen] = useState(true);
