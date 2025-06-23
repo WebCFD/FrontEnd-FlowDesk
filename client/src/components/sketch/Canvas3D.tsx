@@ -1359,6 +1359,12 @@ export default function Canvas3D({
   const handleAirEntryDimensionsUpdate = useCallback((newDimensions: any) => {
     if (!editingAirEntry || !onUpdateAirEntry || isUpdatingRef.current) return;
     
+    console.log('[REALTIME-TEST] Canvas3D received dimensions update', { 
+      newDimensions, 
+      currentEntry: editingAirEntry.entry.dimensions,
+      timestamp: Date.now() 
+    });
+    
     // Clear any pending updates
     if (updateTimeoutRef.current) {
       clearTimeout(updateTimeoutRef.current);
@@ -1375,6 +1381,8 @@ export default function Canvas3D({
       }
     };
     
+    console.log('[REALTIME-TEST] About to update 3D visualization', { updatedEntry: updatedEntry.dimensions });
+    
     // Update local state immediately for responsiveness
     setEditingAirEntry(prev => prev ? {
       ...prev,
@@ -1383,6 +1391,7 @@ export default function Canvas3D({
     
     // Debounce parent callback to prevent loops
     updateTimeoutRef.current = setTimeout(() => {
+      console.log('[REALTIME-TEST] Calling parent onUpdateAirEntry after debounce');
       onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
       isUpdatingRef.current = false;
     }, 100);
