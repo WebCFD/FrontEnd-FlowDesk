@@ -1,0 +1,26 @@
+[STATE-DEBUG] editingFurniture state changed {timestamp: 1750705677881, hasEditingFurniture: false, furnitureId: undefined, mode: undefined, furnitureType: undefined}
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 188ms
+Canvas3D.tsx:4427 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4437 Double-click found entry using stored entryIndex: 0
+wizard-design.tsx:1014 Updating air entry in floor ground, index 0
+wizard-design.tsx:1017 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1068 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+Canvas3D.tsx:1695 [DIMENSION STORAGE] Stored dimensions for entry 0: {"position":{"x":254.8503009064433,"y":78.58247144034343},"dimensions":{"width":120,"height":87,"distanceToFloor":148,"shape":"rectangular"}}
+wizard-design.tsx:1014 Updating air entry in floor ground, index 0
+wizard-design.tsx:1017 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1068 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+Canvas3D.tsx:4427 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4437 Double-click found entry using stored entryIndex: 0
+wizard-design.tsx:1014 Updating air entry in floor ground, index 0
+wizard-design.tsx:1017 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1068 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+wizard-design.tsx:1014 Updating air entry in floor ground, index 0
+wizard-design.tsx:1017 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1068 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+wizard-design.tsx:1014 Updating air entry in floor ground, index 0
+wizard-design.tsx:1017 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1068 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
+Canvas3D.tsx:1695 [DIMENSION STORAGE] Stored dimensions for entry 0: {"position":{"x":254.8503009064433,"y":78.58247144034343},"dimensions":{"width":120,"height":87,"distanceToFloor":148,"shape":"rectangular"}}
+wizard-design.tsx:1014 Updating air entry in floor ground, index 0
+wizard-design.tsx:1017 PARENT COMPONENT DEBUG - BEFORE UPDATE: {updateRequestedFor: {…}, currentFloor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1068 PARENT COMPONENT DEBUG - AFTER UPDATE (CURRENT FLOOR): {updatedIndex: 0, allEntries: Array(1)}
