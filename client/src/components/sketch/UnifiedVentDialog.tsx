@@ -172,6 +172,10 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
           const newScaleX = updatedDimensions.width / 50;
           const newScaleY = updatedDimensions.height / 50;  // Corrected: Height to Y scale
           
+          console.log('🔗 UnifiedVentDialog: onScaleUpdate called');
+          console.log('🔗 UnifiedVentDialog: updatedDimensions:', updatedDimensions);
+          console.log('🔗 UnifiedVentDialog: newScale:', { x: newScaleX, y: newScaleY, z: props.initialValues?.scale?.z || 1 });
+          
           props.onScaleUpdate({
             x: newScaleX,
             y: newScaleY,  // Height controls Y scale (vertical)
@@ -181,12 +185,20 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
       }}
       // Add position and rotation update callbacks for real-time updates
       onPositionUpdate={(newPosition) => {
+        console.log('🔗 UnifiedVentDialog: onPositionUpdate called');
+        console.log('🔗 UnifiedVentDialog: newPosition:', newPosition);
+        console.log('🔗 UnifiedVentDialog: props.onPositionUpdate exists:', !!props.onPositionUpdate);
+        
         setCurrentPosition(newPosition); // Update current state
         if (props.onPositionUpdate) {
           props.onPositionUpdate(newPosition);
         }
       }}
       onRotationUpdate={(newRotation) => {
+        console.log('🔗 UnifiedVentDialog: onRotationUpdate called');
+        console.log('🔗 UnifiedVentDialog: newRotation:', newRotation);
+        console.log('🔗 UnifiedVentDialog: props.onRotationUpdate exists:', !!props.onRotationUpdate);
+        
         setCurrentRotation(newRotation); // Update current state
         if (props.onRotationUpdate) {
           props.onRotationUpdate(newRotation);
