@@ -1685,8 +1685,12 @@ export default function Canvas3D({
       JSON.stringify(updatedAirEntryPositionsRef.current[normalizedFloorName][index]));
 
     // Call the parent component's handler
+    console.log('🔧 Canvas3D: Calling onUpdateAirEntry for final update');
     onUpdateAirEntry(currentFloor, index, updatedEntry);
+    
+    console.log('🔧 Canvas3D: Setting editingAirEntry to null after confirm');
     setEditingAirEntry(null);
+    console.log('🔧 Canvas3D: handleAirEntryEdit completed');
   };
 
   // New function to create stair mesh
@@ -5798,11 +5802,24 @@ export default function Canvas3D({
         <AirEntryDialog
           type={editingAirEntry.entry.type}
           isOpen={true}
-          onClose={() => setEditingAirEntry(null)}
-          onCancel={() => setEditingAirEntry(null)}
-          onConfirm={(data) =>
-            handleAirEntryEdit(editingAirEntry.index, data as any)
-          }
+          onClose={() => {
+            console.log('🚪 Canvas3D: AirEntryDialog onClose called');
+            console.log('🚪 Canvas3D: editingAirEntry before cleanup:', editingAirEntry);
+            setEditingAirEntry(null);
+            console.log('🚪 Canvas3D: editingAirEntry set to null');
+          }}
+          onCancel={() => {
+            console.log('❌ Canvas3D: AirEntryDialog onCancel called');
+            console.log('❌ Canvas3D: editingAirEntry before cleanup:', editingAirEntry);
+            setEditingAirEntry(null);
+            console.log('❌ Canvas3D: editingAirEntry set to null after cancel');
+          }}
+          onConfirm={(data) => {
+            console.log('✅ Canvas3D: AirEntryDialog onConfirm called');
+            console.log('✅ Canvas3D: Confirm data:', data);
+            console.log('✅ Canvas3D: editingAirEntry before confirm:', editingAirEntry);
+            handleAirEntryEdit(editingAirEntry.index, data as any);
+          }}
           initialValues={{
             ...editingAirEntry.entry.dimensions,
             shape: (editingAirEntry.entry.dimensions as any).shape,
@@ -5813,14 +5830,23 @@ export default function Canvas3D({
           isEditing={true}
           wallContext={editingAirEntry.wallContext}
           onPositionUpdate={(newPosition) => {
+            console.log('🔗 Canvas3D: AirEntryDialog onPositionUpdate called');
+            console.log('🔗 Canvas3D: newPosition:', newPosition);
+            console.log('🔗 Canvas3D: editingAirEntry exists:', !!editingAirEntry);
+            console.log('🔗 Canvas3D: onUpdateAirEntry exists:', !!onUpdateAirEntry);
+            
             // Phase 5: Real-time position updates in 3D scene
-            if (!editingAirEntry || !onUpdateAirEntry) return;
+            if (!editingAirEntry || !onUpdateAirEntry) {
+              console.log('❌ Canvas3D: Missing editingAirEntry or onUpdateAirEntry callback');
+              return;
+            }
             
             const updatedEntry = {
               ...editingAirEntry.entry,
               position: newPosition
             };
             
+            console.log('🔗 Canvas3D: Calling onUpdateAirEntry for floor:', currentFloor, 'index:', editingAirEntry.index);
             // Update the entry via parent callback
             onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
             
@@ -5829,10 +5855,18 @@ export default function Canvas3D({
               ...editingAirEntry,
               entry: updatedEntry
             });
+            console.log('🔗 Canvas3D: Position update completed');
           }}
           onDimensionsUpdate={(newDimensions) => {
+            console.log('🔗 Canvas3D: AirEntryDialog onDimensionsUpdate called');
+            console.log('🔗 Canvas3D: newDimensions:', newDimensions);
+            console.log('🔗 Canvas3D: editingAirEntry exists:', !!editingAirEntry);
+            
             // Real-time dimension updates in 3D scene
-            if (!editingAirEntry || !onUpdateAirEntry) return;
+            if (!editingAirEntry || !onUpdateAirEntry) {
+              console.log('❌ Canvas3D: Missing editingAirEntry or onUpdateAirEntry for dimensions');
+              return;
+            }
             
             const updatedEntry = {
               ...editingAirEntry.entry,
@@ -5842,6 +5876,7 @@ export default function Canvas3D({
               }
             };
             
+            console.log('🔗 Canvas3D: Calling onUpdateAirEntry for dimensions update');
             // Update the entry via parent callback
             onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
             
@@ -5850,6 +5885,7 @@ export default function Canvas3D({
               ...editingAirEntry,
               entry: updatedEntry
             });
+            console.log('🔗 Canvas3D: Dimensions update completed');
           }}
         />
       )}
