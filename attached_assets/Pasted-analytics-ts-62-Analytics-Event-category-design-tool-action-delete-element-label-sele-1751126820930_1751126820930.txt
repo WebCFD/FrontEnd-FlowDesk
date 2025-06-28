@@ -1,0 +1,83 @@
+analytics.ts:62 📊 Analytics Event: {category: 'design_tool', action: 'delete_element', label: 'select_eraser_tool', value: undefined, status: 'sent'}
+wizard-design.tsx:2537 🏠 Wizard RECEIVE - New polygons from Canvas2D: (3) [{…}, {…}, {…}]
+wizard-design.tsx:2538 🏠 Wizard RECEIVE - About to call setStairPolygons
+room-store.ts:322 ZUSTAND STORE - setStairPolygons called
+room-store.ts:323 ZUSTAND STORE - Current floor: ground
+room-store.ts:324 ZUSTAND STORE - Previous stairs: (4) [{…}, {…}, {…}, {…}]
+room-store.ts:325 ZUSTAND STORE - New stairs: (3) [{…}, {…}, {…}]
+room-store.ts:337 ZUSTAND STORE - Updated floor data: {lines: Array(3), airEntries: Array(0), walls: Array(3), measurements: Array(0), stairPolygons: Array(3), …}
+wizard-design.tsx:2540 🏠 Wizard RECEIVE - setStairPolygons completed
+wizard-design.tsx:2537 🏠 Wizard RECEIVE - New polygons from Canvas2D: (2) [{…}, {…}]
+wizard-design.tsx:2538 🏠 Wizard RECEIVE - About to call setStairPolygons
+room-store.ts:322 ZUSTAND STORE - setStairPolygons called
+room-store.ts:323 ZUSTAND STORE - Current floor: ground
+room-store.ts:324 ZUSTAND STORE - Previous stairs: (3) [{…}, {…}, {…}]
+room-store.ts:325 ZUSTAND STORE - New stairs: (2) [{…}, {…}]
+room-store.ts:337 ZUSTAND STORE - Updated floor data: {lines: Array(3), airEntries: Array(0), walls: Array(3), measurements: Array(0), stairPolygons: Array(2), …}
+wizard-design.tsx:2540 🏠 Wizard RECEIVE - setStairPolygons completed
+wizard-design.tsx:2537 🏠 Wizard RECEIVE - New polygons from Canvas2D: [{…}]
+wizard-design.tsx:2538 🏠 Wizard RECEIVE - About to call setStairPolygons
+room-store.ts:322 ZUSTAND STORE - setStairPolygons called
+room-store.ts:323 ZUSTAND STORE - Current floor: ground
+room-store.ts:324 ZUSTAND STORE - Previous stairs: (2) [{…}, {…}]
+room-store.ts:325 ZUSTAND STORE - New stairs: [{…}]
+room-store.ts:337 ZUSTAND STORE - Updated floor data: {lines: Array(3), airEntries: Array(0), walls: Array(3), measurements: Array(0), stairPolygons: Array(1), …}
+wizard-design.tsx:2540 🏠 Wizard RECEIVE - setStairPolygons completed
+wizard-design.tsx:2537 🏠 Wizard RECEIVE - New polygons from Canvas2D: []
+wizard-design.tsx:2538 🏠 Wizard RECEIVE - About to call setStairPolygons
+room-store.ts:322 ZUSTAND STORE - setStairPolygons called
+room-store.ts:323 ZUSTAND STORE - Current floor: ground
+room-store.ts:324 ZUSTAND STORE - Previous stairs: [{…}]
+room-store.ts:325 ZUSTAND STORE - New stairs: []
+room-store.ts:337 ZUSTAND STORE - Updated floor data: {lines: Array(3), airEntries: Array(0), walls: Array(3), measurements: Array(0), stairPolygons: Array(0), …}
+wizard-design.tsx:2540 🏠 Wizard RECEIVE - setStairPolygons completed
+analytics.ts:62 📊 Analytics Event: {category: 'design_tool', action: 'add_wall', label: 'select_wall_tool', value: undefined, status: 'sent'}
+Canvas2D.tsx:3346 Context menu prevented
+Canvas2D.tsx:1775 🖱️ RIGHT-CLICK DETECTED while drawing stairs
+Canvas2D.tsx:1776 📊 Current stair points count: 4
+Canvas2D.tsx:1777 📍 Current stair points: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:1778 🏢 Current floor: ground (Ground Floor)
+Canvas2D.tsx:1779 📦 Existing stair polygons count: 0
+Canvas2D.tsx:1783 ✅ SUFFICIENT POINTS - Creating new stair polygon
+Canvas2D.tsx:1794 🏷️ Generated stair ID: stair_0F_1
+Canvas2D.tsx:1803 🆕 NEW STAIR POLYGON CREATED: {id: 'stair_0F_1', points: Array(4), floor: 'Ground Floor', temperature: 29}
+Canvas2D.tsx:1804 🌡️ Default stair temperature: 29
+Canvas2D.tsx:1809 📤 CALLING onStairPolygonsUpdate with: [{…}]
+wizard-design.tsx:2537 🏠 Wizard RECEIVE - New polygons from Canvas2D: [{…}]
+wizard-design.tsx:2538 🏠 Wizard RECEIVE - About to call setStairPolygons
+room-store.ts:322 ZUSTAND STORE - setStairPolygons called
+room-store.ts:323 ZUSTAND STORE - Current floor: ground
+room-store.ts:324 ZUSTAND STORE - Previous stairs: []
+room-store.ts:325 ZUSTAND STORE - New stairs: [{…}]
+room-store.ts:337 ZUSTAND STORE - Updated floor data: {lines: Array(3), airEntries: Array(0), walls: Array(3), measurements: Array(0), stairPolygons: Array(1), …}
+wizard-design.tsx:2540 🏠 Wizard RECEIVE - setStairPolygons completed
+Canvas2D.tsx:1811 ✅ onStairPolygonsUpdate called successfully
+Canvas2D.tsx:1820 🧹 RESETTING stair drawing state
+Canvas2D.tsx:1824 🔄 Stair drawing state reset complete
+analytics.ts:62 📊 Analytics Event: {category: 'design_tool', action: 'add_wall', label: 'select_wall_tool', value: undefined, status: 'sent'}
+Canvas2D.tsx:1245 🎯 Canvas2D DOUBLECLICK - Found stair: {id: 'stair_0F_1', points: Array(4), floor: 'Ground Floor', temperature: 29}
+Canvas2D.tsx:1246 🎯 Canvas2D DOUBLECLICK - Stair ID: stair_0F_1
+Canvas2D.tsx:1247 🎯 Canvas2D DOUBLECLICK - Current temperature: 29
+StairPropertiesDialog.tsx:26 📋 Dialog INIT - Received stair prop: {id: 'stair_0F_1', points: Array(4), floor: 'Ground Floor', temperature: 29}
+StairPropertiesDialog.tsx:27 📋 Dialog INIT - Stair ID: stair_0F_1
+StairPropertiesDialog.tsx:28 📋 Dialog INIT - Stair temperature: 29
+StairPropertiesDialog.tsx:29 📋 Dialog INIT - Setting temperature field to: 29
+Canvas2D.tsx:1308 🔧 Canvas2D SAVE - Received stairId: stair_0F_1 temperature: 30.6
+Canvas2D.tsx:1309 🔧 Canvas2D SAVE - Current stairPolygons: [{…}]
+Canvas2D.tsx:1316 🔧 Canvas2D SAVE - Updated stairs array: [{…}]
+wizard-design.tsx:2537 🏠 Wizard RECEIVE - New polygons from Canvas2D: [{…}]
+wizard-design.tsx:2538 🏠 Wizard RECEIVE - About to call setStairPolygons
+room-store.ts:322 ZUSTAND STORE - setStairPolygons called
+room-store.ts:323 ZUSTAND STORE - Current floor: ground
+room-store.ts:324 ZUSTAND STORE - Previous stairs: [{…}]
+room-store.ts:325 ZUSTAND STORE - New stairs: [{…}]
+room-store.ts:337 ZUSTAND STORE - Updated floor data: {lines: Array(3), airEntries: Array(0), walls: Array(3), measurements: Array(0), stairPolygons: Array(1), …}
+wizard-design.tsx:2540 🏠 Wizard RECEIVE - setStairPolygons completed
+Canvas2D.tsx:1318 🔧 Canvas2D SAVE - onStairPolygonsUpdate called
+Canvas2D.tsx:1245 🎯 Canvas2D DOUBLECLICK - Found stair: {id: 'stair_0F_1', points: Array(4), floor: 'Ground Floor', temperature: 29}
+Canvas2D.tsx:1246 🎯 Canvas2D DOUBLECLICK - Stair ID: stair_0F_1
+Canvas2D.tsx:1247 🎯 Canvas2D DOUBLECLICK - Current temperature: 29
+StairPropertiesDialog.tsx:26 📋 Dialog INIT - Received stair prop: {id: 'stair_0F_1', points: Array(4), floor: 'Ground Floor', temperature: 29}
+StairPropertiesDialog.tsx:27 📋 Dialog INIT - Stair ID: stair_0F_1
+StairPropertiesDialog.tsx:28 📋 Dialog INIT - Stair temperature: 29
+StairPropertiesDialog.tsx:29 📋 Dialog INIT - Setting temperature field to: 29
