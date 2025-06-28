@@ -2536,7 +2536,7 @@ export default function WizardDesign() {
               gridSize={gridSize}
               currentTool={currentTool}
               currentAirEntry={currentAirEntry}
-              airEntries={airEntries}
+              airEntries={floors[currentFloor]?.airEntries || airEntries}
               measurements={measurements}
               stairPolygons={stairPolygons}
               walls={walls}
