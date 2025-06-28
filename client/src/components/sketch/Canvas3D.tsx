@@ -1383,8 +1383,13 @@ export default function Canvas3D({
       if (onUpdateAirEntry && editingAirEntry) {
         onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
       }
+      
+      // Notify RSP to re-apply textures after real-time dimension update
+      if (onAirEntryUpdated) {
+        onAirEntryUpdated();
+      }
     }, 150);
-  }, [editingAirEntry, onUpdateAirEntry, currentFloor]);
+  }, [editingAirEntry, onUpdateAirEntry, onAirEntryUpdated, currentFloor]);
 
   const handleAirEntryDimensionsUpdate = useCallback((newDimensions: any) => {
     if (!editingAirEntry || !onUpdateAirEntry) return;
