@@ -367,6 +367,8 @@ export default function Canvas2D({
 
   const [editingWall, setEditingWall] = useState<Wall | null>(null);
   const [wallPropertiesDialogOpen, setWallPropertiesDialogOpen] = useState(false);
+  const [editingStair, setEditingStair] = useState<any | null>(null);
+  const [stairPropertiesDialogOpen, setStairPropertiesDialogOpen] = useState(false);
   const [hoveredEndpoint, setHoveredEndpoint] = useState<{
     point: Point;
     lines: Line[];
@@ -1282,6 +1284,18 @@ export default function Canvas2D({
           : wall
       );
       onWallsUpdate(updatedWalls);
+    }
+  };
+
+  // Handle stair properties save
+  const handleStairPropertiesSave = (stairId: string, temperature: number) => {
+    if (onStairPolygonsUpdate) {
+      const updatedStairs = stairPolygons.map(stair => 
+        stair.id === stairId 
+          ? { ...stair, temperature }
+          : stair
+      );
+      onStairPolygonsUpdate(updatedStairs);
     }
   };
 

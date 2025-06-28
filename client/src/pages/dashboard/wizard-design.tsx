@@ -55,6 +55,7 @@ import { RoomSketchPro } from "@/components/sketch/RoomSketchPro";
 import { SceneProvider } from "@/contexts/SceneContext";
 import { cn } from "@/lib/utils";
 import AirEntryDialog from "@/components/sketch/AirEntryDialog";
+import StairPropertiesDialog from "@/components/sketch/StairPropertiesDialog";
 import Canvas3D from "@/components/sketch/Canvas3D";
 import { Toolbar3D, ViewDirection } from "@/components/sketch/Toolbar3D";
 import { useRoomStore } from "@/lib/store/room-store";
@@ -265,6 +266,7 @@ export default function WizardDesign() {
   const [loadFromFloor, setLoadFromFloor] = useState("ground");
   const [floorDeckThickness, setFloorDeckThickness] = useState(35); // Default 35cm - deprecated, usar floorParameters
   const [defaultWallTemperature, setDefaultWallTemperature] = useState(20); // Default wall temperature in °C
+  const [defaultStairTemperature, setDefaultStairTemperature] = useState(20); // Default stair temperature in °C
   const [canvas3DKey, setCanvas3DKey] = useState(0); // Force re-render of Canvas3D
   
   // Nuevos estados para parámetros por planta
@@ -1449,6 +1451,47 @@ export default function WizardDesign() {
                       <FileEdit className="mr-2 h-4 w-4" />
                       Stair Design
                     </Button>
+                    
+                    {/* Stair Temperature */}
+                    <div className="space-y-2 mt-4">
+                      <TooltipProvider>
+                        <div className="flex items-center gap-1">
+                          <Label htmlFor="default-stair-temp" className="text-sm font-medium">
+                            Stair Temperature
+                          </Label>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <Info className="w-3 h-3 text-gray-400" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="max-w-64">
+                                Default temperature assigned to new stairs when created. 
+                                You can change individual stair temperatures by double-clicking on any stair.
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </div>
+                      </TooltipProvider>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          id="default-stair-temp"
+                          type="number"
+                          value={defaultStairTemperature}
+                          onChange={(e) => {
+                            const value = parseFloat(e.target.value);
+                            if (!isNaN(value) && value >= -50 && value <= 100) {
+                              setDefaultStairTemperature(value);
+                            }
+                          }}
+                          className="w-20 h-8"
+                          min={-50}
+                          max={100}
+                          step={0.5}
+                          placeholder="20"
+                        />
+                        <span className="text-sm text-gray-500">°C</span>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
