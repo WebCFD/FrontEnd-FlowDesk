@@ -1445,9 +1445,8 @@ export default function Canvas3D({
           if (newDimensions.distanceToFloor !== undefined && editingAirEntry.entry.type !== "door") {
             const baseHeight = getFloorBaseHeight(currentFloor);
             const newDistanceToFloor = newDimensions.distanceToFloor;
-            const height = newDimensions.height || updatedEntry.dimensions.height;
-            // CRITICAL FIX: Use same calculation as initial geometry - no PIXELS_TO_CM conversion
-            const newZPosition = baseHeight + newDistanceToFloor + height / 2;
+            // CRITICAL FIX: distanceToFloor already represents center height, no need to add height/2
+            const newZPosition = baseHeight + newDistanceToFloor;
             
             object.position.setZ(newZPosition);
           }
