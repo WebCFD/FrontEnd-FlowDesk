@@ -1863,24 +1863,10 @@ export default function Canvas3D({
       updatedAirEntryPositionsRef.current[normalizedFloorName][index].dimensions = updatedEntry.dimensions;
     }
 
-    console.log(`[DIMENSION STORAGE] Stored dimensions for entry ${index}:`, 
-      JSON.stringify(updatedAirEntryPositionsRef.current[normalizedFloorName][index]));
-    console.log(`[WALL POSITION STORAGE] wallPosition in data:`, data.wallPosition);
-    console.log(`[WALL POSITION STORAGE] wallPosition in updatedEntry.dimensions:`, updatedEntry.dimensions.wallPosition);
 
-    // SAVE CHANGES: Pure data commit - no geometry or material modifications
-    console.log('💾 [SAVE CHANGES] Pure data commit - only saving values to store');
-    console.log('💾 [SAVE CHANGES] Floor:', currentFloor, 'Index:', index);
-    console.log('💾 [SAVE CHANGES] updatedEntry.dimensions:', updatedEntry.dimensions);
-    console.log('💾 [SAVE CHANGES] wallPosition in updatedEntry.dimensions:', updatedEntry.dimensions.wallPosition);
-    console.log('🔵 [3D SAVE PROBLEM] About to call onUpdateAirEntry callback');
-    console.log('🔵 [3D SAVE PROBLEM] This should update store AND sync to 2D view');
-    console.log('🔵 [3D SAVE PROBLEM] updatedEntry being sent:', updatedEntry);
-    console.log('🔵 [3D SAVE PROBLEM] wallPosition being sent:', updatedEntry.dimensions?.wallPosition);
-    
+
     // Call the callback to update the store
     onUpdateAirEntry(currentFloor, index, updatedEntry);
-    console.log('🔵 [3D SAVE PROBLEM] onUpdateAirEntry callback completed - should sync to 2D');
     
     // Check texture state BEFORE setEditingAirEntry(null)
     if (sceneRef.current) {
