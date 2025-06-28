@@ -43,7 +43,7 @@ export interface StairExportNew {
   id: string;
   lines: StairLineExport[];
   connectsTo?: string;
-  temperature?: number;
+  temp?: number;
 }
 
 export interface Measurement {

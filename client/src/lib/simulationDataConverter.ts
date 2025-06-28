@@ -1023,7 +1023,7 @@ export function convertStairPolygonToExport(
     id: stairId,
     lines: lines,
     connectsTo: stairPolygon.connectsTo,
-    temperature: stairPolygon.temperature
+    temp: stairPolygon.temperature
   };
 }
 
