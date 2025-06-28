@@ -491,9 +491,12 @@ export function RoomSketchPro({
 
   // Function to apply textures to Canvas3D scene materials
   const applyThemeTextures = () => {
+    console.log('🎨 [RSP] applyThemeTextures called, checking scene availability...');
     if (!sceneRef.current) {
+      console.warn('⚠️ [RSP] Scene not available in applyThemeTextures');
       return;
     }
+    console.log('🎨 [RSP] Scene available, proceeding with texture application...');
     
     // Find all wall meshes in the scene
     const wallMeshes: THREE.Mesh[] = [];
@@ -822,11 +825,19 @@ export function RoomSketchPro({
 
   // Function to re-apply textures (called when air entry is updated)
   const handleAirEntryUpdated = useCallback(() => {
-    console.log('RSP: AirEntry updated, re-applying textures...');
+    console.log('🎨 [RSP] handleAirEntryUpdated called - starting texture reapplication...');
+    
+    // Check if scene is available
+    if (!sceneRef.current) {
+      console.warn('⚠️ [RSP] Scene not available for texture reapplication');
+      return;
+    }
     
     // Small delay to ensure the air entry mesh is fully updated in the scene
     setTimeout(() => {
+      console.log('🎨 [RSP] Executing applyThemeTextures after 100ms delay...');
       applyThemeTextures();
+      console.log('✅ [RSP] applyThemeTextures completed');
     }, 100);
   }, []);
 
