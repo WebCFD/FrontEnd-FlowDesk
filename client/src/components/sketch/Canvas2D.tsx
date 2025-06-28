@@ -406,9 +406,16 @@ export default function Canvas2D({
   
   useEffect(() => {
     const unsubscribe = subscribeToAirEntryChanges((floorName, index, updatedEntry) => {
-      // Only update if this change affects our current floor
-      if (floorName !== currentFloor) return;
+      console.log(`🔥 [CANVAS2D RSP] Received store notification - Floor: ${floorName}, Index: ${index}, Type: ${updatedEntry.type}`);
+      console.log(`🔥 [CANVAS2D RSP] Position: (${updatedEntry.position.x}, ${updatedEntry.position.y}), CurrentFloor: ${currentFloor}`);
       
+      // Only update if this change affects our current floor
+      if (floorName !== currentFloor) {
+        console.log(`🔥 [CANVAS2D RSP] Ignoring - not current floor`);
+        return;
+      }
+      
+      console.log(`🔥 [CANVAS2D RSP] Forcing Canvas2D redraw...`);
       // Force re-render by updating state
       setForceRedraw(prev => prev + 1);
     });
@@ -3603,7 +3610,7 @@ export default function Canvas2D({
             handleAirEntryPositionUpdate(editingAirEntry.index, newPosition);
           }}
           onDimensionsUpdate={(newDimensions) => {
-            // FIXED: Removed infinite loop - only update parent state, not local editingAirEntries
+            // Actualizar las dimensiones del Air Entry en tiempo real
             const updatedAirEntries = [...airEntries];
             updatedAirEntries[editingAirEntry.index] = {
               ...editingAirEntry.entry,
@@ -3614,8 +3621,19 @@ export default function Canvas2D({
             };
             onAirEntriesUpdate?.(updatedAirEntries);
             
-            // REMOVED: setEditingAirEntries update that caused infinite re-renders
-            // The parent state update will handle the re-render correctly
+            // También actualizar el estado local para que el diálogo mantenga la referencia correcta
+            setEditingAirEntries(prev => prev.map(item => 
+              item.index === editingAirEntry.index ? {
+                ...item,
+                entry: {
+                  ...item.entry,
+                  dimensions: {
+                    ...item.entry.dimensions,
+                    ...newDimensions
+                  }
+                }
+              } : item
+            ));
           }}
         />
       ))}

@@ -1251,8 +1251,16 @@ export default function Canvas3D({
   
   useEffect(() => {
     const unsubscribe = subscribeToAirEntryChanges((floorName, index, updatedEntry) => {
+      console.log(`🔥 [CANVAS3D RSP] Received store notification - Floor: ${floorName}, Index: ${index}, Type: ${updatedEntry.type}`);
+      console.log(`🔥 [CANVAS3D RSP] Position: (${updatedEntry.position.x}, ${updatedEntry.position.y}), CurrentFloor: ${currentFloor}`);
+      
       // Only update if this change affects our current floor
-      if (floorName !== currentFloor) return;
+      if (floorName !== currentFloor) {
+        console.log(`🔥 [CANVAS3D RSP] Ignoring - not current floor`);
+        return;
+      }
+      
+      console.log(`🔥 [CANVAS3D RSP] Applying change to 3D scene...`);
       
       // Update position in the 3D scene immediately
       if (sceneRef.current) {
@@ -1264,10 +1272,12 @@ export default function Canvas3D({
             const position3D = transform2DTo3D(updatedEntry.position);
             object.position.set(position3D.x, position3D.y, object.position.z);
             object.userData.position = updatedEntry.position;
+            console.log(`🔥 [CANVAS3D RSP] Updated 3D object position to: (${position3D.x}, ${position3D.y})`);
           }
         });
         
         needsRenderRef.current = true;
+        console.log(`🔥 [CANVAS3D RSP] 3D scene updated successfully`);
       }
     });
     
@@ -1337,18 +1347,6 @@ export default function Canvas3D({
       ceilingHeight: number;
     };
   } | null>(null);
-
-  // Force cleanup editingAirEntry when switching tabs or unmounting
-  useEffect(() => {
-    return () => {
-      setEditingAirEntry(null);
-    };
-  }, []);
-
-  // Clear editingAirEntry when currentFloor changes
-  useEffect(() => {
-    setEditingAirEntry(null);
-  }, [currentFloor]);
   
   // State for editing furniture
   const [editingFurniture, setEditingFurniture] = useState<{
@@ -4829,72 +4827,6 @@ export default function Canvas3D({
     return Object.keys(storeFloors).length > 0 ? storeFloors : floors;
   }, [floors]); // Re-compute when props change
 
-  // Stabilize all props to prevent infinite re-renders of AirEntryDialog
-  const stableInitialValues = useMemo(() => {
-    if (!editingAirEntry) return null;
-    
-    return {
-      ...editingAirEntry.entry.dimensions,
-      shape: (editingAirEntry.entry.dimensions as any).shape,
-      properties: (editingAirEntry.entry as any).properties,
-      position: editingAirEntry.entry.position,
-      wallPosition: (editingAirEntry.entry.dimensions as any).wallPosition || (editingAirEntry.entry as any).properties?.wallPosition
-    } as any;
-  }, [
-    editingAirEntry?.entry.dimensions.width,
-    editingAirEntry?.entry.dimensions.height,
-    editingAirEntry?.entry.dimensions.distanceToFloor,
-    editingAirEntry?.entry.position.x,
-    editingAirEntry?.entry.position.y,
-    (editingAirEntry?.entry.dimensions as any)?.shape,
-    (editingAirEntry?.entry.dimensions as any)?.wallPosition,
-    (editingAirEntry?.entry as any)?.properties
-  ]);
-
-  // Stabilize callbacks to prevent recreating on every render
-  const stableOnClose = useCallback(() => setEditingAirEntry(null), []);
-  const stableOnCancel = useCallback(() => setEditingAirEntry(null), []);
-  
-  // Stabilize onConfirm callback
-  const stableOnConfirm = useCallback((data: any) => {
-    if (!editingAirEntry) return;
-    
-    console.log('[CANVAS3D ONCONFIRM] Received data from dialog:', data);
-    console.log('[CANVAS3D ONCONFIRM] wallPosition in received data:', data.wallPosition);
-    console.log('🔍 [SAVE CHANGES DEBUG] About to call handleAirEntryEdit');
-    handleAirEntryEdit(editingAirEntry.index, {
-      width: data.width,
-      height: data.height,
-      distanceToFloor: data.distanceToFloor,
-      shape: data.shape,
-      wallPosition: data.wallPosition,
-      properties: data.properties
-    } as any);
-    console.log('🔍 [SAVE CHANGES DEBUG] handleAirEntryEdit completed - checking for side effects');
-    
-    // Add timeout to check for delayed effects that might cause texture loss
-    setTimeout(() => {
-      console.log('🔍 [SAVE CHANGES DEBUG] 100ms after Save Changes - checking scene state');
-      if (sceneRef.current) {
-        const airEntryMeshes: any[] = [];
-        sceneRef.current.traverse((object: any) => {
-          if (object.userData && ["door", "window", "vent"].includes(object.userData.type)) {
-            airEntryMeshes.push(object);
-          }
-        });
-        console.log('🔍 [SAVE CHANGES DEBUG] AirEntry meshes found:', airEntryMeshes.length);
-        airEntryMeshes.forEach((mesh, i) => {
-          const material = mesh.material;
-          console.log(`🔍 [SAVE CHANGES DEBUG] Mesh ${i} material:`, {
-            hasMap: !!material?.map,
-            opacity: material?.opacity,
-            type: mesh.userData?.type
-          });
-        });
-      }
-    }, 100);
-  }, [editingAirEntry, handleAirEntryEdit]);
-
   useEffect(() => {
     // Scene rebuild using store data when available, fallback to props
 
@@ -5112,92 +5044,57 @@ export default function Canvas3D({
   }, [finalFloors, currentFloor, ceilingHeight, floorDeckThickness]);
 
   // Separate useEffect for context updates to avoid hidden dependencies in scene rebuild
-  // Use refs to prevent circular updates
-  const lastContextUpdateRef = useRef<string>('');
-  const contextUpdateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  
   useEffect(() => {
-    // Create a stable hash to prevent unnecessary updates
-    const contextHash = JSON.stringify({
-      floorsKeys: Object.keys(floors).sort(),
-      currentFloor,
-      isMultifloor,
-      floorParametersKeys: floorParameters ? Object.keys(floorParameters).sort() : []
+    // Update SceneContext with ALL floors data for comprehensive sharing with RoomSketchPro
+    updateGeometryData({
+      floors: floors,
+      currentFloor: currentFloor,
+      floorSize: GRID_SIZE,
+      gridSize: GRID_DIVISIONS
     });
     
-    // Skip if this exact context was already processed
-    if (lastContextUpdateRef.current === contextHash) {
-      return;
-    }
+    // Then set current floor data for immediate use
+    const currentFloorData = floors[currentFloor];
     
-    // Clear any pending timeout
-    if (contextUpdateTimeoutRef.current) {
-      clearTimeout(contextUpdateTimeoutRef.current);
-    }
-    
-    // Debounce context updates to prevent rapid-fire changes
-    contextUpdateTimeoutRef.current = setTimeout(() => {
-      // Update SceneContext with ALL floors data for comprehensive sharing with RoomSketchPro
-      updateGeometryData({
-        floors: floors,
-        currentFloor: currentFloor,
-        floorSize: GRID_SIZE,
-        gridSize: GRID_DIVISIONS
+    if (currentFloorData) {
+      // Update current floor in context (this will trigger setCurrentFloor in the context)
+      setContextCurrentFloor(currentFloor);
+      
+      // Also individually update each floor to ensure proper synchronization
+      Object.entries(floors).forEach(([floorName, floorData]) => {
+        updateFloorData(floorName, floorData);
       });
       
-      // Then set current floor data for immediate use
-      const currentFloorData = floors[currentFloor];
-      
-      if (currentFloorData) {
-        // Update current floor in context (this will trigger setCurrentFloor in the context)
-        setContextCurrentFloor(currentFloor);
+      // Update scene objects in context
+      if (sceneRef.current) {
+        // Find walls, floor, and air entries to expose in context
+        const walls: THREE.Object3D[] = [];
+        let floor: THREE.Object3D | undefined;
+        const airEntries: THREE.Object3D[] = [];
         
-        // Also individually update each floor to ensure proper synchronization
-        Object.entries(floors).forEach(([floorName, floorData]) => {
-          updateFloorData(floorName, floorData);
+        sceneRef.current.traverse((object) => {
+          if (object instanceof THREE.Mesh && object.userData.type === 'floor') {
+            floor = object;
+          } else if (object instanceof THREE.Mesh && object.userData.type === 'wall') {
+            walls.push(object);
+          } else if (object instanceof THREE.Mesh && 
+                    (object.userData.type === 'window' || 
+                     object.userData.type === 'door' || 
+                     object.userData.type === 'vent')) {
+            airEntries.push(object);
+          }
         });
         
-        // Update scene objects in context
-        if (sceneRef.current) {
-          // Find walls, floor, and air entries to expose in context
-          const walls: THREE.Object3D[] = [];
-          let floor: THREE.Object3D | undefined;
-          const airEntries: THREE.Object3D[] = [];
-          
-          sceneRef.current.traverse((object) => {
-            if (object instanceof THREE.Mesh && object.userData.type === 'floor') {
-              floor = object;
-            } else if (object instanceof THREE.Mesh && object.userData.type === 'wall') {
-              walls.push(object);
-            } else if (object instanceof THREE.Mesh && 
-                      (object.userData.type === 'window' || 
-                       object.userData.type === 'door' || 
-                       object.userData.type === 'vent')) {
-              airEntries.push(object);
-            }
-          });
-          
-          updateSceneData({
-            walls,
-            floor,
-            airEntries,
-            gridHelper: sceneRef.current.children.find(
-              (obj) => obj instanceof THREE.GridHelper
-            )
-          });
-        }
+        updateSceneData({
+          walls,
+          floor,
+          airEntries,
+          gridHelper: sceneRef.current.children.find(
+            (obj) => obj instanceof THREE.GridHelper
+          )
+        });
       }
-      
-      // Mark this context as processed
-      lastContextUpdateRef.current = contextHash;
-    }, 50); // 50ms debounce
-    
-    // Cleanup timeout on unmount
-    return () => {
-      if (contextUpdateTimeoutRef.current) {
-        clearTimeout(contextUpdateTimeoutRef.current);
-      }
-    };
+    }
   }, [floors, currentFloor, isMultifloor, floorParameters]);
 
   useEffect(() => {
@@ -6166,18 +6063,55 @@ export default function Canvas3D({
       </div>
 
       {/* Dialog for editing air entries - Phase 4: Unified with Canvas2D */}
-      {editingAirEntry && 
-       stableInitialValues && 
-       editingAirEntry.entry && 
-       editingAirEntry.entry.type && 
-       editingAirEntry.entry.dimensions && (
+      {editingAirEntry && (
         <AirEntryDialog
           type={editingAirEntry.entry.type}
           isOpen={true}
-          onClose={stableOnClose}
-          onCancel={stableOnCancel}
-          onConfirm={stableOnConfirm}
-          initialValues={stableInitialValues}
+          onClose={() => setEditingAirEntry(null)}
+          onCancel={() => setEditingAirEntry(null)}
+          onConfirm={(data) => {
+            console.log('[CANVAS3D ONCONFIRM] Received data from dialog:', data);
+            console.log('[CANVAS3D ONCONFIRM] wallPosition in received data:', data.wallPosition);
+            console.log('🔍 [SAVE CHANGES DEBUG] About to call handleAirEntryEdit');
+            handleAirEntryEdit(editingAirEntry.index, {
+              width: data.width,
+              height: data.height,
+              distanceToFloor: data.distanceToFloor,
+              shape: data.shape,
+              wallPosition: data.wallPosition,
+              properties: data.properties
+            } as any);
+            console.log('🔍 [SAVE CHANGES DEBUG] handleAirEntryEdit completed - checking for side effects');
+            
+            // Add timeout to check for delayed effects that might cause texture loss
+            setTimeout(() => {
+              console.log('🔍 [SAVE CHANGES DEBUG] 100ms after Save Changes - checking scene state');
+              if (sceneRef.current) {
+                const airEntryMeshes: any[] = [];
+                sceneRef.current.traverse((object: any) => {
+                  if (object.userData && ["door", "window", "vent"].includes(object.userData.type)) {
+                    airEntryMeshes.push(object);
+                  }
+                });
+                console.log('🔍 [SAVE CHANGES DEBUG] AirEntry meshes found:', airEntryMeshes.length);
+                airEntryMeshes.forEach((mesh, i) => {
+                  const material = mesh.material;
+                  console.log(`🔍 [SAVE CHANGES DEBUG] Mesh ${i} material:`, {
+                    hasMap: !!material?.map,
+                    opacity: material?.opacity,
+                    type: mesh.userData?.type
+                  });
+                });
+              }
+            }, 100);
+          }}
+          initialValues={{
+            ...editingAirEntry.entry.dimensions,
+            shape: (editingAirEntry.entry.dimensions as any).shape,
+            properties: (editingAirEntry.entry as any).properties,
+            position: editingAirEntry.entry.position,
+            wallPosition: (editingAirEntry.entry.dimensions as any).wallPosition || (editingAirEntry.entry as any).properties?.wallPosition
+          } as any}
           airEntryIndex={editingAirEntry.index}
           currentFloor={currentFloor}
           isEditing={true}
