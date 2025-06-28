@@ -4817,6 +4817,28 @@ export default function Canvas3D({
     return Object.keys(storeFloors).length > 0 ? storeFloors : floors;
   }, [floors]); // Re-compute when props change
 
+  // Stabilize initialValues to prevent infinite re-renders of AirEntryDialog
+  const stableInitialValues = useMemo(() => {
+    if (!editingAirEntry) return null;
+    
+    return {
+      ...editingAirEntry.entry.dimensions,
+      shape: (editingAirEntry.entry.dimensions as any).shape,
+      properties: (editingAirEntry.entry as any).properties,
+      position: editingAirEntry.entry.position,
+      wallPosition: (editingAirEntry.entry.dimensions as any).wallPosition || (editingAirEntry.entry as any).properties?.wallPosition
+    } as any;
+  }, [
+    editingAirEntry?.entry.dimensions.width,
+    editingAirEntry?.entry.dimensions.height,
+    editingAirEntry?.entry.dimensions.distanceToFloor,
+    editingAirEntry?.entry.position.x,
+    editingAirEntry?.entry.position.y,
+    (editingAirEntry?.entry.dimensions as any)?.shape,
+    (editingAirEntry?.entry.dimensions as any)?.wallPosition,
+    (editingAirEntry?.entry as any)?.properties
+  ]);
+
   useEffect(() => {
     // Scene rebuild using store data when available, fallback to props
 
@@ -6130,13 +6152,7 @@ export default function Canvas3D({
               }
             }, 100);
           }}
-          initialValues={{
-            ...editingAirEntry.entry.dimensions,
-            shape: (editingAirEntry.entry.dimensions as any).shape,
-            properties: (editingAirEntry.entry as any).properties,
-            position: editingAirEntry.entry.position,
-            wallPosition: (editingAirEntry.entry.dimensions as any).wallPosition || (editingAirEntry.entry as any).properties?.wallPosition
-          } as any}
+          initialValues={stableInitialValues}
           airEntryIndex={editingAirEntry.index}
           currentFloor={currentFloor}
           isEditing={true}
