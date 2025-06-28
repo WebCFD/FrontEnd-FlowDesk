@@ -1384,7 +1384,7 @@ export default function Canvas3D({
         onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
       }
       
-      // Notify RSP to re-apply textures after real-time dimension update
+      // Notify RSP to re-apply textures after real-time position update
       if (onAirEntryUpdated) {
         onAirEntryUpdated();
       }
