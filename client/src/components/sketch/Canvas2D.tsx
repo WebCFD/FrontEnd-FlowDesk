@@ -951,36 +951,9 @@ export default function Canvas2D({
   };
 
   // Helper function to get the most current air entry data for drawing
+  // SOLUTION: Use direct prop data only - no mixing with editing state to avoid timing issues
   const getCurrentAirEntries = (): AirEntry[] => {
-    const currentEntries = [...airEntries];
-    
-    // HYPOTHESIS LOG: Demonstrate the mixing of prop data with real-time state
-    console.log("🔍 [HYPOTHESIS] getCurrentAirEntries() called");
-    console.log("🔍 [HYPOTHESIS] airEntries prop data (entries count):", airEntries.length);
-    if (airEntries.length > 0) {
-      console.log("🔍 [HYPOTHESIS] airEntries[0] position (from props):", airEntries[0]?.position);
-    }
-    console.log("🔍 [HYPOTHESIS] editingAirEntries state (entries count):", editingAirEntries.length);
-    if (editingAirEntries.length > 0) {
-      console.log("🔍 [HYPOTHESIS] editingAirEntries[0] position (from state):", editingAirEntries[0]?.entry?.position);
-    }
-    
-    // Apply any real-time updates from editingAirEntries
-    editingAirEntries.forEach(editingItem => {
-      if (editingItem.index >= 0 && editingItem.index < currentEntries.length) {
-        console.log("🔍 [HYPOTHESIS] Overriding prop data with real-time state for index:", editingItem.index);
-        console.log("🔍 [HYPOTHESIS] Original position:", currentEntries[editingItem.index]?.position);
-        console.log("🔍 [HYPOTHESIS] New position:", editingItem.entry.position);
-        currentEntries[editingItem.index] = editingItem.entry;
-      }
-    });
-    
-    console.log("🔍 [HYPOTHESIS] Final merged result (entries count):", currentEntries.length);
-    if (currentEntries.length > 0) {
-      console.log("🔍 [HYPOTHESIS] Final merged result[0] position:", currentEntries[0]?.position);
-    }
-    
-    return currentEntries;
+    return airEntries;
   };
 
   const getVisibleGridPoints = (): Point[] => {
@@ -3341,6 +3314,12 @@ export default function Canvas2D({
     setEditingAirEntries(prev => prev.filter(entry => entry.index !== index));
     console.log("🔴 [SAVE CHANGES] editingAirEntries cleared - getCurrentAirEntries will now use props only");
     console.log("🔴 [SAVE CHANGES] If position reverts, it's because props haven't updated yet from store");
+    
+    // Add a small delay to show the timing issue
+    setTimeout(() => {
+      console.log("⏰ [TIMING CHECK] After SaveChanges - checking if props updated from store");
+      console.log("⏰ [TIMING CHECK] Current airEntries prop:", airEntries.length > 0 ? airEntries[0]?.position : "No entries");
+    }, 100);
   };
 
   // Phase 2: Dialog Management Functions
