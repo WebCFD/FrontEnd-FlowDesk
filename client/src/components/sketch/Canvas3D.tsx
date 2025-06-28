@@ -1442,6 +1442,8 @@ export default function Canvas3D({
             
             // Preserve existing material (including RSP textures) before geometry replacement
             const preservedMaterial = object.material;
+            console.log(`🔄 MATERIAL PRESERVATION: AirEntry ${editingAirEntry.index} - Preserving material:`, preservedMaterial);
+            console.log(`🔄 Material type:`, preservedMaterial.type, 'Has texture map:', !!(preservedMaterial as any).map);
             
             const newGeometry = new THREE.PlaneGeometry(newWidth, newHeight);
             object.geometry.dispose(); // Clean up old geometry
@@ -1449,6 +1451,7 @@ export default function Canvas3D({
             
             // Restore the preserved material to maintain RSP textures
             object.material = preservedMaterial;
+            console.log(`✅ MATERIAL RESTORATION: AirEntry ${editingAirEntry.index} - Material restored after geometry update`);
           }
           
           // Update Z-position if distanceToFloor changed

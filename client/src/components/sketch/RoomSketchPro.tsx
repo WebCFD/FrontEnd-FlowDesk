@@ -642,9 +642,15 @@ export function RoomSketchPro({
 
 
 
+    console.log(`🎨 RSP TEXTURE APPLICATION: Found ${airEntryMeshes.length} air entry meshes to texture`);
     airEntryMeshes.forEach((airEntryMesh, index) => {
       const airEntryType = airEntryMesh.userData.type;
       const originalMaterial = airEntryMesh.material as THREE.MeshPhongMaterial;
+      
+      console.log(`🎨 RSP TEXTURE: Processing mesh ${index} - type: ${airEntryType}`, {
+        hasOriginalTexture: !!(originalMaterial as any).map,
+        originalMaterialType: originalMaterial.type
+      });
       
       let texture: THREE.Texture | undefined;
       let materialColor = 0xffffff;
