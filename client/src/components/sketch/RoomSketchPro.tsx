@@ -824,7 +824,7 @@ export function RoomSketchPro({
   const handleAirEntryUpdated = useCallback(() => {
     console.log('RSP: AirEntry updated, re-applying textures...');
     
-    // Use debounced version for real-time updates to avoid performance issues
+    // Small delay to ensure the air entry mesh is fully updated in the scene
     setTimeout(() => {
       applyThemeTextures();
     }, 100);
