@@ -3262,6 +3262,23 @@ export default function Canvas2D({
   // SAVE CHANGES LOGIC: Updates existing element properties
   // This is called for BOTH newly created elements (from wall click) and existing elements (from double-click)
   // The workflow treats both cases identically - just updating an existing element in the array
+  // Real-time position update handler - updates store immediately during dialog interactions
+  const handleAirEntryPositionUpdate = (index: number, newPosition: { x: number; y: number }) => {
+    console.log("⚡ [REAL-TIME] Position update for AirEntry index:", index, "New position:", newPosition);
+    
+    // Update the store immediately to maintain visual consistency
+    const updatedAirEntries = [...airEntries];
+    if (updatedAirEntries[index]) {
+      updatedAirEntries[index] = {
+        ...updatedAirEntries[index],
+        position: newPosition
+      };
+      
+      console.log("⚡ [REAL-TIME] Immediately updating store with new position");
+      onAirEntriesUpdate?.(updatedAirEntries);
+    }
+  };
+
   const handleAirEntryEdit = (
     index: number,
     data: {
@@ -3281,21 +3298,12 @@ export default function Canvas2D({
       };
     },
   ) => {
-    console.log("🔴 [SAVE CHANGES] handleAirEntryEdit called - SaveChanges clicked");
-    console.log("🔴 [SAVE CHANGES] BEFORE save - editingAirEntries count:", editingAirEntries.length);
-    if (editingAirEntries.length > 0) {
-      console.log("🔴 [SAVE CHANGES] BEFORE save - editingAirEntries[0] position:", editingAirEntries[0]?.entry?.position);
-    }
+    console.log("💾 [SAVE CHANGES] Final save to store with all properties");
     
-    const editingEntry = editingAirEntries.find(entry => entry.index === index);
-    if (!editingEntry) return;
-
-    // Update the existing element in the array (whether just created or pre-existing)
+    // Since position is already updated in real-time, just update other properties
     const updatedAirEntries = [...airEntries];
     updatedAirEntries[index] = {
-      ...editingEntry.entry,
-      // Use the position from data if provided, otherwise keep the existing position
-      position: data.position || editingEntry.entry.position,
+      ...updatedAirEntries[index], // Keep current position that was updated in real-time
       dimensions: {
         width: data.width,
         height: data.height,
@@ -3306,20 +3314,16 @@ export default function Canvas2D({
       ...(data.properties && { properties: data.properties }),
     };
 
-    console.log("🔴 [SAVE CHANGES] Final saved position:", updatedAirEntries[index].position);
+    // Ensure position is preserved if provided in data
+    if (data.position) {
+      updatedAirEntries[index].position = data.position;
+    }
+
+    console.log("💾 [SAVE CHANGES] Final saved entry:", updatedAirEntries[index]);
     
     onAirEntriesUpdate?.(updatedAirEntries);
-    console.log("🔴 [SAVE CHANGES] Store updated - now removing from editingAirEntries");
-    
     setEditingAirEntries(prev => prev.filter(entry => entry.index !== index));
-    console.log("🔴 [SAVE CHANGES] editingAirEntries cleared - getCurrentAirEntries will now use props only");
-    console.log("🔴 [SAVE CHANGES] If position reverts, it's because props haven't updated yet from store");
-    
-    // Add a small delay to show the timing issue
-    setTimeout(() => {
-      console.log("⏰ [TIMING CHECK] After SaveChanges - checking if props updated from store");
-      console.log("⏰ [TIMING CHECK] Current airEntries prop:", airEntries.length > 0 ? airEntries[0]?.position : "No entries");
-    }, 100);
+    console.log("✅ [SAVE CHANGES] All properties saved successfully");
   };
 
   // Phase 2: Dialog Management Functions
@@ -3556,25 +3560,8 @@ export default function Canvas2D({
             ceilingHeight: ceilingHeight * 100 // Convert to cm
           }}
           onPositionUpdate={(newPosition) => {
-            // Actualizar la posición del Air Entry en tiempo real
-            const updatedAirEntries = [...airEntries];
-            updatedAirEntries[editingAirEntry.index] = {
-              ...editingAirEntry.entry,
-              position: newPosition
-            };
-            
-            onAirEntriesUpdate?.(updatedAirEntries);
-            
-            // También actualizar el estado local para que el diálogo mantenga la referencia correcta
-            setEditingAirEntries(prev => prev.map(item => 
-              item.index === editingAirEntry.index ? {
-                ...item,
-                entry: {
-                  ...item.entry,
-                  position: newPosition
-                }
-              } : item
-            ));
+            // Use the simplified real-time position update mechanism
+            handleAirEntryPositionUpdate(editingAirEntry.index, newPosition);
           }}
           onDimensionsUpdate={(newDimensions) => {
             // Actualizar las dimensiones del Air Entry en tiempo real
