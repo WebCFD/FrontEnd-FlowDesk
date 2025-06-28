@@ -851,15 +851,25 @@ export function RoomSketchPro({
   const { subscribeToAirEntryChanges } = useRoomStore();
   
   useEffect(() => {
+    console.log(`🔗 RSP: Registrando suscripción para sincronización de AirEntry`);
+    
     const unsubscribe = subscribeToAirEntryChanges((floorName, index, updatedEntry) => {
+      console.log(`📥 RSP: Recibida notificación de cambio AirEntry - piso: ${floorName}, índice: ${index}`);
+      console.log(`📥 RSP: Tipo: ${updatedEntry.type}, posición: (${updatedEntry.position.x}, ${updatedEntry.position.y})`);
+      
       // Force texture re-application when AirEntry changes from external sources
       if (sceneRef.current && appliedTexturesRef.current) {
-        console.log(`🎨 RSP: Re-applying textures after AirEntry change on ${floorName}`);
+        console.log(`🎨 RSP: Re-aplicando texturas después del cambio de AirEntry en ${floorName}`);
         applyThemeTextures();
+      } else {
+        console.log(`⚠️ RSP: No se puede re-aplicar texturas - sceneRef o appliedTexturesRef no disponible`);
       }
     });
     
-    return unsubscribe;
+    return () => {
+      console.log(`🔗 RSP: Desregistrando suscripción para sincronización de AirEntry`);
+      unsubscribe();
+    };
   }, [subscribeToAirEntryChanges]);
 
   const handleUpdateAirEntryFrom3D = useCallback((
