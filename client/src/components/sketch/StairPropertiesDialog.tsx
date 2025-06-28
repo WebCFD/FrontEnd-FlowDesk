@@ -38,7 +38,7 @@ export default function StairPropertiesDialog({
         onSave(stair.id, temp);
         onClose();
       } else {
-        alert("Por favor ingresa una temperatura válida entre -50°C y 100°C");
+        alert("Please enter a valid temperature between -50°C and 100°C");
       }
     }
   };
@@ -58,7 +58,7 @@ export default function StairPropertiesDialog({
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg font-semibold">
-              Propiedades de la Escalera
+              Stair Properties
             </CardTitle>
             <Button
               variant="ghost"
@@ -70,14 +70,14 @@ export default function StairPropertiesDialog({
             </Button>
           </div>
           <p className="text-sm text-gray-600 mt-1">
-            Edita las propiedades térmicas de la escalera {stair.id}
+            Edit thermal properties for stair {stair.id}
           </p>
         </CardHeader>
         
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="stair-id" className="text-sm font-medium">
-              ID de Escalera
+              Stair ID
             </Label>
             <Input
               id="stair-id"
@@ -89,7 +89,7 @@ export default function StairPropertiesDialog({
           
           <div className="space-y-2">
             <Label htmlFor="floor" className="text-sm font-medium">
-              Planta
+              Floor
             </Label>
             <Input
               id="floor"
@@ -116,18 +116,18 @@ export default function StairPropertiesDialog({
           </div>
           
           <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded">
-            <p><strong>Puntos:</strong> {stair.points.length} puntos</p>
+            <p><strong>Points:</strong> {stair.points.length} points</p>
             {stair.connectsTo && (
-              <p><strong>Conecta con:</strong> {stair.connectsTo}</p>
+              <p><strong>Connects to:</strong> {stair.connectsTo}</p>
             )}
           </div>
           
           <div className="flex gap-2 pt-2">
             <Button variant="outline" onClick={handleClose} className="flex-1">
-              Cancelar
+              Cancel
             </Button>
             <Button onClick={handleSave} className="flex-1">
-              Guardar Cambios
+              Save Changes
             </Button>
           </div>
         </CardContent>
