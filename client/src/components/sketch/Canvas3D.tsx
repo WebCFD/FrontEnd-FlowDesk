@@ -2554,11 +2554,11 @@ export default function Canvas3D({
         parentEntryIndex: objects.length - 1
       };
 
-      // Add the axis meshes to the objects array
-      objects.push(xAxis, yAxis, zAxis);
-
-      // Add coordinate label - only show when not in presentation mode
+      // Add coordinate system and labels - only show when not in presentation mode
       if (!presentationMode) {
+        // Add the axis meshes to the objects array
+        objects.push(xAxis, yAxis, zAxis);
+
         const coordText = `(${Math.round(position.x)}, ${Math.round(position.y)}, ${Math.round(zPosition)}) cm`;
         const labelSprite = makeTextSprite(coordText, {
           fontsize: 140,
