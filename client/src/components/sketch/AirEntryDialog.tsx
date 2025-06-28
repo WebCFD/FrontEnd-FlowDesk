@@ -335,9 +335,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           const savedWallPosition = (airEntryProps.initialValues as any).properties?.wallPosition || 
                                   (airEntryProps.initialValues as any).wallPosition;
           
-          // Also set in form values for persistence
+          // CRITICAL FIX: Set complete initialValues including width/height for persistence
           setValues(prev => ({ 
-            ...prev, 
+            ...prev,
+            ...airEntryProps.initialValues, // Include all initial values (width, height, etc.)
             distanceToFloor: initialDistanceToFloor,
             wallPosition: savedWallPosition 
           }));
