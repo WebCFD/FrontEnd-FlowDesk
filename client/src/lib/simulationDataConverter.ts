@@ -204,8 +204,12 @@ interface FurnitureExport {
 interface FloorExport {
   height: number;
   floorDeck: number;
-  ceiling: number;
-  floor_surf: number;
+  ceiling: {
+    temp: number;
+  };
+  floor_surf: {
+    temp: number;
+  };
   walls: WallExport[];
   stairs: StairExportNew[];
   furniture: FurnitureExport[];
@@ -578,8 +582,12 @@ export function generateSimulationData(
     exportData.floors[floorNumber] = {
       height: floorHeight,
       floorDeck: floorDeckValue,
-      ceiling: ceilingTemp,
-      floor_surf: floorTemp,
+      ceiling: {
+        temp: ceilingTemp
+      },
+      floor_surf: {
+        temp: floorTemp
+      },
       walls: walls,
       stairs: stairs,
       furniture: floorFurniture
