@@ -1,0 +1,68 @@
+Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4610 Double-click found entry using stored entryIndex: 0
+AirEntryDialog.tsx:335 🔍 LOADING EDITING VALUES - Full initialValues: {
+  "width": 124,
+  "height": 95,
+  "distanceToFloor": 147,
+  "shape": "rectangular",
+  "wallPosition": 33,
+  "properties": {
+    "state": "open",
+    "temperature": 25,
+    "flowIntensity": "medium",
+    "airOrientation": "inflow",
+    "flowType": "Air Mass Flow",
+    "flowValue": 0.5
+  },
+  "position": {
+    "x": 450.09977964335144,
+    "y": 98.14844452137532
+  }
+}
+AirEntryDialog.tsx:342 ✅ WIDTH LOADING - Found saved width: 124
+AirEntryDialog.tsx:348 🔍 WALL POSITION LOADING - Checking sources:
+AirEntryDialog.tsx:349   - properties?.wallPosition: undefined
+AirEntryDialog.tsx:350   - direct wallPosition: 33
+AirEntryDialog.tsx:351   - Final savedWallPosition: 33
+AirEntryDialog.tsx:362 ✅ WALL POSITION LOADING - Using saved value: 33
+Canvas3D.tsx:1462 📍 [AIRENTRY DIRECT] Updating position directly for vent - oldZ: 147, newZ: 148
+Canvas3D.tsx:1464 ✅ [AIRENTRY DIRECT] Position updated successfully
+Canvas3D.tsx:1468 💾 [AIRENTRY DIRECT] Updating userData for vent
+Canvas3D.tsx:1470 ✅ [AIRENTRY DIRECT] UserData updated successfully
+wizard-design.tsx:2324 wizard-design: Received floors update from RSP: {ground: {…}}
+Canvas3D.tsx:1482 🚀 [OPTIMIZATION] No callback needed - AirEntry works like furniture with direct modification
+Canvas3D.tsx:1483 ✅ [OPTIMIZATION] Textures preserved automatically during real-time updates
+AirEntryDialog.tsx:519 📝 FORM SUBMIT - Current form values: {width: 124, height: 95, distanceToFloor: 148, shape: 'rectangular', wallPosition: 33, …}
+AirEntryDialog.tsx:520 📝 FORM SUBMIT - Current wallPosition state: 33
+AirEntryDialog.tsx:521 📝 FORM SUBMIT - Current distanceToFloor state: 148
+AirEntryDialog.tsx:549 📦 FORM SUBMIT - Final airEntryData being sent: {
+  "width": 124,
+  "height": 95,
+  "diameter": null,
+  "distanceToFloor": 148,
+  "shape": "rectangular",
+  "isOpen": true,
+  "temperature": 25,
+  "airDirection": "inflow",
+  "flowIntensity": "medium",
+  "customIntensityValue": null,
+  "ventFlowType": "massflow",
+  "airOrientation": {
+    "verticalAngle": 0,
+    "horizontalAngle": 0
+  },
+  "wallPosition": 33,
+  "position": {
+    "x": 450.09977964335144,
+    "y": 98.14844452137532
+  }
+}
+AirEntryDialog.tsx:572 💾 SIMULATION PROPERTIES SAVE - Final properties: {flowType: 'massflow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', wallPosition: 33}
+Canvas3D.tsx:5936 [CANVAS3D ONCONFIRM] Received data from dialog: {width: 124, height: 95, distanceToFloor: 148, shape: 'rectangular', wallPosition: 33, …}
+Canvas3D.tsx:5937 [CANVAS3D ONCONFIRM] wallPosition in received data: 33
+Canvas3D.tsx:1862 [DIMENSION STORAGE] Stored dimensions for entry 0: {"position":{"x":450.09977964335144,"y":98.14844452137532},"dimensions":{"width":124,"height":95,"distanceToFloor":148,"shape":"rectangular","wallPosition":33}}
+Canvas3D.tsx:1864 [WALL POSITION STORAGE] wallPosition in data: 33
+Canvas3D.tsx:1865 [WALL POSITION STORAGE] wallPosition in updatedEntry.dimensions: 33
+wizard-design.tsx:2324 wizard-design: Received floors update from RSP: {ground: {…}}
+Canvas3D.tsx:1872 🚀 [OPTIMIZATION] Dialog confirm complete - textures preserved automatically like furniture
+Canvas3D.tsx:1873 ✅ [OPTIMIZATION] No texture reapplication needed after AirEntry edit
