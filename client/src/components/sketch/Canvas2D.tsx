@@ -279,6 +279,7 @@ interface Canvas2DProps {
   isMultifloor: boolean;
   ceilingHeight?: number;
   defaultWallTemperature?: number;
+  defaultStairTemperature?: number;
   onLinesUpdate?: (lines: Line[]) => void;
   onWallsUpdate?: (walls: Wall[]) => void;
   onAirEntriesUpdate?: (airEntries: AirEntry[]) => void;
@@ -301,6 +302,7 @@ export default function Canvas2D({
   isMultifloor,
   ceilingHeight = 2.4,
   defaultWallTemperature = 20,
+  defaultStairTemperature = 20,
   onLinesUpdate,
   onWallsUpdate,
   onAirEntriesUpdate,
@@ -1297,9 +1299,8 @@ export default function Canvas2D({
       );
       onWallsUpdate(updatedWalls);
     }
-  };
+  }
 
-  // Handle stair properties save
   const handleStairPropertiesSave = (stairId: string, temperature: number) => {
     if (onStairPolygonsUpdate) {
       const updatedStairs = stairPolygons.map(stair => 
@@ -1771,6 +1772,7 @@ export default function Canvas2D({
           id: Math.random().toString(36).substring(2, 9),
           points: [...currentStairPoints],
           floor: floorText,
+          temperature: defaultStairTemperature,
         };
 
         // Add the new stair polygon
