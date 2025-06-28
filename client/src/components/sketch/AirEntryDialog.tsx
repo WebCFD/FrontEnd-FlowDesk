@@ -131,6 +131,15 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   const mode = (props as AirEntryDialogProps).mode || 'airEntry'; // Default to airEntry for backward compatibility
   const { updateAirEntryProperties, floors } = useRoomStore();
   
+  // Log when props change to track external updates
+  console.log('🔍 [PROPS CHANGE] AirEntryDialog props updated');
+  console.log('🔍 [PROPS CHANGE] type:', type, 'isEditing:', isEditing, 'dialogOpen:', dialogOpen);
+  if ('initialValues' in props && props.initialValues) {
+    console.log('🔍 [PROPS CHANGE] initialValues.width:', props.initialValues.width);
+    console.log('🔍 [PROPS CHANGE] initialValues.height:', props.initialValues.height);
+    console.log('🔍 [PROPS CHANGE] initialValues wallPosition:', (props.initialValues as any).wallPosition || (props.initialValues as any).properties?.wallPosition);
+  }
+  
   // Estado unificado para manejar tanto dimensiones como temperatura
   const [values, setValues] = useState(getDefaultValues());
   const [position, setPosition] = useState(() => {
@@ -264,6 +273,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
   // Función para manejar cambios de Width (similar a handleWallPositionChange)
   const handleWidthChange = (newWidth: number) => {
+    console.log('📏 [WIDTH CHANGE] handleWidthChange called with:', newWidth);
+    console.log('📏 [WIDTH CHANGE] Current localWidth before change:', localWidth);
+    
     setLocalWidth(newWidth);
     
     // Update form values for persistence
@@ -271,12 +283,16 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     
     // Trigger real-time dimension updates
     if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
+      console.log('📏 [WIDTH CHANGE] Calling onDimensionsUpdate with width:', newWidth);
       props.onDimensionsUpdate({ width: newWidth });
     }
   };
 
   // Función para manejar cambios de Height (similar a handleWallPositionChange)
   const handleHeightChange = (newHeight: number) => {
+    console.log('📐 [HEIGHT CHANGE] handleHeightChange called with:', newHeight);
+    console.log('📐 [HEIGHT CHANGE] Current localHeight before change:', localHeight);
+    
     setLocalHeight(newHeight);
     
     // Update form values for persistence
@@ -284,6 +300,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     
     // Trigger real-time dimension updates
     if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
+      console.log('📐 [HEIGHT CHANGE] Calling onDimensionsUpdate with height:', newHeight);
       props.onDimensionsUpdate({ height: newHeight });
     }
   };
@@ -456,25 +473,43 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
   // Sincronización bidireccional: actualizar estados locales cuando cambien los props externos
   useEffect(() => {
+    console.log('🔄 [SYNC EFFECT] Bidirectional sync useEffect triggered');
+    console.log('🔄 [SYNC EFFECT] isEditing:', isEditing);
+    console.log('🔄 [SYNC EFFECT] props.type:', props.type);
+    console.log('🔄 [SYNC EFFECT] has initialValues:', 'initialValues' in props && props.initialValues);
+    
     if (isEditing && props.type !== 'wall' && 'initialValues' in props && props.initialValues) {
       const airEntryProps = props as AirEntryDialogProps;
       
+      console.log('🔄 [SYNC EFFECT] Current localWidth:', localWidth);
+      console.log('🔄 [SYNC EFFECT] External width:', airEntryProps.initialValues.width);
+      console.log('🔄 [SYNC EFFECT] Current localHeight:', localHeight);
+      console.log('🔄 [SYNC EFFECT] External height:', airEntryProps.initialValues.height);
+      
       // Actualizar localWidth y localHeight cuando cambien externamente
-      if (airEntryProps.initialValues.width !== undefined) {
+      if (airEntryProps.initialValues.width !== undefined && airEntryProps.initialValues.width !== localWidth) {
+        console.log('🔄 [SYNC EFFECT] Updating localWidth from', localWidth, 'to', airEntryProps.initialValues.width);
         setLocalWidth(airEntryProps.initialValues.width);
       }
-      if (airEntryProps.initialValues.height !== undefined) {
+      if (airEntryProps.initialValues.height !== undefined && airEntryProps.initialValues.height !== localHeight) {
+        console.log('🔄 [SYNC EFFECT] Updating localHeight from', localHeight, 'to', airEntryProps.initialValues.height);
         setLocalHeight(airEntryProps.initialValues.height);
       }
       
       // Actualizar wallPosition cuando cambie externamente
       const externalWallPosition = (airEntryProps.initialValues as any).properties?.wallPosition || 
                                    (airEntryProps.initialValues as any).wallPosition;
-      if (externalWallPosition !== undefined && externalWallPosition !== null) {
+      console.log('🔄 [SYNC EFFECT] Current wallPosition:', wallPosition);
+      console.log('🔄 [SYNC EFFECT] External wallPosition:', externalWallPosition);
+      
+      if (externalWallPosition !== undefined && externalWallPosition !== null && externalWallPosition !== wallPosition) {
+        console.log('🔄 [SYNC EFFECT] Updating wallPosition from', wallPosition, 'to', externalWallPosition);
         setWallPosition(externalWallPosition);
       }
+    } else {
+      console.log('🔄 [SYNC EFFECT] Conditions not met for sync');
     }
-  }, [isEditing, props.type, 'initialValues' in props ? props.initialValues?.width : null, 'initialValues' in props ? props.initialValues?.height : null, 'initialValues' in props ? (props.initialValues as any)?.wallPosition : null, 'initialValues' in props ? (props.initialValues as any)?.properties?.wallPosition : null]);
+  }, [isEditing, props.type, 'initialValues' in props ? props.initialValues?.width : null, 'initialValues' in props ? props.initialValues?.height : null, 'initialValues' in props ? (props.initialValues as any)?.wallPosition : null, 'initialValues' in props ? (props.initialValues as any)?.properties?.wallPosition : null, localWidth, localHeight, wallPosition]);
 
   function getDefaultValues() {
     // Obtener valores iniciales según el tipo de props
