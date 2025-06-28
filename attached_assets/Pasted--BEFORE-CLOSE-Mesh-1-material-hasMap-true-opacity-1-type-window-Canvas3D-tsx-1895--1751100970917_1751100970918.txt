@@ -1,0 +1,30 @@
+🔍 [BEFORE CLOSE] Mesh 1 material: {hasMap: true, opacity: 1, type: 'window'}
+Canvas3D.tsx:1895 🔬 [DEPENDENCY TRACKING] BEFORE setEditingAirEntry(null):
+Canvas3D.tsx:1896 🔬 [DEPENDENCY TRACKING] floors keys: ['ground']
+Canvas3D.tsx:1897 🔬 [DEPENDENCY TRACKING] currentFloor: ground
+Canvas3D.tsx:1898 🔬 [DEPENDENCY TRACKING] ceilingHeight: 220
+Canvas3D.tsx:1899 🔬 [DEPENDENCY TRACKING] floorDeckThickness: 35
+Canvas3D.tsx:1900 🔬 [DEPENDENCY TRACKING] floors[currentFloor] airEntries length: 2
+Canvas3D.tsx:1904 🔬 [DEPENDENCY TRACKING] AFTER setEditingAirEntry(null):
+Canvas3D.tsx:1905 🔬 [DEPENDENCY TRACKING] floors keys: ['ground']
+Canvas3D.tsx:1906 🔬 [DEPENDENCY TRACKING] currentFloor: ground
+Canvas3D.tsx:1907 🔬 [DEPENDENCY TRACKING] ceilingHeight: 220
+Canvas3D.tsx:1908 🔬 [DEPENDENCY TRACKING] floorDeckThickness: 35
+Canvas3D.tsx:1909 🔬 [DEPENDENCY TRACKING] floors[currentFloor] airEntries length: 2
+Canvas3D.tsx:1932 ✅ [SAVE CHANGES] Data commit complete - monitoring for texture loss
+Canvas3D.tsx:1933 ✅ [SAVE CHANGES] Dialog closed - checking for side effects
+Canvas3D.tsx:6041 🔍 [SAVE CHANGES DEBUG] handleAirEntryEdit completed - checking for side effects
+Canvas3D.tsx:4781 🚨 [SCENE REBUILD TRIGGER] useEffect triggered - dependencies changed
+Canvas3D.tsx:4782 🚨 [SCENE REBUILD TRIGGER] floors reference: object 1
+Canvas3D.tsx:4783 🚨 [SCENE REBUILD TRIGGER] currentFloor: ground
+Canvas3D.tsx:4784 🚨 [SCENE REBUILD TRIGGER] ceilingHeight: 220
+Canvas3D.tsx:4785 🚨 [SCENE REBUILD TRIGGER] floorDeckThickness: 35
+Canvas3D.tsx:2352 🔧 [SCENE REBUILD] Creating new material for vent at index 0
+Canvas3D.tsx:2352 🔧 [SCENE REBUILD] Creating new material for window at index 1
+Canvas3D.tsx:1913 🔍 [AFTER CLOSE] Checking textures immediately after dialog close
+Canvas3D.tsx:1923 🔍 [AFTER CLOSE] Mesh 0 material: {hasMap: false, opacity: 0.7, type: 'vent'}
+Canvas3D.tsx:1923 🔍 [AFTER CLOSE] Mesh 1 material: {hasMap: false, opacity: 0.7, type: 'window'}
+Canvas3D.tsx:6045 🔍 [SAVE CHANGES DEBUG] 100ms after Save Changes - checking scene state
+Canvas3D.tsx:6053 🔍 [SAVE CHANGES DEBUG] AirEntry meshes found: 2
+Canvas3D.tsx:6056 🔍 [SAVE CHANGES DEBUG] Mesh 0 material: {hasMap: false, opacity: 0.7, type: 'vent'}
+Canvas3D.tsx:6056 🔍 [SAVE CHANGES DEBUG] Mesh 1 material: {hasMap: false, opacity: 0.7, type: 'window'}

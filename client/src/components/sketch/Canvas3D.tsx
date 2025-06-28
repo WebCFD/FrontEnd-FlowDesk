@@ -1898,6 +1898,7 @@ export default function Canvas3D({
     console.log('🔬 [DEPENDENCY TRACKING] ceilingHeight:', ceilingHeight);
     console.log('🔬 [DEPENDENCY TRACKING] floorDeckThickness:', floorDeckThickness);
     console.log('🔬 [DEPENDENCY TRACKING] floors[currentFloor] airEntries length:', floors[currentFloor]?.airEntries?.length);
+    console.log('🔬 [DEPENDENCY TRACKING] selectedAirEntry state:', selectedAirEntry ? 'SELECTED' : 'NULL');
     
     setEditingAirEntry(null);
     
@@ -1907,6 +1908,7 @@ export default function Canvas3D({
     console.log('🔬 [DEPENDENCY TRACKING] ceilingHeight:', ceilingHeight);
     console.log('🔬 [DEPENDENCY TRACKING] floorDeckThickness:', floorDeckThickness);
     console.log('🔬 [DEPENDENCY TRACKING] floors[currentFloor] airEntries length:', floors[currentFloor]?.airEntries?.length);
+    console.log('🔬 [DEPENDENCY TRACKING] selectedAirEntry state:', selectedAirEntry ? 'SELECTED' : 'NULL');
     
     // Check texture state IMMEDIATELY AFTER setEditingAirEntry(null)
     setTimeout(() => {
