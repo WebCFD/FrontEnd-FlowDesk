@@ -5938,6 +5938,7 @@ export default function Canvas3D({
           onConfirm={(data) => {
             console.log('[CANVAS3D ONCONFIRM] Received data from dialog:', data);
             console.log('[CANVAS3D ONCONFIRM] wallPosition in received data:', data.wallPosition);
+            console.log('🔍 [SAVE CHANGES DEBUG] About to call handleAirEntryEdit');
             handleAirEntryEdit(editingAirEntry.index, {
               width: data.width,
               height: data.height,
@@ -5946,6 +5947,7 @@ export default function Canvas3D({
               wallPosition: data.wallPosition,
               properties: data.properties
             } as any);
+            console.log('🔍 [SAVE CHANGES DEBUG] handleAirEntryEdit completed - checking for side effects');
           }}
           initialValues={{
             ...editingAirEntry.entry.dimensions,
