@@ -125,3 +125,4 @@ Preferred communication style: Simple, everyday language.
 Changelog:
 - June 23, 2025. Initial setup
 - June 28, 2025. Fixed AirEntry Center Height real-time updates - removed redundant height/2 offset causing visual glitch during coordinate transformations between Canvas2D and Canvas3D
+- June 28, 2025. Added onAirEntryUpdated callback system to maintain RSP textures during real-time AirEntry modifications - system now triggers texture reapplication for all AirEntry dialog changes

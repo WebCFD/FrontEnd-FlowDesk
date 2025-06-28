@@ -505,6 +505,8 @@ export function RoomSketchPro({
         wallMeshes.push(object);
       }
     });
+    
+    console.log(`🎨 [RSP] Found ${wallMeshes.length} wall meshes in scene`);
 
 
 
@@ -640,6 +642,8 @@ export function RoomSketchPro({
         }
       });
     }
+    
+    console.log(`🎨 [RSP] Found ${airEntryMeshes.length} air entry meshes in scene`);
 
 
 
@@ -704,6 +708,7 @@ export function RoomSketchPro({
           emissiveIntensity: 0.2 // Low intensity for natural look
         });
         
+        console.log(`🎨 [RSP] Applying ${airEntryType} texture to mesh (index ${index})`);
         airEntryMesh.material = newMaterial;
         airEntryMesh.renderOrder = 2; // Render after walls
       }
