@@ -270,8 +270,8 @@ export default function WizardDesign() {
   const [canvas3DKey, setCanvas3DKey] = useState(0); // Force re-render of Canvas3D
   
   // Nuevos estados para parámetros por planta
-  const [floorParameters, setFloorParameters] = useState<Record<string, { ceilingHeight: number; floorDeck: number }>>({
-    ground: { ceilingHeight: 220, floorDeck: 35 }
+  const [floorParameters, setFloorParameters] = useState<Record<string, { ceilingHeight: number; floorDeck: number; ceilingTemperature?: number; floorTemperature?: number }>>({
+    ground: { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20 }
   });
 
   // Funciones auxiliares para manejo de parámetros por planta
