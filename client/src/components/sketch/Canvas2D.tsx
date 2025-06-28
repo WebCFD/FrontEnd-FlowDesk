@@ -1242,9 +1242,6 @@ export default function Canvas2D({
     if (stairPolygons && stairPolygons.length > 0) {
       const stairInfo = findStairPolygonAtPoint(point, stairPolygons);
       if (stairInfo && !stairInfo.polygon.isImported) {
-        console.log("CANVAS2D DOUBLE-CLICK - Stair polygon detected:", stairInfo.polygon);
-        console.log("CANVAS2D DOUBLE-CLICK - Stair ID:", stairInfo.polygon.id);
-        console.log("CANVAS2D DOUBLE-CLICK - Current temperature:", stairInfo.polygon.temperature);
         debugLog(`Double-click detected on stair polygon - opening stair properties editor`);
         setEditingStair(stairInfo.polygon);
         setStairPropertiesDialogOpen(true);
@@ -1305,18 +1302,13 @@ export default function Canvas2D({
   }
 
   const handleStairPropertiesSave = (stairId: string, temperature: number) => {
-    console.log("CANVAS2D STAIR SAVE - Received stairId:", stairId, "temperature:", temperature);
     if (onStairPolygonsUpdate) {
       const updatedStairs = stairPolygons.map(stair => 
         stair.id === stairId 
           ? { ...stair, temperature }
           : stair
       );
-      console.log("CANVAS2D STAIR SAVE - Updated stairs array:", updatedStairs);
-      console.log("CANVAS2D STAIR SAVE - Calling onStairPolygonsUpdate");
       onStairPolygonsUpdate(updatedStairs);
-    } else {
-      console.log("CANVAS2D STAIR SAVE - ERROR: onStairPolygonsUpdate is not available");
     }
   };
 
