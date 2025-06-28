@@ -1825,6 +1825,10 @@ export default function Canvas3D({
       };
     },
   ) => {
+    console.log("🔍 [CANVAS3D handleAirEntryEdit] Called with index:", index);
+    console.log("🔍 [CANVAS3D handleAirEntryEdit] Received data:", data);
+    console.log("🔍 [CANVAS3D handleAirEntryEdit] data.wallPosition:", data.wallPosition);
+    
     if (!editingAirEntry || !onUpdateAirEntry) return;
 
     const updatedEntry = {
@@ -1867,9 +1871,13 @@ export default function Canvas3D({
     // SAVE CHANGES: Pure data commit - no geometry or material modifications
     console.log('💾 [SAVE CHANGES] Pure data commit - only saving values to store');
     console.log('💾 [SAVE CHANGES] Floor:', currentFloor, 'Index:', index);
-    console.log('💾 [SAVE CHANGES] Stored distanceToFloor:', updatedEntry.dimensions.distanceToFloor);
-    console.log('💾 [SAVE CHANGES] Geometry already modified during real-time updates');
-    console.log('💾 [SAVE CHANGES] Textures already applied by RSP - no modifications needed');
+    console.log('💾 [SAVE CHANGES] updatedEntry.dimensions:', updatedEntry.dimensions);
+    console.log('💾 [SAVE CHANGES] wallPosition in updatedEntry.dimensions:', updatedEntry.dimensions.wallPosition);
+    console.log('💾 [SAVE CHANGES] About to call onUpdateAirEntry callback');
+    
+    // Call the callback to update the store
+    onUpdateAirEntry(currentFloor, index, updatedEntry);
+    console.log('💾 [SAVE CHANGES] onUpdateAirEntry callback completed');
     
     // Check texture state BEFORE setEditingAirEntry(null)
     if (sceneRef.current) {
@@ -4716,16 +4724,22 @@ export default function Canvas3D({
           if (foundIndex !== -1) {
             // Get the base entry from floor data
             const baseEntry = floorData.airEntries[foundIndex];
+            console.log("🔍 [CANVAS3D DOUBLECLICK] baseEntry from store:", baseEntry);
+            console.log("🔍 [CANVAS3D DOUBLECLICK] baseEntry.dimensions:", baseEntry.dimensions);
+            console.log("🔍 [CANVAS3D DOUBLECLICK] baseEntry.dimensions.wallPosition:", baseEntry.dimensions?.wallPosition);
             
             // Check if we have updated dimensions for this entry in our ref
             const normalizedFloorName = normalizeFloorName(currentFloor);
             const updatedData = updatedAirEntryPositionsRef.current[normalizedFloorName]?.[foundIndex];
+            console.log("🔍 [CANVAS3D DOUBLECLICK] updatedData from ref:", updatedData);
             
             // Create a merged entry with the latest dimensions
             const mergedEntry = {
               ...baseEntry,
               dimensions: updatedData?.dimensions || baseEntry.dimensions
             };
+            console.log("🔍 [CANVAS3D DOUBLECLICK] mergedEntry:", mergedEntry);
+            console.log("🔍 [CANVAS3D DOUBLECLICK] mergedEntry.dimensions.wallPosition:", mergedEntry.dimensions?.wallPosition);
             
             // Phase 3: Create wall context for unified dialog experience
             const wallContext = createWallContext(mergedEntry);
@@ -4735,6 +4749,8 @@ export default function Canvas3D({
               entry: mergedEntry,
               wallContext
             });
+            
+            console.log("🔍 [CANVAS3D DOUBLECLICK] Dialog opening with index:", foundIndex);
           }
         }
       }
