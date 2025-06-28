@@ -1262,9 +1262,7 @@ export default function Canvas2D({
     if (stairPolygons && stairPolygons.length > 0) {
       const stairInfo = findStairPolygonAtPoint(point, stairPolygons);
       if (stairInfo && !stairInfo.polygon.isImported) {
-        console.log("🎯 Canvas2D DOUBLECLICK - Found stair:", stairInfo.polygon);
-        console.log("🎯 Canvas2D DOUBLECLICK - Stair ID:", stairInfo.polygon.id);
-        console.log("🎯 Canvas2D DOUBLECLICK - Current temperature:", stairInfo.polygon.temperature);
+
         debugLog(`Double-click detected on stair polygon - opening stair properties editor`);
         setEditingStair(stairInfo.polygon);
         setStairPropertiesDialogOpen(true);
@@ -1325,25 +1323,16 @@ export default function Canvas2D({
   }
 
   const handleStairPropertiesSave = (stairId: string, temperature: number) => {
-    console.log("🔧 Canvas2D SAVE - Received stairId:", stairId, "temperature:", temperature);
-    console.log("🔧 Canvas2D SAVE - Current stairPolygons:", stairPolygons);
+
     if (onStairPolygonsUpdate) {
-      console.log("🔧 Canvas2D SAVE - Starting map operation...");
-      const updatedStairs = stairPolygons.map((stair, index) => {
-        console.log(`🔧 Canvas2D SAVE - Processing stair ${index}: ID=${stair.id}, temp=${stair.temperature}`);
-        console.log(`🔧 Canvas2D SAVE - Comparing "${stair.id}" === "${stairId}": ${stair.id === stairId}`);
+      const updatedStairs = stairPolygons.map((stair) => {
         if (stair.id === stairId) {
-          const updatedStair = { ...stair, temperature };
-          console.log("🔧 Canvas2D SAVE - MATCH FOUND! Updated stair:", updatedStair);
-          return updatedStair;
+          return { ...stair, temperature };
         } else {
-          console.log("🔧 Canvas2D SAVE - No match, keeping original stair");
           return stair;
         }
       });
-      console.log("🔧 Canvas2D SAVE - Final updated stairs array:", updatedStairs);
       onStairPolygonsUpdate(updatedStairs);
-      console.log("🔧 Canvas2D SAVE - onStairPolygonsUpdate called");
     }
   };
 
@@ -1800,15 +1789,11 @@ export default function Canvas2D({
     if (isDrawingStairs && e.button === 2) {
       e.preventDefault();
       
-      console.log("🖱️ RIGHT-CLICK DETECTED while drawing stairs");
-      console.log(`📊 Current stair points count: ${currentStairPoints.length}`);
-      console.log(`📍 Current stair points:`, currentStairPoints);
-      console.log(`🏢 Current floor: ${currentFloor} (${floorText})`);
-      console.log(`📦 Existing stair polygons count: ${(stairPolygons || []).length}`);
+
 
       // Only create a stair polygon if we have at least 3 points
       if (currentStairPoints.length >= 3) {
-        console.log("✅ SUFFICIENT POINTS - Creating new stair polygon");
+
         
         // Create a new stair polygon with proper ID format
         const stairCount = (stairPolygons || []).filter(s => s.floor === floorText).length + 1;
@@ -1819,7 +1804,7 @@ export default function Canvas2D({
                          currentFloor === "fourth" ? "4F" :
                          currentFloor === "fifth" ? "5F" : "0F";
         
-        console.log(`🏷️ Generated stair ID: stair_${floorCode}_${stairCount}`);
+
         
         const newStairPolygon: StairPolygon = {
           id: `stair_${floorCode}_${stairCount}`,
@@ -1828,8 +1813,8 @@ export default function Canvas2D({
           temperature: defaultStairTemperature,
         };
 
-        console.log("🆕 NEW STAIR POLYGON CREATED:", newStairPolygon);
-        console.log(`🌡️ Default stair temperature: ${defaultStairTemperature}`);
+
+
 
         // Add the new stair polygon
         if (onStairPolygonsUpdate) {
