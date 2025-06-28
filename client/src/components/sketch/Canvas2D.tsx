@@ -3377,15 +3377,18 @@ export default function Canvas2D({
 
   // Phase 2: Dialog Management Functions
   const openAirEntryDialog = (airEntry: { index: number; entry: AirEntry }) => {
+    console.log('🔍 [WIDTH DEBUG] Canvas2D openAirEntryDialog called with:', airEntry);
+    console.log('🔍 [WIDTH DEBUG] Canvas2D airEntry.entry data:', airEntry.entry);
+    console.log('🔍 [WIDTH DEBUG] Canvas2D airEntry.entry.dimensions:', airEntry.entry.dimensions);
+    console.log('🔍 [WIDTH DEBUG] Canvas2D airEntry.entry.dimensions.width:', airEntry.entry.dimensions?.width);
 
-    
     const isAlreadyOpen = editingAirEntries.some(entry => entry.index === airEntry.index);
 
-    
     if (!isAlreadyOpen) {
       // Phase 3: Calculate position for new dialog
       const dialogPosition = calculateDialogPosition(editingAirEntries.length);
 
+      console.log('🔍 [WIDTH DEBUG] Canvas2D setting editingAirEntries with data:', { ...airEntry, position: dialogPosition });
       setEditingAirEntries(prev => [...prev, { ...airEntry, position: dialogPosition }]);
     }
   };
@@ -3576,13 +3579,25 @@ export default function Canvas2D({
             // Save Changes: Update element properties and close dialog
             handleAirEntryEdit(editingAirEntry.index, data as any);
           }}
-          initialValues={{
-            ...editingAirEntry.entry.dimensions,
-            shape: (editingAirEntry.entry.dimensions as any).shape,
-            properties: (editingAirEntry.entry as any).properties,
-            position: editingAirEntry.entry.position,
-            wallPosition: (editingAirEntry.entry.dimensions as any).wallPosition || (editingAirEntry.entry as any).properties?.wallPosition
-          } as any}
+          initialValues={(() => {
+            const initialVals = {
+              ...editingAirEntry.entry.dimensions,
+              shape: (editingAirEntry.entry.dimensions as any).shape,
+              properties: (editingAirEntry.entry as any).properties,
+              position: editingAirEntry.entry.position,
+              wallPosition: (editingAirEntry.entry.dimensions as any).wallPosition || (editingAirEntry.entry as any).properties?.wallPosition
+            };
+            
+            console.log('🔍 [WIDTH DEBUG] Canvas2D constructing initialValues for dialog:');
+            console.log('🔍 [WIDTH DEBUG] editingAirEntry.entry:', editingAirEntry.entry);
+            console.log('🔍 [WIDTH DEBUG] editingAirEntry.entry.dimensions:', editingAirEntry.entry.dimensions);
+            console.log('🔍 [WIDTH DEBUG] dimensions.width:', editingAirEntry.entry.dimensions?.width);
+            console.log('🔍 [WIDTH DEBUG] dimensions.height:', editingAirEntry.entry.dimensions?.height);
+            console.log('🔍 [WIDTH DEBUG] Final initialValues object:', initialVals);
+            console.log('🔍 [WIDTH DEBUG] Final initialValues.width:', initialVals.width);
+            
+            return initialVals;
+          })()}
           airEntryIndex={editingAirEntry.index}
           currentFloor={currentFloor}
           isEditing={true}
