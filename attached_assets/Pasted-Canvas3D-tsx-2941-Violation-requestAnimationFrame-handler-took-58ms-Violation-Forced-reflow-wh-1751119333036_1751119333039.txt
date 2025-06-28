@@ -1,0 +1,52 @@
+Canvas3D.tsx:2941 [Violation] 'requestAnimationFrame' handler took 58ms
+[Violation] Forced reflow while executing JavaScript took 34ms
+custom-furniture-store.ts:274 Custom Furniture Store: Clearing all definitions (Erase Design)
+analytics.ts:62 📊 Analytics Event: {category: 'simulation', action: 'save_simulation', label: 'design_erased', value: 1, status: 'sent'}
+Canvas3D.tsx:4780 🚨 [SCENE REBUILD TRIGGER] useEffect triggered - dependencies changed
+Canvas3D.tsx:4781 🚨 [SCENE REBUILD TRIGGER] floors reference: {ground: {…}}
+Canvas3D.tsx:4782 🚨 [SCENE REBUILD TRIGGER] floors identity hash: {"ground":{"lines":[],"airEntries":[],"walls":[],"...
+Canvas3D.tsx:4783 🚨 [SCENE REBUILD TRIGGER] currentFloor: ground
+Canvas3D.tsx:4784 🚨 [SCENE REBUILD TRIGGER] ceilingHeight: 220
+Canvas3D.tsx:4785 🚨 [SCENE REBUILD TRIGGER] floorDeckThickness: 35
+wizard-design:1 [.WebGL-0x2c6404fae900] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x2c6404fae900] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x2c6404fae900] GL_INVALID_OPERATION: Texture is immutable.
+Canvas3D.tsx:4780 🚨 [SCENE REBUILD TRIGGER] useEffect triggered - dependencies changed
+Canvas3D.tsx:4781 🚨 [SCENE REBUILD TRIGGER] floors reference: {ground: {…}}
+Canvas3D.tsx:4782 🚨 [SCENE REBUILD TRIGGER] floors identity hash: {"ground":{"lines":[{"id":"1751119302172_93ain815z...
+Canvas3D.tsx:4783 🚨 [SCENE REBUILD TRIGGER] currentFloor: ground
+Canvas3D.tsx:4784 🚨 [SCENE REBUILD TRIGGER] ceilingHeight: 220
+Canvas3D.tsx:4785 🚨 [SCENE REBUILD TRIGGER] floorDeckThickness: 35
+Canvas3D.tsx:5318 🔧 [WALL TRANSPARENCY] Updating wall transparency, preserving AirEntry textures
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 251ms
+wizard-design.tsx:1676 Dragging furniture: {id: 'vent', name: 'Vent', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…ke="#22c55e" stroke-width="2"/>\n      </svg>\n    ', defaultDimensions: {…}}
+AirEntryDialog.tsx:184 AirEntryDialog: Real-time callbacks connected for furnVent mode {hasOnPositionUpdate: true, hasOnRotationUpdate: true, hasOnScaleUpdate: false}
+AirEntryDialog.tsx:505 📝 FORM SUBMIT - Current form values: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:506 📝 FORM SUBMIT - Current wallPosition state: 100
+AirEntryDialog.tsx:507 📝 FORM SUBMIT - Current distanceToFloor state: 120
+Canvas3D.tsx:5944 VENT COORDINATE CONVERSION:
+Canvas3D.tsx:5945 - Dialog values (world): {position: {…}, rotation: {…}}
+Canvas3D.tsx:5946 - Parent transform: {position: _Vector3, rotation: _Euler}
+Canvas3D.tsx:5947 - Applied values (local): {position: {…}, rotation: {…}}
+wizard-design.tsx:1895 Found 0 furniture objects for export: []
+simulationDataConverter.ts:525 EXPORT DEBUG [ground]: Found 0 total furniture objects
+simulationDataConverter.ts:531 EXPORT DEBUG [ground]: ANÁLISIS DE FILTROS DE VENTS:
+simulationDataConverter.ts:535 EXPORT DEBUG [ground]: ❌ FILTRO INCORRECTO encontró 0 objetos con 'vent_furniture' en ID
+simulationDataConverter.ts:539 EXPORT DEBUG [ground]: ✅ FILTRO CORRECTO encuentra 0 objetos con furnitureType === 'vent'
+simulationDataConverter.ts:542 EXPORT DEBUG [ground]: TODOS LOS OBJETOS EN PISO: []
+simulationDataConverter.ts:556 EXPORT DEBUG [ground]: ⚠️ USANDO FILTRO INCORRECTO - esto causa que NO se procesen los vents como airEntries
+simulationDataConverter.ts:635 EXPORT DEBUG [ground]: ⚠️ CAUSA DEL PROBLEMA: Processing 0 vent furniture objects for airEntries conversion
+simulationDataConverter.ts:636 EXPORT DEBUG [ground]: ⚠️ DEBERÍA PROCESAR: 0 objetos, pero solo procesa 0 por el filtro incorrecto
+simulationDataConverter.ts:698 EXPORT DEBUG [ground]: 📊 RESULTADO FINAL DEL FILTRO:
+simulationDataConverter.ts:699 EXPORT DEBUG [ground]: - ceiling.airEntries: 0 (deberían ser los vents de ceiling)
+simulationDataConverter.ts:700 EXPORT DEBUG [ground]: - floor_surf.airEntries: 0 (deberían ser los vents de floor)
+simulationDataConverter.ts:701 EXPORT DEBUG [ground]: - Total airEntries generados: 0
+simulationDataConverter.ts:702 EXPORT DEBUG [ground]: - Total vents disponibles: 0
+simulationDataConverter.ts:713 EXPORT DEBUG [ground]: 🌡️ Temperaturas aplicadas - ceiling: 20°C, floor: 20°C
+analytics.ts:62 📊 Analytics Event: {category: 'simulation', action: 'save_simulation', label: 'file_download', value: 2, status: 'sent'}
