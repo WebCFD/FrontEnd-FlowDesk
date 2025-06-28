@@ -1446,8 +1446,8 @@ export default function Canvas3D({
             const baseHeight = getFloorBaseHeight(currentFloor);
             const newDistanceToFloor = newDimensions.distanceToFloor;
             const height = newDimensions.height || updatedEntry.dimensions.height;
-            // CRITICAL FIX: Apply PIXELS_TO_CM conversion to distanceToFloor for consistent coordinate system
-            const newZPosition = baseHeight + (newDistanceToFloor * PIXELS_TO_CM) + (height * PIXELS_TO_CM) / 2;
+            // CRITICAL FIX: Only convert distanceToFloor, height is already in Three.js coordinates
+            const newZPosition = baseHeight + (newDistanceToFloor * PIXELS_TO_CM) + height / 2;
             
             object.position.setZ(newZPosition);
           }
