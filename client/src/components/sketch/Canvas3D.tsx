@@ -117,7 +117,7 @@ interface Canvas3DProps {
   onSceneReady?: (scene: THREE.Scene, renderer: THREE.WebGLRenderer, camera: THREE.Camera) => void; // For RSP texture access
   onFurnitureAdded?: () => void; // Callback to notify when new furniture is added to scene
   onFurnitureDeleted?: () => void; // Callback to notify when furniture is deleted from scene
-  onAirEntryUpdated?: () => void; // Callback to notify when air entry is updated (for RSP texture re-application)
+  // REMOVED: onAirEntryUpdated - no longer needed, textures preserved automatically during direct modification
   // Furniture callbacks - Phase 2: Props pattern
   onFurnitureAdd?: (floorName: string, item: FurnitureItem) => void;
   onUpdateFurniture?: (floorName: string, itemId: string, item: FurnitureItem) => void;
@@ -1046,7 +1046,7 @@ export default function Canvas3D({
   onFurnitureAdd,
   onUpdateFurniture,
   onDeleteFurniture,
-  onAirEntryUpdated,
+  // REMOVED: onAirEntryUpdated - no longer needed for texture preservation
 }: Canvas3DProps) {
   // Access the SceneContext to share data with RoomSketchPro
   const { updateGeometryData, updateSceneData, updateFloorData, setCurrentFloor: setContextCurrentFloor } = useSceneContext();
@@ -1480,15 +1480,11 @@ export default function Canvas3D({
         onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
       }
       
-      // Notify RSP to re-apply textures after real-time dimension update
-      console.log(`🔄 [CALLBACK ANALYSIS] About to call onAirEntryUpdated callback - Is this necessary?`);
-      
-      if (onAirEntryUpdated) {
-        console.log(`📞 [CALLBACK ANALYSIS] Calling onAirEntryUpdated callback now...`);
-        onAirEntryUpdated();
-      }
+      // OPTIMIZATION: No callback needed - textures preserved automatically during direct modification
+      console.log(`🚀 [OPTIMIZATION] No callback needed - AirEntry works like furniture with direct modification`);
+      console.log(`✅ [OPTIMIZATION] Textures preserved automatically during real-time updates`);
     }, 150);
-  }, [editingAirEntry, onUpdateAirEntry, onAirEntryUpdated, currentFloor, migratedFloors]);
+  }, [editingAirEntry, onUpdateAirEntry, currentFloor, migratedFloors]);
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -1874,12 +1870,9 @@ export default function Canvas3D({
     onUpdateAirEntry(currentFloor, index, updatedEntry);
     setEditingAirEntry(null);
     
-    // Notify RSP to re-apply textures after AirEntry update
-    console.log(`🔄 [CALLBACK ANALYSIS FINAL] About to call onAirEntryUpdated callback after handleAirEntryEdit`);
-    if (onAirEntryUpdated) {
-      console.log(`📞 [CALLBACK ANALYSIS FINAL] Calling onAirEntryUpdated callback after dialog confirm...`);
-      onAirEntryUpdated();
-    }
+    // OPTIMIZATION: No callback needed after dialog confirm - textures already preserved
+    console.log(`🚀 [OPTIMIZATION] Dialog confirm complete - textures preserved automatically like furniture`);
+    console.log(`✅ [OPTIMIZATION] No texture reapplication needed after AirEntry edit`);
   };
 
   // New function to create stair mesh
