@@ -4840,32 +4840,22 @@ export default function Canvas3D({
   }, []);
 
   useEffect(() => {
-    // HYPOTHESIS TEST: Canvas3D data source comparison during scene rebuild
+    // SOLUTION: Use store data for scene rebuild, like Canvas2D
     const storeFloors = useRoomStore.getState().floors;
-    const propsAirEntries = floors[currentFloor]?.airEntries || [];
-    const storeAirEntries = storeFloors[currentFloor]?.airEntries || [];
+    const finalFloors = Object.keys(storeFloors).length > 0 ? storeFloors : floors;
     
-    if (propsAirEntries.length > 0 && storeAirEntries.length > 0) {
-      const propsPos = propsAirEntries[0].position;
-      const storePos = storeAirEntries[0].position;
-      const positionsMatch = Math.abs(propsPos.x - storePos.x) < 0.01 && Math.abs(propsPos.y - storePos.y) < 0.01;
-      
-      console.log(`🧪 [CANVAS3D REBUILD] DATA SOURCE COMPARISON:`);
-      console.log(`🧪 Props airEntry position: (${propsPos.x.toFixed(1)}, ${propsPos.y.toFixed(1)})`);
-      console.log(`🧪 Store airEntry position: (${storePos.x.toFixed(1)}, ${storePos.y.toFixed(1)})`);
-      console.log(`🧪 Canvas3D using: ${positionsMatch ? 'CURRENT DATA' : 'STALE PROPS DATA'}`);
-      
-      if (!positionsMatch) {
-        console.log(`🚨 PERSISTENCE ISSUE: Canvas3D rebuilding from stale props, not store!`);
-      }
+    console.log(`🔧 [CANVAS3D REBUILD] Using ${Object.keys(storeFloors).length > 0 ? 'STORE DATA' : 'PROPS FALLBACK'} for scene rebuild`);
+    
+    if (finalFloors[currentFloor]?.airEntries?.length > 0) {
+      const airEntry = finalFloors[currentFloor].airEntries[0];
+      console.log(`🔧 [CANVAS3D REBUILD] AirEntry position: (${airEntry.position.x.toFixed(1)}, ${airEntry.position.y.toFixed(1)})`);
     }
-
 
     // Don't reset selection state here - we'll handle it after rebuilding the scene
     // This prevents losing the selection when the scene is updated
 
-    // Check specifically for stair polygons
-    Object.entries(floors).forEach(([floorName, floorData]) => {
+    // Check specifically for stair polygons  
+    Object.entries(finalFloors).forEach(([floorName, floorData]) => {
       if (floorData.stairPolygons?.length) {
         console.log(
           `Floor ${floorName} has ${floorData.stairPolygons.length} stair polygons:`,
@@ -4905,7 +4895,7 @@ export default function Canvas3D({
     toRemove.forEach((object) => sceneRef.current?.remove(object));
 
     // Create and add objects for each floor
-    Object.entries(floors).forEach(([floorName, floorData]) => {
+    Object.entries(finalFloors).forEach(([floorName, floorData]) => {
       if (floorData.hasClosedContour || floorName === currentFloor) {
         const baseHeight = getFloorBaseHeight(floorName);
         
@@ -4936,7 +4926,7 @@ export default function Canvas3D({
     // After rebuilding the scene, we need to restore or reset selection state
     if (selectedAirEntry) {
       // Try to find the new mesh object for our selected air entry
-      const currentFloorData = floors[currentFloor];
+      const currentFloorData = finalFloors[currentFloor];
       if (currentFloorData && currentFloorData.airEntries) {
         const entryIndex = selectedAirEntry.index;
 
@@ -5072,7 +5062,7 @@ export default function Canvas3D({
         }
       };
     }
-  }, [floors, currentFloor, ceilingHeight, floorDeckThickness]);
+  }, [finalFloors, currentFloor, ceilingHeight, floorDeckThickness]);
 
   // Separate useEffect for context updates to avoid hidden dependencies in scene rebuild
   useEffect(() => {
