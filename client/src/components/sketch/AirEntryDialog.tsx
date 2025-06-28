@@ -238,10 +238,12 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
   // Función para manejar el cambio de posición a lo largo del wall
   const handleWallPositionChange = (newPercentage: number) => {
+    console.log("🔍 [POSITION CHANGE] handleWallPositionChange called with:", newPercentage);
     setWallPosition(newPercentage);
     
     // Calcular la nueva posición y actualizar en tiempo real
     const newPosition = calculatePositionFromPercentage(newPercentage);
+    console.log("🔍 [POSITION CHANGE] Calculated new position:", newPosition);
     
     if (newPosition) {
       // Update form values for persistence
@@ -251,11 +253,13 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           position: newPosition,
           wallPosition: newPercentage 
         };
+        console.log("🔍 [POSITION CHANGE] Updated values:", newValues);
         return newValues;
       });
       
       // Trigger real-time position updates
       if (props.type !== 'wall' && 'onPositionUpdate' in props && props.onPositionUpdate) {
+        console.log("🔍 [POSITION CHANGE] Calling onPositionUpdate with:", newPosition);
         props.onPositionUpdate(newPosition);
       }
     }
@@ -563,6 +567,12 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
       }
       
       // Transform data to match Canvas2D expectations
+      console.log("🔍 [SAVE CHANGES] About to create canvasData");
+      console.log("🔍 [SAVE CHANGES] Current values state:", values);
+      console.log("🔍 [SAVE CHANGES] Current wallPosition state:", wallPosition);
+      console.log("🔍 [SAVE CHANGES] values.wallPosition:", (values as any).wallPosition);
+      console.log("🔍 [SAVE CHANGES] values.position:", (values as any).position);
+      
       const canvasData = {
         width: shapeType === 'rectangular' ? (values as any).width : (values as any).width, // For circular, width = diameter
         height: shapeType === 'rectangular' ? (values as any).height : (values as any).width, // For circular, height = diameter
@@ -590,6 +600,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           })
         }
       };
+      
+      console.log("🔍 [SAVE CHANGES] Final canvasData being sent to onConfirm:", canvasData);
+      console.log("🔍 [SAVE CHANGES] canvasData.wallPosition:", canvasData.wallPosition);
+      console.log("🔍 [SAVE CHANGES] canvasData.position:", canvasData.position);
       
       props.onConfirm(canvasData);
     }
