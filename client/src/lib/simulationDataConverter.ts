@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import type { StairPolygon } from '@/types';
 
 // Definición de los tipos internos que necesitamos
 interface Point2D {
@@ -53,14 +54,7 @@ interface Wall {
   };
 }
 
-interface StairPolygon {
-  id: string;
-  points: Point2D[];
-  floor: string;
-  direction?: "up" | "down";
-  connectsTo?: string;
-  isImported?: boolean;
-}
+
 
 // Definición del tipo para los datos de planta
 interface FloorData {
@@ -163,6 +157,7 @@ interface StairExportNew {
   id: string;
   lines: StairLineExport[];
   connectsTo?: string;
+  temperature?: number;
 }
 
 interface WallExport {
