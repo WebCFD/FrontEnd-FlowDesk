@@ -861,7 +861,12 @@ export function RoomSketchPro({
       
       // Update floors via parent callback if available
       if (onFloorsUpdate) {
+        console.log('🚨 [RSP FLOORS UPDATE] About to call onFloorsUpdate - THIS TRIGGERS SCENE REGENERATION');
+        console.log('🚨 [RSP FLOORS UPDATE] Called from handleUpdateAirEntryFrom3D in RoomSketchPro');
+        console.log('🚨 [RSP FLOORS UPDATE] Floor:', floorName, 'Index:', index);
+        console.log('🚨 [RSP FLOORS UPDATE] Updated entry distanceToFloor:', deepClonedEntry.dimensions.distanceToFloor);
         onFloorsUpdate(updatedFloors);
+        console.log('🚨 [RSP FLOORS UPDATE] onFloorsUpdate called - wizard-design will now regenerate scene');
       }
     }
   }, [floors, onFloorsUpdate]);
