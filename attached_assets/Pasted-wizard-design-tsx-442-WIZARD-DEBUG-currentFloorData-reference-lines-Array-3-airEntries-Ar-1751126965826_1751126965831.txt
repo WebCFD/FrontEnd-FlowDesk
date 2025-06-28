@@ -1,0 +1,89 @@
+wizard-design.tsx:442 🔍 WIZARD DEBUG - currentFloorData reference: {lines: Array(3), airEntries: Array(0), walls: Array(3), measurements: Array(0), hasClosedContour: true, …}
+wizard-design.tsx:443 🔍 WIZARD DEBUG - currentFloorData.stairPolygons: [{…}]
+wizard-design.tsx:444 🔍 WIZARD DEBUG - floors[currentFloor].stairPolygons: [{…}]
+wizard-design.tsx:445 🔍 WIZARD DEBUG - Are they the same reference? true
+wizard-design.tsx:447 🔍 WIZARD DEBUG - First stair from currentFloorData: {id: 'stair_0F_1', points: Array(4), floor: 'Ground Floor', temperature: 30.6}
+wizard-design.tsx:448 🔍 WIZARD DEBUG - First stair from direct floors access: {id: 'stair_0F_1', points: Array(4), floor: 'Ground Floor', temperature: 30.6}
+wizard-design.tsx:449 🔍 WIZARD DEBUG - Temperature from currentFloorData: 30.6
+wizard-design.tsx:450 🔍 WIZARD DEBUG - Temperature from direct access: 30.6
+Canvas2D.tsx:3346 Context menu prevented
+Canvas2D.tsx:1775 🖱️ RIGHT-CLICK DETECTED while drawing stairs
+Canvas2D.tsx:1776 📊 Current stair points count: 5
+Canvas2D.tsx:1777 📍 Current stair points: (5) [{…}, {…}, {…}, {…}, {…}]
+Canvas2D.tsx:1778 🏢 Current floor: ground (Ground Floor)
+Canvas2D.tsx:1779 📦 Existing stair polygons count: 1
+Canvas2D.tsx:1783 ✅ SUFFICIENT POINTS - Creating new stair polygon
+Canvas2D.tsx:1794 🏷️ Generated stair ID: stair_0F_2
+Canvas2D.tsx:1803 🆕 NEW STAIR POLYGON CREATED: {id: 'stair_0F_2', points: Array(5), floor: 'Ground Floor', temperature: 29}
+Canvas2D.tsx:1804 🌡️ Default stair temperature: 29
+Canvas2D.tsx:1809 📤 CALLING onStairPolygonsUpdate with: (2) [{…}, {…}]
+wizard-design.tsx:2549 🏠 Wizard RECEIVE - New polygons from Canvas2D: (2) [{…}, {…}]
+wizard-design.tsx:2550 🏠 Wizard RECEIVE - About to call setStairPolygons
+room-store.ts:322 ZUSTAND STORE - setStairPolygons called
+room-store.ts:323 ZUSTAND STORE - Current floor: ground
+room-store.ts:324 ZUSTAND STORE - Previous stairs: [{…}]
+room-store.ts:325 ZUSTAND STORE - New stairs: (2) [{…}, {…}]
+room-store.ts:337 ZUSTAND STORE - Updated floor data: {lines: Array(3), airEntries: Array(0), walls: Array(3), measurements: Array(0), stairPolygons: Array(2), …}
+wizard-design.tsx:2552 🏠 Wizard RECEIVE - setStairPolygons completed
+Canvas2D.tsx:1811 ✅ onStairPolygonsUpdate called successfully
+Canvas2D.tsx:1820 🧹 RESETTING stair drawing state
+Canvas2D.tsx:1824 🔄 Stair drawing state reset complete
+wizard-design.tsx:442 🔍 WIZARD DEBUG - currentFloorData reference: {lines: Array(3), airEntries: Array(0), walls: Array(3), measurements: Array(0), hasClosedContour: true, …}
+wizard-design.tsx:443 🔍 WIZARD DEBUG - currentFloorData.stairPolygons: (2) [{…}, {…}]
+wizard-design.tsx:444 🔍 WIZARD DEBUG - floors[currentFloor].stairPolygons: (2) [{…}, {…}]
+wizard-design.tsx:445 🔍 WIZARD DEBUG - Are they the same reference? true
+wizard-design.tsx:447 🔍 WIZARD DEBUG - First stair from currentFloorData: {id: 'stair_0F_1', points: Array(4), floor: 'Ground Floor', temperature: 30.6}
+wizard-design.tsx:448 🔍 WIZARD DEBUG - First stair from direct floors access: {id: 'stair_0F_1', points: Array(4), floor: 'Ground Floor', temperature: 30.6}
+wizard-design.tsx:449 🔍 WIZARD DEBUG - Temperature from currentFloorData: 30.6
+wizard-design.tsx:450 🔍 WIZARD DEBUG - Temperature from direct access: 30.6
+wizard-design.tsx:442 🔍 WIZARD DEBUG - currentFloorData reference: {lines: Array(3), airEntries: Array(0), walls: Array(3), measurements: Array(0), hasClosedContour: true, …}
+wizard-design.tsx:443 🔍 WIZARD DEBUG - currentFloorData.stairPolygons: (2) [{…}, {…}]
+wizard-design.tsx:444 🔍 WIZARD DEBUG - floors[currentFloor].stairPolygons: (2) [{…}, {…}]
+wizard-design.tsx:445 🔍 WIZARD DEBUG - Are they the same reference? true
+wizard-design.tsx:447 🔍 WIZARD DEBUG - First stair from currentFloorData: {id: 'stair_0F_1', points: Array(4), floor: 'Ground Floor', temperature: 30.6}
+wizard-design.tsx:448 🔍 WIZARD DEBUG - First stair from direct floors access: {id: 'stair_0F_1', points: Array(4), floor: 'Ground Floor', temperature: 30.6}
+wizard-design.tsx:449 🔍 WIZARD DEBUG - Temperature from currentFloorData: 30.6
+wizard-design.tsx:450 🔍 WIZARD DEBUG - Temperature from direct access: 30.6
+analytics.ts:62 📊 Analytics Event: {category: 'design_tool', action: 'add_wall', label: 'select_wall_tool', value: undefined, status: 'sent'}
+wizard-design.tsx:442 🔍 WIZARD DEBUG - currentFloorData reference: {lines: Array(3), airEntries: Array(0), walls: Array(3), measurements: Array(0), hasClosedContour: true, …}
+wizard-design.tsx:443 🔍 WIZARD DEBUG - currentFloorData.stairPolygons: (2) [{…}, {…}]
+wizard-design.tsx:444 🔍 WIZARD DEBUG - floors[currentFloor].stairPolygons: (2) [{…}, {…}]
+wizard-design.tsx:445 🔍 WIZARD DEBUG - Are they the same reference? true
+wizard-design.tsx:447 🔍 WIZARD DEBUG - First stair from currentFloorData: {id: 'stair_0F_1', points: Array(4), floor: 'Ground Floor', temperature: 30.6}
+wizard-design.tsx:448 🔍 WIZARD DEBUG - First stair from direct floors access: {id: 'stair_0F_1', points: Array(4), floor: 'Ground Floor', temperature: 30.6}
+wizard-design.tsx:449 🔍 WIZARD DEBUG - Temperature from currentFloorData: 30.6
+wizard-design.tsx:450 🔍 WIZARD DEBUG - Temperature from direct access: 30.6
+Canvas2D.tsx:1245 🎯 Canvas2D DOUBLECLICK - Found stair: {id: 'stair_0F_2', points: Array(5), floor: 'Ground Floor', temperature: 29}
+Canvas2D.tsx:1246 🎯 Canvas2D DOUBLECLICK - Stair ID: stair_0F_2
+Canvas2D.tsx:1247 🎯 Canvas2D DOUBLECLICK - Current temperature: 29
+StairPropertiesDialog.tsx:26 📋 Dialog INIT - Received stair prop: {id: 'stair_0F_2', points: Array(5), floor: 'Ground Floor', temperature: 29}
+StairPropertiesDialog.tsx:27 📋 Dialog INIT - Stair ID: stair_0F_2
+StairPropertiesDialog.tsx:28 📋 Dialog INIT - Stair temperature: 29
+StairPropertiesDialog.tsx:29 📋 Dialog INIT - Setting temperature field to: 29
+Canvas2D.tsx:1308 🔧 Canvas2D SAVE - Received stairId: stair_0F_2 temperature: 30.9
+Canvas2D.tsx:1309 🔧 Canvas2D SAVE - Current stairPolygons: (2) [{…}, {…}]
+Canvas2D.tsx:1316 🔧 Canvas2D SAVE - Updated stairs array: (2) [{…}, {…}]
+wizard-design.tsx:2549 🏠 Wizard RECEIVE - New polygons from Canvas2D: (2) [{…}, {…}]
+wizard-design.tsx:2550 🏠 Wizard RECEIVE - About to call setStairPolygons
+room-store.ts:322 ZUSTAND STORE - setStairPolygons called
+room-store.ts:323 ZUSTAND STORE - Current floor: ground
+room-store.ts:324 ZUSTAND STORE - Previous stairs: (2) [{…}, {…}]
+room-store.ts:325 ZUSTAND STORE - New stairs: (2) [{…}, {…}]
+room-store.ts:337 ZUSTAND STORE - Updated floor data: {lines: Array(3), airEntries: Array(0), walls: Array(3), measurements: Array(0), stairPolygons: Array(2), …}
+wizard-design.tsx:2552 🏠 Wizard RECEIVE - setStairPolygons completed
+Canvas2D.tsx:1318 🔧 Canvas2D SAVE - onStairPolygonsUpdate called
+wizard-design.tsx:442 🔍 WIZARD DEBUG - currentFloorData reference: {lines: Array(3), airEntries: Array(0), walls: Array(3), measurements: Array(0), hasClosedContour: true, …}
+wizard-design.tsx:443 🔍 WIZARD DEBUG - currentFloorData.stairPolygons: (2) [{…}, {…}]
+wizard-design.tsx:444 🔍 WIZARD DEBUG - floors[currentFloor].stairPolygons: (2) [{…}, {…}]
+wizard-design.tsx:445 🔍 WIZARD DEBUG - Are they the same reference? true
+wizard-design.tsx:447 🔍 WIZARD DEBUG - First stair from currentFloorData: {id: 'stair_0F_1', points: Array(4), floor: 'Ground Floor', temperature: 30.6}
+wizard-design.tsx:448 🔍 WIZARD DEBUG - First stair from direct floors access: {id: 'stair_0F_1', points: Array(4), floor: 'Ground Floor', temperature: 30.6}
+wizard-design.tsx:449 🔍 WIZARD DEBUG - Temperature from currentFloorData: 30.6
+wizard-design.tsx:450 🔍 WIZARD DEBUG - Temperature from direct access: 30.6
+Canvas2D.tsx:1245 🎯 Canvas2D DOUBLECLICK - Found stair: {id: 'stair_0F_2', points: Array(5), floor: 'Ground Floor', temperature: 29}
+Canvas2D.tsx:1246 🎯 Canvas2D DOUBLECLICK - Stair ID: stair_0F_2
+Canvas2D.tsx:1247 🎯 Canvas2D DOUBLECLICK - Current temperature: 29
+StairPropertiesDialog.tsx:26 📋 Dialog INIT - Received stair prop: {id: 'stair_0F_2', points: Array(5), floor: 'Ground Floor', temperature: 29}
+StairPropertiesDialog.tsx:27 📋 Dialog INIT - Stair ID: stair_0F_2
+StairPropertiesDialog.tsx:28 📋 Dialog INIT - Stair temperature: 29
+StairPropertiesDialog.tsx:29 📋 Dialog INIT - Setting temperature field to: 29

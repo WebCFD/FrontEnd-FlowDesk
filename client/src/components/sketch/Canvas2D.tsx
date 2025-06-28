@@ -1308,12 +1308,20 @@ export default function Canvas2D({
     console.log("🔧 Canvas2D SAVE - Received stairId:", stairId, "temperature:", temperature);
     console.log("🔧 Canvas2D SAVE - Current stairPolygons:", stairPolygons);
     if (onStairPolygonsUpdate) {
-      const updatedStairs = stairPolygons.map(stair => 
-        stair.id === stairId 
-          ? { ...stair, temperature }
-          : stair
-      );
-      console.log("🔧 Canvas2D SAVE - Updated stairs array:", updatedStairs);
+      console.log("🔧 Canvas2D SAVE - Starting map operation...");
+      const updatedStairs = stairPolygons.map((stair, index) => {
+        console.log(`🔧 Canvas2D SAVE - Processing stair ${index}: ID=${stair.id}, temp=${stair.temperature}`);
+        console.log(`🔧 Canvas2D SAVE - Comparing "${stair.id}" === "${stairId}": ${stair.id === stairId}`);
+        if (stair.id === stairId) {
+          const updatedStair = { ...stair, temperature };
+          console.log("🔧 Canvas2D SAVE - MATCH FOUND! Updated stair:", updatedStair);
+          return updatedStair;
+        } else {
+          console.log("🔧 Canvas2D SAVE - No match, keeping original stair");
+          return stair;
+        }
+      });
+      console.log("🔧 Canvas2D SAVE - Final updated stairs array:", updatedStairs);
       onStairPolygonsUpdate(updatedStairs);
       console.log("🔧 Canvas2D SAVE - onStairPolygonsUpdate called");
     }
