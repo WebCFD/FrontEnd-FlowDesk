@@ -1892,7 +1892,21 @@ export default function Canvas3D({
       });
     }
     
+    console.log('🔬 [DEPENDENCY TRACKING] BEFORE setEditingAirEntry(null):');
+    console.log('🔬 [DEPENDENCY TRACKING] floors keys:', Object.keys(floors));
+    console.log('🔬 [DEPENDENCY TRACKING] currentFloor:', currentFloor);
+    console.log('🔬 [DEPENDENCY TRACKING] ceilingHeight:', ceilingHeight);
+    console.log('🔬 [DEPENDENCY TRACKING] floorDeckThickness:', floorDeckThickness);
+    console.log('🔬 [DEPENDENCY TRACKING] floors[currentFloor] airEntries length:', floors[currentFloor]?.airEntries?.length);
+    
     setEditingAirEntry(null);
+    
+    console.log('🔬 [DEPENDENCY TRACKING] AFTER setEditingAirEntry(null):');
+    console.log('🔬 [DEPENDENCY TRACKING] floors keys:', Object.keys(floors));
+    console.log('🔬 [DEPENDENCY TRACKING] currentFloor:', currentFloor);
+    console.log('🔬 [DEPENDENCY TRACKING] ceilingHeight:', ceilingHeight);
+    console.log('🔬 [DEPENDENCY TRACKING] floorDeckThickness:', floorDeckThickness);
+    console.log('🔬 [DEPENDENCY TRACKING] floors[currentFloor] airEntries length:', floors[currentFloor]?.airEntries?.length);
     
     // Check texture state IMMEDIATELY AFTER setEditingAirEntry(null)
     setTimeout(() => {

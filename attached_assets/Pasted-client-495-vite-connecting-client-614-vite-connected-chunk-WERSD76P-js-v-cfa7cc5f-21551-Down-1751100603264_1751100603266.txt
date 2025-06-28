@@ -1,0 +1,144 @@
+client:495 [vite] connecting...
+client:614 [vite] connected.
+chunk-WERSD76P.js?v=cfa7cc5f:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+AnalyticsProvider.tsx:21 Analytics initialized: false
+chunk-WERSD76P.js?v=cfa7cc5f:377 [Violation] 'message' handler took 256ms
+dashboard-sidebar.tsx:65 
+            
+            
+           GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+fetchUserData @ dashboard-sidebar.tsx:65
+(anonymous) @ dashboard-sidebar.tsx:80
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18868
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19432
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+finishConcurrentRender @ chunk-WERSD76P.js?v=cfa7cc5f:18805
+performConcurrentWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18718
+workLoop @ chunk-WERSD76P.js?v=cfa7cc5f:197
+flushWork @ chunk-WERSD76P.js?v=cfa7cc5f:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=cfa7cc5f:384
+analytics.ts:26 Google Analytics initialized with ID: G-XZYY9DVVHW
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+AnalyticsProvider.tsx:21 Analytics initialized: true
+js?id=G-XZYY9DVVHW:663 [Violation] 'setTimeout' handler took 79ms
+Canvas3D.tsx:4767 🚨 [SCENE REBUILD TRIGGER] useEffect triggered - dependencies changed
+Canvas3D.tsx:4768 🚨 [SCENE REBUILD TRIGGER] floors reference: object 1
+Canvas3D.tsx:4769 🚨 [SCENE REBUILD TRIGGER] currentFloor: ground
+Canvas3D.tsx:4770 🚨 [SCENE REBUILD TRIGGER] ceilingHeight: 220
+Canvas3D.tsx:4771 🚨 [SCENE REBUILD TRIGGER] floorDeckThickness: 35
+Canvas3D.tsx:4772 🚨 [SCENE REBUILD TRIGGER] editingAirEntry state: CLOSED
+Canvas3D.tsx:2338 🔧 [SCENE REBUILD] Creating new material for vent at index 0
+Canvas3D.tsx:2338 🔧 [SCENE REBUILD] Creating new material for window at index 1
+Canvas3D.tsx:5306 🔧 [WALL TRANSPARENCY] Updating wall transparency, preserving AirEntry textures
+Canvas3D.tsx:5320 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5320 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5320 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5320 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5320 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5320 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5325 ✅ [WALL TRANSPARENCY] Preserving AirEntry material - hasTexture: false opacity: 0.7
+Canvas3D.tsx:5325 ✅ [WALL TRANSPARENCY] Preserving AirEntry material - hasTexture: false opacity: 0.7
+RoomSketchPro.tsx:792 ✅ [TRANSPARENCY UPDATE] Preserving existing material properties, only updating opacity
+RoomSketchPro.tsx:793 ✅ [TRANSPARENCY UPDATE] Material has texture: true
+RoomSketchPro.tsx:792 ✅ [TRANSPARENCY UPDATE] Preserving existing material properties, only updating opacity
+RoomSketchPro.tsx:793 ✅ [TRANSPARENCY UPDATE] Material has texture: true
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 197ms
+Canvas3D.tsx:4668 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4678 Double-click found entry using stored entryIndex: 0
+AirEntryDialog.tsx:335 🔍 LOADING EDITING VALUES - Full initialValues: {
+  "width": 124,
+  "height": 95,
+  "distanceToFloor": 154,
+  "shape": "rectangular",
+  "wallPosition": 39,
+  "properties": {
+    "flowType": "massflow",
+    "flowValue": 0.5,
+    "flowIntensity": "medium",
+    "airOrientation": "inflow",
+    "wallPosition": 39
+  },
+  "position": {
+    "x": 429.777266109303,
+    "y": 97.31040272615682
+  }
+}
+AirEntryDialog.tsx:342 ✅ WIDTH LOADING - Found saved width: 124
+AirEntryDialog.tsx:348 🔍 WALL POSITION LOADING - Checking sources:
+AirEntryDialog.tsx:349   - properties?.wallPosition: 39
+AirEntryDialog.tsx:350   - direct wallPosition: 39
+AirEntryDialog.tsx:351   - Final savedWallPosition: 39
+AirEntryDialog.tsx:362 ✅ WALL POSITION LOADING - Using saved value: 39
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
+AirEntryDialog.tsx:519 📝 FORM SUBMIT - Current form values: {width: 124, height: 95, distanceToFloor: 154, shape: 'rectangular', wallPosition: 39, …}
+AirEntryDialog.tsx:520 📝 FORM SUBMIT - Current wallPosition state: 39
+AirEntryDialog.tsx:521 📝 FORM SUBMIT - Current distanceToFloor state: 154
+AirEntryDialog.tsx:549 📦 FORM SUBMIT - Final airEntryData being sent: {
+  "width": 124,
+  "height": 95,
+  "diameter": null,
+  "distanceToFloor": 154,
+  "shape": "rectangular",
+  "isOpen": true,
+  "temperature": 20,
+  "airDirection": "inflow",
+  "flowIntensity": "medium",
+  "customIntensityValue": null,
+  "ventFlowType": "massflow",
+  "airOrientation": {
+    "verticalAngle": 0,
+    "horizontalAngle": 0
+  },
+  "wallPosition": 39,
+  "position": {
+    "x": 429.777266109303,
+    "y": 97.31040272615682
+  }
+}
+AirEntryDialog.tsx:572 💾 SIMULATION PROPERTIES SAVE - Final properties: {flowType: 'massflow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', wallPosition: 39}
+Canvas3D.tsx:6016 [CANVAS3D ONCONFIRM] Received data from dialog: {width: 124, height: 95, distanceToFloor: 154, shape: 'rectangular', wallPosition: 39, …}
+Canvas3D.tsx:6017 [CANVAS3D ONCONFIRM] wallPosition in received data: 39
+Canvas3D.tsx:6018 🔍 [SAVE CHANGES DEBUG] About to call handleAirEntryEdit
+Canvas3D.tsx:1865 [DIMENSION STORAGE] Stored dimensions for entry 0: {"position":{"x":429.777266109303,"y":97.31040272615682},"dimensions":{"width":124,"height":95,"distanceToFloor":154,"shape":"rectangular","wallPosition":39}}
+Canvas3D.tsx:1867 [WALL POSITION STORAGE] wallPosition in data: 39
+Canvas3D.tsx:1868 [WALL POSITION STORAGE] wallPosition in updatedEntry.dimensions: 39
+Canvas3D.tsx:1871 💾 [SAVE CHANGES] Pure data commit - only saving values to store
+Canvas3D.tsx:1872 💾 [SAVE CHANGES] Floor: ground Index: 0
+Canvas3D.tsx:1873 💾 [SAVE CHANGES] Stored distanceToFloor: 154
+Canvas3D.tsx:1874 💾 [SAVE CHANGES] Geometry already modified during real-time updates
+Canvas3D.tsx:1875 💾 [SAVE CHANGES] Textures already applied by RSP - no modifications needed
+Canvas3D.tsx:1887 🔍 [BEFORE CLOSE] Mesh 0 material: {hasMap: true, opacity: 1, type: 'vent'}
+Canvas3D.tsx:1887 🔍 [BEFORE CLOSE] Mesh 1 material: {hasMap: true, opacity: 1, type: 'window'}
+Canvas3D.tsx:1918 ✅ [SAVE CHANGES] Data commit complete - monitoring for texture loss
+Canvas3D.tsx:1919 ✅ [SAVE CHANGES] Dialog closed - checking for side effects
+Canvas3D.tsx:6027 🔍 [SAVE CHANGES DEBUG] handleAirEntryEdit completed - checking for side effects
+Canvas3D.tsx:4767 🚨 [SCENE REBUILD TRIGGER] useEffect triggered - dependencies changed
+Canvas3D.tsx:4768 🚨 [SCENE REBUILD TRIGGER] floors reference: object 1
+Canvas3D.tsx:4769 🚨 [SCENE REBUILD TRIGGER] currentFloor: ground
+Canvas3D.tsx:4770 🚨 [SCENE REBUILD TRIGGER] ceilingHeight: 220
+Canvas3D.tsx:4771 🚨 [SCENE REBUILD TRIGGER] floorDeckThickness: 35
+Canvas3D.tsx:4772 🚨 [SCENE REBUILD TRIGGER] editingAirEntry state: CLOSED
+Canvas3D.tsx:2338 🔧 [SCENE REBUILD] Creating new material for vent at index 0
+Canvas3D.tsx:2338 🔧 [SCENE REBUILD] Creating new material for window at index 1
+Canvas3D.tsx:1899 🔍 [AFTER CLOSE] Checking textures immediately after dialog close
+Canvas3D.tsx:1909 🔍 [AFTER CLOSE] Mesh 0 material: {hasMap: false, opacity: 0.7, type: 'vent'}
+Canvas3D.tsx:1909 🔍 [AFTER CLOSE] Mesh 1 material: {hasMap: false, opacity: 0.7, type: 'window'}
+Canvas3D.tsx:6031 🔍 [SAVE CHANGES DEBUG] 100ms after Save Changes - checking scene state
+Canvas3D.tsx:6039 🔍 [SAVE CHANGES DEBUG] AirEntry meshes found: 2
+Canvas3D.tsx:6042 🔍 [SAVE CHANGES DEBUG] Mesh 0 material: {hasMap: false, opacity: 0.7, type: 'vent'}
+Canvas3D.tsx:6042 🔍 [SAVE CHANGES DEBUG] Mesh 1 material: {hasMap: false, opacity: 0.7, type: 'window'}
