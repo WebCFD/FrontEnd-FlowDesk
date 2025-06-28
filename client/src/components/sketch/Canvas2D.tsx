@@ -960,14 +960,28 @@ export default function Canvas2D({
 
   // Helper function to get the most current air entry data for drawing
   const getCurrentAirEntries = (): AirEntry[] => {
+    console.log("🟢 [DRAW CYCLE] getCurrentAirEntries called");
+    console.log("🟢 [DRAW CYCLE] airEntries prop length:", airEntries.length);
+    console.log("🟢 [DRAW CYCLE] editingAirEntries length:", editingAirEntries.length);
+    
     const currentEntries = [...airEntries];
     
     // Apply any real-time updates from editingAirEntries
     editingAirEntries.forEach(editingItem => {
+      console.log("🟢 [DRAW CYCLE] Applying editing item at index:", editingItem.index);
+      console.log("🟢 [DRAW CYCLE] Editing item position:", editingItem.entry.position);
+      console.log("🟢 [DRAW CYCLE] Editing item wallPosition:", editingItem.entry.dimensions?.wallPosition);
+      
       if (editingItem.index >= 0 && editingItem.index < currentEntries.length) {
         currentEntries[editingItem.index] = editingItem.entry;
       }
     });
+    
+    console.log("🟢 [DRAW CYCLE] Final currentEntries length:", currentEntries.length);
+    if (currentEntries.length > 0) {
+      console.log("🟢 [DRAW CYCLE] First entry final position:", currentEntries[0]?.position);
+      console.log("🟢 [DRAW CYCLE] First entry final wallPosition:", currentEntries[0]?.dimensions?.wallPosition);
+    }
     
     return currentEntries;
   };
@@ -3335,10 +3349,18 @@ export default function Canvas2D({
 
   // Phase 2: Dialog Management Functions
   const openAirEntryDialog = (airEntry: { index: number; entry: AirEntry }) => {
+    console.log("🟠 [DIALOG OPEN] openAirEntryDialog called");
+    console.log("🟠 [DIALOG OPEN] airEntry index:", airEntry.index);
+    console.log("🟠 [DIALOG OPEN] airEntry position:", airEntry.entry.position);
+    console.log("🟠 [DIALOG OPEN] airEntry wallPosition:", airEntry.entry.dimensions?.wallPosition);
+    
     const isAlreadyOpen = editingAirEntries.some(entry => entry.index === airEntry.index);
+    console.log("🟠 [DIALOG OPEN] isAlreadyOpen:", isAlreadyOpen);
+    
     if (!isAlreadyOpen) {
       // Phase 3: Calculate position for new dialog
       const dialogPosition = calculateDialogPosition(editingAirEntries.length);
+      console.log("🟠 [DIALOG OPEN] Adding to editingAirEntries for real-time updates");
       setEditingAirEntries(prev => [...prev, { ...airEntry, position: dialogPosition }]);
     }
   };
