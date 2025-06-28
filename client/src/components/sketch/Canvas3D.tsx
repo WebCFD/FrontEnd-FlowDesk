@@ -2405,13 +2405,6 @@ export default function Canvas3D({
 
       objects.push(mesh);
 
-      // Add yellow sphere marker
-      const markerGeometry = new THREE.SphereGeometry(5, 16, 16);
-      const markerMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-      const marker = new THREE.Mesh(markerGeometry, markerMaterial);
-      marker.position.set(position.x, position.y, zPosition);
-      objects.push(marker);
-
       // Add coordinate system axes
       const axisLength = 50; // Length of the coordinate axes
 
@@ -2554,8 +2547,15 @@ export default function Canvas3D({
         parentEntryIndex: objects.length - 1
       };
 
-      // Add coordinate system and labels - only show when not in presentation mode
+      // Add coordinate system, marker and labels - only show when not in presentation mode
       if (!presentationMode) {
+        // Add yellow sphere marker
+        const markerGeometry = new THREE.SphereGeometry(5, 16, 16);
+        const markerMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+        const marker = new THREE.Mesh(markerGeometry, markerMaterial);
+        marker.position.set(position.x, position.y, zPosition);
+        objects.push(marker);
+
         // Add the axis meshes to the objects array
         objects.push(xAxis, yAxis, zAxis);
 
