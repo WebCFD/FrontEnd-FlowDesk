@@ -1,0 +1,124 @@
+🎨 [RSP] applyThemeTextures called, checking scene availability...
+RoomSketchPro.tsx:499 🎨 [RSP] Scene available, proceeding with texture application...
+RoomSketchPro.tsx:509 🎨 [RSP] Found 4 wall meshes in scene
+RoomSketchPro.tsx:646 🎨 [RSP] Found 2 air entry meshes in scene
+RoomSketchPro.tsx:711 🎨 [RSP] Applying vent texture to mesh (index 0)
+RoomSketchPro.tsx:711 🎨 [RSP] Applying window texture to mesh (index 1)
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 265ms
+RoomSketchPro.tsx:494 🎨 [RSP] applyThemeTextures called, checking scene availability...
+RoomSketchPro.tsx:499 🎨 [RSP] Scene available, proceeding with texture application...
+RoomSketchPro.tsx:509 🎨 [RSP] Found 4 wall meshes in scene
+RoomSketchPro.tsx:646 🎨 [RSP] Found 2 air entry meshes in scene
+RoomSketchPro.tsx:711 🎨 [RSP] Applying vent texture to mesh (index 0)
+RoomSketchPro.tsx:711 🎨 [RSP] Applying window texture to mesh (index 1)
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.Understand this warningAI
+Canvas3D.tsx:4603 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4613 Double-click found entry using stored entryIndex: 0
+AirEntryDialog.tsx:335 🔍 LOADING EDITING VALUES - Full initialValues: {
+  "width": 119,
+  "height": 95,
+  "distanceToFloor": 120,
+  "shape": "rectangular",
+  "wallPosition": 33,
+  "properties": {
+    "state": "open",
+    "temperature": 25,
+    "flowIntensity": "medium",
+    "airOrientation": "inflow",
+    "flowType": "Air Mass Flow",
+    "flowValue": 0.5
+  },
+  "position": {
+    "x": 450.09977964335144,
+    "y": 98.14844452137532
+  }
+}
+AirEntryDialog.tsx:342 ✅ WIDTH LOADING - Found saved width: 119
+AirEntryDialog.tsx:348 🔍 WALL POSITION LOADING - Checking sources:
+AirEntryDialog.tsx:349   - properties?.wallPosition: undefined
+AirEntryDialog.tsx:350   - direct wallPosition: 33
+AirEntryDialog.tsx:351   - Final savedWallPosition: 33
+AirEntryDialog.tsx:362 ✅ WALL POSITION LOADING - Using saved value: 33
+wizard-design.tsx:2324 wizard-design: Received floors update from RSP: {ground: {…}}
+Canvas3D.tsx:1478 🔄 [CANVAS3D] Calling onAirEntryUpdated callback after dimension update
+RoomSketchPro.tsx:833 🎨 [RSP] handleAirEntryUpdated called - starting texture reapplication...
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'setTimeout' handler took 65ms
+RoomSketchPro.tsx:843 🎨 [RSP] Executing applyThemeTextures after 100ms delay...
+RoomSketchPro.tsx:494 🎨 [RSP] applyThemeTextures called, checking scene availability...
+RoomSketchPro.tsx:499 🎨 [RSP] Scene available, proceeding with texture application...
+RoomSketchPro.tsx:509 🎨 [RSP] Found 4 wall meshes in scene
+RoomSketchPro.tsx:646 🎨 [RSP] Found 2 air entry meshes in scene
+RoomSketchPro.tsx:711 🎨 [RSP] Applying vent texture to mesh (index 0)
+RoomSketchPro.tsx:711 🎨 [RSP] Applying window texture to mesh (index 1)
+RoomSketchPro.tsx:845 ✅ [RSP] applyThemeTextures completed
+wizard-design.tsx:2324 wizard-design: Received floors update from RSP: {ground: {…}}
+Canvas3D.tsx:1478 🔄 [CANVAS3D] Calling onAirEntryUpdated callback after dimension update
+RoomSketchPro.tsx:833 🎨 [RSP] handleAirEntryUpdated called - starting texture reapplication...
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'setTimeout' handler took 79ms
+RoomSketchPro.tsx:843 🎨 [RSP] Executing applyThemeTextures after 100ms delay...
+RoomSketchPro.tsx:494 🎨 [RSP] applyThemeTextures called, checking scene availability...
+RoomSketchPro.tsx:499 🎨 [RSP] Scene available, proceeding with texture application...
+RoomSketchPro.tsx:509 🎨 [RSP] Found 4 wall meshes in scene
+RoomSketchPro.tsx:646 🎨 [RSP] Found 2 air entry meshes in scene
+RoomSketchPro.tsx:711 🎨 [RSP] Applying vent texture to mesh (index 0)
+RoomSketchPro.tsx:711 🎨 [RSP] Applying window texture to mesh (index 1)
+RoomSketchPro.tsx:845 ✅ [RSP] applyThemeTextures completed
+wizard-design.tsx:2324 wizard-design: Received floors update from RSP: {ground: {…}}
+Canvas3D.tsx:1478 🔄 [CANVAS3D] Calling onAirEntryUpdated callback after dimension update
+RoomSketchPro.tsx:833 🎨 [RSP] handleAirEntryUpdated called - starting texture reapplication...
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'setTimeout' handler took 83ms
+RoomSketchPro.tsx:843 🎨 [RSP] Executing applyThemeTextures after 100ms delay...
+RoomSketchPro.tsx:494 🎨 [RSP] applyThemeTextures called, checking scene availability...
+RoomSketchPro.tsx:499 🎨 [RSP] Scene available, proceeding with texture application...
+RoomSketchPro.tsx:509 🎨 [RSP] Found 4 wall meshes in scene
+RoomSketchPro.tsx:646 🎨 [RSP] Found 2 air entry meshes in scene
+RoomSketchPro.tsx:711 🎨 [RSP] Applying vent texture to mesh (index 0)
+RoomSketchPro.tsx:711 🎨 [RSP] Applying window texture to mesh (index 1)
+RoomSketchPro.tsx:845 ✅ [RSP] applyThemeTextures completed
+AirEntryDialog.tsx:519 📝 FORM SUBMIT - Current form values: {width: 119, height: 95, distanceToFloor: 123, shape: 'rectangular', wallPosition: 33, …}
+AirEntryDialog.tsx:520 📝 FORM SUBMIT - Current wallPosition state: 33
+AirEntryDialog.tsx:521 📝 FORM SUBMIT - Current distanceToFloor state: 123
+AirEntryDialog.tsx:549 📦 FORM SUBMIT - Final airEntryData being sent: {
+  "width": 119,
+  "height": 95,
+  "diameter": null,
+  "distanceToFloor": 123,
+  "shape": "rectangular",
+  "isOpen": true,
+  "temperature": 25,
+  "airDirection": "inflow",
+  "flowIntensity": "medium",
+  "customIntensityValue": null,
+  "ventFlowType": "massflow",
+  "airOrientation": {
+    "verticalAngle": 0,
+    "horizontalAngle": 0
+  },
+  "wallPosition": 33,
+  "position": {
+    "x": 450.09977964335144,
+    "y": 98.14844452137532
+  }
+}
+AirEntryDialog.tsx:572 💾 SIMULATION PROPERTIES SAVE - Final properties: {flowType: 'massflow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', wallPosition: 33}
+Canvas3D.tsx:5926 [CANVAS3D ONCONFIRM] Received data from dialog: {width: 119, height: 95, distanceToFloor: 123, shape: 'rectangular', wallPosition: 33, …}
+Canvas3D.tsx:5927 [CANVAS3D ONCONFIRM] wallPosition in received data: 33
+Canvas3D.tsx:1861 [DIMENSION STORAGE] Stored dimensions for entry 0: {"position":{"x":450.09977964335144,"y":98.14844452137532},"dimensions":{"width":119,"height":95,"distanceToFloor":123,"shape":"rectangular","wallPosition":33}}
+Canvas3D.tsx:1863 [WALL POSITION STORAGE] wallPosition in data: 33
+Canvas3D.tsx:1864 [WALL POSITION STORAGE] wallPosition in updatedEntry.dimensions: 33
+wizard-design.tsx:2324 wizard-design: Received floors update from RSP: {ground: {…}}
+Canvas3D.tsx:1872 🔄 [CANVAS3D] Calling onAirEntryUpdated callback after handleAirEntryEdit
+RoomSketchPro.tsx:833 🎨 [RSP] handleAirEntryUpdated called - starting texture reapplication...
+RoomSketchPro.tsx:843 🎨 [RSP] Executing applyThemeTextures after 100ms delay...
+RoomSketchPro.tsx:494 🎨 [RSP] applyThemeTextures called, checking scene availability...
+RoomSketchPro.tsx:499 🎨 [RSP] Scene available, proceeding with texture application...
+RoomSketchPro.tsx:509 🎨 [RSP] Found 4 wall meshes in scene
+RoomSketchPro.tsx:646 🎨 [RSP] Found 2 air entry meshes in scene
+RoomSketchPro.tsx:711 🎨 [RSP] Applying vent texture to mesh (index 0)
+RoomSketchPro.tsx:711 🎨 [RSP] Applying window texture to mesh (index 1)
+RoomSketchPro.tsx:845 ✅ [RSP] applyThemeTextures completed

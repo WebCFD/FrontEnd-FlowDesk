@@ -1386,10 +1386,7 @@ export default function Canvas3D({
       
       // Notify RSP to re-apply textures after real-time position update
       if (onAirEntryUpdated) {
-        console.log('🔄 [CANVAS3D] Calling onAirEntryUpdated callback after position update');
         onAirEntryUpdated();
-      } else {
-        console.warn('⚠️ [CANVAS3D] onAirEntryUpdated callback not available for position update');
       }
     }, 150);
   }, [editingAirEntry, onUpdateAirEntry, onAirEntryUpdated, currentFloor]);
@@ -1475,10 +1472,7 @@ export default function Canvas3D({
       
       // Notify RSP to re-apply textures after real-time dimension update
       if (onAirEntryUpdated) {
-        console.log('🔄 [CANVAS3D] Calling onAirEntryUpdated callback after dimension update');
         onAirEntryUpdated();
-      } else {
-        console.warn('⚠️ [CANVAS3D] onAirEntryUpdated callback not available for dimension update');
       }
     }, 150);
   }, [editingAirEntry, onUpdateAirEntry, onAirEntryUpdated, currentFloor, migratedFloors]);
@@ -1869,10 +1863,7 @@ export default function Canvas3D({
     
     // Notify RSP to re-apply textures after AirEntry update
     if (onAirEntryUpdated) {
-      console.log('🔄 [CANVAS3D] Calling onAirEntryUpdated callback after handleAirEntryEdit');
       onAirEntryUpdated();
-    } else {
-      console.warn('⚠️ [CANVAS3D] onAirEntryUpdated callback not available in handleAirEntryEdit');
     }
   };
 
