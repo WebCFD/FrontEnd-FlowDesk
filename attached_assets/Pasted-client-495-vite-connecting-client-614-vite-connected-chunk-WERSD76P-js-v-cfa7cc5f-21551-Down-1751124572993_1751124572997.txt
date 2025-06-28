@@ -1,0 +1,64 @@
+client:495 [vite] connecting...
+client:614 [vite] connected.
+chunk-WERSD76P.js?v=cfa7cc5f:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+AnalyticsProvider.tsx:21 Analytics initialized: false
+/api/auth/user:1 
+            
+            
+           Failed to load resource: the server responded with a status of 401 (Unauthorized)
+analytics.ts:26 Google Analytics initialized with ID: G-XZYY9DVVHW
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+AnalyticsProvider.tsx:21 Analytics initialized: true
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
+custom-furniture-store.ts:290 Custom Furniture Store: Complete reset (Logout)
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
+dashboard-sidebar.tsx:65 
+            
+            
+           GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+fetchUserData @ dashboard-sidebar.tsx:65
+(anonymous) @ dashboard-sidebar.tsx:80
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19416
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+(anonymous) @ chunk-WERSD76P.js?v=cfa7cc5f:18627
+Canvas2D.tsx:3339 Context menu prevented
+Canvas2D.tsx:1768 🖱️ RIGHT-CLICK DETECTED while drawing stairs
+Canvas2D.tsx:1769 📊 Current stair points count: 4
+Canvas2D.tsx:1770 📍 Current stair points: (4) [{…}, {…}, {…}, {…}]
+Canvas2D.tsx:1771 🏢 Current floor: ground (Ground Floor)
+Canvas2D.tsx:1772 📦 Existing stair polygons count: 0
+Canvas2D.tsx:1776 ✅ SUFFICIENT POINTS - Creating new stair polygon
+Canvas2D.tsx:1787 🏷️ Generated stair ID: stair_0F_1
+Canvas2D.tsx:1796 🆕 NEW STAIR POLYGON CREATED: {id: 'stair_0F_1', points: Array(4), floor: 'Ground Floor', temperature: 20}
+Canvas2D.tsx:1797 🌡️ Default stair temperature: 20
+Canvas2D.tsx:1802 📤 CALLING onStairPolygonsUpdate with: [{…}]
+wizard-design.tsx:2531 🔄 WIZARD: onStairPolygonsUpdate callback triggered
+wizard-design.tsx:2532 📥 WIZARD: Received new polygons: [{…}]
+wizard-design.tsx:2533 📊 WIZARD: Previous stairPolygons count: 0
+wizard-design.tsx:2534 📊 WIZARD: New stairPolygons count: 1
+wizard-design.tsx:2535 🏢 WIZARD: Current floor: ground
+wizard-design.tsx:2537 ✅ WIZARD: setStairPolygons called successfully
+Canvas2D.tsx:1804 ✅ onStairPolygonsUpdate called successfully
+Canvas2D.tsx:1813 🧹 RESETTING stair drawing state
+Canvas2D.tsx:1817 🔄 Stair drawing state reset complete
