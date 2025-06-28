@@ -208,11 +208,8 @@ export const useRoomStore = create<RoomState>()(
         })),
 
         addFurnitureToFloor: (floorName, item) => set((state) => {
-          console.log(`🏪 STORE addFurnitureToFloor called:`, { floorName, itemType: item.type, itemId: item.id });
-          
           // Clean existing array - remove any invalid items (strings, nulls, etc.)
           const existingItems = state.floors[floorName]?.furnitureItems || [];
-          console.log(`🏪 STORE existing items count:`, existingItems.length);
           
           const cleanedItems = existingItems.filter(furnitureItem => 
             furnitureItem && 
@@ -220,13 +217,10 @@ export const useRoomStore = create<RoomState>()(
             furnitureItem.type && 
             furnitureItem.position
           );
-          console.log(`🏪 STORE cleaned items count:`, cleanedItems.length);
           
           const newItems = [...cleanedItems, item];
-          console.log(`🏪 STORE new items total:`, newItems.length);
-          console.log(`🏪 STORE item being added:`, { type: item.type, id: item.id, position: item.position });
           
-          const newState = {
+          return {
             floors: {
               ...state.floors,
               [floorName]: {
@@ -235,11 +229,6 @@ export const useRoomStore = create<RoomState>()(
               }
             }
           };
-          
-          console.log(`🏪 STORE new state floors[${floorName}].furnitureItems:`, newState.floors[floorName].furnitureItems);
-          console.log(`🏪 STORE new state complete:`, newState.floors[floorName]);
-          
-          return newState;
         }),
 
         updateFurnitureInFloor: (floorName, itemId, item) => set((state) => {
