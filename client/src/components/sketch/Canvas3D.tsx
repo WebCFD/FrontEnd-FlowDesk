@@ -4781,7 +4781,8 @@ export default function Canvas3D({
 
   useEffect(() => {
     console.log('🚨 [SCENE REBUILD TRIGGER] useEffect triggered - dependencies changed');
-    console.log('🚨 [SCENE REBUILD TRIGGER] floors reference:', typeof floors, Object.keys(floors).length);
+    console.log('🚨 [SCENE REBUILD TRIGGER] floors reference:', floors);
+    console.log('🚨 [SCENE REBUILD TRIGGER] floors identity hash:', JSON.stringify(floors).slice(0, 50) + '...');
     console.log('🚨 [SCENE REBUILD TRIGGER] currentFloor:', currentFloor);
     console.log('🚨 [SCENE REBUILD TRIGGER] ceilingHeight:', ceilingHeight);
     console.log('🚨 [SCENE REBUILD TRIGGER] floorDeckThickness:', floorDeckThickness);
