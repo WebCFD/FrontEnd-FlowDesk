@@ -226,7 +226,7 @@ export const useRoomStore = create<RoomState>()(
           console.log(`🏪 STORE new items total:`, newItems.length);
           console.log(`🏪 STORE item being added:`, { type: item.type, id: item.id, position: item.position });
           
-          return {
+          const newState = {
             floors: {
               ...state.floors,
               [floorName]: {
@@ -235,6 +235,11 @@ export const useRoomStore = create<RoomState>()(
               }
             }
           };
+          
+          console.log(`🏪 STORE new state floors[${floorName}].furnitureItems:`, newState.floors[floorName].furnitureItems);
+          console.log(`🏪 STORE new state complete:`, newState.floors[floorName]);
+          
+          return newState;
         }),
 
         updateFurnitureInFloor: (floorName, itemId, item) => set((state) => {
