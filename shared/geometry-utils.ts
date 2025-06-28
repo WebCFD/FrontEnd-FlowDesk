@@ -14,6 +14,8 @@ export interface Line {
 export interface FloorParameters {
   ceilingHeight: number;
   floorDeck: number;
+  ceilingTemperature?: number;
+  floorTemperature?: number;
 }
 
 // Constants
