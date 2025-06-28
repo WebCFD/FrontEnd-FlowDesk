@@ -1248,6 +1248,7 @@ export default function Canvas3D({
         }
         
         // Store for dialog
+        console.log(`DIALOG DEBUG: Setting newFurnitureForDialog for ${furnitureItem.id}`);
         newFurnitureForDialog.current = furnitureItem;
       }
       
@@ -1508,7 +1509,10 @@ export default function Canvas3D({
   
   // Effect to auto-open dialog for newly created furniture
   useEffect(() => {
+    console.log(`DIALOG DEBUG: useEffect triggered, checking newFurnitureForDialog:`, newFurnitureForDialog.current?.id || 'null');
+    
     if (newFurnitureForDialog.current) {
+      console.log(`DIALOG DEBUG: Opening dialog for ${newFurnitureForDialog.current.id}`);
       setEditingFurniture({
         index: 0, // This would be the actual index in a real furniture list
         item: newFurnitureForDialog.current,
@@ -1517,6 +1521,7 @@ export default function Canvas3D({
       
       // Clear the reference
       newFurnitureForDialog.current = null;
+      console.log(`DIALOG DEBUG: Cleared newFurnitureForDialog reference`);
     }
   }, [floors, currentFloor]); // Trigger when floors update (after furniture is added)
 
