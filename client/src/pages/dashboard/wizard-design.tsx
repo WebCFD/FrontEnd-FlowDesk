@@ -627,6 +627,20 @@ export default function WizardDesign() {
     // Note: Stairs are NOT copied during template load
     // They will be projected automatically by projectStairsFromAdjacentFloors
 
+    // Copy floor parameters (ceiling height, floor deck, and temperatures) from source floor
+    const sourceFloorParams = floorParameters[loadFromFloor];
+    if (sourceFloorParams) {
+      setFloorParameters(prev => ({
+        ...prev,
+        [currentFloor]: {
+          ceilingHeight: sourceFloorParams.ceilingHeight,
+          floorDeck: sourceFloorParams.floorDeck,
+          ceilingTemperature: sourceFloorParams.ceilingTemperature || 20,
+          floorTemperature: sourceFloorParams.floorTemperature || 20
+        }
+      }));
+    }
+
     // Set new data for the current floor
     setLines(newLines);
     setAirEntries(newAirEntries);
