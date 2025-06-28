@@ -3328,8 +3328,7 @@ export default function Canvas2D({
       ...(data.properties && { properties: data.properties }),
     };
 
-    console.log("💾 [SAVE CHANGES] Final saved position:", updatedAirEntries[index].position);
-    console.log("💾 [SAVE CHANGES] Final saved entry:", updatedAirEntries[index]);
+
     
     onAirEntriesUpdate?.(updatedAirEntries);
     setEditingAirEntries(prev => prev.filter(entry => entry.index !== index));
@@ -3338,18 +3337,15 @@ export default function Canvas2D({
 
   // Phase 2: Dialog Management Functions
   const openAirEntryDialog = (airEntry: { index: number; entry: AirEntry }) => {
-    console.log("🟠 [DIALOG OPEN] openAirEntryDialog called");
-    console.log("🟠 [DIALOG OPEN] airEntry index:", airEntry.index);
-    console.log("🟠 [DIALOG OPEN] airEntry position:", airEntry.entry.position);
-    console.log("🟠 [DIALOG OPEN] airEntry wallPosition:", airEntry.entry.dimensions?.wallPosition);
+
     
     const isAlreadyOpen = editingAirEntries.some(entry => entry.index === airEntry.index);
-    console.log("🟠 [DIALOG OPEN] isAlreadyOpen:", isAlreadyOpen);
+
     
     if (!isAlreadyOpen) {
       // Phase 3: Calculate position for new dialog
       const dialogPosition = calculateDialogPosition(editingAirEntries.length);
-      console.log("🟠 [DIALOG OPEN] Adding to editingAirEntries for real-time updates");
+
       setEditingAirEntries(prev => [...prev, { ...airEntry, position: dialogPosition }]);
     }
   };
