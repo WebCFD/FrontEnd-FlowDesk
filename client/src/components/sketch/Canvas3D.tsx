@@ -1227,19 +1227,8 @@ export default function Canvas3D({
       if (model) {
         
         // Add furniture via callback
-        console.log(`FURNITURE ADD DEBUG: About to call onFurnitureAdd for ${furnitureType}`, {
-          id: furnitureItem.id,
-          type: furnitureItem.type,
-          floorName: furnitureItem.floorName,
-          surfaceType: furnitureItem.surfaceType,
-          position: furnitureItem.position
-        });
-        
         if (onFurnitureAdd && typeof onFurnitureAdd === 'function') {
           onFurnitureAdd(surfaceDetection.floorName, furnitureItem);
-          console.log(`FURNITURE ADD DEBUG: onFurnitureAdd callback executed for ${furnitureItem.id}`);
-        } else {
-          console.log(`FURNITURE ADD DEBUG: No onFurnitureAdd callback available!`);
         }
         
         // Notify that new furniture was added to scene (for texture re-application)
@@ -1247,12 +1236,8 @@ export default function Canvas3D({
           onFurnitureAdded();
         }
         
-        // Store for dialog
-        console.log(`DIALOG DEBUG: Setting newFurnitureForDialog for ${furnitureItem.id}`);
+        // Store for dialog and trigger auto-open
         newFurnitureForDialog.current = furnitureItem;
-        
-        // Trigger the dialog useEffect
-        console.log(`DIALOG DEBUG: Triggering dialog useEffect for ${furnitureItem.id}`);
         setDialogTrigger(prev => prev + 1);
       }
       
@@ -1514,14 +1499,7 @@ export default function Canvas3D({
   
   // Effect to auto-open dialog for newly created furniture
   useEffect(() => {
-    console.log(`DIALOG DEBUG: useEffect triggered by dialogTrigger:`, {
-      dialogTrigger,
-      newFurnitureForDialog: newFurnitureForDialog.current?.id || 'null',
-      furnitureCountInCurrentFloor: floors[currentFloor]?.furnitureItems?.length || 0
-    });
-    
     if (newFurnitureForDialog.current) {
-      console.log(`DIALOG DEBUG: Opening dialog for ${newFurnitureForDialog.current.id}`);
       setEditingFurniture({
         index: 0, // This would be the actual index in a real furniture list
         item: newFurnitureForDialog.current,
@@ -1530,9 +1508,6 @@ export default function Canvas3D({
       
       // Clear the reference
       newFurnitureForDialog.current = null;
-      console.log(`DIALOG DEBUG: Cleared newFurnitureForDialog reference`);
-    } else {
-      console.log(`DIALOG DEBUG: No newFurnitureForDialog to process`);
     }
   }, [dialogTrigger]); // Trigger when dialogTrigger changes
 
