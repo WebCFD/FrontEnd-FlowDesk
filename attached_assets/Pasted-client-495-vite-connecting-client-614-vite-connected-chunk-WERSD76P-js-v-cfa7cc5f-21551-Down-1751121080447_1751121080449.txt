@@ -1,0 +1,93 @@
+client:495 [vite] connecting...
+client:614 [vite] connected.
+chunk-WERSD76P.js?v=cfa7cc5f:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+AnalyticsProvider.tsx:21 Analytics initialized: false
+chunk-WERSD76P.js?v=cfa7cc5f:377 [Violation] 'message' handler took 160ms
+analytics.ts:26 Google Analytics initialized with ID: G-XZYY9DVVHW
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+js?id=G-XZYY9DVVHW:663 [Violation] 'setTimeout' handler took 95ms
+useAnalytics.ts:59 Google Analytics initialized successfully
+AnalyticsProvider.tsx:21 Analytics initialized: true
+dashboard-sidebar.tsx:65 
+            
+            
+           GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+fetchUserData @ dashboard-sidebar.tsx:65
+(anonymous) @ dashboard-sidebar.tsx:80
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19416
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+(anonymous) @ chunk-WERSD76P.js?v=cfa7cc5f:18627
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
+Canvas3D.tsx:4780 🚨 [SCENE REBUILD TRIGGER] useEffect triggered - dependencies changed
+Canvas3D.tsx:4781 🚨 [SCENE REBUILD TRIGGER] floors reference: {ground: {…}}
+Canvas3D.tsx:4782 🚨 [SCENE REBUILD TRIGGER] floors identity hash: {"ground":{"lines":[{"id":"1751121043566_tg33pz6mx...
+Canvas3D.tsx:4783 🚨 [SCENE REBUILD TRIGGER] currentFloor: ground
+Canvas3D.tsx:4784 🚨 [SCENE REBUILD TRIGGER] ceilingHeight: 220
+Canvas3D.tsx:4785 🚨 [SCENE REBUILD TRIGGER] floorDeckThickness: 35
+Canvas3D.tsx:5318 🔧 [WALL TRANSPARENCY] Updating wall transparency, preserving AirEntry textures
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 252ms
+wizard-design.tsx:1678 Dragging furniture: {id: 'vent', name: 'Vent', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…ke="#22c55e" stroke-width="2"/>\n      </svg>\n    ', defaultDimensions: {…}}
+wizard-design.tsx:1213 🔧 WIZARD handleFurnitureAdd called: {floorName: 'ground', itemType: 'vent', itemId: 'Vent 0F-1'}
+room-store.ts:211 🏪 STORE addFurnitureToFloor called: {floorName: 'ground', itemType: 'vent', itemId: 'Vent 0F-1'}
+room-store.ts:215 🏪 STORE existing items count: 0
+room-store.ts:223 🏪 STORE cleaned items count: 0
+room-store.ts:226 🏪 STORE new items total: 1
+room-store.ts:227 🏪 STORE item being added: {type: 'vent', id: 'Vent 0F-1', position: {…}}
+wizard-design.tsx:1215 🔧 WIZARD addFurnitureToFloor completed for vent
+AirEntryDialog.tsx:184 AirEntryDialog: Real-time callbacks connected for furnVent mode {hasOnPositionUpdate: true, hasOnRotationUpdate: true, hasOnScaleUpdate: false}
+AirEntryDialog.tsx:505 📝 FORM SUBMIT - Current form values: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:506 📝 FORM SUBMIT - Current wallPosition state: 100
+AirEntryDialog.tsx:507 📝 FORM SUBMIT - Current distanceToFloor state: 120
+Canvas3D.tsx:5944 VENT COORDINATE CONVERSION:
+Canvas3D.tsx:5945 - Dialog values (world): {position: {…}, rotation: {…}}
+Canvas3D.tsx:5946 - Parent transform: {position: _Vector3, rotation: _Euler}
+Canvas3D.tsx:5947 - Applied values (local): {position: {…}, rotation: {…}}
+/dashboard/wizard-design:1 [.WebGL-0x2c6401a53800] GL_INVALID_OPERATION: Texture is immutable.
+/dashboard/wizard-design:1 [.WebGL-0x2c6401a53800] GL_INVALID_OPERATION: Texture is immutable.
+/dashboard/wizard-design:1 [.WebGL-0x2c6401a53800] GL_INVALID_OPERATION: Texture is immutable.
+/dashboard/wizard-design:1 [.WebGL-0x2c6401a53800] GL_INVALID_OPERATION: Texture is immutable.
+/dashboard/wizard-design:1 [.WebGL-0x2c6401a53800] GL_INVALID_OPERATION: Texture is immutable.
+/dashboard/wizard-design:1 [.WebGL-0x2c6401a53800] GL_INVALID_OPERATION: Texture is immutable.
+/dashboard/wizard-design:1 [.WebGL-0x2c6401a53800] GL_INVALID_OPERATION: Texture is immutable.
+/dashboard/wizard-design:1 [.WebGL-0x2c6401a53800] GL_INVALID_OPERATION: Texture is immutable.
+Canvas3D.tsx:4780 🚨 [SCENE REBUILD TRIGGER] useEffect triggered - dependencies changed
+Canvas3D.tsx:4781 🚨 [SCENE REBUILD TRIGGER] floors reference: {ground: {…}}
+Canvas3D.tsx:4782 🚨 [SCENE REBUILD TRIGGER] floors identity hash: {"ground":{"lines":[{"id":"1751121043566_tg33pz6mx...
+Canvas3D.tsx:4783 🚨 [SCENE REBUILD TRIGGER] currentFloor: ground
+Canvas3D.tsx:4784 🚨 [SCENE REBUILD TRIGGER] ceilingHeight: 220
+Canvas3D.tsx:4785 🚨 [SCENE REBUILD TRIGGER] floorDeckThickness: 35
+Canvas3D.tsx:5318 🔧 [WALL TRANSPARENCY] Updating wall transparency, preserving AirEntry textures
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 334ms
+wizard-design.tsx:1897 Found 0 furniture objects for export: []
+simulationDataConverter.ts:524 📊 EXPORT [ground]: Total floor objects found: 0
+simulationDataConverter.ts:525 📊 EXPORT [ground]: Floor objects: []
+simulationDataConverter.ts:534 📊 EXPORT [ground]: Vent objects found: 0
+simulationDataConverter.ts:535 📊 EXPORT [ground]: Regular furniture objects: 0
+analytics.ts:62 📊 Analytics Event: {category: 'simulation', action: 'save_simulation', label: 'file_download', value: 2, status: 'sent'}

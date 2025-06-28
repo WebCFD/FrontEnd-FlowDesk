@@ -1859,8 +1859,15 @@ export default function WizardDesign() {
     // Recopilar datos de mobiliario desde el store de pisos
     const furnitureObjects: THREE.Object3D[] = [];
 
+    console.log(`📊 EXPORT WIZARD: Current floors state:`, floors);
+    console.log(`📊 EXPORT WIZARD: Object.entries(floors):`, Object.entries(floors));
+
     // Recopilar todos los elementos de mobiliario de todos los pisos
     Object.entries(floors).forEach(([floorName, floorData]) => {
+      console.log(`📊 EXPORT WIZARD: Processing floor "${floorName}":`, floorData);
+      console.log(`📊 EXPORT WIZARD: Floor "${floorName}" furnitureItems:`, floorData.furnitureItems);
+      console.log(`📊 EXPORT WIZARD: Floor "${floorName}" furnitureItems length:`, floorData.furnitureItems?.length || 0);
+      
       if (floorData.furnitureItems && floorData.furnitureItems.length > 0) {
         floorData.furnitureItems.forEach((furnitureItem) => {
           // Crear un objeto THREE.Object3D simulado con la información necesaria
