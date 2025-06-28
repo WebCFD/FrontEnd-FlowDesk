@@ -276,14 +276,14 @@ export default function WizardDesign() {
 
   // Funciones auxiliares para manejo de parámetros por planta
   const getCurrentFloorParameters = () => {
-    return floorParameters[selectedFloor] || { ceilingHeight: 220, floorDeck: 35 };
+    return floorParameters[selectedFloor] || { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20 };
   };
 
-  const updateFloorParameter = (floor: string, parameter: 'ceilingHeight' | 'floorDeck', value: number) => {
+  const updateFloorParameter = (floor: string, parameter: 'ceilingHeight' | 'floorDeck' | 'ceilingTemperature' | 'floorTemperature', value: number) => {
     setFloorParameters(prev => ({
       ...prev,
       [floor]: {
-        ...prev[floor] || { ceilingHeight: 220, floorDeck: 35 },
+        ...prev[floor] || { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20 },
         [parameter]: value
       }
     }));
@@ -1974,7 +1974,7 @@ export default function WizardDesign() {
   const handleEraseDesign = () => {
     // PASO 1: LIMPIAR PRIMERO floorParameters para evitar recreación de plantas
     setFloorParameters({
-      ground: { ceilingHeight: 220, floorDeck: 35 }
+      ground: { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20 }
     });
     
     // Clear all furniture from 3D scene BEFORE resetting store to avoid useEffect interference
@@ -2375,7 +2375,7 @@ export default function WizardDesign() {
             // Modo multifloor: controles por planta
             <div className="space-y-4">
               {Object.keys(floors).filter(floorName => floors[floorName]?.hasClosedContour).map((floorName) => {
-                const floorParams = floorParameters[floorName] || { ceilingHeight: 220, floorDeck: 35 };
+                const floorParams = floorParameters[floorName] || { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20 };
                 const isCurrentFloor = floorName === currentFloor;
                 
                 return (
@@ -2426,6 +2426,46 @@ export default function WizardDesign() {
                             className="w-16 h-8 text-xs"
                           />
                           <span className="text-xs text-gray-500">cm</span>
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Ceiling Temperature</Label>
+                        <div className="flex items-center gap-1">
+                          <Input
+                            type="number"
+                            value={floorParams.ceilingTemperature || 20}
+                            min={-50}
+                            max={100}
+                            step={0.1}
+                            onChange={(e) => {
+                              const value = parseFloat(e.target.value);
+                              if (!isNaN(value) && value >= -50 && value <= 100) {
+                                updateFloorParameter(floorName, 'ceilingTemperature', value);
+                              }
+                            }}
+                            className="w-16 h-8 text-xs"
+                          />
+                          <span className="text-xs text-gray-500">°C</span>
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Floor Temperature</Label>
+                        <div className="flex items-center gap-1">
+                          <Input
+                            type="number"
+                            value={floorParams.floorTemperature || 20}
+                            min={-50}
+                            max={100}
+                            step={0.1}
+                            onChange={(e) => {
+                              const value = parseFloat(e.target.value);
+                              if (!isNaN(value) && value >= -50 && value <= 100) {
+                                updateFloorParameter(floorName, 'floorTemperature', value);
+                              }
+                            }}
+                            className="w-16 h-8 text-xs"
+                          />
+                          <span className="text-xs text-gray-500">°C</span>
                         </div>
                       </div>
                     </div>
