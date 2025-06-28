@@ -432,8 +432,11 @@ export default function WizardDesign() {
 
   // Get current floor data
   const currentFloorData = floors[currentFloor];
-  const { lines, airEntries, walls, measurements, hasClosedContour, stairPolygons, furnitureItems } =
+  const { lines, airEntries, walls, measurements, hasClosedContour, furnitureItems } =
     currentFloorData;
+  
+  // Get stairPolygons directly from store to ensure real-time updates
+  const stairPolygons = currentFloorData.stairPolygons || [];
 
 
 
@@ -2530,15 +2533,7 @@ export default function WizardDesign() {
               stairPolygons={stairPolygons}
               walls={walls}
               onMeasurementsUpdate={setMeasurements}
-              onStairPolygonsUpdate={(newPolygons) => {
-                console.log("🔄 WIZARD: onStairPolygonsUpdate callback triggered");
-                console.log("📥 WIZARD: Received new polygons:", newPolygons);
-                console.log("📊 WIZARD: Previous stairPolygons count:", stairPolygons.length);
-                console.log("📊 WIZARD: New stairPolygons count:", newPolygons.length);
-                console.log("🏢 WIZARD: Current floor:", currentFloor);
-                setStairPolygons(newPolygons);
-                console.log("✅ WIZARD: setStairPolygons called successfully");
-              }}
+              onStairPolygonsUpdate={setStairPolygons}
               onWallsUpdate={setWalls}
               lines={lines}
               floorText={formatFloorText(currentFloor)}
