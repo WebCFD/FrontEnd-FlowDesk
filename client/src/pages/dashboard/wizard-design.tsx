@@ -2558,7 +2558,11 @@ export default function WizardDesign() {
                   );
                 setHasClosedContour(hasClosedContour);
               }}
-              onAirEntriesUpdate={setAirEntries}
+              onAirEntriesUpdate={(newAirEntries) => {
+                console.log("🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D:", newAirEntries);
+                setAirEntries(newAirEntries);
+                console.log("🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries");
+              }}
               onLineSelect={handleLineSelect}
             />
           ) : (

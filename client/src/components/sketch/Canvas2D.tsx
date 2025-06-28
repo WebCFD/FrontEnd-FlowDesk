@@ -3311,6 +3311,9 @@ export default function Canvas2D({
       ...(data.properties && { properties: data.properties }),
     };
 
+    console.log("🔍 [CANVAS2D EDIT] Final updatedAirEntries[index]:", updatedAirEntries[index]);
+    console.log("🔍 [CANVAS2D EDIT] About to call onAirEntriesUpdate with:", updatedAirEntries);
+    
     onAirEntriesUpdate?.(updatedAirEntries);
     setEditingAirEntries(prev => prev.filter(entry => entry.index !== index)); // Close dialog - element is preserved
   };

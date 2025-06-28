@@ -156,15 +156,29 @@ export const useRoomStore = create<RoomState>()(
           };
         }),
 
-        setAirEntries: (airEntries) => set((state) => ({
-          floors: {
-            ...state.floors,
-            [state.currentFloor]: {
-              ...state.floors[state.currentFloor],
-              airEntries
-            }
+        setAirEntries: (airEntries) => {
+          console.log("🔍 [STORE setAirEntries] Called with:", airEntries);
+          console.log("🔍 [STORE setAirEntries] airEntries.length:", airEntries?.length);
+          if (airEntries?.length > 0) {
+            console.log("🔍 [STORE setAirEntries] First entry position:", airEntries[0]?.position);
+            console.log("🔍 [STORE setAirEntries] First entry wallPosition:", airEntries[0]?.dimensions?.wallPosition);
           }
-        })),
+          
+          return set((state) => {
+            const result = {
+              floors: {
+                ...state.floors,
+                [state.currentFloor]: {
+                  ...state.floors[state.currentFloor],
+                  airEntries
+                }
+              }
+            };
+            
+            console.log("🔍 [STORE setAirEntries] Store updated for floor:", state.currentFloor);
+            return result;
+          });
+        },
 
         setWalls: (walls) => set((state) => ({
           floors: {
