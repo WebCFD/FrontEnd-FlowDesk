@@ -423,6 +423,7 @@ export default function WizardDesign() {
           airEntriesLength: rawFloors[floorName]?.airEntries?.length || 0,
           furnitureItemsLength: rawFloors[floorName]?.furnitureItems?.length || 0,
           stairPolygonsLength: rawFloors[floorName]?.stairPolygons?.length || 0,
+          stairPolygonsHash: JSON.stringify(rawFloors[floorName]?.stairPolygons || []),
           hasClosedContour: rawFloors[floorName]?.hasClosedContour || false
         }))
     )
