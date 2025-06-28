@@ -4817,7 +4817,7 @@ export default function Canvas3D({
     return Object.keys(storeFloors).length > 0 ? storeFloors : floors;
   }, [floors]); // Re-compute when props change
 
-  // Stabilize initialValues to prevent infinite re-renders of AirEntryDialog
+  // Stabilize all props to prevent infinite re-renders of AirEntryDialog
   const stableInitialValues = useMemo(() => {
     if (!editingAirEntry) return null;
     
@@ -4838,6 +4838,50 @@ export default function Canvas3D({
     (editingAirEntry?.entry.dimensions as any)?.wallPosition,
     (editingAirEntry?.entry as any)?.properties
   ]);
+
+  // Stabilize callbacks to prevent recreating on every render
+  const stableOnClose = useCallback(() => setEditingAirEntry(null), []);
+  const stableOnCancel = useCallback(() => setEditingAirEntry(null), []);
+  
+  // Stabilize onConfirm callback
+  const stableOnConfirm = useCallback((data: any) => {
+    if (!editingAirEntry) return;
+    
+    console.log('[CANVAS3D ONCONFIRM] Received data from dialog:', data);
+    console.log('[CANVAS3D ONCONFIRM] wallPosition in received data:', data.wallPosition);
+    console.log('🔍 [SAVE CHANGES DEBUG] About to call handleAirEntryEdit');
+    handleAirEntryEdit(editingAirEntry.index, {
+      width: data.width,
+      height: data.height,
+      distanceToFloor: data.distanceToFloor,
+      shape: data.shape,
+      wallPosition: data.wallPosition,
+      properties: data.properties
+    } as any);
+    console.log('🔍 [SAVE CHANGES DEBUG] handleAirEntryEdit completed - checking for side effects');
+    
+    // Add timeout to check for delayed effects that might cause texture loss
+    setTimeout(() => {
+      console.log('🔍 [SAVE CHANGES DEBUG] 100ms after Save Changes - checking scene state');
+      if (sceneRef.current) {
+        const airEntryMeshes: any[] = [];
+        sceneRef.current.traverse((object: any) => {
+          if (object.userData && ["door", "window", "vent"].includes(object.userData.type)) {
+            airEntryMeshes.push(object);
+          }
+        });
+        console.log('🔍 [SAVE CHANGES DEBUG] AirEntry meshes found:', airEntryMeshes.length);
+        airEntryMeshes.forEach((mesh, i) => {
+          const material = mesh.material;
+          console.log(`🔍 [SAVE CHANGES DEBUG] Mesh ${i} material:`, {
+            hasMap: !!material?.map,
+            opacity: material?.opacity,
+            type: mesh.userData?.type
+          });
+        });
+      }
+    }, 100);
+  }, [editingAirEntry, handleAirEntryEdit]);
 
   useEffect(() => {
     // Scene rebuild using store data when available, fallback to props
@@ -6114,44 +6158,9 @@ export default function Canvas3D({
         <AirEntryDialog
           type={editingAirEntry.entry.type}
           isOpen={true}
-          onClose={() => setEditingAirEntry(null)}
-          onCancel={() => setEditingAirEntry(null)}
-          onConfirm={(data) => {
-            console.log('[CANVAS3D ONCONFIRM] Received data from dialog:', data);
-            console.log('[CANVAS3D ONCONFIRM] wallPosition in received data:', data.wallPosition);
-            console.log('🔍 [SAVE CHANGES DEBUG] About to call handleAirEntryEdit');
-            handleAirEntryEdit(editingAirEntry.index, {
-              width: data.width,
-              height: data.height,
-              distanceToFloor: data.distanceToFloor,
-              shape: data.shape,
-              wallPosition: data.wallPosition,
-              properties: data.properties
-            } as any);
-            console.log('🔍 [SAVE CHANGES DEBUG] handleAirEntryEdit completed - checking for side effects');
-            
-            // Add timeout to check for delayed effects that might cause texture loss
-            setTimeout(() => {
-              console.log('🔍 [SAVE CHANGES DEBUG] 100ms after Save Changes - checking scene state');
-              if (sceneRef.current) {
-                const airEntryMeshes: any[] = [];
-                sceneRef.current.traverse((object: any) => {
-                  if (object.userData && ["door", "window", "vent"].includes(object.userData.type)) {
-                    airEntryMeshes.push(object);
-                  }
-                });
-                console.log('🔍 [SAVE CHANGES DEBUG] AirEntry meshes found:', airEntryMeshes.length);
-                airEntryMeshes.forEach((mesh, i) => {
-                  const material = mesh.material;
-                  console.log(`🔍 [SAVE CHANGES DEBUG] Mesh ${i} material:`, {
-                    hasMap: !!material?.map,
-                    opacity: material?.opacity,
-                    type: mesh.userData?.type
-                  });
-                });
-              }
-            }, 100);
-          }}
+          onClose={stableOnClose}
+          onCancel={stableOnCancel}
+          onConfirm={stableOnConfirm}
           initialValues={stableInitialValues}
           airEntryIndex={editingAirEntry.index}
           currentFloor={currentFloor}
