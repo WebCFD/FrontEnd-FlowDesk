@@ -1,0 +1,131 @@
+client:495 [vite] connecting...
+client:614 [vite] connected.
+chunk-WERSD76P.js?v=cfa7cc5f:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+AnalyticsProvider.tsx:21 Analytics initialized: false
+chunk-WERSD76P.js?v=cfa7cc5f:377 [Violation] 'message' handler took 249ms
+dashboard-sidebar.tsx:65 
+            
+            
+           GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+fetchUserData @ dashboard-sidebar.tsx:65
+(anonymous) @ dashboard-sidebar.tsx:80
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18868
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19432
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+finishConcurrentRender @ chunk-WERSD76P.js?v=cfa7cc5f:18805
+performConcurrentWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18718
+workLoop @ chunk-WERSD76P.js?v=cfa7cc5f:197
+flushWork @ chunk-WERSD76P.js?v=cfa7cc5f:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=cfa7cc5f:384
+analytics.ts:26 Google Analytics initialized with ID: G-XZYY9DVVHW
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+AnalyticsProvider.tsx:21 Analytics initialized: true
+RoomSketchPro.tsx:792 ✅ [TRANSPARENCY UPDATE] Preserving existing material properties, only updating opacity
+RoomSketchPro.tsx:793 ✅ [TRANSPARENCY UPDATE] Material has texture: true
+RoomSketchPro.tsx:792 ✅ [TRANSPARENCY UPDATE] Preserving existing material properties, only updating opacity
+RoomSketchPro.tsx:793 ✅ [TRANSPARENCY UPDATE] Material has texture: true
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 199ms
+Canvas3D.tsx:4603 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4613 Double-click found entry using stored entryIndex: 0
+AirEntryDialog.tsx:335 🔍 LOADING EDITING VALUES - Full initialValues: {
+  "width": 124,
+  "height": 95,
+  "distanceToFloor": 154,
+  "shape": "rectangular",
+  "wallPosition": 39,
+  "properties": {
+    "flowType": "massflow",
+    "flowValue": 0.5,
+    "flowIntensity": "medium",
+    "airOrientation": "inflow",
+    "wallPosition": 53
+  },
+  "position": {
+    "x": 429.777266109303,
+    "y": 97.31040272615682
+  }
+}
+AirEntryDialog.tsx:342 ✅ WIDTH LOADING - Found saved width: 124
+AirEntryDialog.tsx:348 🔍 WALL POSITION LOADING - Checking sources:
+AirEntryDialog.tsx:349   - properties?.wallPosition: 53
+AirEntryDialog.tsx:350   - direct wallPosition: 39
+AirEntryDialog.tsx:351   - Final savedWallPosition: 53
+AirEntryDialog.tsx:362 ✅ WALL POSITION LOADING - Using saved value: 53
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
+Canvas3D.tsx:1462 📍 [AIRENTRY DIRECT] Updating position directly for vent - oldZ: 154, newZ: 155
+Canvas3D.tsx:1464 ✅ [AIRENTRY DIRECT] Position updated successfully
+Canvas3D.tsx:1468 💾 [AIRENTRY DIRECT] Updating userData for vent
+Canvas3D.tsx:1470 ✅ [AIRENTRY DIRECT] UserData updated successfully
+Canvas3D.tsx:1462 📍 [AIRENTRY DIRECT] Updating position directly for vent - oldZ: 155, newZ: 156
+Canvas3D.tsx:1464 ✅ [AIRENTRY DIRECT] Position updated successfully
+Canvas3D.tsx:1468 💾 [AIRENTRY DIRECT] Updating userData for vent
+Canvas3D.tsx:1470 ✅ [AIRENTRY DIRECT] UserData updated successfully
+RoomSketchPro.tsx:856 ✅ [RSP OPTIMIZED] AirEntry update received - no propagation needed
+RoomSketchPro.tsx:857 ✅ [RSP OPTIMIZED] Floor: ground Index: 0
+RoomSketchPro.tsx:858 ✅ [RSP OPTIMIZED] Updated distanceToFloor: 156
+RoomSketchPro.tsx:859 ✅ [RSP OPTIMIZED] Textures preserved automatically - no scene regeneration
+Canvas3D.tsx:1482 🚀 [OPTIMIZATION] No callback needed - AirEntry works like furniture with direct modification
+Canvas3D.tsx:1483 ✅ [OPTIMIZATION] Textures preserved automatically during real-time updates
+RoomSketchPro.tsx:866 🔍 [RSP DEBUG] 200ms after AirEntry update - checking for side effects
+RoomSketchPro.tsx:874 🔍 [RSP DEBUG] AirEntry meshes in RSP scene: 2
+RoomSketchPro.tsx:877 🔍 [RSP DEBUG] RSP Mesh 0: {hasTexture: true, opacity: 1, type: 'vent'}
+RoomSketchPro.tsx:877 🔍 [RSP DEBUG] RSP Mesh 1: {hasTexture: true, opacity: 1, type: 'window'}
+AirEntryDialog.tsx:519 📝 FORM SUBMIT - Current form values: {width: 124, height: 95, distanceToFloor: 156, shape: 'rectangular', wallPosition: 39, …}
+AirEntryDialog.tsx:520 📝 FORM SUBMIT - Current wallPosition state: 53
+AirEntryDialog.tsx:521 📝 FORM SUBMIT - Current distanceToFloor state: 156
+AirEntryDialog.tsx:549 📦 FORM SUBMIT - Final airEntryData being sent: {
+  "width": 124,
+  "height": 95,
+  "diameter": null,
+  "distanceToFloor": 156,
+  "shape": "rectangular",
+  "isOpen": true,
+  "temperature": 20,
+  "airDirection": "inflow",
+  "flowIntensity": "medium",
+  "customIntensityValue": null,
+  "ventFlowType": "massflow",
+  "airOrientation": {
+    "verticalAngle": 0,
+    "horizontalAngle": 0
+  },
+  "wallPosition": 39,
+  "position": {
+    "x": 429.777266109303,
+    "y": 97.31040272615682
+  }
+}
+AirEntryDialog.tsx:572 💾 SIMULATION PROPERTIES SAVE - Final properties: {flowType: 'massflow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', wallPosition: 39}
+Canvas3D.tsx:5939 [CANVAS3D ONCONFIRM] Received data from dialog: {width: 124, height: 95, distanceToFloor: 156, shape: 'rectangular', wallPosition: 39, …}
+Canvas3D.tsx:5940 [CANVAS3D ONCONFIRM] wallPosition in received data: 39
+Canvas3D.tsx:5941 🔍 [SAVE CHANGES DEBUG] About to call handleAirEntryEdit
+Canvas3D.tsx:1862 [DIMENSION STORAGE] Stored dimensions for entry 0: {"position":{"x":429.777266109303,"y":97.31040272615682},"dimensions":{"width":124,"height":95,"distanceToFloor":156,"shape":"rectangular","wallPosition":39}}
+Canvas3D.tsx:1864 [WALL POSITION STORAGE] wallPosition in data: 39
+Canvas3D.tsx:1865 [WALL POSITION STORAGE] wallPosition in updatedEntry.dimensions: 39
+Canvas3D.tsx:1868 💾 [SAVE CHANGES] Pure data commit - only saving values to store
+Canvas3D.tsx:1869 💾 [SAVE CHANGES] Floor: ground Index: 0
+Canvas3D.tsx:1870 💾 [SAVE CHANGES] Stored distanceToFloor: 156
+Canvas3D.tsx:1871 💾 [SAVE CHANGES] Geometry already modified during real-time updates
+Canvas3D.tsx:1872 💾 [SAVE CHANGES] Textures already applied by RSP - no modifications needed
+Canvas3D.tsx:1875 ✅ [SAVE CHANGES] Data commit complete - no visual effects triggered
+Canvas3D.tsx:1876 ✅ [SAVE CHANGES] Textures and geometry preserved automatically
+Canvas3D.tsx:5950 🔍 [SAVE CHANGES DEBUG] handleAirEntryEdit completed - checking for side effects
+Canvas3D.tsx:5954 🔍 [SAVE CHANGES DEBUG] 100ms after Save Changes - checking scene state
+Canvas3D.tsx:5962 🔍 [SAVE CHANGES DEBUG] AirEntry meshes found: 2
+Canvas3D.tsx:5965 🔍 [SAVE CHANGES DEBUG] Mesh 0 material: {hasMap: false, opacity: 0.7, type: 'vent'}
+Canvas3D.tsx:5965 🔍 [SAVE CHANGES DEBUG] Mesh 1 material: {hasMap: false, opacity: 0.7, type: 'window'}

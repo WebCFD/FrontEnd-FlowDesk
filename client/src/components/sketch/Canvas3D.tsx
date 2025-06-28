@@ -1870,10 +1870,50 @@ export default function Canvas3D({
     console.log('💾 [SAVE CHANGES] Stored distanceToFloor:', updatedEntry.dimensions.distanceToFloor);
     console.log('💾 [SAVE CHANGES] Geometry already modified during real-time updates');
     console.log('💾 [SAVE CHANGES] Textures already applied by RSP - no modifications needed');
+    
+    // Check texture state BEFORE setEditingAirEntry(null)
+    if (sceneRef.current) {
+      const airEntryMeshes: any[] = [];
+      sceneRef.current.traverse((object: any) => {
+        if (object.userData && ["door", "window", "vent"].includes(object.userData.type)) {
+          airEntryMeshes.push(object);
+        }
+      });
+      airEntryMeshes.forEach((mesh, i) => {
+        const material = mesh.material;
+        console.log(`🔍 [BEFORE CLOSE] Mesh ${i} material:`, {
+          hasMap: !!material?.map,
+          opacity: material?.opacity,
+          type: mesh.userData?.type
+        });
+      });
+    }
+    
     setEditingAirEntry(null);
     
-    console.log('✅ [SAVE CHANGES] Data commit complete - no visual effects triggered');
-    console.log('✅ [SAVE CHANGES] Textures and geometry preserved automatically');
+    // Check texture state IMMEDIATELY AFTER setEditingAirEntry(null)
+    setTimeout(() => {
+      console.log('🔍 [AFTER CLOSE] Checking textures immediately after dialog close');
+      if (sceneRef.current) {
+        const airEntryMeshes: any[] = [];
+        sceneRef.current.traverse((object: any) => {
+          if (object.userData && ["door", "window", "vent"].includes(object.userData.type)) {
+            airEntryMeshes.push(object);
+          }
+        });
+        airEntryMeshes.forEach((mesh, i) => {
+          const material = mesh.material;
+          console.log(`🔍 [AFTER CLOSE] Mesh ${i} material:`, {
+            hasMap: !!material?.map,
+            opacity: material?.opacity,
+            type: mesh.userData?.type
+          });
+        });
+      }
+    }, 0);
+    
+    console.log('✅ [SAVE CHANGES] Data commit complete - monitoring for texture loss');
+    console.log('✅ [SAVE CHANGES] Dialog closed - checking for side effects');
   };
 
   // New function to create stair mesh
