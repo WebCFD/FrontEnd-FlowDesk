@@ -1,0 +1,1981 @@
+analytics.ts:62 📊 Analytics Event: {category: 'ui_interaction', action: 'change_tab', label: 'view_2d_editor', value: undefined, status: 'sent'}
+wizard-design.tsx:2561 📊 WIZARD: Pasando airEntries a Canvas2D
+wizard-design.tsx:2562 📊 WIZARD: rawFloors[ground] existe: true
+wizard-design.tsx:2563 📊 WIZARD: rawFloors[ground]?.airEntries length: 1
+wizard-design.tsx:2564 📊 WIZARD: fallback airEntries length: 1
+wizard-design.tsx:2565 📊 WIZARD: Usando rawAirEntries: SÍ (rawFloors)
+wizard-design.tsx:2568 📊 WIZARD: Primer airEntry enviado a Canvas2D - posición: (684.5155848099347, 42.01276434901955)
+Canvas3D.tsx:1300 🔗 Canvas3D: Desregistrando suscripción para piso 'ground'
+room-store.ts:477 🔗 STORE: Suscripción eliminada. Total listeners: 0
+Canvas2D.tsx:408 🔗 Canvas2D: Registrando suscripción para piso 'ground'
+room-store.ts:469 🔗 STORE: Nueva suscripción añadida. Total listeners: 1
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+wizard-design.tsx:2561 📊 WIZARD: Pasando airEntries a Canvas2D
+wizard-design.tsx:2562 📊 WIZARD: rawFloors[ground] existe: true
+wizard-design.tsx:2563 📊 WIZARD: rawFloors[ground]?.airEntries length: 1
+wizard-design.tsx:2564 📊 WIZARD: fallback airEntries length: 1
+wizard-design.tsx:2565 📊 WIZARD: Usando rawAirEntries: SÍ (rawFloors)
+wizard-design.tsx:2568 📊 WIZARD: Primer airEntry enviado a Canvas2D - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+wizard-design:1 [.WebGL-0x2c640ebdb100] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x2c640ebdb100] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x2c640ebdb100] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x2c640ebdb100] GL_INVALID_OPERATION: Texture is immutable.
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+Canvas2D.tsx:2577 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+Canvas2D.tsx:2579 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2582 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2566 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+Canvas2D.tsx:2567 🎨 Canvas2D: forceRedraw actual: 0
+Canvas2D.tsx:2570 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+Canvas2D.tsx:2574 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: RENDERIZANDO airEntries - total: 1
+ 🎨 Canvas2D: forceRedraw actual: 0
+ 🎨 Canvas2D: Dibujando airEntry 0 - tipo: vent, posición: (684.5155848099347, 42.01276434901955)
+ 🎨 Canvas2D: Dibujo de airEntries completado
+ 📊 Canvas2D: COMPARACIÓN - airEntries.length (props): 1, getCurrentAirEntries().length: 1
+ 📊 Canvas2D: Primer airEntry de props - posición: (684.5155848099347, 42.01276434901955)
+ 📊 Canvas2D: Primer airEntry renderizado - posición: (684.5155848099347, 42.01276434901955)
