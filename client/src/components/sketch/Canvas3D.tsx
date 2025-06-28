@@ -1873,11 +1873,14 @@ export default function Canvas3D({
     console.log('💾 [SAVE CHANGES] Floor:', currentFloor, 'Index:', index);
     console.log('💾 [SAVE CHANGES] updatedEntry.dimensions:', updatedEntry.dimensions);
     console.log('💾 [SAVE CHANGES] wallPosition in updatedEntry.dimensions:', updatedEntry.dimensions.wallPosition);
-    console.log('💾 [SAVE CHANGES] About to call onUpdateAirEntry callback');
+    console.log('🔵 [3D SAVE PROBLEM] About to call onUpdateAirEntry callback');
+    console.log('🔵 [3D SAVE PROBLEM] This should update store AND sync to 2D view');
+    console.log('🔵 [3D SAVE PROBLEM] updatedEntry being sent:', updatedEntry);
+    console.log('🔵 [3D SAVE PROBLEM] wallPosition being sent:', updatedEntry.dimensions?.wallPosition);
     
     // Call the callback to update the store
     onUpdateAirEntry(currentFloor, index, updatedEntry);
-    console.log('💾 [SAVE CHANGES] onUpdateAirEntry callback completed');
+    console.log('🔵 [3D SAVE PROBLEM] onUpdateAirEntry callback completed - should sync to 2D');
     
     // Check texture state BEFORE setEditingAirEntry(null)
     if (sceneRef.current) {

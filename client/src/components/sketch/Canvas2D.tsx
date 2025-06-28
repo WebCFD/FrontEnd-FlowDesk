@@ -310,6 +310,15 @@ export default function Canvas2D({
   onStairPolygonsUpdate,
   onLineSelect,
 }: Canvas2DProps) {
+  
+  // CRITICAL: Track view switching behavior 
+  console.log("🟡 [VIEW SWITCH TRACK] Canvas2D rendered with airEntries:", airEntries?.length || 0);
+  console.log("🟡 [VIEW SWITCH TRACK] Current floor:", currentFloor);
+  if (airEntries?.length > 0) {
+    console.log("🟡 [VIEW SWITCH TRACK] First airEntry:", airEntries[0]);
+    console.log("🟡 [VIEW SWITCH TRACK] First airEntry position:", airEntries[0]?.position);
+    console.log("🟡 [VIEW SWITCH TRACK] First airEntry wallPosition:", airEntries[0]?.dimensions?.wallPosition);
+  }
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
@@ -3288,9 +3297,11 @@ export default function Canvas2D({
       };
     },
   ) => {
-    console.log("🔍 [CANVAS2D EDIT] Received data:", data);
-    console.log("🔍 [CANVAS2D EDIT] data.wallPosition:", data.wallPosition);
-    console.log("🔍 [CANVAS2D EDIT] data.position:", data.position);
+    console.log("🔴 [2D SAVE PROBLEM] Canvas2D handleAirEntryEdit called");
+    console.log("🔴 [2D SAVE PROBLEM] Index:", index);
+    console.log("🔴 [2D SAVE PROBLEM] Received data:", data);
+    console.log("🔴 [2D SAVE PROBLEM] data.wallPosition:", data.wallPosition);
+    console.log("🔴 [2D SAVE PROBLEM] data.position:", data.position);
     
     const editingEntry = editingAirEntries.find(entry => entry.index === index);
     if (!editingEntry) return;
@@ -3311,11 +3322,15 @@ export default function Canvas2D({
       ...(data.properties && { properties: data.properties }),
     };
 
-    console.log("🔍 [CANVAS2D EDIT] Final updatedAirEntries[index]:", updatedAirEntries[index]);
-    console.log("🔍 [CANVAS2D EDIT] About to call onAirEntriesUpdate with:", updatedAirEntries);
+    console.log("🔴 [2D SAVE PROBLEM] Final entry being saved:", updatedAirEntries[index]);
+    console.log("🔴 [2D SAVE PROBLEM] Final entry position:", updatedAirEntries[index].position);
+    console.log("🔴 [2D SAVE PROBLEM] Final entry wallPosition:", updatedAirEntries[index].dimensions?.wallPosition);
+    console.log("🔴 [2D SAVE PROBLEM] About to call onAirEntriesUpdate - this should persist to store");
     
     onAirEntriesUpdate?.(updatedAirEntries);
     setEditingAirEntries(prev => prev.filter(entry => entry.index !== index)); // Close dialog - element is preserved
+    
+    console.log("🔴 [2D SAVE PROBLEM] Save complete - checking if element reverts in draw cycle");
   };
 
   // Phase 2: Dialog Management Functions
