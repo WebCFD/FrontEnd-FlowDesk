@@ -406,16 +406,9 @@ export default function Canvas2D({
   
   useEffect(() => {
     const unsubscribe = subscribeToAirEntryChanges((floorName, index, updatedEntry) => {
-      console.log(`🔥 [CANVAS2D RSP] Received store notification - Floor: ${floorName}, Index: ${index}, Type: ${updatedEntry.type}`);
-      console.log(`🔥 [CANVAS2D RSP] Position: (${updatedEntry.position.x}, ${updatedEntry.position.y}), CurrentFloor: ${currentFloor}`);
-      
       // Only update if this change affects our current floor
-      if (floorName !== currentFloor) {
-        console.log(`🔥 [CANVAS2D RSP] Ignoring - not current floor`);
-        return;
-      }
+      if (floorName !== currentFloor) return;
       
-      console.log(`🔥 [CANVAS2D RSP] Forcing Canvas2D redraw...`);
       // Force re-render by updating state
       setForceRedraw(prev => prev + 1);
     });
@@ -3377,18 +3370,15 @@ export default function Canvas2D({
 
   // Phase 2: Dialog Management Functions
   const openAirEntryDialog = (airEntry: { index: number; entry: AirEntry }) => {
-    console.log('🔍 [WIDTH DEBUG] Canvas2D openAirEntryDialog called with:', airEntry);
-    console.log('🔍 [WIDTH DEBUG] Canvas2D airEntry.entry data:', airEntry.entry);
-    console.log('🔍 [WIDTH DEBUG] Canvas2D airEntry.entry.dimensions:', airEntry.entry.dimensions);
-    console.log('🔍 [WIDTH DEBUG] Canvas2D airEntry.entry.dimensions.width:', airEntry.entry.dimensions?.width);
 
+    
     const isAlreadyOpen = editingAirEntries.some(entry => entry.index === airEntry.index);
 
+    
     if (!isAlreadyOpen) {
       // Phase 3: Calculate position for new dialog
       const dialogPosition = calculateDialogPosition(editingAirEntries.length);
 
-      console.log('🔍 [WIDTH DEBUG] Canvas2D setting editingAirEntries with data:', { ...airEntry, position: dialogPosition });
       setEditingAirEntries(prev => [...prev, { ...airEntry, position: dialogPosition }]);
     }
   };
@@ -3579,25 +3569,13 @@ export default function Canvas2D({
             // Save Changes: Update element properties and close dialog
             handleAirEntryEdit(editingAirEntry.index, data as any);
           }}
-          initialValues={(() => {
-            const initialVals = {
-              ...editingAirEntry.entry.dimensions,
-              shape: (editingAirEntry.entry.dimensions as any).shape,
-              properties: (editingAirEntry.entry as any).properties,
-              position: editingAirEntry.entry.position,
-              wallPosition: (editingAirEntry.entry.dimensions as any).wallPosition || (editingAirEntry.entry as any).properties?.wallPosition
-            };
-            
-            console.log('🔍 [WIDTH DEBUG] Canvas2D constructing initialValues for dialog:');
-            console.log('🔍 [WIDTH DEBUG] editingAirEntry.entry:', editingAirEntry.entry);
-            console.log('🔍 [WIDTH DEBUG] editingAirEntry.entry.dimensions:', editingAirEntry.entry.dimensions);
-            console.log('🔍 [WIDTH DEBUG] dimensions.width:', editingAirEntry.entry.dimensions?.width);
-            console.log('🔍 [WIDTH DEBUG] dimensions.height:', editingAirEntry.entry.dimensions?.height);
-            console.log('🔍 [WIDTH DEBUG] Final initialValues object:', initialVals);
-            console.log('🔍 [WIDTH DEBUG] Final initialValues.width:', initialVals.width);
-            
-            return initialVals;
-          })()}
+          initialValues={{
+            ...editingAirEntry.entry.dimensions,
+            shape: (editingAirEntry.entry.dimensions as any).shape,
+            properties: (editingAirEntry.entry as any).properties,
+            position: editingAirEntry.entry.position,
+            wallPosition: (editingAirEntry.entry.dimensions as any).wallPosition || (editingAirEntry.entry as any).properties?.wallPosition
+          } as any}
           airEntryIndex={editingAirEntry.index}
           currentFloor={currentFloor}
           isEditing={true}
@@ -3625,7 +3603,7 @@ export default function Canvas2D({
             handleAirEntryPositionUpdate(editingAirEntry.index, newPosition);
           }}
           onDimensionsUpdate={(newDimensions) => {
-            // Actualizar las dimensiones del Air Entry en tiempo real
+            // FIXED: Removed infinite loop - only update parent state, not local editingAirEntries
             const updatedAirEntries = [...airEntries];
             updatedAirEntries[editingAirEntry.index] = {
               ...editingAirEntry.entry,
@@ -3636,19 +3614,8 @@ export default function Canvas2D({
             };
             onAirEntriesUpdate?.(updatedAirEntries);
             
-            // También actualizar el estado local para que el diálogo mantenga la referencia correcta
-            setEditingAirEntries(prev => prev.map(item => 
-              item.index === editingAirEntry.index ? {
-                ...item,
-                entry: {
-                  ...item.entry,
-                  dimensions: {
-                    ...item.entry.dimensions,
-                    ...newDimensions
-                  }
-                }
-              } : item
-            ));
+            // REMOVED: setEditingAirEntries update that caused infinite re-renders
+            // The parent state update will handle the re-render correctly
           }}
         />
       ))}

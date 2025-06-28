@@ -1110,11 +1110,6 @@ export default function WizardDesign() {
     index: number,
     updatedEntry: AirEntry,
   ) => {
-    console.log(`🔥 [RSP FLOW] handleUpdateAirEntryFrom3D called from RSP`);
-    console.log(`🔥 [RSP FLOW] Floor: ${floorName}, Index: ${index}, Type: ${updatedEntry.type}`);
-    console.log(`🔥 [RSP FLOW] Position: (${updatedEntry.position.x}, ${updatedEntry.position.y})`);
-    console.log(`🔥 [RSP FLOW] WallPosition: ${updatedEntry.dimensions?.wallPosition}`);
-    console.log(`🔥 [RSP FLOW] About to update store with RSP changes...`);
     
     // CRITICAL FIX: Preserve wallPosition from existing store data
     const existingEntry = airEntries[index];
@@ -2530,12 +2525,7 @@ export default function WizardDesign() {
               onToggleFurnitureEraserMode={handleToggleFurnitureEraserMode}
               // Add onFloorsUpdate callback to enable 2D vent real-time updates in RSP
               onFloorsUpdate={(updatedFloors) => {
-                console.log('🔥 [SCENE REGENERATION] wizard-design: Received floors update from RSP - THIS CAUSES SCENE REBUILD');
-                console.log('🔥 [SCENE REGENERATION] Stack trace:', new Error().stack?.split('\n')[1]?.trim());
-                console.log('🔥 [SCENE REGENERATION] Updated floors keys:', Object.keys(updatedFloors));
-                console.log('🔥 [SCENE REGENERATION] Current floor airEntries count:', updatedFloors[currentFloor]?.airEntries?.length);
                 useRoomStore.getState().setFloors(updatedFloors);
-                console.log('🔥 [SCENE REGENERATION] Store updated - this will trigger RSP geometry rebuild');
               }}
               // Pass wizard scene callback to RoomSketchPro for proper scene reference
               onWizardSceneReady={(scene) => {

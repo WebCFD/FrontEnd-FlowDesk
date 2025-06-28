@@ -422,9 +422,6 @@ export const useRoomStore = create<RoomState>()(
 
         // Reactive AirEntry synchronization system
         updateAirEntry: (floorName: string, index: number, entry: AirEntry) => {
-          console.log(`🔥 [RSP STORE] updateAirEntry called - Floor: ${floorName}, Index: ${index}, Type: ${entry.type}`);
-          console.log(`🔥 [RSP STORE] Position: (${entry.position.x}, ${entry.position.y}), WallPosition: ${entry.dimensions?.wallPosition}`);
-          console.log(`🔥 [RSP STORE] This should propagate to Canvas3D and Canvas2D...`);
           
           set((state) => {
             const updatedFloors = { ...state.floors };
