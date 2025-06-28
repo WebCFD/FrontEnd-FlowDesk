@@ -324,9 +324,14 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   // Inicializar valores cuando se abre el diálogo
   useEffect(() => {
     if (dialogOpen) {
+      console.log('🔍 [WIDTH DEBUG] Dialog opened, dialogOpen:', dialogOpen, 'isEditing:', isEditing);
+      
       if (isEditing) {
         // En modo edición, usar los valores actuales del elemento
         const airEntryProps = props as AirEntryDialogProps;
+        console.log('🔍 [WIDTH DEBUG] AirEntry props:', airEntryProps);
+        console.log('🔍 [WIDTH DEBUG] Initial values received:', airEntryProps.initialValues);
+        
         if (airEntryProps.initialValues) {
           const initialDistanceToFloor = airEntryProps.initialValues.distanceToFloor || 0;
           setDistanceToFloor(initialDistanceToFloor);
@@ -335,13 +340,30 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           const savedWallPosition = (airEntryProps.initialValues as any).properties?.wallPosition || 
                                   (airEntryProps.initialValues as any).wallPosition;
           
-          // CRITICAL FIX: Set complete initialValues including width/height for persistence
-          setValues(prev => ({ 
-            ...prev,
-            ...airEntryProps.initialValues, // Include all initial values (width, height, etc.)
+          console.log('🔍 [WIDTH DEBUG] Setting values with:', {
+            prev: 'will be merged',
+            initialValues: airEntryProps.initialValues,
+            width: airEntryProps.initialValues.width,
+            height: airEntryProps.initialValues.height,
             distanceToFloor: initialDistanceToFloor,
-            wallPosition: savedWallPosition 
-          }));
+            wallPosition: savedWallPosition
+          });
+          
+          // CRITICAL FIX: Set complete initialValues including width/height for persistence
+          setValues(prev => {
+            const newValues = { 
+              ...prev,
+              ...airEntryProps.initialValues, // Include all initial values (width, height, etc.)
+              distanceToFloor: initialDistanceToFloor,
+              wallPosition: savedWallPosition 
+            };
+            
+            console.log('🔍 [WIDTH DEBUG] Previous values:', prev);
+            console.log('🔍 [WIDTH DEBUG] New values after merge:', newValues);
+            console.log('🔍 [WIDTH DEBUG] Final width value:', newValues.width);
+            
+            return newValues;
+          });
           
           // If we have a saved wallPosition, use it directly
           if (savedWallPosition !== undefined && savedWallPosition !== null) {
@@ -425,20 +447,36 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
       ? props.initialValues 
       : props.initialValues;
 
-    if (initialValues) return initialValues;
+    console.log('🔍 [WIDTH DEBUG] getDefaultValues called');
+    console.log('🔍 [WIDTH DEBUG] getDefaultValues - props.type:', props.type);
+    console.log('🔍 [WIDTH DEBUG] getDefaultValues - props.initialValues:', props.initialValues);
+    console.log('🔍 [WIDTH DEBUG] getDefaultValues - extracted initialValues:', initialValues);
 
+    if (initialValues) {
+      console.log('🔍 [WIDTH DEBUG] getDefaultValues - returning initialValues:', initialValues);
+      return initialValues;
+    }
+
+    let defaults;
     switch (type) {
       case 'window':
-        return { ...windowDefaults };
+        defaults = { ...windowDefaults };
+        break;
       case 'door':
-        return { ...doorDefaults };
+        defaults = { ...doorDefaults };
+        break;
       case 'vent':
-        return { ...ventDefaults };
+        defaults = { ...ventDefaults };
+        break;
       case 'wall':
-        return { ...wallDefaults };
+        defaults = { ...wallDefaults };
+        break;
       default:
-        return { ...windowDefaults };
+        defaults = { ...windowDefaults };
     }
+    
+    console.log('🔍 [WIDTH DEBUG] getDefaultValues - returning defaults for type', type, ':', defaults);
+    return defaults;
   }
 
   // Reset values when dialog opens with new type or initialValues
@@ -1184,10 +1222,22 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                             <Input
                               id="width"
                               type="number"
-                              value={(values as { width: number }).width}
+                              value={(() => {
+                                const widthValue = (values as { width: number }).width;
+                                console.log('🔍 [WIDTH DEBUG] Width field render - values state:', values);
+                                console.log('🔍 [WIDTH DEBUG] Width field render - extracted width:', widthValue);
+                                console.log('🔍 [WIDTH DEBUG] Width field render - typeof width:', typeof widthValue);
+                                return widthValue;
+                              })()}
                               onChange={(e) => {
                                 const newWidth = Number(e.target.value);
-                                setValues(prev => ({ ...prev, width: newWidth }));
+                                console.log('🔍 [WIDTH DEBUG] Width field onChange - new value:', newWidth);
+                                setValues(prev => {
+                                  console.log('🔍 [WIDTH DEBUG] Width field onChange - prev values:', prev);
+                                  const updated = { ...prev, width: newWidth };
+                                  console.log('🔍 [WIDTH DEBUG] Width field onChange - updated values:', updated);
+                                  return updated;
+                                });
                                 
                                 // Real-time dimension updates
                                 if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
