@@ -310,15 +310,7 @@ export default function Canvas2D({
   onStairPolygonsUpdate,
   onLineSelect,
 }: Canvas2DProps) {
-  
-  // CRITICAL: Track view switching behavior 
-  console.log("🟡 [VIEW SWITCH TRACK] Canvas2D rendered with airEntries:", airEntries?.length || 0);
-  console.log("🟡 [VIEW SWITCH TRACK] Current floor:", currentFloor);
-  if (airEntries?.length > 0) {
-    console.log("🟡 [VIEW SWITCH TRACK] First airEntry:", airEntries[0]);
-    console.log("🟡 [VIEW SWITCH TRACK] First airEntry position:", airEntries[0]?.position);
-    console.log("🟡 [VIEW SWITCH TRACK] First airEntry wallPosition:", airEntries[0]?.dimensions?.wallPosition);
-  }
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
@@ -960,28 +952,14 @@ export default function Canvas2D({
 
   // Helper function to get the most current air entry data for drawing
   const getCurrentAirEntries = (): AirEntry[] => {
-    console.log("🟢 [DRAW CYCLE] getCurrentAirEntries called");
-    console.log("🟢 [DRAW CYCLE] airEntries prop length:", airEntries.length);
-    console.log("🟢 [DRAW CYCLE] editingAirEntries length:", editingAirEntries.length);
-    
     const currentEntries = [...airEntries];
     
     // Apply any real-time updates from editingAirEntries
     editingAirEntries.forEach(editingItem => {
-      console.log("🟢 [DRAW CYCLE] Applying editing item at index:", editingItem.index);
-      console.log("🟢 [DRAW CYCLE] Editing item position:", editingItem.entry.position);
-      console.log("🟢 [DRAW CYCLE] Editing item wallPosition:", editingItem.entry.dimensions?.wallPosition);
-      
       if (editingItem.index >= 0 && editingItem.index < currentEntries.length) {
         currentEntries[editingItem.index] = editingItem.entry;
       }
     });
-    
-    console.log("🟢 [DRAW CYCLE] Final currentEntries length:", currentEntries.length);
-    if (currentEntries.length > 0) {
-      console.log("🟢 [DRAW CYCLE] First entry final position:", currentEntries[0]?.position);
-      console.log("🟢 [DRAW CYCLE] First entry final wallPosition:", currentEntries[0]?.dimensions?.wallPosition);
-    }
     
     return currentEntries;
   };
