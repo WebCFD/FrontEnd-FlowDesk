@@ -50,6 +50,7 @@ interface RoomSketchProProps {
   onFurnitureAdd?: (floorName: string, item: FurnitureItem) => void;
   onUpdateFurniture?: (floorName: string, index: number, item: FurnitureItem) => void;
   onDeleteFurniture?: (floorName: string, index: number) => void;
+  onUpdateAirEntry?: (floorName: string, index: number, updatedEntry: AirEntry) => void; // CRITICAL: Missing callback for RSP sync
   wallTransparency: number;
   onWallTransparencyChange: (value: number) => void;
   airEntryTransparency?: number;
@@ -82,6 +83,7 @@ export function RoomSketchPro({
   onFurnitureAdd,
   onUpdateFurniture,
   onDeleteFurniture,
+  onUpdateAirEntry, // CRITICAL: Receive callback from wizard-design.tsx
   wallTransparency,
   onWallTransparencyChange,
   airEntryTransparency = 1.0,
@@ -942,7 +944,7 @@ export function RoomSketchPro({
         isFurnitureEraserMode={isFurnitureEraserMode}
         isMultifloor={isMultifloor}
         floorParameters={floorParameters}
-        onUpdateAirEntry={handleUpdateAirEntryFrom3D}
+        onUpdateAirEntry={onUpdateAirEntry}
         onDeleteAirEntry={undefined}
         onSceneReady={handleSceneReady}
         onFurnitureAdded={handleFurnitureAdded} // Callback to re-apply textures when furniture is added
