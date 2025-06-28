@@ -1110,8 +1110,7 @@ export default function WizardDesign() {
     index: number,
     updatedEntry: AirEntry,
   ) => {
-    console.log(`🎯 WIZARD: handleUpdateAirEntryFrom3D llamado - piso: ${floorName}, índice: ${index}`);
-    console.log(`🎯 WIZARD: Datos recibidos del AirEntry:`, updatedEntry);
+    console.log(`🔧 WIZARD: Canvas3D → handleUpdateAirEntryFrom3D`);
     
     // CRITICAL FIX: Preserve wallPosition from existing store data
     const existingEntry = airEntries[index];
@@ -1128,11 +1127,8 @@ export default function WizardDesign() {
       dimensions: preservedDimensions
     };
 
-    console.log(`📝 WIZARD: Entry clonado con wallPosition preservado:`, deepClonedEntry);
-
     // Use the store's setAirEntries function when updating the current floor
     if (floorName === currentFloor) {
-      console.log(`✅ WIZARD: Actualizando piso actual - procediendo con la actualización del store`);
       
       // Create a deep copy of the air entries array with structuredClone
       const updatedAirEntries = airEntries.map((entry, i) =>
@@ -1141,7 +1137,6 @@ export default function WizardDesign() {
 
       // Set the air entries with the deep copy
       setAirEntries(updatedAirEntries);
-      console.log(`📋 WIZARD: setAirEntries ejecutado con nuevo array`);
 
       // Also update the floors data to keep everything in sync
       const updatedFloors = { ...floors };
@@ -1152,17 +1147,11 @@ export default function WizardDesign() {
         };
         // Update floor data in the store
         useRoomStore.getState().setFloors(updatedFloors);
-        console.log(`📋 WIZARD: useRoomStore.setFloors ejecutado`);
       }
 
-      // CRÍTICO: Aquí es donde debería estar la llamada a updateAirEntry para la sincronización
-      console.log(`🚨 WIZARD: CRÍTICO - No se está llamando updateAirEntry del store para la sincronización`);
-      console.log(`🚨 WIZARD: Esto explica por qué no se notifica a otros componentes`);
-      
-      // AGREGANDO SINCRONIZACIÓN: Llamar updateAirEntry para notificar a otros componentes
-      console.log(`🔧 WIZARD: Llamando updateAirEntry para disparar sincronización`);
+      // CRITICAL: Call updateAirEntry to trigger store notifications
+      console.log(`🔧 WIZARD: Calling updateAirEntry to trigger store notifications`);
       useRoomStore.getState().updateAirEntry(floorName, index, deepClonedEntry);
-      console.log(`✅ WIZARD: updateAirEntry completado - debería notificar a Canvas2D, Canvas3D y RSP`);
 
       // Entry updated successfully
 
@@ -2558,14 +2547,23 @@ export default function WizardDesign() {
                 const rawAirEntries = rawFloors[currentFloor]?.airEntries || airEntries;
                 const fallbackAirEntries = airEntries;
                 
-                console.log(`📊 WIZARD: Pasando airEntries a Canvas2D`);
-                console.log(`📊 WIZARD: rawFloors[${currentFloor}] existe:`, !!rawFloors[currentFloor]);
-                console.log(`📊 WIZARD: rawFloors[${currentFloor}]?.airEntries length:`, rawFloors[currentFloor]?.airEntries?.length || 0);
-                console.log(`📊 WIZARD: fallback airEntries length:`, fallbackAirEntries.length);
-                console.log(`📊 WIZARD: Usando rawAirEntries:`, rawAirEntries === rawFloors[currentFloor]?.airEntries ? 'SÍ (rawFloors)' : 'NO (fallback)');
+                // HYPOTHESIS TEST: Compare rawFloors vs store data
+                const storeFloors = useRoomStore.getState().floors;
+                const storeAirEntries = storeFloors[currentFloor]?.airEntries || [];
                 
-                if (rawAirEntries.length > 0) {
-                  console.log(`📊 WIZARD: Primer airEntry enviado a Canvas2D - posición: (${rawAirEntries[0].position.x}, ${rawAirEntries[0].position.y})`);
+                if (rawAirEntries.length > 0 && storeAirEntries.length > 0) {
+                  const rawPos = rawAirEntries[0].position;
+                  const storePos = storeAirEntries[0].position;
+                  const positionsMatch = Math.abs(rawPos.x - storePos.x) < 0.01 && Math.abs(rawPos.y - storePos.y) < 0.01;
+                  
+                  console.log(`🔍 HYPOTHESIS TEST: rawFloors vs store data synchronization`);
+                  console.log(`🔍 rawFloors[${currentFloor}] position: (${rawPos.x}, ${rawPos.y})`);
+                  console.log(`🔍 store.floors[${currentFloor}] position: (${storePos.x}, ${storePos.y})`);
+                  console.log(`🔍 DATA SYNC STATUS: ${positionsMatch ? '✅ SYNCHRONIZED' : '❌ DESYNCHRONIZED'}`);
+                  
+                  if (!positionsMatch) {
+                    console.log(`🚨 CRITICAL: rawFloors and store are out of sync - this explains Canvas2D issue!`);
+                  }
                 }
                 
                 return rawAirEntries;
