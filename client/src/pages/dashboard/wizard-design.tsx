@@ -357,6 +357,29 @@ export default function WizardDesign() {
     console.log('🧠 [FLOORS MEMOIZATION] Computing memoized floors object');
     console.log('🧠 [FLOORS MEMOIZATION] Raw floors reference:', rawFloors);
     
+    // Helper function to normalize floating point numbers to prevent precision errors
+    const normalizeNum = (num: number, precision = 2): number => {
+      return Math.round(num * Math.pow(10, precision)) / Math.pow(10, precision);
+    };
+    
+    // Helper function to normalize objects with floating point values
+    const normalizeObject = (obj: any): any => {
+      if (typeof obj === 'number') {
+        return normalizeNum(obj);
+      }
+      if (Array.isArray(obj)) {
+        return obj.map(normalizeObject);
+      }
+      if (obj && typeof obj === 'object') {
+        const normalized: any = {};
+        Object.keys(obj).forEach(key => {
+          normalized[key] = normalizeObject(obj[key]);
+        });
+        return normalized;
+      }
+      return obj;
+    };
+    
     // Create a stable reference by extracting only structural data
     const structuralFloors: Record<string, any> = {};
     
@@ -364,8 +387,8 @@ export default function WizardDesign() {
       const floorData = rawFloors[floorName];
       if (floorData) {
         structuralFloors[floorName] = {
-          lines: floorData.lines,
-          airEntries: floorData.airEntries?.map(entry => ({
+          lines: normalizeObject(floorData.lines),
+          airEntries: floorData.airEntries?.map(entry => normalizeObject({
             type: entry.type,
             position: entry.position,
             line: entry.line,
@@ -377,17 +400,17 @@ export default function WizardDesign() {
             }
             // Exclude properties to prevent metadata changes from triggering rebuilds
           })),
-          walls: floorData.walls,
-          measurements: floorData.measurements,
+          walls: normalizeObject(floorData.walls),
+          measurements: normalizeObject(floorData.measurements),
           hasClosedContour: floorData.hasClosedContour,
-          stairPolygons: floorData.stairPolygons,
-          furnitureItems: floorData.furnitureItems,
+          stairPolygons: normalizeObject(floorData.stairPolygons),
+          furnitureItems: normalizeObject(floorData.furnitureItems),
           name: floorData.name
         };
       }
     });
     
-    console.log('🧠 [FLOORS MEMOIZATION] Structural floors computed');
+    console.log('🧠 [FLOORS MEMOIZATION] Structural floors computed with normalized values');
     return structuralFloors;
   }, [
     // Dependencies: only structural changes that should trigger scene rebuild
@@ -395,15 +418,31 @@ export default function WizardDesign() {
     ...Object.keys(rawFloors).flatMap(floorName => {
       const floorData = rawFloors[floorName];
       if (!floorData) return [];
+      
+      // Normalize floating point values to prevent precision errors from triggering rebuilds
+      const normalizeNum = (num: number): number => Math.round(num * 100) / 100;
+      
       return [
         JSON.stringify(floorData.lines || []),
         JSON.stringify(floorData.airEntries?.map(e => ({ 
           type: e.type, 
-          position: e.position, 
-          line: e.line,
-          width: e.dimensions.width,
-          height: e.dimensions.height,
-          distanceToFloor: e.dimensions.distanceToFloor,
+          position: {
+            x: normalizeNum(e.position.x),
+            y: normalizeNum(e.position.y)
+          }, 
+          line: {
+            start: {
+              x: normalizeNum(e.line.start.x),
+              y: normalizeNum(e.line.start.y)
+            },
+            end: {
+              x: normalizeNum(e.line.end.x),
+              y: normalizeNum(e.line.end.y)
+            }
+          },
+          width: normalizeNum(e.dimensions.width),
+          height: normalizeNum(e.dimensions.height),
+          distanceToFloor: normalizeNum(e.dimensions.distanceToFloor || 0),
           shape: e.dimensions.shape
         })) || []),
         JSON.stringify(floorData.walls || []),
