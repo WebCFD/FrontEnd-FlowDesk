@@ -203,45 +203,67 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
   // Función para calcular la nueva posición basada en el porcentaje del wall
   const calculatePositionFromPercentage = (percentage: number) => {
-    if (!('wallContext' in props) || !props.wallContext) return null;
+    console.log("🔍 [CALCULATE POSITION] calculatePositionFromPercentage called with:", percentage);
+    
+    if (!('wallContext' in props) || !props.wallContext) {
+      console.log("🔍 [CALCULATE POSITION] No wallContext available - returning null");
+      return null;
+    }
     
     const { wallStart, wallEnd } = props.wallContext;
+    console.log("🔍 [CALCULATE POSITION] Wall coordinates:", { wallStart, wallEnd });
     
     // Obtener el ancho del elemento (solo para Air Entries)
     const elementWidth = props.type === 'window' || props.type === 'door' || props.type === 'vent' ? (values as any).width || 50 : 50; // Default 50cm
+    console.log("🔍 [CALCULATE POSITION] Element width:", elementWidth, "cm");
     
     // Calcular la longitud total del wall
     const wallLength = Math.sqrt(
       Math.pow(wallEnd.x - wallStart.x, 2) + Math.pow(wallEnd.y - wallStart.y, 2)
     );
+    console.log("🔍 [CALCULATE POSITION] Wall length:", wallLength, "pixels");
     
     // Convertir ancho del elemento de cm a pixels (asumiendo PIXELS_TO_CM = 1.25)
     const PIXELS_TO_CM = 1.25;
     const elementWidthPixels = elementWidth / PIXELS_TO_CM;
     const halfElementWidth = elementWidthPixels / 2;
+    console.log("🔍 [CALCULATE POSITION] Element width in pixels:", elementWidthPixels, "half:", halfElementWidth);
     
     // Calcular la longitud efectiva disponible (wall length - element width)
     const effectiveLength = Math.max(0, wallLength - elementWidthPixels);
+    console.log("🔍 [CALCULATE POSITION] Effective length:", effectiveLength);
     
     // Calcular la posición real: desde halfElementWidth hasta (wallLength - halfElementWidth)
     const t = percentage / 100;
     const actualDistance = halfElementWidth + (effectiveLength * t);
+    console.log("🔍 [CALCULATE POSITION] Calculated distance from start:", actualDistance);
     
     // Normalizar la distancia respecto a la longitud total del wall
     const normalizedT = actualDistance / wallLength;
+    console.log("🔍 [CALCULATE POSITION] Normalized t:", normalizedT);
     
-    return {
+    const newPosition = {
       x: wallStart.x + (wallEnd.x - wallStart.x) * normalizedT,
       y: wallStart.y + (wallEnd.y - wallStart.y) * normalizedT
     };
+    console.log("🔍 [CALCULATE POSITION] Final calculated position:", newPosition);
+    
+    return newPosition;
   };
 
   // Función para manejar el cambio de posición a lo largo del wall
   const handleWallPositionChange = (newPercentage: number) => {
+    console.log("🔍 [AIRENTRY DIALOG] handleWallPositionChange called with:", newPercentage);
+    console.log("🔍 [AIRENTRY DIALOG] Props type:", props.type);
+    console.log("🔍 [AIRENTRY DIALOG] Has onPositionUpdate?", 'onPositionUpdate' in props);
+    console.log("🔍 [AIRENTRY DIALOG] onPositionUpdate value:", 'onPositionUpdate' in props ? (props as any).onPositionUpdate : 'NOT FOUND');
+    
     setWallPosition(newPercentage);
     
     // Calcular la nueva posición y actualizar en tiempo real
     const newPosition = calculatePositionFromPercentage(newPercentage);
+    console.log("🔍 [AIRENTRY DIALOG] Calculated newPosition:", newPosition);
+    
     if (newPosition) {
       // Update form values for persistence
       setValues(prev => {
@@ -250,13 +272,23 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           position: newPosition,
           wallPosition: newPercentage 
         };
+        console.log("🔍 [AIRENTRY DIALOG] Updated form values:", newValues);
         return newValues;
       });
       
       // Trigger real-time position updates
       if (props.type !== 'wall' && 'onPositionUpdate' in props && props.onPositionUpdate) {
+        console.log("🔍 [AIRENTRY DIALOG] About to call onPositionUpdate with position:", newPosition);
         props.onPositionUpdate(newPosition);
+        console.log("🔍 [AIRENTRY DIALOG] onPositionUpdate called successfully");
+      } else {
+        console.log("🔍 [AIRENTRY DIALOG] onPositionUpdate NOT called - conditions not met");
+        console.log("🔍 [AIRENTRY DIALOG] - props.type !== 'wall':", props.type !== 'wall');
+        console.log("🔍 [AIRENTRY DIALOG] - has onPositionUpdate prop:", 'onPositionUpdate' in props);
+        console.log("🔍 [AIRENTRY DIALOG] - onPositionUpdate is truthy:", !!('onPositionUpdate' in props && props.onPositionUpdate));
       }
+    } else {
+      console.log("🔍 [AIRENTRY DIALOG] newPosition is null/undefined - no updates performed");
     }
   };
 
