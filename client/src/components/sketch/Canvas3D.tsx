@@ -117,6 +117,7 @@ interface Canvas3DProps {
   onSceneReady?: (scene: THREE.Scene, renderer: THREE.WebGLRenderer, camera: THREE.Camera) => void; // For RSP texture access
   onFurnitureAdded?: () => void; // Callback to notify when new furniture is added to scene
   onFurnitureDeleted?: () => void; // Callback to notify when furniture is deleted from scene
+  onAirEntryUpdated?: () => void; // Callback to notify when air entry is updated (for RSP texture re-application)
   // Furniture callbacks - Phase 2: Props pattern
   onFurnitureAdd?: (floorName: string, item: FurnitureItem) => void;
   onUpdateFurniture?: (floorName: string, itemId: string, item: FurnitureItem) => void;
@@ -1045,6 +1046,7 @@ export default function Canvas3D({
   onFurnitureAdd,
   onUpdateFurniture,
   onDeleteFurniture,
+  onAirEntryUpdated,
 }: Canvas3DProps) {
   // Access the SceneContext to share data with RoomSketchPro
   const { updateGeometryData, updateSceneData, updateFloorData, setCurrentFloor: setContextCurrentFloor } = useSceneContext();
@@ -1848,6 +1850,11 @@ export default function Canvas3D({
     // Call the parent component's handler
     onUpdateAirEntry(currentFloor, index, updatedEntry);
     setEditingAirEntry(null);
+    
+    // Notify RSP to re-apply textures after AirEntry update
+    if (onAirEntryUpdated) {
+      onAirEntryUpdated();
+    }
   };
 
   // New function to create stair mesh
