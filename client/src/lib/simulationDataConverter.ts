@@ -527,18 +527,33 @@ export function generateSimulationData(
       console.log(`EXPORT DEBUG [${floorName}]: Furniture ${i}: id="${obj.userData?.id}", furnitureType="${obj.userData?.furnitureType}", surfaceType="${obj.userData?.surfaceType}"`);
     });
     
-    // Separar vent_furniture del resto del mobiliario
+    // PROBLEMA IDENTIFICADO: Usando filtro incorrecto para vents
+    console.log(`EXPORT DEBUG [${floorName}]: ANÁLISIS DE FILTROS DE VENTS:`);
+    
+    // Filtro INCORRECTO actual (busca 'vent_furniture' en ID)
     const ventFurnitureObjects = allFloorObjects.filter(obj => obj.userData?.id?.includes('vent_furniture'));
-    const floorFurnitureObjects = allFloorObjects.filter(obj => !obj.userData?.id?.includes('vent_furniture'));
+    console.log(`EXPORT DEBUG [${floorName}]: ❌ FILTRO INCORRECTO encontró ${ventFurnitureObjects.length} objetos con 'vent_furniture' en ID`);
     
-    console.log(`EXPORT DEBUG [${floorName}]: Current filter found ${ventFurnitureObjects.length} vent_furniture objects (searching for 'vent_furniture' in ID)`);
-    
-    // Test new filter
+    // Filtro CORRECTO (busca furnitureType === 'vent')
     const ventsByType = allFloorObjects.filter(obj => obj.userData?.furnitureType === 'vent');
-    console.log(`EXPORT DEBUG [${floorName}]: Correct filter would find ${ventsByType.length} vent objects (checking furnitureType === 'vent')`);
+    console.log(`EXPORT DEBUG [${floorName}]: ✅ FILTRO CORRECTO encuentra ${ventsByType.length} objetos con furnitureType === 'vent'`);
+    
+    // Mostrar detalles de todos los objetos para debug
+    console.log(`EXPORT DEBUG [${floorName}]: TODOS LOS OBJETOS EN PISO:`, allFloorObjects.map(obj => ({
+      id: obj.userData?.id,
+      furnitureType: obj.userData?.furnitureType,
+      surfaceType: obj.userData?.surfaceType,
+      type: obj.userData?.type
+    })));
+    
+    // Mostrar específicamente los vents encontrados
     ventsByType.forEach((obj, i) => {
       console.log(`EXPORT DEBUG [${floorName}]: Vent ${i}: id="${obj.userData?.id}", furnitureType="${obj.userData?.furnitureType}", surfaceType="${obj.userData?.surfaceType}"`);
     });
+    
+    // Separar usando el filtro INCORRECTO para mantener el flujo actual (pero logeando el problema)
+    const floorFurnitureObjects = allFloorObjects.filter(obj => !obj.userData?.id?.includes('vent_furniture'));
+    console.log(`EXPORT DEBUG [${floorName}]: ⚠️ USANDO FILTRO INCORRECTO - esto causa que NO se procesen los vents como airEntries`);
     
     // Initialize furniture type counters for this floor
     const furnitureTypeCounts = { 
@@ -617,7 +632,13 @@ export function generateSimulationData(
     const ceilingAirEntries: AirEntryExport[] = [];
     const floorSurfAirEntries: AirEntryExport[] = [];
     
-    console.log(`EXPORT DEBUG [${floorName}]: Processing ${ventFurnitureObjects.length} vent furniture objects for airEntries conversion`);
+    console.log(`EXPORT DEBUG [${floorName}]: ⚠️ CAUSA DEL PROBLEMA: Processing ${ventFurnitureObjects.length} vent furniture objects for airEntries conversion`);
+    console.log(`EXPORT DEBUG [${floorName}]: ⚠️ DEBERÍA PROCESAR: ${ventsByType.length} objetos, pero solo procesa ${ventFurnitureObjects.length} por el filtro incorrecto`);
+    
+    if (ventFurnitureObjects.length === 0 && ventsByType.length > 0) {
+      console.log(`EXPORT DEBUG [${floorName}]: 🚨 CONFIRMADO: Los vents NO se procesan como airEntries por filtro incorrecto`);
+      console.log(`EXPORT DEBUG [${floorName}]: 🚨 Resultado: ceiling.airEntries y floor_surf.airEntries quedarán vacíos`);
+    }
     
     ventFurnitureObjects.forEach((ventObj, index) => {
       console.log(`EXPORT DEBUG [${floorName}]: Processing vent ${index}: id="${ventObj.userData?.id}", surfaceType="${ventObj.userData?.surfaceType}"`);
@@ -674,11 +695,22 @@ export function generateSimulationData(
       }
     });
     
-    console.log(`EXPORT DEBUG [${floorName}]: Final airEntries count - ceiling: ${ceilingAirEntries.length}, floor_surf: ${floorSurfAirEntries.length}`);
+    console.log(`EXPORT DEBUG [${floorName}]: 📊 RESULTADO FINAL DEL FILTRO:`);
+    console.log(`EXPORT DEBUG [${floorName}]: - ceiling.airEntries: ${ceilingAirEntries.length} (deberían ser los vents de ceiling)`);
+    console.log(`EXPORT DEBUG [${floorName}]: - floor_surf.airEntries: ${floorSurfAirEntries.length} (deberían ser los vents de floor)`);
+    console.log(`EXPORT DEBUG [${floorName}]: - Total airEntries generados: ${ceilingAirEntries.length + floorSurfAirEntries.length}`);
+    console.log(`EXPORT DEBUG [${floorName}]: - Total vents disponibles: ${ventsByType.length}`);
+    
+    if (ceilingAirEntries.length + floorSurfAirEntries.length === 0 && ventsByType.length > 0) {
+      console.log(`EXPORT DEBUG [${floorName}]: 🚨 PROBLEMA CONFIRMADO: No se generaron airEntries a pesar de tener ${ventsByType.length} vents`);
+      console.log(`EXPORT DEBUG [${floorName}]: 🚨 CAUSA: El filtro obj.userData?.id?.includes('vent_furniture') no encuentra los IDs reales de los vents`);
+    }
     
     // Obtener temperaturas de techo y suelo de los parámetros del wizard
     const ceilingTemp = currentFloorParams.ceilingTemperature ?? 20; // Valor por defecto 20°C
     const floorTemp = currentFloorParams.floorTemperature ?? 20; // Valor por defecto 20°C
+    
+    console.log(`EXPORT DEBUG [${floorName}]: 🌡️ Temperaturas aplicadas - ceiling: ${ceilingTemp}°C, floor: ${floorTemp}°C`);
     
     // Agregar los datos del piso al objeto de exportación usando número
     exportData.floors[floorNumber] = {
