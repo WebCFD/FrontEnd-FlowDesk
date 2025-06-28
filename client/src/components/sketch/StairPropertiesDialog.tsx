@@ -23,10 +23,6 @@ export default function StairPropertiesDialog({
 
   useEffect(() => {
     if (stair) {
-      console.log("📋 Dialog INIT - Received stair prop:", stair);
-      console.log("📋 Dialog INIT - Stair ID:", stair.id);
-      console.log("📋 Dialog INIT - Stair temperature:", stair.temperature);
-      console.log("📋 Dialog INIT - Setting temperature field to:", stair.temperature?.toString() || "20");
       setTemperature(stair.temperature?.toString() || "20");
     }
   }, [stair]);

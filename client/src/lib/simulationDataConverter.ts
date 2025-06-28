@@ -157,7 +157,7 @@ interface StairExportNew {
   id: string;
   lines: StairLineExport[];
   connectsTo?: string;
-  temperature?: number;
+  temp?: number;
 }
 
 interface WallExport {
