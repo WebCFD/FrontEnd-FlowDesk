@@ -5034,57 +5034,92 @@ export default function Canvas3D({
   }, [finalFloors, currentFloor, ceilingHeight, floorDeckThickness]);
 
   // Separate useEffect for context updates to avoid hidden dependencies in scene rebuild
+  // Use refs to prevent circular updates
+  const lastContextUpdateRef = useRef<string>('');
+  const contextUpdateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
   useEffect(() => {
-    // Update SceneContext with ALL floors data for comprehensive sharing with RoomSketchPro
-    updateGeometryData({
-      floors: floors,
-      currentFloor: currentFloor,
-      floorSize: GRID_SIZE,
-      gridSize: GRID_DIVISIONS
+    // Create a stable hash to prevent unnecessary updates
+    const contextHash = JSON.stringify({
+      floorsKeys: Object.keys(floors).sort(),
+      currentFloor,
+      isMultifloor,
+      floorParametersKeys: floorParameters ? Object.keys(floorParameters).sort() : []
     });
     
-    // Then set current floor data for immediate use
-    const currentFloorData = floors[currentFloor];
+    // Skip if this exact context was already processed
+    if (lastContextUpdateRef.current === contextHash) {
+      return;
+    }
     
-    if (currentFloorData) {
-      // Update current floor in context (this will trigger setCurrentFloor in the context)
-      setContextCurrentFloor(currentFloor);
-      
-      // Also individually update each floor to ensure proper synchronization
-      Object.entries(floors).forEach(([floorName, floorData]) => {
-        updateFloorData(floorName, floorData);
+    // Clear any pending timeout
+    if (contextUpdateTimeoutRef.current) {
+      clearTimeout(contextUpdateTimeoutRef.current);
+    }
+    
+    // Debounce context updates to prevent rapid-fire changes
+    contextUpdateTimeoutRef.current = setTimeout(() => {
+      // Update SceneContext with ALL floors data for comprehensive sharing with RoomSketchPro
+      updateGeometryData({
+        floors: floors,
+        currentFloor: currentFloor,
+        floorSize: GRID_SIZE,
+        gridSize: GRID_DIVISIONS
       });
       
-      // Update scene objects in context
-      if (sceneRef.current) {
-        // Find walls, floor, and air entries to expose in context
-        const walls: THREE.Object3D[] = [];
-        let floor: THREE.Object3D | undefined;
-        const airEntries: THREE.Object3D[] = [];
+      // Then set current floor data for immediate use
+      const currentFloorData = floors[currentFloor];
+      
+      if (currentFloorData) {
+        // Update current floor in context (this will trigger setCurrentFloor in the context)
+        setContextCurrentFloor(currentFloor);
         
-        sceneRef.current.traverse((object) => {
-          if (object instanceof THREE.Mesh && object.userData.type === 'floor') {
-            floor = object;
-          } else if (object instanceof THREE.Mesh && object.userData.type === 'wall') {
-            walls.push(object);
-          } else if (object instanceof THREE.Mesh && 
-                    (object.userData.type === 'window' || 
-                     object.userData.type === 'door' || 
-                     object.userData.type === 'vent')) {
-            airEntries.push(object);
-          }
+        // Also individually update each floor to ensure proper synchronization
+        Object.entries(floors).forEach(([floorName, floorData]) => {
+          updateFloorData(floorName, floorData);
         });
         
-        updateSceneData({
-          walls,
-          floor,
-          airEntries,
-          gridHelper: sceneRef.current.children.find(
-            (obj) => obj instanceof THREE.GridHelper
-          )
-        });
+        // Update scene objects in context
+        if (sceneRef.current) {
+          // Find walls, floor, and air entries to expose in context
+          const walls: THREE.Object3D[] = [];
+          let floor: THREE.Object3D | undefined;
+          const airEntries: THREE.Object3D[] = [];
+          
+          sceneRef.current.traverse((object) => {
+            if (object instanceof THREE.Mesh && object.userData.type === 'floor') {
+              floor = object;
+            } else if (object instanceof THREE.Mesh && object.userData.type === 'wall') {
+              walls.push(object);
+            } else if (object instanceof THREE.Mesh && 
+                      (object.userData.type === 'window' || 
+                       object.userData.type === 'door' || 
+                       object.userData.type === 'vent')) {
+              airEntries.push(object);
+            }
+          });
+          
+          updateSceneData({
+            walls,
+            floor,
+            airEntries,
+            gridHelper: sceneRef.current.children.find(
+              (obj) => obj instanceof THREE.GridHelper
+            )
+          });
+        }
       }
-    }
+      
+      // Mark this context as processed
+      lastContextUpdateRef.current = contextHash;
+    }, 50); // 50ms debounce
+    
+    // Cleanup timeout on unmount
+    return () => {
+      if (contextUpdateTimeoutRef.current) {
+        clearTimeout(contextUpdateTimeoutRef.current);
+      }
+    };
   }, [floors, currentFloor, isMultifloor, floorParameters]);
 
   useEffect(() => {
