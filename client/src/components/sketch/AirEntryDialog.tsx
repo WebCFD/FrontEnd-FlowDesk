@@ -238,7 +238,6 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
   // Función para manejar el cambio de posición a lo largo del wall
   const handleWallPositionChange = (newPercentage: number) => {
-    console.log('🔄 WALL POSITION CHANGE - New value:', newPercentage);
     setWallPosition(newPercentage);
     
     // Calcular la nueva posición y actualizar en tiempo real
@@ -251,7 +250,6 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           position: newPosition,
           wallPosition: newPercentage 
         };
-        console.log('💾 WALL POSITION CHANGE - Updated form values:', newValues);
         return newValues;
       });
       
@@ -1090,7 +1088,6 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                             if (!isNaN(value)) {
                               // Permitir hasta 2 decimales
                               const roundedValue = Math.round(value * 100) / 100;
-                              console.log('📝 INPUT CHANGE - Wall position input changed to:', roundedValue);
                               handleWallPositionChange(roundedValue);
                             }
                           }}
