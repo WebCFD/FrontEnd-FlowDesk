@@ -3603,7 +3603,7 @@ export default function Canvas2D({
             handleAirEntryPositionUpdate(editingAirEntry.index, newPosition);
           }}
           onDimensionsUpdate={(newDimensions) => {
-            // Actualizar las dimensiones del Air Entry en tiempo real
+            // FIXED: Removed infinite loop - only update parent state, not local editingAirEntries
             const updatedAirEntries = [...airEntries];
             updatedAirEntries[editingAirEntry.index] = {
               ...editingAirEntry.entry,
@@ -3614,19 +3614,8 @@ export default function Canvas2D({
             };
             onAirEntriesUpdate?.(updatedAirEntries);
             
-            // También actualizar el estado local para que el diálogo mantenga la referencia correcta
-            setEditingAirEntries(prev => prev.map(item => 
-              item.index === editingAirEntry.index ? {
-                ...item,
-                entry: {
-                  ...item.entry,
-                  dimensions: {
-                    ...item.entry.dimensions,
-                    ...newDimensions
-                  }
-                }
-              } : item
-            ));
+            // REMOVED: setEditingAirEntries update that caused infinite re-renders
+            // The parent state update will handle the re-render correctly
           }}
         />
       ))}

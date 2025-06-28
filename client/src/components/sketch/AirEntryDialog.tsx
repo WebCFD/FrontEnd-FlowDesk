@@ -131,14 +131,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   const mode = (props as AirEntryDialogProps).mode || 'airEntry'; // Default to airEntry for backward compatibility
   const { updateAirEntryProperties, floors } = useRoomStore();
   
-  // Log when props change to track external updates
-  console.log('🔍 [PROPS CHANGE] AirEntryDialog props updated');
-  console.log('🔍 [PROPS CHANGE] type:', type, 'isEditing:', isEditing, 'dialogOpen:', dialogOpen);
-  if ('initialValues' in props && props.initialValues) {
-    console.log('🔍 [PROPS CHANGE] initialValues.width:', props.initialValues.width);
-    console.log('🔍 [PROPS CHANGE] initialValues.height:', props.initialValues.height);
-    console.log('🔍 [PROPS CHANGE] initialValues wallPosition:', (props.initialValues as any).wallPosition || (props.initialValues as any).properties?.wallPosition);
-  }
+  // Component initialization
   
   // Estado unificado para manejar tanto dimensiones como temperatura
   const [values, setValues] = useState(getDefaultValues());
