@@ -397,7 +397,9 @@ export default function WizardDesign() {
               width: entry.dimensions.width,
               height: entry.dimensions.height,
               distanceToFloor: entry.dimensions.distanceToFloor,
-              shape: entry.dimensions.shape
+              shape: entry.dimensions.shape,
+              // Include wallPosition to preserve Save Changes data
+              wallPosition: (entry.dimensions as any).wallPosition
             }
             // Exclude properties to prevent metadata changes from triggering rebuilds
           })),

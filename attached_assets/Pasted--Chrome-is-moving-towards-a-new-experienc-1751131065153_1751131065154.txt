@@ -1,0 +1,69 @@
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
+AirEntryDialog.tsx:241 🔍 [POSITION CHANGE] handleWallPositionChange called with: 61.5
+AirEntryDialog.tsx:246 🔍 [POSITION CHANGE] Calculated new position: {x: 337.5966562002557, y: 305.1557220335769}
+AirEntryDialog.tsx:262 🔍 [POSITION CHANGE] Calling onPositionUpdate with: {x: 337.5966562002557, y: 305.1557220335769}
+AirEntryDialog.tsx:256 🔍 [POSITION CHANGE] Updated values: {width: 60, height: 40, distanceToFloor: 111, shape: 'rectangular', properties: undefined, …}
+AirEntryDialog.tsx:241 🔍 [POSITION CHANGE] handleWallPositionChange called with: 62.5
+AirEntryDialog.tsx:246 🔍 [POSITION CHANGE] Calculated new position: {x: 331.8224523915823, y: 309.4301326451923}
+AirEntryDialog.tsx:262 🔍 [POSITION CHANGE] Calling onPositionUpdate with: {x: 331.8224523915823, y: 309.4301326451923}
+AirEntryDialog.tsx:256 🔍 [POSITION CHANGE] Updated values: {width: 60, height: 40, distanceToFloor: 111, shape: 'rectangular', properties: undefined, …}
+AirEntryDialog.tsx:241 🔍 [POSITION CHANGE] handleWallPositionChange called with: 63.5
+AirEntryDialog.tsx:246 🔍 [POSITION CHANGE] Calculated new position: {x: 326.0482485829089, y: 313.7045432568077}
+AirEntryDialog.tsx:262 🔍 [POSITION CHANGE] Calling onPositionUpdate with: {x: 326.0482485829089, y: 313.7045432568077}
+AirEntryDialog.tsx:256 🔍 [POSITION CHANGE] Updated values: {width: 60, height: 40, distanceToFloor: 111, shape: 'rectangular', properties: undefined, …}
+AirEntryDialog.tsx:241 🔍 [POSITION CHANGE] handleWallPositionChange called with: 64.5
+AirEntryDialog.tsx:246 🔍 [POSITION CHANGE] Calculated new position: {x: 320.27404477423545, y: 317.9789538684231}
+AirEntryDialog.tsx:262 🔍 [POSITION CHANGE] Calling onPositionUpdate with: {x: 320.27404477423545, y: 317.9789538684231}
+AirEntryDialog.tsx:256 🔍 [POSITION CHANGE] Updated values: {width: 60, height: 40, distanceToFloor: 111, shape: 'rectangular', properties: undefined, …}
+AirEntryDialog.tsx:241 🔍 [POSITION CHANGE] handleWallPositionChange called with: 65.5
+AirEntryDialog.tsx:246 🔍 [POSITION CHANGE] Calculated new position: {x: 314.4998409655621, y: 322.25336448003844}
+AirEntryDialog.tsx:262 🔍 [POSITION CHANGE] Calling onPositionUpdate with: {x: 314.4998409655621, y: 322.25336448003844}
+AirEntryDialog.tsx:256 🔍 [POSITION CHANGE] Updated values: {width: 60, height: 40, distanceToFloor: 111, shape: 'rectangular', properties: undefined, …}
+AirEntryDialog.tsx:241 🔍 [POSITION CHANGE] handleWallPositionChange called with: 66.5
+AirEntryDialog.tsx:246 🔍 [POSITION CHANGE] Calculated new position: {x: 308.7256371568887, y: 326.52777509165384}
+AirEntryDialog.tsx:262 🔍 [POSITION CHANGE] Calling onPositionUpdate with: {x: 308.7256371568887, y: 326.52777509165384}
+AirEntryDialog.tsx:256 🔍 [POSITION CHANGE] Updated values: {width: 60, height: 40, distanceToFloor: 111, shape: 'rectangular', properties: undefined, …}
+AirEntryDialog.tsx:241 🔍 [POSITION CHANGE] handleWallPositionChange called with: 67.5
+AirEntryDialog.tsx:246 🔍 [POSITION CHANGE] Calculated new position: {x: 302.9514333482153, y: 330.80218570326923}
+AirEntryDialog.tsx:262 🔍 [POSITION CHANGE] Calling onPositionUpdate with: {x: 302.9514333482153, y: 330.80218570326923}
+AirEntryDialog.tsx:256 🔍 [POSITION CHANGE] Updated values: {width: 60, height: 40, distanceToFloor: 111, shape: 'rectangular', properties: undefined, …}
+AirEntryDialog.tsx:241 🔍 [POSITION CHANGE] handleWallPositionChange called with: 68.5
+AirEntryDialog.tsx:246 🔍 [POSITION CHANGE] Calculated new position: {x: 297.1772295395419, y: 335.07659631488457}
+AirEntryDialog.tsx:262 🔍 [POSITION CHANGE] Calling onPositionUpdate with: {x: 297.1772295395419, y: 335.07659631488457}
+AirEntryDialog.tsx:256 🔍 [POSITION CHANGE] Updated values: {width: 60, height: 40, distanceToFloor: 111, shape: 'rectangular', properties: undefined, …}
+AirEntryDialog.tsx:241 🔍 [POSITION CHANGE] handleWallPositionChange called with: 69.5
+AirEntryDialog.tsx:246 🔍 [POSITION CHANGE] Calculated new position: {x: 291.4030257308684, y: 339.3510069265}
+AirEntryDialog.tsx:262 🔍 [POSITION CHANGE] Calling onPositionUpdate with: {x: 291.4030257308684, y: 339.3510069265}
+AirEntryDialog.tsx:256 🔍 [POSITION CHANGE] Updated values: {width: 60, height: 40, distanceToFloor: 111, shape: 'rectangular', properties: undefined, …}
+AirEntryDialog.tsx:241 🔍 [POSITION CHANGE] handleWallPositionChange called with: 70.5
+AirEntryDialog.tsx:246 🔍 [POSITION CHANGE] Calculated new position: {x: 285.628821922195, y: 343.6254175381154}
+AirEntryDialog.tsx:262 🔍 [POSITION CHANGE] Calling onPositionUpdate with: {x: 285.628821922195, y: 343.6254175381154}
+AirEntryDialog.tsx:256 🔍 [POSITION CHANGE] Updated values: {width: 60, height: 40, distanceToFloor: 111, shape: 'rectangular', properties: undefined, …}
+AirEntryDialog.tsx:510 📝 FORM SUBMIT - Current form values: {width: 60, height: 40, distanceToFloor: 111, shape: 'rectangular', properties: undefined, …}
+AirEntryDialog.tsx:511 📝 FORM SUBMIT - Current wallPosition state: 70.5
+AirEntryDialog.tsx:512 📝 FORM SUBMIT - Current distanceToFloor state: 111
+AirEntryDialog.tsx:570 🔍 [SAVE CHANGES] About to create canvasData
+AirEntryDialog.tsx:571 🔍 [SAVE CHANGES] Current values state: {width: 60, height: 40, distanceToFloor: 111, shape: 'rectangular', properties: undefined, …}
+AirEntryDialog.tsx:572 🔍 [SAVE CHANGES] Current wallPosition state: 70.5
+AirEntryDialog.tsx:573 🔍 [SAVE CHANGES] values.wallPosition: 70.5
+AirEntryDialog.tsx:574 🔍 [SAVE CHANGES] values.position: {x: 285.628821922195, y: 343.6254175381154}
+AirEntryDialog.tsx:604 🔍 [SAVE CHANGES] Final canvasData being sent to onConfirm: {width: 60, height: 40, distanceToFloor: 111, shape: 'rectangular', wallPosition: 70.5, …}
+AirEntryDialog.tsx:605 🔍 [SAVE CHANGES] canvasData.wallPosition: 70.5
+AirEntryDialog.tsx:606 🔍 [SAVE CHANGES] canvasData.position: {x: 285.628821922195, y: 343.6254175381154}
+Canvas2D.tsx:3522 🔍 [CANVAS2D ONCONFIRM] Received data from AirEntryDialog: {width: 60, height: 40, distanceToFloor: 111, shape: 'rectangular', wallPosition: 70.5, …}
+Canvas2D.tsx:3523 🔍 [CANVAS2D ONCONFIRM] data.wallPosition: 70.5
+Canvas2D.tsx:3524 🔍 [CANVAS2D ONCONFIRM] data.position: {x: 285.628821922195, y: 343.6254175381154}
+Canvas2D.tsx:3525 🔍 [CANVAS2D ONCONFIRM] About to call handleAirEntryEdit with index: 0
+Canvas2D.tsx:3291 🔍 [HANDLE AIR ENTRY EDIT] Called with index: 0
+Canvas2D.tsx:3292 🔍 [HANDLE AIR ENTRY EDIT] Received data: {width: 60, height: 40, distanceToFloor: 111, shape: 'rectangular', wallPosition: 70.5, …}
+Canvas2D.tsx:3293 🔍 [HANDLE AIR ENTRY EDIT] data.wallPosition: 70.5
+Canvas2D.tsx:3294 🔍 [HANDLE AIR ENTRY EDIT] data.position: {x: 285.628821922195, y: 343.6254175381154}
+Canvas2D.tsx:3302 🔍 [HANDLE AIR ENTRY EDIT] Current editingEntry.entry.position: {x: 285.628821922195, y: 343.6254175381154}
+Canvas2D.tsx:3320 🔍 [HANDLE AIR ENTRY EDIT] Final updatedAirEntries[index]: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas2D.tsx:3321 🔍 [HANDLE AIR ENTRY EDIT] Final position in updatedAirEntries[index]: {x: 285.628821922195, y: 343.6254175381154}
+Canvas2D.tsx:3322 🔍 [HANDLE AIR ENTRY EDIT] About to call onAirEntriesUpdate
