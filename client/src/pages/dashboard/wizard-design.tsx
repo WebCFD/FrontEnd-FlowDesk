@@ -1110,7 +1110,11 @@ export default function WizardDesign() {
     index: number,
     updatedEntry: AirEntry,
   ) => {
-    // Reduced logging
+    console.log(`🔥 [RSP FLOW] handleUpdateAirEntryFrom3D called from RSP`);
+    console.log(`🔥 [RSP FLOW] Floor: ${floorName}, Index: ${index}, Type: ${updatedEntry.type}`);
+    console.log(`🔥 [RSP FLOW] Position: (${updatedEntry.position.x}, ${updatedEntry.position.y})`);
+    console.log(`🔥 [RSP FLOW] WallPosition: ${updatedEntry.dimensions?.wallPosition}`);
+    console.log(`🔥 [RSP FLOW] About to update store with RSP changes...`);
     
     // CRITICAL FIX: Preserve wallPosition from existing store data
     const existingEntry = airEntries[index];

@@ -405,38 +405,15 @@ export default function Canvas2D({
   const [forceRedraw, setForceRedraw] = useState(0);
   
   useEffect(() => {
-    console.log(`🔗 Canvas2D: Registrando suscripción para piso '${currentFloor}'`);
-    console.log(`🔗 Canvas2D: subscribeToAirEntryChanges función disponible:`, !!subscribeToAirEntryChanges);
-    
     const unsubscribe = subscribeToAirEntryChanges((floorName, index, updatedEntry) => {
-      console.log(`📥 Canvas2D: *** NOTIFICACIÓN RECIBIDA DEL STORE ***`);
-      console.log(`📥 Canvas2D: Piso: ${floorName}, índice: ${index}, tipo: ${updatedEntry.type}`);
-      console.log(`📥 Canvas2D: Nueva posición: (${updatedEntry.position.x}, ${updatedEntry.position.y})`);
-      console.log(`📥 Canvas2D: Piso actual: ${currentFloor}, piso de cambio: ${floorName}`);
-      
       // Only update if this change affects our current floor
-      if (floorName !== currentFloor) {
-        console.log(`⚠️ Canvas2D: IGNORANDO - cambio no es para el piso actual`);
-        return;
-      }
-      
-      console.log(`✅ Canvas2D: APLICANDO CAMBIO - forzando re-render`);
-      console.log(`✅ Canvas2D: forceRedraw anterior: ${forceRedraw}`);
+      if (floorName !== currentFloor) return;
       
       // Force re-render by updating state
-      setForceRedraw(prev => {
-        const newValue = prev + 1;
-        console.log(`✅ Canvas2D: forceRedraw nuevo: ${newValue}`);
-        return newValue;
-      });
-      
-      console.log(`🎨 Canvas2D: Re-render disparado - Canvas2D debería actualizarse visualmente`);
+      setForceRedraw(prev => prev + 1);
     });
     
-    console.log(`🔗 Canvas2D: Suscripción creada exitosamente:`, !!unsubscribe);
-    
     return () => {
-      console.log(`🔗 Canvas2D: Desregistrando suscripción para piso '${currentFloor}'`);
       if (unsubscribe) {
         unsubscribe();
       }
