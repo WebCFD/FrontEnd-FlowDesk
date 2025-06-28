@@ -2544,29 +2544,20 @@ export default function WizardDesign() {
               currentTool={currentTool}
               currentAirEntry={currentAirEntry}
               airEntries={(() => {
-                const rawAirEntries = rawFloors[currentFloor]?.airEntries || airEntries;
-                const fallbackAirEntries = airEntries;
-                
-                // HYPOTHESIS TEST: Compare rawFloors vs store data
+                // SOLUTION: Read directly from reactive store instead of rawFloors
                 const storeFloors = useRoomStore.getState().floors;
                 const storeAirEntries = storeFloors[currentFloor]?.airEntries || [];
+                const fallbackAirEntries = rawFloors[currentFloor]?.airEntries || airEntries;
                 
-                if (rawAirEntries.length > 0 && storeAirEntries.length > 0) {
-                  const rawPos = rawAirEntries[0].position;
-                  const storePos = storeAirEntries[0].position;
-                  const positionsMatch = Math.abs(rawPos.x - storePos.x) < 0.01 && Math.abs(rawPos.y - storePos.y) < 0.01;
-                  
-                  console.log(`🔍 HYPOTHESIS TEST: rawFloors vs store data synchronization`);
-                  console.log(`🔍 rawFloors[${currentFloor}] position: (${rawPos.x}, ${rawPos.y})`);
-                  console.log(`🔍 store.floors[${currentFloor}] position: (${storePos.x}, ${storePos.y})`);
-                  console.log(`🔍 DATA SYNC STATUS: ${positionsMatch ? '✅ SYNCHRONIZED' : '❌ DESYNCHRONIZED'}`);
-                  
-                  if (!positionsMatch) {
-                    console.log(`🚨 CRITICAL: rawFloors and store are out of sync - this explains Canvas2D issue!`);
-                  }
+                // Use store data if available, fallback to rawFloors
+                const finalAirEntries = storeAirEntries.length > 0 ? storeAirEntries : fallbackAirEntries;
+                
+                console.log(`🔧 SOLUTION: Canvas2D reading from store - ${finalAirEntries.length} airEntries`);
+                if (finalAirEntries.length > 0) {
+                  console.log(`🔧 SOLUTION: First airEntry position: (${finalAirEntries[0].position.x}, ${finalAirEntries[0].position.y})`);
                 }
                 
-                return rawAirEntries;
+                return finalAirEntries;
               })()}
               measurements={measurements}
               stairPolygons={stairPolygons}
