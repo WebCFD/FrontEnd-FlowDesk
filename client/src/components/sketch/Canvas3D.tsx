@@ -4829,17 +4829,36 @@ export default function Canvas3D({
     return Object.keys(storeFloors).length > 0 ? storeFloors : floors;
   }, [floors]); // Re-compute when props change
 
+  // DEBUG: Track editingAirEntry state changes to identify infinite loop source
+  useEffect(() => {
+    console.log('🚨 [DIAGNOSIS] editingAirEntry state changed:', {
+      hasEditingAirEntry: !!editingAirEntry,
+      entryType: editingAirEntry?.entry?.type,
+      entryIndex: editingAirEntry?.index,
+      hasDimensions: !!editingAirEntry?.entry?.dimensions,
+      hasPosition: !!editingAirEntry?.entry?.position,
+      callStack: new Error().stack?.split('\n').slice(1, 5).join('\n')
+    });
+  }, [editingAirEntry]);
+
   // Stabilize all props to prevent infinite re-renders of AirEntryDialog
   const stableInitialValues = useMemo(() => {
-    if (!editingAirEntry) return null;
+    console.log('🚨 [DIAGNOSIS] stableInitialValues useMemo recalculating');
+    if (!editingAirEntry) {
+      console.log('🚨 [DIAGNOSIS] No editingAirEntry - returning null');
+      return null;
+    }
     
-    return {
+    const result = {
       ...editingAirEntry.entry.dimensions,
       shape: (editingAirEntry.entry.dimensions as any).shape,
       properties: (editingAirEntry.entry as any).properties,
       position: editingAirEntry.entry.position,
       wallPosition: (editingAirEntry.entry.dimensions as any).wallPosition || (editingAirEntry.entry as any).properties?.wallPosition
     } as any;
+    
+    console.log('🚨 [DIAGNOSIS] stableInitialValues result:', result);
+    return result;
   }, [
     editingAirEntry?.entry.dimensions.width,
     editingAirEntry?.entry.dimensions.height,
@@ -6165,23 +6184,44 @@ export default function Canvas3D({
         </div>
       </div>
 
-      {/* Dialog for editing air entries - Phase 4: Unified with Canvas2D */}
-      {editingAirEntry && stableInitialValues && (
-        <AirEntryDialog
-          type={editingAirEntry.entry.type}
-          isOpen={true}
-          onClose={stableOnClose}
-          onCancel={stableOnCancel}
-          onConfirm={stableOnConfirm}
-          initialValues={stableInitialValues}
-          airEntryIndex={editingAirEntry.index}
-          currentFloor={currentFloor}
-          isEditing={true}
-          wallContext={editingAirEntry.wallContext}
-          onPositionUpdate={handleAirEntryPositionUpdate}
-          onDimensionsUpdate={handleAirEntryDimensionsUpdate}
-        />
-      )}
+      {/* Dialog for editing air entries - Phase 4: Unified with Canvas2D - STRICT VALIDATION */}
+      {(() => {
+        const shouldRender = editingAirEntry && 
+                           stableInitialValues && 
+                           editingAirEntry.entry && 
+                           editingAirEntry.entry.type && 
+                           editingAirEntry.entry.dimensions;
+        
+        console.log('🚨 [DIAGNOSIS] Dialog render evaluation:', {
+          hasEditingAirEntry: !!editingAirEntry,
+          hasStableInitialValues: !!stableInitialValues,
+          hasEntry: !!editingAirEntry?.entry,
+          hasType: !!editingAirEntry?.entry?.type,
+          hasDimensions: !!editingAirEntry?.entry?.dimensions,
+          shouldRender,
+          renderCount: (window as any).renderCount = ((window as any).renderCount || 0) + 1
+        });
+        
+        if (!shouldRender) return null;
+        
+        console.log('🚨 [DIAGNOSIS] Actually rendering AirEntryDialog');
+        return (
+          <AirEntryDialog
+            type={editingAirEntry.entry.type}
+            isOpen={true}
+            onClose={stableOnClose}
+            onCancel={stableOnCancel}
+            onConfirm={stableOnConfirm}
+            initialValues={stableInitialValues}
+            airEntryIndex={editingAirEntry.index}
+            currentFloor={currentFloor}
+            isEditing={true}
+            wallContext={editingAirEntry.wallContext}
+            onPositionUpdate={handleAirEntryPositionUpdate}
+            onDimensionsUpdate={handleAirEntryDimensionsUpdate}
+          />
+        );
+      })()}
 
       {/* Dialog for editing furniture */}
       {editingFurniture && editingFurniture.item.type === 'vent' ? (
