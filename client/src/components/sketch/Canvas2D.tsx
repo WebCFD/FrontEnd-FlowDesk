@@ -402,6 +402,7 @@ export default function Canvas2D({
   
   // Reactive AirEntry synchronization system for Canvas2D
   const { subscribeToAirEntryChanges } = useRoomStore();
+  const [forceRedraw, setForceRedraw] = useState(0);
   
   useEffect(() => {
     const unsubscribe = subscribeToAirEntryChanges((floorName, index, updatedEntry) => {
@@ -410,14 +411,8 @@ export default function Canvas2D({
       
       console.log(`🔄 Canvas2D: Received AirEntry update from external source - ${updatedEntry.type} at position (${updatedEntry.position.x}, ${updatedEntry.position.y})`);
       
-      // Force re-render to show updated position from other views
-      const canvas = canvasRef.current;
-      if (canvas) {
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          requestAnimationFrame(() => draw(ctx));
-        }
-      }
+      // Force re-render by updating state
+      setForceRedraw(prev => prev + 1);
     });
     
     return unsubscribe;
@@ -2988,6 +2983,7 @@ export default function Canvas2D({
     ignoreNextClick,
     ignoreStairToolClick,
     ignoreMeasureToolClick,
+    forceRedraw, // Add reactive synchronization trigger
   ]);
 
   const handleZoomInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
