@@ -1210,7 +1210,22 @@ export default function WizardDesign() {
 
   // Phase 2: Furniture callback handlers
   const handleFurnitureAdd = useCallback((floorName: string, item: FurnitureItem) => {
+    console.log(`WIZARD FURNITURE ADD DEBUG: Received furniture add request`, {
+      id: item.id,
+      type: item.type,
+      floorName: floorName,
+      surfaceType: item.surfaceType,
+      position: item.position
+    });
+    
     addFurnitureToFloor(floorName, item);
+    console.log(`WIZARD FURNITURE ADD DEBUG: addFurnitureToFloor called for ${item.id}`);
+    
+    // Verify if item was actually added to store
+    const currentFloors = useRoomStore.getState().floors;
+    const floorData = currentFloors[floorName];
+    const furnitureCount = floorData?.furnitureItems?.length || 0;
+    console.log(`WIZARD FURNITURE ADD DEBUG: Store now has ${furnitureCount} furniture items on ${floorName}`);
     
     toast({
       title: "Furniture Added",

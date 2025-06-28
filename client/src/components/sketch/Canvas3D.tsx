@@ -1227,8 +1227,19 @@ export default function Canvas3D({
       if (model) {
         
         // Add furniture via callback
+        console.log(`FURNITURE ADD DEBUG: About to call onFurnitureAdd for ${furnitureType}`, {
+          id: furnitureItem.id,
+          type: furnitureItem.type,
+          floorName: furnitureItem.floorName,
+          surfaceType: furnitureItem.surfaceType,
+          position: furnitureItem.position
+        });
+        
         if (onFurnitureAdd && typeof onFurnitureAdd === 'function') {
           onFurnitureAdd(surfaceDetection.floorName, furnitureItem);
+          console.log(`FURNITURE ADD DEBUG: onFurnitureAdd callback executed for ${furnitureItem.id}`);
+        } else {
+          console.log(`FURNITURE ADD DEBUG: No onFurnitureAdd callback available!`);
         }
         
         // Notify that new furniture was added to scene (for texture re-application)
