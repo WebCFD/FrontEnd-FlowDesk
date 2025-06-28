@@ -3288,6 +3288,10 @@ export default function Canvas2D({
       };
     },
   ) => {
+    console.log("🔍 [CANVAS2D EDIT] Received data:", data);
+    console.log("🔍 [CANVAS2D EDIT] data.wallPosition:", data.wallPosition);
+    console.log("🔍 [CANVAS2D EDIT] data.position:", data.position);
+    
     const editingEntry = editingAirEntries.find(entry => entry.index === index);
     if (!editingEntry) return;
 
