@@ -1,0 +1,35 @@
+wizard-design.tsx:1676 Dragging furniture: {id: 'vent', name: 'Vent', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…ke="#22c55e" stroke-width="2"/>\n      </svg>\n    ', defaultDimensions: {…}}
+AirEntryDialog.tsx:184 AirEntryDialog: Real-time callbacks connected for furnVent mode {hasOnPositionUpdate: true, hasOnRotationUpdate: true, hasOnScaleUpdate: false}
+AirEntryDialog.tsx:505 📝 FORM SUBMIT - Current form values: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:506 📝 FORM SUBMIT - Current wallPosition state: 100
+AirEntryDialog.tsx:507 📝 FORM SUBMIT - Current distanceToFloor state: 120
+Canvas3D.tsx:5944 VENT COORDINATE CONVERSION:
+Canvas3D.tsx:5945 - Dialog values (world): {position: {…}, rotation: {…}}
+Canvas3D.tsx:5946 - Parent transform: {position: _Vector3, rotation: _Euler}
+Canvas3D.tsx:5947 - Applied values (local): {position: {…}, rotation: {…}}
+Canvas3D.tsx:2941 [Violation] 'requestAnimationFrame' handler took 54ms
+wizard-design.tsx:1862 EXPORT DEBUG: Checking floor ground - furnitureItems: [{…}]
+wizard-design.tsx:1864 EXPORT DEBUG: Found 1 furniture items in ground
+wizard-design.tsx:1866 EXPORT DEBUG: Processing furniture item: {id: 'Vent 0F-1', type: 'vent', surfaceType: 'floor'}
+wizard-design.tsx:1902 Found 1 furniture objects for export: [{…}]
+simulationDataConverter.ts:525 EXPORT DEBUG [ground]: Found 1 total furniture objects
+simulationDataConverter.ts:527 EXPORT DEBUG [ground]: Furniture 0: id="Vent 0F-1", furnitureType="vent", surfaceType="floor"
+simulationDataConverter.ts:531 EXPORT DEBUG [ground]: ANÁLISIS DE FILTROS DE VENTS:
+simulationDataConverter.ts:535 EXPORT DEBUG [ground]: ❌ FILTRO INCORRECTO encontró 0 objetos con 'vent_furniture' en ID
+simulationDataConverter.ts:539 EXPORT DEBUG [ground]: ✅ FILTRO CORRECTO encuentra 1 objetos con furnitureType === 'vent'
+simulationDataConverter.ts:542 EXPORT DEBUG [ground]: TODOS LOS OBJETOS EN PISO: [{…}]
+simulationDataConverter.ts:551 EXPORT DEBUG [ground]: Vent 0: id="Vent 0F-1", furnitureType="vent", surfaceType="floor"
+simulationDataConverter.ts:556 EXPORT DEBUG [ground]: ⚠️ USANDO FILTRO INCORRECTO - esto causa que NO se procesen los vents como airEntries
+simulationDataConverter.ts:635 EXPORT DEBUG [ground]: ⚠️ CAUSA DEL PROBLEMA: Processing 0 vent furniture objects for airEntries conversion
+simulationDataConverter.ts:636 EXPORT DEBUG [ground]: ⚠️ DEBERÍA PROCESAR: 1 objetos, pero solo procesa 0 por el filtro incorrecto
+simulationDataConverter.ts:639 EXPORT DEBUG [ground]: 🚨 CONFIRMADO: Los vents NO se procesan como airEntries por filtro incorrecto
+simulationDataConverter.ts:640 EXPORT DEBUG [ground]: 🚨 Resultado: ceiling.airEntries y floor_surf.airEntries quedarán vacíos
+simulationDataConverter.ts:698 EXPORT DEBUG [ground]: 📊 RESULTADO FINAL DEL FILTRO:
+simulationDataConverter.ts:699 EXPORT DEBUG [ground]: - ceiling.airEntries: 0 (deberían ser los vents de ceiling)
+simulationDataConverter.ts:700 EXPORT DEBUG [ground]: - floor_surf.airEntries: 0 (deberían ser los vents de floor)
+simulationDataConverter.ts:701 EXPORT DEBUG [ground]: - Total airEntries generados: 0
+simulationDataConverter.ts:702 EXPORT DEBUG [ground]: - Total vents disponibles: 1
+simulationDataConverter.ts:705 EXPORT DEBUG [ground]: 🚨 PROBLEMA CONFIRMADO: No se generaron airEntries a pesar de tener 1 vents
+simulationDataConverter.ts:706 EXPORT DEBUG [ground]: 🚨 CAUSA: El filtro obj.userData?.id?.includes('vent_furniture') no encuentra los IDs reales de los vents
+simulationDataConverter.ts:713 EXPORT DEBUG [ground]: 🌡️ Temperaturas aplicadas - ceiling: 20°C, floor: 20°C
+analytics.ts:62 📊 Analytics Event: {category: 'simulation', action: 'save_simulation', label: 'file_download', value: 2, status: 'sent'}
