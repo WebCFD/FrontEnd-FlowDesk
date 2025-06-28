@@ -200,6 +200,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   const [ventMeasurementType, setVentMeasurementType] = useState<'massflow' | 'velocity' | 'pressure'>('massflow');
   const [verticalAngle, setVerticalAngle] = useState(0);
   const [horizontalAngle, setHorizontalAngle] = useState(0);
+  
+  // Estados locales para dimensiones (igual que wallPosition para tiempo real)
+  const [localWidth, setLocalWidth] = useState(50);
+  const [localHeight, setLocalHeight] = useState(50);
 
   // Función para calcular la nueva posición basada en el porcentaje del wall
   const calculatePositionFromPercentage = (percentage: number) => {
@@ -255,6 +259,32 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
       if (props.type !== 'wall' && 'onPositionUpdate' in props && props.onPositionUpdate) {
         props.onPositionUpdate(newPosition);
       }
+    }
+  };
+
+  // Función para manejar cambios de Width (similar a handleWallPositionChange)
+  const handleWidthChange = (newWidth: number) => {
+    setLocalWidth(newWidth);
+    
+    // Update form values for persistence
+    setValues(prev => ({ ...prev, width: newWidth }));
+    
+    // Trigger real-time dimension updates
+    if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
+      props.onDimensionsUpdate({ width: newWidth });
+    }
+  };
+
+  // Función para manejar cambios de Height (similar a handleWallPositionChange)
+  const handleHeightChange = (newHeight: number) => {
+    setLocalHeight(newHeight);
+    
+    // Update form values for persistence
+    setValues(prev => ({ ...prev, height: newHeight }));
+    
+    // Trigger real-time dimension updates
+    if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
+      props.onDimensionsUpdate({ height: newHeight });
     }
   };
 
@@ -330,6 +360,12 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         if (airEntryProps.initialValues) {
           const initialDistanceToFloor = airEntryProps.initialValues.distanceToFloor || 0;
           setDistanceToFloor(initialDistanceToFloor);
+          
+          // Initialize local dimensions states
+          const initialWidth = airEntryProps.initialValues.width || 50;
+          const initialHeight = airEntryProps.initialValues.height || 50;
+          setLocalWidth(initialWidth);
+          setLocalHeight(initialHeight);
           
           // Check if we have a saved wallPosition value from properties
           const savedWallPosition = (airEntryProps.initialValues as any).properties?.wallPosition || 
@@ -1183,15 +1219,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                             <Input
                               id="width"
                               type="number"
-                              value={(values as { width: number }).width}
+                              value={localWidth}
                               onChange={(e) => {
                                 const newWidth = Number(e.target.value);
-                                setValues(prev => ({ ...prev, width: newWidth }));
-                                
-                                // Real-time dimension updates
-                                if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
-                                  props.onDimensionsUpdate({ width: newWidth });
-                                }
+                                handleWidthChange(newWidth);
                               }}
                               className="h-8 text-sm"
                             />
@@ -1218,15 +1249,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                             <Input
                               id="height"
                               type="number"
-                              value={(values as { height: number }).height}
+                              value={localHeight}
                               onChange={(e) => {
                                 const newHeight = Number(e.target.value);
-                                setValues(prev => ({ ...prev, height: newHeight }));
-                                
-                                // Real-time dimension updates
-                                if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
-                                  props.onDimensionsUpdate({ height: newHeight });
-                                }
+                                handleHeightChange(newHeight);
                               }}
                               className="h-8 text-sm"
                             />
