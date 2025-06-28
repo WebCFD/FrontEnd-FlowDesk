@@ -4783,7 +4783,7 @@ export default function Canvas3D({
     console.log('🚨 [SCENE REBUILD TRIGGER] currentFloor:', currentFloor);
     console.log('🚨 [SCENE REBUILD TRIGGER] ceilingHeight:', ceilingHeight);
     console.log('🚨 [SCENE REBUILD TRIGGER] floorDeckThickness:', floorDeckThickness);
-    console.log('🚨 [SCENE REBUILD TRIGGER] editingAirEntry state:', editingAirEntry ? 'OPEN' : 'CLOSED');
+
 
     // Don't reset selection state here - we'll handle it after rebuilding the scene
     // This prevents losing the selection when the scene is updated
