@@ -10,16 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
-interface StairPolygon {
-  id: string;
-  points: Array<{ x: number; y: number }>;
-  floor: string;
-  destinationFloor: string;
-  direction: "up" | "down";
-  isImported?: boolean;
-  temperature?: number;
-}
+import { StairPolygon } from "@/types";
 
 interface StairPropertiesDialogProps {
   isOpen: boolean;
@@ -82,33 +73,11 @@ export default function StairPropertiesDialog({
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="floor" className="text-right">
-              Planta Origen:
+              Planta:
             </Label>
             <Input
               id="floor"
               value={stair.floor}
-              className="col-span-3"
-              disabled
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="destination-floor" className="text-right">
-              Planta Destino:
-            </Label>
-            <Input
-              id="destination-floor"
-              value={stair.destinationFloor}
-              className="col-span-3"
-              disabled
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="direction" className="text-right">
-              Dirección:
-            </Label>
-            <Input
-              id="direction"
-              value={stair.direction === "up" ? "Subida" : "Bajada"}
               className="col-span-3"
               disabled
             />
@@ -131,8 +100,8 @@ export default function StairPropertiesDialog({
           </div>
           <div className="text-sm text-gray-600 col-span-4">
             <p><strong>Puntos de la escalera:</strong> {stair.points.length} puntos</p>
-            {stair.isImported && (
-              <p className="text-amber-600"><strong>Nota:</strong> Escalera importada desde otra planta</p>
+            {stair.connectsTo && (
+              <p><strong>Conecta con:</strong> {stair.connectsTo}</p>
             )}
           </div>
         </div>
