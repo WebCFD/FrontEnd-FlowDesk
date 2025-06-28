@@ -853,35 +853,9 @@ export function RoomSketchPro({
   ) => {
     // OPTIMIZATION: AirEntry now works like furniture - no store propagation needed
     // Direct modification in Canvas3D already preserves textures and geometry
-    console.log('✅ [RSP OPTIMIZED] AirEntry update received - no propagation needed');
-    console.log('✅ [RSP OPTIMIZED] Floor:', floorName, 'Index:', index);
-    console.log('✅ [RSP OPTIMIZED] Updated distanceToFloor:', updatedEntry.dimensions.distanceToFloor);
-    console.log('✅ [RSP OPTIMIZED] Textures preserved automatically - no scene regeneration');
     
     // No need to update floors or call onFloorsUpdate - direct modification already applied
     // This prevents the expensive scene regeneration cycle while maintaining functionality
-    
-    // Add delayed check to monitor if something else causes texture loss after dialog closes
-    setTimeout(() => {
-      console.log('🔍 [RSP DEBUG] 200ms after AirEntry update - checking for side effects');
-      if (sceneRef.current) {
-        const airEntryMeshes: any[] = [];
-        sceneRef.current.traverse((object: any) => {
-          if (object.userData && ["door", "window", "vent"].includes(object.userData.type)) {
-            airEntryMeshes.push(object);
-          }
-        });
-        console.log('🔍 [RSP DEBUG] AirEntry meshes in RSP scene:', airEntryMeshes.length);
-        airEntryMeshes.forEach((mesh, i) => {
-          const material = mesh.material;
-          console.log(`🔍 [RSP DEBUG] RSP Mesh ${i}:`, {
-            hasTexture: !!material?.map,
-            opacity: material?.opacity,
-            type: mesh.userData?.type
-          });
-        });
-      }
-    }, 200);
   }, [floors, onFloorsUpdate]);
 
   // Theme configurations with different Canvas3D parameters
