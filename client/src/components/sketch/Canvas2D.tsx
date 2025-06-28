@@ -1764,9 +1764,17 @@ export default function Canvas2D({
     // Handle right-click when drawing stairs to complete the polygon
     if (isDrawingStairs && e.button === 2) {
       e.preventDefault();
+      
+      console.log("🖱️ RIGHT-CLICK DETECTED while drawing stairs");
+      console.log(`📊 Current stair points count: ${currentStairPoints.length}`);
+      console.log(`📍 Current stair points:`, currentStairPoints);
+      console.log(`🏢 Current floor: ${currentFloor} (${floorText})`);
+      console.log(`📦 Existing stair polygons count: ${(stairPolygons || []).length}`);
 
       // Only create a stair polygon if we have at least 3 points
       if (currentStairPoints.length >= 3) {
+        console.log("✅ SUFFICIENT POINTS - Creating new stair polygon");
+        
         // Create a new stair polygon with proper ID format
         const stairCount = (stairPolygons || []).filter(s => s.floor === floorText).length + 1;
         const floorCode = currentFloor === "ground" ? "0F" : 
@@ -1776,6 +1784,8 @@ export default function Canvas2D({
                          currentFloor === "fourth" ? "4F" :
                          currentFloor === "fifth" ? "5F" : "0F";
         
+        console.log(`🏷️ Generated stair ID: stair_${floorCode}_${stairCount}`);
+        
         const newStairPolygon: StairPolygon = {
           id: `stair_${floorCode}_${stairCount}`,
           points: [...currentStairPoints],
@@ -1783,16 +1793,28 @@ export default function Canvas2D({
           temperature: defaultStairTemperature,
         };
 
+        console.log("🆕 NEW STAIR POLYGON CREATED:", newStairPolygon);
+        console.log(`🌡️ Default stair temperature: ${defaultStairTemperature}`);
+
         // Add the new stair polygon
         if (onStairPolygonsUpdate) {
-          onStairPolygonsUpdate([...(stairPolygons || []), newStairPolygon]);
+          const updatedPolygons = [...(stairPolygons || []), newStairPolygon];
+          console.log("📤 CALLING onStairPolygonsUpdate with:", updatedPolygons);
+          onStairPolygonsUpdate(updatedPolygons);
+          console.log("✅ onStairPolygonsUpdate called successfully");
+        } else {
+          console.log("❌ onStairPolygonsUpdate callback is not available");
         }
+      } else {
+        console.log(`❌ INSUFFICIENT POINTS - Need at least 3 points, have ${currentStairPoints.length}`);
       }
 
       // Reset stair drawing state
+      console.log("🧹 RESETTING stair drawing state");
       setIsDrawingStairs(false);
       setCurrentStairPoints([]);
       setPreviewStairPoint(null);
+      console.log("🔄 Stair drawing state reset complete");
       return;
     }
 
