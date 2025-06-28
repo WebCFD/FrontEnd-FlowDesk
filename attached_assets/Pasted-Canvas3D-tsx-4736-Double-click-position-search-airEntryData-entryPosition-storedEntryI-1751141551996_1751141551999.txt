@@ -1,0 +1,193 @@
+Canvas3D.tsx:4736 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4746 Double-click found entry using stored entryIndex: 0
+Canvas3D.tsx:4774 🔍 [CANVAS3D DOUBLECLICK] baseEntry from store: {type: 'vent', position: {…}, line: {…}, dimensions: {…}}
+Canvas3D.tsx:4775 🔍 [CANVAS3D DOUBLECLICK] baseEntry.dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 100}
+Canvas3D.tsx:4776 🔍 [CANVAS3D DOUBLECLICK] baseEntry.dimensions.wallPosition: 100
+Canvas3D.tsx:4781 🔍 [CANVAS3D DOUBLECLICK] updatedData from ref: {position: {…}, dimensions: {…}}
+Canvas3D.tsx:4788 🔍 [CANVAS3D DOUBLECLICK] mergedEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}}
+Canvas3D.tsx:4789 🔍 [CANVAS3D DOUBLECLICK] mergedEntry.dimensions.wallPosition: 100
+Canvas3D.tsx:4800 🔍 [CANVAS3D DOUBLECLICK] Dialog opening with index: 0
+Canvas3D.tsx:1503 🔧 [AIRENTRY DIRECT] Updating geometry directly for vent - oldSize: 60x40, newSize: 61x40
+Canvas3D.tsx:1509 ✅ [AIRENTRY DIRECT] Geometry updated successfully - Material type: MeshPhongMaterial, Has texture: false
+wizard-design.tsx:1113 🔧 WIZARD: Canvas3D → handleUpdateAirEntryFrom3D
+wizard-design.tsx:1153 🔧 WIZARD: Calling updateAirEntry to trigger store notifications
+room-store.ts:425 🔄 STORE: updateAirEntry llamado - piso: ground, índice: 0
+room-store.ts:426 🔄 STORE: Nueva posición del AirEntry: (139.48, 433.99)
+room-store.ts:440 ✅ STORE: AirEntry actualizado en el store, notificando a 1 listeners
+room-store.ts:444 📢 STORE: Notificando listener 1/1
+Canvas3D.tsx:1256 📥 Canvas3D: Recibida notificación de cambio AirEntry - piso: ground, índice: 0
+Canvas3D.tsx:1257 📥 Canvas3D: Tipo: vent, posición: (139.48, 433.99)
+Canvas3D.tsx:1265 ✅ Canvas3D: Aplicando cambio - buscando objetos en escena 3D
+Canvas3D.tsx:1278 🎯 Canvas3D: Encontrado objeto vent para actualizar - índice: 0
+Canvas3D.tsx:1285 🎯 Canvas3D: Objeto actualizado - nueva posición 3D: (-325.65, -167.4875, 110)
+Canvas3D.tsx:1289 📊 Canvas3D: Objetos encontrados: 1, actualizados: 1
+Canvas3D.tsx:1293 🔄 Canvas3D: Forzando re-render de la escena
+Canvas3D.tsx:1256 📥 Canvas3D: Recibida notificación de cambio AirEntry - piso: ground, índice: 0
+Canvas3D.tsx:1257 📥 Canvas3D: Tipo: vent, posición: (139.48, 433.99)
+Canvas3D.tsx:1265 ✅ Canvas3D: Aplicando cambio - buscando objetos en escena 3D
+Canvas3D.tsx:1278 🎯 Canvas3D: Encontrado objeto vent para actualizar - índice: 0
+Canvas3D.tsx:1285 🎯 Canvas3D: Objeto actualizado - nueva posición 3D: (-325.65, -167.4875, 110)
+Canvas3D.tsx:1289 📊 Canvas3D: Objetos encontrados: 1, actualizados: 1
+Canvas3D.tsx:1293 🔄 Canvas3D: Forzando re-render de la escena
+Canvas3D.tsx:1503 🔧 [AIRENTRY DIRECT] Updating geometry directly for vent - oldSize: 61x40, newSize: 62x40
+Canvas3D.tsx:1509 ✅ [AIRENTRY DIRECT] Geometry updated successfully - Material type: MeshPhongMaterial, Has texture: false
+Canvas3D.tsx:1503 🔧 [AIRENTRY DIRECT] Updating geometry directly for vent - oldSize: 62x40, newSize: 63x40
+Canvas3D.tsx:1509 ✅ [AIRENTRY DIRECT] Geometry updated successfully - Material type: MeshPhongMaterial, Has texture: false
+Canvas3D.tsx:1503 🔧 [AIRENTRY DIRECT] Updating geometry directly for vent - oldSize: 63x40, newSize: 64x40
+Canvas3D.tsx:1509 ✅ [AIRENTRY DIRECT] Geometry updated successfully - Material type: MeshPhongMaterial, Has texture: false
+Canvas3D.tsx:1503 🔧 [AIRENTRY DIRECT] Updating geometry directly for vent - oldSize: 64x40, newSize: 65x40
+Canvas3D.tsx:1509 ✅ [AIRENTRY DIRECT] Geometry updated successfully - Material type: MeshPhongMaterial, Has texture: false
+Canvas3D.tsx:1503 🔧 [AIRENTRY DIRECT] Updating geometry directly for vent - oldSize: 65x40, newSize: 66x40
+Canvas3D.tsx:1509 ✅ [AIRENTRY DIRECT] Geometry updated successfully - Material type: MeshPhongMaterial, Has texture: false
+Canvas3D.tsx:1503 🔧 [AIRENTRY DIRECT] Updating geometry directly for vent - oldSize: 66x40, newSize: 67x40
+Canvas3D.tsx:1509 ✅ [AIRENTRY DIRECT] Geometry updated successfully - Material type: MeshPhongMaterial, Has texture: false
+Canvas3D.tsx:1503 🔧 [AIRENTRY DIRECT] Updating geometry directly for vent - oldSize: 67x40, newSize: 68x40
+Canvas3D.tsx:1509 ✅ [AIRENTRY DIRECT] Geometry updated successfully - Material type: MeshPhongMaterial, Has texture: false
+Canvas3D.tsx:1503 🔧 [AIRENTRY DIRECT] Updating geometry directly for vent - oldSize: 68x40, newSize: 69x40
+Canvas3D.tsx:1509 ✅ [AIRENTRY DIRECT] Geometry updated successfully - Material type: MeshPhongMaterial, Has texture: false
+Canvas3D.tsx:1503 🔧 [AIRENTRY DIRECT] Updating geometry directly for vent - oldSize: 69x40, newSize: 70x40
+Canvas3D.tsx:1509 ✅ [AIRENTRY DIRECT] Geometry updated successfully - Material type: MeshPhongMaterial, Has texture: false
+Canvas3D.tsx:1503 🔧 [AIRENTRY DIRECT] Updating geometry directly for vent - oldSize: 70x40, newSize: 71x40
+Canvas3D.tsx:1509 ✅ [AIRENTRY DIRECT] Geometry updated successfully - Material type: MeshPhongMaterial, Has texture: false
+Canvas3D.tsx:1503 🔧 [AIRENTRY DIRECT] Updating geometry directly for vent - oldSize: 71x40, newSize: 72x40
+Canvas3D.tsx:1509 ✅ [AIRENTRY DIRECT] Geometry updated successfully - Material type: MeshPhongMaterial, Has texture: false
+Canvas3D.tsx:1503 🔧 [AIRENTRY DIRECT] Updating geometry directly for vent - oldSize: 72x40, newSize: 73x40
+Canvas3D.tsx:1509 ✅ [AIRENTRY DIRECT] Geometry updated successfully - Material type: MeshPhongMaterial, Has texture: false
+Canvas3D.tsx:1503 🔧 [AIRENTRY DIRECT] Updating geometry directly for vent - oldSize: 73x40, newSize: 74x40
+Canvas3D.tsx:1509 ✅ [AIRENTRY DIRECT] Geometry updated successfully - Material type: MeshPhongMaterial, Has texture: false
+Canvas3D.tsx:1503 🔧 [AIRENTRY DIRECT] Updating geometry directly for vent - oldSize: 74x40, newSize: 75x40
+Canvas3D.tsx:1509 ✅ [AIRENTRY DIRECT] Geometry updated successfully - Material type: MeshPhongMaterial, Has texture: false
+wizard-design.tsx:1113 🔧 WIZARD: Canvas3D → handleUpdateAirEntryFrom3D
+wizard-design.tsx:1153 🔧 WIZARD: Calling updateAirEntry to trigger store notifications
+room-store.ts:425 🔄 STORE: updateAirEntry llamado - piso: ground, índice: 0
+room-store.ts:426 🔄 STORE: Nueva posición del AirEntry: (139.48, 433.99)
+room-store.ts:440 ✅ STORE: AirEntry actualizado en el store, notificando a 1 listeners
+room-store.ts:444 📢 STORE: Notificando listener 1/1
+Canvas3D.tsx:1256 📥 Canvas3D: Recibida notificación de cambio AirEntry - piso: ground, índice: 0
+Canvas3D.tsx:1257 📥 Canvas3D: Tipo: vent, posición: (139.48, 433.99)
+Canvas3D.tsx:1265 ✅ Canvas3D: Aplicando cambio - buscando objetos en escena 3D
+Canvas3D.tsx:1278 🎯 Canvas3D: Encontrado objeto vent para actualizar - índice: 0
+Canvas3D.tsx:1285 🎯 Canvas3D: Objeto actualizado - nueva posición 3D: (-325.65, -167.4875, 110)
+Canvas3D.tsx:1289 📊 Canvas3D: Objetos encontrados: 1, actualizados: 1
+Canvas3D.tsx:1293 🔄 Canvas3D: Forzando re-render de la escena
+Canvas3D.tsx:1256 📥 Canvas3D: Recibida notificación de cambio AirEntry - piso: ground, índice: 0
+Canvas3D.tsx:1257 📥 Canvas3D: Tipo: vent, posición: (139.48, 433.99)
+Canvas3D.tsx:1265 ✅ Canvas3D: Aplicando cambio - buscando objetos en escena 3D
+Canvas3D.tsx:1278 🎯 Canvas3D: Encontrado objeto vent para actualizar - índice: 0
+Canvas3D.tsx:1285 🎯 Canvas3D: Objeto actualizado - nueva posición 3D: (-325.65, -167.4875, 110)
+Canvas3D.tsx:1289 📊 Canvas3D: Objetos encontrados: 1, actualizados: 1
+Canvas3D.tsx:1293 🔄 Canvas3D: Forzando re-render de la escena
+AirEntryDialog.tsx:499 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+AirEntryDialog.tsx:500 🎯 [SAVE BUTTON CLICKED] Event type: submit
+AirEntryDialog.tsx:501 🎯 [SAVE BUTTON CLICKED] Props type: vent
+AirEntryDialog.tsx:502 🎯 [SAVE BUTTON CLICKED] Current values: {width: 75, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 100, …}
+AirEntryDialog.tsx:503 🎯 [SAVE BUTTON CLICKED] wallPosition from values: 100
+AirEntryDialog.tsx:504 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 100
+AirEntryDialog.tsx:599 🎯 [PROPS.ONCONFIRM] About to call props.onConfirm with canvasData
+AirEntryDialog.tsx:600 🎯 [PROPS.ONCONFIRM] canvasData being sent: {width: 75, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 100, …}
+AirEntryDialog.tsx:601 🎯 [PROPS.ONCONFIRM] canvasData.wallPosition: 100
+AirEntryDialog.tsx:602 🎯 [PROPS.ONCONFIRM] canvasData.position: {x: 139.48, y: 433.99}
+AirEntryDialog.tsx:603 🎯 [PROPS.ONCONFIRM] This should trigger handleAirEntryEdit in Canvas2D
+Canvas3D.tsx:6091 [CANVAS3D ONCONFIRM] Received data from dialog: {width: 75, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 100, …}
+Canvas3D.tsx:6092 [CANVAS3D ONCONFIRM] wallPosition in received data: 100
+Canvas3D.tsx:6093 🔍 [SAVE CHANGES DEBUG] About to call handleAirEntryEdit
+Canvas3D.tsx:1880 🔍 [CANVAS3D handleAirEntryEdit] Called with index: 0
+Canvas3D.tsx:1881 🔍 [CANVAS3D handleAirEntryEdit] Received data: {width: 75, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 100, …}
+Canvas3D.tsx:1882 🔍 [CANVAS3D handleAirEntryEdit] data.wallPosition: 100
+Canvas3D.tsx:1921 🚀 Canvas3D: Llamando onUpdateAirEntry - piso: ground, índice: 0
+Canvas3D.tsx:1922 🚀 Canvas3D: Datos del AirEntry actualizado: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+wizard-design.tsx:1113 🔧 WIZARD: Canvas3D → handleUpdateAirEntryFrom3D
+wizard-design.tsx:1153 🔧 WIZARD: Calling updateAirEntry to trigger store notifications
+room-store.ts:425 🔄 STORE: updateAirEntry llamado - piso: ground, índice: 0
+room-store.ts:426 🔄 STORE: Nueva posición del AirEntry: (139.48, 433.99)
+room-store.ts:440 ✅ STORE: AirEntry actualizado en el store, notificando a 1 listeners
+room-store.ts:444 📢 STORE: Notificando listener 1/1
+Canvas3D.tsx:1256 📥 Canvas3D: Recibida notificación de cambio AirEntry - piso: ground, índice: 0
+Canvas3D.tsx:1257 📥 Canvas3D: Tipo: vent, posición: (139.48, 433.99)
+Canvas3D.tsx:1265 ✅ Canvas3D: Aplicando cambio - buscando objetos en escena 3D
+Canvas3D.tsx:1278 🎯 Canvas3D: Encontrado objeto vent para actualizar - índice: 0
+Canvas3D.tsx:1285 🎯 Canvas3D: Objeto actualizado - nueva posición 3D: (-325.65, -167.4875, 110)
+Canvas3D.tsx:1289 📊 Canvas3D: Objetos encontrados: 1, actualizados: 1
+Canvas3D.tsx:1293 🔄 Canvas3D: Forzando re-render de la escena
+Canvas3D.tsx:1256 📥 Canvas3D: Recibida notificación de cambio AirEntry - piso: ground, índice: 0
+Canvas3D.tsx:1257 📥 Canvas3D: Tipo: vent, posición: (139.48, 433.99)
+Canvas3D.tsx:1265 ✅ Canvas3D: Aplicando cambio - buscando objetos en escena 3D
+Canvas3D.tsx:1278 🎯 Canvas3D: Encontrado objeto vent para actualizar - índice: 0
+Canvas3D.tsx:1285 🎯 Canvas3D: Objeto actualizado - nueva posición 3D: (-325.65, -167.4875, 110)
+Canvas3D.tsx:1289 📊 Canvas3D: Objetos encontrados: 1, actualizados: 1
+Canvas3D.tsx:1293 🔄 Canvas3D: Forzando re-render de la escena
+Canvas3D.tsx:1926 ✅ Canvas3D: onUpdateAirEntry completado - debería haber actualizado el store
+Canvas3D.tsx:1927 📋 Canvas3D: Verificando si esto dispara notificaciones a otros componentes...
+Canvas3D.tsx:1939 🔍 [BEFORE CLOSE] Mesh 0 material: {hasMap: false, opacity: 0.7, type: 'vent'}
+Canvas3D.tsx:1947 🔬 [DEPENDENCY TRACKING] BEFORE setEditingAirEntry(null):
+Canvas3D.tsx:1948 🔬 [DEPENDENCY TRACKING] floors keys: ['ground']
+Canvas3D.tsx:1949 🔬 [DEPENDENCY TRACKING] currentFloor: ground
+Canvas3D.tsx:1950 🔬 [DEPENDENCY TRACKING] ceilingHeight: 220
+Canvas3D.tsx:1951 🔬 [DEPENDENCY TRACKING] floorDeckThickness: 35
+Canvas3D.tsx:1952 🔬 [DEPENDENCY TRACKING] floors[currentFloor] airEntries length: 1
+Canvas3D.tsx:1953 🔬 [DEPENDENCY TRACKING] selectedAirEntry state: NULL
+Canvas3D.tsx:1957 🔬 [DEPENDENCY TRACKING] AFTER setEditingAirEntry(null):
+Canvas3D.tsx:1958 🔬 [DEPENDENCY TRACKING] floors keys: ['ground']
+Canvas3D.tsx:1959 🔬 [DEPENDENCY TRACKING] currentFloor: ground
+Canvas3D.tsx:1960 🔬 [DEPENDENCY TRACKING] ceilingHeight: 220
+Canvas3D.tsx:1961 🔬 [DEPENDENCY TRACKING] floorDeckThickness: 35
+Canvas3D.tsx:1962 🔬 [DEPENDENCY TRACKING] floors[currentFloor] airEntries length: 1
+Canvas3D.tsx:1963 🔬 [DEPENDENCY TRACKING] selectedAirEntry state: NULL
+Canvas3D.tsx:1986 ✅ [SAVE CHANGES] Data commit complete - monitoring for texture loss
+Canvas3D.tsx:1987 ✅ [SAVE CHANGES] Dialog closed - checking for side effects
+Canvas3D.tsx:6102 🔍 [SAVE CHANGES DEBUG] handleAirEntryEdit completed - checking for side effects
+AirEntryDialog.tsx:607 🎯 [PROPS.ONCONFIRM] props.onConfirm completed
+AirEntryDialog.tsx:608 🎯 [PROPS.ONCONFIRM] Now calling onClose() to close dialog
+Canvas3D.tsx:1967 🔍 [AFTER CLOSE] Checking textures immediately after dialog close
+Canvas3D.tsx:1977 🔍 [AFTER CLOSE] Mesh 0 material: {hasMap: false, opacity: 0.7, type: 'vent'}
+Canvas3D.tsx:6106 🔍 [SAVE CHANGES DEBUG] 100ms after Save Changes - checking scene state
+Canvas3D.tsx:6114 🔍 [SAVE CHANGES DEBUG] AirEntry meshes found: 1
+Canvas3D.tsx:6117 🔍 [SAVE CHANGES DEBUG] Mesh 0 material: {hasMap: false, opacity: 0.7, type: 'vent'}
+analytics.ts:62 📊 Analytics Event: {category: 'ui_interaction', action: 'change_tab', label: 'view_2d_editor', value: undefined, status: 'sent'}
+wizard-design.tsx:2559 🔍 HYPOTHESIS TEST: rawFloors vs store data synchronization
+wizard-design.tsx:2560 🔍 rawFloors[ground] position: (139.48, 433.99)
+wizard-design.tsx:2561 🔍 store.floors[ground] position: (139.48, 433.99)
+wizard-design.tsx:2562 🔍 DATA SYNC STATUS: ✅ SYNCHRONIZED
+Canvas3D.tsx:1300 🔗 Canvas3D: Desregistrando suscripción para piso 'ground'
+room-store.ts:477 🔗 STORE: Suscripción eliminada. Total listeners: 0
+Canvas2D.tsx:408 🔗 Canvas2D: Registrando suscripción para piso 'ground'
+Canvas2D.tsx:409 🔗 Canvas2D: subscribeToAirEntryChanges función disponible: true
+room-store.ts:469 🔗 STORE: Nueva suscripción añadida. Total listeners: 1
+Canvas2D.tsx:436 🔗 Canvas2D: Suscripción creada exitosamente: true
+wizard-design.tsx:2559 🔍 HYPOTHESIS TEST: rawFloors vs store data synchronization
+wizard-design.tsx:2560 🔍 rawFloors[ground] position: (139.48, 433.99)
+wizard-design.tsx:2561 🔍 store.floors[ground] position: (139.48, 433.99)
+wizard-design.tsx:2562 🔍 DATA SYNC STATUS: ✅ SYNCHRONIZED
+wizard-design:1 [.WebGL-0x2c640f3e4d00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x2c640f3e4d00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x2c640f3e4d00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x2c640f3e4d00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design.tsx:2559 🔍 HYPOTHESIS TEST: rawFloors vs store data synchronization
+wizard-design.tsx:2560 🔍 rawFloors[ground] position: (139.48, 433.99)
+wizard-design.tsx:2561 🔍 store.floors[ground] position: (139.48, 433.99)
+wizard-design.tsx:2562 🔍 DATA SYNC STATUS: ✅ SYNCHRONIZED
+wizard-design.tsx:2559 🔍 HYPOTHESIS TEST: rawFloors vs store data synchronization
+wizard-design.tsx:2560 🔍 rawFloors[ground] position: (139.48, 433.99)
+wizard-design.tsx:2561 🔍 store.floors[ground] position: (139.48, 433.99)
+wizard-design.tsx:2562 🔍 DATA SYNC STATUS: ✅ SYNCHRONIZED
+wizard-design.tsx:2559 🔍 HYPOTHESIS TEST: rawFloors vs store data synchronization
+wizard-design.tsx:2560 🔍 rawFloors[ground] position: (139.48, 433.99)
+wizard-design.tsx:2561 🔍 store.floors[ground] position: (139.48, 433.99)
+wizard-design.tsx:2562 🔍 DATA SYNC STATUS: ✅ SYNCHRONIZED
+AirEntryDialog.tsx:499 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+AirEntryDialog.tsx:500 🎯 [SAVE BUTTON CLICKED] Event type: submit
+AirEntryDialog.tsx:501 🎯 [SAVE BUTTON CLICKED] Props type: vent
+AirEntryDialog.tsx:502 🎯 [SAVE BUTTON CLICKED] Current values: {width: 75, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 100, …}
+AirEntryDialog.tsx:503 🎯 [SAVE BUTTON CLICKED] wallPosition from values: 100
+AirEntryDialog.tsx:504 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 100
+AirEntryDialog.tsx:599 🎯 [PROPS.ONCONFIRM] About to call props.onConfirm with canvasData
+AirEntryDialog.tsx:600 🎯 [PROPS.ONCONFIRM] canvasData being sent: {width: 75, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 100, …}
+AirEntryDialog.tsx:601 🎯 [PROPS.ONCONFIRM] canvasData.wallPosition: 100
+AirEntryDialog.tsx:602 🎯 [PROPS.ONCONFIRM] canvasData.position: {x: 139.48, y: 433.99}
+AirEntryDialog.tsx:603 🎯 [PROPS.ONCONFIRM] This should trigger handleAirEntryEdit in Canvas2D
+AirEntryDialog.tsx:607 🎯 [PROPS.ONCONFIRM] props.onConfirm completed
+AirEntryDialog.tsx:608 🎯 [PROPS.ONCONFIRM] Now calling onClose() to close dialog
+wizard-design.tsx:2559 🔍 HYPOTHESIS TEST: rawFloors vs store data synchronization
+wizard-design.tsx:2560 🔍 rawFloors[ground] position: (139.48, 433.99)
+wizard-design.tsx:2561 🔍 store.floors[ground] position: (139.48, 433.99)
+wizard-design.tsx:2562 🔍 DATA SYNC STATUS: ✅ SYNCHRONIZED
