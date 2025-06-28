@@ -4839,12 +4839,14 @@ export default function Canvas3D({
     };
   }, []);
 
-  useEffect(() => {
-    // SOLUTION: Use store data for scene rebuild, like Canvas2D
+  // SOLUTION: Use store data for scene rebuild, like Canvas2D - reactive with useMemo
+  const finalFloors = useMemo(() => {
     const storeFloors = useRoomStore.getState().floors;
-    const finalFloors = Object.keys(storeFloors).length > 0 ? storeFloors : floors;
-    
-    console.log(`🔧 [CANVAS3D REBUILD] Using ${Object.keys(storeFloors).length > 0 ? 'STORE DATA' : 'PROPS FALLBACK'} for scene rebuild`);
+    return Object.keys(storeFloors).length > 0 ? storeFloors : floors;
+  }, [floors]); // Re-compute when props change
+
+  useEffect(() => {
+    console.log(`🔧 [CANVAS3D REBUILD] Using ${finalFloors === floors ? 'PROPS FALLBACK' : 'STORE DATA'} for scene rebuild`);
     
     if (finalFloors[currentFloor]?.airEntries?.length > 0) {
       const airEntry = finalFloors[currentFloor].airEntries[0];
