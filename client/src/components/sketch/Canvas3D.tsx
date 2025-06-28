@@ -5948,6 +5948,28 @@ export default function Canvas3D({
               properties: data.properties
             } as any);
             console.log('🔍 [SAVE CHANGES DEBUG] handleAirEntryEdit completed - checking for side effects');
+            
+            // Add timeout to check for delayed effects that might cause texture loss
+            setTimeout(() => {
+              console.log('🔍 [SAVE CHANGES DEBUG] 100ms after Save Changes - checking scene state');
+              if (sceneRef.current) {
+                const airEntryMeshes: any[] = [];
+                sceneRef.current.traverse((object: any) => {
+                  if (object.userData && ["door", "window", "vent"].includes(object.userData.type)) {
+                    airEntryMeshes.push(object);
+                  }
+                });
+                console.log('🔍 [SAVE CHANGES DEBUG] AirEntry meshes found:', airEntryMeshes.length);
+                airEntryMeshes.forEach((mesh, i) => {
+                  const material = mesh.material;
+                  console.log(`🔍 [SAVE CHANGES DEBUG] Mesh ${i} material:`, {
+                    hasMap: !!material?.map,
+                    opacity: material?.opacity,
+                    type: mesh.userData?.type
+                  });
+                });
+              }
+            }, 100);
           }}
           initialValues={{
             ...editingAirEntry.entry.dimensions,
