@@ -624,8 +624,8 @@ export function generateSimulationData(
         type: "vent",
         position: {
           x: parseFloat(ventObj.position.x.toFixed(5)),
-          y: parseFloat(ventObj.position.z.toFixed(5)), // Z se convierte en Y en el sistema de exportación
-          z: parseFloat(ventObj.position.y.toFixed(5)), // Y se convierte en Z en el sistema de exportación
+          y: parseFloat(ventObj.position.y.toFixed(5)), // Y se mantiene como Y
+          z: parseFloat(ventObj.position.z.toFixed(5)), // Z se mantiene como Z
           normal: {
             x: 0,
             y: 0,
