@@ -1,15 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { X } from "lucide-react";
 import { StairPolygon } from "@/types";
 
 interface StairPropertiesDialogProps {
@@ -25,9 +19,13 @@ export default function StairPropertiesDialog({
   stair,
   onSave,
 }: StairPropertiesDialogProps) {
-  const [temperature, setTemperature] = useState(
-    stair?.temperature?.toString() || "20"
-  );
+  const [temperature, setTemperature] = useState("20");
+
+  useEffect(() => {
+    if (stair) {
+      setTemperature(stair.temperature?.toString() || "20");
+    }
+  }, [stair]);
 
   const handleSave = () => {
     if (stair) {
@@ -48,72 +46,88 @@ export default function StairPropertiesDialog({
     onClose();
   };
 
-  if (!stair) return null;
+  if (!isOpen || !stair) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Propiedades de la Escalera</DialogTitle>
-          <DialogDescription>
+    <div className="fixed top-4 right-4 z-50 w-96">
+      <Card className="shadow-lg border border-gray-200">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg font-semibold">
+              Propiedades de la Escalera
+            </CardTitle>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleClose}
+              className="h-6 w-6 p-0"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          <p className="text-sm text-gray-600 mt-1">
             Edita las propiedades térmicas de la escalera {stair.id}
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="stair-id" className="text-right">
-              ID de Escalera:
+          </p>
+        </CardHeader>
+        
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="stair-id" className="text-sm font-medium">
+              ID de Escalera
             </Label>
             <Input
               id="stair-id"
               value={stair.id}
-              className="col-span-3"
               disabled
+              className="bg-gray-50"
             />
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="floor" className="text-right">
-              Planta:
+          
+          <div className="space-y-2">
+            <Label htmlFor="floor" className="text-sm font-medium">
+              Planta
             </Label>
             <Input
               id="floor"
               value={stair.floor}
-              className="col-span-3"
               disabled
+              className="bg-gray-50"
             />
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="temperature" className="text-right">
-              Temperatura (°C):
+          
+          <div className="space-y-2">
+            <Label htmlFor="temperature" className="text-sm font-medium">
+              Temperatura (°C)
             </Label>
             <Input
               id="temperature"
               type="number"
               value={temperature}
               onChange={(e) => setTemperature(e.target.value)}
-              className="col-span-3"
               placeholder="20.0"
               min="-50"
               max="100"
               step="0.1"
             />
           </div>
-          <div className="text-sm text-gray-600 col-span-4">
-            <p><strong>Puntos de la escalera:</strong> {stair.points.length} puntos</p>
+          
+          <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded">
+            <p><strong>Puntos:</strong> {stair.points.length} puntos</p>
             {stair.connectsTo && (
               <p><strong>Conecta con:</strong> {stair.connectsTo}</p>
             )}
           </div>
-        </div>
-        <DialogFooter>
-          <Button type="button" variant="outline" onClick={handleClose}>
-            Cancelar
-          </Button>
-          <Button type="submit" onClick={handleSave}>
-            Guardar Cambios
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          
+          <div className="flex gap-2 pt-2">
+            <Button variant="outline" onClick={handleClose} className="flex-1">
+              Cancelar
+            </Button>
+            <Button onClick={handleSave} className="flex-1">
+              Guardar Cambios
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
