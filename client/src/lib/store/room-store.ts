@@ -82,6 +82,9 @@ interface FloorData {
   templateSource?: string; // Name of the floor this was copied from
 }
 
+// AirEntry change notification system
+type AirEntryChangeListener = (floorName: string, index: number, entry: AirEntry) => void;
+
 interface RoomState {
   floors: Record<string, FloorData>;
   currentFloor: string;
@@ -108,8 +111,14 @@ interface RoomState {
   updateFloor: (floorName: string, floorData: FloorData) => void;
   syncWallsForCurrentFloor: () => void;
   updateAirEntryProperties: (floorName: string, index: number, properties: SimulationProperties) => void;
+  // Reactive AirEntry synchronization system
+  updateAirEntry: (floorName: string, index: number, entry: AirEntry) => void;
+  subscribeToAirEntryChanges: (listener: AirEntryChangeListener) => () => void;
   reset: () => void;
 }
+
+// Global listeners array for AirEntry change notifications
+let airEntryChangeListeners: AirEntryChangeListener[] = [];
 
 export const useRoomStore = create<RoomState>()(
   devtools(
@@ -410,6 +419,46 @@ export const useRoomStore = create<RoomState>()(
           
           return { floors: currentFloors };
         }),
+
+        // Reactive AirEntry synchronization system
+        updateAirEntry: (floorName: string, index: number, entry: AirEntry) => {
+          set((state) => {
+            const updatedFloors = { ...state.floors };
+            
+            if (updatedFloors[floorName]?.airEntries && updatedFloors[floorName].airEntries[index]) {
+              const updatedAirEntries = [...updatedFloors[floorName].airEntries];
+              updatedAirEntries[index] = entry;
+              
+              updatedFloors[floorName] = {
+                ...updatedFloors[floorName],
+                airEntries: updatedAirEntries
+              };
+            }
+            
+            return { floors: updatedFloors };
+          });
+
+          // Notify all subscribed listeners about the change
+          airEntryChangeListeners.forEach(listener => {
+            try {
+              listener(floorName, index, entry);
+            } catch (error) {
+              console.error('Error in AirEntry change listener:', error);
+            }
+          });
+        },
+
+        subscribeToAirEntryChanges: (listener: AirEntryChangeListener) => {
+          airEntryChangeListeners.push(listener);
+          
+          // Return unsubscribe function
+          return () => {
+            const index = airEntryChangeListeners.indexOf(listener);
+            if (index > -1) {
+              airEntryChangeListeners.splice(index, 1);
+            }
+          };
+        },
         
         reset: () => set({
           floors: {

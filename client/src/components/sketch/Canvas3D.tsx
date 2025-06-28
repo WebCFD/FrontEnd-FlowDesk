@@ -1246,9 +1246,34 @@ export default function Canvas3D({
     }
   }, [currentFloor, migratedFloors, isMultifloor, floorParameters, onFurnitureAdd]);
 
-  // Canvas3D initialization
+  // Reactive AirEntry synchronization system
+  const { subscribeToAirEntryChanges } = useRoomStore();
+  
   useEffect(() => {
-  }, []);
+    const unsubscribe = subscribeToAirEntryChanges((floorName, index, updatedEntry) => {
+      // Only update if this change affects our current floor
+      if (floorName !== currentFloor) return;
+      
+      // Update position in the 3D scene immediately
+      if (sceneRef.current) {
+        sceneRef.current.traverse((object) => {
+          if (object instanceof THREE.Mesh && 
+              object.userData?.type === updatedEntry.type &&
+              object.userData?.entryIndex === index) {
+            
+            const position3D = transform2DTo3D(updatedEntry.position);
+            object.position.set(position3D.x, position3D.y, object.position.z);
+            object.userData.position = updatedEntry.position;
+          }
+        });
+        
+        // Force re-render
+        needsRenderRef.current = true;
+      }
+    });
+    
+    return unsubscribe;
+  }, [currentFloor, subscribeToAirEntryChanges]);
 
   // Function to setup lighting based on presentation mode
   const setupLights = (scene: THREE.Scene) => {
