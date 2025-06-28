@@ -940,7 +940,7 @@ export function RoomSketchPro({
         onSceneReady={handleSceneReady}
         onFurnitureAdded={handleFurnitureAdded} // Callback to re-apply textures when furniture is added
         onFurnitureDeleted={handleFurnitureDeleted} // Callback to re-apply textures when furniture is deleted
-        onAirEntryUpdated={handleAirEntryUpdated} // Callback to re-apply textures when air entry is updated
+        // REMOVED: onAirEntryUpdated - textures preserved automatically during direct modification
         onFurnitureAdd={onFurnitureAdd} // Pass furniture callback to Canvas3D
         onUpdateFurniture={onUpdateFurniture} // Enable furniture editing in RSP
         onDeleteFurniture={onDeleteFurniture} // Enable furniture deletion in RSP
