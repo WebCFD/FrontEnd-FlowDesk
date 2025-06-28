@@ -59,7 +59,7 @@ export default function StairPropertiesDialog({
             Edita las propiedades térmicas de la escalera {stair.id}
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+        <div className="grid gap-6 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="stair-id" className="text-right">
               ID de Escalera:

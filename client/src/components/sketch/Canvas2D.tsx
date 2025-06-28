@@ -1767,9 +1767,17 @@ export default function Canvas2D({
 
       // Only create a stair polygon if we have at least 3 points
       if (currentStairPoints.length >= 3) {
-        // Create a new stair polygon
+        // Create a new stair polygon with proper ID format
+        const stairCount = (stairPolygons || []).filter(s => s.floor === floorText).length + 1;
+        const floorCode = currentFloor === "ground" ? "0F" : 
+                         currentFloor === "first" ? "1F" :
+                         currentFloor === "second" ? "2F" :
+                         currentFloor === "third" ? "3F" :
+                         currentFloor === "fourth" ? "4F" :
+                         currentFloor === "fifth" ? "5F" : "0F";
+        
         const newStairPolygon: StairPolygon = {
-          id: Math.random().toString(36).substring(2, 9),
+          id: `stair_${floorCode}_${stairCount}`,
           points: [...currentStairPoints],
           floor: floorText,
           temperature: defaultStairTemperature,
