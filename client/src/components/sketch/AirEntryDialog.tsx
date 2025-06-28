@@ -566,13 +566,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
       
       // Transform data to match Canvas2D expectations
       
-      console.log("🎯 [SAVE CHANGES DEBUG] About to create canvasData");
-      console.log("🎯 [SAVE CHANGES DEBUG] Mode:", mode);
-      console.log("🎯 [SAVE CHANGES DEBUG] isEditing:", isEditing); 
-      console.log("🎯 [SAVE CHANGES DEBUG] values.wallPosition:", (values as any).wallPosition);
-      console.log("🎯 [SAVE CHANGES DEBUG] wallPosition state:", wallPosition);
-      console.log("🎯 [SAVE CHANGES DEBUG] values.position:", (values as any).position);
-      console.log("🎯 [SAVE CHANGES DEBUG] This will determine 2D vs 3D behavior");
+
       
       const canvasData = {
         width: shapeType === 'rectangular' ? (values as any).width : (values as any).width, // For circular, width = diameter
