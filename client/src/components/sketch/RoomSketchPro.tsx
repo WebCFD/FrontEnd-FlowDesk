@@ -822,18 +822,7 @@ export function RoomSketchPro({
     }, 100);
   }, []);
 
-  // Function to re-apply textures (called when air entry is updated)
-  const handleAirEntryUpdated = useCallback(() => {
-    // Check if scene is available
-    if (!sceneRef.current) {
-      return;
-    }
-    
-    // Small delay to ensure the air entry mesh is fully updated in the scene
-    setTimeout(() => {
-      applyThemeTextures();
-    }, 100);
-  }, []);
+
 
   // Apply textures when theme changes
   useEffect(() => {

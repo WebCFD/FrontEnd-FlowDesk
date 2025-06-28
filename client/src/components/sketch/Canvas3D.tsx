@@ -1384,12 +1384,9 @@ export default function Canvas3D({
         onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
       }
       
-      // Notify RSP to re-apply textures after real-time position update
-      if (onAirEntryUpdated) {
-        onAirEntryUpdated();
-      }
+
     }, 150);
-  }, [editingAirEntry, onUpdateAirEntry, onAirEntryUpdated, currentFloor]);
+  }, [editingAirEntry, onUpdateAirEntry, currentFloor]);
 
   const handleAirEntryDimensionsUpdate = useCallback((newDimensions: any) => {
     if (!editingAirEntry || !onUpdateAirEntry) return;
@@ -1443,9 +1440,15 @@ export default function Canvas3D({
             const newWidth = newDimensions.width || updatedEntry.dimensions.width;
             const newHeight = newDimensions.height || updatedEntry.dimensions.height;
             
+            // Preserve existing material (including RSP textures) before geometry replacement
+            const preservedMaterial = object.material;
+            
             const newGeometry = new THREE.PlaneGeometry(newWidth, newHeight);
             object.geometry.dispose(); // Clean up old geometry
             object.geometry = newGeometry;
+            
+            // Restore the preserved material to maintain RSP textures
+            object.material = preservedMaterial;
           }
           
           // Update Z-position if distanceToFloor changed
@@ -1470,12 +1473,9 @@ export default function Canvas3D({
         onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
       }
       
-      // Notify RSP to re-apply textures after real-time dimension update
-      if (onAirEntryUpdated) {
-        onAirEntryUpdated();
-      }
+
     }, 150);
-  }, [editingAirEntry, onUpdateAirEntry, onAirEntryUpdated, currentFloor, migratedFloors]);
+  }, [editingAirEntry, onUpdateAirEntry, currentFloor, migratedFloors]);
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -1861,10 +1861,7 @@ export default function Canvas3D({
     onUpdateAirEntry(currentFloor, index, updatedEntry);
     setEditingAirEntry(null);
     
-    // Notify RSP to re-apply textures after AirEntry update
-    if (onAirEntryUpdated) {
-      onAirEntryUpdated();
-    }
+
   };
 
   // New function to create stair mesh
