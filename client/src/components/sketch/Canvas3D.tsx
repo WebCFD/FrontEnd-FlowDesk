@@ -1462,15 +1462,11 @@ export default function Canvas3D({
             // CRITICAL FIX: distanceToFloor already represents center height, no need to add height/2
             const newZPosition = baseHeight + newDistanceToFloor;
             
-            console.log(`📍 [AIRENTRY DIRECT] Updating position directly for ${object.userData.type} - oldZ: ${object.position.z}, newZ: ${newZPosition}`);
             object.position.setZ(newZPosition);
-            console.log(`✅ [AIRENTRY DIRECT] Position updated successfully`);
           }
           
           // Update userData with new dimensions
-          console.log(`💾 [AIRENTRY DIRECT] Updating userData for ${object.userData.type}`);
           object.userData.dimensions = updatedEntry.dimensions;
-          console.log(`✅ [AIRENTRY DIRECT] UserData updated successfully`);
         }
       });
     }
@@ -1482,8 +1478,6 @@ export default function Canvas3D({
       }
       
       // OPTIMIZATION: No callback needed - textures preserved automatically during direct modification
-      console.log(`🚀 [OPTIMIZATION] No callback needed - AirEntry works like furniture with direct modification`);
-      console.log(`✅ [OPTIMIZATION] Textures preserved automatically during real-time updates`);
     }, 150);
   }, [editingAirEntry, onUpdateAirEntry, currentFloor, migratedFloors]);
 
