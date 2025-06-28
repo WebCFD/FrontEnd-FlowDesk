@@ -521,10 +521,18 @@ export function generateSimulationData(
 
     // Filtrar el mobiliario que pertenece a este piso con coordenadas normalizadas
     const allFloorObjects = furniture.filter(obj => obj.userData?.floor === floorName && obj.userData?.type === 'furniture');
+    console.log(`📊 EXPORT [${floorName}]: Total floor objects found:`, allFloorObjects.length);
+    console.log(`📊 EXPORT [${floorName}]: Floor objects:`, allFloorObjects.map(obj => ({ 
+      id: obj.userData?.id, 
+      type: obj.userData?.furnitureType, 
+      position: obj.position 
+    })));
     
     // Separar vents del resto de furniture para procesamiento diferenciado
     const ventFurnitureObjects = allFloorObjects.filter(obj => obj.userData?.furnitureType === 'vent');
     const floorFurnitureObjects = allFloorObjects.filter(obj => obj.userData?.furnitureType !== 'vent');
+    console.log(`📊 EXPORT [${floorName}]: Vent objects found:`, ventFurnitureObjects.length);
+    console.log(`📊 EXPORT [${floorName}]: Regular furniture objects:`, floorFurnitureObjects.length);
     
     // Initialize furniture type counters for this floor
     const furnitureTypeCounts = { 
