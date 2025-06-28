@@ -5052,7 +5052,7 @@ export default function Canvas3D({
         });
       }
     }
-  }, [floors, currentFloor, isMultifloor, floorParameters, updateGeometryData, setContextCurrentFloor, updateFloorData, updateSceneData]);
+  }, [floors, currentFloor, isMultifloor, floorParameters]);
 
   useEffect(() => {
     // Mark that rendering is needed when selection or dragging state changes
