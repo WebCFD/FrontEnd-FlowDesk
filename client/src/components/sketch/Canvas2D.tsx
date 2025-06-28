@@ -406,9 +406,16 @@ export default function Canvas2D({
   
   useEffect(() => {
     const unsubscribe = subscribeToAirEntryChanges((floorName, index, updatedEntry) => {
-      // Only update if this change affects our current floor
-      if (floorName !== currentFloor) return;
+      console.log(`🔥 [CANVAS2D RSP] Received store notification - Floor: ${floorName}, Index: ${index}, Type: ${updatedEntry.type}`);
+      console.log(`🔥 [CANVAS2D RSP] Position: (${updatedEntry.position.x}, ${updatedEntry.position.y}), CurrentFloor: ${currentFloor}`);
       
+      // Only update if this change affects our current floor
+      if (floorName !== currentFloor) {
+        console.log(`🔥 [CANVAS2D RSP] Ignoring - not current floor`);
+        return;
+      }
+      
+      console.log(`🔥 [CANVAS2D RSP] Forcing Canvas2D redraw...`);
       // Force re-render by updating state
       setForceRedraw(prev => prev + 1);
     });
