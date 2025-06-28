@@ -1859,15 +1859,8 @@ export default function WizardDesign() {
 
     // Recopilar todos los elementos de mobiliario de todos los pisos
     Object.entries(floors).forEach(([floorName, floorData]) => {
-      console.log(`EXPORT DEBUG: Checking floor ${floorName} - furnitureItems:`, floorData.furnitureItems);
       if (floorData.furnitureItems && floorData.furnitureItems.length > 0) {
-        console.log(`EXPORT DEBUG: Found ${floorData.furnitureItems.length} furniture items in ${floorName}`);
         floorData.furnitureItems.forEach((furnitureItem) => {
-          console.log(`EXPORT DEBUG: Processing furniture item:`, {
-            id: furnitureItem.id,
-            type: furnitureItem.type,
-            surfaceType: furnitureItem.surfaceType
-          });
           // Crear un objeto THREE.Object3D simulado con la información necesaria
           const mockObject3D = {
             userData: {
