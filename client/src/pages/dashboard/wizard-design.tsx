@@ -1110,15 +1110,8 @@ export default function WizardDesign() {
     index: number,
     updatedEntry: AirEntry,
   ) => {
-    console.log('🔥 [WIZARD RECEIVED] handleUpdateAirEntryFrom3D called from Canvas3D');
-    console.log('🔥 [WIZARD RECEIVED] Floor:', floorName, 'Index:', index);
-    console.log('🔥 [WIZARD RECEIVED] Updated entry from Canvas3D:', updatedEntry);
-    console.log('🔥 [WIZARD RECEIVED] wallPosition in updatedEntry:', updatedEntry.dimensions?.wallPosition);
-    
     // CRITICAL FIX: Preserve wallPosition from existing store data
     const existingEntry = airEntries[index];
-    console.log('🔥 [WIZARD PRESERVE] Existing entry from store:', existingEntry);
-    console.log('🔥 [WIZARD PRESERVE] Existing wallPosition:', existingEntry?.dimensions?.wallPosition);
     
     // Create merged entry preserving wallPosition
     const preservedDimensions = {
@@ -1131,8 +1124,6 @@ export default function WizardDesign() {
       ...JSON.parse(JSON.stringify(updatedEntry)),
       dimensions: preservedDimensions
     };
-    
-    console.log('🔥 [WIZARD PRESERVE] Final preserved wallPosition:', deepClonedEntry.dimensions?.wallPosition);
 
     // Use the store's setAirEntries function when updating the current floor
     if (floorName === currentFloor) {
@@ -2573,9 +2564,7 @@ export default function WizardDesign() {
                 setHasClosedContour(hasClosedContour);
               }}
               onAirEntriesUpdate={(newAirEntries) => {
-                console.log("🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D:", newAirEntries);
                 setAirEntries(newAirEntries);
-                console.log("🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries");
               }}
               onLineSelect={handleLineSelect}
             />
