@@ -3189,6 +3189,7 @@ export default function Canvas2D({
       height: number;
       distanceToFloor?: number;
       shape?: 'rectangular' | 'circular';
+      wallPosition?: number;
       properties?: {
         state?: 'open' | 'closed';
         temperature?: number;
@@ -3211,6 +3212,7 @@ export default function Canvas2D({
         height: data.height,
         distanceToFloor: data.distanceToFloor,
         ...(data.shape && { shape: data.shape }),
+        ...(data.wallPosition !== undefined && { wallPosition: data.wallPosition }),
       },
       ...(data.properties && { properties: data.properties }),
     };
@@ -3418,7 +3420,8 @@ export default function Canvas2D({
           initialValues={{
             ...editingAirEntry.entry.dimensions,
             shape: (editingAirEntry.entry.dimensions as any).shape,
-            properties: (editingAirEntry.entry as any).properties
+            properties: (editingAirEntry.entry as any).properties,
+            wallPosition: (editingAirEntry.entry.dimensions as any).wallPosition || (editingAirEntry.entry as any).properties?.wallPosition
           } as any}
           airEntryIndex={editingAirEntry.index}
           currentFloor={currentFloor}
