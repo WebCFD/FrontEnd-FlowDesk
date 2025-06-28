@@ -1251,8 +1251,16 @@ export default function Canvas3D({
   
   useEffect(() => {
     const unsubscribe = subscribeToAirEntryChanges((floorName, index, updatedEntry) => {
+      console.log(`🔥 [CANVAS3D RSP] Received store notification - Floor: ${floorName}, Index: ${index}, Type: ${updatedEntry.type}`);
+      console.log(`🔥 [CANVAS3D RSP] Position: (${updatedEntry.position.x}, ${updatedEntry.position.y}), CurrentFloor: ${currentFloor}`);
+      
       // Only update if this change affects our current floor
-      if (floorName !== currentFloor) return;
+      if (floorName !== currentFloor) {
+        console.log(`🔥 [CANVAS3D RSP] Ignoring - not current floor`);
+        return;
+      }
+      
+      console.log(`🔥 [CANVAS3D RSP] Applying change to 3D scene...`);
       
       // Update position in the 3D scene immediately
       if (sceneRef.current) {
@@ -1264,10 +1272,12 @@ export default function Canvas3D({
             const position3D = transform2DTo3D(updatedEntry.position);
             object.position.set(position3D.x, position3D.y, object.position.z);
             object.userData.position = updatedEntry.position;
+            console.log(`🔥 [CANVAS3D RSP] Updated 3D object position to: (${position3D.x}, ${position3D.y})`);
           }
         });
         
         needsRenderRef.current = true;
+        console.log(`🔥 [CANVAS3D RSP] 3D scene updated successfully`);
       }
     });
     
