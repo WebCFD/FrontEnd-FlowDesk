@@ -3279,6 +3279,9 @@ export default function Canvas2D({
   const handleAirEntryPositionUpdate = (index: number, newPosition: { x: number; y: number }) => {
     console.log("⚡ [REAL-TIME] Position update for AirEntry index:", index, "New position:", newPosition);
     
+    // HYPOTHESIS TEST: Log current airEntries prop before update
+    console.log("🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop:", airEntries[index]?.position);
+    
     // Update the store immediately to maintain visual consistency
     const updatedAirEntries = [...airEntries];
     if (updatedAirEntries[index]) {
@@ -3287,8 +3290,15 @@ export default function Canvas2D({
         position: newPosition
       };
       
-      console.log("⚡ [REAL-TIME] Immediately updating store with new position");
+      console.log("⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position");
+      console.log("🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate:", updatedAirEntries[index].position);
       onAirEntriesUpdate?.(updatedAirEntries);
+      
+      // HYPOTHESIS TEST: Add timeout to check if prop was updated
+      setTimeout(() => {
+        console.log("🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop:", airEntries[index]?.position);
+        console.log("🔬 [HYPOTHESIS] Did prop update? Expected:", newPosition, "Actual:", airEntries[index]?.position);
+      }, 100);
       
       // Also update the editing state for immediate visual feedback
       setEditingAirEntries(prev => prev.map(item => 

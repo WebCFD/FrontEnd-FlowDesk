@@ -2564,8 +2564,13 @@ export default function WizardDesign() {
                 setHasClosedContour(hasClosedContour);
               }}
               onAirEntriesUpdate={(newAirEntries) => {
+                console.log("🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx");
+                console.log("🔬 [HYPOTHESIS] Received newAirEntries:", newAirEntries[0]?.position);
+                console.log("🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update:", floors[currentFloor]?.airEntries?.[0]?.position);
+                
                 // Update both local state and floors store to ensure consistency
                 setAirEntries(newAirEntries);
+                console.log("🔬 [HYPOTHESIS] Called setAirEntries with new data");
                 
                 // Also update the floors store so Canvas2D receives updated data immediately
                 const updatedFloors = { ...floors };
@@ -2577,8 +2582,16 @@ export default function WizardDesign() {
                   airEntries: newAirEntries
                 };
                 
+                console.log("🔬 [HYPOTHESIS] About to call setFloors with updated data:", updatedFloors[currentFloor].airEntries[0]?.position);
+                
                 // Update the store immediately for real-time propagation
                 useRoomStore.getState().setFloors(updatedFloors);
+                
+                console.log("🔬 [HYPOTHESIS] Called setFloors - checking floors state after update");
+                setTimeout(() => {
+                  const currentFloors = useRoomStore.getState().floors;
+                  console.log("🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay):", currentFloors[currentFloor]?.airEntries?.[0]?.position);
+                }, 100);
               }}
               onLineSelect={handleLineSelect}
             />
