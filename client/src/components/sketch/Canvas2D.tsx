@@ -1819,22 +1819,22 @@ export default function Canvas2D({
         // Add the new stair polygon
         if (onStairPolygonsUpdate) {
           const updatedPolygons = [...(stairPolygons || []), newStairPolygon];
-          console.log("📤 CALLING onStairPolygonsUpdate with:", updatedPolygons);
+
           onStairPolygonsUpdate(updatedPolygons);
-          console.log("✅ onStairPolygonsUpdate called successfully");
+
         } else {
-          console.log("❌ onStairPolygonsUpdate callback is not available");
+
         }
       } else {
-        console.log(`❌ INSUFFICIENT POINTS - Need at least 3 points, have ${currentStairPoints.length}`);
+
       }
 
       // Reset stair drawing state
-      console.log("🧹 RESETTING stair drawing state");
+
       setIsDrawingStairs(false);
       setCurrentStairPoints([]);
       setPreviewStairPoint(null);
-      console.log("🔄 Stair drawing state reset complete");
+
       return;
     }
 
@@ -3262,7 +3262,7 @@ export default function Canvas2D({
   // The workflow treats both cases identically - just updating an existing element in the array
   // Real-time position update handler - updates store immediately during dialog interactions
   const handleAirEntryPositionUpdate = (index: number, newPosition: { x: number; y: number }) => {
-    console.log("⚡ [REAL-TIME] Position update for AirEntry index:", index, "New position:", newPosition);
+
     
     // Update the store immediately to maintain visual consistency
     const updatedAirEntries = [...airEntries];
@@ -3272,7 +3272,7 @@ export default function Canvas2D({
         position: newPosition
       };
       
-      console.log("⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position");
+
       onAirEntriesUpdate?.(updatedAirEntries);
       
       // Also update the editing state for immediate visual feedback
@@ -3307,11 +3307,7 @@ export default function Canvas2D({
       };
     },
   ) => {
-    console.log("💾 [SAVE CHANGES] Starting handleAirEntryEdit");
-    console.log("💾 [SAVE CHANGES] Index:", index);
-    console.log("💾 [SAVE CHANGES] Data received from dialog:", data);
-    console.log("💾 [SAVE CHANGES] Current store position:", airEntries[index]?.position);
-    console.log("💾 [SAVE CHANGES] Data.position from dialog:", data.position);
+
     
     const updatedAirEntries = [...airEntries];
     
@@ -3337,7 +3333,7 @@ export default function Canvas2D({
     
     onAirEntriesUpdate?.(updatedAirEntries);
     setEditingAirEntries(prev => prev.filter(entry => entry.index !== index));
-    console.log("✅ [SAVE CHANGES] All properties saved successfully");
+
   };
 
   // Phase 2: Dialog Management Functions
