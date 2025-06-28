@@ -1,0 +1,36 @@
+out third-party cookies.Understand this warningAI
+Canvas2D.tsx:3360 🟠 [DIALOG OPEN] openAirEntryDialog called
+Canvas2D.tsx:3361 🟠 [DIALOG OPEN] airEntry index: 0
+Canvas2D.tsx:3362 🟠 [DIALOG OPEN] airEntry position: {x: 668.2086955817313, y: 95.15813775463744}
+Canvas2D.tsx:3363 🟠 [DIALOG OPEN] airEntry wallPosition: 0
+Canvas2D.tsx:3366 🟠 [DIALOG OPEN] isAlreadyOpen: true
+Canvas2D.tsx:3360 🟠 [DIALOG OPEN] openAirEntryDialog called
+Canvas2D.tsx:3361 🟠 [DIALOG OPEN] airEntry index: 0
+Canvas2D.tsx:3362 🟠 [DIALOG OPEN] airEntry position: {x: 668.2086955817313, y: 95.15813775463744}
+Canvas2D.tsx:3363 🟠 [DIALOG OPEN] airEntry wallPosition: 0
+Canvas2D.tsx:3366 🟠 [DIALOG OPEN] isAlreadyOpen: true
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 647.9878260235581, y: 97.8423239791737}
+Canvas2D.tsx:3290 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 466, y: 122}
+Canvas2D.tsx:3290 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+AirEntryDialog.tsx:499 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+AirEntryDialog.tsx:500 🎯 [SAVE BUTTON CLICKED] Event type: submit
+AirEntryDialog.tsx:501 🎯 [SAVE BUTTON CLICKED] Props type: vent
+AirEntryDialog.tsx:502 🎯 [SAVE BUTTON CLICKED] Current values: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 50, …}
+AirEntryDialog.tsx:503 🎯 [SAVE BUTTON CLICKED] wallPosition from values: 50
+AirEntryDialog.tsx:504 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 50
+AirEntryDialog.tsx:599 🎯 [PROPS.ONCONFIRM] About to call props.onConfirm with canvasData
+AirEntryDialog.tsx:600 🎯 [PROPS.ONCONFIRM] canvasData being sent: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 50, …}
+AirEntryDialog.tsx:601 🎯 [PROPS.ONCONFIRM] canvasData.wallPosition: 50
+AirEntryDialog.tsx:602 🎯 [PROPS.ONCONFIRM] canvasData.position: {x: 466, y: 122}
+AirEntryDialog.tsx:603 🎯 [PROPS.ONCONFIRM] This should trigger handleAirEntryEdit in Canvas2D
+Canvas2D.tsx:3325 💾 [SAVE CHANGES] Starting handleAirEntryEdit
+Canvas2D.tsx:3326 💾 [SAVE CHANGES] Index: 0
+Canvas2D.tsx:3327 💾 [SAVE CHANGES] Data received from dialog: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 50, …}
+Canvas2D.tsx:3328 💾 [SAVE CHANGES] Current store position: {x: 466, y: 122}
+Canvas2D.tsx:3329 💾 [SAVE CHANGES] Data.position from dialog: {x: 466, y: 122}
+Canvas2D.tsx:3350 💾 [SAVE CHANGES] Final saved position: {x: 466, y: 122}
+Canvas2D.tsx:3351 💾 [SAVE CHANGES] Final saved entry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas2D.tsx:3355 ✅ [SAVE CHANGES] All properties saved successfully
+AirEntryDialog.tsx:607 🎯 [PROPS.ONCONFIRM] props.onConfirm completed
+AirEntryDialog.tsx:608 🎯 [PROPS.ONCONFIRM] Now calling onClose() to close dialog
