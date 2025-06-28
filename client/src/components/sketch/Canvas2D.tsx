@@ -1242,6 +1242,9 @@ export default function Canvas2D({
     if (stairPolygons && stairPolygons.length > 0) {
       const stairInfo = findStairPolygonAtPoint(point, stairPolygons);
       if (stairInfo && !stairInfo.polygon.isImported) {
+        console.log("CANVAS2D DOUBLE-CLICK - Stair polygon detected:", stairInfo.polygon);
+        console.log("CANVAS2D DOUBLE-CLICK - Stair ID:", stairInfo.polygon.id);
+        console.log("CANVAS2D DOUBLE-CLICK - Current temperature:", stairInfo.polygon.temperature);
         debugLog(`Double-click detected on stair polygon - opening stair properties editor`);
         setEditingStair(stairInfo.polygon);
         setStairPropertiesDialogOpen(true);
