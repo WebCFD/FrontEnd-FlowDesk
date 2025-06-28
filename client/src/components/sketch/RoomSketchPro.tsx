@@ -642,15 +642,9 @@ export function RoomSketchPro({
 
 
 
-    console.log(`🎨 RSP TEXTURE APPLICATION: Found ${airEntryMeshes.length} air entry meshes to texture`);
     airEntryMeshes.forEach((airEntryMesh, index) => {
       const airEntryType = airEntryMesh.userData.type;
       const originalMaterial = airEntryMesh.material as THREE.MeshPhongMaterial;
-      
-      console.log(`🎨 RSP TEXTURE: Processing mesh ${index} - type: ${airEntryType}`, {
-        hasOriginalTexture: !!(originalMaterial as any).map,
-        originalMaterialType: originalMaterial.type
-      });
       
       let texture: THREE.Texture | undefined;
       let materialColor = 0xffffff;
@@ -680,7 +674,6 @@ export function RoomSketchPro({
       }
 
       if (texture) {
-        console.log(`🎨 RSP TEXTURE: Found texture for ${airEntryType}, applying to mesh ${index}`);
         // Add UV coordinates if missing
         const geometry = airEntryMesh.geometry as THREE.BufferGeometry;
         if (!geometry.attributes.uv) {
@@ -712,7 +705,6 @@ export function RoomSketchPro({
         
         airEntryMesh.material = newMaterial;
         airEntryMesh.renderOrder = 2; // Render after walls
-        console.log(`✅ RSP TEXTURE: Successfully applied ${airEntryType} texture to mesh ${index}`);
       }
     });
 
@@ -830,7 +822,18 @@ export function RoomSketchPro({
     }, 100);
   }, []);
 
-
+  // Function to re-apply textures (called when air entry is updated)
+  const handleAirEntryUpdated = useCallback(() => {
+    // Check if scene is available
+    if (!sceneRef.current) {
+      return;
+    }
+    
+    // Small delay to ensure the air entry mesh is fully updated in the scene
+    setTimeout(() => {
+      applyThemeTextures();
+    }, 100);
+  }, []);
 
   // Apply textures when theme changes
   useEffect(() => {
@@ -838,8 +841,6 @@ export function RoomSketchPro({
     appliedTexturesRef.current = false;
     applyThemeTextures();
   }, [selectedTheme]);
-
-
 
   // Update air entry transparency when it changes
   useEffect(() => {
@@ -939,7 +940,7 @@ export function RoomSketchPro({
         onSceneReady={handleSceneReady}
         onFurnitureAdded={handleFurnitureAdded} // Callback to re-apply textures when furniture is added
         onFurnitureDeleted={handleFurnitureDeleted} // Callback to re-apply textures when furniture is deleted
-
+        onAirEntryUpdated={handleAirEntryUpdated} // Callback to re-apply textures when air entry is updated
         onFurnitureAdd={onFurnitureAdd} // Pass furniture callback to Canvas3D
         onUpdateFurniture={onUpdateFurniture} // Enable furniture editing in RSP
         onDeleteFurniture={onDeleteFurniture} // Enable furniture deletion in RSP
