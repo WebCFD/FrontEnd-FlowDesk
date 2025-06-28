@@ -206,9 +206,11 @@ interface FloorExport {
   floorDeck: number;
   ceiling: {
     temp: number;
+    airEntries: AirEntryExport[];
   };
   floor_surf: {
     temp: number;
+    airEntries: AirEntryExport[];
   };
   walls: WallExport[];
   stairs: StairExportNew[];
@@ -259,6 +261,25 @@ export function denormalizeCoordinates(jsonPoint: PointXY): Point2D {
 
 
 
+
+/**
+ * Maps internal flow type values to export format
+ */
+function mapFlowType(flowType?: string): "Air Mass Flow" | "Air Velocity" | "Pressure" | undefined {
+  switch (flowType) {
+    case 'Air Mass Flow':
+    case 'massFlow':
+      return 'Air Mass Flow';
+    case 'Air Velocity':
+    case 'velocity':
+      return 'Air Velocity';
+    case 'Pressure':
+    case 'pressure':
+      return 'Pressure';
+    default:
+      return undefined;
+  }
+}
 
 /**
  * Convierte los datos del diseño en un formato JSON exportable para simulación
@@ -499,7 +520,11 @@ export function generateSimulationData(
     });
 
     // Filtrar el mobiliario que pertenece a este piso con coordenadas normalizadas
-    const floorFurnitureObjects = furniture.filter(obj => obj.userData?.floor === floorName && obj.userData?.type === 'furniture');
+    const allFloorObjects = furniture.filter(obj => obj.userData?.floor === floorName && obj.userData?.type === 'furniture');
+    
+    // Separar vent_furniture del resto del mobiliario
+    const ventFurnitureObjects = allFloorObjects.filter(obj => obj.userData?.id?.includes('vent_furniture'));
+    const floorFurnitureObjects = allFloorObjects.filter(obj => !obj.userData?.id?.includes('vent_furniture'));
     
     // Initialize furniture type counters for this floor
     const furnitureTypeCounts = { 
@@ -574,6 +599,48 @@ export function generateSimulationData(
     const floorHeight = (currentFloorParams.ceilingHeight || roomHeight * 100) / 100;
     const floorDeckValue = (currentFloorParams.floorDeck || 0) / 100; // Convertir de cm a metros
     
+    // Convertir vent_furniture a airEntries para ceiling y floor_surf
+    const ceilingAirEntries: AirEntryExport[] = [];
+    const floorSurfAirEntries: AirEntryExport[] = [];
+    
+    ventFurnitureObjects.forEach(ventObj => {
+      // Determinar si es ceiling o floor_surf basado en la posición Z
+      const isFloorVent = ventObj.position.y <= 0.1; // Si está cerca del suelo (Y baja)
+      
+      const airEntry: AirEntryExport = {
+        id: ventObj.userData?.id || `vent_${floorNumber}_${ceilingAirEntries.length + floorSurfAirEntries.length + 1}`,
+        type: "vent",
+        position: {
+          x: parseFloat(ventObj.position.x.toFixed(5)),
+          y: parseFloat(ventObj.position.z.toFixed(5)), // Z se convierte en Y en el sistema de exportación
+          z: parseFloat(ventObj.position.y.toFixed(5)), // Y se convierte en Z en el sistema de exportación
+          normal: {
+            x: 0,
+            y: 0,
+            z: isFloorVent ? 1 : -1 // Normal hacia arriba para floor, hacia abajo para ceiling
+          }
+        },
+        dimensions: {
+          width: parseFloat((ventObj.scale.x * 0.6).toFixed(5)), // Tamaño basado en escala
+          height: parseFloat((ventObj.scale.z * 0.6).toFixed(5)),
+          shape: "rectangular" as const
+        },
+        simulation: {
+          state: (ventObj.userData?.simulationProperties?.state as "open" | "closed") || "open",
+          temperature: ventObj.userData?.simulationProperties?.airTemperature || 20,
+          airDirection: (ventObj.userData?.simulationProperties?.airOrientation as "inflow" | "outflow") || "inflow",
+          flowType: mapFlowType(ventObj.userData?.simulationProperties?.flowType) || "Air Velocity",
+          flowIntensity: (ventObj.userData?.simulationProperties?.flowIntensity as "low" | "medium" | "high" | "custom") || "medium"
+        }
+      };
+      
+      if (isFloorVent) {
+        floorSurfAirEntries.push(airEntry);
+      } else {
+        ceilingAirEntries.push(airEntry);
+      }
+    });
+    
     // Obtener temperaturas de techo y suelo de los parámetros del wizard
     const ceilingTemp = currentFloorParams.ceilingTemperature ?? 20; // Valor por defecto 20°C
     const floorTemp = currentFloorParams.floorTemperature ?? 20; // Valor por defecto 20°C
@@ -583,10 +650,12 @@ export function generateSimulationData(
       height: floorHeight,
       floorDeck: floorDeckValue,
       ceiling: {
-        temp: ceilingTemp
+        temp: ceilingTemp,
+        airEntries: ceilingAirEntries
       },
       floor_surf: {
-        temp: floorTemp
+        temp: floorTemp,
+        airEntries: floorSurfAirEntries
       },
       walls: walls,
       stairs: stairs,
@@ -835,9 +904,6 @@ export function prepareSynchronizedWalls(
 
 // ================== STAIR CONVERSION SYSTEM ==================
 
-/**
- * Maps furniture types to their ID representation
- */
 function getFurnitureTypeForId(furnitureType?: string): string {
   switch (furnitureType) {
     case 'table': return 'table';
