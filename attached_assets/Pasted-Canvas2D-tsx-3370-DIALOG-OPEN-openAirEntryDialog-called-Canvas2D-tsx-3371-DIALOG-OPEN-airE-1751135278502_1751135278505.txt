@@ -1,0 +1,390 @@
+Canvas2D.tsx:3370 🟠 [DIALOG OPEN] openAirEntryDialog called
+Canvas2D.tsx:3371 🟠 [DIALOG OPEN] airEntry index: 0
+Canvas2D.tsx:3372 🟠 [DIALOG OPEN] airEntry position: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3373 🟠 [DIALOG OPEN] airEntry wallPosition: 77
+Canvas2D.tsx:3376 🟠 [DIALOG OPEN] isAlreadyOpen: false
+Canvas2D.tsx:3381 🟠 [DIALOG OPEN] Adding to editingAirEntries for real-time updates
+Canvas2D.tsx:3370 🟠 [DIALOG OPEN] openAirEntryDialog called
+Canvas2D.tsx:3371 🟠 [DIALOG OPEN] airEntry index: 0
+Canvas2D.tsx:3372 🟠 [DIALOG OPEN] airEntry position: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3373 🟠 [DIALOG OPEN] airEntry wallPosition: 77
+Canvas2D.tsx:3376 🟠 [DIALOG OPEN] isAlreadyOpen: true
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 360.85147829749974, y: 135.95776836758853}
+Canvas2D.tsx:3283 🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3293 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3294 🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate: {x: 360.85147829749974, y: 135.95776836758853}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 360.85147829749974, y: 135.95776836758853}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 360.85147829749974, y: 135.95776836758853}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 360.85147829749974, y: 135.95776836758853}
+Canvas2D.tsx:3299 🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3300 🔬 [HYPOTHESIS] Did prop update? Expected: {x: 360.85147829749974, y: 135.95776836758853} Actual: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 364.89565220913437, y: 135.42093112268128}
+Canvas2D.tsx:3283 🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3293 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3294 🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate: {x: 364.89565220913437, y: 135.42093112268128}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 364.89565220913437, y: 135.42093112268128}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 364.89565220913437, y: 135.42093112268128}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 368.93982612076906, y: 134.88409387777403}
+Canvas2D.tsx:3283 🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3293 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3294 🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate: {x: 368.93982612076906, y: 134.88409387777403}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 368.93982612076906, y: 134.88409387777403}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 368.93982612076906, y: 134.88409387777403}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 372.9840000324037, y: 134.34725663286676}
+Canvas2D.tsx:3283 🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3293 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3294 🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate: {x: 372.9840000324037, y: 134.34725663286676}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 372.9840000324037, y: 134.34725663286676}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 372.9840000324037, y: 134.34725663286676}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 372.9840000324037, y: 134.34725663286676}
+Canvas2D.tsx:3299 🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3300 🔬 [HYPOTHESIS] Did prop update? Expected: {x: 364.89565220913437, y: 135.42093112268128} Actual: {x: 333.35, y: 139.61}
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 372.9840000324037, y: 134.34725663286676}
+Canvas2D.tsx:3299 🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3300 🔬 [HYPOTHESIS] Did prop update? Expected: {x: 368.93982612076906, y: 134.88409387777403} Actual: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 377.02817394403826, y: 133.81041938795954}
+Canvas2D.tsx:3283 🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3293 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3294 🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate: {x: 377.02817394403826, y: 133.81041938795954}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 377.02817394403826, y: 133.81041938795954}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 377.02817394403826, y: 133.81041938795954}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 381.0723478556729, y: 133.27358214305227}
+Canvas2D.tsx:3283 🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3293 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3294 🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate: {x: 381.0723478556729, y: 133.27358214305227}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 381.0723478556729, y: 133.27358214305227}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 381.0723478556729, y: 133.27358214305227}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 381.0723478556729, y: 133.27358214305227}
+Canvas2D.tsx:3299 🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3300 🔬 [HYPOTHESIS] Did prop update? Expected: {x: 372.9840000324037, y: 134.34725663286676} Actual: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 385.1165217673075, y: 132.73674489814502}
+Canvas2D.tsx:3283 🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3293 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3294 🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate: {x: 385.1165217673075, y: 132.73674489814502}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 385.1165217673075, y: 132.73674489814502}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 385.1165217673075, y: 132.73674489814502}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 385.1165217673075, y: 132.73674489814502}
+Canvas2D.tsx:3299 🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3300 🔬 [HYPOTHESIS] Did prop update? Expected: {x: 377.02817394403826, y: 133.81041938795954} Actual: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 389.1606956789421, y: 132.19990765323777}
+Canvas2D.tsx:3283 🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3293 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3294 🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate: {x: 389.1606956789421, y: 132.19990765323777}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 389.1606956789421, y: 132.19990765323777}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 389.1606956789421, y: 132.19990765323777}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 389.1606956789421, y: 132.19990765323777}
+Canvas2D.tsx:3299 🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3300 🔬 [HYPOTHESIS] Did prop update? Expected: {x: 381.0723478556729, y: 133.27358214305227} Actual: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 393.2048695905767, y: 131.66307040833053}
+Canvas2D.tsx:3283 🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3293 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3294 🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate: {x: 393.2048695905767, y: 131.66307040833053}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 393.2048695905767, y: 131.66307040833053}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 393.2048695905767, y: 131.66307040833053}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 393.2048695905767, y: 131.66307040833053}
+Canvas2D.tsx:3299 🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3300 🔬 [HYPOTHESIS] Did prop update? Expected: {x: 385.1165217673075, y: 132.73674489814502} Actual: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 397.24904350221135, y: 131.12623316342328}
+Canvas2D.tsx:3283 🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3293 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3294 🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate: {x: 397.24904350221135, y: 131.12623316342328}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 397.24904350221135, y: 131.12623316342328}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 397.24904350221135, y: 131.12623316342328}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 397.24904350221135, y: 131.12623316342328}
+Canvas2D.tsx:3299 🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3300 🔬 [HYPOTHESIS] Did prop update? Expected: {x: 389.1606956789421, y: 132.19990765323777} Actual: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 401.293217413846, y: 130.589395918516}
+Canvas2D.tsx:3283 🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3293 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3294 🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate: {x: 401.293217413846, y: 130.589395918516}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 401.293217413846, y: 130.589395918516}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 401.293217413846, y: 130.589395918516}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 401.293217413846, y: 130.589395918516}
+Canvas2D.tsx:3299 🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3300 🔬 [HYPOTHESIS] Did prop update? Expected: {x: 393.2048695905767, y: 131.66307040833053} Actual: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 405.3373913254806, y: 130.05255867360876}
+Canvas2D.tsx:3283 🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3293 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3294 🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate: {x: 405.3373913254806, y: 130.05255867360876}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 405.3373913254806, y: 130.05255867360876}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 405.3373913254806, y: 130.05255867360876}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 405.3373913254806, y: 130.05255867360876}
+Canvas2D.tsx:3299 🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3300 🔬 [HYPOTHESIS] Did prop update? Expected: {x: 397.24904350221135, y: 131.12623316342328} Actual: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 409.38156523711524, y: 129.5157214287015}
+Canvas2D.tsx:3283 🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3293 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3294 🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate: {x: 409.38156523711524, y: 129.5157214287015}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 409.38156523711524, y: 129.5157214287015}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 409.38156523711524, y: 129.5157214287015}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 409.38156523711524, y: 129.5157214287015}
+Canvas2D.tsx:3299 🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3300 🔬 [HYPOTHESIS] Did prop update? Expected: {x: 401.293217413846, y: 130.589395918516} Actual: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 413.42573914874987, y: 128.97888418379426}
+Canvas2D.tsx:3283 🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3293 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3294 🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate: {x: 413.42573914874987, y: 128.97888418379426}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 413.42573914874987, y: 128.97888418379426}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 413.42573914874987, y: 128.97888418379426}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 413.42573914874987, y: 128.97888418379426}
+Canvas2D.tsx:3299 🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3300 🔬 [HYPOTHESIS] Did prop update? Expected: {x: 405.3373913254806, y: 130.05255867360876} Actual: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 417.46991306038444, y: 128.44204693888702}
+Canvas2D.tsx:3283 🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3293 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3294 🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate: {x: 417.46991306038444, y: 128.44204693888702}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 417.46991306038444, y: 128.44204693888702}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 417.46991306038444, y: 128.44204693888702}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 417.46991306038444, y: 128.44204693888702}
+Canvas2D.tsx:3299 🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3300 🔬 [HYPOTHESIS] Did prop update? Expected: {x: 409.38156523711524, y: 129.5157214287015} Actual: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 421.5140869720192, y: 127.90520969397976}
+Canvas2D.tsx:3283 🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3293 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3294 🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate: {x: 421.5140869720192, y: 127.90520969397976}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 421.5140869720192, y: 127.90520969397976}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 421.5140869720192, y: 127.90520969397976}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 421.5140869720192, y: 127.90520969397976}
+Canvas2D.tsx:3299 🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3300 🔬 [HYPOTHESIS] Did prop update? Expected: {x: 413.42573914874987, y: 128.97888418379426} Actual: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 425.55826088365376, y: 127.36837244907251}
+Canvas2D.tsx:3283 🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3293 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3294 🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate: {x: 425.55826088365376, y: 127.36837244907251}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 425.55826088365376, y: 127.36837244907251}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 425.55826088365376, y: 127.36837244907251}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 425.55826088365376, y: 127.36837244907251}
+Canvas2D.tsx:3299 🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3300 🔬 [HYPOTHESIS] Did prop update? Expected: {x: 417.46991306038444, y: 128.44204693888702} Actual: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 429.60243479528845, y: 126.83153520416525}
+Canvas2D.tsx:3283 🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3293 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3294 🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate: {x: 429.60243479528845, y: 126.83153520416525}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 429.60243479528845, y: 126.83153520416525}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 429.60243479528845, y: 126.83153520416525}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 429.60243479528845, y: 126.83153520416525}
+Canvas2D.tsx:3299 🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3300 🔬 [HYPOTHESIS] Did prop update? Expected: {x: 421.5140869720192, y: 127.90520969397976} Actual: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 433.646608706923, y: 126.294697959258}
+Canvas2D.tsx:3283 🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3293 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3294 🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate: {x: 433.646608706923, y: 126.294697959258}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 433.646608706923, y: 126.294697959258}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 433.646608706923, y: 126.294697959258}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 433.646608706923, y: 126.294697959258}
+Canvas2D.tsx:3299 🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3300 🔬 [HYPOTHESIS] Did prop update? Expected: {x: 425.55826088365376, y: 127.36837244907251} Actual: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 437.6907826185576, y: 125.75786071435076}
+Canvas2D.tsx:3283 🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3293 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3294 🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate: {x: 437.6907826185576, y: 125.75786071435076}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 437.6907826185576, y: 125.75786071435076}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 437.6907826185576, y: 125.75786071435076}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 437.6907826185576, y: 125.75786071435076}
+Canvas2D.tsx:3299 🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3300 🔬 [HYPOTHESIS] Did prop update? Expected: {x: 429.60243479528845, y: 126.83153520416525} Actual: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 441.7349565301922, y: 125.22102346944351}
+Canvas2D.tsx:3283 🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3293 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3294 🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate: {x: 441.7349565301922, y: 125.22102346944351}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 441.7349565301922, y: 125.22102346944351}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 441.7349565301922, y: 125.22102346944351}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 441.7349565301922, y: 125.22102346944351}
+Canvas2D.tsx:3299 🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3300 🔬 [HYPOTHESIS] Did prop update? Expected: {x: 433.646608706923, y: 126.294697959258} Actual: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 445.77913044182685, y: 124.68418622453626}
+Canvas2D.tsx:3283 🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3293 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3294 🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate: {x: 445.77913044182685, y: 124.68418622453626}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 445.77913044182685, y: 124.68418622453626}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 445.77913044182685, y: 124.68418622453626}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 445.77913044182685, y: 124.68418622453626}
+Canvas2D.tsx:3299 🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3300 🔬 [HYPOTHESIS] Did prop update? Expected: {x: 437.6907826185576, y: 125.75786071435076} Actual: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 449.8233043534615, y: 124.147348979629}
+Canvas2D.tsx:3283 🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3293 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3294 🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate: {x: 449.8233043534615, y: 124.147348979629}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 449.8233043534615, y: 124.147348979629}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 449.8233043534615, y: 124.147348979629}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 449.8233043534615, y: 124.147348979629}
+Canvas2D.tsx:3299 🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3300 🔬 [HYPOTHESIS] Did prop update? Expected: {x: 441.7349565301922, y: 125.22102346944351} Actual: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 453.8674782650961, y: 123.61051173472175}
+Canvas2D.tsx:3283 🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3293 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3294 🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate: {x: 453.8674782650961, y: 123.61051173472175}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 453.8674782650961, y: 123.61051173472175}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 453.8674782650961, y: 123.61051173472175}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 453.8674782650961, y: 123.61051173472175}
+Canvas2D.tsx:3299 🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3300 🔬 [HYPOTHESIS] Did prop update? Expected: {x: 445.77913044182685, y: 124.68418622453626} Actual: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 457.91165217673074, y: 123.0736744898145}
+Canvas2D.tsx:3283 🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3293 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3294 🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate: {x: 457.91165217673074, y: 123.0736744898145}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 457.91165217673074, y: 123.0736744898145}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 457.91165217673074, y: 123.0736744898145}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 457.91165217673074, y: 123.0736744898145}
+Canvas2D.tsx:3299 🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3300 🔬 [HYPOTHESIS] Did prop update? Expected: {x: 449.8233043534615, y: 124.147348979629} Actual: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 461.95582608836537, y: 122.53683724490725}
+Canvas2D.tsx:3283 🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3293 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3294 🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate: {x: 461.95582608836537, y: 122.53683724490725}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 461.95582608836537, y: 122.53683724490725}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 461.95582608836537, y: 122.53683724490725}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 461.95582608836537, y: 122.53683724490725}
+Canvas2D.tsx:3299 🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3300 🔬 [HYPOTHESIS] Did prop update? Expected: {x: 453.8674782650961, y: 123.61051173472175} Actual: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 466, y: 122}
+Canvas2D.tsx:3283 🔬 [HYPOTHESIS] BEFORE onAirEntriesUpdate - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3293 ⚡ [REAL-TIME] Calling onAirEntriesUpdate with new position
+Canvas2D.tsx:3294 🔬 [HYPOTHESIS] Sending to onAirEntriesUpdate: {x: 466, y: 122}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 466, y: 122}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 466, y: 122}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 466, y: 122}
+Canvas2D.tsx:3299 🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3300 🔬 [HYPOTHESIS] Did prop update? Expected: {x: 457.91165217673074, y: 123.0736744898145} Actual: {x: 333.35, y: 139.61}
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 466, y: 122}
+Canvas2D.tsx:3299 🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3300 🔬 [HYPOTHESIS] Did prop update? Expected: {x: 461.95582608836537, y: 122.53683724490725} Actual: {x: 333.35, y: 139.61}
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 466, y: 122}
+Canvas2D.tsx:3299 🔬 [HYPOTHESIS] AFTER onAirEntriesUpdate (100ms delay) - Current airEntries prop: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3300 🔬 [HYPOTHESIS] Did prop update? Expected: {x: 466, y: 122} Actual: {x: 333.35, y: 139.61}
+AirEntryDialog.tsx:499 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+AirEntryDialog.tsx:500 🎯 [SAVE BUTTON CLICKED] Event type: submit
+AirEntryDialog.tsx:501 🎯 [SAVE BUTTON CLICKED] Props type: vent
+AirEntryDialog.tsx:502 🎯 [SAVE BUTTON CLICKED] Current values: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 50, …}
+AirEntryDialog.tsx:503 🎯 [SAVE BUTTON CLICKED] wallPosition from values: 50
+AirEntryDialog.tsx:504 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 50
+AirEntryDialog.tsx:599 🎯 [PROPS.ONCONFIRM] About to call props.onConfirm with canvasData
+AirEntryDialog.tsx:600 🎯 [PROPS.ONCONFIRM] canvasData being sent: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 50, …}
+AirEntryDialog.tsx:601 🎯 [PROPS.ONCONFIRM] canvasData.wallPosition: 50
+AirEntryDialog.tsx:602 🎯 [PROPS.ONCONFIRM] canvasData.position: {x: 466, y: 122}
+AirEntryDialog.tsx:603 🎯 [PROPS.ONCONFIRM] This should trigger handleAirEntryEdit in Canvas2D
+Canvas2D.tsx:3335 💾 [SAVE CHANGES] Starting handleAirEntryEdit
+Canvas2D.tsx:3336 💾 [SAVE CHANGES] Index: 0
+Canvas2D.tsx:3337 💾 [SAVE CHANGES] Data received from dialog: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 50, …}
+Canvas2D.tsx:3338 💾 [SAVE CHANGES] Current store position: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3339 💾 [SAVE CHANGES] Data.position from dialog: {x: 466, y: 122}
+Canvas2D.tsx:3360 💾 [SAVE CHANGES] Final saved position: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3361 💾 [SAVE CHANGES] Final saved entry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+wizard-design.tsx:2567 🔬 [HYPOTHESIS] onAirEntriesUpdate called in wizard-design.tsx
+wizard-design.tsx:2568 🔬 [HYPOTHESIS] Received newAirEntries: {x: 333.35, y: 139.61}
+wizard-design.tsx:2569 🔬 [HYPOTHESIS] Current floors[currentFloor].airEntries BEFORE update: {x: 333.35, y: 139.61}
+wizard-design.tsx:2573 🔬 [HYPOTHESIS] Called setAirEntries with new data
+wizard-design.tsx:2585 🔬 [HYPOTHESIS] About to call setFloors with updated data: {x: 333.35, y: 139.61}
+wizard-design.tsx:2590 🔬 [HYPOTHESIS] Called setFloors - checking floors state after update
+Canvas2D.tsx:3365 ✅ [SAVE CHANGES] All properties saved successfully
+AirEntryDialog.tsx:607 🎯 [PROPS.ONCONFIRM] props.onConfirm completed
+AirEntryDialog.tsx:608 🎯 [PROPS.ONCONFIRM] Now calling onClose() to close dialog
+wizard-design.tsx:2593 🔬 [HYPOTHESIS] floors[currentFloor].airEntries AFTER setFloors (100ms delay): {x: 333.35, y: 139.61}
