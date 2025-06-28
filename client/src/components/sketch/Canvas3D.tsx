@@ -1337,6 +1337,18 @@ export default function Canvas3D({
       ceilingHeight: number;
     };
   } | null>(null);
+
+  // Force cleanup editingAirEntry when switching tabs or unmounting
+  useEffect(() => {
+    return () => {
+      setEditingAirEntry(null);
+    };
+  }, []);
+
+  // Clear editingAirEntry when currentFloor changes
+  useEffect(() => {
+    setEditingAirEntry(null);
+  }, [currentFloor]);
   
   // State for editing furniture
   const [editingFurniture, setEditingFurniture] = useState<{
@@ -6154,7 +6166,7 @@ export default function Canvas3D({
       </div>
 
       {/* Dialog for editing air entries - Phase 4: Unified with Canvas2D */}
-      {editingAirEntry && (
+      {editingAirEntry && stableInitialValues && (
         <AirEntryDialog
           type={editingAirEntry.entry.type}
           isOpen={true}
