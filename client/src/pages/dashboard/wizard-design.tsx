@@ -422,6 +422,7 @@ export default function WizardDesign() {
           linesLength: rawFloors[floorName]?.lines?.length || 0,
           airEntriesLength: rawFloors[floorName]?.airEntries?.length || 0,
           furnitureItemsLength: rawFloors[floorName]?.furnitureItems?.length || 0,
+          stairPolygonsLength: rawFloors[floorName]?.stairPolygons?.length || 0,
           hasClosedContour: rawFloors[floorName]?.hasClosedContour || false
         }))
     )
