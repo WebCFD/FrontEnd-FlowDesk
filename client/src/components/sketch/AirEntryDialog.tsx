@@ -559,6 +559,11 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
       
       // Transform data to match Canvas2D expectations
       
+      console.log("🔍 [CANVAS DATA CREATION] About to create canvasData");
+      console.log("🔍 [CANVAS DATA CREATION] values.wallPosition:", (values as any).wallPosition);
+      console.log("🔍 [CANVAS DATA CREATION] wallPosition state:", wallPosition);
+      console.log("🔍 [CANVAS DATA CREATION] values.position:", (values as any).position);
+      
       const canvasData = {
         width: shapeType === 'rectangular' ? (values as any).width : (values as any).width, // For circular, width = diameter
         height: shapeType === 'rectangular' ? (values as any).height : (values as any).width, // For circular, height = diameter
