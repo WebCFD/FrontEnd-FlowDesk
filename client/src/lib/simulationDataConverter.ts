@@ -522,16 +522,8 @@ export function generateSimulationData(
     // Filtrar el mobiliario que pertenece a este piso con coordenadas normalizadas
     const allFloorObjects = furniture.filter(obj => obj.userData?.floor === floorName && obj.userData?.type === 'furniture');
     
-    console.log(`EXPORT DEBUG [${floorName}]: Found ${allFloorObjects.length} total furniture objects`);
-    allFloorObjects.forEach((obj, i) => {
-      console.log(`EXPORT DEBUG [${floorName}]: Furniture ${i}: id="${obj.userData?.id}", furnitureType="${obj.userData?.furnitureType}", surfaceType="${obj.userData?.surfaceType}"`);
-    });
-    
-    // FILTRO CORREGIDO: Usar furnitureType para identificar vents correctamente
+    // Separar vents del resto de furniture para procesamiento diferenciado
     const ventFurnitureObjects = allFloorObjects.filter(obj => obj.userData?.furnitureType === 'vent');
-    console.log(`EXPORT DEBUG [${floorName}]: ✅ FILTRO CORREGIDO encuentra ${ventFurnitureObjects.length} vents con furnitureType === 'vent'`);
-    
-    // Separar furniture regular (no-vents) para el procesamiento
     const floorFurnitureObjects = allFloorObjects.filter(obj => obj.userData?.furnitureType !== 'vent');
     
     // Initialize furniture type counters for this floor
@@ -611,25 +603,20 @@ export function generateSimulationData(
     const ceilingAirEntries: AirEntryExport[] = [];
     const floorSurfAirEntries: AirEntryExport[] = [];
     
-    console.log(`EXPORT DEBUG [${floorName}]: ✅ PROCESANDO: ${ventFurnitureObjects.length} vents para conversión a airEntries`);
+
     
     ventFurnitureObjects.forEach((ventObj, index) => {
-      console.log(`EXPORT DEBUG [${floorName}]: Processing vent ${index}: id="${ventObj.userData?.id}", surfaceType="${ventObj.userData?.surfaceType}"`);
-      
       // Determinar si es ceiling o floor_surf usando surfaceType almacenado
       let isFloorVent: boolean;
       if (ventObj.userData?.surfaceType) {
         // Usar el surfaceType almacenado (método preferido)
         isFloorVent = ventObj.userData.surfaceType === 'floor';
-        console.log(`EXPORT DEBUG [${floorName}]: Vent ${index} surface determined by surfaceType: ${ventObj.userData.surfaceType} -> ${isFloorVent ? 'floor_surf' : 'ceiling'}`);
       } else if (ventObj.userData?.simulationProperties?.normalVector) {
         // Fallback: usar el vector normal (z positivo = floor, z negativo = ceiling)
         isFloorVent = ventObj.userData.simulationProperties.normalVector.z > 0;
-        console.log(`EXPORT DEBUG [${floorName}]: Vent ${index} surface determined by normal vector: z=${ventObj.userData.simulationProperties.normalVector.z} -> ${isFloorVent ? 'floor_surf' : 'ceiling'}`);
       } else {
         // Último fallback: posición Y (método menos confiable)
         isFloorVent = ventObj.position.y <= 0.1;
-        console.log(`EXPORT DEBUG [${floorName}]: Vent ${index} surface determined by Y position: y=${ventObj.position.y} -> ${isFloorVent ? 'floor_surf' : 'ceiling'}`);
       }
       
       const airEntry: AirEntryExport = {
