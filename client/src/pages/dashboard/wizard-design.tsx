@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useLocation } from "wouter";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import {
@@ -330,7 +330,7 @@ export default function WizardDesign() {
 
   // Use the global room store with updated selectors
   const {
-    floors,
+    floors: rawFloors,
     currentFloor,
     setCurrentFloor,
     setLines,
@@ -349,6 +349,71 @@ export default function WizardDesign() {
     deleteFurnitureFromFloor,
     reset: storeReset, // Import store reset function with alias
   } = useRoomStore();
+
+  // CRITICAL OPTIMIZATION: Memoize floors to prevent unnecessary scene rebuilds
+  // Only change when structural data (lines, airEntries positions, walls) changes
+  // NOT when metadata (properties, dimensions) changes
+  const floors = useMemo(() => {
+    console.log('🧠 [FLOORS MEMOIZATION] Computing memoized floors object');
+    console.log('🧠 [FLOORS MEMOIZATION] Raw floors reference:', rawFloors);
+    
+    // Create a stable reference by extracting only structural data
+    const structuralFloors: Record<string, any> = {};
+    
+    Object.keys(rawFloors).forEach(floorName => {
+      const floorData = rawFloors[floorName];
+      if (floorData) {
+        structuralFloors[floorName] = {
+          lines: floorData.lines,
+          airEntries: floorData.airEntries?.map(entry => ({
+            type: entry.type,
+            position: entry.position,
+            line: entry.line,
+            dimensions: {
+              width: entry.dimensions.width,
+              height: entry.dimensions.height,
+              distanceToFloor: entry.dimensions.distanceToFloor,
+              shape: entry.dimensions.shape
+            }
+            // Exclude properties to prevent metadata changes from triggering rebuilds
+          })),
+          walls: floorData.walls,
+          measurements: floorData.measurements,
+          hasClosedContour: floorData.hasClosedContour,
+          stairPolygons: floorData.stairPolygons,
+          furnitureItems: floorData.furnitureItems,
+          name: floorData.name
+        };
+      }
+    });
+    
+    console.log('🧠 [FLOORS MEMOIZATION] Structural floors computed');
+    return structuralFloors;
+  }, [
+    // Dependencies: only structural changes that should trigger scene rebuild
+    Object.keys(rawFloors).join(','), // Floor list changes
+    ...Object.keys(rawFloors).flatMap(floorName => {
+      const floorData = rawFloors[floorName];
+      if (!floorData) return [];
+      return [
+        JSON.stringify(floorData.lines || []),
+        JSON.stringify(floorData.airEntries?.map(e => ({ 
+          type: e.type, 
+          position: e.position, 
+          line: e.line,
+          width: e.dimensions.width,
+          height: e.dimensions.height,
+          distanceToFloor: e.dimensions.distanceToFloor,
+          shape: e.dimensions.shape
+        })) || []),
+        JSON.stringify(floorData.walls || []),
+        JSON.stringify(floorData.measurements || []),
+        floorData.hasClosedContour,
+        JSON.stringify(floorData.stairPolygons || []),
+        JSON.stringify(floorData.furnitureItems || [])
+      ];
+    })
+  ]);
 
 
 
