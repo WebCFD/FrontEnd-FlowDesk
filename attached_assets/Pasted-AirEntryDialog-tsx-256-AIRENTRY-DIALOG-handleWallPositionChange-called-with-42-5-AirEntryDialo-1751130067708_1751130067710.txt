@@ -1,0 +1,130 @@
+AirEntryDialog.tsx:256 🔍 [AIRENTRY DIALOG] handleWallPositionChange called with: 42.5
+AirEntryDialog.tsx:257 🔍 [AIRENTRY DIALOG] Props type: vent
+AirEntryDialog.tsx:258 🔍 [AIRENTRY DIALOG] Has onPositionUpdate? true
+AirEntryDialog.tsx:259 🔍 [AIRENTRY DIALOG] onPositionUpdate value: (newPosition) => {
+            console.log("🔍 [CANVAS2D POSITION UPDATE] onPositionUpdate callback called");
+            console.log("🔍 [CANVAS2D POSITION UPDATE] editingAirEntry.index:", editingAi…
+AirEntryDialog.tsx:206 🔍 [CALCULATE POSITION] calculatePositionFromPercentage called with: 42.5
+AirEntryDialog.tsx:214 🔍 [CALCULATE POSITION] Wall coordinates: {wallStart: {…}, wallEnd: {…}}
+AirEntryDialog.tsx:218 🔍 [CALCULATE POSITION] Element width: 60 cm
+AirEntryDialog.tsx:224 🔍 [CALCULATE POSITION] Wall length: 766.4150311678393 pixels
+AirEntryDialog.tsx:230 🔍 [CALCULATE POSITION] Element width in pixels: 48 half: 24
+AirEntryDialog.tsx:234 🔍 [CALCULATE POSITION] Effective length: 718.4150311678393
+AirEntryDialog.tsx:239 🔍 [CALCULATE POSITION] Calculated distance from start: 329.3263882463317
+AirEntryDialog.tsx:243 🔍 [CALCULATE POSITION] Normalized t: 0.4296971938879049
+AirEntryDialog.tsx:249 🔍 [CALCULATE POSITION] Final calculated position: {x: 447.3065285650506, y: 223.94192041288463}
+AirEntryDialog.tsx:265 🔍 [AIRENTRY DIALOG] Calculated newPosition: {x: 447.3065285650506, y: 223.94192041288463}
+AirEntryDialog.tsx:281 🔍 [AIRENTRY DIALOG] About to call onPositionUpdate with position: {x: 447.3065285650506, y: 223.94192041288463}
+Canvas2D.tsx:3523 🔍 [CANVAS2D POSITION UPDATE] onPositionUpdate callback called
+Canvas2D.tsx:3524 🔍 [CANVAS2D POSITION UPDATE] editingAirEntry.index: 0
+Canvas2D.tsx:3525 🔍 [CANVAS2D POSITION UPDATE] newPosition: {x: 447.3065285650506, y: 223.94192041288463}
+Canvas2D.tsx:3526 🔍 [CANVAS2D POSITION UPDATE] Current airEntries.length: 1
+Canvas2D.tsx:3535 🔍 [CANVAS2D POSITION UPDATE] About to call onAirEntriesUpdate with: {type: 'vent', position: {…}, line: {…}, dimensions: {…}}
+Canvas2D.tsx:3537 🔍 [CANVAS2D POSITION UPDATE] onAirEntriesUpdate called successfully
+Canvas2D.tsx:3549 🔍 [CANVAS2D POSITION UPDATE] Local state updated - canvas should redraw now
+AirEntryDialog.tsx:283 🔍 [AIRENTRY DIALOG] onPositionUpdate called successfully
+AirEntryDialog.tsx:275 🔍 [AIRENTRY DIALOG] Updated form values: {width: 60, height: 40, distanceToFloor: 111, shape: 'rectangular', properties: undefined, …}
+AirEntryDialog.tsx:256 🔍 [AIRENTRY DIALOG] handleWallPositionChange called with: 43.5
+AirEntryDialog.tsx:257 🔍 [AIRENTRY DIALOG] Props type: vent
+AirEntryDialog.tsx:258 🔍 [AIRENTRY DIALOG] Has onPositionUpdate? true
+AirEntryDialog.tsx:259 🔍 [AIRENTRY DIALOG] onPositionUpdate value: (newPosition) => {
+            console.log("🔍 [CANVAS2D POSITION UPDATE] onPositionUpdate callback called");
+            console.log("🔍 [CANVAS2D POSITION UPDATE] editingAirEntry.index:", editingAi…
+AirEntryDialog.tsx:206 🔍 [CALCULATE POSITION] calculatePositionFromPercentage called with: 43.5
+AirEntryDialog.tsx:214 🔍 [CALCULATE POSITION] Wall coordinates: {wallStart: {…}, wallEnd: {…}}
+AirEntryDialog.tsx:218 🔍 [CALCULATE POSITION] Element width: 60 cm
+AirEntryDialog.tsx:224 🔍 [CALCULATE POSITION] Wall length: 766.4150311678393 pixels
+AirEntryDialog.tsx:230 🔍 [CALCULATE POSITION] Element width in pixels: 48 half: 24
+AirEntryDialog.tsx:234 🔍 [CALCULATE POSITION] Effective length: 718.4150311678393
+AirEntryDialog.tsx:239 🔍 [CALCULATE POSITION] Calculated distance from start: 336.51053855801007
+AirEntryDialog.tsx:243 🔍 [CALCULATE POSITION] Normalized t: 0.43907090136951754
+AirEntryDialog.tsx:249 🔍 [CALCULATE POSITION] Final calculated position: {x: 441.5323247563772, y: 228.2163310245}
+AirEntryDialog.tsx:265 🔍 [AIRENTRY DIALOG] Calculated newPosition: {x: 441.5323247563772, y: 228.2163310245}
+AirEntryDialog.tsx:281 🔍 [AIRENTRY DIALOG] About to call onPositionUpdate with position: {x: 441.5323247563772, y: 228.2163310245}
+Canvas2D.tsx:3523 🔍 [CANVAS2D POSITION UPDATE] onPositionUpdate callback called
+Canvas2D.tsx:3524 🔍 [CANVAS2D POSITION UPDATE] editingAirEntry.index: 0
+Canvas2D.tsx:3525 🔍 [CANVAS2D POSITION UPDATE] newPosition: {x: 441.5323247563772, y: 228.2163310245}
+Canvas2D.tsx:3526 🔍 [CANVAS2D POSITION UPDATE] Current airEntries.length: 1
+Canvas2D.tsx:3535 🔍 [CANVAS2D POSITION UPDATE] About to call onAirEntriesUpdate with: {type: 'vent', position: {…}, line: {…}, dimensions: {…}}
+Canvas2D.tsx:3537 🔍 [CANVAS2D POSITION UPDATE] onAirEntriesUpdate called successfully
+Canvas2D.tsx:3549 🔍 [CANVAS2D POSITION UPDATE] Local state updated - canvas should redraw now
+AirEntryDialog.tsx:283 🔍 [AIRENTRY DIALOG] onPositionUpdate called successfully
+AirEntryDialog.tsx:275 🔍 [AIRENTRY DIALOG] Updated form values: {width: 60, height: 40, distanceToFloor: 111, shape: 'rectangular', properties: undefined, …}
+AirEntryDialog.tsx:256 🔍 [AIRENTRY DIALOG] handleWallPositionChange called with: 44.5
+AirEntryDialog.tsx:257 🔍 [AIRENTRY DIALOG] Props type: vent
+AirEntryDialog.tsx:258 🔍 [AIRENTRY DIALOG] Has onPositionUpdate? true
+AirEntryDialog.tsx:259 🔍 [AIRENTRY DIALOG] onPositionUpdate value: (newPosition) => {
+            console.log("🔍 [CANVAS2D POSITION UPDATE] onPositionUpdate callback called");
+            console.log("🔍 [CANVAS2D POSITION UPDATE] editingAirEntry.index:", editingAi…
+AirEntryDialog.tsx:206 🔍 [CALCULATE POSITION] calculatePositionFromPercentage called with: 44.5
+AirEntryDialog.tsx:214 🔍 [CALCULATE POSITION] Wall coordinates: {wallStart: {…}, wallEnd: {…}}
+AirEntryDialog.tsx:218 🔍 [CALCULATE POSITION] Element width: 60 cm
+AirEntryDialog.tsx:224 🔍 [CALCULATE POSITION] Wall length: 766.4150311678393 pixels
+AirEntryDialog.tsx:230 🔍 [CALCULATE POSITION] Element width in pixels: 48 half: 24
+AirEntryDialog.tsx:234 🔍 [CALCULATE POSITION] Effective length: 718.4150311678393
+AirEntryDialog.tsx:239 🔍 [CALCULATE POSITION] Calculated distance from start: 343.6946888696885
+AirEntryDialog.tsx:243 🔍 [CALCULATE POSITION] Normalized t: 0.44844460885113024
+AirEntryDialog.tsx:249 🔍 [CALCULATE POSITION] Final calculated position: {x: 435.7581209477038, y: 232.4907416361154}
+AirEntryDialog.tsx:265 🔍 [AIRENTRY DIALOG] Calculated newPosition: {x: 435.7581209477038, y: 232.4907416361154}
+AirEntryDialog.tsx:281 🔍 [AIRENTRY DIALOG] About to call onPositionUpdate with position: {x: 435.7581209477038, y: 232.4907416361154}
+Canvas2D.tsx:3523 🔍 [CANVAS2D POSITION UPDATE] onPositionUpdate callback called
+Canvas2D.tsx:3524 🔍 [CANVAS2D POSITION UPDATE] editingAirEntry.index: 0
+Canvas2D.tsx:3525 🔍 [CANVAS2D POSITION UPDATE] newPosition: {x: 435.7581209477038, y: 232.4907416361154}
+Canvas2D.tsx:3526 🔍 [CANVAS2D POSITION UPDATE] Current airEntries.length: 1
+Canvas2D.tsx:3535 🔍 [CANVAS2D POSITION UPDATE] About to call onAirEntriesUpdate with: {type: 'vent', position: {…}, line: {…}, dimensions: {…}}
+Canvas2D.tsx:3537 🔍 [CANVAS2D POSITION UPDATE] onAirEntriesUpdate called successfully
+Canvas2D.tsx:3549 🔍 [CANVAS2D POSITION UPDATE] Local state updated - canvas should redraw now
+AirEntryDialog.tsx:283 🔍 [AIRENTRY DIALOG] onPositionUpdate called successfully
+AirEntryDialog.tsx:275 🔍 [AIRENTRY DIALOG] Updated form values: {width: 60, height: 40, distanceToFloor: 111, shape: 'rectangular', properties: undefined, …}
+AirEntryDialog.tsx:256 🔍 [AIRENTRY DIALOG] handleWallPositionChange called with: 45.5
+AirEntryDialog.tsx:257 🔍 [AIRENTRY DIALOG] Props type: vent
+AirEntryDialog.tsx:258 🔍 [AIRENTRY DIALOG] Has onPositionUpdate? true
+AirEntryDialog.tsx:259 🔍 [AIRENTRY DIALOG] onPositionUpdate value: (newPosition) => {
+            console.log("🔍 [CANVAS2D POSITION UPDATE] onPositionUpdate callback called");
+            console.log("🔍 [CANVAS2D POSITION UPDATE] editingAirEntry.index:", editingAi…
+AirEntryDialog.tsx:206 🔍 [CALCULATE POSITION] calculatePositionFromPercentage called with: 45.5
+AirEntryDialog.tsx:214 🔍 [CALCULATE POSITION] Wall coordinates: {wallStart: {…}, wallEnd: {…}}
+AirEntryDialog.tsx:218 🔍 [CALCULATE POSITION] Element width: 60 cm
+AirEntryDialog.tsx:224 🔍 [CALCULATE POSITION] Wall length: 766.4150311678393 pixels
+AirEntryDialog.tsx:230 🔍 [CALCULATE POSITION] Element width in pixels: 48 half: 24
+AirEntryDialog.tsx:234 🔍 [CALCULATE POSITION] Effective length: 718.4150311678393
+AirEntryDialog.tsx:239 🔍 [CALCULATE POSITION] Calculated distance from start: 350.8788391813669
+AirEntryDialog.tsx:243 🔍 [CALCULATE POSITION] Normalized t: 0.45781831633274295
+AirEntryDialog.tsx:249 🔍 [CALCULATE POSITION] Final calculated position: {x: 429.9839171390303, y: 236.76515224773078}
+AirEntryDialog.tsx:265 🔍 [AIRENTRY DIALOG] Calculated newPosition: {x: 429.9839171390303, y: 236.76515224773078}
+AirEntryDialog.tsx:281 🔍 [AIRENTRY DIALOG] About to call onPositionUpdate with position: {x: 429.9839171390303, y: 236.76515224773078}
+Canvas2D.tsx:3523 🔍 [CANVAS2D POSITION UPDATE] onPositionUpdate callback called
+Canvas2D.tsx:3524 🔍 [CANVAS2D POSITION UPDATE] editingAirEntry.index: 0
+Canvas2D.tsx:3525 🔍 [CANVAS2D POSITION UPDATE] newPosition: {x: 429.9839171390303, y: 236.76515224773078}
+Canvas2D.tsx:3526 🔍 [CANVAS2D POSITION UPDATE] Current airEntries.length: 1
+Canvas2D.tsx:3535 🔍 [CANVAS2D POSITION UPDATE] About to call onAirEntriesUpdate with: {type: 'vent', position: {…}, line: {…}, dimensions: {…}}
+Canvas2D.tsx:3537 🔍 [CANVAS2D POSITION UPDATE] onAirEntriesUpdate called successfully
+Canvas2D.tsx:3549 🔍 [CANVAS2D POSITION UPDATE] Local state updated - canvas should redraw now
+AirEntryDialog.tsx:283 🔍 [AIRENTRY DIALOG] onPositionUpdate called successfully
+AirEntryDialog.tsx:275 🔍 [AIRENTRY DIALOG] Updated form values: {width: 60, height: 40, distanceToFloor: 111, shape: 'rectangular', properties: undefined, …}
+AirEntryDialog.tsx:256 🔍 [AIRENTRY DIALOG] handleWallPositionChange called with: 46.5
+AirEntryDialog.tsx:257 🔍 [AIRENTRY DIALOG] Props type: vent
+AirEntryDialog.tsx:258 🔍 [AIRENTRY DIALOG] Has onPositionUpdate? true
+AirEntryDialog.tsx:259 🔍 [AIRENTRY DIALOG] onPositionUpdate value: (newPosition) => {
+            console.log("🔍 [CANVAS2D POSITION UPDATE] onPositionUpdate callback called");
+            console.log("🔍 [CANVAS2D POSITION UPDATE] editingAirEntry.index:", editingAi…
+AirEntryDialog.tsx:206 🔍 [CALCULATE POSITION] calculatePositionFromPercentage called with: 46.5
+AirEntryDialog.tsx:214 🔍 [CALCULATE POSITION] Wall coordinates: {wallStart: {…}, wallEnd: {…}}
+AirEntryDialog.tsx:218 🔍 [CALCULATE POSITION] Element width: 60 cm
+AirEntryDialog.tsx:224 🔍 [CALCULATE POSITION] Wall length: 766.4150311678393 pixels
+AirEntryDialog.tsx:230 🔍 [CALCULATE POSITION] Element width in pixels: 48 half: 24
+AirEntryDialog.tsx:234 🔍 [CALCULATE POSITION] Effective length: 718.4150311678393
+AirEntryDialog.tsx:239 🔍 [CALCULATE POSITION] Calculated distance from start: 358.0629894930453
+AirEntryDialog.tsx:243 🔍 [CALCULATE POSITION] Normalized t: 0.4671920238143556
+AirEntryDialog.tsx:249 🔍 [CALCULATE POSITION] Final calculated position: {x: 424.209713330357, y: 241.03956285934615}
+AirEntryDialog.tsx:265 🔍 [AIRENTRY DIALOG] Calculated newPosition: {x: 424.209713330357, y: 241.03956285934615}
+AirEntryDialog.tsx:281 🔍 [AIRENTRY DIALOG] About to call onPositionUpdate with position: {x: 424.209713330357, y: 241.03956285934615}
+Canvas2D.tsx:3523 🔍 [CANVAS2D POSITION UPDATE] onPositionUpdate callback called
+Canvas2D.tsx:3524 🔍 [CANVAS2D POSITION UPDATE] editingAirEntry.index: 0
+Canvas2D.tsx:3525 🔍 [CANVAS2D POSITION UPDATE] newPosition: {x: 424.209713330357, y: 241.03956285934615}
+Canvas2D.tsx:3526 🔍 [CANVAS2D POSITION UPDATE] Current airEntries.length: 1
+Canvas2D.tsx:3535 🔍 [CANVAS2D POSITION UPDATE] About to call onAirEntriesUpdate with: {type: 'vent', position: {…}, line: {…}, dimensions: {…}}
+Canvas2D.tsx:3537 🔍 [CANVAS2D POSITION UPDATE] onAirEntriesUpdate called successfully
+Canvas2D.tsx:3549 🔍 [CANVAS2D POSITION UPDATE] Local state updated - canvas should redraw now
+AirEntryDialog.tsx:283 🔍 [AIRENTRY DIALOG] onPositionUpdate called successfully
+AirEntryDialog.tsx:275 🔍 [AIRENTRY DIALOG] Updated form values: {width: 60, height: 40, distanceToFloor: 111, shape: 'rectangular', properties: undefined, …}
