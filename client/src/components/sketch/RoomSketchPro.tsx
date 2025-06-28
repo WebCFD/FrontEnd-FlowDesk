@@ -839,18 +839,7 @@ export function RoomSketchPro({
     applyThemeTextures();
   }, [selectedTheme]);
 
-  // CRITICAL: Global trigger function for Canvas3D to reapply RSP textures after AirEntry updates
-  useEffect(() => {
-    (window as any).triggerRSPTextureReapplication = () => {
-      console.log(`🔄 GLOBAL TRIGGER: RSP texture reapplication triggered by Canvas3D`);
-      applyThemeTextures();
-    };
 
-    // Cleanup function
-    return () => {
-      delete (window as any).triggerRSPTextureReapplication;
-    };
-  }, []);
 
   // Update air entry transparency when it changes
   useEffect(() => {
