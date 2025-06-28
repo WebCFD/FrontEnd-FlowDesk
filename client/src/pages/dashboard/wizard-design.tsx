@@ -2527,7 +2527,15 @@ export default function WizardDesign() {
               stairPolygons={stairPolygons}
               walls={walls}
               onMeasurementsUpdate={setMeasurements}
-              onStairPolygonsUpdate={setStairPolygons}
+              onStairPolygonsUpdate={(newPolygons) => {
+                console.log("🔄 WIZARD: onStairPolygonsUpdate callback triggered");
+                console.log("📥 WIZARD: Received new polygons:", newPolygons);
+                console.log("📊 WIZARD: Previous stairPolygons count:", stairPolygons.length);
+                console.log("📊 WIZARD: New stairPolygons count:", newPolygons.length);
+                console.log("🏢 WIZARD: Current floor:", currentFloor);
+                setStairPolygons(newPolygons);
+                console.log("✅ WIZARD: setStairPolygons called successfully");
+              }}
               onWallsUpdate={setWalls}
               lines={lines}
               floorText={formatFloorText(currentFloor)}
