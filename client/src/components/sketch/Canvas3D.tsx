@@ -1251,13 +1251,9 @@ export default function Canvas3D({
         console.log(`DIALOG DEBUG: Setting newFurnitureForDialog for ${furnitureItem.id}`);
         newFurnitureForDialog.current = furnitureItem;
         
-        // Log the current state to see why useEffect might not trigger
-        console.log(`DIALOG DEBUG: After setting newFurnitureForDialog:`, {
-          currentFloorsKeys: Object.keys(floors || {}),
-          currentFloor,
-          furnitureCountAfterAdd: floors[currentFloor]?.furnitureItems?.length || 0,
-          newFurnitureId: newFurnitureForDialog.current?.id
-        });
+        // Trigger the dialog useEffect
+        console.log(`DIALOG DEBUG: Triggering dialog useEffect for ${furnitureItem.id}`);
+        setDialogTrigger(prev => prev + 1);
       }
       
     } catch (error) {
@@ -1514,12 +1510,12 @@ export default function Canvas3D({
   // Reference to store newly created furniture for auto-opening dialog
   const newFurnitureForDialog = useRef<FurnitureItem | null>(null);
   const [ignoreNextClick, setIgnoreNextClick] = useState<boolean>(false);
+  const [dialogTrigger, setDialogTrigger] = useState<number>(0);
   
   // Effect to auto-open dialog for newly created furniture
   useEffect(() => {
-    console.log(`DIALOG DEBUG: useEffect triggered with dependencies:`, {
-      floorsKeys: Object.keys(floors || {}),
-      currentFloor,
+    console.log(`DIALOG DEBUG: useEffect triggered by dialogTrigger:`, {
+      dialogTrigger,
       newFurnitureForDialog: newFurnitureForDialog.current?.id || 'null',
       furnitureCountInCurrentFloor: floors[currentFloor]?.furnitureItems?.length || 0
     });
@@ -1538,7 +1534,7 @@ export default function Canvas3D({
     } else {
       console.log(`DIALOG DEBUG: No newFurnitureForDialog to process`);
     }
-  }, [floors, currentFloor]); // Trigger when floors update (after furniture is added)
+  }, [dialogTrigger]); // Trigger when dialogTrigger changes
 
   // PHASE 5: Pure props pattern - furniture is now rendered in scene building loop
   // No longer need manual furniture loading as it's handled in createFloorObjects
