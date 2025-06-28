@@ -29,6 +29,7 @@ export interface StairPolygon {
   connectsTo?: string;
   sourceFloor?: string; // Track where the stair was originally defined
   isImported?: boolean; // Flag to identify if this stair was imported from another floor
+  temperature?: number; // Temperature property for thermal simulation
 }
 
 // New export types for improved JSON structure

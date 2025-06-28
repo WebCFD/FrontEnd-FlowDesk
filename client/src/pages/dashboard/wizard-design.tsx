@@ -2499,6 +2499,8 @@ export default function WizardDesign() {
               isMultifloor={isMultifloor}
               ceilingHeight={isMultifloor ? (floorParameters[currentFloor]?.ceilingHeight || 220) / 100 : ceilingHeight / 100}
               defaultWallTemperature={defaultWallTemperature}
+              defaultStairTemperature={defaultStairTemperature}
+              defaultWallTemperature={defaultWallTemperature}
               onLinesUpdate={(newLines) => {
                 setLines(newLines);
                 const hasClosedContour =
