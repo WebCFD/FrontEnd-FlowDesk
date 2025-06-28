@@ -1038,7 +1038,10 @@ export default function WizardDesign() {
           airEntries: [...updatedAirEntries],
         };
         // Update floor data in the store
+        console.log('🔥 [STORE UPDATE 1] About to call setFloors - THIS TRIGGERS RSP REGENERATION');
+        console.log('🔥 [STORE UPDATE 1] Current floor case - this will cause RSP useEffect to fire');
         useRoomStore.getState().setFloors(updatedFloors);
+        console.log('🔥 [STORE UPDATE 1] setFloors called - RSP will now regenerate scene losing textures');
       }
 
       // Entry updated successfully
@@ -1100,7 +1103,10 @@ export default function WizardDesign() {
 
       // Make sure we also update the "floors" state variable completely
       // to ensure it's consistent across the component
+      console.log('🔥 [STORE UPDATE 2] About to call setFloors - THIS TRIGGERS RSP REGENERATION');
+      console.log('🔥 [STORE UPDATE 2] Non-current floor case - this will cause RSP useEffect to fire');
       useRoomStore.getState().setFloors(updatedFloors);
+      console.log('🔥 [STORE UPDATE 2] setFloors called - RSP will now regenerate scene losing textures');
 
       // Update the room store with each floor's updated data
       Object.entries(updatedFloors).forEach(([floor, data]) => {
