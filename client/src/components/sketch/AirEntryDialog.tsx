@@ -601,10 +601,6 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         }
       };
       
-      console.log("🔍 [SAVE CHANGES] Final canvasData being sent to onConfirm:", canvasData);
-      console.log("🔍 [SAVE CHANGES] canvasData.wallPosition:", canvasData.wallPosition);
-      console.log("🔍 [SAVE CHANGES] canvasData.position:", canvasData.position);
-      
       props.onConfirm(canvasData);
     }
     onClose();

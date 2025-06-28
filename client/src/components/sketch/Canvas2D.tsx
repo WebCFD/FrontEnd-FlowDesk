@@ -3288,18 +3288,8 @@ export default function Canvas2D({
       };
     },
   ) => {
-    console.log("🔍 [HANDLE AIR ENTRY EDIT] Called with index:", index);
-    console.log("🔍 [HANDLE AIR ENTRY EDIT] Received data:", data);
-    console.log("🔍 [HANDLE AIR ENTRY EDIT] data.wallPosition:", data.wallPosition);
-    console.log("🔍 [HANDLE AIR ENTRY EDIT] data.position:", data.position);
-    
     const editingEntry = editingAirEntries.find(entry => entry.index === index);
-    if (!editingEntry) {
-      console.log("🔍 [HANDLE AIR ENTRY EDIT] No editingEntry found for index:", index);
-      return;
-    }
-
-    console.log("🔍 [HANDLE AIR ENTRY EDIT] Current editingEntry.entry.position:", editingEntry.entry.position);
+    if (!editingEntry) return;
 
     // Update the existing element in the array (whether just created or pre-existing)
     const updatedAirEntries = [...airEntries];
@@ -3316,10 +3306,6 @@ export default function Canvas2D({
       },
       ...(data.properties && { properties: data.properties }),
     };
-
-    console.log("🔍 [HANDLE AIR ENTRY EDIT] Final updatedAirEntries[index]:", updatedAirEntries[index]);
-    console.log("🔍 [HANDLE AIR ENTRY EDIT] Final position in updatedAirEntries[index]:", updatedAirEntries[index].position);
-    console.log("🔍 [HANDLE AIR ENTRY EDIT] About to call onAirEntriesUpdate");
 
     onAirEntriesUpdate?.(updatedAirEntries);
     setEditingAirEntries(prev => prev.filter(entry => entry.index !== index)); // Close dialog - element is preserved
@@ -3519,10 +3505,6 @@ export default function Canvas2D({
           }}
           onConfirm={(data) => {
             // Save Changes: Update element properties and close dialog
-            console.log("🔍 [CANVAS2D ONCONFIRM] Received data from AirEntryDialog:", data);
-            console.log("🔍 [CANVAS2D ONCONFIRM] data.wallPosition:", data.wallPosition);
-            console.log("🔍 [CANVAS2D ONCONFIRM] data.position:", data.position);
-            console.log("🔍 [CANVAS2D ONCONFIRM] About to call handleAirEntryEdit with index:", editingAirEntry.index);
             handleAirEntryEdit(editingAirEntry.index, data as any);
           }}
           initialValues={{
