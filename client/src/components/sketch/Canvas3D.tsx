@@ -1864,12 +1864,11 @@ export default function Canvas3D({
     console.log(`[WALL POSITION STORAGE] wallPosition in data:`, data.wallPosition);
     console.log(`[WALL POSITION STORAGE] wallPosition in updatedEntry.dimensions:`, updatedEntry.dimensions.wallPosition);
 
-    // Call the parent component's handler
-    console.log('🎯 [CANVAS3D] About to call onUpdateAirEntry - this will trigger RSP update chain');
-    console.log('🎯 [CANVAS3D] Floor:', currentFloor, 'Index:', index);
-    console.log('🎯 [CANVAS3D] Updated entry distanceToFloor:', updatedEntry.dimensions.distanceToFloor);
-    onUpdateAirEntry(currentFloor, index, updatedEntry);
-    console.log('🎯 [CANVAS3D] onUpdateAirEntry called - this flows to wizard-design handleUpdateAirEntryFrom3D');
+    // AirEntry now works like furniture - direct modification only, no store propagation needed
+    console.log('✅ [AIRENTRY OPTIMIZED] Skipping store propagation - direct modification preserves textures');
+    console.log('✅ [AIRENTRY OPTIMIZED] Floor:', currentFloor, 'Index:', index);
+    console.log('✅ [AIRENTRY OPTIMIZED] Updated distanceToFloor:', updatedEntry.dimensions.distanceToFloor);
+    console.log('✅ [AIRENTRY OPTIMIZED] Textures preserved automatically like furniture');
     setEditingAirEntry(null);
     
     // OPTIMIZATION: No callback needed after dialog confirm - textures already preserved

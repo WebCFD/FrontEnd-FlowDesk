@@ -844,31 +844,15 @@ export function RoomSketchPro({
     index: number,
     updatedEntry: AirEntry,
   ) => {
-    // Create a deep clone of the updated entry to prevent reference issues
-    const deepClonedEntry = JSON.parse(JSON.stringify(updatedEntry));
+    // OPTIMIZATION: AirEntry now works like furniture - no store propagation needed
+    // Direct modification in Canvas3D already preserves textures and geometry
+    console.log('✅ [RSP OPTIMIZED] AirEntry update received - no propagation needed');
+    console.log('✅ [RSP OPTIMIZED] Floor:', floorName, 'Index:', index);
+    console.log('✅ [RSP OPTIMIZED] Updated distanceToFloor:', updatedEntry.dimensions.distanceToFloor);
+    console.log('✅ [RSP OPTIMIZED] Textures preserved automatically - no scene regeneration');
     
-    // Update the floors data
-    const updatedFloors = { ...floors };
-    if (updatedFloors[floorName] && updatedFloors[floorName].airEntries) {
-      const updatedAirEntries = updatedFloors[floorName].airEntries.map((entry, i) =>
-        i === index ? deepClonedEntry : entry
-      );
-      
-      updatedFloors[floorName] = {
-        ...updatedFloors[floorName],
-        airEntries: updatedAirEntries,
-      };
-      
-      // Update floors via parent callback if available
-      if (onFloorsUpdate) {
-        console.log('🚨 [RSP FLOORS UPDATE] About to call onFloorsUpdate - THIS TRIGGERS SCENE REGENERATION');
-        console.log('🚨 [RSP FLOORS UPDATE] Called from handleUpdateAirEntryFrom3D in RoomSketchPro');
-        console.log('🚨 [RSP FLOORS UPDATE] Floor:', floorName, 'Index:', index);
-        console.log('🚨 [RSP FLOORS UPDATE] Updated entry distanceToFloor:', deepClonedEntry.dimensions.distanceToFloor);
-        onFloorsUpdate(updatedFloors);
-        console.log('🚨 [RSP FLOORS UPDATE] onFloorsUpdate called - wizard-design will now regenerate scene');
-      }
-    }
+    // No need to update floors or call onFloorsUpdate - direct modification already applied
+    // This prevents the expensive scene regeneration cycle while maintaining functionality
   }, [floors, onFloorsUpdate]);
 
   // Theme configurations with different Canvas3D parameters
