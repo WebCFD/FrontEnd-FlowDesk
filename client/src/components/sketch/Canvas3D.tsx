@@ -1250,29 +1250,56 @@ export default function Canvas3D({
   const { subscribeToAirEntryChanges } = useRoomStore();
   
   useEffect(() => {
+    console.log(`🔗 Canvas3D: Registrando suscripción para sincronización de AirEntry en piso '${currentFloor}'`);
+    
     const unsubscribe = subscribeToAirEntryChanges((floorName, index, updatedEntry) => {
+      console.log(`📥 Canvas3D: Recibida notificación de cambio AirEntry - piso: ${floorName}, índice: ${index}`);
+      console.log(`📥 Canvas3D: Tipo: ${updatedEntry.type}, posición: (${updatedEntry.position.x}, ${updatedEntry.position.y})`);
+      
       // Only update if this change affects our current floor
-      if (floorName !== currentFloor) return;
+      if (floorName !== currentFloor) {
+        console.log(`⏭️ Canvas3D: Ignorando cambio - no es el piso actual (${currentFloor})`);
+        return;
+      }
+      
+      console.log(`✅ Canvas3D: Aplicando cambio - buscando objetos en escena 3D`);
       
       // Update position in the 3D scene immediately
       if (sceneRef.current) {
+        let objectsFound = 0;
+        let objectsUpdated = 0;
+        
         sceneRef.current.traverse((object) => {
           if (object instanceof THREE.Mesh && 
               object.userData?.type === updatedEntry.type &&
               object.userData?.entryIndex === index) {
             
+            objectsFound++;
+            console.log(`🎯 Canvas3D: Encontrado objeto ${updatedEntry.type} para actualizar - índice: ${index}`);
+            
             const position3D = transform2DTo3D(updatedEntry.position);
             object.position.set(position3D.x, position3D.y, object.position.z);
             object.userData.position = updatedEntry.position;
+            objectsUpdated++;
+            
+            console.log(`🎯 Canvas3D: Objeto actualizado - nueva posición 3D: (${position3D.x}, ${position3D.y}, ${object.position.z})`);
           }
         });
         
+        console.log(`📊 Canvas3D: Objetos encontrados: ${objectsFound}, actualizados: ${objectsUpdated}`);
+        
         // Force re-render
         needsRenderRef.current = true;
+        console.log(`🔄 Canvas3D: Forzando re-render de la escena`);
+      } else {
+        console.warn(`⚠️ Canvas3D: sceneRef.current es null - no se puede actualizar`);
       }
     });
     
-    return unsubscribe;
+    return () => {
+      console.log(`🔗 Canvas3D: Desregistrando suscripción para piso '${currentFloor}'`);
+      unsubscribe();
+    };
   }, [currentFloor, subscribeToAirEntryChanges]);
 
   // Function to setup lighting based on presentation mode
@@ -1891,7 +1918,13 @@ export default function Canvas3D({
 
 
     // Call the callback to update the store
+    console.log(`🚀 Canvas3D: Llamando onUpdateAirEntry - piso: ${currentFloor}, índice: ${index}`);
+    console.log(`🚀 Canvas3D: Datos del AirEntry actualizado:`, updatedEntry);
+    
     onUpdateAirEntry(currentFloor, index, updatedEntry);
+    
+    console.log(`✅ Canvas3D: onUpdateAirEntry completado - debería haber actualizado el store`);
+    console.log(`📋 Canvas3D: Verificando si esto dispara notificaciones a otros componentes...`);
     
     // Check texture state BEFORE setEditingAirEntry(null)
     if (sceneRef.current) {

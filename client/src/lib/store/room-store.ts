@@ -422,6 +422,9 @@ export const useRoomStore = create<RoomState>()(
 
         // Reactive AirEntry synchronization system
         updateAirEntry: (floorName: string, index: number, entry: AirEntry) => {
+          console.log(`🔄 STORE: updateAirEntry llamado - piso: ${floorName}, índice: ${index}`);
+          console.log(`🔄 STORE: Nueva posición del AirEntry: (${entry.position.x}, ${entry.position.y})`);
+          
           set((state) => {
             const updatedFloors = { ...state.floors };
             
@@ -433,6 +436,20 @@ export const useRoomStore = create<RoomState>()(
                 ...updatedFloors[floorName],
                 airEntries: updatedAirEntries
               };
+              
+              console.log(`✅ STORE: AirEntry actualizado en el store, notificando a ${airEntryChangeListeners.length} listeners`);
+              
+              // Notify all listeners about the change
+              airEntryChangeListeners.forEach((listener, listenerIndex) => {
+                console.log(`📢 STORE: Notificando listener ${listenerIndex + 1}/${airEntryChangeListeners.length}`);
+                try {
+                  listener(floorName, index, entry);
+                } catch (error) {
+                  console.error(`❌ STORE: Error en listener ${listenerIndex + 1}:`, error);
+                }
+              });
+            } else {
+              console.warn(`⚠️ STORE: No se pudo actualizar AirEntry - piso o índice no válido`);
             }
             
             return { floors: updatedFloors };
@@ -449,6 +466,7 @@ export const useRoomStore = create<RoomState>()(
         },
 
         subscribeToAirEntryChanges: (listener: AirEntryChangeListener) => {
+          console.log(`🔗 STORE: Nueva suscripción añadida. Total listeners: ${airEntryChangeListeners.length + 1}`);
           airEntryChangeListeners.push(listener);
           
           // Return unsubscribe function
@@ -456,6 +474,7 @@ export const useRoomStore = create<RoomState>()(
             const index = airEntryChangeListeners.indexOf(listener);
             if (index > -1) {
               airEntryChangeListeners.splice(index, 1);
+              console.log(`🔗 STORE: Suscripción eliminada. Total listeners: ${airEntryChangeListeners.length}`);
             }
           };
         },
