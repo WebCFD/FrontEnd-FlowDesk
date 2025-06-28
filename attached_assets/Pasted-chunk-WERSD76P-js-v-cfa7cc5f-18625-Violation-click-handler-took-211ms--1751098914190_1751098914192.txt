@@ -1,0 +1,98 @@
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 211ms
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
+Canvas3D.tsx:4604 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4614 Double-click found entry using stored entryIndex: 0
+AirEntryDialog.tsx:335 🔍 LOADING EDITING VALUES - Full initialValues: {
+  "width": 124,
+  "height": 95,
+  "distanceToFloor": 148,
+  "shape": "rectangular",
+  "wallPosition": 33,
+  "properties": {
+    "state": "open",
+    "temperature": 25,
+    "flowIntensity": "medium",
+    "airOrientation": "inflow",
+    "flowType": "Air Mass Flow",
+    "flowValue": 0.5
+  },
+  "position": {
+    "x": 461.554532218606,
+    "y": 98.62080545231365
+  }
+}
+AirEntryDialog.tsx:342 ✅ WIDTH LOADING - Found saved width: 124
+AirEntryDialog.tsx:348 🔍 WALL POSITION LOADING - Checking sources:
+AirEntryDialog.tsx:349   - properties?.wallPosition: undefined
+AirEntryDialog.tsx:350   - direct wallPosition: 33
+AirEntryDialog.tsx:351   - Final savedWallPosition: 33
+AirEntryDialog.tsx:362 ✅ WALL POSITION LOADING - Using saved value: 33
+Canvas3D.tsx:1462 📍 [AIRENTRY DIRECT] Updating position directly for vent - oldZ: 148, newZ: 149
+Canvas3D.tsx:1464 ✅ [AIRENTRY DIRECT] Position updated successfully
+Canvas3D.tsx:1468 💾 [AIRENTRY DIRECT] Updating userData for vent
+Canvas3D.tsx:1470 ✅ [AIRENTRY DIRECT] UserData updated successfully
+RoomSketchPro.tsx:864 🚨 [RSP FLOORS UPDATE] About to call onFloorsUpdate - THIS TRIGGERS SCENE REGENERATION
+RoomSketchPro.tsx:865 🚨 [RSP FLOORS UPDATE] Called from handleUpdateAirEntryFrom3D in RoomSketchPro
+RoomSketchPro.tsx:866 🚨 [RSP FLOORS UPDATE] Floor: ground Index: 0
+RoomSketchPro.tsx:867 🚨 [RSP FLOORS UPDATE] Updated entry distanceToFloor: 149
+wizard-design.tsx:2335 🔥 [SCENE REGENERATION] wizard-design: Received floors update from RSP - THIS CAUSES SCENE REBUILD
+wizard-design.tsx:2336 🔥 [SCENE REGENERATION] Stack trace: at onFloorsUpdate (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/pages/dashboard/wizard-design.tsx:2925:63)
+wizard-design.tsx:2337 🔥 [SCENE REGENERATION] Updated floors keys: ['ground']
+wizard-design.tsx:2338 🔥 [SCENE REGENERATION] Current floor airEntries count: 2
+wizard-design.tsx:2340 🔥 [SCENE REGENERATION] Store updated - this will trigger RSP geometry rebuild
+RoomSketchPro.tsx:869 🚨 [RSP FLOORS UPDATE] onFloorsUpdate called - wizard-design will now regenerate scene
+Canvas3D.tsx:1482 🚀 [OPTIMIZATION] No callback needed - AirEntry works like furniture with direct modification
+Canvas3D.tsx:1483 ✅ [OPTIMIZATION] Textures preserved automatically during real-time updates
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'setTimeout' handler took 69ms
+AirEntryDialog.tsx:519 📝 FORM SUBMIT - Current form values: {width: 124, height: 95, distanceToFloor: 149, shape: 'rectangular', wallPosition: 33, …}
+AirEntryDialog.tsx:520 📝 FORM SUBMIT - Current wallPosition state: 33
+AirEntryDialog.tsx:521 📝 FORM SUBMIT - Current distanceToFloor state: 149
+AirEntryDialog.tsx:549 📦 FORM SUBMIT - Final airEntryData being sent: {
+  "width": 124,
+  "height": 95,
+  "diameter": null,
+  "distanceToFloor": 149,
+  "shape": "rectangular",
+  "isOpen": true,
+  "temperature": 25,
+  "airDirection": "inflow",
+  "flowIntensity": "medium",
+  "customIntensityValue": null,
+  "ventFlowType": "massflow",
+  "airOrientation": {
+    "verticalAngle": 0,
+    "horizontalAngle": 0
+  },
+  "wallPosition": 33,
+  "position": {
+    "x": 461.554532218606,
+    "y": 98.62080545231365
+  }
+}
+AirEntryDialog.tsx:572 💾 SIMULATION PROPERTIES SAVE - Final properties: {flowType: 'massflow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', wallPosition: 33}
+Canvas3D.tsx:5940 [CANVAS3D ONCONFIRM] Received data from dialog: {width: 124, height: 95, distanceToFloor: 149, shape: 'rectangular', wallPosition: 33, …}
+Canvas3D.tsx:5941 [CANVAS3D ONCONFIRM] wallPosition in received data: 33
+Canvas3D.tsx:1862 [DIMENSION STORAGE] Stored dimensions for entry 0: {"position":{"x":461.554532218606,"y":98.62080545231365},"dimensions":{"width":124,"height":95,"distanceToFloor":149,"shape":"rectangular","wallPosition":33}}
+Canvas3D.tsx:1864 [WALL POSITION STORAGE] wallPosition in data: 33
+Canvas3D.tsx:1865 [WALL POSITION STORAGE] wallPosition in updatedEntry.dimensions: 33
+Canvas3D.tsx:1868 🎯 [CANVAS3D] About to call onUpdateAirEntry - this will trigger RSP update chain
+Canvas3D.tsx:1869 🎯 [CANVAS3D] Floor: ground Index: 0
+Canvas3D.tsx:1870 🎯 [CANVAS3D] Updated entry distanceToFloor: 149
+RoomSketchPro.tsx:864 🚨 [RSP FLOORS UPDATE] About to call onFloorsUpdate - THIS TRIGGERS SCENE REGENERATION
+RoomSketchPro.tsx:865 🚨 [RSP FLOORS UPDATE] Called from handleUpdateAirEntryFrom3D in RoomSketchPro
+RoomSketchPro.tsx:866 🚨 [RSP FLOORS UPDATE] Floor: ground Index: 0
+RoomSketchPro.tsx:867 🚨 [RSP FLOORS UPDATE] Updated entry distanceToFloor: 149
+wizard-design.tsx:2335 🔥 [SCENE REGENERATION] wizard-design: Received floors update from RSP - THIS CAUSES SCENE REBUILD
+wizard-design.tsx:2336 🔥 [SCENE REGENERATION] Stack trace: at onFloorsUpdate (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/pages/dashboard/wizard-design.tsx:2925:63)
+wizard-design.tsx:2337 🔥 [SCENE REGENERATION] Updated floors keys: ['ground']
+wizard-design.tsx:2338 🔥 [SCENE REGENERATION] Current floor airEntries count: 2
+wizard-design.tsx:2340 🔥 [SCENE REGENERATION] Store updated - this will trigger RSP geometry rebuild
+RoomSketchPro.tsx:869 🚨 [RSP FLOORS UPDATE] onFloorsUpdate called - wizard-design will now regenerate scene
+Canvas3D.tsx:1872 🎯 [CANVAS3D] onUpdateAirEntry called - this flows to wizard-design handleUpdateAirEntryFrom3D
+Canvas3D.tsx:1876 🚀 [OPTIMIZATION] Dialog confirm complete - textures preserved automatically like furniture
+Canvas3D.tsx:1877 ✅ [OPTIMIZATION] No texture reapplication needed after AirEntry edit

@@ -127,3 +127,4 @@ Changelog:
 - June 28, 2025. Fixed AirEntry Center Height real-time updates - removed redundant height/2 offset causing visual glitch during coordinate transformations between Canvas2D and Canvas3D
 - June 28, 2025. Added onAirEntryUpdated callback system to maintain RSP textures during real-time AirEntry modifications - system now triggers texture reapplication for all AirEntry dialog changes
 - June 28, 2025. MAJOR OPTIMIZATION: Eliminated redundant callback system for AirEntry modifications - AirEntry now works identically to furniture with direct modification and automatic texture preservation, removing unnecessary texture reapplication overhead
+- June 28, 2025. CRITICAL OPTIMIZATION: Eliminated scene regeneration during AirEntry modifications - removed store propagation flow that caused texture loss. AirEntry now uses direct geometry modification like furniture, preserving textures and performance during real-time updates
