@@ -522,9 +522,23 @@ export function generateSimulationData(
     // Filtrar el mobiliario que pertenece a este piso con coordenadas normalizadas
     const allFloorObjects = furniture.filter(obj => obj.userData?.floor === floorName && obj.userData?.type === 'furniture');
     
+    console.log(`EXPORT DEBUG [${floorName}]: Found ${allFloorObjects.length} total furniture objects`);
+    allFloorObjects.forEach((obj, i) => {
+      console.log(`EXPORT DEBUG [${floorName}]: Furniture ${i}: id="${obj.userData?.id}", furnitureType="${obj.userData?.furnitureType}", surfaceType="${obj.userData?.surfaceType}"`);
+    });
+    
     // Separar vent_furniture del resto del mobiliario
     const ventFurnitureObjects = allFloorObjects.filter(obj => obj.userData?.id?.includes('vent_furniture'));
     const floorFurnitureObjects = allFloorObjects.filter(obj => !obj.userData?.id?.includes('vent_furniture'));
+    
+    console.log(`EXPORT DEBUG [${floorName}]: Current filter found ${ventFurnitureObjects.length} vent_furniture objects (searching for 'vent_furniture' in ID)`);
+    
+    // Test new filter
+    const ventsByType = allFloorObjects.filter(obj => obj.userData?.furnitureType === 'vent');
+    console.log(`EXPORT DEBUG [${floorName}]: Correct filter would find ${ventsByType.length} vent objects (checking furnitureType === 'vent')`);
+    ventsByType.forEach((obj, i) => {
+      console.log(`EXPORT DEBUG [${floorName}]: Vent ${i}: id="${obj.userData?.id}", furnitureType="${obj.userData?.furnitureType}", surfaceType="${obj.userData?.surfaceType}"`);
+    });
     
     // Initialize furniture type counters for this floor
     const furnitureTypeCounts = { 
@@ -603,18 +617,25 @@ export function generateSimulationData(
     const ceilingAirEntries: AirEntryExport[] = [];
     const floorSurfAirEntries: AirEntryExport[] = [];
     
-    ventFurnitureObjects.forEach(ventObj => {
+    console.log(`EXPORT DEBUG [${floorName}]: Processing ${ventFurnitureObjects.length} vent furniture objects for airEntries conversion`);
+    
+    ventFurnitureObjects.forEach((ventObj, index) => {
+      console.log(`EXPORT DEBUG [${floorName}]: Processing vent ${index}: id="${ventObj.userData?.id}", surfaceType="${ventObj.userData?.surfaceType}"`);
+      
       // Determinar si es ceiling o floor_surf usando surfaceType almacenado
       let isFloorVent: boolean;
       if (ventObj.userData?.surfaceType) {
         // Usar el surfaceType almacenado (método preferido)
         isFloorVent = ventObj.userData.surfaceType === 'floor';
+        console.log(`EXPORT DEBUG [${floorName}]: Vent ${index} surface determined by surfaceType: ${ventObj.userData.surfaceType} -> ${isFloorVent ? 'floor_surf' : 'ceiling'}`);
       } else if (ventObj.userData?.simulationProperties?.normalVector) {
         // Fallback: usar el vector normal (z positivo = floor, z negativo = ceiling)
         isFloorVent = ventObj.userData.simulationProperties.normalVector.z > 0;
+        console.log(`EXPORT DEBUG [${floorName}]: Vent ${index} surface determined by normal vector: z=${ventObj.userData.simulationProperties.normalVector.z} -> ${isFloorVent ? 'floor_surf' : 'ceiling'}`);
       } else {
         // Último fallback: posición Y (método menos confiable)
         isFloorVent = ventObj.position.y <= 0.1;
+        console.log(`EXPORT DEBUG [${floorName}]: Vent ${index} surface determined by Y position: y=${ventObj.position.y} -> ${isFloorVent ? 'floor_surf' : 'ceiling'}`);
       }
       
       const airEntry: AirEntryExport = {
@@ -646,10 +667,14 @@ export function generateSimulationData(
       
       if (isFloorVent) {
         floorSurfAirEntries.push(airEntry);
+        console.log(`EXPORT DEBUG [${floorName}]: Added vent to floor_surf: id="${airEntry.id}"`);
       } else {
         ceilingAirEntries.push(airEntry);
+        console.log(`EXPORT DEBUG [${floorName}]: Added vent to ceiling: id="${airEntry.id}"`);
       }
     });
+    
+    console.log(`EXPORT DEBUG [${floorName}]: Final airEntries count - ceiling: ${ceilingAirEntries.length}, floor_surf: ${floorSurfAirEntries.length}`);
     
     // Obtener temperaturas de techo y suelo de los parámetros del wizard
     const ceilingTemp = currentFloorParams.ceilingTemperature ?? 20; // Valor por defecto 20°C
