@@ -434,6 +434,14 @@ export default function WizardDesign() {
   const { lines, airEntries, walls, measurements, hasClosedContour, stairPolygons, furnitureItems } =
     currentFloorData;
 
+  // Add useEffect to log stair polygon changes
+  useEffect(() => {
+    console.log("🔍 STAIR POLYGONS CHANGED - Current count:", stairPolygons?.length || 0);
+    if (stairPolygons?.length > 0) {
+      console.log("📦 Current stair polygons:", stairPolygons);
+    }
+  }, [stairPolygons]);
+
   // Auto-inicializar parámetros cuando se activa multifloor
   useEffect(() => {
     if (isMultifloor) {
