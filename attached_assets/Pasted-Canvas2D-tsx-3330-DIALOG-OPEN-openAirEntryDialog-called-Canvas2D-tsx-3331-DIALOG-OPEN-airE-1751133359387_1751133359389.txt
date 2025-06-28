@@ -1,0 +1,270 @@
+Canvas2D.tsx:3330 🟠 [DIALOG OPEN] openAirEntryDialog called
+Canvas2D.tsx:3331 🟠 [DIALOG OPEN] airEntry index: 0
+Canvas2D.tsx:3332 🟠 [DIALOG OPEN] airEntry position: {x: 472.02, y: 261.7}
+Canvas2D.tsx:3333 🟠 [DIALOG OPEN] airEntry wallPosition: 49.28
+Canvas2D.tsx:3336 🟠 [DIALOG OPEN] isAlreadyOpen: false
+Canvas2D.tsx:3341 🟠 [DIALOG OPEN] Adding to editingAirEntries for real-time updates
+Canvas2D.tsx:3330 🟠 [DIALOG OPEN] openAirEntryDialog called
+Canvas2D.tsx:3331 🟠 [DIALOG OPEN] airEntry index: 0
+Canvas2D.tsx:3332 🟠 [DIALOG OPEN] airEntry position: {x: 472.02, y: 261.7}
+Canvas2D.tsx:3333 🟠 [DIALOG OPEN] airEntry wallPosition: 49.28
+Canvas2D.tsx:3336 🟠 [DIALOG OPEN] isAlreadyOpen: true
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
+wizard-design.tsx:2576 🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D: [{…}]
+room-store.ts:160 🔍 [STORE setAirEntries] Called with: [{…}]
+room-store.ts:161 🔍 [STORE setAirEntries] airEntries.length: 1
+room-store.ts:163 🔍 [STORE setAirEntries] First entry position: {x: 466.43659608961474, y: 264.89635157528755}
+room-store.ts:164 🔍 [STORE setAirEntries] First entry wallPosition: 49.28
+room-store.ts:178 🔍 [STORE setAirEntries] Store updated for floor: ground
+wizard-design.tsx:2578 🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries
+wizard-design.tsx:2576 🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D: [{…}]
+room-store.ts:160 🔍 [STORE setAirEntries] Called with: [{…}]
+room-store.ts:161 🔍 [STORE setAirEntries] airEntries.length: 1
+room-store.ts:163 🔍 [STORE setAirEntries] First entry position: {x: 460.85301069538184, y: 268.0976072013144}
+room-store.ts:164 🔍 [STORE setAirEntries] First entry wallPosition: 49.28
+room-store.ts:178 🔍 [STORE setAirEntries] Store updated for floor: ground
+wizard-design.tsx:2578 🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries
+wizard-design.tsx:2576 🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D: [{…}]
+room-store.ts:160 🔍 [STORE setAirEntries] Called with: [{…}]
+room-store.ts:161 🔍 [STORE setAirEntries] airEntries.length: 1
+room-store.ts:163 🔍 [STORE setAirEntries] First entry position: {x: 455.26942530114894, y: 271.2988628273413}
+room-store.ts:164 🔍 [STORE setAirEntries] First entry wallPosition: 49.28
+room-store.ts:178 🔍 [STORE setAirEntries] Store updated for floor: ground
+wizard-design.tsx:2578 🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries
+wizard-design.tsx:2576 🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D: [{…}]
+room-store.ts:160 🔍 [STORE setAirEntries] Called with: [{…}]
+room-store.ts:161 🔍 [STORE setAirEntries] airEntries.length: 1
+room-store.ts:163 🔍 [STORE setAirEntries] First entry position: {x: 449.68583990691604, y: 274.50011845336815}
+room-store.ts:164 🔍 [STORE setAirEntries] First entry wallPosition: 49.28
+room-store.ts:178 🔍 [STORE setAirEntries] Store updated for floor: ground
+wizard-design.tsx:2578 🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries
+AirEntryDialog.tsx:499 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+AirEntryDialog.tsx:500 🎯 [SAVE BUTTON CLICKED] Event type: submit
+AirEntryDialog.tsx:501 🎯 [SAVE BUTTON CLICKED] Props type: vent
+AirEntryDialog.tsx:502 🎯 [SAVE BUTTON CLICKED] Current values: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 53.28, …}
+AirEntryDialog.tsx:503 🎯 [SAVE BUTTON CLICKED] wallPosition from values: 53.28
+AirEntryDialog.tsx:504 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 53.28
+AirEntryDialog.tsx:569 🎯 [SAVE CHANGES DEBUG] About to create canvasData
+AirEntryDialog.tsx:570 🎯 [SAVE CHANGES DEBUG] Mode: airEntry
+AirEntryDialog.tsx:571 🎯 [SAVE CHANGES DEBUG] isEditing: true
+AirEntryDialog.tsx:572 🎯 [SAVE CHANGES DEBUG] values.wallPosition: 53.28
+AirEntryDialog.tsx:573 🎯 [SAVE CHANGES DEBUG] wallPosition state: 53.28
+AirEntryDialog.tsx:574 🎯 [SAVE CHANGES DEBUG] values.position: {x: 449.68583990691604, y: 274.50011845336815}
+AirEntryDialog.tsx:575 🎯 [SAVE CHANGES DEBUG] This will determine 2D vs 3D behavior
+AirEntryDialog.tsx:605 🎯 [PROPS.ONCONFIRM] About to call props.onConfirm with canvasData
+AirEntryDialog.tsx:606 🎯 [PROPS.ONCONFIRM] canvasData being sent: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 53.28, …}
+AirEntryDialog.tsx:607 🎯 [PROPS.ONCONFIRM] canvasData.wallPosition: 53.28
+AirEntryDialog.tsx:608 🎯 [PROPS.ONCONFIRM] canvasData.position: {x: 449.68583990691604, y: 274.50011845336815}
+AirEntryDialog.tsx:609 🎯 [PROPS.ONCONFIRM] This should trigger handleAirEntryEdit in Canvas2D
+Canvas2D.tsx:3292 🔴 [2D SAVE PROBLEM] Canvas2D handleAirEntryEdit called
+Canvas2D.tsx:3293 🔴 [2D SAVE PROBLEM] Index: 0
+Canvas2D.tsx:3294 🔴 [2D SAVE PROBLEM] Received data: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 53.28, …}
+Canvas2D.tsx:3295 🔴 [2D SAVE PROBLEM] data.wallPosition: 53.28
+Canvas2D.tsx:3296 🔴 [2D SAVE PROBLEM] data.position: {x: 449.68583990691604, y: 274.50011845336815}
+Canvas2D.tsx:3317 🔴 [2D SAVE PROBLEM] Final entry being saved: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas2D.tsx:3318 🔴 [2D SAVE PROBLEM] Final entry position: {x: 449.68583990691604, y: 274.50011845336815}
+Canvas2D.tsx:3319 🔴 [2D SAVE PROBLEM] Final entry wallPosition: 53.28
+Canvas2D.tsx:3320 🔴 [2D SAVE PROBLEM] About to call onAirEntriesUpdate - this should persist to store
+wizard-design.tsx:2576 🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D: [{…}]
+room-store.ts:160 🔍 [STORE setAirEntries] Called with: [{…}]
+room-store.ts:161 🔍 [STORE setAirEntries] airEntries.length: 1
+room-store.ts:163 🔍 [STORE setAirEntries] First entry position: {x: 449.68583990691604, y: 274.50011845336815}
+room-store.ts:164 🔍 [STORE setAirEntries] First entry wallPosition: 53.28
+room-store.ts:178 🔍 [STORE setAirEntries] Store updated for floor: ground
+wizard-design.tsx:2578 🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries
+Canvas2D.tsx:3325 🔴 [2D SAVE PROBLEM] Save complete - checking if element reverts in draw cycle
+AirEntryDialog.tsx:613 🎯 [PROPS.ONCONFIRM] props.onConfirm completed
+AirEntryDialog.tsx:614 🎯 [PROPS.ONCONFIRM] Now calling onClose() to close dialog
+Canvas2D.tsx:3330 🟠 [DIALOG OPEN] openAirEntryDialog called
+Canvas2D.tsx:3331 🟠 [DIALOG OPEN] airEntry index: 0
+Canvas2D.tsx:3332 🟠 [DIALOG OPEN] airEntry position: {x: 472.02, y: 261.7}
+Canvas2D.tsx:3333 🟠 [DIALOG OPEN] airEntry wallPosition: 49.28
+Canvas2D.tsx:3336 🟠 [DIALOG OPEN] isAlreadyOpen: false
+Canvas2D.tsx:3341 🟠 [DIALOG OPEN] Adding to editingAirEntries for real-time updates
+Canvas2D.tsx:3330 🟠 [DIALOG OPEN] openAirEntryDialog called
+Canvas2D.tsx:3331 🟠 [DIALOG OPEN] airEntry index: 0
+Canvas2D.tsx:3332 🟠 [DIALOG OPEN] airEntry position: {x: 472.02, y: 261.7}
+Canvas2D.tsx:3333 🟠 [DIALOG OPEN] airEntry wallPosition: 49.28
+Canvas2D.tsx:3336 🟠 [DIALOG OPEN] isAlreadyOpen: true
+wizard-design.tsx:2576 🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D: [{…}]
+room-store.ts:160 🔍 [STORE setAirEntries] Called with: [{…}]
+room-store.ts:161 🔍 [STORE setAirEntries] airEntries.length: 1
+room-store.ts:163 🔍 [STORE setAirEntries] First entry position: {x: 466.43659608961474, y: 264.89635157528755}
+room-store.ts:164 🔍 [STORE setAirEntries] First entry wallPosition: 49.28
+room-store.ts:178 🔍 [STORE setAirEntries] Store updated for floor: ground
+wizard-design.tsx:2578 🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries
+wizard-design.tsx:2576 🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D: [{…}]
+room-store.ts:160 🔍 [STORE setAirEntries] Called with: [{…}]
+room-store.ts:161 🔍 [STORE setAirEntries] airEntries.length: 1
+room-store.ts:163 🔍 [STORE setAirEntries] First entry position: {x: 460.85301069538184, y: 268.0976072013144}
+room-store.ts:164 🔍 [STORE setAirEntries] First entry wallPosition: 49.28
+room-store.ts:178 🔍 [STORE setAirEntries] Store updated for floor: ground
+wizard-design.tsx:2578 🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries
+wizard-design.tsx:2576 🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D: [{…}]
+room-store.ts:160 🔍 [STORE setAirEntries] Called with: [{…}]
+room-store.ts:161 🔍 [STORE setAirEntries] airEntries.length: 1
+room-store.ts:163 🔍 [STORE setAirEntries] First entry position: {x: 455.26942530114894, y: 271.2988628273413}
+room-store.ts:164 🔍 [STORE setAirEntries] First entry wallPosition: 49.28
+room-store.ts:178 🔍 [STORE setAirEntries] Store updated for floor: ground
+wizard-design.tsx:2578 🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries
+wizard-design.tsx:2576 🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D: [{…}]
+room-store.ts:160 🔍 [STORE setAirEntries] Called with: [{…}]
+room-store.ts:161 🔍 [STORE setAirEntries] airEntries.length: 1
+room-store.ts:163 🔍 [STORE setAirEntries] First entry position: {x: 449.68583990691604, y: 274.50011845336815}
+room-store.ts:164 🔍 [STORE setAirEntries] First entry wallPosition: 49.28
+room-store.ts:178 🔍 [STORE setAirEntries] Store updated for floor: ground
+wizard-design.tsx:2578 🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries
+wizard-design.tsx:2576 🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D: [{…}]
+room-store.ts:160 🔍 [STORE setAirEntries] Called with: [{…}]
+room-store.ts:161 🔍 [STORE setAirEntries] airEntries.length: 1
+room-store.ts:163 🔍 [STORE setAirEntries] First entry position: {x: 444.1022545126832, y: 277.701374079395}
+room-store.ts:164 🔍 [STORE setAirEntries] First entry wallPosition: 49.28
+room-store.ts:178 🔍 [STORE setAirEntries] Store updated for floor: ground
+wizard-design.tsx:2578 🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries
+wizard-design.tsx:2576 🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D: [{…}]
+room-store.ts:160 🔍 [STORE setAirEntries] Called with: [{…}]
+room-store.ts:161 🔍 [STORE setAirEntries] airEntries.length: 1
+room-store.ts:163 🔍 [STORE setAirEntries] First entry position: {x: 438.51866911845036, y: 280.90262970542176}
+room-store.ts:164 🔍 [STORE setAirEntries] First entry wallPosition: 49.28
+room-store.ts:178 🔍 [STORE setAirEntries] Store updated for floor: ground
+wizard-design.tsx:2578 🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries
+wizard-design.tsx:2576 🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D: [{…}]
+room-store.ts:160 🔍 [STORE setAirEntries] Called with: [{…}]
+room-store.ts:161 🔍 [STORE setAirEntries] airEntries.length: 1
+room-store.ts:163 🔍 [STORE setAirEntries] First entry position: {x: 432.93508372421746, y: 284.1038853314486}
+room-store.ts:164 🔍 [STORE setAirEntries] First entry wallPosition: 49.28
+room-store.ts:178 🔍 [STORE setAirEntries] Store updated for floor: ground
+wizard-design.tsx:2578 🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries
+wizard-design.tsx:2576 🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D: [{…}]
+room-store.ts:160 🔍 [STORE setAirEntries] Called with: [{…}]
+room-store.ts:161 🔍 [STORE setAirEntries] airEntries.length: 1
+room-store.ts:163 🔍 [STORE setAirEntries] First entry position: {x: 427.35149832998457, y: 287.3051409574755}
+room-store.ts:164 🔍 [STORE setAirEntries] First entry wallPosition: 49.28
+room-store.ts:178 🔍 [STORE setAirEntries] Store updated for floor: ground
+wizard-design.tsx:2578 🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries
+wizard-design.tsx:2576 🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D: [{…}]
+room-store.ts:160 🔍 [STORE setAirEntries] Called with: [{…}]
+room-store.ts:161 🔍 [STORE setAirEntries] airEntries.length: 1
+room-store.ts:163 🔍 [STORE setAirEntries] First entry position: {x: 421.76791293575167, y: 290.50639658350235}
+room-store.ts:164 🔍 [STORE setAirEntries] First entry wallPosition: 49.28
+room-store.ts:178 🔍 [STORE setAirEntries] Store updated for floor: ground
+wizard-design.tsx:2578 🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries
+wizard-design.tsx:2576 🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D: [{…}]
+room-store.ts:160 🔍 [STORE setAirEntries] Called with: [{…}]
+room-store.ts:161 🔍 [STORE setAirEntries] airEntries.length: 1
+room-store.ts:163 🔍 [STORE setAirEntries] First entry position: {x: 416.1843275415187, y: 293.7076522095293}
+room-store.ts:164 🔍 [STORE setAirEntries] First entry wallPosition: 49.28
+room-store.ts:178 🔍 [STORE setAirEntries] Store updated for floor: ground
+wizard-design.tsx:2578 🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries
+wizard-design.tsx:2576 🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D: [{…}]
+room-store.ts:160 🔍 [STORE setAirEntries] Called with: [{…}]
+room-store.ts:161 🔍 [STORE setAirEntries] airEntries.length: 1
+room-store.ts:163 🔍 [STORE setAirEntries] First entry position: {x: 410.6007421472858, y: 296.90890783555614}
+room-store.ts:164 🔍 [STORE setAirEntries] First entry wallPosition: 49.28
+room-store.ts:178 🔍 [STORE setAirEntries] Store updated for floor: ground
+wizard-design.tsx:2578 🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries
+wizard-design.tsx:2576 🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D: [{…}]
+room-store.ts:160 🔍 [STORE setAirEntries] Called with: [{…}]
+room-store.ts:161 🔍 [STORE setAirEntries] airEntries.length: 1
+room-store.ts:163 🔍 [STORE setAirEntries] First entry position: {x: 405.0171567530529, y: 300.110163461583}
+room-store.ts:164 🔍 [STORE setAirEntries] First entry wallPosition: 49.28
+room-store.ts:178 🔍 [STORE setAirEntries] Store updated for floor: ground
+wizard-design.tsx:2578 🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries
+wizard-design.tsx:2576 🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D: [{…}]
+room-store.ts:160 🔍 [STORE setAirEntries] Called with: [{…}]
+room-store.ts:161 🔍 [STORE setAirEntries] airEntries.length: 1
+room-store.ts:163 🔍 [STORE setAirEntries] First entry position: {x: 399.43357135882, y: 303.3114190876098}
+room-store.ts:164 🔍 [STORE setAirEntries] First entry wallPosition: 49.28
+room-store.ts:178 🔍 [STORE setAirEntries] Store updated for floor: ground
+wizard-design.tsx:2578 🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries
+wizard-design.tsx:2576 🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D: [{…}]
+room-store.ts:160 🔍 [STORE setAirEntries] Called with: [{…}]
+room-store.ts:161 🔍 [STORE setAirEntries] airEntries.length: 1
+room-store.ts:163 🔍 [STORE setAirEntries] First entry position: {x: 393.8499859645871, y: 306.51267471363667}
+room-store.ts:164 🔍 [STORE setAirEntries] First entry wallPosition: 49.28
+room-store.ts:178 🔍 [STORE setAirEntries] Store updated for floor: ground
+wizard-design.tsx:2578 🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries
+wizard-design.tsx:2576 🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D: [{…}]
+room-store.ts:160 🔍 [STORE setAirEntries] Called with: [{…}]
+room-store.ts:161 🔍 [STORE setAirEntries] airEntries.length: 1
+room-store.ts:163 🔍 [STORE setAirEntries] First entry position: {x: 388.2664005703542, y: 309.71393033966353}
+room-store.ts:164 🔍 [STORE setAirEntries] First entry wallPosition: 49.28
+room-store.ts:178 🔍 [STORE setAirEntries] Store updated for floor: ground
+wizard-design.tsx:2578 🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries
+wizard-design.tsx:2576 🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D: [{…}]
+room-store.ts:160 🔍 [STORE setAirEntries] Called with: [{…}]
+room-store.ts:161 🔍 [STORE setAirEntries] airEntries.length: 1
+room-store.ts:163 🔍 [STORE setAirEntries] First entry position: {x: 382.6828151761214, y: 312.9151859656904}
+room-store.ts:164 🔍 [STORE setAirEntries] First entry wallPosition: 49.28
+room-store.ts:178 🔍 [STORE setAirEntries] Store updated for floor: ground
+wizard-design.tsx:2578 🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries
+wizard-design.tsx:2576 🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D: [{…}]
+room-store.ts:160 🔍 [STORE setAirEntries] Called with: [{…}]
+room-store.ts:161 🔍 [STORE setAirEntries] airEntries.length: 1
+room-store.ts:163 🔍 [STORE setAirEntries] First entry position: {x: 377.0992297818885, y: 316.11644159171726}
+room-store.ts:164 🔍 [STORE setAirEntries] First entry wallPosition: 49.28
+room-store.ts:178 🔍 [STORE setAirEntries] Store updated for floor: ground
+wizard-design.tsx:2578 🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries
+wizard-design.tsx:2576 🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D: [{…}]
+room-store.ts:160 🔍 [STORE setAirEntries] Called with: [{…}]
+room-store.ts:161 🔍 [STORE setAirEntries] airEntries.length: 1
+room-store.ts:163 🔍 [STORE setAirEntries] First entry position: {x: 371.5156443876555, y: 319.3176972177442}
+room-store.ts:164 🔍 [STORE setAirEntries] First entry wallPosition: 49.28
+room-store.ts:178 🔍 [STORE setAirEntries] Store updated for floor: ground
+wizard-design.tsx:2578 🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries
+wizard-design.tsx:2576 🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D: [{…}]
+room-store.ts:160 🔍 [STORE setAirEntries] Called with: [{…}]
+room-store.ts:161 🔍 [STORE setAirEntries] airEntries.length: 1
+room-store.ts:163 🔍 [STORE setAirEntries] First entry position: {x: 365.9320589934227, y: 322.518952843771}
+room-store.ts:164 🔍 [STORE setAirEntries] First entry wallPosition: 49.28
+room-store.ts:178 🔍 [STORE setAirEntries] Store updated for floor: ground
+wizard-design.tsx:2578 🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries
+wizard-design.tsx:2576 🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D: [{…}]
+room-store.ts:160 🔍 [STORE setAirEntries] Called with: [{…}]
+room-store.ts:161 🔍 [STORE setAirEntries] airEntries.length: 1
+room-store.ts:163 🔍 [STORE setAirEntries] First entry position: {x: 360.3484735991898, y: 325.72020846979785}
+room-store.ts:164 🔍 [STORE setAirEntries] First entry wallPosition: 49.28
+room-store.ts:178 🔍 [STORE setAirEntries] Store updated for floor: ground
+wizard-design.tsx:2578 🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries
+AirEntryDialog.tsx:499 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+AirEntryDialog.tsx:500 🎯 [SAVE BUTTON CLICKED] Event type: submit
+AirEntryDialog.tsx:501 🎯 [SAVE BUTTON CLICKED] Props type: vent
+AirEntryDialog.tsx:502 🎯 [SAVE BUTTON CLICKED] Current values: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 69.28, …}
+AirEntryDialog.tsx:503 🎯 [SAVE BUTTON CLICKED] wallPosition from values: 69.28
+AirEntryDialog.tsx:504 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 69.28
+AirEntryDialog.tsx:569 🎯 [SAVE CHANGES DEBUG] About to create canvasData
+AirEntryDialog.tsx:570 🎯 [SAVE CHANGES DEBUG] Mode: airEntry
+AirEntryDialog.tsx:571 🎯 [SAVE CHANGES DEBUG] isEditing: true
+AirEntryDialog.tsx:572 🎯 [SAVE CHANGES DEBUG] values.wallPosition: 69.28
+AirEntryDialog.tsx:573 🎯 [SAVE CHANGES DEBUG] wallPosition state: 69.28
+AirEntryDialog.tsx:574 🎯 [SAVE CHANGES DEBUG] values.position: {x: 360.3484735991898, y: 325.72020846979785}
+AirEntryDialog.tsx:575 🎯 [SAVE CHANGES DEBUG] This will determine 2D vs 3D behavior
+AirEntryDialog.tsx:605 🎯 [PROPS.ONCONFIRM] About to call props.onConfirm with canvasData
+AirEntryDialog.tsx:606 🎯 [PROPS.ONCONFIRM] canvasData being sent: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 69.28, …}
+AirEntryDialog.tsx:607 🎯 [PROPS.ONCONFIRM] canvasData.wallPosition: 69.28
+AirEntryDialog.tsx:608 🎯 [PROPS.ONCONFIRM] canvasData.position: {x: 360.3484735991898, y: 325.72020846979785}
+AirEntryDialog.tsx:609 🎯 [PROPS.ONCONFIRM] This should trigger handleAirEntryEdit in Canvas2D
+Canvas2D.tsx:3292 🔴 [2D SAVE PROBLEM] Canvas2D handleAirEntryEdit called
+Canvas2D.tsx:3293 🔴 [2D SAVE PROBLEM] Index: 0
+Canvas2D.tsx:3294 🔴 [2D SAVE PROBLEM] Received data: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 69.28, …}
+Canvas2D.tsx:3295 🔴 [2D SAVE PROBLEM] data.wallPosition: 69.28
+Canvas2D.tsx:3296 🔴 [2D SAVE PROBLEM] data.position: {x: 360.3484735991898, y: 325.72020846979785}
+Canvas2D.tsx:3317 🔴 [2D SAVE PROBLEM] Final entry being saved: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas2D.tsx:3318 🔴 [2D SAVE PROBLEM] Final entry position: {x: 360.3484735991898, y: 325.72020846979785}
+Canvas2D.tsx:3319 🔴 [2D SAVE PROBLEM] Final entry wallPosition: 69.28
+Canvas2D.tsx:3320 🔴 [2D SAVE PROBLEM] About to call onAirEntriesUpdate - this should persist to store
+wizard-design.tsx:2576 🔍 [WIZARD AIRENTRIES UPDATE] Received from Canvas2D: [{…}]
+room-store.ts:160 🔍 [STORE setAirEntries] Called with: [{…}]
+room-store.ts:161 🔍 [STORE setAirEntries] airEntries.length: 1
+room-store.ts:163 🔍 [STORE setAirEntries] First entry position: {x: 360.3484735991898, y: 325.72020846979785}
+room-store.ts:164 🔍 [STORE setAirEntries] First entry wallPosition: 69.28
+room-store.ts:178 🔍 [STORE setAirEntries] Store updated for floor: ground
+wizard-design.tsx:2578 🔍 [WIZARD AIRENTRIES UPDATE] Called setAirEntries
+Canvas2D.tsx:3325 🔴 [2D SAVE PROBLEM] Save complete - checking if element reverts in draw cycle
+AirEntryDialog.tsx:613 🎯 [PROPS.ONCONFIRM] props.onConfirm completed
+AirEntryDialog.tsx:614 🎯 [PROPS.ONCONFIRM] Now calling onClose() to close dialog
