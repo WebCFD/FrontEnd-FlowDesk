@@ -438,18 +438,6 @@ export default function WizardDesign() {
   
   // Get stairPolygons directly from store to ensure real-time updates
   const stairPolygons = currentFloorData.stairPolygons || [];
-  
-  // DEBUG: Log stairPolygons reference consistency
-  console.log("🔍 WIZARD DEBUG - currentFloorData reference:", currentFloorData);
-  console.log("🔍 WIZARD DEBUG - currentFloorData.stairPolygons:", currentFloorData.stairPolygons);
-  console.log("🔍 WIZARD DEBUG - floors[currentFloor].stairPolygons:", floors[currentFloor].stairPolygons);
-  console.log("🔍 WIZARD DEBUG - Are they the same reference?", currentFloorData.stairPolygons === floors[currentFloor].stairPolygons);
-  if (stairPolygons.length > 0) {
-    console.log("🔍 WIZARD DEBUG - First stair from currentFloorData:", currentFloorData.stairPolygons?.[0]);
-    console.log("🔍 WIZARD DEBUG - First stair from direct floors access:", floors[currentFloor].stairPolygons?.[0]);
-    console.log("🔍 WIZARD DEBUG - Temperature from currentFloorData:", currentFloorData.stairPolygons?.[0]?.temperature);
-    console.log("🔍 WIZARD DEBUG - Temperature from direct access:", floors[currentFloor].stairPolygons?.[0]?.temperature);
-  }
 
 
 
@@ -2547,10 +2535,7 @@ export default function WizardDesign() {
               walls={walls}
               onMeasurementsUpdate={setMeasurements}
               onStairPolygonsUpdate={(newPolygons) => {
-                console.log("🏠 Wizard RECEIVE - New polygons from Canvas2D DETAILED:", JSON.stringify(newPolygons, null, 2));
-                console.log("🏠 Wizard RECEIVE - About to call setStairPolygons");
                 setStairPolygons(newPolygons);
-                console.log("🏠 Wizard RECEIVE - setStairPolygons completed");
               }}
               onWallsUpdate={setWalls}
               lines={lines}
