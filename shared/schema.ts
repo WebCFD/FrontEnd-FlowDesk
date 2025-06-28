@@ -54,12 +54,133 @@ export const contactMessageSchema = createInsertSchema(contactMessages)
     message: true,
   });
 
-// Simulation data schemas
+// Simulation data schemas - Updated to match actual JSON export format
 export const airOrientationSchema = z.object({
   verticalAngle: z.number().min(-45).max(45),
   horizontalAngle: z.number().min(-45).max(45),
 }).nullable();
 
+export const simulationPropertiesSchema = z.object({
+  state: z.enum(['open', 'closed']).optional(),
+  temperature: z.number().optional(),
+  flowIntensity: z.enum(['low', 'medium', 'high', 'custom']).optional(),
+  airDirection: z.enum(['inflow', 'outflow']).optional(),
+  customValue: z.number().optional(),
+  flowType: z.enum(['massFlow', 'velocity', 'pressure']).optional(),
+  airOrientation: airOrientationSchema.optional(),
+});
+
+export const airEntryExportSchema = z.object({
+  id: z.string(),
+  type: z.enum(['window', 'door', 'vent']),
+  position: z.object({
+    x: z.number(),
+    y: z.number(),
+    z: z.number(),
+    normal: z.object({
+      x: z.number(),
+      y: z.number(),
+      z: z.number(),
+    }),
+  }),
+  dimensions: z.union([
+    z.object({
+      width: z.number(),
+      height: z.number(),
+      shape: z.literal('rectangular'),
+    }),
+    z.object({
+      diameter: z.number(),
+      shape: z.literal('circular'),
+    }),
+  ]),
+  simulation: simulationPropertiesSchema,
+});
+
+export const stairLineSchema = z.object({
+  id: z.string(),
+  start: z.object({
+    x: z.number(),
+    y: z.number(),
+  }),
+  end: z.object({
+    x: z.number(),
+    y: z.number(),
+  }),
+});
+
+export const stairSchema = z.object({
+  id: z.string(),
+  lines: z.array(stairLineSchema),
+  connectsTo: z.string().optional(),
+});
+
+export const wallExportSchema = z.object({
+  id: z.string(),
+  start: z.object({
+    x: z.number(),
+    y: z.number(),
+  }),
+  end: z.object({
+    x: z.number(),
+    y: z.number(),
+  }),
+  temp: z.number(),
+  airEntries: z.array(airEntryExportSchema),
+});
+
+export const furnitureExportSchema = z.object({
+  id: z.string(),
+  position: z.object({
+    x: z.number(),
+    y: z.number(),
+    z: z.number(),
+  }),
+  rotation: z.object({
+    x: z.number(),
+    y: z.number(),
+    z: z.number(),
+  }),
+  scale: z.object({
+    x: z.number(),
+    y: z.number(),
+    z: z.number(),
+  }),
+  state: z.string().optional(),
+  simulationProperties: z.object({
+    flowType: z.string().optional(),
+    flowValue: z.number().optional(),
+    flowIntensity: z.string().optional(),
+    airOrientation: z.string().optional(),
+    state: z.string().optional(),
+    customIntensityValue: z.number().optional(),
+    verticalAngle: z.number().optional(),
+    horizontalAngle: z.number().optional(),
+    airTemperature: z.number().optional(),
+    normalVector: z.object({
+      x: z.number(),
+      y: z.number(),
+      z: z.number(),
+    }).optional(),
+  }).optional(),
+});
+
+export const floorExportSchema = z.object({
+  height: z.number(),
+  floorDeck: z.number(),
+  ceilingTemperature: z.number().optional(),
+  floorTemperature: z.number().optional(),
+  walls: z.array(wallExportSchema),
+  stairs: z.array(stairSchema),
+  furniture: z.array(furnitureExportSchema),
+});
+
+export const simulationExportSchema = z.object({
+  version: z.string(),
+  floors: z.record(z.string(), floorExportSchema),
+});
+
+// Legacy schemas for backward compatibility
 export const airEntrySchema = z.object({
   id: z.string(),
   type: z.enum(['window', 'door', 'vent']),
@@ -118,8 +239,18 @@ export type InsertSimulation = z.infer<typeof simulationSchema>;
 export type ContactMessage = typeof contactMessages.$inferSelect;
 export type InsertContactMessage = z.infer<typeof contactMessageSchema>;
 
-// Simulation data types
+// Export format types
 export type AirOrientation = z.infer<typeof airOrientationSchema>;
+export type SimulationProperties = z.infer<typeof simulationPropertiesSchema>;
+export type AirEntryExport = z.infer<typeof airEntryExportSchema>;
+export type StairLine = z.infer<typeof stairLineSchema>;
+export type Stair = z.infer<typeof stairSchema>;
+export type WallExport = z.infer<typeof wallExportSchema>;
+export type FurnitureExport = z.infer<typeof furnitureExportSchema>;
+export type FloorExport = z.infer<typeof floorExportSchema>;
+export type SimulationExport = z.infer<typeof simulationExportSchema>;
+
+// Legacy types (for backward compatibility)
 export type AirEntry = z.infer<typeof airEntrySchema>;
 export type Wall = z.infer<typeof wallSchema>;
 export type Floor = z.infer<typeof floorSchema>;
