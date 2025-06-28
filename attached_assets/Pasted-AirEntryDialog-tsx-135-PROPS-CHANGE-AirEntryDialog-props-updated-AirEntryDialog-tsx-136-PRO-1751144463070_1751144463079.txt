@@ -1,0 +1,1708 @@
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 55
+AirEntryDialog.tsx:476 🔄 [SYNC EFFECT] Bidirectional sync useEffect triggered
+AirEntryDialog.tsx:477 🔄 [SYNC EFFECT] isEditing: true
+AirEntryDialog.tsx:478 🔄 [SYNC EFFECT] props.type: vent
+AirEntryDialog.tsx:479 🔄 [SYNC EFFECT] has initialValues: {width: 10, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 55, …}
+AirEntryDialog.tsx:484 🔄 [SYNC EFFECT] Current localWidth: 50
+AirEntryDialog.tsx:485 🔄 [SYNC EFFECT] External width: 10
+AirEntryDialog.tsx:486 🔄 [SYNC EFFECT] Current localHeight: 50
+AirEntryDialog.tsx:487 🔄 [SYNC EFFECT] External height: 40
+AirEntryDialog.tsx:491 🔄 [SYNC EFFECT] Updating localWidth from 50 to 10
+AirEntryDialog.tsx:495 🔄 [SYNC EFFECT] Updating localHeight from 50 to 40
+AirEntryDialog.tsx:502 🔄 [SYNC EFFECT] Current wallPosition: 50
+AirEntryDialog.tsx:503 🔄 [SYNC EFFECT] External wallPosition: 55
+AirEntryDialog.tsx:506 🔄 [SYNC EFFECT] Updating wallPosition from 50 to 55
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 55
+AirEntryDialog.tsx:476 🔄 [SYNC EFFECT] Bidirectional sync useEffect triggered
+AirEntryDialog.tsx:477 🔄 [SYNC EFFECT] isEditing: true
+AirEntryDialog.tsx:478 🔄 [SYNC EFFECT] props.type: vent
+AirEntryDialog.tsx:479 🔄 [SYNC EFFECT] has initialValues: {width: 10, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 55, …}
+AirEntryDialog.tsx:484 🔄 [SYNC EFFECT] Current localWidth: 10
+AirEntryDialog.tsx:485 🔄 [SYNC EFFECT] External width: 10
+AirEntryDialog.tsx:486 🔄 [SYNC EFFECT] Current localHeight: 40
+AirEntryDialog.tsx:487 🔄 [SYNC EFFECT] External height: 40
+AirEntryDialog.tsx:502 🔄 [SYNC EFFECT] Current wallPosition: 55
+AirEntryDialog.tsx:503 🔄 [SYNC EFFECT] External wallPosition: 55
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 55
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 55
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 55
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 55
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 55
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 55
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 55
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 55
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 55
+AirEntryDialog.tsx:276 📏 [WIDTH CHANGE] handleWidthChange called with: 3
+AirEntryDialog.tsx:277 📏 [WIDTH CHANGE] Current localWidth before change: 10
+AirEntryDialog.tsx:286 📏 [WIDTH CHANGE] Calling onDimensionsUpdate with width: 3
+wizard-design.tsx:2551 📱 Canvas2D: Reading 1 airEntries from store - pos: (400.0, 182.6)
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 3
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 55
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:476 🔄 [SYNC EFFECT] Bidirectional sync useEffect triggered
+AirEntryDialog.tsx:477 🔄 [SYNC EFFECT] isEditing: true
+AirEntryDialog.tsx:478 🔄 [SYNC EFFECT] props.type: vent
+AirEntryDialog.tsx:479 🔄 [SYNC EFFECT] has initialValues: {width: 3, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 55, …}
+AirEntryDialog.tsx:484 🔄 [SYNC EFFECT] Current localWidth: 3
+AirEntryDialog.tsx:485 🔄 [SYNC EFFECT] External width: 3
+AirEntryDialog.tsx:486 🔄 [SYNC EFFECT] Current localHeight: 40
+AirEntryDialog.tsx:487 🔄 [SYNC EFFECT] External height: 40
+AirEntryDialog.tsx:502 🔄 [SYNC EFFECT] Current wallPosition: 55
+AirEntryDialog.tsx:503 🔄 [SYNC EFFECT] External wallPosition: 55
+AirEntryDialog.tsx:276 📏 [WIDTH CHANGE] handleWidthChange called with: 35
+AirEntryDialog.tsx:277 📏 [WIDTH CHANGE] Current localWidth before change: 3
+AirEntryDialog.tsx:286 📏 [WIDTH CHANGE] Calling onDimensionsUpdate with width: 35
+wizard-design.tsx:2551 📱 Canvas2D: Reading 1 airEntries from store - pos: (400.0, 182.6)
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 35
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 55
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:476 🔄 [SYNC EFFECT] Bidirectional sync useEffect triggered
+AirEntryDialog.tsx:477 🔄 [SYNC EFFECT] isEditing: true
+AirEntryDialog.tsx:478 🔄 [SYNC EFFECT] props.type: vent
+AirEntryDialog.tsx:479 🔄 [SYNC EFFECT] has initialValues: {width: 35, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 55, …}
+AirEntryDialog.tsx:484 🔄 [SYNC EFFECT] Current localWidth: 35
+AirEntryDialog.tsx:485 🔄 [SYNC EFFECT] External width: 35
+AirEntryDialog.tsx:486 🔄 [SYNC EFFECT] Current localHeight: 40
+AirEntryDialog.tsx:487 🔄 [SYNC EFFECT] External height: 40
+AirEntryDialog.tsx:502 🔄 [SYNC EFFECT] Current wallPosition: 55
+AirEntryDialog.tsx:503 🔄 [SYNC EFFECT] External wallPosition: 55
+AirEntryDialog.tsx:592 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+AirEntryDialog.tsx:593 🎯 [SAVE BUTTON CLICKED] Event type: submit
+AirEntryDialog.tsx:594 🎯 [SAVE BUTTON CLICKED] Props type: vent
+AirEntryDialog.tsx:595 🎯 [SAVE BUTTON CLICKED] Current values: {width: 35, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 55, …}
+AirEntryDialog.tsx:596 🎯 [SAVE BUTTON CLICKED] wallPosition from values: 55
+AirEntryDialog.tsx:597 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 55
+AirEntryDialog.tsx:692 🎯 [PROPS.ONCONFIRM] About to call props.onConfirm with canvasData
+AirEntryDialog.tsx:693 🎯 [PROPS.ONCONFIRM] canvasData being sent: {width: 35, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 55, …}
+AirEntryDialog.tsx:694 🎯 [PROPS.ONCONFIRM] canvasData.wallPosition: 55
+AirEntryDialog.tsx:695 🎯 [PROPS.ONCONFIRM] canvasData.position: {x: 400, y: 182.60000000000002}
+AirEntryDialog.tsx:696 🎯 [PROPS.ONCONFIRM] This should trigger handleAirEntryEdit in Canvas2D
+AirEntryDialog.tsx:700 🎯 [PROPS.ONCONFIRM] props.onConfirm completed
+AirEntryDialog.tsx:701 🎯 [PROPS.ONCONFIRM] Now calling onClose() to close dialog
+wizard-design.tsx:2551 📱 Canvas2D: Reading 1 airEntries from store - pos: (400.0, 182.6)
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+analytics.ts:62 📊 Analytics Event: {category: 'ui_interaction', action: 'change_tab', label: 'view_3d_preview', value: undefined, status: 'sent'}
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+room-store.ts:475 🔗 STORE: Suscripción eliminada. Total listeners: 0
+room-store.ts:467 🔗 STORE: Nueva suscripción añadida. Total listeners: 1
+Canvas3D.tsx:2378 🔧 [SCENE REBUILD] Creating new material for vent at index 0
+Canvas3D.tsx:5353 🔧 [WALL TRANSPARENCY] Updating wall transparency, preserving AirEntry textures
+Canvas3D.tsx:5367 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5367 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5367 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5367 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5367 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5367 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5372 ✅ [WALL TRANSPARENCY] Preserving AirEntry material - hasTexture: false opacity: 0.7
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 257ms
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+Canvas3D.tsx:4708 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4718 Double-click found entry using stored entryIndex: 0
+Canvas3D.tsx:4746 🔍 [CANVAS3D DOUBLECLICK] baseEntry from store: {type: 'vent', position: {…}, line: {…}, dimensions: {…}}
+Canvas3D.tsx:4747 🔍 [CANVAS3D DOUBLECLICK] baseEntry.dimensions: {width: 10, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 5}
+Canvas3D.tsx:4748 🔍 [CANVAS3D DOUBLECLICK] baseEntry.dimensions.wallPosition: 5
+Canvas3D.tsx:4753 🔍 [CANVAS3D DOUBLECLICK] updatedData from ref: undefined
+Canvas3D.tsx:4760 🔍 [CANVAS3D DOUBLECLICK] mergedEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}}
+Canvas3D.tsx:4761 🔍 [CANVAS3D DOUBLECLICK] mergedEntry.dimensions.wallPosition: 5
+Canvas3D.tsx:4772 🔍 [CANVAS3D DOUBLECLICK] Dialog opening with index: 0
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:476 🔄 [SYNC EFFECT] Bidirectional sync useEffect triggered
+AirEntryDialog.tsx:477 🔄 [SYNC EFFECT] isEditing: true
+AirEntryDialog.tsx:478 🔄 [SYNC EFFECT] props.type: vent
+AirEntryDialog.tsx:479 🔄 [SYNC EFFECT] has initialValues: {width: 10, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 5, …}
+AirEntryDialog.tsx:484 🔄 [SYNC EFFECT] Current localWidth: 50
+AirEntryDialog.tsx:485 🔄 [SYNC EFFECT] External width: 10
+AirEntryDialog.tsx:486 🔄 [SYNC EFFECT] Current localHeight: 50
+AirEntryDialog.tsx:487 🔄 [SYNC EFFECT] External height: 40
+AirEntryDialog.tsx:491 🔄 [SYNC EFFECT] Updating localWidth from 50 to 10
+AirEntryDialog.tsx:495 🔄 [SYNC EFFECT] Updating localHeight from 50 to 40
+AirEntryDialog.tsx:502 🔄 [SYNC EFFECT] Current wallPosition: 50
+AirEntryDialog.tsx:503 🔄 [SYNC EFFECT] External wallPosition: 5
+AirEntryDialog.tsx:506 🔄 [SYNC EFFECT] Updating wallPosition from 50 to 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:476 🔄 [SYNC EFFECT] Bidirectional sync useEffect triggered
+AirEntryDialog.tsx:477 🔄 [SYNC EFFECT] isEditing: true
+AirEntryDialog.tsx:478 🔄 [SYNC EFFECT] props.type: vent
+AirEntryDialog.tsx:479 🔄 [SYNC EFFECT] has initialValues: {width: 10, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 5, …}
+AirEntryDialog.tsx:484 🔄 [SYNC EFFECT] Current localWidth: 10
+AirEntryDialog.tsx:485 🔄 [SYNC EFFECT] External width: 10
+AirEntryDialog.tsx:486 🔄 [SYNC EFFECT] Current localHeight: 40
+AirEntryDialog.tsx:487 🔄 [SYNC EFFECT] External height: 40
+AirEntryDialog.tsx:502 🔄 [SYNC EFFECT] Current wallPosition: 5
+AirEntryDialog.tsx:503 🔄 [SYNC EFFECT] External wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: vent isEditing: true dialogOpen: true
+AirEntryDialog.tsx:138 🔍 [PROPS CHANGE] initialValues.width: 10
+AirEntryDialog.tsx:139 🔍 [PROPS CHANGE] initialValues.height: 40
+AirEntryDialog.tsx:140 🔍 [PROPS CHANGE] initialValues wallPosition: 5
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:592 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+AirEntryDialog.tsx:593 🎯 [SAVE BUTTON CLICKED] Event type: submit
+AirEntryDialog.tsx:594 🎯 [SAVE BUTTON CLICKED] Props type: vent
+AirEntryDialog.tsx:595 🎯 [SAVE BUTTON CLICKED] Current values: {width: 10, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 5, …}
+AirEntryDialog.tsx:596 🎯 [SAVE BUTTON CLICKED] wallPosition from values: 5
+AirEntryDialog.tsx:597 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 5
+AirEntryDialog.tsx:692 🎯 [PROPS.ONCONFIRM] About to call props.onConfirm with canvasData
+AirEntryDialog.tsx:693 🎯 [PROPS.ONCONFIRM] canvasData being sent: {width: 10, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 5, …}
+AirEntryDialog.tsx:694 🎯 [PROPS.ONCONFIRM] canvasData.wallPosition: 5
+AirEntryDialog.tsx:695 🎯 [PROPS.ONCONFIRM] canvasData.position: {x: 400, y: 89}
+AirEntryDialog.tsx:696 🎯 [PROPS.ONCONFIRM] This should trigger handleAirEntryEdit in Canvas2D
+Canvas3D.tsx:6063 [CANVAS3D ONCONFIRM] Received data from dialog: {width: 10, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 5, …}
+Canvas3D.tsx:6064 [CANVAS3D ONCONFIRM] wallPosition in received data: 5
+Canvas3D.tsx:6065 🔍 [SAVE CHANGES DEBUG] About to call handleAirEntryEdit
+Canvas3D.tsx:1852 🔍 [CANVAS3D handleAirEntryEdit] Called with index: 0
+Canvas3D.tsx:1853 🔍 [CANVAS3D handleAirEntryEdit] Received data: {width: 10, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 5, …}
+Canvas3D.tsx:1854 🔍 [CANVAS3D handleAirEntryEdit] data.wallPosition: 5
+Canvas3D.tsx:1893 🚀 Canvas3D: Llamando onUpdateAirEntry - piso: ground, índice: 0
+Canvas3D.tsx:1894 🚀 Canvas3D: Datos del AirEntry actualizado: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+room-store.ts:438 ✅ STORE: AirEntry actualizado en el store, notificando a 1 listeners
+room-store.ts:442 📢 STORE: Notificando listener 1/1
+Canvas3D.tsx:1898 ✅ Canvas3D: onUpdateAirEntry completado - debería haber actualizado el store
+Canvas3D.tsx:1899 📋 Canvas3D: Verificando si esto dispara notificaciones a otros componentes...
+Canvas3D.tsx:1911 🔍 [BEFORE CLOSE] Mesh 0 material: {hasMap: false, opacity: 0.7, type: 'vent'}
+Canvas3D.tsx:1919 🔬 [DEPENDENCY TRACKING] BEFORE setEditingAirEntry(null):
+Canvas3D.tsx:1920 🔬 [DEPENDENCY TRACKING] floors keys: ['ground']
+Canvas3D.tsx:1921 🔬 [DEPENDENCY TRACKING] currentFloor: ground
+Canvas3D.tsx:1922 🔬 [DEPENDENCY TRACKING] ceilingHeight: 220
+Canvas3D.tsx:1923 🔬 [DEPENDENCY TRACKING] floorDeckThickness: 35
+Canvas3D.tsx:1924 🔬 [DEPENDENCY TRACKING] floors[currentFloor] airEntries length: 1
+Canvas3D.tsx:1925 🔬 [DEPENDENCY TRACKING] selectedAirEntry state: NULL
+Canvas3D.tsx:1929 🔬 [DEPENDENCY TRACKING] AFTER setEditingAirEntry(null):
+Canvas3D.tsx:1930 🔬 [DEPENDENCY TRACKING] floors keys: ['ground']
+Canvas3D.tsx:1931 🔬 [DEPENDENCY TRACKING] currentFloor: ground
+Canvas3D.tsx:1932 🔬 [DEPENDENCY TRACKING] ceilingHeight: 220
+Canvas3D.tsx:1933 🔬 [DEPENDENCY TRACKING] floorDeckThickness: 35
+Canvas3D.tsx:1934 🔬 [DEPENDENCY TRACKING] floors[currentFloor] airEntries length: 1
+Canvas3D.tsx:1935 🔬 [DEPENDENCY TRACKING] selectedAirEntry state: NULL
+Canvas3D.tsx:1958 ✅ [SAVE CHANGES] Data commit complete - monitoring for texture loss
+Canvas3D.tsx:1959 ✅ [SAVE CHANGES] Dialog closed - checking for side effects
+Canvas3D.tsx:6074 🔍 [SAVE CHANGES DEBUG] handleAirEntryEdit completed - checking for side effects
+AirEntryDialog.tsx:700 🎯 [PROPS.ONCONFIRM] props.onConfirm completed
+AirEntryDialog.tsx:701 🎯 [PROPS.ONCONFIRM] Now calling onClose() to close dialog
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+Canvas3D.tsx:1939 🔍 [AFTER CLOSE] Checking textures immediately after dialog close
+Canvas3D.tsx:1949 🔍 [AFTER CLOSE] Mesh 0 material: {hasMap: false, opacity: 0.7, type: 'vent'}
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+Canvas3D.tsx:6078 🔍 [SAVE CHANGES DEBUG] 100ms after Save Changes - checking scene state
+Canvas3D.tsx:6086 🔍 [SAVE CHANGES DEBUG] AirEntry meshes found: 1
+Canvas3D.tsx:6089 🔍 [SAVE CHANGES DEBUG] Mesh 0 material: {hasMap: false, opacity: 0.7, type: 'vent'}
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+AirEntryDialog.tsx:135 🔍 [PROPS CHANGE] AirEntryDialog props updated
+AirEntryDialog.tsx:136 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
+ 🔍 [PROPS CHANGE] AirEntryDialog props updated
+ 🔍 [PROPS CHANGE] type: window isEditing: false dialogOpen: false
