@@ -4840,12 +4840,25 @@ export default function Canvas3D({
   }, []);
 
   useEffect(() => {
-    console.log('🚨 [SCENE REBUILD TRIGGER] useEffect triggered - dependencies changed');
-    console.log('🚨 [SCENE REBUILD TRIGGER] floors reference:', floors);
-    console.log('🚨 [SCENE REBUILD TRIGGER] floors identity hash:', JSON.stringify(floors).slice(0, 50) + '...');
-    console.log('🚨 [SCENE REBUILD TRIGGER] currentFloor:', currentFloor);
-    console.log('🚨 [SCENE REBUILD TRIGGER] ceilingHeight:', ceilingHeight);
-    console.log('🚨 [SCENE REBUILD TRIGGER] floorDeckThickness:', floorDeckThickness);
+    // HYPOTHESIS TEST: Canvas3D data source comparison during scene rebuild
+    const storeFloors = useRoomStore.getState().floors;
+    const propsAirEntries = floors[currentFloor]?.airEntries || [];
+    const storeAirEntries = storeFloors[currentFloor]?.airEntries || [];
+    
+    if (propsAirEntries.length > 0 && storeAirEntries.length > 0) {
+      const propsPos = propsAirEntries[0].position;
+      const storePos = storeAirEntries[0].position;
+      const positionsMatch = Math.abs(propsPos.x - storePos.x) < 0.01 && Math.abs(propsPos.y - storePos.y) < 0.01;
+      
+      console.log(`🧪 [CANVAS3D REBUILD] DATA SOURCE COMPARISON:`);
+      console.log(`🧪 Props airEntry position: (${propsPos.x.toFixed(1)}, ${propsPos.y.toFixed(1)})`);
+      console.log(`🧪 Store airEntry position: (${storePos.x.toFixed(1)}, ${storePos.y.toFixed(1)})`);
+      console.log(`🧪 Canvas3D using: ${positionsMatch ? 'CURRENT DATA' : 'STALE PROPS DATA'}`);
+      
+      if (!positionsMatch) {
+        console.log(`🚨 PERSISTENCE ISSUE: Canvas3D rebuilding from stale props, not store!`);
+      }
+    }
 
 
     // Don't reset selection state here - we'll handle it after rebuilding the scene
