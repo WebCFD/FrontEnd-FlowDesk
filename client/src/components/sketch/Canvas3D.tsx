@@ -1228,6 +1228,12 @@ export default function Canvas3D({
         
         // Add furniture via callback
         if (onFurnitureAdd && typeof onFurnitureAdd === 'function') {
+          console.log(`FURNITURE SAVE DEBUG: Saving furniture item:`, {
+            id: furnitureItem.id,
+            type: furnitureItem.type,
+            surfaceType: furnitureItem.surfaceType,
+            floorName: furnitureItem.floorName
+          });
           onFurnitureAdd(surfaceDetection.floorName, furnitureItem);
         }
         
