@@ -162,25 +162,27 @@ const FloorLoadDialog: React.FC<FloorLoadDialogProps> = ({
           <AlertDialogTitle>
             {hasContent ? "Overwrite Floor Layout?" : "Load Floor Template"}
           </AlertDialogTitle>
-          <AlertDialogDescription className="space-y-4">
-            <p>
-              {hasContent
-                ? `Loading ${sourceFloorText} as a template will overwrite your current ${targetFloorText} layout. This action cannot be undone.`
-                : `This will copy the layout from ${sourceFloorText} to ${targetFloorText}.`}
-            </p>
+          <AlertDialogDescription asChild>
+            <div className="space-y-4">
+              <p>
+                {hasContent
+                  ? `Loading ${sourceFloorText} as a template will overwrite your current ${targetFloorText} layout. This action cannot be undone.`
+                  : `This will copy the layout from ${sourceFloorText} to ${targetFloorText}.`}
+              </p>
 
-            {hasStairs && (
-              <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-md">
-                <h4 className="text-amber-800 font-medium">
-                  Stair Connection Information
-                </h4>
-                <p className="text-amber-700 text-sm mt-1">
-                  Stairs connecting {sourceFloorText} to {targetFloorText} will
-                  be imported and displayed as non-editable elements. Imported
-                  stairs can only be removed from their source floor.
-                </p>
-              </div>
-            )}
+              {hasStairs && (
+                <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-md">
+                  <h4 className="text-amber-800 font-medium">
+                    Stair Connection Information
+                  </h4>
+                  <p className="text-amber-700 text-sm mt-1">
+                    Stairs connecting {sourceFloorText} to {targetFloorText} will
+                    be imported and displayed as non-editable elements. Imported
+                    stairs can only be removed from their source floor.
+                  </p>
+                </div>
+              )}
+            </div>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -411,45 +413,17 @@ export default function WizardDesign() {
     
     return structuralFloors;
   }, [
-    // Use a stable dependency key to prevent useMemo warning
-    JSON.stringify(Object.keys(rawFloors).sort()),
-    ...Object.keys(rawFloors).sort().map(floorName => {
-      const floorData = rawFloors[floorName];
-      if (!floorData) return '';
-      
-      // Normalize floating point values to prevent precision errors
-      const normalizeNum = (num: number): number => Math.round(num * 100) / 100;
-      
-      return JSON.stringify({
-        lines: floorData.lines || [],
-        airEntries: floorData.airEntries?.map(e => ({ 
-          type: e.type, 
-          position: {
-            x: normalizeNum(e.position.x),
-            y: normalizeNum(e.position.y)
-          }, 
-          line: {
-            start: {
-              x: normalizeNum(e.line.start.x),
-              y: normalizeNum(e.line.start.y)
-            },
-            end: {
-              x: normalizeNum(e.line.end.x),
-              y: normalizeNum(e.line.end.y)
-            }
-          },
-          width: normalizeNum(e.dimensions.width),
-          height: normalizeNum(e.dimensions.height),
-          distanceToFloor: normalizeNum(e.dimensions.distanceToFloor || 0),
-          shape: e.dimensions.shape
-        })) || [],
-        walls: floorData.walls || [],
-        measurements: floorData.measurements || [],
-        hasClosedContour: floorData.hasClosedContour,
-        stairPolygons: floorData.stairPolygons || [],
-        furnitureItems: floorData.furnitureItems || []
-      });
-    })
+    // Single stable dependency hash to prevent useMemo warning
+    JSON.stringify(
+      Object.keys(rawFloors)
+        .sort()
+        .map(floorName => ({
+          name: floorName,
+          linesLength: rawFloors[floorName]?.lines?.length || 0,
+          airEntriesLength: rawFloors[floorName]?.airEntries?.length || 0,
+          hasClosedContour: rawFloors[floorName]?.hasClosedContour || false
+        }))
+    )
   ]);
 
 
