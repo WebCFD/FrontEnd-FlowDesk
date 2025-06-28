@@ -4846,12 +4846,7 @@ export default function Canvas3D({
   }, [floors]); // Re-compute when props change
 
   useEffect(() => {
-    console.log(`🔧 [CANVAS3D REBUILD] Using ${finalFloors === floors ? 'PROPS FALLBACK' : 'STORE DATA'} for scene rebuild`);
-    
-    if (finalFloors[currentFloor]?.airEntries?.length > 0) {
-      const airEntry = finalFloors[currentFloor].airEntries[0];
-      console.log(`🔧 [CANVAS3D REBUILD] AirEntry position: (${airEntry.position.x.toFixed(1)}, ${airEntry.position.y.toFixed(1)})`);
-    }
+    // Scene rebuild using store data when available, fallback to props
 
     // Don't reset selection state here - we'll handle it after rebuilding the scene
     // This prevents losing the selection when the scene is updated
