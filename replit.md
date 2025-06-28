@@ -124,3 +124,4 @@ Preferred communication style: Simple, everyday language.
 
 Changelog:
 - June 23, 2025. Initial setup
+- June 28, 2025. Fixed AirEntry Center Height real-time updates - removed redundant height/2 offset causing visual glitch during coordinate transformations between Canvas2D and Canvas3D
