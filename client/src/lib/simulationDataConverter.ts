@@ -219,20 +219,6 @@ interface FloorExport {
 
 interface SimulationExport {
   version: string;
-  metadata: {
-    exportDate: string;
-    totalFloors: number;
-    isMultifloor: boolean;
-  };
-  buildingParameters: {
-    defaultCeilingHeight: number;
-    floorParameters: Record<string, {
-      ceilingHeight: number;
-      floorDeck: number;
-      ceilingTemperature: number;
-      floorTemperature: number;
-    }>;
-  };
   floors: Record<string, FloorExport>;
 }
 
@@ -309,25 +295,6 @@ export function generateSimulationData(
   
   const exportData: SimulationExport = {
     version: "1.0",
-    metadata: {
-      exportDate: new Date().toISOString(),
-      totalFloors: Object.keys(floors).length,
-      isMultifloor: Object.keys(floors).length > 1
-    },
-    buildingParameters: {
-      defaultCeilingHeight: roomHeight,
-      floorParameters: Object.fromEntries(
-        Object.entries(floorParameters || {}).map(([floorName, params]) => [
-          floorName,
-          {
-            ceilingHeight: (params.ceilingHeight || 220) / 100,
-            floorDeck: (params.floorDeck || 0) / 100,
-            ceilingTemperature: params.ceilingTemperature ?? 20,
-            floorTemperature: params.floorTemperature ?? 20
-          }
-        ])
-      )
-    },
     floors: {}
   };
 
@@ -635,13 +602,8 @@ export function generateSimulationData(
       };
     });
 
-    // Obtener los parámetros específicos del piso actual con valores por defecto mejorados
-    const currentFloorParams = floorParameters?.[floorName] || { 
-      ceilingHeight: 220, 
-      floorDeck: 0,
-      ceilingTemperature: 20,
-      floorTemperature: 20
-    };
+    // Obtener los parámetros específicos del piso actual
+    const currentFloorParams = floorParameters?.[floorName] || { ceilingHeight: 220, floorDeck: 0 };
     const floorHeight = (currentFloorParams.ceilingHeight || roomHeight * 100) / 100;
     const floorDeckValue = (currentFloorParams.floorDeck || 0) / 100; // Convertir de cm a metros
     
