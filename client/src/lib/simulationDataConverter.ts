@@ -204,6 +204,8 @@ interface FurnitureExport {
 interface FloorExport {
   height: number;
   floorDeck: number;
+  ceiling: number;
+  floor_surf: number;
   walls: WallExport[];
   stairs: StairExportNew[];
   furniture: FurnitureExport[];
@@ -261,7 +263,7 @@ export function generateSimulationData(
   floors: Record<string, FloorData>,
   furniture: THREE.Object3D[] = [],
   roomHeight: number = 2.5,
-  floorParameters?: Record<string, { ceilingHeight: number; floorDeck: number }>
+  floorParameters?: Record<string, { ceilingHeight: number; floorDeck: number; ceilingTemperature?: number; floorTemperature?: number }>
 ): SimulationExport {
   // Reset global stair line counter for each export
   globalStairLineCounter = 1;
@@ -568,10 +570,16 @@ export function generateSimulationData(
     const floorHeight = (currentFloorParams.ceilingHeight || roomHeight * 100) / 100;
     const floorDeckValue = (currentFloorParams.floorDeck || 0) / 100; // Convertir de cm a metros
     
+    // Obtener temperaturas de techo y suelo de los parámetros del wizard
+    const ceilingTemp = currentFloorParams.ceilingTemperature ?? 20; // Valor por defecto 20°C
+    const floorTemp = currentFloorParams.floorTemperature ?? 20; // Valor por defecto 20°C
+    
     // Agregar los datos del piso al objeto de exportación usando número
     exportData.floors[floorNumber] = {
       height: floorHeight,
       floorDeck: floorDeckValue,
+      ceiling: ceilingTemp,
+      floor_surf: floorTemp,
       walls: walls,
       stairs: stairs,
       furniture: floorFurniture
