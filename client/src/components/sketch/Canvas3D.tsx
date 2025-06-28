@@ -1864,16 +1864,16 @@ export default function Canvas3D({
     console.log(`[WALL POSITION STORAGE] wallPosition in data:`, data.wallPosition);
     console.log(`[WALL POSITION STORAGE] wallPosition in updatedEntry.dimensions:`, updatedEntry.dimensions.wallPosition);
 
-    // AirEntry now works like furniture - direct modification only, no store propagation needed
-    console.log('✅ [AIRENTRY OPTIMIZED] Skipping store propagation - direct modification preserves textures');
-    console.log('✅ [AIRENTRY OPTIMIZED] Floor:', currentFloor, 'Index:', index);
-    console.log('✅ [AIRENTRY OPTIMIZED] Updated distanceToFloor:', updatedEntry.dimensions.distanceToFloor);
-    console.log('✅ [AIRENTRY OPTIMIZED] Textures preserved automatically like furniture');
+    // SAVE CHANGES: Pure data commit - no geometry or material modifications
+    console.log('💾 [SAVE CHANGES] Pure data commit - only saving values to store');
+    console.log('💾 [SAVE CHANGES] Floor:', currentFloor, 'Index:', index);
+    console.log('💾 [SAVE CHANGES] Stored distanceToFloor:', updatedEntry.dimensions.distanceToFloor);
+    console.log('💾 [SAVE CHANGES] Geometry already modified during real-time updates');
+    console.log('💾 [SAVE CHANGES] Textures already applied by RSP - no modifications needed');
     setEditingAirEntry(null);
     
-    // OPTIMIZATION: No callback needed after dialog confirm - textures already preserved
-    console.log(`🚀 [OPTIMIZATION] Dialog confirm complete - textures preserved automatically like furniture`);
-    console.log(`✅ [OPTIMIZATION] No texture reapplication needed after AirEntry edit`);
+    console.log('✅ [SAVE CHANGES] Data commit complete - no visual effects triggered');
+    console.log('✅ [SAVE CHANGES] Textures and geometry preserved automatically');
   };
 
   // New function to create stair mesh

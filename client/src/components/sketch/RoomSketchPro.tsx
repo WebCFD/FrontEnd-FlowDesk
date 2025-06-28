@@ -788,9 +788,16 @@ export function RoomSketchPro({
     airEntryMeshes.forEach((airEntryMesh) => {
       const material = airEntryMesh.material as THREE.MeshPhongMaterial;
       if (material) {
+        // CRITICAL FIX: Only modify transparency properties, preserve all other material properties including textures
+        console.log('✅ [TRANSPARENCY UPDATE] Preserving existing material properties, only updating opacity');
+        console.log('✅ [TRANSPARENCY UPDATE] Material has texture:', !!material.map);
+        
+        // Only modify transparency-related properties - DO NOT recreate material
         material.opacity = airEntryTransparency;
         material.transparent = airEntryTransparency < 1.0;
         material.needsUpdate = true;
+        
+        // Preserve existing textures, colors, and all other material properties
       }
     });
 
