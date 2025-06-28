@@ -405,18 +405,37 @@ export default function Canvas2D({
   const [forceRedraw, setForceRedraw] = useState(0);
   
   useEffect(() => {
+    console.log(`🔗 Canvas2D: Registrando suscripción para piso '${currentFloor}'`);
+    
     const unsubscribe = subscribeToAirEntryChanges((floorName, index, updatedEntry) => {
-      // Only update if this change affects our current floor
-      if (floorName !== currentFloor) return;
+      console.log(`📥 Canvas2D: NOTIFICACIÓN RECIBIDA - piso: ${floorName}, índice: ${index}, tipo: ${updatedEntry.type}`);
+      console.log(`📥 Canvas2D: Nueva posición: (${updatedEntry.position.x}, ${updatedEntry.position.y})`);
+      console.log(`📥 Canvas2D: Piso actual: ${currentFloor}, piso de cambio: ${floorName}`);
       
-      console.log(`🔄 Canvas2D: Received AirEntry update from external source - ${updatedEntry.type} at position (${updatedEntry.position.x}, ${updatedEntry.position.y})`);
+      // Only update if this change affects our current floor
+      if (floorName !== currentFloor) {
+        console.log(`⚠️ Canvas2D: IGNORANDO - cambio no es para el piso actual`);
+        return;
+      }
+      
+      console.log(`✅ Canvas2D: APLICANDO CAMBIO - forzando re-render`);
+      console.log(`✅ Canvas2D: forceRedraw anterior: ${forceRedraw}`);
       
       // Force re-render by updating state
-      setForceRedraw(prev => prev + 1);
+      setForceRedraw(prev => {
+        const newValue = prev + 1;
+        console.log(`✅ Canvas2D: forceRedraw nuevo: ${newValue}`);
+        return newValue;
+      });
+      
+      console.log(`🎨 Canvas2D: Re-render disparado - Canvas2D debería actualizarse visualmente`);
     });
     
-    return unsubscribe;
-  }, [currentFloor, subscribeToAirEntryChanges]);
+    return () => {
+      console.log(`🔗 Canvas2D: Desregistrando suscripción para piso '${currentFloor}'`);
+      unsubscribe();
+    };
+  }, [currentFloor, subscribeToAirEntryChanges, forceRedraw]);
 
   // Helper function to get scaled font size that responds to zoom and font scale
   const getScaledFont = (baseSize: number, fontFamily: string = 'sans-serif'): string => {
@@ -2542,9 +2561,26 @@ export default function Canvas2D({
         drawWallMeasurements(ctx, currentLine);
       }
 
-      getCurrentAirEntries().forEach((entry, index) => {
+      // DIAGNÓSTICO: Logs para capturar desconexión Canvas2D-Canvas3D
+      const currentAirEntries = getCurrentAirEntries();
+      console.log(`🎨 Canvas2D: RENDERIZANDO airEntries - total: ${currentAirEntries.length}`);
+      console.log(`🎨 Canvas2D: forceRedraw actual: ${forceRedraw}`);
+      
+      currentAirEntries.forEach((entry, index) => {
+        console.log(`🎨 Canvas2D: Dibujando airEntry ${index} - tipo: ${entry.type}, posición: (${entry.position.x}, ${entry.position.y})`);
         drawAirEntry(ctx, entry, index);
       });
+      
+      console.log(`🎨 Canvas2D: Dibujo de airEntries completado`);
+      
+      // Verificar si airEntries de props coincide con lo que estamos dibujando
+      console.log(`📊 Canvas2D: COMPARACIÓN - airEntries.length (props): ${airEntries.length}, getCurrentAirEntries().length: ${currentAirEntries.length}`);
+      if (airEntries.length > 0) {
+        console.log(`📊 Canvas2D: Primer airEntry de props - posición: (${airEntries[0].position.x}, ${airEntries[0].position.y})`);
+      }
+      if (currentAirEntries.length > 0) {
+        console.log(`📊 Canvas2D: Primer airEntry renderizado - posición: (${currentAirEntries[0].position.x}, ${currentAirEntries[0].position.y})`);
+      }
 
       const drawEndpoints = () => {
         const drawnPoints = new Set<string>();

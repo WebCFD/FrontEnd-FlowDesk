@@ -2554,7 +2554,22 @@ export default function WizardDesign() {
               gridSize={gridSize}
               currentTool={currentTool}
               currentAirEntry={currentAirEntry}
-              airEntries={rawFloors[currentFloor]?.airEntries || airEntries}
+              airEntries={(() => {
+                const rawAirEntries = rawFloors[currentFloor]?.airEntries || airEntries;
+                const fallbackAirEntries = airEntries;
+                
+                console.log(`📊 WIZARD: Pasando airEntries a Canvas2D`);
+                console.log(`📊 WIZARD: rawFloors[${currentFloor}] existe:`, !!rawFloors[currentFloor]);
+                console.log(`📊 WIZARD: rawFloors[${currentFloor}]?.airEntries length:`, rawFloors[currentFloor]?.airEntries?.length || 0);
+                console.log(`📊 WIZARD: fallback airEntries length:`, fallbackAirEntries.length);
+                console.log(`📊 WIZARD: Usando rawAirEntries:`, rawAirEntries === rawFloors[currentFloor]?.airEntries ? 'SÍ (rawFloors)' : 'NO (fallback)');
+                
+                if (rawAirEntries.length > 0) {
+                  console.log(`📊 WIZARD: Primer airEntry enviado a Canvas2D - posición: (${rawAirEntries[0].position.x}, ${rawAirEntries[0].position.y})`);
+                }
+                
+                return rawAirEntries;
+              })()}
               measurements={measurements}
               stairPolygons={stairPolygons}
               walls={walls}
