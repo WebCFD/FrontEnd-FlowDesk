@@ -1110,7 +1110,7 @@ export default function WizardDesign() {
     index: number,
     updatedEntry: AirEntry,
   ) => {
-    console.log(`🔧 WIZARD: Canvas3D → handleUpdateAirEntryFrom3D`);
+    // Reduced logging
     
     // CRITICAL FIX: Preserve wallPosition from existing store data
     const existingEntry = airEntries[index];
@@ -1149,8 +1149,7 @@ export default function WizardDesign() {
         useRoomStore.getState().setFloors(updatedFloors);
       }
 
-      // CRITICAL: Call updateAirEntry to trigger store notifications
-      console.log(`🔧 WIZARD: Calling updateAirEntry to trigger store notifications`);
+      // Update store for synchronization
       useRoomStore.getState().updateAirEntry(floorName, index, deepClonedEntry);
 
       // Entry updated successfully
@@ -2552,9 +2551,9 @@ export default function WizardDesign() {
                 // Use store data if available, fallback to rawFloors
                 const finalAirEntries = storeAirEntries.length > 0 ? storeAirEntries : fallbackAirEntries;
                 
-                console.log(`🔧 SOLUTION: Canvas2D reading from store - ${finalAirEntries.length} airEntries`);
+                // Reduced logging for Canvas2D
                 if (finalAirEntries.length > 0) {
-                  console.log(`🔧 SOLUTION: First airEntry position: (${finalAirEntries[0].position.x}, ${finalAirEntries[0].position.y})`);
+                  console.log(`📱 Canvas2D: Reading ${finalAirEntries.length} airEntries from store - pos: (${finalAirEntries[0].position.x.toFixed(1)}, ${finalAirEntries[0].position.y.toFixed(1)})`);
                 }
                 
                 return finalAirEntries;
