@@ -364,6 +364,11 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           }
           // Otherwise, calculate from current position
           else if (airEntryProps.wallContext && airEntryProps.initialValues.position) {
+            console.log('🔍 WALL POSITION DEBUG - No saved value, calculating from current position');
+            console.log('🔍 WALL POSITION DEBUG - wallContext exists:', !!airEntryProps.wallContext);
+            console.log('🔍 WALL POSITION DEBUG - position exists:', !!airEntryProps.initialValues.position);
+            console.log('🔍 WALL POSITION DEBUG - current position:', airEntryProps.initialValues.position);
+            console.log('🔍 WALL POSITION DEBUG - wallContext:', airEntryProps.wallContext);
             const { wallStart, wallEnd } = airEntryProps.wallContext;
             const currentPosition = airEntryProps.initialValues.position;
             
@@ -391,6 +396,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
             const percentage = effectiveLength > 0 ? (effectiveDistance / effectiveLength) * 100 : 0;
             
             const finalPercentage = Math.min(100, Math.max(0, percentage));
+            console.log('🔍 WALL POSITION DEBUG - Calculated percentage:', finalPercentage);
             setWallPosition(finalPercentage);
             
             // Also set in form values for persistence
@@ -400,6 +406,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
               position: currentPosition 
             }));
           } else {
+            console.log('❌ WALL POSITION DEBUG - Falling back to default 50% - Missing data:');
+            console.log('❌ WALL POSITION DEBUG - wallContext exists:', !!airEntryProps.wallContext);
+            console.log('❌ WALL POSITION DEBUG - position exists:', !!airEntryProps.initialValues.position);
             setWallPosition(50); // Default center
             setValues(prev => ({ ...prev, wallPosition: 50 }));
           }
