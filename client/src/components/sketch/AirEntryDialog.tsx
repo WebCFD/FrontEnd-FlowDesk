@@ -496,6 +496,13 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   }, [dialogOpen, type, isEditing]);
 
   const handleSubmit = (e: React.FormEvent) => {
+    console.log("🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered");
+    console.log("🎯 [SAVE BUTTON CLICKED] Event type:", e.type);
+    console.log("🎯 [SAVE BUTTON CLICKED] Props type:", props.type);
+    console.log("🎯 [SAVE BUTTON CLICKED] Current values:", values);
+    console.log("🎯 [SAVE BUTTON CLICKED] wallPosition from values:", (values as any).wallPosition);
+    console.log("🎯 [SAVE BUTTON CLICKED] wallPosition from state:", wallPosition);
+    
     e.preventDefault();
     if (props.type === 'wall') {
       props.onConfirm((values as { temperature: number }).temperature);
@@ -595,7 +602,16 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         }
       };
       
+      console.log("🎯 [PROPS.ONCONFIRM] About to call props.onConfirm with canvasData");
+      console.log("🎯 [PROPS.ONCONFIRM] canvasData being sent:", canvasData);
+      console.log("🎯 [PROPS.ONCONFIRM] canvasData.wallPosition:", canvasData.wallPosition);
+      console.log("🎯 [PROPS.ONCONFIRM] canvasData.position:", canvasData.position);
+      console.log("🎯 [PROPS.ONCONFIRM] This should trigger handleAirEntryEdit in Canvas2D");
+      
       props.onConfirm(canvasData);
+      
+      console.log("🎯 [PROPS.ONCONFIRM] props.onConfirm completed");
+      console.log("🎯 [PROPS.ONCONFIRM] Now calling onClose() to close dialog");
     }
     onClose();
   };
