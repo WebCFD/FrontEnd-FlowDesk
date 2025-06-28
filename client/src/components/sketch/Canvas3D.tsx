@@ -1823,6 +1823,20 @@ export default function Canvas3D({
   ) => {
     if (!editingAirEntry || !onUpdateAirEntry) return;
 
+    // CRITICAL: Preserve existing material before any updates (for RSP texture preservation)
+    let preservedMaterial: THREE.Material | null = null;
+    if (sceneRef.current && editingAirEntry) {
+      sceneRef.current.traverse((object) => {
+        if (object instanceof THREE.Mesh && 
+            object.userData?.type === editingAirEntry.entry.type &&
+            object.userData?.entryIndex === editingAirEntry.index) {
+          preservedMaterial = object.material;
+          console.log(`🔄 MATERIAL PRESERVATION: AirEntry ${index} - Preserving material before dialog update:`, preservedMaterial);
+          console.log(`🔄 Material type:`, preservedMaterial.type, 'Has texture map:', !!(preservedMaterial as any).map);
+        }
+      });
+    }
+
     const updatedEntry = {
       ...editingAirEntry.entry,
       dimensions: {
@@ -1862,6 +1876,24 @@ export default function Canvas3D({
 
     // Call the parent component's handler
     onUpdateAirEntry(currentFloor, index, updatedEntry);
+    
+    // CRITICAL: Restore preserved material after scene rebuild (for RSP texture preservation)
+    if (preservedMaterial) {
+      // Use setTimeout to allow scene rebuild to complete, then restore material
+      setTimeout(() => {
+        if (sceneRef.current) {
+          sceneRef.current.traverse((object) => {
+            if (object instanceof THREE.Mesh && 
+                object.userData?.type === editingAirEntry.entry.type &&
+                object.userData?.entryIndex === index) {
+              object.material = preservedMaterial!;
+              console.log(`✅ MATERIAL RESTORATION: AirEntry ${index} - Material restored after scene rebuild`);
+            }
+          });
+        }
+      }, 100); // Small delay to ensure scene rebuild is complete
+    }
+    
     setEditingAirEntry(null);
     
 
