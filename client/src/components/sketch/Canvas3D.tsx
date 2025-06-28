@@ -1184,6 +1184,7 @@ export default function Canvas3D({
         rotation: surfaceDetection.surfaceType === 'ceiling' && furnitureType !== 'vent' ? { x: Math.PI, y: 0, z: 0 } : { x: 0, y: 0, z: 0 },
         dimensions: dimensions,
         information: `${generatedId} placed on ${surfaceDetection.surfaceType} of ${surfaceDetection.floorName}`,
+        surfaceType: surfaceDetection.surfaceType, // Store the surface type for export
         properties: furnitureType === 'vent' ? {
           // Vent type maintains original thermal properties system
           temperature: 20,

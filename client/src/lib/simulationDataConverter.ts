@@ -604,8 +604,18 @@ export function generateSimulationData(
     const floorSurfAirEntries: AirEntryExport[] = [];
     
     ventFurnitureObjects.forEach(ventObj => {
-      // Determinar si es ceiling o floor_surf basado en la posición Z
-      const isFloorVent = ventObj.position.y <= 0.1; // Si está cerca del suelo (Y baja)
+      // Determinar si es ceiling o floor_surf usando surfaceType almacenado
+      let isFloorVent: boolean;
+      if (ventObj.userData?.surfaceType) {
+        // Usar el surfaceType almacenado (método preferido)
+        isFloorVent = ventObj.userData.surfaceType === 'floor';
+      } else if (ventObj.userData?.simulationProperties?.normalVector) {
+        // Fallback: usar el vector normal (z positivo = floor, z negativo = ceiling)
+        isFloorVent = ventObj.userData.simulationProperties.normalVector.z > 0;
+      } else {
+        // Último fallback: posición Y (método menos confiable)
+        isFloorVent = ventObj.position.y <= 0.1;
+      }
       
       const airEntry: AirEntryExport = {
         id: ventObj.userData?.id || `vent_${floorNumber}_${ceilingAirEntries.length + floorSurfAirEntries.length + 1}`,
