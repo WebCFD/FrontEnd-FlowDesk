@@ -1,0 +1,55 @@
+[Violation] Forced reflow while executing JavaScript took 39ms
+custom-furniture-store.ts:274 Custom Furniture Store: Clearing all definitions (Erase Design)
+analytics.ts:62 📊 Analytics Event: {category: 'simulation', action: 'save_simulation', label: 'design_erased', value: 1, status: 'sent'}
+Canvas3D.tsx:4780 🚨 [SCENE REBUILD TRIGGER] useEffect triggered - dependencies changed
+Canvas3D.tsx:4781 🚨 [SCENE REBUILD TRIGGER] floors reference: {ground: {…}}
+Canvas3D.tsx:4782 🚨 [SCENE REBUILD TRIGGER] floors identity hash: {"ground":{"lines":[],"airEntries":[],"walls":[],"...
+Canvas3D.tsx:4783 🚨 [SCENE REBUILD TRIGGER] currentFloor: ground
+Canvas3D.tsx:4784 🚨 [SCENE REBUILD TRIGGER] ceilingHeight: 220
+Canvas3D.tsx:4785 🚨 [SCENE REBUILD TRIGGER] floorDeckThickness: 35
+wizard-design:1 [.WebGL-0x2c6404facd00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x2c6404facd00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x2c6404facd00] GL_INVALID_OPERATION: Texture is immutable.
+Canvas3D.tsx:4780 🚨 [SCENE REBUILD TRIGGER] useEffect triggered - dependencies changed
+Canvas3D.tsx:4781 🚨 [SCENE REBUILD TRIGGER] floors reference: {ground: {…}}
+Canvas3D.tsx:4782 🚨 [SCENE REBUILD TRIGGER] floors identity hash: {"ground":{"lines":[{"id":"1751120510876_zbky0cb67...
+Canvas3D.tsx:4783 🚨 [SCENE REBUILD TRIGGER] currentFloor: ground
+Canvas3D.tsx:4784 🚨 [SCENE REBUILD TRIGGER] ceilingHeight: 220
+Canvas3D.tsx:4785 🚨 [SCENE REBUILD TRIGGER] floorDeckThickness: 35
+Canvas3D.tsx:5318 🔧 [WALL TRANSPARENCY] Updating wall transparency, preserving AirEntry textures
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 323ms
+wizard-design.tsx:1676 Dragging furniture: {id: 'vent', name: 'Vent', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…ke="#22c55e" stroke-width="2"/>\n      </svg>\n    ', defaultDimensions: {…}}
+AirEntryDialog.tsx:184 AirEntryDialog: Real-time callbacks connected for furnVent mode {hasOnPositionUpdate: true, hasOnRotationUpdate: true, hasOnScaleUpdate: false}
+Canvas3D.tsx:2941 [Violation] 'requestAnimationFrame' handler took 74ms
+RoomSketchPro.tsx:817 [Violation] 'setTimeout' handler took 98ms
+AirEntryDialog.tsx:505 📝 FORM SUBMIT - Current form values: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:506 📝 FORM SUBMIT - Current wallPosition state: 100
+AirEntryDialog.tsx:507 📝 FORM SUBMIT - Current distanceToFloor state: 120
+Canvas3D.tsx:5944 VENT COORDINATE CONVERSION:
+Canvas3D.tsx:5945 - Dialog values (world): {position: {…}, rotation: {…}}
+Canvas3D.tsx:5946 - Parent transform: {position: _Vector3, rotation: _Euler}
+Canvas3D.tsx:5947 - Applied values (local): {position: {…}, rotation: {…}}
+wizard-design.tsx:1676 Dragging furniture: {id: 'vent', name: 'Vent', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…ke="#22c55e" stroke-width="2"/>\n      </svg>\n    ', defaultDimensions: {…}}
+AirEntryDialog.tsx:184 AirEntryDialog: Real-time callbacks connected for furnVent mode {hasOnPositionUpdate: true, hasOnRotationUpdate: true, hasOnScaleUpdate: false}
+AirEntryDialog.tsx:184 AirEntryDialog: Real-time callbacks connected for furnVent mode {hasOnPositionUpdate: true, hasOnRotationUpdate: true, hasOnScaleUpdate: false}
+AirEntryDialog.tsx:505 📝 FORM SUBMIT - Current form values: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:506 📝 FORM SUBMIT - Current wallPosition state: 100
+AirEntryDialog.tsx:507 📝 FORM SUBMIT - Current distanceToFloor state: 120
+Canvas3D.tsx:5944 VENT COORDINATE CONVERSION:
+Canvas3D.tsx:5945 - Dialog values (world): {position: {…}, rotation: {…}}
+Canvas3D.tsx:5946 - Parent transform: {position: _Vector3, rotation: _Euler}
+Canvas3D.tsx:5947 - Applied values (local): {position: {…}, rotation: {…}}
+wizard-design.tsx:1895 Found 0 furniture objects for export: []
+simulationDataConverter.ts:658 EXPORT DEBUG [ground]: 📊 RESULTADO FINAL:
+simulationDataConverter.ts:659 EXPORT DEBUG [ground]: - ceiling.airEntries: 0
+simulationDataConverter.ts:660 EXPORT DEBUG [ground]: - floor_surf.airEntries: 0
+simulationDataConverter.ts:661 EXPORT DEBUG [ground]: - Total airEntries generados: 0
+simulationDataConverter.ts:662 EXPORT DEBUG [ground]: - Total vents procesados: 0
+simulationDataConverter.ts:668 EXPORT DEBUG [ground]: 🌡️ Temperaturas aplicadas - ceiling: 20°C, floor: 20°C
+analytics.ts:62 📊 Analytics Event: {category: 'simulation', action: 'save_simulation', label: 'file_download', value: 2, status: 'sent'}
