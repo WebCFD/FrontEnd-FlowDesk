@@ -954,12 +954,31 @@ export default function Canvas2D({
   const getCurrentAirEntries = (): AirEntry[] => {
     const currentEntries = [...airEntries];
     
+    // HYPOTHESIS LOG: Demonstrate the mixing of prop data with real-time state
+    console.log("🔍 [HYPOTHESIS] getCurrentAirEntries() called");
+    console.log("🔍 [HYPOTHESIS] airEntries prop data (entries count):", airEntries.length);
+    if (airEntries.length > 0) {
+      console.log("🔍 [HYPOTHESIS] airEntries[0] position (from props):", airEntries[0]?.position);
+    }
+    console.log("🔍 [HYPOTHESIS] editingAirEntries state (entries count):", editingAirEntries.length);
+    if (editingAirEntries.length > 0) {
+      console.log("🔍 [HYPOTHESIS] editingAirEntries[0] position (from state):", editingAirEntries[0]?.entry?.position);
+    }
+    
     // Apply any real-time updates from editingAirEntries
     editingAirEntries.forEach(editingItem => {
       if (editingItem.index >= 0 && editingItem.index < currentEntries.length) {
+        console.log("🔍 [HYPOTHESIS] Overriding prop data with real-time state for index:", editingItem.index);
+        console.log("🔍 [HYPOTHESIS] Original position:", currentEntries[editingItem.index]?.position);
+        console.log("🔍 [HYPOTHESIS] New position:", editingItem.entry.position);
         currentEntries[editingItem.index] = editingItem.entry;
       }
     });
+    
+    console.log("🔍 [HYPOTHESIS] Final merged result (entries count):", currentEntries.length);
+    if (currentEntries.length > 0) {
+      console.log("🔍 [HYPOTHESIS] Final merged result[0] position:", currentEntries[0]?.position);
+    }
     
     return currentEntries;
   };
@@ -3289,11 +3308,11 @@ export default function Canvas2D({
       };
     },
   ) => {
-    console.log("🔴 [2D SAVE PROBLEM] Canvas2D handleAirEntryEdit called");
-    console.log("🔴 [2D SAVE PROBLEM] Index:", index);
-    console.log("🔴 [2D SAVE PROBLEM] Received data:", data);
-    console.log("🔴 [2D SAVE PROBLEM] data.wallPosition:", data.wallPosition);
-    console.log("🔴 [2D SAVE PROBLEM] data.position:", data.position);
+    console.log("🔴 [SAVE CHANGES] handleAirEntryEdit called - SaveChanges clicked");
+    console.log("🔴 [SAVE CHANGES] BEFORE save - editingAirEntries count:", editingAirEntries.length);
+    if (editingAirEntries.length > 0) {
+      console.log("🔴 [SAVE CHANGES] BEFORE save - editingAirEntries[0] position:", editingAirEntries[0]?.entry?.position);
+    }
     
     const editingEntry = editingAirEntries.find(entry => entry.index === index);
     if (!editingEntry) return;
@@ -3314,15 +3333,14 @@ export default function Canvas2D({
       ...(data.properties && { properties: data.properties }),
     };
 
-    console.log("🔴 [2D SAVE PROBLEM] Final entry being saved:", updatedAirEntries[index]);
-    console.log("🔴 [2D SAVE PROBLEM] Final entry position:", updatedAirEntries[index].position);
-    console.log("🔴 [2D SAVE PROBLEM] Final entry wallPosition:", updatedAirEntries[index].dimensions?.wallPosition);
-    console.log("🔴 [2D SAVE PROBLEM] About to call onAirEntriesUpdate - this should persist to store");
+    console.log("🔴 [SAVE CHANGES] Final saved position:", updatedAirEntries[index].position);
     
     onAirEntriesUpdate?.(updatedAirEntries);
-    setEditingAirEntries(prev => prev.filter(entry => entry.index !== index)); // Close dialog - element is preserved
+    console.log("🔴 [SAVE CHANGES] Store updated - now removing from editingAirEntries");
     
-    console.log("🔴 [2D SAVE PROBLEM] Save complete - checking if element reverts in draw cycle");
+    setEditingAirEntries(prev => prev.filter(entry => entry.index !== index));
+    console.log("🔴 [SAVE CHANGES] editingAirEntries cleared - getCurrentAirEntries will now use props only");
+    console.log("🔴 [SAVE CHANGES] If position reverts, it's because props haven't updated yet from store");
   };
 
   // Phase 2: Dialog Management Functions

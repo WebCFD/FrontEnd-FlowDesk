@@ -157,15 +157,8 @@ export const useRoomStore = create<RoomState>()(
         }),
 
         setAirEntries: (airEntries) => {
-          console.log("🔍 [STORE setAirEntries] Called with:", airEntries);
-          console.log("🔍 [STORE setAirEntries] airEntries.length:", airEntries?.length);
-          if (airEntries?.length > 0) {
-            console.log("🔍 [STORE setAirEntries] First entry position:", airEntries[0]?.position);
-            console.log("🔍 [STORE setAirEntries] First entry wallPosition:", airEntries[0]?.dimensions?.wallPosition);
-          }
-          
           return set((state) => {
-            const result = {
+            return {
               floors: {
                 ...state.floors,
                 [state.currentFloor]: {
@@ -174,9 +167,6 @@ export const useRoomStore = create<RoomState>()(
                 }
               }
             };
-            
-            console.log("🔍 [STORE setAirEntries] Store updated for floor:", state.currentFloor);
-            return result;
           });
         },
 
