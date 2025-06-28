@@ -454,6 +454,28 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     }
   }, [(values as any).height, type]);
 
+  // Sincronización bidireccional: actualizar estados locales cuando cambien los props externos
+  useEffect(() => {
+    if (isEditing && props.type !== 'wall' && 'initialValues' in props && props.initialValues) {
+      const airEntryProps = props as AirEntryDialogProps;
+      
+      // Actualizar localWidth y localHeight cuando cambien externamente
+      if (airEntryProps.initialValues.width !== undefined) {
+        setLocalWidth(airEntryProps.initialValues.width);
+      }
+      if (airEntryProps.initialValues.height !== undefined) {
+        setLocalHeight(airEntryProps.initialValues.height);
+      }
+      
+      // Actualizar wallPosition cuando cambie externamente
+      const externalWallPosition = (airEntryProps.initialValues as any).properties?.wallPosition || 
+                                   (airEntryProps.initialValues as any).wallPosition;
+      if (externalWallPosition !== undefined && externalWallPosition !== null) {
+        setWallPosition(externalWallPosition);
+      }
+    }
+  }, [isEditing, props.type, 'initialValues' in props ? props.initialValues?.width : null, 'initialValues' in props ? props.initialValues?.height : null, 'initialValues' in props ? (props.initialValues as any)?.wallPosition : null, 'initialValues' in props ? (props.initialValues as any)?.properties?.wallPosition : null]);
+
   function getDefaultValues() {
     // Obtener valores iniciales según el tipo de props
     const initialValues = props.type === 'wall' 
