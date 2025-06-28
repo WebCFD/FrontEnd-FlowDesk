@@ -648,24 +648,14 @@ export function generateSimulationData(
       
       if (isFloorVent) {
         floorSurfAirEntries.push(airEntry);
-        console.log(`EXPORT DEBUG [${floorName}]: Added vent to floor_surf: id="${airEntry.id}"`);
       } else {
         ceilingAirEntries.push(airEntry);
-        console.log(`EXPORT DEBUG [${floorName}]: Added vent to ceiling: id="${airEntry.id}"`);
       }
     });
-    
-    console.log(`EXPORT DEBUG [${floorName}]: 📊 RESULTADO FINAL:`);
-    console.log(`EXPORT DEBUG [${floorName}]: - ceiling.airEntries: ${ceilingAirEntries.length}`);
-    console.log(`EXPORT DEBUG [${floorName}]: - floor_surf.airEntries: ${floorSurfAirEntries.length}`);
-    console.log(`EXPORT DEBUG [${floorName}]: - Total airEntries generados: ${ceilingAirEntries.length + floorSurfAirEntries.length}`);
-    console.log(`EXPORT DEBUG [${floorName}]: - Total vents procesados: ${ventFurnitureObjects.length}`);
     
     // Obtener temperaturas de techo y suelo de los parámetros del wizard
     const ceilingTemp = currentFloorParams.ceilingTemperature ?? 20; // Valor por defecto 20°C
     const floorTemp = currentFloorParams.floorTemperature ?? 20; // Valor por defecto 20°C
-    
-    console.log(`EXPORT DEBUG [${floorName}]: 🌡️ Temperaturas aplicadas - ceiling: ${ceilingTemp}°C, floor: ${floorTemp}°C`);
     
     // Agregar los datos del piso al objeto de exportación usando número
     exportData.floors[floorNumber] = {
