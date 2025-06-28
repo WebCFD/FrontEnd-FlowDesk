@@ -411,18 +411,18 @@ export default function WizardDesign() {
     
     return structuralFloors;
   }, [
-    // Dependencies: only structural changes that should trigger scene rebuild
-    Object.keys(rawFloors).join(','), // Floor list changes
-    ...Object.keys(rawFloors).flatMap(floorName => {
+    // Use a stable dependency key to prevent useMemo warning
+    JSON.stringify(Object.keys(rawFloors).sort()),
+    ...Object.keys(rawFloors).sort().map(floorName => {
       const floorData = rawFloors[floorName];
-      if (!floorData) return [];
+      if (!floorData) return '';
       
-      // Normalize floating point values to prevent precision errors from triggering rebuilds
+      // Normalize floating point values to prevent precision errors
       const normalizeNum = (num: number): number => Math.round(num * 100) / 100;
       
-      return [
-        JSON.stringify(floorData.lines || []),
-        JSON.stringify(floorData.airEntries?.map(e => ({ 
+      return JSON.stringify({
+        lines: floorData.lines || [],
+        airEntries: floorData.airEntries?.map(e => ({ 
           type: e.type, 
           position: {
             x: normalizeNum(e.position.x),
@@ -442,13 +442,13 @@ export default function WizardDesign() {
           height: normalizeNum(e.dimensions.height),
           distanceToFloor: normalizeNum(e.dimensions.distanceToFloor || 0),
           shape: e.dimensions.shape
-        })) || []),
-        JSON.stringify(floorData.walls || []),
-        JSON.stringify(floorData.measurements || []),
-        floorData.hasClosedContour,
-        JSON.stringify(floorData.stairPolygons || []),
-        JSON.stringify(floorData.furnitureItems || [])
-      ];
+        })) || [],
+        walls: floorData.walls || [],
+        measurements: floorData.measurements || [],
+        hasClosedContour: floorData.hasClosedContour,
+        stairPolygons: floorData.stairPolygons || [],
+        furnitureItems: floorData.furnitureItems || []
+      });
     })
   ]);
 
@@ -2073,7 +2073,7 @@ export default function WizardDesign() {
       
       // Convertir datos del JSON al formato interno
       const convertedFloors: Record<string, any> = {};
-      const newFloorParameters: Record<string, { ceilingHeight: number; floorDeck: number }> = {};
+      const newFloorParameters: Record<string, { ceilingHeight: number; floorDeck: number; ceilingTemperature?: number; floorTemperature?: number }> = {};
       
       // Convertir plantas numeradas de vuelta a nombres
       const floorNameMap: Record<string, string> = {
@@ -2126,7 +2126,9 @@ export default function WizardDesign() {
         // Configurar parámetros del piso
         newFloorParameters[floorName] = {
           ceilingHeight: (floorData.height || 2.2) * 100, // Convertir metros a cm
-          floorDeck: (floorData.floorDeck || 0) * 100 // Convertir metros a cm
+          floorDeck: (floorData.floorDeck || 0) * 100, // Convertir metros a cm
+          ceilingTemperature: floorData.ceilingTemperature || 20, // Default 20°C
+          floorTemperature: floorData.floorTemperature || 20 // Default 20°C
         };
       });
       
@@ -2691,10 +2693,11 @@ export default function WizardDesign() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Erase Current Design?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action will permanently delete all current design data including walls, air entries, stairs, measurements, and multi-floor configurations.
-              <br /><br />
-              This action cannot be undone. Are you sure you want to continue?
+            <AlertDialogDescription asChild>
+              <div>
+                <div>This action will permanently delete all current design data including walls, air entries, stairs, measurements, and multi-floor configurations.</div>
+                <div className="mt-2">This action cannot be undone. Are you sure you want to continue?</div>
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
