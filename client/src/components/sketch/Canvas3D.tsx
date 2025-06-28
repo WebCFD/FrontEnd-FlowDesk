@@ -4857,63 +4857,7 @@ export default function Canvas3D({
         objects.forEach((obj) => sceneRef.current?.add(obj));
       }
     });
-    
-    // Update SceneContext with ALL floors data for comprehensive sharing with RoomSketchPro
-
-    
-    // First, update the entire floors object in the context
-    updateGeometryData({
-      floors: floors,
-      currentFloor: currentFloor,
-      floorSize: GRID_SIZE,
-      gridSize: GRID_DIVISIONS
-    });
-    
-    // Then set current floor data for immediate use
-    const currentFloorData = floors[currentFloor];
-
-    
-    if (currentFloorData) {
-
-      
-      // Update current floor in context (this will trigger setCurrentFloor in the context)
-      setContextCurrentFloor(currentFloor);
-      
-      // Also individually update each floor to ensure proper synchronization
-      Object.entries(floors).forEach(([floorName, floorData]) => {
-        updateFloorData(floorName, floorData);
-      });
-      
-      // Update scene objects in context
-      if (sceneRef.current) {
-        // Find walls, floor, and air entries to expose in context
-        const walls: THREE.Object3D[] = [];
-        let floor: THREE.Object3D | undefined;
-        const airEntries: THREE.Object3D[] = [];
-        
-        sceneRef.current.traverse((object) => {
-          if (object instanceof THREE.Mesh && object.userData.type === 'floor') {
-            floor = object;
-          } else if (object instanceof THREE.Mesh && object.userData.type === 'wall') {
-            walls.push(object);
-          } else if (object instanceof THREE.Mesh && 
-                    (object.userData.type === 'window' || 
-                     object.userData.type === 'door' || 
-                     object.userData.type === 'vent')) {
-            airEntries.push(object);
-          }
-        });
-        
-        updateSceneData({
-          walls,
-          floor,
-          airEntries,
-          gridHelper: sceneRef.current.children.find(
-            (obj) => obj instanceof THREE.GridHelper
-          )
-        });
-      }
-    }
+    // Scene geometry has been rebuilt - context updates will happen in separate useEffect
 
     // After rebuilding the scene, we need to restore or reset selection state
     if (selectedAirEntry) {
@@ -5055,6 +4999,60 @@ export default function Canvas3D({
       };
     }
   }, [floors, currentFloor, ceilingHeight, floorDeckThickness]);
+
+  // Separate useEffect for context updates to avoid hidden dependencies in scene rebuild
+  useEffect(() => {
+    // Update SceneContext with ALL floors data for comprehensive sharing with RoomSketchPro
+    updateGeometryData({
+      floors: floors,
+      currentFloor: currentFloor,
+      floorSize: GRID_SIZE,
+      gridSize: GRID_DIVISIONS
+    });
+    
+    // Then set current floor data for immediate use
+    const currentFloorData = floors[currentFloor];
+    
+    if (currentFloorData) {
+      // Update current floor in context (this will trigger setCurrentFloor in the context)
+      setContextCurrentFloor(currentFloor);
+      
+      // Also individually update each floor to ensure proper synchronization
+      Object.entries(floors).forEach(([floorName, floorData]) => {
+        updateFloorData(floorName, floorData);
+      });
+      
+      // Update scene objects in context
+      if (sceneRef.current) {
+        // Find walls, floor, and air entries to expose in context
+        const walls: THREE.Object3D[] = [];
+        let floor: THREE.Object3D | undefined;
+        const airEntries: THREE.Object3D[] = [];
+        
+        sceneRef.current.traverse((object) => {
+          if (object instanceof THREE.Mesh && object.userData.type === 'floor') {
+            floor = object;
+          } else if (object instanceof THREE.Mesh && object.userData.type === 'wall') {
+            walls.push(object);
+          } else if (object instanceof THREE.Mesh && 
+                    (object.userData.type === 'window' || 
+                     object.userData.type === 'door' || 
+                     object.userData.type === 'vent')) {
+            airEntries.push(object);
+          }
+        });
+        
+        updateSceneData({
+          walls,
+          floor,
+          airEntries,
+          gridHelper: sceneRef.current.children.find(
+            (obj) => obj instanceof THREE.GridHelper
+          )
+        });
+      }
+    }
+  }, [floors, currentFloor, isMultifloor, floorParameters, updateGeometryData, setContextCurrentFloor, updateFloorData, updateSceneData]);
 
   useEffect(() => {
     // Mark that rendering is needed when selection or dragging state changes
