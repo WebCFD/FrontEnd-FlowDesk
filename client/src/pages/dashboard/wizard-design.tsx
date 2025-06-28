@@ -1040,8 +1040,11 @@ export default function WizardDesign() {
         // Update floor data in the store
         console.log('🔥 [STORE UPDATE 1] About to call setFloors - THIS TRIGGERS RSP REGENERATION');
         console.log('🔥 [STORE UPDATE 1] Current floor case - this will cause RSP useEffect to fire');
+        console.log('🔥 [STORE UPDATE 1] BEFORE setFloors - floors reference:', floors);
+        console.log('🔥 [STORE UPDATE 1] BEFORE setFloors - floors hash:', JSON.stringify(floors).slice(0, 50) + '...');
         useRoomStore.getState().setFloors(updatedFloors);
         console.log('🔥 [STORE UPDATE 1] setFloors called - RSP will now regenerate scene losing textures');
+        console.log('🔥 [STORE UPDATE 1] AFTER setFloors - floors should have new reference');
       }
 
       // Entry updated successfully
@@ -1105,6 +1108,8 @@ export default function WizardDesign() {
       // to ensure it's consistent across the component
       console.log('🔥 [STORE UPDATE 2] About to call setFloors - THIS TRIGGERS RSP REGENERATION');
       console.log('🔥 [STORE UPDATE 2] Non-current floor case - this will cause RSP useEffect to fire');
+      console.log('🔥 [STORE UPDATE 2] BEFORE setFloors - floors reference:', floors);
+      console.log('🔥 [STORE UPDATE 2] BEFORE setFloors - floors hash:', JSON.stringify(floors).slice(0, 50) + '...');
       useRoomStore.getState().setFloors(updatedFloors);
       console.log('🔥 [STORE UPDATE 2] setFloors called - RSP will now regenerate scene losing textures');
 
