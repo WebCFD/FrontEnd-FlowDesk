@@ -2525,6 +2525,7 @@ export default function WizardDesign() {
               onFurnitureAdd={handleFurnitureAdd}
               onUpdateFurniture={handleFurnitureUpdate}
               onDeleteFurniture={handleFurnitureDelete}
+              onUpdateAirEntry={handleUpdateAirEntryFrom3D} // CRITICAL: Connect RSP to store sync
               isFurnitureEraserMode={isFurnitureEraserMode}
               onToggleFurnitureEraserMode={handleToggleFurnitureEraserMode}
               // Add onFloorsUpdate callback to enable 2D vent real-time updates in RSP
