@@ -1,0 +1,85 @@
+dashboard-sidebar.tsx:65 
+            
+            
+           GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+fetchUserData @ dashboard-sidebar.tsx:65
+(anonymous) @ dashboard-sidebar.tsx:80
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19416
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+(anonymous) @ chunk-WERSD76P.js?v=cfa7cc5f:18627
+Canvas3D.tsx:4778 🚨 [SCENE REBUILD TRIGGER] useEffect triggered - dependencies changed
+Canvas3D.tsx:4779 🚨 [SCENE REBUILD TRIGGER] floors reference: {ground: {…}}
+Canvas3D.tsx:4780 🚨 [SCENE REBUILD TRIGGER] floors identity hash: {"ground":{"lines":[{"id":"1751117633700_8acpoo1h3...
+Canvas3D.tsx:4781 🚨 [SCENE REBUILD TRIGGER] currentFloor: ground
+Canvas3D.tsx:4782 🚨 [SCENE REBUILD TRIGGER] ceilingHeight: 220
+Canvas3D.tsx:4783 🚨 [SCENE REBUILD TRIGGER] floorDeckThickness: 35
+Canvas3D.tsx:5316 🔧 [WALL TRANSPARENCY] Updating wall transparency, preserving AirEntry textures
+Canvas3D.tsx:5330 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5330 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5330 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5330 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5330 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5330 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 244ms
+wizard-design.tsx:1676 Dragging furniture: {id: 'vent', name: 'Vent', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…ke="#22c55e" stroke-width="2"/>\n      </svg>\n    ', defaultDimensions: {…}}
+wizard-design.tsx:1676 Dragging furniture: {id: 'vent', name: 'Vent', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…ke="#22c55e" stroke-width="2"/>\n      </svg>\n    ', defaultDimensions: {…}}
+wizard-design:1 [.WebGL-0x2c6409cfce00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x2c6409cfce00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x2c6409cfce00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x2c6409cfce00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x2c6409cfce00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x2c6409cfce00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x2c6409cfce00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x2c6409cfce00] GL_INVALID_OPERATION: Texture is immutable.
+Canvas3D.tsx:4778 🚨 [SCENE REBUILD TRIGGER] useEffect triggered - dependencies changed
+Canvas3D.tsx:4779 🚨 [SCENE REBUILD TRIGGER] floors reference: {ground: {…}}
+Canvas3D.tsx:4780 🚨 [SCENE REBUILD TRIGGER] floors identity hash: {"ground":{"lines":[{"id":"1751117633700_8acpoo1h3...
+Canvas3D.tsx:4781 🚨 [SCENE REBUILD TRIGGER] currentFloor: ground
+Canvas3D.tsx:4782 🚨 [SCENE REBUILD TRIGGER] ceilingHeight: 220
+Canvas3D.tsx:4783 🚨 [SCENE REBUILD TRIGGER] floorDeckThickness: 35
+Canvas3D.tsx:5316 🔧 [WALL TRANSPARENCY] Updating wall transparency, preserving AirEntry textures
+Canvas3D.tsx:5330 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5330 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5330 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5330 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5330 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5330 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 237ms
+[Violation] Forced reflow while executing JavaScript took 35ms
+custom-furniture-store.ts:274 Custom Furniture Store: Clearing all definitions (Erase Design)
+analytics.ts:62 📊 Analytics Event: {category: 'simulation', action: 'save_simulation', label: 'design_erased', value: 1, status: 'sent'}
+Canvas3D.tsx:4778 🚨 [SCENE REBUILD TRIGGER] useEffect triggered - dependencies changed
+Canvas3D.tsx:4779 🚨 [SCENE REBUILD TRIGGER] floors reference: {ground: {…}}
+Canvas3D.tsx:4780 🚨 [SCENE REBUILD TRIGGER] floors identity hash: {"ground":{"lines":[],"airEntries":[],"walls":[],"...
+Canvas3D.tsx:4781 🚨 [SCENE REBUILD TRIGGER] currentFloor: ground
+Canvas3D.tsx:4782 🚨 [SCENE REBUILD TRIGGER] ceilingHeight: 220
+Canvas3D.tsx:4783 🚨 [SCENE REBUILD TRIGGER] floorDeckThickness: 35
+wizard-design:1 [.WebGL-0x2c6404789c00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x2c6404789c00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x2c6404789c00] GL_INVALID_OPERATION: Texture is immutable.
+Canvas3D.tsx:4778 🚨 [SCENE REBUILD TRIGGER] useEffect triggered - dependencies changed
+Canvas3D.tsx:4779 🚨 [SCENE REBUILD TRIGGER] floors reference: {ground: {…}}
+Canvas3D.tsx:4780 🚨 [SCENE REBUILD TRIGGER] floors identity hash: {"ground":{"lines":[{"id":"1751117682192_8z27bk2k2...
+Canvas3D.tsx:4781 🚨 [SCENE REBUILD TRIGGER] currentFloor: ground
+Canvas3D.tsx:4782 🚨 [SCENE REBUILD TRIGGER] ceilingHeight: 220
+Canvas3D.tsx:4783 🚨 [SCENE REBUILD TRIGGER] floorDeckThickness: 35
+Canvas3D.tsx:5316 🔧 [WALL TRANSPARENCY] Updating wall transparency, preserving AirEntry textures
+Canvas3D.tsx:5330 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5330 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5330 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5330 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5330 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5330 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 272ms
+wizard-design.tsx:1676 Dragging furniture: {id: 'table', name: 'Table', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…"4" height="8" fill="#8B4513"/>\n      </svg>\n    ', defaultDimensions: {…}}
+wizard-design.tsx:1676 Dragging furniture: {id: 'vent', name: 'Vent', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…ke="#22c55e" stroke-width="2"/>\n      </svg>\n    ', defaultDimensions: {…}}
+wizard-design.tsx:1676 Dragging furniture: {id: 'vent', name: 'Vent', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…ke="#22c55e" stroke-width="2"/>\n      </svg>\n    ', defaultDimensions: {…}}
