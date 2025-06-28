@@ -2,6 +2,7 @@ import { useRef, useEffect, useState, useCallback } from "react";
 import Canvas3D from "./Canvas3D";
 import * as THREE from "three";
 import { TextureGenerator } from "./textureGenerator";
+import { useRoomStore } from "@/lib/store/room-store";
 
 interface Point {
   x: number;
@@ -846,6 +847,21 @@ export function RoomSketchPro({
   }, [airEntryTransparency]);
 
   // Handle air entry updates from 3D Canvas (real-time updates for 2D vents)
+  // Reactive AirEntry synchronization system for RSP
+  const { subscribeToAirEntryChanges } = useRoomStore();
+  
+  useEffect(() => {
+    const unsubscribe = subscribeToAirEntryChanges((floorName, index, updatedEntry) => {
+      // Force texture re-application when AirEntry changes from external sources
+      if (sceneRef.current && appliedTexturesRef.current) {
+        console.log(`🎨 RSP: Re-applying textures after AirEntry change on ${floorName}`);
+        applyThemeTextures();
+      }
+    });
+    
+    return unsubscribe;
+  }, [subscribeToAirEntryChanges]);
+
   const handleUpdateAirEntryFrom3D = useCallback((
     floorName: string,
     index: number,
