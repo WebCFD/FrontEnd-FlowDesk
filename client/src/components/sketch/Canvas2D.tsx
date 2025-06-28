@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { useSketchStore } from "@/lib/stores/sketch-store";
 import CoordinateEditorDialog from "./CoordinateEditorDialog";
 import WallPropertiesDialog from "./WallPropertiesDialog";
+import StairPropertiesDialog from "./StairPropertiesDialog";
 import { 
   createWallFromLine, 
   findWallForLine, 
@@ -1235,7 +1236,18 @@ export default function Canvas2D({
       }
     }
     
-    // SECOND: Check for air entries
+    // SECOND: Check for stair polygon body double-click (for properties editing)
+    if (stairPolygons && stairPolygons.length > 0) {
+      const stairInfo = findStairPolygonAtPoint(point, stairPolygons);
+      if (stairInfo && !stairInfo.polygon.isImported) {
+        debugLog(`Double-click detected on stair polygon - opening stair properties editor`);
+        setEditingStair(stairInfo.polygon);
+        setStairPropertiesDialogOpen(true);
+        return;
+      }
+    }
+    
+    // THIRD: Check for air entries
     const airEntryInfo = findAirEntryAtLocation(point);
     if (airEntryInfo) {
       debugLog(`Double-click detected on air entry - opening air entry editor`);
@@ -3532,6 +3544,19 @@ export default function Canvas2D({
           onConfirm={(temperature) => handleWallPropertiesSave(editingWall.id, temperature)}
           isEditing={true}
           initialValues={{ temperature: editingWall.properties.temperature }}
+        />
+      )}
+
+      {/* Stair Properties Dialog */}
+      {editingStair && (
+        <StairPropertiesDialog
+          isOpen={stairPropertiesDialogOpen}
+          onClose={() => {
+            setStairPropertiesDialogOpen(false);
+            setEditingStair(null);
+          }}
+          stair={editingStair}
+          onSave={handleStairPropertiesSave}
         />
       )}
     </div>
