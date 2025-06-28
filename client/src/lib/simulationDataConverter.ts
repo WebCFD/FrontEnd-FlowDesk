@@ -1027,7 +1027,8 @@ export function convertStairPolygonToExport(
   return {
     id: stairId,
     lines: lines,
-    connectsTo: stairPolygon.connectsTo
+    connectsTo: stairPolygon.connectsTo,
+    temperature: stairPolygon.temperature
   };
 }
 
