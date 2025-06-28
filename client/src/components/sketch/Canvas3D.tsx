@@ -2312,19 +2312,41 @@ export default function Canvas3D({
             : entryDimensions.distanceToFloor || 0);
 
         const geometry = new THREE.PlaneGeometry(width, height);
-        const material = new THREE.MeshPhongMaterial({
-          color:
-            entry.type === "window"
-              ? 0x3b82f6
-              : entry.type === "door"
-                ? 0xb45309
-                : 0x22c55e,
-          opacity: 0.7, // Fixed opacity at 70% regardless of current floor
-          transparent: true,
-          side: THREE.DoubleSide,
-          depthTest: false, // Disable depth testing to render on top
-          depthWrite: false, // Disable depth writing
+        // CRITICAL FIX: Check for existing material with textures before creating new one
+        let material: THREE.MeshPhongMaterial;
+        let existingMesh: THREE.Mesh | null = null;
+        
+        // Search for existing mesh with same type and position to preserve textures
+        sceneRef.current?.traverse((object) => {
+          if (object instanceof THREE.Mesh && 
+              object.userData?.type === entry.type && 
+              object.userData?.entryIndex === index) {
+            existingMesh = object;
+          }
         });
+        
+        if (existingMesh && existingMesh.material instanceof THREE.MeshPhongMaterial && existingMesh.material.map) {
+          // PRESERVE EXISTING TEXTURE: Reuse material with texture
+          console.log(`✅ [SCENE REBUILD] Preserving texture for ${entry.type} at index ${index}`);
+          material = existingMesh.material.clone();
+          material.needsUpdate = true;
+        } else {
+          // CREATE NEW MATERIAL: No existing texture found
+          console.log(`🔧 [SCENE REBUILD] Creating new material for ${entry.type} at index ${index}`);
+          material = new THREE.MeshPhongMaterial({
+            color:
+              entry.type === "window"
+                ? 0x3b82f6
+                : entry.type === "door"
+                  ? 0xb45309
+                  : 0x22c55e,
+            opacity: 0.7, // Fixed opacity at 70% regardless of current floor
+            transparent: true,
+            side: THREE.DoubleSide,
+            depthTest: false, // Disable depth testing to render on top
+            depthWrite: false, // Disable depth writing
+          });
+        }
 
         const mesh = new THREE.Mesh(geometry, material);
         const position = transform2DTo3D(entryPosition);
