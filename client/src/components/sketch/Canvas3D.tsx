@@ -5031,6 +5031,11 @@ export default function Canvas3D({
         const airEntries: THREE.Object3D[] = [];
         
         sceneRef.current.traverse((object) => {
+          // CRITICAL FIX: Skip coordinate system axes - they should only be visible in Canvas3D
+          if (object.userData?.type === 'axis') {
+            return; // Skip axes completely - don't share with RSP
+          }
+          
           if (object instanceof THREE.Mesh && object.userData.type === 'floor') {
             floor = object;
           } else if (object instanceof THREE.Mesh && object.userData.type === 'wall') {
