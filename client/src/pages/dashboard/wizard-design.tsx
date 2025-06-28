@@ -421,6 +421,7 @@ export default function WizardDesign() {
           name: floorName,
           linesLength: rawFloors[floorName]?.lines?.length || 0,
           airEntriesLength: rawFloors[floorName]?.airEntries?.length || 0,
+          furnitureItemsLength: rawFloors[floorName]?.furnitureItems?.length || 0,
           hasClosedContour: rawFloors[floorName]?.hasClosedContour || false
         }))
     )
