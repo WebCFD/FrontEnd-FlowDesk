@@ -1383,7 +1383,10 @@ export default function Canvas3D({
     // Debounce parent callback to prevent excessive updates
     updateTimeoutRef.current = setTimeout(() => {
       if (onUpdateAirEntry && editingAirEntry) {
+        console.log('🔍 [HYPOTHESIS TEST] About to call onUpdateAirEntry - this may trigger floors modification');
+        console.log('🔍 [HYPOTHESIS TEST] Current floors object reference:', typeof floors);
         onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
+        console.log('🔍 [HYPOTHESIS TEST] onUpdateAirEntry completed - floors may have been modified');
       }
       
       // OPTIMIZATION: No callback needed after position update - textures preserved automatically
@@ -4761,7 +4764,12 @@ export default function Canvas3D({
   }, []);
 
   useEffect(() => {
-
+    console.log('🚨 [SCENE REBUILD TRIGGER] useEffect triggered - dependencies changed');
+    console.log('🚨 [SCENE REBUILD TRIGGER] floors reference:', typeof floors, Object.keys(floors).length);
+    console.log('🚨 [SCENE REBUILD TRIGGER] currentFloor:', currentFloor);
+    console.log('🚨 [SCENE REBUILD TRIGGER] ceilingHeight:', ceilingHeight);
+    console.log('🚨 [SCENE REBUILD TRIGGER] floorDeckThickness:', floorDeckThickness);
+    console.log('🚨 [SCENE REBUILD TRIGGER] editingAirEntry state:', editingAirEntry ? 'OPEN' : 'CLOSED');
 
     // Don't reset selection state here - we'll handle it after rebuilding the scene
     // This prevents losing the selection when the scene is updated
