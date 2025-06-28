@@ -1110,6 +1110,9 @@ export default function WizardDesign() {
     index: number,
     updatedEntry: AirEntry,
   ) => {
+    console.log(`🎯 WIZARD: handleUpdateAirEntryFrom3D llamado - piso: ${floorName}, índice: ${index}`);
+    console.log(`🎯 WIZARD: Datos recibidos del AirEntry:`, updatedEntry);
+    
     // CRITICAL FIX: Preserve wallPosition from existing store data
     const existingEntry = airEntries[index];
     
@@ -1125,8 +1128,12 @@ export default function WizardDesign() {
       dimensions: preservedDimensions
     };
 
+    console.log(`📝 WIZARD: Entry clonado con wallPosition preservado:`, deepClonedEntry);
+
     // Use the store's setAirEntries function when updating the current floor
     if (floorName === currentFloor) {
+      console.log(`✅ WIZARD: Actualizando piso actual - procediendo con la actualización del store`);
+      
       // Create a deep copy of the air entries array with structuredClone
       const updatedAirEntries = airEntries.map((entry, i) =>
         i === index ? deepClonedEntry : { ...entry },
@@ -1134,6 +1141,7 @@ export default function WizardDesign() {
 
       // Set the air entries with the deep copy
       setAirEntries(updatedAirEntries);
+      console.log(`📋 WIZARD: setAirEntries ejecutado con nuevo array`);
 
       // Also update the floors data to keep everything in sync
       const updatedFloors = { ...floors };
@@ -1144,7 +1152,17 @@ export default function WizardDesign() {
         };
         // Update floor data in the store
         useRoomStore.getState().setFloors(updatedFloors);
+        console.log(`📋 WIZARD: useRoomStore.setFloors ejecutado`);
       }
+
+      // CRÍTICO: Aquí es donde debería estar la llamada a updateAirEntry para la sincronización
+      console.log(`🚨 WIZARD: CRÍTICO - No se está llamando updateAirEntry del store para la sincronización`);
+      console.log(`🚨 WIZARD: Esto explica por qué no se notifica a otros componentes`);
+      
+      // AGREGANDO SINCRONIZACIÓN: Llamar updateAirEntry para notificar a otros componentes
+      console.log(`🔧 WIZARD: Llamando updateAirEntry para disparar sincronización`);
+      useRoomStore.getState().updateAirEntry(floorName, index, deepClonedEntry);
+      console.log(`✅ WIZARD: updateAirEntry completado - debería notificar a Canvas2D, Canvas3D y RSP`);
 
       // Entry updated successfully
 
