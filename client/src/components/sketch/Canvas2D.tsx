@@ -3417,24 +3417,13 @@ export default function Canvas2D({
             // Save Changes: Update element properties and close dialog
             handleAirEntryEdit(editingAirEntry.index, data as any);
           }}
-          initialValues={(() => {
-            console.log('🔍 [CANVAS2D DEBUG] Preparing initialValues for dialog');
-            console.log('🔍 [CANVAS2D DEBUG] editingAirEntry.entry:', editingAirEntry.entry);
-            console.log('🔍 [CANVAS2D DEBUG] editingAirEntry.entry.position:', editingAirEntry.entry.position);
-            console.log('🔍 [CANVAS2D DEBUG] editingAirEntry.entry.dimensions:', editingAirEntry.entry.dimensions);
-            console.log('🔍 [CANVAS2D DEBUG] editingAirEntry.entry.properties:', (editingAirEntry.entry as any).properties);
-            
-            const initialValues = {
-              ...editingAirEntry.entry.dimensions,
-              shape: (editingAirEntry.entry.dimensions as any).shape,
-              properties: (editingAirEntry.entry as any).properties,
-              position: editingAirEntry.entry.position,  // Add the missing position
-              wallPosition: (editingAirEntry.entry.dimensions as any).wallPosition || (editingAirEntry.entry as any).properties?.wallPosition
-            };
-            
-            console.log('🔍 [CANVAS2D DEBUG] Final initialValues being passed:', initialValues);
-            return initialValues;
-          })() as any}
+          initialValues={{
+            ...editingAirEntry.entry.dimensions,
+            shape: (editingAirEntry.entry.dimensions as any).shape,
+            properties: (editingAirEntry.entry as any).properties,
+            position: editingAirEntry.entry.position,
+            wallPosition: (editingAirEntry.entry.dimensions as any).wallPosition || (editingAirEntry.entry as any).properties?.wallPosition
+          } as any}
           airEntryIndex={editingAirEntry.index}
           currentFloor={currentFloor}
           isEditing={true}

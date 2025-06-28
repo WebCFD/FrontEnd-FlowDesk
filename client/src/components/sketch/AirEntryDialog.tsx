@@ -332,23 +332,12 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         // En modo edición, usar los valores actuales del elemento
         const airEntryProps = props as AirEntryDialogProps;
         if (airEntryProps.initialValues) {
-          console.log('🔍 LOADING EDITING VALUES - Full initialValues:', JSON.stringify(airEntryProps.initialValues, null, 2));
-          
           const initialDistanceToFloor = airEntryProps.initialValues.distanceToFloor || 0;
           setDistanceToFloor(initialDistanceToFloor);
-          
-          // DEBUG: Width loading (working parameter)
-          const savedWidth = airEntryProps.initialValues.width;
-          console.log('✅ WIDTH LOADING - Found saved width:', savedWidth);
           
           // Check if we have a saved wallPosition value from properties
           const savedWallPosition = (airEntryProps.initialValues as any).properties?.wallPosition || 
                                   (airEntryProps.initialValues as any).wallPosition;
-          
-          console.log('🔍 WALL POSITION LOADING - Checking sources:');
-          console.log('  - properties?.wallPosition:', (airEntryProps.initialValues as any).properties?.wallPosition);
-          console.log('  - direct wallPosition:', (airEntryProps.initialValues as any).wallPosition);
-          console.log('  - Final savedWallPosition:', savedWallPosition);
           
           // Also set in form values for persistence
           setValues(prev => ({ 
@@ -359,16 +348,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           
           // If we have a saved wallPosition, use it directly
           if (savedWallPosition !== undefined && savedWallPosition !== null) {
-            console.log('✅ WALL POSITION LOADING - Using saved value:', savedWallPosition);
             setWallPosition(savedWallPosition);
           }
           // Otherwise, calculate from current position
           else if (airEntryProps.wallContext && airEntryProps.initialValues.position) {
-            console.log('🔍 WALL POSITION DEBUG - No saved value, calculating from current position');
-            console.log('🔍 WALL POSITION DEBUG - wallContext exists:', !!airEntryProps.wallContext);
-            console.log('🔍 WALL POSITION DEBUG - position exists:', !!airEntryProps.initialValues.position);
-            console.log('🔍 WALL POSITION DEBUG - current position:', airEntryProps.initialValues.position);
-            console.log('🔍 WALL POSITION DEBUG - wallContext:', airEntryProps.wallContext);
             const { wallStart, wallEnd } = airEntryProps.wallContext;
             const currentPosition = airEntryProps.initialValues.position;
             
@@ -396,7 +379,6 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
             const percentage = effectiveLength > 0 ? (effectiveDistance / effectiveLength) * 100 : 0;
             
             const finalPercentage = Math.min(100, Math.max(0, percentage));
-            console.log('🔍 WALL POSITION DEBUG - Calculated percentage:', finalPercentage);
             setWallPosition(finalPercentage);
             
             // Also set in form values for persistence
@@ -406,9 +388,6 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
               position: currentPosition 
             }));
           } else {
-            console.log('❌ WALL POSITION DEBUG - Falling back to default 50% - Missing data:');
-            console.log('❌ WALL POSITION DEBUG - wallContext exists:', !!airEntryProps.wallContext);
-            console.log('❌ WALL POSITION DEBUG - position exists:', !!airEntryProps.initialValues.position);
             setWallPosition(50); // Default center
             setValues(prev => ({ ...prev, wallPosition: 50 }));
           }
@@ -555,7 +534,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         position: (values as any).position
       };
       
-      console.log('📦 FORM SUBMIT - Final airEntryData being sent:', JSON.stringify(airEntryData, null, 2));
+      // Final airEntryData prepared for submission
       
       // Persist simulation properties in the store if we have the necessary info
       if ((props.type === 'window' || props.type === 'door' || props.type === 'vent') && 'airEntryIndex' in props && props.airEntryIndex !== undefined && props.currentFloor) {
@@ -578,7 +557,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         // Always save wallPosition for all air entry types
         simulationProperties.wallPosition = (values as any).wallPosition || wallPosition;
         
-        console.log('💾 SIMULATION PROPERTIES SAVE - Final properties:', simulationProperties);
+        // Save simulation properties to store
         
         // Store the properties
         updateAirEntryProperties(props.currentFloor, props.airEntryIndex, simulationProperties);
