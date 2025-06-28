@@ -1299,8 +1299,7 @@ export default function Canvas3D({
   const controlsRef = useRef<TrackballControls | null>(null);
   const needsRenderRef = useRef<boolean>(true);
   
-  // CRITICAL: Global material preservation for RSP textures
-  const preservedMaterialsRef = useRef<Map<string, THREE.Material>>(new Map());
+
   // State for editing air entries - Phase 2: Extended with wall context
   const [editingAirEntry, setEditingAirEntry] = useState<{
     index: number;
