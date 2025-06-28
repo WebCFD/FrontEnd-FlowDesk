@@ -1242,6 +1242,9 @@ export default function Canvas2D({
     if (stairPolygons && stairPolygons.length > 0) {
       const stairInfo = findStairPolygonAtPoint(point, stairPolygons);
       if (stairInfo && !stairInfo.polygon.isImported) {
+        console.log("🎯 Canvas2D DOUBLECLICK - Found stair:", stairInfo.polygon);
+        console.log("🎯 Canvas2D DOUBLECLICK - Stair ID:", stairInfo.polygon.id);
+        console.log("🎯 Canvas2D DOUBLECLICK - Current temperature:", stairInfo.polygon.temperature);
         debugLog(`Double-click detected on stair polygon - opening stair properties editor`);
         setEditingStair(stairInfo.polygon);
         setStairPropertiesDialogOpen(true);
@@ -1302,13 +1305,17 @@ export default function Canvas2D({
   }
 
   const handleStairPropertiesSave = (stairId: string, temperature: number) => {
+    console.log("🔧 Canvas2D SAVE - Received stairId:", stairId, "temperature:", temperature);
+    console.log("🔧 Canvas2D SAVE - Current stairPolygons:", stairPolygons);
     if (onStairPolygonsUpdate) {
       const updatedStairs = stairPolygons.map(stair => 
         stair.id === stairId 
           ? { ...stair, temperature }
           : stair
       );
+      console.log("🔧 Canvas2D SAVE - Updated stairs array:", updatedStairs);
       onStairPolygonsUpdate(updatedStairs);
+      console.log("🔧 Canvas2D SAVE - onStairPolygonsUpdate called");
     }
   };
 

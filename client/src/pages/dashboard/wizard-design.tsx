@@ -2533,7 +2533,12 @@ export default function WizardDesign() {
               stairPolygons={stairPolygons}
               walls={walls}
               onMeasurementsUpdate={setMeasurements}
-              onStairPolygonsUpdate={setStairPolygons}
+              onStairPolygonsUpdate={(newPolygons) => {
+                console.log("🏠 Wizard RECEIVE - New polygons from Canvas2D:", newPolygons);
+                console.log("🏠 Wizard RECEIVE - About to call setStairPolygons");
+                setStairPolygons(newPolygons);
+                console.log("🏠 Wizard RECEIVE - setStairPolygons completed");
+              }}
               onWallsUpdate={setWalls}
               lines={lines}
               floorText={formatFloorText(currentFloor)}
