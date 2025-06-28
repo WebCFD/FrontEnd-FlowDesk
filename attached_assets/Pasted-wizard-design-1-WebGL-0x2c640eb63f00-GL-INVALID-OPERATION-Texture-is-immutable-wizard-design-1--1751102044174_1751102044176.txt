@@ -1,0 +1,117 @@
+wizard-design:1 [.WebGL-0x2c640eb63f00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x2c640eb63f00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x2c640eb63f00] GL_INVALID_OPERATION: Texture is immutable.
+Canvas3D.tsx:4783 🚨 [SCENE REBUILD TRIGGER] useEffect triggered - dependencies changed
+Canvas3D.tsx:4784 🚨 [SCENE REBUILD TRIGGER] floors reference: {ground: {…}}
+Canvas3D.tsx:4785 🚨 [SCENE REBUILD TRIGGER] floors identity hash: {"ground":{"lines":[{"id":"1751088197581_7xgw9jn6h...
+Canvas3D.tsx:4786 🚨 [SCENE REBUILD TRIGGER] currentFloor: ground
+Canvas3D.tsx:4787 🚨 [SCENE REBUILD TRIGGER] ceilingHeight: 220
+Canvas3D.tsx:4788 🚨 [SCENE REBUILD TRIGGER] floorDeckThickness: 35
+Canvas3D.tsx:2354 🔧 [SCENE REBUILD] Creating new material for vent at index 0
+Canvas3D.tsx:2354 🔧 [SCENE REBUILD] Creating new material for window at index 1
+Canvas3D.tsx:5321 🔧 [WALL TRANSPARENCY] Updating wall transparency, preserving AirEntry textures
+Canvas3D.tsx:5335 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5335 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5335 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5335 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5335 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5335 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5340 ✅ [WALL TRANSPARENCY] Preserving AirEntry material - hasTexture: false opacity: 0.7
+Canvas3D.tsx:5340 ✅ [WALL TRANSPARENCY] Preserving AirEntry material - hasTexture: false opacity: 0.7
+RoomSketchPro.tsx:792 ✅ [TRANSPARENCY UPDATE] Preserving existing material properties, only updating opacity
+RoomSketchPro.tsx:793 ✅ [TRANSPARENCY UPDATE] Material has texture: true
+RoomSketchPro.tsx:792 ✅ [TRANSPARENCY UPDATE] Preserving existing material properties, only updating opacity
+RoomSketchPro.tsx:793 ✅ [TRANSPARENCY UPDATE] Material has texture: true
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 513ms
+[Violation] Forced reflow while executing JavaScript took 67ms
+Canvas3D.tsx:4684 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4694 Double-click found entry using stored entryIndex: 0
+AirEntryDialog.tsx:335 🔍 LOADING EDITING VALUES - Full initialValues: {
+  "width": 124,
+  "height": 95,
+  "distanceToFloor": 154,
+  "shape": "rectangular",
+  "position": {
+    "x": 429.777266109303,
+    "y": 97.31040272615682
+  }
+}
+AirEntryDialog.tsx:342 ✅ WIDTH LOADING - Found saved width: 124
+AirEntryDialog.tsx:348 🔍 WALL POSITION LOADING - Checking sources:
+AirEntryDialog.tsx:349   - properties?.wallPosition: undefined
+AirEntryDialog.tsx:350   - direct wallPosition: undefined
+AirEntryDialog.tsx:351   - Final savedWallPosition: undefined
+AirEntryDialog.tsx:519 📝 FORM SUBMIT - Current form values: {width: 124, height: 95, distanceToFloor: 154, shape: 'rectangular', properties: undefined, …}
+AirEntryDialog.tsx:520 📝 FORM SUBMIT - Current wallPosition state: 38.99999999999999
+AirEntryDialog.tsx:521 📝 FORM SUBMIT - Current distanceToFloor state: 154
+AirEntryDialog.tsx:549 📦 FORM SUBMIT - Final airEntryData being sent: {
+  "width": 124,
+  "height": 95,
+  "diameter": null,
+  "distanceToFloor": 154,
+  "shape": "rectangular",
+  "isOpen": true,
+  "temperature": 20,
+  "airDirection": "inflow",
+  "flowIntensity": "medium",
+  "customIntensityValue": null,
+  "ventFlowType": "massflow",
+  "airOrientation": {
+    "verticalAngle": 0,
+    "horizontalAngle": 0
+  },
+  "wallPosition": 38.99999999999999,
+  "position": {
+    "x": 429.777266109303,
+    "y": 97.31040272615682
+  }
+}
+AirEntryDialog.tsx:572 💾 SIMULATION PROPERTIES SAVE - Final properties: {flowType: 'massflow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', wallPosition: 38.99999999999999}
+Canvas3D.tsx:6031 [CANVAS3D ONCONFIRM] Received data from dialog: {width: 124, height: 95, distanceToFloor: 154, shape: 'rectangular', wallPosition: 38.99999999999999, …}
+Canvas3D.tsx:6032 [CANVAS3D ONCONFIRM] wallPosition in received data: 38.99999999999999
+Canvas3D.tsx:6033 🔍 [SAVE CHANGES DEBUG] About to call handleAirEntryEdit
+Canvas3D.tsx:1865 [DIMENSION STORAGE] Stored dimensions for entry 0: {"position":{"x":429.777266109303,"y":97.31040272615682},"dimensions":{"width":124,"height":95,"distanceToFloor":154,"shape":"rectangular","wallPosition":38.99999999999999}}
+Canvas3D.tsx:1867 [WALL POSITION STORAGE] wallPosition in data: 38.99999999999999
+Canvas3D.tsx:1868 [WALL POSITION STORAGE] wallPosition in updatedEntry.dimensions: 38.99999999999999
+Canvas3D.tsx:1871 💾 [SAVE CHANGES] Pure data commit - only saving values to store
+Canvas3D.tsx:1872 💾 [SAVE CHANGES] Floor: ground Index: 0
+Canvas3D.tsx:1873 💾 [SAVE CHANGES] Stored distanceToFloor: 154
+Canvas3D.tsx:1874 💾 [SAVE CHANGES] Geometry already modified during real-time updates
+Canvas3D.tsx:1875 💾 [SAVE CHANGES] Textures already applied by RSP - no modifications needed
+Canvas3D.tsx:1887 🔍 [BEFORE CLOSE] Mesh 0 material: {hasMap: true, opacity: 1, type: 'vent'}
+Canvas3D.tsx:1887 🔍 [BEFORE CLOSE] Mesh 1 material: {hasMap: true, opacity: 1, type: 'window'}
+Canvas3D.tsx:1895 🔬 [DEPENDENCY TRACKING] BEFORE setEditingAirEntry(null):
+Canvas3D.tsx:1896 🔬 [DEPENDENCY TRACKING] floors keys: ['ground']
+Canvas3D.tsx:1897 🔬 [DEPENDENCY TRACKING] currentFloor: ground
+Canvas3D.tsx:1898 🔬 [DEPENDENCY TRACKING] ceilingHeight: 220
+Canvas3D.tsx:1899 🔬 [DEPENDENCY TRACKING] floorDeckThickness: 35
+Canvas3D.tsx:1900 🔬 [DEPENDENCY TRACKING] floors[currentFloor] airEntries length: 2
+Canvas3D.tsx:1901 🔬 [DEPENDENCY TRACKING] selectedAirEntry state: NULL
+Canvas3D.tsx:1905 🔬 [DEPENDENCY TRACKING] AFTER setEditingAirEntry(null):
+Canvas3D.tsx:1906 🔬 [DEPENDENCY TRACKING] floors keys: ['ground']
+Canvas3D.tsx:1907 🔬 [DEPENDENCY TRACKING] currentFloor: ground
+Canvas3D.tsx:1908 🔬 [DEPENDENCY TRACKING] ceilingHeight: 220
+Canvas3D.tsx:1909 🔬 [DEPENDENCY TRACKING] floorDeckThickness: 35
+Canvas3D.tsx:1910 🔬 [DEPENDENCY TRACKING] floors[currentFloor] airEntries length: 2
+Canvas3D.tsx:1911 🔬 [DEPENDENCY TRACKING] selectedAirEntry state: NULL
+Canvas3D.tsx:1934 ✅ [SAVE CHANGES] Data commit complete - monitoring for texture loss
+Canvas3D.tsx:1935 ✅ [SAVE CHANGES] Dialog closed - checking for side effects
+Canvas3D.tsx:6042 🔍 [SAVE CHANGES DEBUG] handleAirEntryEdit completed - checking for side effects
+wizard-design.tsx:357 🧠 [FLOORS MEMOIZATION] Computing memoized floors object
+wizard-design.tsx:358 🧠 [FLOORS MEMOIZATION] Raw floors reference: {ground: {…}}
+wizard-design.tsx:390 🧠 [FLOORS MEMOIZATION] Structural floors computed
+Canvas3D.tsx:4783 🚨 [SCENE REBUILD TRIGGER] useEffect triggered - dependencies changed
+Canvas3D.tsx:4784 🚨 [SCENE REBUILD TRIGGER] floors reference: {ground: {…}}
+Canvas3D.tsx:4785 🚨 [SCENE REBUILD TRIGGER] floors identity hash: {"ground":{"lines":[{"id":"1751088197581_7xgw9jn6h...
+Canvas3D.tsx:4786 🚨 [SCENE REBUILD TRIGGER] currentFloor: ground
+Canvas3D.tsx:4787 🚨 [SCENE REBUILD TRIGGER] ceilingHeight: 220
+Canvas3D.tsx:4788 🚨 [SCENE REBUILD TRIGGER] floorDeckThickness: 35
+Canvas3D.tsx:2354 🔧 [SCENE REBUILD] Creating new material for vent at index 0
+Canvas3D.tsx:2354 🔧 [SCENE REBUILD] Creating new material for window at index 1
+Canvas3D.tsx:1915 🔍 [AFTER CLOSE] Checking textures immediately after dialog close
+Canvas3D.tsx:1925 🔍 [AFTER CLOSE] Mesh 0 material: {hasMap: false, opacity: 0.7, type: 'vent'}
+Canvas3D.tsx:1925 🔍 [AFTER CLOSE] Mesh 1 material: {hasMap: false, opacity: 0.7, type: 'window'}
+Canvas3D.tsx:6046 🔍 [SAVE CHANGES DEBUG] 100ms after Save Changes - checking scene state
+Canvas3D.tsx:6054 🔍 [SAVE CHANGES DEBUG] AirEntry meshes found: 2
+Canvas3D.tsx:6057 🔍 [SAVE CHANGES DEBUG] Mesh 0 material: {hasMap: false, opacity: 0.7, type: 'vent'}
+Canvas3D.tsx:6057 🔍 [SAVE CHANGES DEBUG] Mesh 1 material: {hasMap: false, opacity: 0.7, type: 'window'}
