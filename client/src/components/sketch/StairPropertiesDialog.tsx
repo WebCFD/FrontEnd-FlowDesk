@@ -23,6 +23,7 @@ export default function StairPropertiesDialog({
 
   useEffect(() => {
     if (stair) {
+      console.log("STAIR DIALOG INIT - Stair ID:", stair.id, "Current temperature:", stair.temperature);
       setTemperature(stair.temperature?.toString() || "20");
     }
   }, [stair]);
@@ -30,6 +31,7 @@ export default function StairPropertiesDialog({
   const handleSave = () => {
     if (stair) {
       const temp = parseFloat(temperature);
+      console.log("STAIR DIALOG SAVE - Stair ID:", stair.id, "Old temperature:", stair.temperature, "New temperature:", temp);
       if (!isNaN(temp) && temp >= -50 && temp <= 100) {
         onSave(stair.id, temp);
         onClose();

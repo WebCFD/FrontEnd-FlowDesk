@@ -318,15 +318,25 @@ export const useRoomStore = create<RoomState>()(
         }),
 
         // Stair polygon methods
-        setStairPolygons: (stairPolygons) => set((state) => ({
-          floors: {
-            ...state.floors,
-            [state.currentFloor]: {
-              ...state.floors[state.currentFloor],
-              stairPolygons
+        setStairPolygons: (stairPolygons) => set((state) => {
+          console.log("ZUSTAND STORE - setStairPolygons called");
+          console.log("ZUSTAND STORE - Current floor:", state.currentFloor);
+          console.log("ZUSTAND STORE - Previous stairs:", state.floors[state.currentFloor]?.stairPolygons || []);
+          console.log("ZUSTAND STORE - New stairs:", stairPolygons);
+          
+          const newState = {
+            floors: {
+              ...state.floors,
+              [state.currentFloor]: {
+                ...state.floors[state.currentFloor],
+                stairPolygons
+              }
             }
-          }
-        })),
+          };
+          
+          console.log("ZUSTAND STORE - Updated floor data:", newState.floors[state.currentFloor]);
+          return newState;
+        }),
 
         addStairPolygon: (polygon) => set((state) => {
           // Get current floor's stair polygons

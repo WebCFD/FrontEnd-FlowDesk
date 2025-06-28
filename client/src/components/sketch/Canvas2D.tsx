@@ -1302,13 +1302,18 @@ export default function Canvas2D({
   }
 
   const handleStairPropertiesSave = (stairId: string, temperature: number) => {
+    console.log("CANVAS2D STAIR SAVE - Received stairId:", stairId, "temperature:", temperature);
     if (onStairPolygonsUpdate) {
       const updatedStairs = stairPolygons.map(stair => 
         stair.id === stairId 
           ? { ...stair, temperature }
           : stair
       );
+      console.log("CANVAS2D STAIR SAVE - Updated stairs array:", updatedStairs);
+      console.log("CANVAS2D STAIR SAVE - Calling onStairPolygonsUpdate");
       onStairPolygonsUpdate(updatedStairs);
+    } else {
+      console.log("CANVAS2D STAIR SAVE - ERROR: onStairPolygonsUpdate is not available");
     }
   };
 
