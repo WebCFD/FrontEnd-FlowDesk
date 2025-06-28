@@ -1250,6 +1250,14 @@ export default function Canvas3D({
         // Store for dialog
         console.log(`DIALOG DEBUG: Setting newFurnitureForDialog for ${furnitureItem.id}`);
         newFurnitureForDialog.current = furnitureItem;
+        
+        // Log the current state to see why useEffect might not trigger
+        console.log(`DIALOG DEBUG: After setting newFurnitureForDialog:`, {
+          currentFloorsKeys: Object.keys(floors || {}),
+          currentFloor,
+          furnitureCountAfterAdd: floors[currentFloor]?.furnitureItems?.length || 0,
+          newFurnitureId: newFurnitureForDialog.current?.id
+        });
       }
       
     } catch (error) {
@@ -1509,7 +1517,12 @@ export default function Canvas3D({
   
   // Effect to auto-open dialog for newly created furniture
   useEffect(() => {
-    console.log(`DIALOG DEBUG: useEffect triggered, checking newFurnitureForDialog:`, newFurnitureForDialog.current?.id || 'null');
+    console.log(`DIALOG DEBUG: useEffect triggered with dependencies:`, {
+      floorsKeys: Object.keys(floors || {}),
+      currentFloor,
+      newFurnitureForDialog: newFurnitureForDialog.current?.id || 'null',
+      furnitureCountInCurrentFloor: floors[currentFloor]?.furnitureItems?.length || 0
+    });
     
     if (newFurnitureForDialog.current) {
       console.log(`DIALOG DEBUG: Opening dialog for ${newFurnitureForDialog.current.id}`);
@@ -1522,6 +1535,8 @@ export default function Canvas3D({
       // Clear the reference
       newFurnitureForDialog.current = null;
       console.log(`DIALOG DEBUG: Cleared newFurnitureForDialog reference`);
+    } else {
+      console.log(`DIALOG DEBUG: No newFurnitureForDialog to process`);
     }
   }, [floors, currentFloor]); // Trigger when floors update (after furniture is added)
 
