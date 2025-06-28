@@ -680,6 +680,7 @@ export function RoomSketchPro({
       }
 
       if (texture) {
+        console.log(`🎨 RSP TEXTURE: Found texture for ${airEntryType}, applying to mesh ${index}`);
         // Add UV coordinates if missing
         const geometry = airEntryMesh.geometry as THREE.BufferGeometry;
         if (!geometry.attributes.uv) {
@@ -711,6 +712,7 @@ export function RoomSketchPro({
         
         airEntryMesh.material = newMaterial;
         airEntryMesh.renderOrder = 2; // Render after walls
+        console.log(`✅ RSP TEXTURE: Successfully applied ${airEntryType} texture to mesh ${index}`);
       }
     });
 
