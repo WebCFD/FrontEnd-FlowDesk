@@ -1,0 +1,104 @@
+
+﻿
+client:495 [vite] connecting...
+client:614 [vite] connected.
+chunk-WERSD76P.js?v=cfa7cc5f:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+AnalyticsProvider.tsx:21 Analytics initialized: false
+dashboard-sidebar.tsx:65 
+ GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+analytics.ts:26 Google Analytics initialized with ID: G-XZYY9DVVHW
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+AnalyticsProvider.tsx:21 Analytics initialized: true
+RoomSketchPro.tsx:645 🎨 RSP TEXTURE APPLICATION: Found 2 air entry meshes to texture
+RoomSketchPro.tsx:650 🎨 RSP TEXTURE: Processing mesh 0 - type: vent 
+{hasOriginalTexture: false, originalMaterialType: 'MeshPhongMaterial'}
+RoomSketchPro.tsx:683 🎨 RSP TEXTURE: Found texture for vent, applying to mesh 0
+RoomSketchPro.tsx:715 ✅ RSP TEXTURE: Successfully applied vent texture to mesh 0
+RoomSketchPro.tsx:650 🎨 RSP TEXTURE: Processing mesh 1 - type: window 
+{hasOriginalTexture: false, originalMaterialType: 'MeshPhongMaterial'}
+RoomSketchPro.tsx:683 🎨 RSP TEXTURE: Found texture for window, applying to mesh 1
+RoomSketchPro.tsx:715 ✅ RSP TEXTURE: Successfully applied window texture to mesh 1
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 210ms
+RoomSketchPro.tsx:645 🎨 RSP TEXTURE APPLICATION: Found 2 air entry meshes to texture
+RoomSketchPro.tsx:650 🎨 RSP TEXTURE: Processing mesh 0 - type: vent 
+{hasOriginalTexture: true, originalMaterialType: 'MeshPhongMaterial'}
+RoomSketchPro.tsx:683 🎨 RSP TEXTURE: Found texture for vent, applying to mesh 0
+RoomSketchPro.tsx:715 ✅ RSP TEXTURE: Successfully applied vent texture to mesh 0
+RoomSketchPro.tsx:650 🎨 RSP TEXTURE: Processing mesh 1 - type: window 
+{hasOriginalTexture: true, originalMaterialType: 'MeshPhongMaterial'}
+RoomSketchPro.tsx:683 🎨 RSP TEXTURE: Found texture for window, applying to mesh 1
+RoomSketchPro.tsx:715 ✅ RSP TEXTURE: Successfully applied window texture to mesh 1
+
+ Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
+Canvas3D.tsx:4594 Double-click position search: 
+{airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4604 Double-click found entry using stored entryIndex: 0
+AirEntryDialog.tsx:335 🔍 LOADING EDITING VALUES - Full initialValues: {
+  "width": 119,
+  "height": 95,
+  "distanceToFloor": 145,
+  "shape": "rectangular",
+  "wallPosition": 33,
+  "properties": {
+    "state": "open",
+    "temperature": 25,
+    "flowIntensity": "medium",
+    "airOrientation": "inflow",
+    "flowType": "Air Mass Flow",
+    "flowValue": 0.5
+  },
+  "position": {
+    "x": 450.09977964335144,
+    "y": 98.14844452137532
+  }
+}
+AirEntryDialog.tsx:342 ✅ WIDTH LOADING - Found saved width: 119
+AirEntryDialog.tsx:348 🔍 WALL POSITION LOADING - Checking sources:
+AirEntryDialog.tsx:349   - properties?.wallPosition: undefined
+AirEntryDialog.tsx:350   - direct wallPosition: 33
+AirEntryDialog.tsx:351   - Final savedWallPosition: 33
+AirEntryDialog.tsx:362 ✅ WALL POSITION LOADING - Using saved value: 33
+wizard-design.tsx:2324 wizard-design: Received floors update from RSP: 
+{ground: {…}}
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'setTimeout' handler took 71ms
+wizard-design.tsx:2324 wizard-design: Received floors update from RSP: 
+{ground: {…}}
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'setTimeout' handler took 82ms
+AirEntryDialog.tsx:519 📝 FORM SUBMIT - Current form values: 
+{width: 119, height: 95, distanceToFloor: 143, shape: 'rectangular', wallPosition: 33, …}
+AirEntryDialog.tsx:520 📝 FORM SUBMIT - Current wallPosition state: 33
+AirEntryDialog.tsx:521 📝 FORM SUBMIT - Current distanceToFloor state: 143
+AirEntryDialog.tsx:549 📦 FORM SUBMIT - Final airEntryData being sent: {
+  "width": 119,
+  "height": 95,
+  "diameter": null,
+  "distanceToFloor": 143,
+  "shape": "rectangular",
+  "isOpen": true,
+  "temperature": 25,
+  "airDirection": "inflow",
+  "flowIntensity": "medium",
+  "customIntensityValue": null,
+  "ventFlowType": "massflow",
+  "airOrientation": {
+    "verticalAngle": 0,
+    "horizontalAngle": 0
+  },
+  "wallPosition": 33,
+  "position": {
+    "x": 450.09977964335144,
+    "y": 98.14844452137532
+  }
+}
+AirEntryDialog.tsx:572 💾 SIMULATION PROPERTIES SAVE - Final properties: 
+{flowType: 'massflow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', wallPosition: 33}
+Canvas3D.tsx:5917 [CANVAS3D ONCONFIRM] Received data from dialog: 
+{width: 119, height: 95, distanceToFloor: 143, shape: 'rectangular', wallPosition: 33, …}
+Canvas3D.tsx:5918 [CANVAS3D ONCONFIRM] wallPosition in received data: 33
+Canvas3D.tsx:1858 [DIMENSION STORAGE] Stored dimensions for entry 0: {"position":{"x":450.09977964335144,"y":98.14844452137532},"dimensions":{"width":119,"height":95,"distanceToFloor":143,"shape":"rectangular","wallPosition":33}}
+Canvas3D.tsx:1860 [WALL POSITION STORAGE] wallPosition in data: 33
+Canvas3D.tsx:1861 [WALL POSITION STORAGE] wallPosition in updatedEntry.dimensions: 33
+wizard-design.tsx:2324 wizard-design: Received floors update from RSP: 
+{ground: {…}}
