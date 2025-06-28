@@ -949,6 +949,20 @@ export default function Canvas2D({
     ctx.restore();
   };
 
+  // Helper function to get the most current air entry data for drawing
+  const getCurrentAirEntries = (): AirEntry[] => {
+    const currentEntries = [...airEntries];
+    
+    // Apply any real-time updates from editingAirEntries
+    editingAirEntries.forEach(editingItem => {
+      if (editingItem.index >= 0 && editingItem.index < currentEntries.length) {
+        currentEntries[editingItem.index] = editingItem.entry;
+      }
+    });
+    
+    return currentEntries;
+  };
+
   const getVisibleGridPoints = (): Point[] => {
     const points: Point[] = [];
     const centerX = dimensions.width / 2;
@@ -1669,7 +1683,7 @@ export default function Canvas2D({
           const typeCounters = { window: 1, door: 1, vent: 1 };
           
           // Count existing entries to get next available number
-          airEntries.forEach(entry => {
+          getCurrentAirEntries().forEach(entry => {
             const anyEntry = entry as any;
             if (anyEntry.id) {
               // Look for new format: window_0F_1
@@ -2518,7 +2532,7 @@ export default function Canvas2D({
         drawWallMeasurements(ctx, currentLine);
       }
 
-      airEntries.forEach((entry, index) => {
+      getCurrentAirEntries().forEach((entry, index) => {
         drawAirEntry(ctx, entry, index);
       });
 
@@ -3520,11 +3534,6 @@ export default function Canvas2D({
             ceilingHeight: ceilingHeight * 100 // Convert to cm
           }}
           onPositionUpdate={(newPosition) => {
-            console.log("🔍 [CANVAS2D POSITION UPDATE] onPositionUpdate callback called");
-            console.log("🔍 [CANVAS2D POSITION UPDATE] editingAirEntry.index:", editingAirEntry.index);
-            console.log("🔍 [CANVAS2D POSITION UPDATE] newPosition:", newPosition);
-            console.log("🔍 [CANVAS2D POSITION UPDATE] Current airEntries.length:", airEntries.length);
-            
             // Actualizar la posición del Air Entry en tiempo real
             const updatedAirEntries = [...airEntries];
             updatedAirEntries[editingAirEntry.index] = {
@@ -3532,9 +3541,7 @@ export default function Canvas2D({
               position: newPosition
             };
             
-            console.log("🔍 [CANVAS2D POSITION UPDATE] About to call onAirEntriesUpdate with:", updatedAirEntries[editingAirEntry.index]);
             onAirEntriesUpdate?.(updatedAirEntries);
-            console.log("🔍 [CANVAS2D POSITION UPDATE] onAirEntriesUpdate called successfully");
             
             // También actualizar el estado local para que el diálogo mantenga la referencia correcta
             setEditingAirEntries(prev => prev.map(item => 
@@ -3546,7 +3553,6 @@ export default function Canvas2D({
                 }
               } : item
             ));
-            console.log("🔍 [CANVAS2D POSITION UPDATE] Local state updated - canvas should redraw now");
           }}
           onDimensionsUpdate={(newDimensions) => {
             // Actualizar las dimensiones del Air Entry en tiempo real
