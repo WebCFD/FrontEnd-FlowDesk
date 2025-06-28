@@ -951,9 +951,22 @@ export default function Canvas2D({
   };
 
   // Helper function to get the most current air entry data for drawing
-  // SOLUTION: Use direct prop data only - no mixing with editing state to avoid timing issues
+  // RESTORED: Visual updates for real-time feedback while maintaining store persistence
   const getCurrentAirEntries = (): AirEntry[] => {
-    return airEntries;
+    const result = [...airEntries];
+    
+    // Apply visual updates from editing state for real-time feedback
+    // This only affects visual rendering, not persistence (handled by immediate store updates)
+    editingAirEntries.forEach(editingItem => {
+      if (editingItem.index < result.length && editingItem.entry) {
+        result[editingItem.index] = {
+          ...result[editingItem.index],
+          ...editingItem.entry
+        };
+      }
+    });
+    
+    return result;
   };
 
   const getVisibleGridPoints = (): Point[] => {
@@ -3276,6 +3289,17 @@ export default function Canvas2D({
       
       console.log("⚡ [REAL-TIME] Immediately updating store with new position");
       onAirEntriesUpdate?.(updatedAirEntries);
+      
+      // Also update the editing state for immediate visual feedback
+      setEditingAirEntries(prev => prev.map(item => 
+        item.index === index ? {
+          ...item,
+          entry: {
+            ...item.entry,
+            position: newPosition
+          }
+        } : item
+      ));
     }
   };
 
