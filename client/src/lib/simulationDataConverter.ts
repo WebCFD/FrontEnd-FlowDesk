@@ -219,6 +219,20 @@ interface FloorExport {
 
 interface SimulationExport {
   version: string;
+  metadata: {
+    exportDate: string;
+    totalFloors: number;
+    isMultifloor: boolean;
+  };
+  buildingParameters: {
+    defaultCeilingHeight: number;
+    floorParameters: Record<string, {
+      ceilingHeight: number;
+      floorDeck: number;
+      ceilingTemperature: number;
+      floorTemperature: number;
+    }>;
+  };
   floors: Record<string, FloorExport>;
 }
 
@@ -295,6 +309,25 @@ export function generateSimulationData(
   
   const exportData: SimulationExport = {
     version: "1.0",
+    metadata: {
+      exportDate: new Date().toISOString(),
+      totalFloors: Object.keys(floors).length,
+      isMultifloor: Object.keys(floors).length > 1
+    },
+    buildingParameters: {
+      defaultCeilingHeight: roomHeight,
+      floorParameters: Object.fromEntries(
+        Object.entries(floorParameters || {}).map(([floorName, params]) => [
+          floorName,
+          {
+            ceilingHeight: (params.ceilingHeight || 220) / 100,
+            floorDeck: (params.floorDeck || 0) / 100,
+            ceilingTemperature: params.ceilingTemperature ?? 20,
+            floorTemperature: params.floorTemperature ?? 20
+          }
+        ])
+      )
+    },
     floors: {}
   };
 
