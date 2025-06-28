@@ -1,0 +1,36 @@
+RoomSketchPro.tsx:824 RSP: Furniture deleted, re-applying textures...
+RoomSketchPro.tsx:824 RSP: Furniture deleted, re-applying textures...
+wizard-design.tsx:1678 Dragging furniture: {id: 'vent', name: 'Vent', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…ke="#22c55e" stroke-width="2"/>\n      </svg>\n    ', defaultDimensions: {…}}
+wizard-design.tsx:1213 🔧 WIZARD handleFurnitureAdd called: {floorName: 'ground', itemType: 'vent', itemId: 'Vent 0F-3'}
+wizard-design.tsx:1215 🔧 WIZARD addFurnitureToFloor completed for vent
+AirEntryDialog.tsx:184 AirEntryDialog: Real-time callbacks connected for furnVent mode {hasOnPositionUpdate: true, hasOnRotationUpdate: true, hasOnScaleUpdate: false}
+AirEntryDialog.tsx:184 AirEntryDialog: Real-time callbacks connected for furnVent mode {hasOnPositionUpdate: true, hasOnRotationUpdate: true, hasOnScaleUpdate: false}
+AirEntryDialog.tsx:184 AirEntryDialog: Real-time callbacks connected for furnVent mode {hasOnPositionUpdate: true, hasOnRotationUpdate: true, hasOnScaleUpdate: false}
+AirEntryDialog.tsx:505 📝 FORM SUBMIT - Current form values: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:506 📝 FORM SUBMIT - Current wallPosition state: 100
+AirEntryDialog.tsx:507 📝 FORM SUBMIT - Current distanceToFloor state: 120
+Canvas3D.tsx:5944 VENT COORDINATE CONVERSION:
+Canvas3D.tsx:5945 - Dialog values (world): {position: {…}, rotation: {…}}
+Canvas3D.tsx:5946 - Parent transform: {position: _Vector3, rotation: _Euler}
+Canvas3D.tsx:5947 - Applied values (local): {position: {…}, rotation: {…}}
+wizard-design.tsx:1678 Dragging furniture: {id: 'vent', name: 'Vent', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…ke="#22c55e" stroke-width="2"/>\n      </svg>\n    ', defaultDimensions: {…}}
+wizard-design.tsx:1213 🔧 WIZARD handleFurnitureAdd called: {floorName: 'ground', itemType: 'vent', itemId: 'Vent 0F-3'}
+wizard-design.tsx:1215 🔧 WIZARD addFurnitureToFloor completed for vent
+AirEntryDialog.tsx:184 AirEntryDialog: Real-time callbacks connected for furnVent mode {hasOnPositionUpdate: true, hasOnRotationUpdate: true, hasOnScaleUpdate: false}
+AirEntryDialog.tsx:505 📝 FORM SUBMIT - Current form values: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:506 📝 FORM SUBMIT - Current wallPosition state: 100
+AirEntryDialog.tsx:507 📝 FORM SUBMIT - Current distanceToFloor state: 120
+Canvas3D.tsx:5944 VENT COORDINATE CONVERSION:
+Canvas3D.tsx:5945 - Dialog values (world): {position: {…}, rotation: {…}}
+Canvas3D.tsx:5946 - Parent transform: {position: _Vector3, rotation: _Euler}
+Canvas3D.tsx:5947 - Applied values (local): {position: {…}, rotation: {…}}
+wizard-design.tsx:1897 Found 2 furniture objects for export: (2) [{…}, {…}]
+simulationDataConverter.ts:651 EXPORT DEBUG [ground]: Added vent to floor_surf: id="Vent 0F-1"
+simulationDataConverter.ts:651 EXPORT DEBUG [ground]: Added vent to floor_surf: id="Vent 0F-1"
+simulationDataConverter.ts:658 EXPORT DEBUG [ground]: 📊 RESULTADO FINAL:
+simulationDataConverter.ts:659 EXPORT DEBUG [ground]: - ceiling.airEntries: 0
+simulationDataConverter.ts:660 EXPORT DEBUG [ground]: - floor_surf.airEntries: 2
+simulationDataConverter.ts:661 EXPORT DEBUG [ground]: - Total airEntries generados: 2
+simulationDataConverter.ts:662 EXPORT DEBUG [ground]: - Total vents procesados: 2
+simulationDataConverter.ts:668 EXPORT DEBUG [ground]: 🌡️ Temperaturas aplicadas - ceiling: 20°C, floor: 20°C
+analytics.ts:62 📊 Analytics Event: {category: 'simulation', action: 'save_simulation', label: 'file_download', value: 2, status: 'sent'}
