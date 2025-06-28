@@ -131,6 +131,8 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   const mode = (props as AirEntryDialogProps).mode || 'airEntry'; // Default to airEntry for backward compatibility
   const { updateAirEntryProperties, floors } = useRoomStore();
   
+  // Component initialization
+  
   // Estado unificado para manejar tanto dimensiones como temperatura
   const [values, setValues] = useState(getDefaultValues());
   const [position, setPosition] = useState(() => {
@@ -200,6 +202,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   const [ventMeasurementType, setVentMeasurementType] = useState<'massflow' | 'velocity' | 'pressure'>('massflow');
   const [verticalAngle, setVerticalAngle] = useState(0);
   const [horizontalAngle, setHorizontalAngle] = useState(0);
+  
+  // Estados locales para dimensiones (igual que wallPosition para tiempo real)
+  const [localWidth, setLocalWidth] = useState(50);
+  const [localHeight, setLocalHeight] = useState(50);
 
   // Función para calcular la nueva posición basada en el porcentaje del wall
   const calculatePositionFromPercentage = (percentage: number) => {
@@ -255,6 +261,40 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
       if (props.type !== 'wall' && 'onPositionUpdate' in props && props.onPositionUpdate) {
         props.onPositionUpdate(newPosition);
       }
+    }
+  };
+
+  // Función para manejar cambios de Width (similar a handleWallPositionChange)
+  const handleWidthChange = (newWidth: number) => {
+    console.log('📏 [WIDTH CHANGE] handleWidthChange called with:', newWidth);
+    console.log('📏 [WIDTH CHANGE] Current localWidth before change:', localWidth);
+    
+    setLocalWidth(newWidth);
+    
+    // Update form values for persistence
+    setValues(prev => ({ ...prev, width: newWidth }));
+    
+    // Trigger real-time dimension updates
+    if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
+      console.log('📏 [WIDTH CHANGE] Calling onDimensionsUpdate with width:', newWidth);
+      props.onDimensionsUpdate({ width: newWidth });
+    }
+  };
+
+  // Función para manejar cambios de Height (similar a handleWallPositionChange)
+  const handleHeightChange = (newHeight: number) => {
+    console.log('📐 [HEIGHT CHANGE] handleHeightChange called with:', newHeight);
+    console.log('📐 [HEIGHT CHANGE] Current localHeight before change:', localHeight);
+    
+    setLocalHeight(newHeight);
+    
+    // Update form values for persistence
+    setValues(prev => ({ ...prev, height: newHeight }));
+    
+    // Trigger real-time dimension updates
+    if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
+      console.log('📐 [HEIGHT CHANGE] Calling onDimensionsUpdate with height:', newHeight);
+      props.onDimensionsUpdate({ height: newHeight });
     }
   };
 
@@ -324,46 +364,29 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   // Inicializar valores cuando se abre el diálogo
   useEffect(() => {
     if (dialogOpen) {
-      console.log('🔍 [WIDTH DEBUG] Dialog opened, dialogOpen:', dialogOpen, 'isEditing:', isEditing);
-      
       if (isEditing) {
         // En modo edición, usar los valores actuales del elemento
         const airEntryProps = props as AirEntryDialogProps;
-        console.log('🔍 [WIDTH DEBUG] AirEntry props:', airEntryProps);
-        console.log('🔍 [WIDTH DEBUG] Initial values received:', airEntryProps.initialValues);
-        
         if (airEntryProps.initialValues) {
           const initialDistanceToFloor = airEntryProps.initialValues.distanceToFloor || 0;
           setDistanceToFloor(initialDistanceToFloor);
+          
+          // Initialize local dimensions states
+          const initialWidth = airEntryProps.initialValues.width || 50;
+          const initialHeight = airEntryProps.initialValues.height || 50;
+          setLocalWidth(initialWidth);
+          setLocalHeight(initialHeight);
           
           // Check if we have a saved wallPosition value from properties
           const savedWallPosition = (airEntryProps.initialValues as any).properties?.wallPosition || 
                                   (airEntryProps.initialValues as any).wallPosition;
           
-          console.log('🔍 [WIDTH DEBUG] Setting values with:', {
-            prev: 'will be merged',
-            initialValues: airEntryProps.initialValues,
-            width: airEntryProps.initialValues.width,
-            height: airEntryProps.initialValues.height,
+          // Also set in form values for persistence
+          setValues(prev => ({ 
+            ...prev, 
             distanceToFloor: initialDistanceToFloor,
-            wallPosition: savedWallPosition
-          });
-          
-          // CRITICAL FIX: Set complete initialValues including width/height for persistence
-          setValues(prev => {
-            const newValues = { 
-              ...prev,
-              ...airEntryProps.initialValues, // Include all initial values (width, height, etc.)
-              distanceToFloor: initialDistanceToFloor,
-              wallPosition: savedWallPosition 
-            };
-            
-            console.log('🔍 [WIDTH DEBUG] Previous values:', prev);
-            console.log('🔍 [WIDTH DEBUG] New values after merge:', newValues);
-            console.log('🔍 [WIDTH DEBUG] Final width value:', newValues.width);
-            
-            return newValues;
-          });
+            wallPosition: savedWallPosition 
+          }));
           
           // If we have a saved wallPosition, use it directly
           if (savedWallPosition !== undefined && savedWallPosition !== null) {
@@ -441,42 +464,66 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     }
   }, [(values as any).height, type]);
 
+  // Sincronización bidireccional: actualizar estados locales cuando cambien los props externos
+  useEffect(() => {
+    console.log('🔄 [SYNC EFFECT] Bidirectional sync useEffect triggered');
+    console.log('🔄 [SYNC EFFECT] isEditing:', isEditing);
+    console.log('🔄 [SYNC EFFECT] props.type:', props.type);
+    console.log('🔄 [SYNC EFFECT] has initialValues:', 'initialValues' in props && props.initialValues);
+    
+    if (isEditing && props.type !== 'wall' && 'initialValues' in props && props.initialValues) {
+      const airEntryProps = props as AirEntryDialogProps;
+      
+      console.log('🔄 [SYNC EFFECT] Current localWidth:', localWidth);
+      console.log('🔄 [SYNC EFFECT] External width:', airEntryProps.initialValues.width);
+      console.log('🔄 [SYNC EFFECT] Current localHeight:', localHeight);
+      console.log('🔄 [SYNC EFFECT] External height:', airEntryProps.initialValues.height);
+      
+      // Actualizar localWidth y localHeight cuando cambien externamente
+      if (airEntryProps.initialValues.width !== undefined && airEntryProps.initialValues.width !== localWidth) {
+        console.log('🔄 [SYNC EFFECT] Updating localWidth from', localWidth, 'to', airEntryProps.initialValues.width);
+        setLocalWidth(airEntryProps.initialValues.width);
+      }
+      if (airEntryProps.initialValues.height !== undefined && airEntryProps.initialValues.height !== localHeight) {
+        console.log('🔄 [SYNC EFFECT] Updating localHeight from', localHeight, 'to', airEntryProps.initialValues.height);
+        setLocalHeight(airEntryProps.initialValues.height);
+      }
+      
+      // Actualizar wallPosition cuando cambie externamente
+      const externalWallPosition = (airEntryProps.initialValues as any).properties?.wallPosition || 
+                                   (airEntryProps.initialValues as any).wallPosition;
+      console.log('🔄 [SYNC EFFECT] Current wallPosition:', wallPosition);
+      console.log('🔄 [SYNC EFFECT] External wallPosition:', externalWallPosition);
+      
+      if (externalWallPosition !== undefined && externalWallPosition !== null && externalWallPosition !== wallPosition) {
+        console.log('🔄 [SYNC EFFECT] Updating wallPosition from', wallPosition, 'to', externalWallPosition);
+        setWallPosition(externalWallPosition);
+      }
+    } else {
+      console.log('🔄 [SYNC EFFECT] Conditions not met for sync');
+    }
+  }, [isEditing, props.type, 'initialValues' in props ? props.initialValues?.width : null, 'initialValues' in props ? props.initialValues?.height : null, 'initialValues' in props ? (props.initialValues as any)?.wallPosition : null, 'initialValues' in props ? (props.initialValues as any)?.properties?.wallPosition : null, localWidth, localHeight, wallPosition]);
+
   function getDefaultValues() {
     // Obtener valores iniciales según el tipo de props
     const initialValues = props.type === 'wall' 
       ? props.initialValues 
       : props.initialValues;
 
-    console.log('🔍 [WIDTH DEBUG] getDefaultValues called');
-    console.log('🔍 [WIDTH DEBUG] getDefaultValues - props.type:', props.type);
-    console.log('🔍 [WIDTH DEBUG] getDefaultValues - props.initialValues:', props.initialValues);
-    console.log('🔍 [WIDTH DEBUG] getDefaultValues - extracted initialValues:', initialValues);
+    if (initialValues) return initialValues;
 
-    if (initialValues) {
-      console.log('🔍 [WIDTH DEBUG] getDefaultValues - returning initialValues:', initialValues);
-      return initialValues;
-    }
-
-    let defaults;
     switch (type) {
       case 'window':
-        defaults = { ...windowDefaults };
-        break;
+        return { ...windowDefaults };
       case 'door':
-        defaults = { ...doorDefaults };
-        break;
+        return { ...doorDefaults };
       case 'vent':
-        defaults = { ...ventDefaults };
-        break;
+        return { ...ventDefaults };
       case 'wall':
-        defaults = { ...wallDefaults };
-        break;
+        return { ...wallDefaults };
       default:
-        defaults = { ...windowDefaults };
+        return { ...windowDefaults };
     }
-    
-    console.log('🔍 [WIDTH DEBUG] getDefaultValues - returning defaults for type', type, ':', defaults);
-    return defaults;
   }
 
   // Reset values when dialog opens with new type or initialValues
@@ -1222,27 +1269,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                             <Input
                               id="width"
                               type="number"
-                              value={(() => {
-                                const widthValue = (values as { width: number }).width;
-                                console.log('🔍 [WIDTH DEBUG] Width field render - values state:', values);
-                                console.log('🔍 [WIDTH DEBUG] Width field render - extracted width:', widthValue);
-                                console.log('🔍 [WIDTH DEBUG] Width field render - typeof width:', typeof widthValue);
-                                return widthValue;
-                              })()}
+                              value={localWidth}
                               onChange={(e) => {
                                 const newWidth = Number(e.target.value);
-                                console.log('🔍 [WIDTH DEBUG] Width field onChange - new value:', newWidth);
-                                setValues(prev => {
-                                  console.log('🔍 [WIDTH DEBUG] Width field onChange - prev values:', prev);
-                                  const updated = { ...prev, width: newWidth };
-                                  console.log('🔍 [WIDTH DEBUG] Width field onChange - updated values:', updated);
-                                  return updated;
-                                });
-                                
-                                // Real-time dimension updates
-                                if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
-                                  props.onDimensionsUpdate({ width: newWidth });
-                                }
+                                handleWidthChange(newWidth);
                               }}
                               className="h-8 text-sm"
                             />
@@ -1269,15 +1299,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                             <Input
                               id="height"
                               type="number"
-                              value={(values as { height: number }).height}
+                              value={localHeight}
                               onChange={(e) => {
                                 const newHeight = Number(e.target.value);
-                                setValues(prev => ({ ...prev, height: newHeight }));
-                                
-                                // Real-time dimension updates
-                                if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
-                                  props.onDimensionsUpdate({ height: newHeight });
-                                }
+                                handleHeightChange(newHeight);
                               }}
                               className="h-8 text-sm"
                             />
