@@ -1298,6 +1298,9 @@ export default function Canvas3D({
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<TrackballControls | null>(null);
   const needsRenderRef = useRef<boolean>(true);
+  
+  // CRITICAL: Global material preservation for RSP textures
+  const preservedMaterialsRef = useRef<Map<string, THREE.Material>>(new Map());
   // State for editing air entries - Phase 2: Extended with wall context
   const [editingAirEntry, setEditingAirEntry] = useState<{
     index: number;
@@ -1823,20 +1826,55 @@ export default function Canvas3D({
   ) => {
     if (!editingAirEntry || !onUpdateAirEntry) return;
 
-    // CRITICAL: Preserve existing material before any updates (for RSP texture preservation)
-    let preservedMaterial: THREE.Material | null = null;
+    // CRITICAL: Apply furniture-pattern real-time updates to preserve RSP textures
+    // Instead of triggering scene rebuild, update properties directly on the mesh
     if (sceneRef.current && editingAirEntry) {
       sceneRef.current.traverse((object) => {
         if (object instanceof THREE.Mesh && 
             object.userData?.type === editingAirEntry.entry.type &&
             object.userData?.entryIndex === editingAirEntry.index) {
-          preservedMaterial = object.material;
-          console.log(`🔄 MATERIAL PRESERVATION: AirEntry ${index} - Preserving material before dialog update:`, preservedMaterial);
+          
+          // Preserve existing material (including RSP textures) during ALL updates
+          const preservedMaterial = object.material;
+          console.log(`🔄 DIALOG UPDATE PRESERVATION: AirEntry ${editingAirEntry.index} - Preserving material during dialog submit:`, preservedMaterial);
           console.log(`🔄 Material type:`, preservedMaterial.type, 'Has texture map:', !!(preservedMaterial as any).map);
+          
+          // Update geometry if dimensions changed
+          const currentWidth = editingAirEntry.entry.dimensions.width;
+          const currentHeight = editingAirEntry.entry.dimensions.height;
+          if (data.width !== currentWidth || data.height !== currentHeight) {
+            const newGeometry = new THREE.PlaneGeometry(data.width, data.height);
+            object.geometry.dispose();
+            object.geometry = newGeometry;
+            
+            // Restore preserved material after geometry update
+            object.material = preservedMaterial;
+            console.log(`✅ GEOMETRY UPDATE: AirEntry ${editingAirEntry.index} - Geometry updated, material preserved`);
+          }
+          
+          // Update Z-position if distanceToFloor changed (not for doors)
+          if (data.distanceToFloor !== editingAirEntry.entry.dimensions.distanceToFloor && editingAirEntry.entry.type !== "door") {
+            const baseHeight = getFloorBaseHeight(currentFloor);
+            const newZPosition = baseHeight + data.distanceToFloor;
+            object.position.setZ(newZPosition);
+            console.log(`✅ POSITION UPDATE: AirEntry ${editingAirEntry.index} - Z-position updated to:`, newZPosition);
+          }
+          
+          // Update userData with new properties (for future reference)
+          object.userData.dimensions = {
+            width: data.width,
+            height: data.height,
+            distanceToFloor: data.distanceToFloor,
+            ...(data.shape && { shape: data.shape }),
+            ...(data.wallPosition !== undefined && { wallPosition: data.wallPosition }),
+          };
+          
+          console.log(`✅ REAL-TIME UPDATE COMPLETE: AirEntry ${editingAirEntry.index} - All properties updated without scene rebuild`);
         }
       });
     }
 
+    // Build updated entry for parent callback
     const updatedEntry = {
       ...editingAirEntry.entry,
       dimensions: {
@@ -1849,49 +1887,25 @@ export default function Canvas3D({
       ...(data.properties && { properties: data.properties }),
     };
 
-    // Store the dimensions in our ref to preserve them during scene rebuilds
+    // Store dimensions in ref for persistence
     const normalizedFloorName = normalizeFloorName(currentFloor);
-
-    // Initialize storage structure if needed
     if (!updatedAirEntryPositionsRef.current[normalizedFloorName]) {
       updatedAirEntryPositionsRef.current[normalizedFloorName] = {};
     }
-
-    // Check if we already have position data for this entry
     if (!updatedAirEntryPositionsRef.current[normalizedFloorName][index]) {
-      // If no position data exists yet, initialize with the current position
       updatedAirEntryPositionsRef.current[normalizedFloorName][index] = {
         position: { ...editingAirEntry.entry.position },
         dimensions: updatedEntry.dimensions
       };
     } else {
-      // If position data exists, just update the dimensions
       updatedAirEntryPositionsRef.current[normalizedFloorName][index].dimensions = updatedEntry.dimensions;
     }
 
     console.log(`[DIMENSION STORAGE] Stored dimensions for entry ${index}:`, 
       JSON.stringify(updatedAirEntryPositionsRef.current[normalizedFloorName][index]));
-    console.log(`[WALL POSITION STORAGE] wallPosition in data:`, data.wallPosition);
-    console.log(`[WALL POSITION STORAGE] wallPosition in updatedEntry.dimensions:`, updatedEntry.dimensions.wallPosition);
 
-    // Call the parent component's handler
+    // Call the parent component's handler for data persistence (scene is already updated)
     onUpdateAirEntry(currentFloor, index, updatedEntry);
-    
-    // CRITICAL: Store material info for RSP texture preservation
-    // Since RSP textures are applied after scene rebuild, we need to trigger RSP texture re-application
-    // instead of directly restoring the material
-    if (preservedMaterial && (preservedMaterial as any).map) {
-      // Only trigger RSP re-application if the preserved material had a texture (RSP applied)
-      console.log(`🔄 TRIGGER RSP REAPPLICATION: AirEntry ${index} had texture, triggering RSP reapplication`);
-      
-      // Use setTimeout to allow scene rebuild and then trigger RSP texture reapplication
-      setTimeout(() => {
-        // Trigger RSP texture reapplication by calling applyThemeTextures if available
-        if (window.triggerRSPTextureReapplication) {
-          window.triggerRSPTextureReapplication();
-        }
-      }, 150); // Longer delay to ensure scene rebuild is fully complete
-    }
     
     setEditingAirEntry(null);
     
