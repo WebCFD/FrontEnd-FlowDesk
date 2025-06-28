@@ -1,0 +1,66 @@
+wizard-design.tsx:1678 Dragging furniture: {id: 'vent', name: 'Vent', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…ke="#22c55e" stroke-width="2"/>\n      </svg>\n    ', defaultDimensions: {…}}
+wizard-design.tsx:1213 🔧 WIZARD handleFurnitureAdd called: {floorName: 'ground', itemType: 'vent', itemId: 'Vent 0F-1'}
+room-store.ts:211 🏪 STORE addFurnitureToFloor called: {floorName: 'ground', itemType: 'vent', itemId: 'Vent 0F-1'}
+room-store.ts:215 🏪 STORE existing items count: 0
+room-store.ts:223 🏪 STORE cleaned items count: 0
+room-store.ts:226 🏪 STORE new items total: 1
+room-store.ts:227 🏪 STORE item being added: {type: 'vent', id: 'Vent 0F-1', position: {…}}
+wizard-design.tsx:1215 🔧 WIZARD addFurnitureToFloor completed for vent
+AirEntryDialog.tsx:184 AirEntryDialog: Real-time callbacks connected for furnVent mode {hasOnPositionUpdate: true, hasOnRotationUpdate: true, hasOnScaleUpdate: false}
+AirEntryDialog.tsx:505 📝 FORM SUBMIT - Current form values: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:506 📝 FORM SUBMIT - Current wallPosition state: 100
+AirEntryDialog.tsx:507 📝 FORM SUBMIT - Current distanceToFloor state: 120
+Canvas3D.tsx:5944 VENT COORDINATE CONVERSION:
+Canvas3D.tsx:5945 - Dialog values (world): {position: {…}, rotation: {…}}
+Canvas3D.tsx:5946 - Parent transform: {position: _Vector3, rotation: _Euler}
+Canvas3D.tsx:5947 - Applied values (local): {position: {…}, rotation: {…}}
+wizard-design.tsx:1678 Dragging furniture: {id: 'vent', name: 'Vent', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…ke="#22c55e" stroke-width="2"/>\n      </svg>\n    ', defaultDimensions: {…}}
+wizard-design.tsx:1213 🔧 WIZARD handleFurnitureAdd called: {floorName: 'ground', itemType: 'vent', itemId: 'Vent 0F-1'}
+room-store.ts:211 🏪 STORE addFurnitureToFloor called: {floorName: 'ground', itemType: 'vent', itemId: 'Vent 0F-1'}
+room-store.ts:215 🏪 STORE existing items count: 1
+room-store.ts:223 🏪 STORE cleaned items count: 1
+room-store.ts:226 🏪 STORE new items total: 2
+room-store.ts:227 🏪 STORE item being added: {type: 'vent', id: 'Vent 0F-1', position: {…}}
+wizard-design.tsx:1215 🔧 WIZARD addFurnitureToFloor completed for vent
+AirEntryDialog.tsx:184 AirEntryDialog: Real-time callbacks connected for furnVent mode {hasOnPositionUpdate: true, hasOnRotationUpdate: true, hasOnScaleUpdate: false}
+AirEntryDialog.tsx:184 AirEntryDialog: Real-time callbacks connected for furnVent mode {hasOnPositionUpdate: true, hasOnRotationUpdate: true, hasOnScaleUpdate: false}
+AirEntryDialog.tsx:505 📝 FORM SUBMIT - Current form values: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:506 📝 FORM SUBMIT - Current wallPosition state: 100
+AirEntryDialog.tsx:507 📝 FORM SUBMIT - Current distanceToFloor state: 120
+Canvas3D.tsx:5944 VENT COORDINATE CONVERSION:
+Canvas3D.tsx:5945 - Dialog values (world): {position: {…}, rotation: {…}}
+Canvas3D.tsx:5946 - Parent transform: {position: _Vector3, rotation: _Euler}
+Canvas3D.tsx:5947 - Applied values (local): {position: {…}, rotation: {…}}
+wizard-design.tsx:1862 📊 EXPORT WIZARD: Current floors state: {ground: {…}}
+wizard-design.tsx:1863 📊 EXPORT WIZARD: Object.entries(floors): [Array(2)]
+wizard-design.tsx:1867 📊 EXPORT WIZARD: Processing floor "ground": {lines: Array(4), airEntries: Array(0), walls: Array(4), measurements: Array(0), hasClosedContour: true, …}
+wizard-design.tsx:1868 📊 EXPORT WIZARD: Floor "ground" furnitureItems: []
+wizard-design.tsx:1869 📊 EXPORT WIZARD: Floor "ground" furnitureItems length: 0
+wizard-design.tsx:1904 Found 0 furniture objects for export: []
+simulationDataConverter.ts:524 📊 EXPORT [ground]: Total floor objects found: 0
+simulationDataConverter.ts:525 📊 EXPORT [ground]: Floor objects: []
+simulationDataConverter.ts:534 📊 EXPORT [ground]: Vent objects found: 0
+simulationDataConverter.ts:535 📊 EXPORT [ground]: Regular furniture objects: 0
+analytics.ts:62 📊 Analytics Event: {category: 'simulation', action: 'save_simulation', label: 'file_download', value: 2, status: 'sent'}
+/dashboard/wizard-design:1 [.WebGL-0x2c6409cfe300] GL_INVALID_OPERATION: Texture is immutable.
+/dashboard/wizard-design:1 [.WebGL-0x2c6409cfe300] GL_INVALID_OPERATION: Texture is immutable.
+/dashboard/wizard-design:1 [.WebGL-0x2c6409cfe300] GL_INVALID_OPERATION: Texture is immutable.
+/dashboard/wizard-design:1 [.WebGL-0x2c6409cfe300] GL_INVALID_OPERATION: Texture is immutable.
+/dashboard/wizard-design:1 [.WebGL-0x2c6409cfe300] GL_INVALID_OPERATION: Texture is immutable.
+/dashboard/wizard-design:1 [.WebGL-0x2c6409cfe300] GL_INVALID_OPERATION: Texture is immutable.
+/dashboard/wizard-design:1 [.WebGL-0x2c6409cfe300] GL_INVALID_OPERATION: Texture is immutable.
+/dashboard/wizard-design:1 [.WebGL-0x2c6409cfe300] GL_INVALID_OPERATION: Texture is immutable.
+Canvas3D.tsx:4780 🚨 [SCENE REBUILD TRIGGER] useEffect triggered - dependencies changed
+Canvas3D.tsx:4781 🚨 [SCENE REBUILD TRIGGER] floors reference: {ground: {…}}
+Canvas3D.tsx:4782 🚨 [SCENE REBUILD TRIGGER] floors identity hash: {"ground":{"lines":[{"id":"1751121188850_kk069hogf...
+Canvas3D.tsx:4783 🚨 [SCENE REBUILD TRIGGER] currentFloor: ground
+Canvas3D.tsx:4784 🚨 [SCENE REBUILD TRIGGER] ceilingHeight: 220
+Canvas3D.tsx:4785 🚨 [SCENE REBUILD TRIGGER] floorDeckThickness: 35
+Canvas3D.tsx:5318 🔧 [WALL TRANSPARENCY] Updating wall transparency, preserving AirEntry textures
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5332 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 260ms

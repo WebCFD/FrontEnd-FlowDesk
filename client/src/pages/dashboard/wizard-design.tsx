@@ -1860,6 +1860,7 @@ export default function WizardDesign() {
     const furnitureObjects: THREE.Object3D[] = [];
 
     console.log(`📊 EXPORT WIZARD: Current floors state:`, floors);
+    console.log(`📊 EXPORT WIZARD: RAW floors from store:`, rawFloors);
     console.log(`📊 EXPORT WIZARD: Object.entries(floors):`, Object.entries(floors));
 
     // Recopilar todos los elementos de mobiliario de todos los pisos
