@@ -24,6 +24,7 @@ import {
   denormalizeCoordinates,
   normalizeCoordinates
 } from "@/lib/simulationDataConverter";
+import { useRoomStore } from "@/lib/store/room-store";
 
 interface HighlightState {
   lines: Line[];
@@ -398,6 +399,29 @@ export default function Canvas2D({
   >(null);
 
   const { snapDistance, showCursorCoordinates, fontScale } = useSketchStore();
+  
+  // Reactive AirEntry synchronization system for Canvas2D
+  const { subscribeToAirEntryChanges } = useRoomStore();
+  
+  useEffect(() => {
+    const unsubscribe = subscribeToAirEntryChanges((floorName, index, updatedEntry) => {
+      // Only update if this change affects our current floor
+      if (floorName !== currentFloor) return;
+      
+      console.log(`🔄 Canvas2D: Received AirEntry update from external source - ${updatedEntry.type} at position (${updatedEntry.position.x}, ${updatedEntry.position.y})`);
+      
+      // Force re-render to show updated position from other views
+      const canvas = canvasRef.current;
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          requestAnimationFrame(() => draw(ctx));
+        }
+      }
+    });
+    
+    return unsubscribe;
+  }, [currentFloor, subscribeToAirEntryChanges]);
 
   // Helper function to get scaled font size that responds to zoom and font scale
   const getScaledFont = (baseSize: number, fontFamily: string = 'sans-serif'): string => {
