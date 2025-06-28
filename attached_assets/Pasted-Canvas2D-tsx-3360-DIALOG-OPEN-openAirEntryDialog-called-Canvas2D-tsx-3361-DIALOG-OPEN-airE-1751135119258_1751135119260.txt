@@ -1,0 +1,78 @@
+Canvas2D.tsx:3360 🟠 [DIALOG OPEN] openAirEntryDialog called
+Canvas2D.tsx:3361 🟠 [DIALOG OPEN] airEntry index: 0
+Canvas2D.tsx:3362 🟠 [DIALOG OPEN] airEntry position: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3363 🟠 [DIALOG OPEN] airEntry wallPosition: 100
+Canvas2D.tsx:3366 🟠 [DIALOG OPEN] isAlreadyOpen: false
+Canvas2D.tsx:3371 🟠 [DIALOG OPEN] Adding to editingAirEntries for real-time updates
+Canvas2D.tsx:3360 🟠 [DIALOG OPEN] openAirEntryDialog called
+Canvas2D.tsx:3361 🟠 [DIALOG OPEN] airEntry index: 0
+Canvas2D.tsx:3362 🟠 [DIALOG OPEN] airEntry position: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3363 🟠 [DIALOG OPEN] airEntry wallPosition: 100
+Canvas2D.tsx:3366 🟠 [DIALOG OPEN] isAlreadyOpen: true
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 267.83547832990337, y: 148.30502500045532}
+Canvas2D.tsx:3290 ⚡ [REAL-TIME] Immediately updating store with new position
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 271.879652241538, y: 147.76818775554807}
+Canvas2D.tsx:3290 ⚡ [REAL-TIME] Immediately updating store with new position
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 275.9238261531727, y: 147.2313505106408}
+Canvas2D.tsx:3290 ⚡ [REAL-TIME] Immediately updating store with new position
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 279.96800006480726, y: 146.69451326573355}
+Canvas2D.tsx:3290 ⚡ [REAL-TIME] Immediately updating store with new position
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 284.0121739764419, y: 146.1576760208263}
+Canvas2D.tsx:3290 ⚡ [REAL-TIME] Immediately updating store with new position
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 288.05634788807646, y: 145.62083877591905}
+Canvas2D.tsx:3290 ⚡ [REAL-TIME] Immediately updating store with new position
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 292.10052179971103, y: 145.0840015310118}
+Canvas2D.tsx:3290 ⚡ [REAL-TIME] Immediately updating store with new position
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 296.14469571134566, y: 144.54716428610456}
+Canvas2D.tsx:3290 ⚡ [REAL-TIME] Immediately updating store with new position
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 300.18886962298035, y: 144.01032704119729}
+Canvas2D.tsx:3290 ⚡ [REAL-TIME] Immediately updating store with new position
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 304.233043534615, y: 143.47348979629004}
+Canvas2D.tsx:3290 ⚡ [REAL-TIME] Immediately updating store with new position
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 308.2772174462496, y: 142.9366525513828}
+Canvas2D.tsx:3290 ⚡ [REAL-TIME] Immediately updating store with new position
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 312.32139135788424, y: 142.39981530647555}
+Canvas2D.tsx:3290 ⚡ [REAL-TIME] Immediately updating store with new position
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 316.36556526951887, y: 141.8629780615683}
+Canvas2D.tsx:3290 ⚡ [REAL-TIME] Immediately updating store with new position
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 320.4097391811535, y: 141.32614081666105}
+Canvas2D.tsx:3290 ⚡ [REAL-TIME] Immediately updating store with new position
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 324.4539130927882, y: 140.78930357175378}
+Canvas2D.tsx:3290 ⚡ [REAL-TIME] Immediately updating store with new position
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 328.4980870044228, y: 140.25246632684653}
+Canvas2D.tsx:3290 ⚡ [REAL-TIME] Immediately updating store with new position
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 332.5422609160574, y: 139.71562908193928}
+Canvas2D.tsx:3290 ⚡ [REAL-TIME] Immediately updating store with new position
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 336.58643482769196, y: 139.17879183703204}
+Canvas2D.tsx:3290 ⚡ [REAL-TIME] Immediately updating store with new position
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 340.6306087393266, y: 138.6419545921248}
+Canvas2D.tsx:3290 ⚡ [REAL-TIME] Immediately updating store with new position
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 344.67478265096116, y: 138.10511734721754}
+Canvas2D.tsx:3290 ⚡ [REAL-TIME] Immediately updating store with new position
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 348.71895656259585, y: 137.56828010231027}
+Canvas2D.tsx:3290 ⚡ [REAL-TIME] Immediately updating store with new position
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 352.7631304742305, y: 137.03144285740302}
+Canvas2D.tsx:3290 ⚡ [REAL-TIME] Immediately updating store with new position
+Canvas2D.tsx:3280 ⚡ [REAL-TIME] Position update for AirEntry index: 0 New position: {x: 356.8073043858651, y: 136.49460561249577}
+Canvas2D.tsx:3290 ⚡ [REAL-TIME] Immediately updating store with new position
+AirEntryDialog.tsx:499 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+AirEntryDialog.tsx:500 🎯 [SAVE BUTTON CLICKED] Event type: submit
+AirEntryDialog.tsx:501 🎯 [SAVE BUTTON CLICKED] Props type: vent
+AirEntryDialog.tsx:502 🎯 [SAVE BUTTON CLICKED] Current values: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 77, …}
+AirEntryDialog.tsx:503 🎯 [SAVE BUTTON CLICKED] wallPosition from values: 77
+AirEntryDialog.tsx:504 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 77
+AirEntryDialog.tsx:599 🎯 [PROPS.ONCONFIRM] About to call props.onConfirm with canvasData
+AirEntryDialog.tsx:600 🎯 [PROPS.ONCONFIRM] canvasData being sent: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 77, …}
+AirEntryDialog.tsx:601 🎯 [PROPS.ONCONFIRM] canvasData.wallPosition: 77
+AirEntryDialog.tsx:602 🎯 [PROPS.ONCONFIRM] canvasData.position: {x: 356.8073043858651, y: 136.49460561249577}
+AirEntryDialog.tsx:603 🎯 [PROPS.ONCONFIRM] This should trigger handleAirEntryEdit in Canvas2D
+Canvas2D.tsx:3325 💾 [SAVE CHANGES] Starting handleAirEntryEdit
+Canvas2D.tsx:3326 💾 [SAVE CHANGES] Index: 0
+Canvas2D.tsx:3327 💾 [SAVE CHANGES] Data received from dialog: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 77, …}
+Canvas2D.tsx:3328 💾 [SAVE CHANGES] Current store position: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3329 💾 [SAVE CHANGES] Data.position from dialog: {x: 356.8073043858651, y: 136.49460561249577}
+Canvas2D.tsx:3350 💾 [SAVE CHANGES] Final saved position: {x: 333.35, y: 139.61}
+Canvas2D.tsx:3351 💾 [SAVE CHANGES] Final saved entry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas2D.tsx:3355 ✅ [SAVE CHANGES] All properties saved successfully
+AirEntryDialog.tsx:607 🎯 [PROPS.ONCONFIRM] props.onConfirm completed
+AirEntryDialog.tsx:608 🎯 [PROPS.ONCONFIRM] Now calling onClose() to close dialog

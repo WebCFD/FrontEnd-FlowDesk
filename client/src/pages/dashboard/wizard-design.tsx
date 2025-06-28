@@ -2564,7 +2564,21 @@ export default function WizardDesign() {
                 setHasClosedContour(hasClosedContour);
               }}
               onAirEntriesUpdate={(newAirEntries) => {
+                // Update both local state and floors store to ensure consistency
                 setAirEntries(newAirEntries);
+                
+                // Also update the floors store so Canvas2D receives updated data immediately
+                const updatedFloors = { ...floors };
+                if (!updatedFloors[currentFloor]) {
+                  updatedFloors[currentFloor] = { airEntries: [], lines: [], measurements: [], stairPolygons: [], walls: [] };
+                }
+                updatedFloors[currentFloor] = {
+                  ...updatedFloors[currentFloor],
+                  airEntries: newAirEntries
+                };
+                
+                // Update the store immediately for real-time propagation
+                useRoomStore.getState().setFloors(updatedFloors);
               }}
               onLineSelect={handleLineSelect}
             />
