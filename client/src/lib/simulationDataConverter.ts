@@ -602,8 +602,13 @@ export function generateSimulationData(
       };
     });
 
-    // Obtener los parámetros específicos del piso actual
-    const currentFloorParams = floorParameters?.[floorName] || { ceilingHeight: 220, floorDeck: 0 };
+    // Obtener los parámetros específicos del piso actual con valores por defecto mejorados
+    const currentFloorParams = floorParameters?.[floorName] || { 
+      ceilingHeight: 220, 
+      floorDeck: 0,
+      ceilingTemperature: 20,
+      floorTemperature: 20
+    };
     const floorHeight = (currentFloorParams.ceilingHeight || roomHeight * 100) / 100;
     const floorDeckValue = (currentFloorParams.floorDeck || 0) / 100; // Convertir de cm a metros
     
