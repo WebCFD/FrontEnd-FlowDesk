@@ -1,0 +1,81 @@
+wizard-design:1 [.WebGL-0x2c640eb60000] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x2c640eb60000] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x2c640eb60000] GL_INVALID_OPERATION: Texture is immutable.
+RoomSketchPro.tsx:645 🎨 RSP TEXTURE APPLICATION: Found 2 air entry meshes to texture
+RoomSketchPro.tsx:650 🎨 RSP TEXTURE: Processing mesh 0 - type: vent {hasOriginalTexture: false, originalMaterialType: 'MeshPhongMaterial'}
+RoomSketchPro.tsx:683 🎨 RSP TEXTURE: Found texture for vent, applying to mesh 0
+RoomSketchPro.tsx:715 ✅ RSP TEXTURE: Successfully applied vent texture to mesh 0
+RoomSketchPro.tsx:650 🎨 RSP TEXTURE: Processing mesh 1 - type: window {hasOriginalTexture: false, originalMaterialType: 'MeshPhongMaterial'}
+RoomSketchPro.tsx:683 🎨 RSP TEXTURE: Found texture for window, applying to mesh 1
+RoomSketchPro.tsx:715 ✅ RSP TEXTURE: Successfully applied window texture to mesh 1
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 216ms
+RoomSketchPro.tsx:645 🎨 RSP TEXTURE APPLICATION: Found 2 air entry meshes to texture
+RoomSketchPro.tsx:650 🎨 RSP TEXTURE: Processing mesh 0 - type: vent {hasOriginalTexture: true, originalMaterialType: 'MeshPhongMaterial'}
+RoomSketchPro.tsx:683 🎨 RSP TEXTURE: Found texture for vent, applying to mesh 0
+RoomSketchPro.tsx:715 ✅ RSP TEXTURE: Successfully applied vent texture to mesh 0
+RoomSketchPro.tsx:650 🎨 RSP TEXTURE: Processing mesh 1 - type: window {hasOriginalTexture: true, originalMaterialType: 'MeshPhongMaterial'}
+RoomSketchPro.tsx:683 🎨 RSP TEXTURE: Found texture for window, applying to mesh 1
+RoomSketchPro.tsx:715 ✅ RSP TEXTURE: Successfully applied window texture to mesh 1
+Canvas3D.tsx:4626 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4636 Double-click found entry using stored entryIndex: 0
+AirEntryDialog.tsx:335 🔍 LOADING EDITING VALUES - Full initialValues: {
+  "width": 119,
+  "height": 95,
+  "distanceToFloor": 145,
+  "shape": "rectangular",
+  "wallPosition": 33,
+  "properties": {
+    "state": "open",
+    "temperature": 25,
+    "flowIntensity": "medium",
+    "airOrientation": "inflow",
+    "flowType": "Air Mass Flow",
+    "flowValue": 0.5
+  },
+  "position": {
+    "x": 450.09977964335144,
+    "y": 98.14844452137532
+  }
+}
+AirEntryDialog.tsx:342 ✅ WIDTH LOADING - Found saved width: 119
+AirEntryDialog.tsx:348 🔍 WALL POSITION LOADING - Checking sources:
+AirEntryDialog.tsx:349   - properties?.wallPosition: undefined
+AirEntryDialog.tsx:350   - direct wallPosition: 33
+AirEntryDialog.tsx:351   - Final savedWallPosition: 33
+AirEntryDialog.tsx:362 ✅ WALL POSITION LOADING - Using saved value: 33
+wizard-design.tsx:2324 wizard-design: Received floors update from RSP: {ground: {…}}
+AirEntryDialog.tsx:519 📝 FORM SUBMIT - Current form values: {width: 119, height: 95, distanceToFloor: 144, shape: 'rectangular', wallPosition: 33, …}
+AirEntryDialog.tsx:520 📝 FORM SUBMIT - Current wallPosition state: 33
+AirEntryDialog.tsx:521 📝 FORM SUBMIT - Current distanceToFloor state: 144
+AirEntryDialog.tsx:549 📦 FORM SUBMIT - Final airEntryData being sent: {
+  "width": 119,
+  "height": 95,
+  "diameter": null,
+  "distanceToFloor": 144,
+  "shape": "rectangular",
+  "isOpen": true,
+  "temperature": 25,
+  "airDirection": "inflow",
+  "flowIntensity": "medium",
+  "customIntensityValue": null,
+  "ventFlowType": "massflow",
+  "airOrientation": {
+    "verticalAngle": 0,
+    "horizontalAngle": 0
+  },
+  "wallPosition": 33,
+  "position": {
+    "x": 450.09977964335144,
+    "y": 98.14844452137532
+  }
+}
+AirEntryDialog.tsx:572 💾 SIMULATION PROPERTIES SAVE - Final properties: {flowType: 'massflow', flowValue: 0.5, flowIntensity: 'medium', airOrientation: 'inflow', wallPosition: 33}
+Canvas3D.tsx:5949 [CANVAS3D ONCONFIRM] Received data from dialog: {width: 119, height: 95, distanceToFloor: 144, shape: 'rectangular', wallPosition: 33, …}
+Canvas3D.tsx:5950 [CANVAS3D ONCONFIRM] wallPosition in received data: 33
+Canvas3D.tsx:1834 🔄 MATERIAL PRESERVATION: AirEntry 0 - Preserving material before dialog update: MeshPhongMaterial {isMaterial: true, uuid: 'ec7086bb-fe0c-4214-8852-7fcb707ec2e7', name: '', type: 'MeshPhongMaterial', blending: 1, …}alphaHash: falsealphaMap: nullalphaToCoverage: falseaoMap: nullaoMapIntensity: 1blendAlpha: 0blendColor: Color {isColor: true, r: 0, g: 0, b: 0}blendDst: 205blendDstAlpha: nullblendEquation: 100blendEquationAlpha: nullblendSrc: 204blendSrcAlpha: nullblending: 1bumpMap: nullbumpScale: 1clipIntersection: falseclipShadows: falseclippingPlanes: nullcolor: Color {isColor: true, r: 0.015996293361446288, g: 0.5583403896257968, b: 0.11193242782769693}colorWrite: truecombine: 0depthFunc: 3depthTest: falsedepthWrite: falsedisplacementBias: 0displacementMap: nulldisplacementScale: 1dithering: falseemissive: Color {isColor: true, r: 0, g: 0, b: 0}emissiveIntensity: 1emissiveMap: nullenvMap: nullenvMapRotation: _Euler {isEuler: true, _x: 0, _y: 0, _z: 0, _order: 'XYZ'}flatShading: falsefog: trueforceSinglePass: falseisMaterial: trueisMeshPhongMaterial: truelightMap: nulllightMapIntensity: 1map: nullname: ""normalMap: nullnormalMapType: 0normalScale: _Vector2 {x: 1, y: 1}opacity: 0.7polygonOffset: falsepolygonOffsetFactor: 0polygonOffsetUnits: 0precision: nullpremultipliedAlpha: falsereflectivity: 1refractionRatio: 0.98shadowSide: nullshininess: 30side: 2specular: Color {isColor: true, r: 0.005605391621829108, g: 0.005605391621829108, b: 0.005605391621829108}specularMap: nullstencilFail: 7680stencilFunc: 519stencilFuncMask: 255stencilRef: 0stencilWrite: falsestencilWriteMask: 255stencilZFail: 7680stencilZPass: 7680toneMapped: truetransparent: truetype: "MeshPhongMaterial"userData: {}uuid: "ec7086bb-fe0c-4214-8852-7fcb707ec2e7"version: 428vertexColors: falsevisible: truewireframe: falsewireframeLinecap: "round"wireframeLinejoin: "round"wireframeLinewidth: 1_alphaTest: 0_listeners: {dispose: Array(1)}id: 136alphaTest: (...)[[Prototype]]: Material
+Canvas3D.tsx:1835 🔄 Material type: MeshPhongMaterial Has texture map: false
+Canvas3D.tsx:1872 [DIMENSION STORAGE] Stored dimensions for entry 0: {"position":{"x":450.09977964335144,"y":98.14844452137532},"dimensions":{"width":119,"height":95,"distanceToFloor":144,"shape":"rectangular","wallPosition":33}}
+Canvas3D.tsx:1874 [WALL POSITION STORAGE] wallPosition in data: 33
+Canvas3D.tsx:1875 [WALL POSITION STORAGE] wallPosition in updatedEntry.dimensions: 33
+wizard-design.tsx:2324 wizard-design: Received floors update from RSP: {ground: {…}}
+Canvas3D.tsx:1890 ✅ MATERIAL RESTORATION: AirEntry 0 - Material restored after scene rebuild

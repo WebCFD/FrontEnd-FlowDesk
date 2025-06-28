@@ -1877,21 +1877,20 @@ export default function Canvas3D({
     // Call the parent component's handler
     onUpdateAirEntry(currentFloor, index, updatedEntry);
     
-    // CRITICAL: Restore preserved material after scene rebuild (for RSP texture preservation)
-    if (preservedMaterial) {
-      // Use setTimeout to allow scene rebuild to complete, then restore material
+    // CRITICAL: Store material info for RSP texture preservation
+    // Since RSP textures are applied after scene rebuild, we need to trigger RSP texture re-application
+    // instead of directly restoring the material
+    if (preservedMaterial && (preservedMaterial as any).map) {
+      // Only trigger RSP re-application if the preserved material had a texture (RSP applied)
+      console.log(`🔄 TRIGGER RSP REAPPLICATION: AirEntry ${index} had texture, triggering RSP reapplication`);
+      
+      // Use setTimeout to allow scene rebuild and then trigger RSP texture reapplication
       setTimeout(() => {
-        if (sceneRef.current) {
-          sceneRef.current.traverse((object) => {
-            if (object instanceof THREE.Mesh && 
-                object.userData?.type === editingAirEntry.entry.type &&
-                object.userData?.entryIndex === index) {
-              object.material = preservedMaterial!;
-              console.log(`✅ MATERIAL RESTORATION: AirEntry ${index} - Material restored after scene rebuild`);
-            }
-          });
+        // Trigger RSP texture reapplication by calling applyThemeTextures if available
+        if (window.triggerRSPTextureReapplication) {
+          window.triggerRSPTextureReapplication();
         }
-      }, 100); // Small delay to ensure scene rebuild is complete
+      }, 150); // Longer delay to ensure scene rebuild is fully complete
     }
     
     setEditingAirEntry(null);
