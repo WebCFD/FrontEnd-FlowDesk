@@ -1371,9 +1371,11 @@ export default function Canvas3D({
             object.userData?.entryIndex === editingAirEntry.index) {
           
           // Update the mesh position
+          console.log(`🏠 [AIRENTRY DIRECT] Updating position directly for ${object.userData.type} - similar to furniture`);
           const position3D = transform2DTo3D(newPosition);
           object.position.set(position3D.x, position3D.y, object.position.z);
           object.userData.position = newPosition;
+          console.log(`✅ [AIRENTRY DIRECT] Position updated directly - Material: ${object.material.constructor.name}, HasTexture: ${!!(object.material as any).map}`);
         }
       });
     }
@@ -1443,9 +1445,13 @@ export default function Canvas3D({
             const newWidth = newDimensions.width || updatedEntry.dimensions.width;
             const newHeight = newDimensions.height || updatedEntry.dimensions.height;
             
+            console.log(`🔧 [AIRENTRY DIRECT] Updating geometry directly for ${object.userData.type} - oldSize: ${object.geometry.parameters?.width}x${object.geometry.parameters?.height}, newSize: ${newWidth}x${newHeight}`);
+            
             const newGeometry = new THREE.PlaneGeometry(newWidth, newHeight);
             object.geometry.dispose(); // Clean up old geometry
             object.geometry = newGeometry;
+            
+            console.log(`✅ [AIRENTRY DIRECT] Geometry updated successfully - Material type: ${object.material.constructor.name}, Has texture: ${!!(object.material as any).map}`);
           }
           
           // Update Z-position if distanceToFloor changed
@@ -1455,11 +1461,15 @@ export default function Canvas3D({
             // CRITICAL FIX: distanceToFloor already represents center height, no need to add height/2
             const newZPosition = baseHeight + newDistanceToFloor;
             
+            console.log(`📍 [AIRENTRY DIRECT] Updating position directly for ${object.userData.type} - oldZ: ${object.position.z}, newZ: ${newZPosition}`);
             object.position.setZ(newZPosition);
+            console.log(`✅ [AIRENTRY DIRECT] Position updated successfully`);
           }
           
           // Update userData with new dimensions
+          console.log(`💾 [AIRENTRY DIRECT] Updating userData for ${object.userData.type}`);
           object.userData.dimensions = updatedEntry.dimensions;
+          console.log(`✅ [AIRENTRY DIRECT] UserData updated successfully`);
         }
       });
     }
@@ -1471,7 +1481,10 @@ export default function Canvas3D({
       }
       
       // Notify RSP to re-apply textures after real-time dimension update
+      console.log(`🔄 [CALLBACK ANALYSIS] About to call onAirEntryUpdated callback - Is this necessary?`);
+      
       if (onAirEntryUpdated) {
+        console.log(`📞 [CALLBACK ANALYSIS] Calling onAirEntryUpdated callback now...`);
         onAirEntryUpdated();
       }
     }, 150);
@@ -1862,7 +1875,9 @@ export default function Canvas3D({
     setEditingAirEntry(null);
     
     // Notify RSP to re-apply textures after AirEntry update
+    console.log(`🔄 [CALLBACK ANALYSIS FINAL] About to call onAirEntryUpdated callback after handleAirEntryEdit`);
     if (onAirEntryUpdated) {
+      console.log(`📞 [CALLBACK ANALYSIS FINAL] Calling onAirEntryUpdated callback after dialog confirm...`);
       onAirEntryUpdated();
     }
   };
@@ -5688,6 +5703,17 @@ export default function Canvas3D({
     });
 
     if (furnitureGroup) {
+      console.log(`🪑 [FURNITURE DIRECT] Updating position directly for ${editingFurniture.item.type} - NO texture callbacks needed`);
+      
+      // Check material/texture state before modification
+      let materialInfo = 'No materials found';
+      furnitureGroup.traverse((child) => {
+        if (child instanceof THREE.Mesh && child.material) {
+          materialInfo = `Material: ${child.material.constructor.name}, HasTexture: ${!!(child.material as any).map}`;
+        }
+      });
+      console.log(`🪑 [FURNITURE DIRECT] Current material state: ${materialInfo}`);
+      
       // COORDINATE SYSTEM FIX: Apply same conversion as confirm button
       if (editingFurniture.item.type === 'vent' || editingFurniture.item.type === 'custom') {
         // For vents and custom objects: Convert world coordinates to local coordinates
@@ -5708,6 +5734,8 @@ export default function Canvas3D({
         // For tables and other furniture: direct application
         furnitureGroup.position.set(newPosition.x, newPosition.y, newPosition.z);
       }
+      
+      console.log(`✅ [FURNITURE DIRECT] Position updated - textures preserved automatically`);
     }
   };
 
