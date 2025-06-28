@@ -2546,7 +2546,7 @@ export default function WizardDesign() {
               walls={walls}
               onMeasurementsUpdate={setMeasurements}
               onStairPolygonsUpdate={(newPolygons) => {
-                console.log("🏠 Wizard RECEIVE - New polygons from Canvas2D:", newPolygons);
+                console.log("🏠 Wizard RECEIVE - New polygons from Canvas2D DETAILED:", JSON.stringify(newPolygons, null, 2));
                 console.log("🏠 Wizard RECEIVE - About to call setStairPolygons");
                 setStairPolygons(newPolygons);
                 console.log("🏠 Wizard RECEIVE - setStairPolygons completed");
