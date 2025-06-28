@@ -3322,12 +3322,21 @@ export default function Canvas2D({
       };
     },
   ) => {
-    console.log("💾 [SAVE CHANGES] Final save to store with all properties");
+    console.log("💾 [SAVE CHANGES] Starting handleAirEntryEdit");
+    console.log("💾 [SAVE CHANGES] Index:", index);
+    console.log("💾 [SAVE CHANGES] Data received from dialog:", data);
+    console.log("💾 [SAVE CHANGES] Current store position:", airEntries[index]?.position);
+    console.log("💾 [SAVE CHANGES] Data.position from dialog:", data.position);
     
-    // Since position is already updated in real-time, just update other properties
     const updatedAirEntries = [...airEntries];
+    
+    // CRITICAL: Never use data.position from dialog - it may contain stale data
+    // Keep the current store position that was updated in real-time
+    const currentStorePosition = updatedAirEntries[index]?.position;
+    
     updatedAirEntries[index] = {
-      ...updatedAirEntries[index], // Keep current position that was updated in real-time
+      ...updatedAirEntries[index],
+      position: currentStorePosition, // Explicitly preserve current store position
       dimensions: {
         width: data.width,
         height: data.height,
@@ -3338,11 +3347,7 @@ export default function Canvas2D({
       ...(data.properties && { properties: data.properties }),
     };
 
-    // Ensure position is preserved if provided in data
-    if (data.position) {
-      updatedAirEntries[index].position = data.position;
-    }
-
+    console.log("💾 [SAVE CHANGES] Final saved position:", updatedAirEntries[index].position);
     console.log("💾 [SAVE CHANGES] Final saved entry:", updatedAirEntries[index]);
     
     onAirEntriesUpdate?.(updatedAirEntries);
