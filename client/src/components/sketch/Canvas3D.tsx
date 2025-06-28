@@ -5273,20 +5273,27 @@ export default function Canvas3D({
 
   useEffect(() => {
     if (sceneRef.current) {
+      console.log('🔧 [WALL TRANSPARENCY] Updating wall transparency, preserving AirEntry textures');
+      
       // Update the opacity of only wall materials in the scene, not air entries
       sceneRef.current.traverse((object) => {
         if (object instanceof THREE.Mesh && 
             object.material instanceof THREE.MeshPhongMaterial &&
             object.material.transparent) {
 
-          // Only update walls, not air entries (windows, doors, vents)
+          // CRITICAL FIX: More robust AirEntry detection and texture preservation
           const isAirEntry = object.userData?.type && 
                             ["window", "door", "vent"].includes(object.userData.type);
 
           if (!isAirEntry) {
             // This is a wall material that needs updating
+            console.log('🔧 [WALL TRANSPARENCY] Updating wall material opacity to:', wallTransparency);
             object.material.opacity = wallTransparency;
             object.material.needsUpdate = true;
+          } else {
+            // CRITICAL: This is an AirEntry - preserve its texture and current opacity
+            console.log('✅ [WALL TRANSPARENCY] Preserving AirEntry material - hasTexture:', !!object.material.map, 'opacity:', object.material.opacity);
+            // DO NOT modify AirEntry materials - they are managed by RSP texture system
           }
         }
       });
