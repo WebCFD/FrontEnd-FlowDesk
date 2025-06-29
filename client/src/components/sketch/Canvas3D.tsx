@@ -3692,7 +3692,7 @@ export default function Canvas3D({
         
         // Skip hover detection if mouse buttons are being held down
         if (event.buttons !== 0) {
-          console.log("⏩ Skipping hover detection during active mouse button press");
+
           return;
         }
         
@@ -4718,15 +4718,14 @@ export default function Canvas3D({
             // Check if we have updated dimensions for this entry in our ref
             const normalizedFloorName = normalizeFloorName(currentFloor);
             const updatedData = updatedAirEntryPositionsRef.current[normalizedFloorName]?.[foundIndex];
-            console.log("🔵 [CANVAS3D STORE READ] updatedData from ref:", updatedData);
+
             
             // Create a merged entry with the latest dimensions
             const mergedEntry = {
               ...baseEntry,
               dimensions: updatedData?.dimensions || baseEntry.dimensions
             };
-            console.log("🔵 [CANVAS3D STORE READ] mergedEntry after merge:", mergedEntry);
-            console.log("🔵 [CANVAS3D STORE READ] mergedEntry.dimensions.wallPosition:", (mergedEntry.dimensions as any)?.wallPosition);
+
             
             // Phase 3: Create wall context for unified dialog experience
             const wallContext = createWallContext(mergedEntry);
@@ -4737,7 +4736,7 @@ export default function Canvas3D({
               wallContext
             });
             
-            console.log("🔍 [CANVAS3D DOUBLECLICK] Dialog opening with index:", foundIndex);
+
           }
         }
       }
@@ -6030,9 +6029,8 @@ export default function Canvas3D({
           onClose={() => setEditingAirEntry(null)}
           onCancel={() => setEditingAirEntry(null)}
           onConfirm={(data) => {
-            console.log('[CANVAS3D ONCONFIRM] Received data from dialog:', data);
-            console.log('[CANVAS3D ONCONFIRM] wallPosition in received data:', data.wallPosition);
-            console.log('🔍 [SAVE CHANGES DEBUG] About to call handleAirEntryEdit');
+
+
             handleAirEntryEdit(editingAirEntry.index, {
               width: data.width,
               height: data.height,
@@ -6041,29 +6039,7 @@ export default function Canvas3D({
               wallPosition: data.wallPosition,
               properties: data.properties
             } as any);
-            console.log('🔍 [SAVE CHANGES DEBUG] handleAirEntryEdit completed - checking for side effects');
-            
-            // Add timeout to check for delayed effects that might cause texture loss
-            setTimeout(() => {
-              console.log('🔍 [SAVE CHANGES DEBUG] 100ms after Save Changes - checking scene state');
-              if (sceneRef.current) {
-                const airEntryMeshes: any[] = [];
-                sceneRef.current.traverse((object: any) => {
-                  if (object.userData && ["door", "window", "vent"].includes(object.userData.type)) {
-                    airEntryMeshes.push(object);
-                  }
-                });
-                console.log('🔍 [SAVE CHANGES DEBUG] AirEntry meshes found:', airEntryMeshes.length);
-                airEntryMeshes.forEach((mesh, i) => {
-                  const material = mesh.material;
-                  console.log(`🔍 [SAVE CHANGES DEBUG] Mesh ${i} material:`, {
-                    hasMap: !!material?.map,
-                    opacity: material?.opacity,
-                    type: mesh.userData?.type
-                  });
-                });
-              }
-            }, 100);
+
           }}
           initialValues={airEntryInitialValues as any}
           airEntryIndex={editingAirEntry.index}
