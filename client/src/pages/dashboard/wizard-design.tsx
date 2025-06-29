@@ -354,6 +354,15 @@ export default function WizardDesign() {
     reset: storeReset, // Import store reset function with alias
   } = useRoomStore();
 
+  // Log reactive store subscription changes
+  useEffect(() => {
+    if (rawFloors[currentFloor]?.airEntries?.length > 0) {
+      const firstEntry = rawFloors[currentFloor].airEntries[0];
+      console.log('🔄 [WIZARD REACTIVE] rawFloors subscription updated - wallPosition:', (firstEntry.dimensions as any)?.wallPosition);
+      console.log('🔄 [WIZARD REACTIVE] Timestamp:', new Date().toISOString());
+    }
+  }, [rawFloors, currentFloor]);
+
   // CRITICAL OPTIMIZATION: Memoize floors to prevent unnecessary scene rebuilds
   // Only change when structural data (lines, airEntries positions, walls) changes
   // NOT when metadata (properties, dimensions) changes
@@ -2546,9 +2555,13 @@ export default function WizardDesign() {
                 // Use store data if available, fallback to rawFloors
                 const finalAirEntries = storeAirEntries.length > 0 ? storeAirEntries : fallbackAirEntries;
                 
-                // Reduced logging for Canvas2D
+                // CRITICAL LOG: Compare static vs reactive reads
                 if (finalAirEntries.length > 0) {
-                  console.log(`📱 Canvas2D: Reading ${finalAirEntries.length} airEntries from store - pos: (${finalAirEntries[0].position.x.toFixed(1)}, ${finalAirEntries[0].position.y.toFixed(1)})`);
+                  const staticWallPosition = (storeAirEntries[0]?.dimensions as any)?.wallPosition;
+                  const reactiveWallPosition = (rawFloors[currentFloor]?.airEntries?.[0]?.dimensions as any)?.wallPosition;
+                  console.log('🔄 [CANVAS2D COMPARISON] Static store read wallPosition:', staticWallPosition);
+                  console.log('🔄 [CANVAS2D COMPARISON] Reactive rawFloors wallPosition:', reactiveWallPosition);
+                  console.log('🔄 [CANVAS2D COMPARISON] Values match:', staticWallPosition === reactiveWallPosition);
                 }
                 
                 return finalAirEntries;
