@@ -3295,16 +3295,22 @@ export default function Canvas2D({
   // The workflow treats both cases identically - just updating an existing element in the array
   // Real-time position update handler - updates store immediately during dialog interactions
   const handleAirEntryPositionUpdate = (index: number, newPosition: { x: number; y: number }) => {
-
+    console.log("🟢 [CANVAS2D DEBUG] handleAirEntryPositionUpdate called with index:", index, "position:", newPosition);
     
     // Update the store immediately to maintain visual consistency
     const updatedAirEntries = [...airEntries];
     if (updatedAirEntries[index]) {
+      const originalEntry = updatedAirEntries[index];
+      console.log("🟢 [CANVAS2D DEBUG] Original entry before update:", originalEntry);
+      console.log("🟢 [CANVAS2D DEBUG] Original wallPosition:", originalEntry.dimensions?.wallPosition);
+      
       updatedAirEntries[index] = {
         ...updatedAirEntries[index],
         position: newPosition
       };
       
+      console.log("🟢 [CANVAS2D DEBUG] Updated entry after position change:", updatedAirEntries[index]);
+      console.log("🟢 [CANVAS2D DEBUG] wallPosition preserved?:", updatedAirEntries[index].dimensions?.wallPosition);
 
       onAirEntriesUpdate?.(updatedAirEntries);
       
@@ -3340,13 +3346,19 @@ export default function Canvas2D({
       };
     },
   ) => {
-
+    console.log("🟢 [CANVAS2D EDIT] handleAirEntryEdit called with index:", index);
+    console.log("🟢 [CANVAS2D EDIT] Received data:", data);
+    console.log("🟢 [CANVAS2D EDIT] data.wallPosition:", data.wallPosition);
     
     const updatedAirEntries = [...airEntries];
     
     // CRITICAL: Never use data.position from dialog - it may contain stale data
     // Keep the current store position that was updated in real-time
     const currentStorePosition = updatedAirEntries[index]?.position;
+    const originalEntry = updatedAirEntries[index];
+    console.log("🟢 [CANVAS2D EDIT] Original entry:", originalEntry);
+    console.log("🟢 [CANVAS2D EDIT] Original wallPosition:", originalEntry?.dimensions?.wallPosition);
+    console.log("🟢 [CANVAS2D EDIT] Current store position:", currentStorePosition);
     
     updatedAirEntries[index] = {
       ...updatedAirEntries[index],
@@ -3360,6 +3372,9 @@ export default function Canvas2D({
       },
       ...(data.properties && { properties: data.properties }),
     };
+    
+    console.log("🟢 [CANVAS2D EDIT] Final updated entry:", updatedAirEntries[index]);
+    console.log("🟢 [CANVAS2D EDIT] Final wallPosition:", updatedAirEntries[index].dimensions?.wallPosition);
 
 
     
