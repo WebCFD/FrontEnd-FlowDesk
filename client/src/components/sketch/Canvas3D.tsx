@@ -1348,22 +1348,13 @@ export default function Canvas3D({
     const dimensions = baseEntry.dimensions;
     const wallPosition = (dimensions as any).wallPosition || (baseEntry as any).properties?.wallPosition;
     
-    console.log("🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:");
-    console.log("🔵 [CANVAS3D DIALOG] baseEntry:", baseEntry);
-    console.log("🔵 [CANVAS3D DIALOG] dimensions:", dimensions);
-    console.log("🔵 [CANVAS3D DIALOG] wallPosition found:", wallPosition);
-    console.log("🔵 [CANVAS3D DIALOG] entry position:", baseEntry.position);
-    
-    const initialValues = {
+    return {
       ...dimensions,
       shape: (dimensions as any).shape,
       properties: (baseEntry as any).properties,
       position: baseEntry.position,
       wallPosition: wallPosition
     };
-    
-    console.log("🔵 [CANVAS3D DIALOG] Final initialValues:", initialValues);
-    return initialValues;
   }, [editingAirEntry]);
   
   // State for editing furniture
@@ -1437,10 +1428,7 @@ export default function Canvas3D({
     // Debounce parent callback to prevent excessive updates
     updateTimeoutRef.current = setTimeout(() => {
       if (onUpdateAirEntry && editingAirEntry) {
-        console.log('🔍 [HYPOTHESIS TEST] About to call onUpdateAirEntry - this may trigger floors modification');
-        console.log('🔍 [HYPOTHESIS TEST] Current floors object reference:', typeof floors);
         onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
-        console.log('🔍 [HYPOTHESIS TEST] onUpdateAirEntry completed - floors may have been modified');
       }
       
       // OPTIMIZATION: No callback needed after position update - textures preserved automatically
@@ -1877,9 +1865,7 @@ export default function Canvas3D({
       };
     },
   ) => {
-    console.log("🔍 [CANVAS3D handleAirEntryEdit] Called with index:", index);
-    console.log("🔍 [CANVAS3D handleAirEntryEdit] Received data:", data);
-    console.log("🔍 [CANVAS3D handleAirEntryEdit] data.wallPosition:", data.wallPosition);
+
     
     if (!editingAirEntry || !onUpdateAirEntry) return;
 
@@ -1936,31 +1922,11 @@ export default function Canvas3D({
       });
       airEntryMeshes.forEach((mesh, i) => {
         const material = mesh.material;
-        console.log(`🔍 [BEFORE CLOSE] Mesh ${i} material:`, {
-          hasMap: !!material?.map,
-          opacity: material?.opacity,
-          type: mesh.userData?.type
-        });
+
       });
     }
     
-    console.log('🔬 [DEPENDENCY TRACKING] BEFORE setEditingAirEntry(null):');
-    console.log('🔬 [DEPENDENCY TRACKING] floors keys:', Object.keys(floors));
-    console.log('🔬 [DEPENDENCY TRACKING] currentFloor:', currentFloor);
-    console.log('🔬 [DEPENDENCY TRACKING] ceilingHeight:', ceilingHeight);
-    console.log('🔬 [DEPENDENCY TRACKING] floorDeckThickness:', floorDeckThickness);
-    console.log('🔬 [DEPENDENCY TRACKING] floors[currentFloor] airEntries length:', floors[currentFloor]?.airEntries?.length);
-    console.log('🔬 [DEPENDENCY TRACKING] selectedAirEntry state:', selectedAirEntry ? 'SELECTED' : 'NULL');
-    
     setEditingAirEntry(null);
-    
-    console.log('🔬 [DEPENDENCY TRACKING] AFTER setEditingAirEntry(null):');
-    console.log('🔬 [DEPENDENCY TRACKING] floors keys:', Object.keys(floors));
-    console.log('🔬 [DEPENDENCY TRACKING] currentFloor:', currentFloor);
-    console.log('🔬 [DEPENDENCY TRACKING] ceilingHeight:', ceilingHeight);
-    console.log('🔬 [DEPENDENCY TRACKING] floorDeckThickness:', floorDeckThickness);
-    console.log('🔬 [DEPENDENCY TRACKING] floors[currentFloor] airEntries length:', floors[currentFloor]?.airEntries?.length);
-    console.log('🔬 [DEPENDENCY TRACKING] selectedAirEntry state:', selectedAirEntry ? 'SELECTED' : 'NULL');
     
     // Check texture state IMMEDIATELY AFTER setEditingAirEntry(null)
     setTimeout(() => {
