@@ -5021,6 +5021,48 @@ export default function Canvas3D({
     return Object.keys(reactiveStoreFloors).length > 0 ? reactiveStoreFloors : floors;
   }, [reactiveStoreFloors, floors, currentFloor]); // React to store changes
 
+  // CRITICAL PERFORMANCE FIX: Create filtered floors that exclude AirEntry mesh properties
+  // This prevents scene rebuilds when only AirEntry dimensions/properties change
+  const structuralFloors = useMemo(() => {
+    console.log(`🎯 [CANVAS3D STRUCTURAL] Creating structural floors for scene rebuild optimization`);
+    
+    const filtered: Record<string, any> = {};
+    
+    Object.entries(finalFloors).forEach(([floorName, floorData]) => {
+      if (floorData) {
+        filtered[floorName] = {
+          ...floorData,
+          // EXCLUDE AirEntry mesh properties to prevent rebuilds during Save Changes
+          airEntries: floorData.airEntries?.map(entry => ({
+            type: entry.type,
+            position: entry.position,
+            line: entry.line,
+            id: (entry as any).id
+            // EXCLUDED: dimensions, properties, wallPosition - these are mesh-level only
+          })) || []
+        };
+      }
+    });
+    
+    console.log(`🎯 [CANVAS3D STRUCTURAL] Structural floors created, AirEntry mesh properties excluded`);
+    return filtered;
+  }, [
+    // Only track structural changes, not mesh properties
+    JSON.stringify(
+      Object.keys(finalFloors)
+        .sort()
+        .map(floorName => ({
+          name: floorName,
+          linesLength: finalFloors[floorName]?.lines?.length || 0,
+          furnitureItemsLength: finalFloors[floorName]?.furnitureItems?.length || 0,
+          stairPolygonsLength: finalFloors[floorName]?.stairPolygons?.length || 0,
+          hasClosedContour: finalFloors[floorName]?.hasClosedContour || false,
+          // COMPLETE EXCLUSION: AirEntries entirely excluded from dependency calculation
+          // This ensures scene rebuilds only for structural changes, not mesh modifications
+        }))
+    )
+  ]);
+
   useEffect(() => {
     // Scene rebuild using store data when available, fallback to props
 
@@ -5235,7 +5277,7 @@ export default function Canvas3D({
         }
       };
     }
-  }, [finalFloors, currentFloor, ceilingHeight, floorDeckThickness]);
+  }, [structuralFloors, currentFloor, ceilingHeight, floorDeckThickness]);
 
   // Separate useEffect for context updates to avoid hidden dependencies in scene rebuild
   useEffect(() => {
