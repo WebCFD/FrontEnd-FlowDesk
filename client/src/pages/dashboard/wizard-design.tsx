@@ -396,9 +396,10 @@ export default function WizardDesign() {
             position: entry.position,
             line: entry.line,
             id: (entry as any).id
-            // OPTIMIZATION: Exclude mesh-level properties (width, height, distanceToFloor, wallPosition, shape)
-            // These are now handled by direct mesh modification in Canvas3D to prevent texture loss
-            // Only structural data that affects scene geometry included in useMemo
+            // COMPLETE EXCLUSION: All mesh-level properties excluded to prevent scene rebuild
+            // Excluded: dimensions (width, height, distanceToFloor, wallPosition, shape), properties (temperature, state, flow, etc.)
+            // These modifications now use furniture model - only mesh updates, no store updates during editing
+            // This prevents the scene rebuild that was destroying textures after Save Changes
           })),
           walls: normalizeObject(floorData.walls),
           measurements: normalizeObject(floorData.measurements),
@@ -419,7 +420,14 @@ export default function WizardDesign() {
         .map(floorName => ({
           name: floorName,
           linesLength: rawFloors[floorName]?.lines?.length || 0,
-          airEntriesLength: rawFloors[floorName]?.airEntries?.length || 0,
+          // EXCLUDED: airEntriesLength to prevent useMemo rebuild on AirEntry modifications
+          // Only structural changes (position, line, type) are tracked, not mesh properties (dimensions, properties)
+          airEntriesStructural: JSON.stringify(rawFloors[floorName]?.airEntries?.map(entry => ({
+            type: entry.type,
+            position: entry.position,
+            line: entry.line,
+            id: (entry as any).id
+          })) || []),
           furnitureItemsLength: rawFloors[floorName]?.furnitureItems?.length || 0,
           stairPolygonsLength: rawFloors[floorName]?.stairPolygons?.length || 0,
           stairPolygonsHash: JSON.stringify(rawFloors[floorName]?.stairPolygons || []),
