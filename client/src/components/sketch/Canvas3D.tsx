@@ -6095,7 +6095,7 @@ export default function Canvas3D({
               }
             }, 100);
           }}
-          initialValues={(() => {
+          initialValues={useMemo(() => {
             const baseEntry = editingAirEntry.entry;
             const dimensions = baseEntry.dimensions;
             const wallPosition = (dimensions as any).wallPosition || (baseEntry as any).properties?.wallPosition;
@@ -6116,7 +6116,7 @@ export default function Canvas3D({
             
             console.log("🔵 [CANVAS3D DIALOG] Final initialValues:", initialValues);
             return initialValues;
-          })() as any}
+          }, [editingAirEntry]) as any}
           airEntryIndex={editingAirEntry.index}
           currentFloor={currentFloor}
           isEditing={true}
