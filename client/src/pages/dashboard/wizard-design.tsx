@@ -1116,8 +1116,14 @@ export default function WizardDesign() {
     updatedEntry: AirEntry,
   ) => {
     
-    // CRITICAL FIX: Preserve wallPosition from existing store data
-    const existingEntry = airEntries[index];
+    // CRITICAL FIX: Get fresh data from reactive store, not props/useMemo
+    const freshFloorData = useRoomStore.getState().floors[floorName];
+    const existingEntry = freshFloorData?.airEntries?.[index];
+    
+    if (!existingEntry) {
+      console.error(`❌ AirEntry index ${index} not found in floor ${floorName}`);
+      return;
+    }
     
     // Create merged entry preserving wallPosition
     const preservedDimensions = {
@@ -1134,8 +1140,11 @@ export default function WizardDesign() {
     // Use the store's setAirEntries function when updating the current floor
     if (floorName === currentFloor) {
       
+      // Get fresh airEntries from store, not from props/useMemo
+      const freshAirEntries = freshFloorData.airEntries || [];
+      
       // Create a deep copy of the air entries array with structuredClone
-      const updatedAirEntries = airEntries.map((entry, i) =>
+      const updatedAirEntries = freshAirEntries.map((entry, i) =>
         i === index ? deepClonedEntry : { ...entry },
       );
 
