@@ -1565,7 +1565,25 @@ export default function Canvas3D({
       properties?: any;
     }
   ) => {
-    if (!editingAirEntry || !sceneRef.current) return;
+    console.log(`🔍 [CANVAS3D SAVE] handleAirEntryEdit called:`, {
+      index,
+      editingAirEntryIndex: editingAirEntry?.index,
+      currentFloor,
+      data: {
+        width: data.width,
+        height: data.height,
+        distanceToFloor: data.distanceToFloor,
+        wallPosition: data.wallPosition
+      }
+    });
+    
+    if (!editingAirEntry || !sceneRef.current) {
+      console.error(`🔍 [CANVAS3D SAVE] Missing requirements:`, {
+        hasEditingAirEntry: !!editingAirEntry,
+        hasSceneRef: !!sceneRef.current
+      });
+      return;
+    }
 
     // Find the mesh to ensure it exists
     let airEntryMesh: THREE.Mesh | null = null;
@@ -1586,6 +1604,16 @@ export default function Canvas3D({
 
       // Save data to persistent store (exactly like furniture model)
       if (onUpdateAirEntry) {
+        console.log(`🔍 [CANVAS3D SAVE] Creating updatedEntry from:`, {
+          editingEntry: {
+            type: editingAirEntry.entry.type,
+            position: editingAirEntry.entry.position,
+            dimensions: editingAirEntry.entry.dimensions,
+            line: editingAirEntry.entry.line
+          },
+          formData: data
+        });
+        
         // Calculate new position from wallPosition
         const line = editingAirEntry.entry.line;
         const t = data.wallPosition / 100;
@@ -1593,6 +1621,13 @@ export default function Canvas3D({
           x: line.start.x + (line.end.x - line.start.x) * t,
           y: line.start.y + (line.end.y - line.start.y) * t
         };
+
+        console.log(`🔍 [CANVAS3D SAVE] Position calculation:`, {
+          wallPosition: data.wallPosition,
+          t,
+          line,
+          newPosition
+        });
 
         const updatedEntry = {
           ...editingAirEntry.entry,
@@ -1606,6 +1641,20 @@ export default function Canvas3D({
           },
           properties: data.properties
         };
+
+        console.log(`🔍 [CANVAS3D SAVE] Final updatedEntry:`, {
+          type: updatedEntry.type,
+          position: updatedEntry.position,
+          dimensions: updatedEntry.dimensions,
+          hasLine: !!updatedEntry.line,
+          hasId: !!updatedEntry.id
+        });
+
+        console.log(`🔍 [CANVAS3D SAVE] Calling onUpdateAirEntry with:`, {
+          currentFloor,
+          index: editingAirEntry.index,
+          entryType: updatedEntry.type
+        });
 
         onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
         
