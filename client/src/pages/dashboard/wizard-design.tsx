@@ -395,15 +395,10 @@ export default function WizardDesign() {
             type: entry.type,
             position: entry.position,
             line: entry.line,
-            dimensions: {
-              width: entry.dimensions.width,
-              height: entry.dimensions.height,
-              distanceToFloor: entry.dimensions.distanceToFloor,
-              shape: entry.dimensions.shape,
-              // Include wallPosition to preserve Save Changes data
-              wallPosition: (entry.dimensions as any).wallPosition
-            }
-            // Exclude properties to prevent metadata changes from triggering rebuilds
+            id: (entry as any).id
+            // OPTIMIZATION: Exclude mesh-level properties (width, height, distanceToFloor, wallPosition, shape)
+            // These are now handled by direct mesh modification in Canvas3D to prevent texture loss
+            // Only structural data that affects scene geometry included in useMemo
           })),
           walls: normalizeObject(floorData.walls),
           measurements: normalizeObject(floorData.measurements),

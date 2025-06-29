@@ -1414,7 +1414,116 @@ export default function Canvas3D({
     }, 150);
   }, [editingAirEntry, onUpdateAirEntry, currentFloor]);
 
+  /**
+   * PHASE 2: Direct Mesh Modification System
+   * Handles mesh-level changes (width, height, distanceToFloor, wallPosition) 
+   * without triggering useMemo rebuilds to preserve RSP textures
+   */
+  const handleDirectAirEntryMeshUpdate = useCallback((changes: {
+    width?: number;
+    height?: number; 
+    distanceToFloor?: number;
+    wallPosition?: number;
+    properties?: any;
+  }) => {
+    if (!editingAirEntry || !sceneRef.current) return;
+    
+    // Find the mesh for this AirEntry
+    sceneRef.current.traverse((object) => {
+      if (object instanceof THREE.Mesh && 
+          object.userData?.type === editingAirEntry.entry.type &&
+          object.userData?.entryIndex === editingAirEntry.index) {
+        
+        // Direct mesh geometry modification
+        if (changes.width !== undefined || changes.height !== undefined) {
+          const currentWidth = changes.width ?? editingAirEntry.entry.dimensions.width;
+          const currentHeight = changes.height ?? editingAirEntry.entry.dimensions.height;
+          
+          // Replace geometry directly - preserves materials and textures
+          object.geometry.dispose();
+          object.geometry = new THREE.PlaneGeometry(
+            currentWidth / PIXELS_TO_CM, 
+            currentHeight / PIXELS_TO_CM
+          );
+        }
+        
+        // Direct mesh position modification
+        if (changes.distanceToFloor !== undefined) {
+          object.position.z = changes.distanceToFloor / PIXELS_TO_CM;
+        }
+        
+        if (changes.wallPosition !== undefined) {
+          // Calculate new position based on wallPosition percentage
+          const line = editingAirEntry.entry.line;
+          const t = changes.wallPosition / 100;
+          const newPosition = {
+            x: line.start.x + (line.end.x - line.start.x) * t,
+            y: line.start.y + (line.end.y - line.start.y) * t
+          };
+          
+          const position3D = transform2DTo3D(newPosition);
+          object.position.set(position3D.x, position3D.y, object.position.z);
+          object.userData.position = newPosition;
+        }
+        
+        // Update userData for properties
+        if (changes.properties) {
+          object.userData.properties = { ...object.userData.properties, ...changes.properties };
+        }
+      }
+    });
+    
+    // Update local state for dialog consistency
+    setEditingAirEntry(prev => prev ? {
+      ...prev,
+      entry: {
+        ...prev.entry,
+        dimensions: {
+          ...prev.entry.dimensions,
+          ...(changes.width !== undefined && { width: changes.width }),
+          ...(changes.height !== undefined && { height: changes.height }),
+          ...(changes.distanceToFloor !== undefined && { distanceToFloor: changes.distanceToFloor }),
+          ...(changes.wallPosition !== undefined && { wallPosition: changes.wallPosition })
+        },
+        ...(changes.properties && { 
+          properties: { ...prev.entry.properties, ...changes.properties }
+        })
+      }
+    } : null);
+    
+    // Update store only for persistence, NOT for scene rebuilding
+    if (onUpdateAirEntry) {
+      const updatedEntry = {
+        ...editingAirEntry.entry,
+        dimensions: {
+          ...editingAirEntry.entry.dimensions,
+          ...(changes.width !== undefined && { width: changes.width }),
+          ...(changes.height !== undefined && { height: changes.height }),
+          ...(changes.distanceToFloor !== undefined && { distanceToFloor: changes.distanceToFloor }),
+          ...(changes.wallPosition !== undefined && { wallPosition: changes.wallPosition })
+        },
+        ...(changes.properties && { 
+          properties: { ...editingAirEntry.entry.properties, ...changes.properties }
+        })
+      };
+      
+      // Store update for persistence - useMemo will ignore these changes
+      onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
+    }
+  }, [editingAirEntry, currentFloor, onUpdateAirEntry]);
+
   const handleAirEntryDimensionsUpdate = useCallback((newDimensions: any) => {
+    // Redirect to direct mesh modification system
+    handleDirectAirEntryMeshUpdate({
+      width: newDimensions.width,
+      height: newDimensions.height,
+      distanceToFloor: newDimensions.distanceToFloor,
+      wallPosition: newDimensions.wallPosition
+    });
+  }, [handleDirectAirEntryMeshUpdate]);
+
+  // Legacy function maintained for compatibility - now uses direct modification
+  const handleAirEntryDimensionsUpdateLegacy = useCallback((newDimensions: any) => {
     if (!editingAirEntry || !onUpdateAirEntry) return;
     
     // Clear any pending updates
@@ -6007,17 +6116,17 @@ export default function Canvas3D({
           onClose={() => setEditingAirEntry(null)}
           onCancel={() => setEditingAirEntry(null)}
           onConfirm={(data) => {
-
-
-            handleAirEntryEdit(editingAirEntry.index, {
+            // PHASE 3: Use direct mesh modification system to preserve RSP textures
+            handleDirectAirEntryMeshUpdate({
               width: data.width,
               height: data.height,
               distanceToFloor: data.distanceToFloor,
-              shape: data.shape,
               wallPosition: data.wallPosition,
               properties: data.properties
-            } as any);
-
+            });
+            
+            // Close dialog after successful update
+            setEditingAirEntry(null);
           }}
           initialValues={airEntryInitialValues as any}
           airEntryIndex={editingAirEntry.index}
