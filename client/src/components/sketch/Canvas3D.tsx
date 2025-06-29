@@ -4743,18 +4743,7 @@ export default function Canvas3D({
           if (foundIndex !== -1) {
             // Get the base entry from floor data
             const baseEntry = floorData.airEntries[foundIndex];
-            console.log("🔵 [CANVAS3D DIALOG READ] Reading floorData for dialog - SOURCE INVESTIGATION:");
-            console.log("🔵 [CANVAS3D DIALOG READ] currentFloor:", currentFloor);
-            console.log("🔵 [CANVAS3D DIALOG READ] foundIndex:", foundIndex);
-            console.log("🔵 [CANVAS3D DIALOG READ] baseEntry.dimensions.wallPosition:", (baseEntry.dimensions as any)?.wallPosition);
-            
-            // CRITICAL COMPARISON: Read FRESH store data vs floorData
-            const freshStoreFloors = useRoomStore.getState().floors;
-            const freshStoreEntry = freshStoreFloors[currentFloor]?.airEntries?.[foundIndex];
-            console.log("🔬 [STATIC VS FRESH] Fresh store read wallPosition:", (freshStoreEntry?.dimensions as any)?.wallPosition);
-            console.log("🔬 [STATIC VS FRESH] floorData wallPosition:", (baseEntry.dimensions as any)?.wallPosition);
-            console.log("🔬 [STATIC VS FRESH] Data sources match:", 
-              (freshStoreEntry?.dimensions as any)?.wallPosition === (baseEntry.dimensions as any)?.wallPosition);
+            // Canvas3D now uses reactive store data like Canvas2D and wizard-design.tsx
             
             // Check if we have updated dimensions for this entry in our ref
             const normalizedFloorName = normalizeFloorName(currentFloor);
@@ -4820,21 +4809,13 @@ export default function Canvas3D({
     };
   }, []);
 
-  // SOLUTION: Use store data for scene rebuild, like Canvas2D - reactive with useMemo
+  // SOLUTION: Use reactive store subscription like Canvas2D and wizard-design.tsx
+  const reactiveStoreFloors = useRoomStore((state) => state.floors);
+  
+  // Use reactive data with fallback to props (same pattern as wizard-design.tsx)
   const finalFloors = useMemo(() => {
-    const storeFloors = useRoomStore.getState().floors;
-    console.log('🔬 [CANVAS3D STATIC READ] finalFloors useMemo executed');
-    console.log('🔬 [CANVAS3D STATIC READ] Store read at:', new Date().toISOString());
-    console.log('🔬 [CANVAS3D STATIC READ] Store keys:', Object.keys(storeFloors));
-    
-    if (storeFloors[currentFloor]?.airEntries) {
-      storeFloors[currentFloor].airEntries.forEach((entry, i) => {
-        console.log(`🔬 [CANVAS3D STATIC READ] AirEntry ${i} wallPosition:`, (entry.dimensions as any)?.wallPosition);
-      });
-    }
-    
-    return Object.keys(storeFloors).length > 0 ? storeFloors : floors;
-  }, [floors]); // Re-compute when props change
+    return Object.keys(reactiveStoreFloors).length > 0 ? reactiveStoreFloors : floors;
+  }, [reactiveStoreFloors, floors, currentFloor]); // React to store changes
 
   useEffect(() => {
     // Scene rebuild using store data when available, fallback to props
