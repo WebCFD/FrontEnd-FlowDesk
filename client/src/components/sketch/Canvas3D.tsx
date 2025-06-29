@@ -6231,8 +6231,8 @@ export default function Canvas3D({
             handleAirEntryEdit(editingAirEntry.index, {
               width: data.width,
               height: data.height,
-              distanceToFloor: data.distanceToFloor,
-              wallPosition: data.wallPosition,
+              distanceToFloor: data.distanceToFloor || 0,
+              wallPosition: (data as any).wallPosition || 50,
               shape: data.shape,
               properties: data.properties
             });
@@ -6242,8 +6242,15 @@ export default function Canvas3D({
           currentFloor={currentFloor}
           isEditing={true}
           wallContext={editingAirEntry.wallContext}
-          onPositionUpdate={handleAirEntryPositionUpdate}
-          onDimensionsUpdate={handleAirEntryDimensionsUpdate}
+          onPositionUpdate={handleRealTimeAirEntryPositionUpdate}
+          onDimensionsUpdate={(dimensions) => {
+            console.log(`🚪 [AIRENTRY REALTIME] Dimensions update - NO store update (furniture model):`, dimensions);
+            // Call individual real-time functions
+            if (dimensions.width !== undefined) handleRealTimeAirEntryWidthUpdate(dimensions.width);
+            if (dimensions.height !== undefined) handleRealTimeAirEntryHeightUpdate(dimensions.height);
+            if (dimensions.distanceToFloor !== undefined) handleRealTimeAirEntryDistanceUpdate(dimensions.distanceToFloor);
+            if (dimensions.wallPosition !== undefined) handleRealTimeAirEntryPositionUpdate(dimensions.wallPosition);
+          }}
         />
       )}
 
