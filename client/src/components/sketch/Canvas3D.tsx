@@ -1116,6 +1116,8 @@ export default function Canvas3D({
     return [...floorFurniture, ...customFurnitureItems];
   }, [migratedFloors]);
 
+
+
   // FASE 5A: Component-level furniture drop handler with store access
   const handleComponentFurnitureDrop = useCallback((
     event: DragEvent,
@@ -1337,6 +1339,32 @@ export default function Canvas3D({
       ceilingHeight: number;
     };
   } | null>(null);
+
+  // Calculate initialValues for AirEntry dialog at component level to avoid React hooks violations
+  const airEntryInitialValues = useMemo(() => {
+    if (!editingAirEntry) return null;
+    
+    const baseEntry = editingAirEntry.entry;
+    const dimensions = baseEntry.dimensions;
+    const wallPosition = (dimensions as any).wallPosition || (baseEntry as any).properties?.wallPosition;
+    
+    console.log("🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:");
+    console.log("🔵 [CANVAS3D DIALOG] baseEntry:", baseEntry);
+    console.log("🔵 [CANVAS3D DIALOG] dimensions:", dimensions);
+    console.log("🔵 [CANVAS3D DIALOG] wallPosition found:", wallPosition);
+    console.log("🔵 [CANVAS3D DIALOG] entry position:", baseEntry.position);
+    
+    const initialValues = {
+      ...dimensions,
+      shape: (dimensions as any).shape,
+      properties: (baseEntry as any).properties,
+      position: baseEntry.position,
+      wallPosition: wallPosition
+    };
+    
+    console.log("🔵 [CANVAS3D DIALOG] Final initialValues:", initialValues);
+    return initialValues;
+  }, [editingAirEntry]);
   
   // State for editing furniture
   const [editingFurniture, setEditingFurniture] = useState<{
@@ -6095,28 +6123,7 @@ export default function Canvas3D({
               }
             }, 100);
           }}
-          initialValues={useMemo(() => {
-            const baseEntry = editingAirEntry.entry;
-            const dimensions = baseEntry.dimensions;
-            const wallPosition = (dimensions as any).wallPosition || (baseEntry as any).properties?.wallPosition;
-            
-            console.log("🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:");
-            console.log("🔵 [CANVAS3D DIALOG] baseEntry:", baseEntry);
-            console.log("🔵 [CANVAS3D DIALOG] dimensions:", dimensions);
-            console.log("🔵 [CANVAS3D DIALOG] wallPosition found:", wallPosition);
-            console.log("🔵 [CANVAS3D DIALOG] entry position:", baseEntry.position);
-            
-            const initialValues = {
-              ...dimensions,
-              shape: (dimensions as any).shape,
-              properties: (baseEntry as any).properties,
-              position: baseEntry.position,
-              wallPosition: wallPosition
-            };
-            
-            console.log("🔵 [CANVAS3D DIALOG] Final initialValues:", initialValues);
-            return initialValues;
-          }, [editingAirEntry]) as any}
+          initialValues={airEntryInitialValues as any}
           airEntryIndex={editingAirEntry.index}
           currentFloor={currentFloor}
           isEditing={true}
