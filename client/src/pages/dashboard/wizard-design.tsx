@@ -360,6 +360,7 @@ export default function WizardDesign() {
   // Only change when structural data (lines, airEntries positions, walls) changes
   // NOT when metadata (properties, dimensions) changes
   const floors = useMemo(() => {
+    console.log(`🔧 [USEMEMO DEBUG] floors useMemo executing - potential scene rebuild trigger`);
     // Helper function to normalize floating point numbers to prevent precision errors
     const normalizeNum = (num: number, precision = 2): number => {
       return Math.round(num * Math.pow(10, precision)) / Math.pow(10, precision);
@@ -410,6 +411,9 @@ export default function WizardDesign() {
         };
       }
     });
+    
+    console.log(`🔧 [USEMEMO DEBUG] Returning new structuralFloors object - this will trigger Canvas3D scene rebuild`);
+    console.log(`🔧 [USEMEMO DEBUG] Floors processed:`, Object.keys(structuralFloors));
     
     return structuralFloors;
   }, [
