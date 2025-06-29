@@ -1319,22 +1319,30 @@ export default function Canvas3D({
     };
   } | null>(null);
 
-  // Calculate initialValues for AirEntry dialog at component level to avoid React hooks violations
+  // Calculate initialValues for AirEntry dialog with REACTIVE STORE DATA
   const airEntryInitialValues = useMemo(() => {
     if (!editingAirEntry) return null;
     
-    const baseEntry = editingAirEntry.entry;
-    const dimensions = baseEntry.dimensions;
-    const wallPosition = (dimensions as any).wallPosition || (baseEntry as any).properties?.wallPosition;
+    // CRITICAL FIX: Get fresh data from reactive store, not stale editingAirEntry.entry
+    const currentFloorData = floors[currentFloor];
+    const freshEntry = currentFloorData?.airEntries?.[editingAirEntry.index];
+    
+    if (!freshEntry) {
+      console.warn(`AirEntry index ${editingAirEntry.index} not found in current floor data`);
+      return null;
+    }
+    
+    const dimensions = freshEntry.dimensions;
+    const wallPosition = (dimensions as any).wallPosition || (freshEntry as any).properties?.wallPosition || 50;
     
     return {
       ...dimensions,
       shape: (dimensions as any).shape,
-      properties: (baseEntry as any).properties,
-      position: baseEntry.position,
+      properties: (freshEntry as any).properties,
+      position: freshEntry.position,
       wallPosition: wallPosition
     };
-  }, [editingAirEntry]);
+  }, [editingAirEntry, floors, currentFloor]);
   
   // State for editing furniture
   const [editingFurniture, setEditingFurniture] = useState<{
