@@ -1958,7 +1958,9 @@ export default function Canvas2D({
     for (let i = 0; i < airEntries.length; i++) {
       const entry = airEntries[i];
       const normal = calculateNormal(entry.line);
-      const widthInPixels = cmToPixels(entry.dimensions.width);
+      // Safety check for dimensions due to useMemo exclusion optimization
+      const dimensions = entry.dimensions || { width: 100, height: 100 };
+      const widthInPixels = cmToPixels(dimensions.width);
       const halfWidth = widthInPixels / 2;
 
       const start = {
@@ -3587,11 +3589,11 @@ export default function Canvas2D({
             handleAirEntryEdit(editingAirEntry.index, data as any);
           }}
           initialValues={{
-            ...editingAirEntry.entry.dimensions,
-            shape: (editingAirEntry.entry.dimensions as any).shape,
+            ...(editingAirEntry.entry.dimensions || { width: 100, height: 100 }),
+            shape: (editingAirEntry.entry.dimensions as any)?.shape,
             properties: (editingAirEntry.entry as any).properties,
             position: editingAirEntry.entry.position,
-            wallPosition: (editingAirEntry.entry.dimensions as any).wallPosition || (editingAirEntry.entry as any).properties?.wallPosition
+            wallPosition: (editingAirEntry.entry.dimensions as any)?.wallPosition || (editingAirEntry.entry as any).properties?.wallPosition
           } as any}
           airEntryIndex={editingAirEntry.index}
           currentFloor={currentFloor}
@@ -3625,7 +3627,7 @@ export default function Canvas2D({
             updatedAirEntries[editingAirEntry.index] = {
               ...editingAirEntry.entry,
               dimensions: {
-                ...editingAirEntry.entry.dimensions,
+                ...(editingAirEntry.entry.dimensions || { width: 100, height: 100 }),
                 ...newDimensions
               }
             };
@@ -3638,7 +3640,7 @@ export default function Canvas2D({
                 entry: {
                   ...item.entry,
                   dimensions: {
-                    ...item.entry.dimensions,
+                    ...(item.entry.dimensions || { width: 100, height: 100 }),
                     ...newDimensions
                   }
                 }
