@@ -4702,7 +4702,7 @@ export default function Canvas3D({
 
         // Find the index of this air entry in the floors data
         let foundIndex = -1;
-        const floorData = floors[currentFloor];
+        const floorData = finalFloors[currentFloor];
 
         if (floorData && floorData.airEntries) {
           console.log("Double-click position search:", {
