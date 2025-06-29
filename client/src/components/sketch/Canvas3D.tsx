@@ -2341,24 +2341,25 @@ export default function Canvas3D({
           });
         }
 
-        const mesh = new THREE.Mesh(geometry, material);
+        // Create AirEntry Group to contain both the mesh and coordinate system
+        const airEntryGroup = new THREE.Group();
         const position = transform2DTo3D(entryPosition);
-        mesh.position.set(position.x, position.y, zPosition);
         
-        // Set render order to ensure AirEntry elements appear on top of walls
-        mesh.renderOrder = 1;
-
-        // Add userData for raycasting identification - include the actual entry index for easy mapping
-        mesh.userData = {
+        // Position the entire group
+        airEntryGroup.position.set(position.x, position.y, zPosition);
+        
+        // Add group userData for raycasting identification
+        airEntryGroup.userData = {
           type: entry.type,
-          position: entryPosition, // Use the potentially updated position
-          dimensions: entryDimensions, // Use the potentially updated dimensions
+          position: entryPosition,
+          dimensions: entryDimensions,
           line: entry.line,
           index: objects.length,
-          entryIndex: index  // Add the actual index in the airEntries array
+          entryIndex: index,
+          isAirEntryGroup: true // Flag to identify this as an AirEntry group
         };
 
-        // Calculate proper orientation
+        // Calculate proper orientation for the group
         const wallDir = new THREE.Vector3()
           .subVectors(
             transform2DTo3D(entry.line.end),
@@ -2375,9 +2376,35 @@ export default function Canvas3D({
         const right = new THREE.Vector3().crossVectors(up, forward).normalize();
         forward.crossVectors(right, up).normalize();
         const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
-        mesh.setRotationFromMatrix(rotationMatrix);
+        airEntryGroup.setRotationFromMatrix(rotationMatrix);
 
-      objects.push(mesh);
+        // Create the main AirEntry mesh (now positioned relative to group origin)
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(0, 0, 0); // Position relative to group
+        mesh.renderOrder = 1;
+        
+        // Preserve mesh userData for backward compatibility
+        mesh.userData = {
+          type: entry.type,
+          position: entryPosition,
+          dimensions: entryDimensions,
+          line: entry.line,
+          entryIndex: index,
+          isAirEntryMesh: true
+        };
+        
+        // Add mesh to group
+        airEntryGroup.add(mesh);
+
+        // Add coordinate system to the same group (only when not in presentation mode)
+        if (!presentationMode) {
+          const coordinateElements = createCoordinateSystem(50); // axisLength = 50
+          coordinateElements.forEach(element => {
+            airEntryGroup.add(element);
+          });
+        }
+
+        objects.push(airEntryGroup);
 
       // Add coordinate system axes
       const axisLength = 50; // Length of the coordinate axes
