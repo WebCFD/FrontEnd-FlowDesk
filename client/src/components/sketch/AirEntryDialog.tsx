@@ -242,23 +242,34 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
   // Función para manejar el cambio de posición a lo largo del wall
   const handleWallPositionChange = (newPercentage: number) => {
+    console.log("🔴 [WALLPOS DEBUG] handleWallPositionChange called with:", newPercentage);
     setWallPosition(newPercentage);
     
     // Calcular la nueva posición y actualizar en tiempo real
     const newPosition = calculatePositionFromPercentage(newPercentage);
+    console.log("🔴 [WALLPOS DEBUG] Calculated new position:", newPosition);
     
     if (newPosition) {
       // Update form values for persistence
-      setValues(prev => ({ 
-        ...prev, 
-        position: newPosition,
-        wallPosition: newPercentage 
-      }));
+      setValues(prev => {
+        const newValues = { 
+          ...prev, 
+          position: newPosition,
+          wallPosition: newPercentage 
+        };
+        console.log("🔴 [WALLPOS DEBUG] Updated form values:", newValues);
+        return newValues;
+      });
       
       // Trigger real-time position updates
       if (props.type !== 'wall' && 'onPositionUpdate' in props && props.onPositionUpdate) {
+        console.log("🔴 [WALLPOS DEBUG] Calling onPositionUpdate with position:", newPosition);
         props.onPositionUpdate(newPosition);
+      } else {
+        console.log("🔴 [WALLPOS DEBUG] onPositionUpdate NOT called - props check failed");
       }
+    } else {
+      console.log("🔴 [WALLPOS DEBUG] newPosition is null, skipping updates");
     }
   };
 
@@ -354,9 +365,14 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   // Inicializar valores cuando se abre el diálogo
   useEffect(() => {
     if (dialogOpen) {
+      console.log("🟠 [DIALOG INIT] Dialog opened, isEditing:", isEditing);
+      console.log("🟠 [DIALOG INIT] Props received:", props);
+      
       if (isEditing) {
         // En modo edición, usar los valores actuales del elemento
         const airEntryProps = props as AirEntryDialogProps;
+        console.log("🟠 [DIALOG INIT] airEntryProps.initialValues:", airEntryProps.initialValues);
+        
         if (airEntryProps.initialValues) {
           const initialDistanceToFloor = airEntryProps.initialValues.distanceToFloor || 0;
           setDistanceToFloor(initialDistanceToFloor);
@@ -371,6 +387,11 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           const savedWallPosition = (airEntryProps.initialValues as any).properties?.wallPosition || 
                                   (airEntryProps.initialValues as any).wallPosition;
           
+          console.log("🟠 [DIALOG INIT] Searching for wallPosition:");
+          console.log("🟠 [DIALOG INIT] - From properties:", (airEntryProps.initialValues as any).properties?.wallPosition);
+          console.log("🟠 [DIALOG INIT] - From direct:", (airEntryProps.initialValues as any).wallPosition);
+          console.log("🟠 [DIALOG INIT] - Final savedWallPosition:", savedWallPosition);
+          
           // Also set in form values for persistence
           setValues(prev => ({ 
             ...prev, 
@@ -380,6 +401,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           
           // If we have a saved wallPosition, use it directly
           if (savedWallPosition !== undefined && savedWallPosition !== null) {
+            console.log("🟠 [DIALOG INIT] Setting wallPosition to saved value:", savedWallPosition);
             setWallPosition(savedWallPosition);
           }
           // Otherwise, calculate from current position

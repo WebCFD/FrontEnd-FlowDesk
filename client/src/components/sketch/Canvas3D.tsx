@@ -6095,13 +6095,28 @@ export default function Canvas3D({
               }
             }, 100);
           }}
-          initialValues={{
-            ...editingAirEntry.entry.dimensions,
-            shape: (editingAirEntry.entry.dimensions as any).shape,
-            properties: (editingAirEntry.entry as any).properties,
-            position: editingAirEntry.entry.position,
-            wallPosition: (editingAirEntry.entry.dimensions as any).wallPosition || (editingAirEntry.entry as any).properties?.wallPosition
-          } as any}
+          initialValues={(() => {
+            const baseEntry = editingAirEntry.entry;
+            const dimensions = baseEntry.dimensions;
+            const wallPosition = (dimensions as any).wallPosition || (baseEntry as any).properties?.wallPosition;
+            
+            console.log("🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:");
+            console.log("🔵 [CANVAS3D DIALOG] baseEntry:", baseEntry);
+            console.log("🔵 [CANVAS3D DIALOG] dimensions:", dimensions);
+            console.log("🔵 [CANVAS3D DIALOG] wallPosition found:", wallPosition);
+            console.log("🔵 [CANVAS3D DIALOG] entry position:", baseEntry.position);
+            
+            const initialValues = {
+              ...dimensions,
+              shape: (dimensions as any).shape,
+              properties: (baseEntry as any).properties,
+              position: baseEntry.position,
+              wallPosition: wallPosition
+            };
+            
+            console.log("🔵 [CANVAS3D DIALOG] Final initialValues:", initialValues);
+            return initialValues;
+          })() as any}
           airEntryIndex={editingAirEntry.index}
           currentFloor={currentFloor}
           isEditing={true}
