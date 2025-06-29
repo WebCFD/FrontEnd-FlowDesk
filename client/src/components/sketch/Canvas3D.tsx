@@ -1928,29 +1928,7 @@ export default function Canvas3D({
     
     setEditingAirEntry(null);
     
-    // Check texture state IMMEDIATELY AFTER setEditingAirEntry(null)
-    setTimeout(() => {
-      console.log('🔍 [AFTER CLOSE] Checking textures immediately after dialog close');
-      if (sceneRef.current) {
-        const airEntryMeshes: any[] = [];
-        sceneRef.current.traverse((object: any) => {
-          if (object.userData && ["door", "window", "vent"].includes(object.userData.type)) {
-            airEntryMeshes.push(object);
-          }
-        });
-        airEntryMeshes.forEach((mesh, i) => {
-          const material = mesh.material;
-          console.log(`🔍 [AFTER CLOSE] Mesh ${i} material:`, {
-            hasMap: !!material?.map,
-            opacity: material?.opacity,
-            type: mesh.userData?.type
-          });
-        });
-      }
-    }, 0);
-    
-    console.log('✅ [SAVE CHANGES] Data commit complete - monitoring for texture loss');
-    console.log('✅ [SAVE CHANGES] Dialog closed - checking for side effects');
+
   };
 
   // New function to create stair mesh
@@ -3718,7 +3696,7 @@ export default function Canvas3D({
           return;
         }
         
-        console.log("🔍 Eraser mode hover detection active - looking for air entries to highlight");
+
         
         // We already have mouseCoords from the beginning of handleMouseMove
         console.log(`Mouse coordinates (normalized): ${mouseCoords.x.toFixed(2)}, ${mouseCoords.y.toFixed(2)}`);
@@ -3871,7 +3849,7 @@ export default function Canvas3D({
             console.log(`Found ${meshIntersects.length} intersections with air entries`);
             
             // Log detailed info about available air entry meshes
-            console.log(`DEBUG: Eraser mode hover detection - ${airEntryMeshes.length} air entries in scene`);
+
             airEntryMeshes.forEach((mesh, i) => {
               console.log(`Air Entry #${i}: type=${mesh.userData.type}, position=${JSON.stringify(mesh.position)}, worldPosition=${JSON.stringify(mesh.getWorldPosition(new THREE.Vector3()))}`);
               
@@ -3889,9 +3867,7 @@ export default function Canvas3D({
               const screenX = (screenPos.x + 1) / 2 * window.innerWidth;
               const screenY = -(screenPos.y - 1) / 2 * window.innerHeight;
               
-              console.log(`📌 Highlighted object screen position: (${screenX.toFixed(0)}, ${screenY.toFixed(0)})`);
-              console.log(`📌 Mouse position: (${event.clientX}, ${event.clientY})`);
-              console.log(`📌 Distance: ${Math.sqrt(Math.pow(screenX - event.clientX, 2) + Math.pow(screenY - event.clientY, 2)).toFixed(1)}px`);
+
             }
             
             setDebugInfo(prev => ({
@@ -3904,7 +3880,7 @@ export default function Canvas3D({
             
             // If there are no intersections and we have a previously hovered target, reset it
             if (!hasIntersections && hoveredEraseTarget) {
-              console.log("🔄 Clearing previous highlight - no intersection found");
+
               
               try {
                 // Restore original material if it exists
@@ -3958,7 +3934,7 @@ export default function Canvas3D({
               
               // Force explicit verification of state update with callback
               setTimeout(() => {
-                console.log("🔍 Verifying hover target cleared:", hoveredEraseTarget ? "STILL PRESENT" : "Successfully cleared");
+
                 if (hoveredEraseTarget) {
                   console.error("CRITICAL ERROR: Hover target not cleared after setState call");
                 }
@@ -3972,7 +3948,7 @@ export default function Canvas3D({
               
               // If we're already hovering over a different object, restore it first
               if (hoveredEraseTarget && hoveredEraseTarget.object !== mesh) {
-                console.log("🔄 Switching hover target to new element");
+
                 
                 try {
                   // Restore original material if it exists
