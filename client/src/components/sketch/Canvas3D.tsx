@@ -2130,71 +2130,6 @@ export default function Canvas3D({
     return objects;
   };
 
-  // Helper function to create coordinate system elements
-  const createCoordinateSystem = (forward: THREE.Vector3, axisLength: number): THREE.Object3D[] => {
-    const elements: THREE.Object3D[] = [];
-    
-    // Calculate coordinate system vectors
-    const up = new THREE.Vector3(0, 0, 1);
-    const right = new THREE.Vector3().crossVectors(up, forward).normalize();
-    const xDirection = right.clone();
-    const yDirection = up.clone();
-    const zDirection = forward.clone();
-
-    // X-Axis (Red) - horizontal perpendicular to wall
-    const xAxisGeometry = new THREE.CylinderGeometry(2, 2, axisLength, 8);
-    const xAxisMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000 });
-    const xAxis = new THREE.Mesh(xAxisGeometry, xAxisMaterial);
-    const xAxisMidPoint = xDirection.clone().multiplyScalar(axisLength / 2);
-    xAxis.position.copy(xAxisMidPoint);
-    xAxis.lookAt(xAxisMidPoint.clone().add(xDirection));
-    xAxis.rotateZ(Math.PI / 2);
-    xAxis.userData = { type: 'axis', axis: 'x' };
-    elements.push(xAxis);
-
-    // Y-Axis (Green) - vertical
-    const yAxisGeometry = new THREE.CylinderGeometry(2, 2, axisLength, 8);
-    const yAxisMaterial = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
-    const yAxis = new THREE.Mesh(yAxisGeometry, yAxisMaterial);
-    const yAxisMidPoint = yDirection.clone().multiplyScalar(axisLength / 2);
-    yAxis.position.copy(yAxisMidPoint);
-    yAxis.userData = { type: 'axis', axis: 'y' };
-    elements.push(yAxis);
-
-    // Z-Axis (Blue) - normal to wall pointing outward
-    const zAxisGeometry = new THREE.CylinderGeometry(2, 2, axisLength, 8);
-    const zAxisMaterial = new THREE.MeshPhongMaterial({ color: 0x0066ff });
-    const zAxis = new THREE.Mesh(zAxisGeometry, zAxisMaterial);
-    const zAxisMidPoint = zDirection.clone().multiplyScalar(axisLength / 2);
-    zAxis.position.copy(zAxisMidPoint);
-    zAxis.lookAt(zAxisMidPoint.clone().add(zDirection));
-    zAxis.rotateZ(Math.PI / 2);
-    zAxis.userData = { type: 'axis', axis: 'z' };
-    elements.push(zAxis);
-
-    // Central marker (Yellow sphere)
-    const markerGeometry = new THREE.SphereGeometry(8, 16, 16);
-    const markerMaterial = new THREE.MeshPhongMaterial({ color: 0xffff00 });
-    const marker = new THREE.Mesh(markerGeometry, markerMaterial);
-    marker.position.set(0, 0, 0); // At group origin
-    marker.userData = { type: 'marker' };
-    elements.push(marker);
-
-    // Coordinate label
-    const coordinateText = `(0,0,0)`;
-    const labelSprite = makeTextSprite(coordinateText, {
-      fontsize: 18,
-      fontface: "Arial",
-      textColor: { r: 255, g: 255, b: 255, a: 1.0 },
-      backgroundColor: { r: 0, g: 0, b: 0, a: 0.5 },
-    });
-    labelSprite.position.set(0, 0, 15); // Slightly above marker
-    labelSprite.userData = { type: 'coordinate-label' };
-    elements.push(labelSprite);
-
-    return elements;
-  };
-
   // Create scene objects for a single floor
   const createFloorObjects = (
     floorData: FloorData,
@@ -2406,25 +2341,24 @@ export default function Canvas3D({
           });
         }
 
-        // Create AirEntry Group to contain both the mesh and coordinate system
-        const airEntryGroup = new THREE.Group();
+        const mesh = new THREE.Mesh(geometry, material);
         const position = transform2DTo3D(entryPosition);
+        mesh.position.set(position.x, position.y, zPosition);
         
-        // Position the entire group
-        airEntryGroup.position.set(position.x, position.y, zPosition);
-        
-        // Add group userData for raycasting identification
-        airEntryGroup.userData = {
+        // Set render order to ensure AirEntry elements appear on top of walls
+        mesh.renderOrder = 1;
+
+        // Add userData for raycasting identification - include the actual entry index for easy mapping
+        mesh.userData = {
           type: entry.type,
-          position: entryPosition,
-          dimensions: entryDimensions,
+          position: entryPosition, // Use the potentially updated position
+          dimensions: entryDimensions, // Use the potentially updated dimensions
           line: entry.line,
           index: objects.length,
-          entryIndex: index,
-          isAirEntryGroup: true // Flag to identify this as an AirEntry group
+          entryIndex: index  // Add the actual index in the airEntries array
         };
 
-        // Calculate proper orientation for the group
+        // Calculate proper orientation
         const wallDir = new THREE.Vector3()
           .subVectors(
             transform2DTo3D(entry.line.end),
@@ -2441,35 +2375,174 @@ export default function Canvas3D({
         const right = new THREE.Vector3().crossVectors(up, forward).normalize();
         forward.crossVectors(right, up).normalize();
         const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
-        airEntryGroup.setRotationFromMatrix(rotationMatrix);
+        mesh.setRotationFromMatrix(rotationMatrix);
 
-        // Create the main AirEntry mesh (now positioned relative to group origin)
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.position.set(0, 0, 0); // Position relative to group
-        mesh.renderOrder = 1;
-        
-        // Preserve mesh userData for backward compatibility
-        mesh.userData = {
-          type: entry.type,
-          position: entryPosition,
-          dimensions: entryDimensions,
-          line: entry.line,
-          entryIndex: index,
-          isAirEntryMesh: true
-        };
-        
-        // Add mesh to group
-        airEntryGroup.add(mesh);
+      objects.push(mesh);
 
-        // Add coordinate system to the same group (only when not in presentation mode)
-        if (!presentationMode) {
-          const coordinateElements = createCoordinateSystem(forward, 50); // pass orientation and axisLength
-          coordinateElements.forEach(element => {
-            airEntryGroup.add(element);
-          });
-        }
+      // Add coordinate system axes
+      const axisLength = 50; // Length of the coordinate axes
 
-        objects.push(airEntryGroup);
+
+      // Store the entry's index in airEntries array for direct reference
+      const parentMeshIndex = objects.length - 1;
+
+
+      // Create custom axis meshes that are better for intersection detection
+      
+      // Create the local coordinate system for this air entry:
+      // - Z axis (blue) is normal to the wall surface (using the 'forward' vector) 
+      // - Y axis (green) is vertical (pointing upward)
+      // - X axis (red) is horizontal and perpendicular to Z (using the 2D perpendicular vector technique)
+      
+      // Z axis should point perpendicular to the wall (normal to the surface)
+      // This is the "forward" vector in the mesh's orientation
+      const zDirection = forward.clone();
+
+      
+      // Y axis is always vertical
+      const verticalDirection = new THREE.Vector3(0, 0, 1);
+      
+      // Create X direction by rotating the Z-axis 90 degrees around the vertical axis
+      // This ensures it's perpendicular to Z and in the floor plane
+      const rotationAxis = new THREE.Vector3(0, 0, 1); // Vertical axis
+      const xDirection = zDirection.clone()
+        .applyAxisAngle(rotationAxis, Math.PI/2)
+        .normalize();
+
+      
+      // Verify perpendicularity - dot product should be close to 0
+      const dotProduct = xDirection.dot(zDirection);
+
+      
+      // X axis - Red (Perpendicular to both Y and Z axes)
+      const xAxisGeometry = new THREE.CylinderGeometry(3, 3, axisLength, 8); // Increased thickness for visibility
+      // We'll properly align the cylinder along its length instead of with rotation
+      const xAxisMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.8 }); // Increased opacity
+      const xAxis = new THREE.Mesh(xAxisGeometry, xAxisMaterial);
+      
+      // Get origin point at the air entry position
+      const axisOrigin = new THREE.Vector3(position.x, position.y, zPosition);
+      
+      // Debug the axis origin and direction vectors
+
+
+      
+      // Calculate the endpoint of the axis
+      const xAxisEndPoint = new THREE.Vector3(
+        axisOrigin.x + axisLength * xDirection.x,
+        axisOrigin.y + axisLength * xDirection.y,
+        axisOrigin.z + axisLength * xDirection.z
+      );
+      
+      // Calculate the midpoint between origin and endpoint
+      const xAxisMidPoint = new THREE.Vector3().addVectors(axisOrigin, xAxisEndPoint).multiplyScalar(0.5);
+      
+      // Position the axis at the midpoint
+      xAxis.position.copy(xAxisMidPoint);
+      
+      // Create direction vector from origin to endpoint
+      const xAxisDirectionVector = new THREE.Vector3().subVectors(xAxisEndPoint, axisOrigin).normalize();
+      
+      // Use quaternion to rotate cylinder to align with direction vector
+      // We need to align the cylinder's local Y-axis with our direction vector
+      const xAxisUp = new THREE.Vector3(0, 1, 0); // Cylinder's default axis
+      xAxis.quaternion.setFromUnitVectors(xAxisUp, xAxisDirectionVector);
+      
+      xAxis.userData = { 
+        type: 'axis', 
+        direction: 'x',
+        parentEntryIndex: parentMeshIndex, // Reference to the parent mesh
+        actualEntryIndex: index // Store the actual entry index from the floor data
+      };
+
+      // Y axis - Green (Vertical)
+      const yAxisGeometry = new THREE.CylinderGeometry(3, 3, axisLength, 8); // Same thickness as X axis
+      const yAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.8 }); // Increased opacity
+      const yAxis = new THREE.Mesh(yAxisGeometry, yAxisMaterial);
+      
+      // Calculate the endpoint of the Y axis (vertical)
+      const yAxisEndPoint = new THREE.Vector3(
+        axisOrigin.x,
+        axisOrigin.y,
+        axisOrigin.z + axisLength
+      );
+      
+      // Calculate the midpoint between origin and endpoint
+      const yAxisMidPoint = new THREE.Vector3().addVectors(axisOrigin, yAxisEndPoint).multiplyScalar(0.5);
+      
+      // Position the axis at the midpoint
+      yAxis.position.copy(yAxisMidPoint);
+      
+      // Create direction vector from origin to endpoint (vertical)
+      // Use local variable name to avoid collision
+      const yAxisDirection = new THREE.Vector3(0, 0, 1); // Always vertical
+      
+      // Use quaternion to rotate cylinder to align with Y direction
+      const yAxisUp = new THREE.Vector3(0, 1, 0); // Cylinder's default axis
+      yAxis.quaternion.setFromUnitVectors(yAxisUp, yAxisDirection);
+      yAxis.userData = { 
+        type: 'axis', 
+        direction: 'y',
+        parentEntryIndex: objects.length - 1
+      };
+
+      // Z axis - Blue (Normal to wall, pointing outward)
+      const zAxisGeometry = new THREE.CylinderGeometry(3, 3, axisLength, 12); // Same thickness as X axis
+      const zAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x0066ff, transparent: true, opacity: 0.3
+                                                        }); // Brighter blue
+      const zAxis = new THREE.Mesh(zAxisGeometry, zAxisMaterial);
+      
+      // Debug the Z axis direction vector
+
+      
+      // Calculate the endpoint of the Z axis
+      const zAxisEndPoint = new THREE.Vector3(
+        axisOrigin.x + axisLength * zDirection.x,
+        axisOrigin.y + axisLength * zDirection.y,
+        axisOrigin.z + axisLength * zDirection.z
+      );
+      
+      // Calculate the midpoint between origin and endpoint
+      const zAxisMidPoint = new THREE.Vector3().addVectors(axisOrigin, zAxisEndPoint).multiplyScalar(0.5);
+      
+      // Position the axis at the midpoint
+      zAxis.position.copy(zAxisMidPoint);
+      
+      // Create direction vector from origin to endpoint
+      const zAxisDirectionVector = new THREE.Vector3().subVectors(zAxisEndPoint, axisOrigin).normalize();
+      
+      // Use quaternion to rotate cylinder to align with direction vector
+      const zAxisUp = new THREE.Vector3(0, 1, 0); // Cylinder's default axis
+      zAxis.quaternion.setFromUnitVectors(zAxisUp, zAxisDirectionVector);
+      
+      zAxis.userData = { 
+        type: 'axis', 
+        direction: 'z',
+        parentEntryIndex: objects.length - 1
+      };
+
+      // Add coordinate system, marker and labels - only show when not in presentation mode
+      if (!presentationMode) {
+        // Add yellow sphere marker
+        const markerGeometry = new THREE.SphereGeometry(5, 16, 16);
+        const markerMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+        const marker = new THREE.Mesh(markerGeometry, markerMaterial);
+        marker.position.set(position.x, position.y, zPosition);
+        objects.push(marker);
+
+        // Add the axis meshes to the objects array
+        objects.push(xAxis, yAxis, zAxis);
+
+        const coordText = `(${Math.round(position.x)}, ${Math.round(position.y)}, ${Math.round(zPosition)}) cm`;
+        const labelSprite = makeTextSprite(coordText, {
+          fontsize: 140,
+          fontface: "Arial",
+          textColor: { r: 0, g: 0, b: 0, a: 1.0 },
+          backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 },
+        });
+        labelSprite.position.set(position.x, position.y, zPosition + 15);
+        objects.push(labelSprite);
+      }
     });
 
     // Create stairs

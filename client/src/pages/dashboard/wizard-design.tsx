@@ -393,11 +393,17 @@ export default function WizardDesign() {
           lines: normalizeObject(floorData.lines),
           airEntries: floorData.airEntries?.map(entry => normalizeObject({
             type: entry.type,
-            position: entry.position, // Include position - changes require coordinate system rebuild
-            line: entry.line, // Include line - changes require coordinate system rebuild
-            // OPTIMIZE: Exclude dimensions and properties to prevent unnecessary coordinate system rebuilds
-            // Only structural changes (position, line) should trigger full scene rebuilds with coordinate systems
-            // Dimension changes (width, height, distanceToFloor) only affect the AirEntry mesh, not coordinates
+            position: entry.position,
+            line: entry.line,
+            dimensions: {
+              width: entry.dimensions.width,
+              height: entry.dimensions.height,
+              distanceToFloor: entry.dimensions.distanceToFloor,
+              shape: entry.dimensions.shape,
+              // Include wallPosition to preserve Save Changes data
+              wallPosition: (entry.dimensions as any).wallPosition
+            }
+            // Exclude properties to prevent metadata changes from triggering rebuilds
           })),
           walls: normalizeObject(floorData.walls),
           measurements: normalizeObject(floorData.measurements),
