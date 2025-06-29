@@ -6242,14 +6242,30 @@ export default function Canvas3D({
           currentFloor={currentFloor}
           isEditing={true}
           wallContext={editingAirEntry.wallContext}
-          onPositionUpdate={handleRealTimeAirEntryPositionUpdate}
+          onPositionUpdate={(newPosition) => {
+            console.log(`🚪 [AIRENTRY REALTIME] Position update callback - converting to wallPosition`);
+            // Convert position coordinates to wallPosition percentage
+            if (editingAirEntry) {
+              const line = editingAirEntry.entry.line;
+              const totalLength = Math.sqrt(
+                Math.pow(line.end.x - line.start.x, 2) + 
+                Math.pow(line.end.y - line.start.y, 2)
+              );
+              const currentLength = Math.sqrt(
+                Math.pow(newPosition.x - line.start.x, 2) + 
+                Math.pow(newPosition.y - line.start.y, 2)
+              );
+              const wallPosition = (currentLength / totalLength) * 100;
+              handleRealTimeAirEntryPositionUpdate(wallPosition);
+            }
+          }}
           onDimensionsUpdate={(dimensions) => {
             console.log(`🚪 [AIRENTRY REALTIME] Dimensions update - NO store update (furniture model):`, dimensions);
             // Call individual real-time functions
             if (dimensions.width !== undefined) handleRealTimeAirEntryWidthUpdate(dimensions.width);
             if (dimensions.height !== undefined) handleRealTimeAirEntryHeightUpdate(dimensions.height);
             if (dimensions.distanceToFloor !== undefined) handleRealTimeAirEntryDistanceUpdate(dimensions.distanceToFloor);
-            if (dimensions.wallPosition !== undefined) handleRealTimeAirEntryPositionUpdate(dimensions.wallPosition);
+            if ((dimensions as any).wallPosition !== undefined) handleRealTimeAirEntryPositionUpdate((dimensions as any).wallPosition);
           }}
         />
       )}
