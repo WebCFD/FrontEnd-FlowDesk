@@ -4743,22 +4743,26 @@ export default function Canvas3D({
           if (foundIndex !== -1) {
             // Get the base entry from floor data
             const baseEntry = floorData.airEntries[foundIndex];
-            console.log("🔍 [CANVAS3D DOUBLECLICK] baseEntry from store:", baseEntry);
-            console.log("🔍 [CANVAS3D DOUBLECLICK] baseEntry.dimensions:", baseEntry.dimensions);
-            console.log("🔍 [CANVAS3D DOUBLECLICK] baseEntry.dimensions.wallPosition:", baseEntry.dimensions?.wallPosition);
+            console.log("🔵 [CANVAS3D STORE READ] Reading from store for dialog:");
+            console.log("🔵 [CANVAS3D STORE READ] currentFloor:", currentFloor);
+            console.log("🔵 [CANVAS3D STORE READ] foundIndex:", foundIndex);
+            console.log("🔵 [CANVAS3D STORE READ] baseEntry from store:", baseEntry);
+            console.log("🔵 [CANVAS3D STORE READ] baseEntry.position:", baseEntry.position);
+            console.log("🔵 [CANVAS3D STORE READ] baseEntry.dimensions:", baseEntry.dimensions);
+            console.log("🔵 [CANVAS3D STORE READ] baseEntry.dimensions.wallPosition:", (baseEntry.dimensions as any)?.wallPosition);
             
             // Check if we have updated dimensions for this entry in our ref
             const normalizedFloorName = normalizeFloorName(currentFloor);
             const updatedData = updatedAirEntryPositionsRef.current[normalizedFloorName]?.[foundIndex];
-            console.log("🔍 [CANVAS3D DOUBLECLICK] updatedData from ref:", updatedData);
+            console.log("🔵 [CANVAS3D STORE READ] updatedData from ref:", updatedData);
             
             // Create a merged entry with the latest dimensions
             const mergedEntry = {
               ...baseEntry,
               dimensions: updatedData?.dimensions || baseEntry.dimensions
             };
-            console.log("🔍 [CANVAS3D DOUBLECLICK] mergedEntry:", mergedEntry);
-            console.log("🔍 [CANVAS3D DOUBLECLICK] mergedEntry.dimensions.wallPosition:", mergedEntry.dimensions?.wallPosition);
+            console.log("🔵 [CANVAS3D STORE READ] mergedEntry after merge:", mergedEntry);
+            console.log("🔵 [CANVAS3D STORE READ] mergedEntry.dimensions.wallPosition:", (mergedEntry.dimensions as any)?.wallPosition);
             
             // Phase 3: Create wall context for unified dialog experience
             const wallContext = createWallContext(mergedEntry);
