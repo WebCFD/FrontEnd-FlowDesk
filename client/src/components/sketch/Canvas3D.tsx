@@ -857,7 +857,7 @@ const createFurnitureModel = (
         
 
         
-        console.log(`Created custom STL object: ${furnitureItem.name}`);
+
       } else {
         // Custom object no longer exists in store - trigger cleanup
         console.warn(`Custom STL object not found in store, cleaning up reference: ${furnitureItem.id}`);
@@ -952,28 +952,7 @@ const createFurnitureModel = (
     // Compare with table dimensions for reference
     const tableDefaultDims = getDefaultDimensions('table');
     
-    console.log(`COORDINATE TRANSFORMATION TRACE:`, {
-      name: furnitureItem.name,
-      
-      // Constants
-      PIXELS_TO_CM: PIXELS_TO_CM,
-      
-      // STL stored data
-      storedDimensions: furnitureItem.dimensions,
-      
-      // Applied scale
-      modelScale: model.scale,
-      
-      // Final measurements  
-      actualSceneSize: actualSize,
-      
-      // Reference comparison
-      tableDefaultDims: tableDefaultDims,
-      scaleVsTable: actualSize.width / tableDefaultDims.width,
-      
-      // Position
-      position: model.position
-    });
+    // Coordinate transformation trace removed for production
   }
 
   return model;
@@ -1416,11 +1395,11 @@ export default function Canvas3D({
             object.userData?.entryIndex === editingAirEntry.index) {
           
           // Update the mesh position
-          console.log(`🏠 [AIRENTRY DIRECT] Updating position directly for ${object.userData.type} - similar to furniture`);
+
           const position3D = transform2DTo3D(newPosition);
           object.position.set(position3D.x, position3D.y, object.position.z);
           object.userData.position = newPosition;
-          console.log(`✅ [AIRENTRY DIRECT] Position updated directly - Material: ${object.material.constructor.name}, HasTexture: ${!!(object.material as any).map}`);
+
         }
       });
     }
@@ -1432,7 +1411,6 @@ export default function Canvas3D({
       }
       
       // OPTIMIZATION: No callback needed after position update - textures preserved automatically
-      console.log(`✅ [OPTIMIZATION] Position update complete - textures preserved automatically`);
     }, 150);
   }, [editingAirEntry, onUpdateAirEntry, currentFloor]);
 
