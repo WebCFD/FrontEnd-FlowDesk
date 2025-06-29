@@ -901,7 +901,9 @@ export default function Canvas2D({
       color = brighterColor;
     }
 
-    const widthInPixels = cmToPixels(entry.dimensions.width);
+    // Safety check for dimensions due to useMemo exclusion optimization
+    const dimensions = entry.dimensions || { width: 100, height: 100 };
+    const widthInPixels = cmToPixels(dimensions.width);
     const halfWidth = widthInPixels / 2;
 
     ctx.save();

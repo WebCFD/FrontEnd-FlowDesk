@@ -1567,8 +1567,6 @@ export default function Canvas3D({
   ) => {
     if (!editingAirEntry || !sceneRef.current) return;
 
-    console.log(`🚪 [AIRENTRY CONFIRM] Save Changes clicked - updating store (furniture model)`);
-
     // Find the mesh to ensure it exists
     let airEntryMesh: THREE.Mesh | null = null;
     sceneRef.current.traverse((object) => {
@@ -1580,14 +1578,6 @@ export default function Canvas3D({
     });
 
     if (airEntryMesh) {
-      console.log(`🚪 [AIRENTRY CONFIRM] Found mesh - applying final updates`);
-      
-      // Check material/texture state before store update
-      let materialInfo = 'No materials found';
-      if (airEntryMesh.material) {
-        materialInfo = `Material: ${airEntryMesh.material.constructor.name}, HasTexture: ${!!(airEntryMesh.material as any).map}`;
-      }
-      console.log(`🚪 [AIRENTRY CONFIRM] Current material state: ${materialInfo}`);
 
       // Store properties in userData for reference (like furniture)
       if (data.properties) {
@@ -1617,22 +1607,12 @@ export default function Canvas3D({
           properties: data.properties
         };
 
-        console.log(`🚪 [AIRENTRY CONFIRM] Updating store with final data:`, {
-          width: data.width,
-          height: data.height,
-          distanceToFloor: data.distanceToFloor,
-          wallPosition: data.wallPosition
-        });
-
         onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
         
         // Trigger texture recovery for RSP (exactly like furniture)
         if (onFurnitureAdded) {
-          console.log(`🚪 [AIRENTRY CONFIRM] Triggering texture recovery callback`);
           onFurnitureAdded();
         }
-
-        console.log(`✅ [AIRENTRY CONFIRM] Store updated successfully - textures preserved`);
       }
     } else {
       console.error("❌ Could not find AirEntry mesh in scene");
