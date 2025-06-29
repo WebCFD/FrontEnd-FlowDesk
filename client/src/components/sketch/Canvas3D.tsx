@@ -1332,7 +1332,7 @@ export default function Canvas3D({
       return null;
     }
     
-    const dimensions = freshEntry.dimensions;
+    const dimensions = freshEntry.dimensions || {};
     const wallPosition = (dimensions as any).wallPosition || (freshEntry as any).properties?.wallPosition || 50;
     
     return {
