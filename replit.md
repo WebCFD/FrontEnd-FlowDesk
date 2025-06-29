@@ -119,6 +119,88 @@ This is a full-stack web application for HVAC (Heating, Ventilation, and Air Con
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Technical documentation preference: Detailed technical explanations for architectural patterns to enable replication in future development cycles.
+
+## Technical Architecture Patterns
+
+### Data Synchronization Pattern: Reactive Store with Direct Component Integration
+
+**Problem Solved**: Bidirectional real-time synchronization between Canvas2D (2D editor), Canvas3D (3D interactive view), and RoomSketchPro (3D presentation view) for AirEntry position modifications.
+
+**Core Architecture**:
+
+1. **Centralized Reactive Store** (Zustand):
+   - Single source of truth: `useRoomStore((state) => state.floors)`
+   - All components subscribe directly to store state changes
+   - No intermediate props or memoization layers that could cause stale data
+
+2. **Component Data Flow Pattern**:
+   ```
+   Canvas2D ← useRoomStore((state) => state.floors)[currentFloor] → Direct store subscription
+   Canvas3D ← useRoomStore((state) => state.floors) → Reactive subscription (NOT useMemo)
+   RoomSketchPro ← Canvas3D wrapper → Inherits same reactive pattern
+   ```
+
+3. **Real-time Update Architecture**:
+   - **Immediate Store Updates**: `handleAirEntryPositionUpdate()` writes directly to store during slider changes
+   - **Bypass Props Propagation**: Components read from store, not from parent props
+   - **Eliminate Timing Dependencies**: No reliance on React state propagation timing
+
+4. **Key Implementation Details**:
+   
+   **Canvas2D Pattern**:
+   ```javascript
+   // CORRECT: Direct store subscription
+   const airEntries = useRoomStore((state) => state.floors)[currentFloor]?.airEntries || [];
+   
+   // WRONG: Props-based (causes timing issues)
+   const airEntries = floors[currentFloor]?.airEntries || [];
+   ```
+
+   **Canvas3D Pattern**:
+   ```javascript
+   // CORRECT: Reactive subscription
+   const floors = useRoomStore((state) => state.floors);
+   
+   // WRONG: Static memoization (captures snapshot at mount)
+   const finalFloors = useMemo(() => ({ ...floors }), [floors, currentFloor]);
+   ```
+
+   **Callback Architecture**:
+   ```javascript
+   // Real-time position updates flow directly to store
+   const handleAirEntryPositionUpdate = (floorName, index, entry) => {
+     setFloors(floors => ({
+       ...floors,
+       [floorName]: {
+         ...floors[floorName],
+         airEntries: floors[floorName].airEntries.map((e, i) => 
+           i === index ? entry : e
+         )
+       }
+     }));
+   };
+   ```
+
+5. **Critical Success Factors**:
+   - **Avoid useMemo for Dynamic Data**: Only use useMemo for expensive computations, never for reactive data flow
+   - **Direct Store Access**: Components must subscribe directly to store, not through normalized/memoized intermediaries
+   - **Immediate Updates**: Real-time changes write to store immediately, not on save/submit
+   - **Consistent Pattern**: All three components use identical store subscription pattern
+
+6. **Performance Optimizations**:
+   - **React Hooks Compliance**: useMemo for expensive computations placed at component top level
+   - **Precision Normalization**: Float precision normalization in memoization to prevent micro-changes triggering rebuilds
+   - **Direct Object Modification**: For 3D scene objects, modify position directly without full scene rebuilds
+
+**Result**: Complete bidirectional synchronization where AirEntry position changes in any view (2D slider, 3D drag, RSP interaction) immediately reflect in all other views without timing dependencies or visual lag.
+
+**Replication Guidelines**: 
+1. Identify the shared data entity (e.g., AirEntry, furniture, walls)
+2. Ensure single reactive store subscription in all components
+3. Implement immediate store updates for real-time changes
+4. Avoid memoization layers that could create data staleness
+5. Test bidirectional flow: changes in component A should immediately appear in components B and C
 
 ## Changelog
 
