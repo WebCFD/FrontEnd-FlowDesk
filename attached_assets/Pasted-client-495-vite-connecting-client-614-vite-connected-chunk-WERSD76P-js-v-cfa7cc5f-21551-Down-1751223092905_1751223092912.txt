@@ -1,0 +1,1476 @@
+client:495 [vite] connecting...
+client:614 [vite] connected.
+chunk-WERSD76P.js?v=cfa7cc5f:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+AnalyticsProvider.tsx:21 Analytics initialized: false
+room-store.ts:467 🔗 STORE: Nueva suscripción añadida. Total listeners: 1
+chunk-WERSD76P.js?v=cfa7cc5f:377 [Violation] 'message' handler took 293ms
+dashboard-sidebar.tsx:65 
+            
+            
+           GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+fetchUserData @ dashboard-sidebar.tsx:65
+(anonymous) @ dashboard-sidebar.tsx:80
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18868
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19432
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+finishConcurrentRender @ chunk-WERSD76P.js?v=cfa7cc5f:18805
+performConcurrentWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18718
+workLoop @ chunk-WERSD76P.js?v=cfa7cc5f:197
+flushWork @ chunk-WERSD76P.js?v=cfa7cc5f:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=cfa7cc5f:384
+analytics.ts:26 Google Analytics initialized with ID: G-XZYY9DVVHW
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+AnalyticsProvider.tsx:21 Analytics initialized: true
+AirEntryDialog.tsx:368 🟠 [DIALOG INIT] Dialog opened, isEditing: true
+AirEntryDialog.tsx:369 🟠 [DIALOG INIT] Props received: {data-replit-metadata: 'client/src/components/sketch/Canvas2D.tsx:3571:6', data-component-name: 'AirEntryDialog', type: 'vent', isOpen: true, dialogPosition: {…}, …}
+AirEntryDialog.tsx:374 🟠 [DIALOG INIT] airEntryProps.initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 8.11, …}
+AirEntryDialog.tsx:390 🟠 [DIALOG INIT] Searching for wallPosition:
+AirEntryDialog.tsx:391 🟠 [DIALOG INIT] - From properties: undefined
+AirEntryDialog.tsx:392 🟠 [DIALOG INIT] - From direct: 8.11
+AirEntryDialog.tsx:393 🟠 [DIALOG INIT] - Final savedWallPosition: 8.11
+AirEntryDialog.tsx:404 🟠 [DIALOG INIT] Setting wallPosition to saved value: 8.11
+AirEntryDialog.tsx:245 🔴 [WALLPOS DEBUG] handleWallPositionChange called with: 6
+AirEntryDialog.tsx:250 🔴 [WALLPOS DEBUG] Calculated new position: {x: 400, y: 76.72}
+AirEntryDialog.tsx:266 🔴 [WALLPOS DEBUG] Calling onPositionUpdate with position: {x: 400, y: 76.72}
+Canvas2D.tsx:3298 🟢 [CANVAS2D DEBUG] handleAirEntryPositionUpdate called with index: 0 position: {x: 400, y: 76.72}
+Canvas2D.tsx:3304 🟢 [CANVAS2D DEBUG] Original entry before update: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas2D.tsx:3305 🟢 [CANVAS2D DEBUG] Original wallPosition: 8.11
+Canvas2D.tsx:3312 🟢 [CANVAS2D DEBUG] Updated entry after position change: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas2D.tsx:3313 🟢 [CANVAS2D DEBUG] wallPosition preserved?: 8.11
+AirEntryDialog.tsx:260 🔴 [WALLPOS DEBUG] Updated form values: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 6, …}
+AirEntryDialog.tsx:245 🔴 [WALLPOS DEBUG] handleWallPositionChange called with: 60
+AirEntryDialog.tsx:250 🔴 [WALLPOS DEBUG] Calculated new position: {x: 400, y: 191.2}
+AirEntryDialog.tsx:266 🔴 [WALLPOS DEBUG] Calling onPositionUpdate with position: {x: 400, y: 191.2}
+Canvas2D.tsx:3298 🟢 [CANVAS2D DEBUG] handleAirEntryPositionUpdate called with index: 0 position: {x: 400, y: 191.2}
+Canvas2D.tsx:3304 🟢 [CANVAS2D DEBUG] Original entry before update: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas2D.tsx:3305 🟢 [CANVAS2D DEBUG] Original wallPosition: 8.11
+Canvas2D.tsx:3312 🟢 [CANVAS2D DEBUG] Updated entry after position change: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas2D.tsx:3313 🟢 [CANVAS2D DEBUG] wallPosition preserved?: 8.11
+AirEntryDialog.tsx:260 🔴 [WALLPOS DEBUG] Updated form values: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+AirEntryDialog.tsx:579 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+AirEntryDialog.tsx:580 🎯 [SAVE BUTTON CLICKED] Event type: submit
+AirEntryDialog.tsx:581 🎯 [SAVE BUTTON CLICKED] Props type: vent
+AirEntryDialog.tsx:582 🎯 [SAVE BUTTON CLICKED] Current values: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+AirEntryDialog.tsx:583 🎯 [SAVE BUTTON CLICKED] wallPosition from values: 60
+AirEntryDialog.tsx:584 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 60
+AirEntryDialog.tsx:679 🎯 [PROPS.ONCONFIRM] About to call props.onConfirm with canvasData
+AirEntryDialog.tsx:680 🎯 [PROPS.ONCONFIRM] canvasData being sent: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+AirEntryDialog.tsx:681 🎯 [PROPS.ONCONFIRM] canvasData.wallPosition: 60
+AirEntryDialog.tsx:682 🎯 [PROPS.ONCONFIRM] canvasData.position: {x: 400, y: 191.2}
+AirEntryDialog.tsx:683 🎯 [PROPS.ONCONFIRM] This should trigger handleAirEntryEdit in Canvas2D
+Canvas2D.tsx:3349 🟢 [CANVAS2D EDIT] handleAirEntryEdit called with index: 0
+Canvas2D.tsx:3350 🟢 [CANVAS2D EDIT] Received data: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas2D.tsx:3351 🟢 [CANVAS2D EDIT] data.wallPosition: 60
+Canvas2D.tsx:3359 🟢 [CANVAS2D EDIT] Original entry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas2D.tsx:3360 🟢 [CANVAS2D EDIT] Original wallPosition: 8.11
+Canvas2D.tsx:3361 🟢 [CANVAS2D EDIT] Current store position: {x: 400, y: 191.2}
+Canvas2D.tsx:3376 🟢 [CANVAS2D EDIT] Final updated entry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas2D.tsx:3377 🟢 [CANVAS2D EDIT] Final wallPosition: 60
+AirEntryDialog.tsx:687 🎯 [PROPS.ONCONFIRM] props.onConfirm completed
+AirEntryDialog.tsx:688 🎯 [PROPS.ONCONFIRM] Now calling onClose() to close dialog
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
+analytics.ts:62 📊 Analytics Event: {category: 'ui_interaction', action: 'change_tab', label: 'view_3d_preview', value: undefined, status: 'sent'}
+room-store.ts:475 🔗 STORE: Suscripción eliminada. Total listeners: 0
+room-store.ts:467 🔗 STORE: Nueva suscripción añadida. Total listeners: 1
+Canvas3D.tsx:2378 🔧 [SCENE REBUILD] Creating new material for vent at index 0
+Canvas3D.tsx:5353 🔧 [WALL TRANSPARENCY] Updating wall transparency, preserving AirEntry textures
+Canvas3D.tsx:5367 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5367 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5367 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5367 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5367 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5367 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5372 ✅ [WALL TRANSPARENCY] Preserving AirEntry material - hasTexture: false opacity: 0.7
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 164ms
+Canvas3D.tsx:4708 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4718 Double-click found entry using stored entryIndex: 0
+Canvas3D.tsx:4751 🔵 [CANVAS3D STORE READ] updatedData from ref: undefined
+Canvas3D.tsx:4758 🔵 [CANVAS3D STORE READ] mergedEntry after merge: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:4759 🔵 [CANVAS3D STORE READ] mergedEntry.dimensions.wallPosition: 60
+Canvas3D.tsx:4770 🔍 [CANVAS3D DOUBLECLICK] Dialog opening with index: 0
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+AirEntryDialog.tsx:368 🟠 [DIALOG INIT] Dialog opened, isEditing: true
+AirEntryDialog.tsx:369 🟠 [DIALOG INIT] Props received: {data-replit-metadata: 'client/src/components/sketch/Canvas3D.tsx:6057:6', data-component-name: 'AirEntryDialog', type: 'vent', isOpen: true, onClose: ƒ, …}
+AirEntryDialog.tsx:374 🟠 [DIALOG INIT] airEntryProps.initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+AirEntryDialog.tsx:390 🟠 [DIALOG INIT] Searching for wallPosition:
+AirEntryDialog.tsx:391 🟠 [DIALOG INIT] - From properties: undefined
+AirEntryDialog.tsx:392 🟠 [DIALOG INIT] - From direct: 60
+AirEntryDialog.tsx:393 🟠 [DIALOG INIT] - Final savedWallPosition: 60
+AirEntryDialog.tsx:404 🟠 [DIALOG INIT] Setting wallPosition to saved value: 60
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6103 🔵 [CANVAS3D DIALOG] Creating initialValues for dialog:
+Canvas3D.tsx:6104 🔵 [CANVAS3D DIALOG] baseEntry: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+Canvas3D.tsx:6105 🔵 [CANVAS3D DIALOG] dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60}
+Canvas3D.tsx:6106 🔵 [CANVAS3D DIALOG] wallPosition found: 60
+Canvas3D.tsx:6107 🔵 [CANVAS3D DIALOG] entry position: {x: 400, y: 191.2}
+Canvas3D.tsx:6117 🔵 [CANVAS3D DIALOG] Final initialValues: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+AirEntryDialog.tsx:579 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+AirEntryDialog.tsx:580 🎯 [SAVE BUTTON CLICKED] Event type: submit
+AirEntryDialog.tsx:581 🎯 [SAVE BUTTON CLICKED] Props type: vent
+AirEntryDialog.tsx:582 🎯 [SAVE BUTTON CLICKED] Current values: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+AirEntryDialog.tsx:583 🎯 [SAVE BUTTON CLICKED] wallPosition from values: 60
+AirEntryDialog.tsx:584 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 60
+AirEntryDialog.tsx:679 🎯 [PROPS.ONCONFIRM] About to call props.onConfirm with canvasData
+AirEntryDialog.tsx:680 🎯 [PROPS.ONCONFIRM] canvasData being sent: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+AirEntryDialog.tsx:681 🎯 [PROPS.ONCONFIRM] canvasData.wallPosition: 60
+AirEntryDialog.tsx:682 🎯 [PROPS.ONCONFIRM] canvasData.position: {x: 400, y: 191.2}
+AirEntryDialog.tsx:683 🎯 [PROPS.ONCONFIRM] This should trigger handleAirEntryEdit in Canvas2D
+Canvas3D.tsx:6063 [CANVAS3D ONCONFIRM] Received data from dialog: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:6064 [CANVAS3D ONCONFIRM] wallPosition in received data: 60
+Canvas3D.tsx:6065 🔍 [SAVE CHANGES DEBUG] About to call handleAirEntryEdit
+Canvas3D.tsx:1852 🔍 [CANVAS3D handleAirEntryEdit] Called with index: 0
+Canvas3D.tsx:1853 🔍 [CANVAS3D handleAirEntryEdit] Received data: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 60, …}
+Canvas3D.tsx:1854 🔍 [CANVAS3D handleAirEntryEdit] data.wallPosition: 60
+Canvas3D.tsx:1893 🚀 Canvas3D: Llamando onUpdateAirEntry - piso: ground, índice: 0
+Canvas3D.tsx:1894 🚀 Canvas3D: Datos del AirEntry actualizado: {type: 'vent', position: {…}, line: {…}, dimensions: {…}, properties: {…}}
+room-store.ts:438 ✅ STORE: AirEntry actualizado en el store, notificando a 1 listeners
+room-store.ts:442 📢 STORE: Notificando listener 1/1
+Canvas3D.tsx:1898 ✅ Canvas3D: onUpdateAirEntry completado - debería haber actualizado el store
+Canvas3D.tsx:1899 📋 Canvas3D: Verificando si esto dispara notificaciones a otros componentes...
+Canvas3D.tsx:1911 🔍 [BEFORE CLOSE] Mesh 0 material: {hasMap: false, opacity: 0.7, type: 'vent'}
+Canvas3D.tsx:1919 🔬 [DEPENDENCY TRACKING] BEFORE setEditingAirEntry(null):
+Canvas3D.tsx:1920 🔬 [DEPENDENCY TRACKING] floors keys: ['ground']
+Canvas3D.tsx:1921 🔬 [DEPENDENCY TRACKING] currentFloor: ground
+Canvas3D.tsx:1922 🔬 [DEPENDENCY TRACKING] ceilingHeight: 220
+Canvas3D.tsx:1923 🔬 [DEPENDENCY TRACKING] floorDeckThickness: 35
+Canvas3D.tsx:1924 🔬 [DEPENDENCY TRACKING] floors[currentFloor] airEntries length: 1
+Canvas3D.tsx:1925 🔬 [DEPENDENCY TRACKING] selectedAirEntry state: NULL
+Canvas3D.tsx:1929 🔬 [DEPENDENCY TRACKING] AFTER setEditingAirEntry(null):
+Canvas3D.tsx:1930 🔬 [DEPENDENCY TRACKING] floors keys: ['ground']
+Canvas3D.tsx:1931 🔬 [DEPENDENCY TRACKING] currentFloor: ground
+Canvas3D.tsx:1932 🔬 [DEPENDENCY TRACKING] ceilingHeight: 220
+Canvas3D.tsx:1933 🔬 [DEPENDENCY TRACKING] floorDeckThickness: 35
+Canvas3D.tsx:1934 🔬 [DEPENDENCY TRACKING] floors[currentFloor] airEntries length: 1
+Canvas3D.tsx:1935 🔬 [DEPENDENCY TRACKING] selectedAirEntry state: NULL
+Canvas3D.tsx:1958 ✅ [SAVE CHANGES] Data commit complete - monitoring for texture loss
+Canvas3D.tsx:1959 ✅ [SAVE CHANGES] Dialog closed - checking for side effects
+Canvas3D.tsx:6074 🔍 [SAVE CHANGES DEBUG] handleAirEntryEdit completed - checking for side effects
+AirEntryDialog.tsx:687 🎯 [PROPS.ONCONFIRM] props.onConfirm completed
+AirEntryDialog.tsx:688 🎯 [PROPS.ONCONFIRM] Now calling onClose() to close dialog
+Canvas3D.tsx:2378 🔧 [SCENE REBUILD] Creating new material for vent at index 0
+Canvas3D.tsx:1939 🔍 [AFTER CLOSE] Checking textures immediately after dialog close
+Canvas3D.tsx:1949 🔍 [AFTER CLOSE] Mesh 0 material: {hasMap: false, opacity: 0.7, type: 'vent'}
+Canvas3D.tsx:6078 🔍 [SAVE CHANGES DEBUG] 100ms after Save Changes - checking scene state
+Canvas3D.tsx:6086 🔍 [SAVE CHANGES DEBUG] AirEntry meshes found: 1
+Canvas3D.tsx:6089 🔍 [SAVE CHANGES DEBUG] Mesh 0 material: {hasMap: false, opacity: 0.7, type: 'vent'}
