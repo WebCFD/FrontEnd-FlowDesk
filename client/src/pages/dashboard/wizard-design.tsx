@@ -360,7 +360,6 @@ export default function WizardDesign() {
   // Only change when structural data (lines, airEntries positions, walls) changes
   // NOT when metadata (properties, dimensions) changes
   const floors = useMemo(() => {
-    console.log(`🔧 [USEMEMO DEBUG] floors useMemo executing - potential scene rebuild trigger`);
     // Helper function to normalize floating point numbers to prevent precision errors
     const normalizeNum = (num: number, precision = 2): number => {
       return Math.round(num * Math.pow(10, precision)) / Math.pow(10, precision);
@@ -412,9 +411,6 @@ export default function WizardDesign() {
       }
     });
     
-    console.log(`🔧 [USEMEMO DEBUG] Returning new structuralFloors object - this will trigger Canvas3D scene rebuild`);
-    console.log(`🔧 [USEMEMO DEBUG] Floors processed:`, Object.keys(structuralFloors));
-    
     return structuralFloors;
   }, [
     // Single stable dependency hash to prevent useMemo warning
@@ -424,14 +420,10 @@ export default function WizardDesign() {
         .map(floorName => ({
           name: floorName,
           linesLength: rawFloors[floorName]?.lines?.length || 0,
-          // EXCLUDED: airEntriesLength to prevent useMemo rebuild on AirEntry modifications
-          // Only structural changes (position, line, type) are tracked, not mesh properties (dimensions, properties)
-          airEntriesStructural: JSON.stringify(rawFloors[floorName]?.airEntries?.map(entry => ({
-            type: entry.type,
-            position: entry.position,
-            line: entry.line,
-            id: (entry as any).id
-          })) || []),
+          // COMPLETE EXCLUSION: AirEntries entirely excluded from useMemo dependencies
+          // AirEntry modifications now use furniture model - direct mesh updates without scene rebuild
+          // This prevents scene reconstruction that destroys RSP textures during Save Changes
+          // airEntriesLength: EXCLUDED to prevent any AirEntry-related rebuilds
           furnitureItemsLength: rawFloors[floorName]?.furnitureItems?.length || 0,
           stairPolygonsLength: rawFloors[floorName]?.stairPolygons?.length || 0,
           stairPolygonsHash: JSON.stringify(rawFloors[floorName]?.stairPolygons || []),
@@ -1119,33 +1111,12 @@ export default function WizardDesign() {
     index: number,
     updatedEntry: AirEntry,
   ) => {
-    console.log(`🔍 [SAVE CHANGES DEBUG] Starting handleUpdateAirEntryFrom3D:`, {
-      floorName,
-      index,
-      updatedEntry: {
-        type: updatedEntry.type,
-        position: updatedEntry.position,
-        dimensions: updatedEntry.dimensions
-      }
-    });
-    
     // CRITICAL FIX: Get fresh data from reactive store, not props/useMemo
     const freshFloorData = useRoomStore.getState().floors[floorName];
     const existingEntry = freshFloorData?.airEntries?.[index];
     
-    console.log(`🔍 [SAVE CHANGES DEBUG] Fresh floor data:`, {
-      floorExists: !!freshFloorData,
-      airEntriesCount: freshFloorData?.airEntries?.length || 0,
-      existingEntry: existingEntry ? {
-        type: existingEntry.type,
-        position: existingEntry.position,
-        dimensions: existingEntry.dimensions
-      } : null
-    });
-    
     if (!existingEntry) {
-      console.error(`❌ [SAVE CHANGES DEBUG] AirEntry index ${index} not found in floor ${floorName}`);
-      console.log(`🔍 [SAVE CHANGES DEBUG] Available airEntries:`, freshFloorData?.airEntries?.map((e, i) => ({ index: i, type: e.type })));
+      console.error(`❌ AirEntry index ${index} not found in floor ${floorName}`);
       return;
     }
     
@@ -1167,32 +1138,13 @@ export default function WizardDesign() {
       // Get fresh airEntries from store, not from props/useMemo
       const freshAirEntries = freshFloorData.airEntries || [];
       
-      console.log(`🔍 [SAVE CHANGES DEBUG] About to update airEntries:`, {
-        freshAirEntriesCount: freshAirEntries.length,
-        targetIndex: index,
-        currentFloor,
-        floorName
-      });
-      
       // Create a deep copy of the air entries array with structuredClone
       const updatedAirEntries = freshAirEntries.map((entry, i) =>
         i === index ? deepClonedEntry : { ...entry },
       );
 
-      console.log(`🔍 [SAVE CHANGES DEBUG] Updated airEntries created:`, {
-        originalCount: freshAirEntries.length,
-        updatedCount: updatedAirEntries.length,
-        updatedEntry: updatedAirEntries[index] ? {
-          type: updatedAirEntries[index].type,
-          position: updatedAirEntries[index].position,
-          dimensions: updatedAirEntries[index].dimensions
-        } : 'NOT_FOUND'
-      });
-
       // Set the air entries with the deep copy
       setAirEntries(updatedAirEntries);
-      
-      console.log(`🔍 [SAVE CHANGES DEBUG] setAirEntries called with ${updatedAirEntries.length} entries`);
 
       // Also update the floors data to keep everything in sync
       const updatedFloors = { ...floors };
