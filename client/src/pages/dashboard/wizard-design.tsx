@@ -1115,13 +1115,33 @@ export default function WizardDesign() {
     index: number,
     updatedEntry: AirEntry,
   ) => {
+    console.log(`🔍 [SAVE CHANGES DEBUG] Starting handleUpdateAirEntryFrom3D:`, {
+      floorName,
+      index,
+      updatedEntry: {
+        type: updatedEntry.type,
+        position: updatedEntry.position,
+        dimensions: updatedEntry.dimensions
+      }
+    });
     
     // CRITICAL FIX: Get fresh data from reactive store, not props/useMemo
     const freshFloorData = useRoomStore.getState().floors[floorName];
     const existingEntry = freshFloorData?.airEntries?.[index];
     
+    console.log(`🔍 [SAVE CHANGES DEBUG] Fresh floor data:`, {
+      floorExists: !!freshFloorData,
+      airEntriesCount: freshFloorData?.airEntries?.length || 0,
+      existingEntry: existingEntry ? {
+        type: existingEntry.type,
+        position: existingEntry.position,
+        dimensions: existingEntry.dimensions
+      } : null
+    });
+    
     if (!existingEntry) {
-      console.error(`❌ AirEntry index ${index} not found in floor ${floorName}`);
+      console.error(`❌ [SAVE CHANGES DEBUG] AirEntry index ${index} not found in floor ${floorName}`);
+      console.log(`🔍 [SAVE CHANGES DEBUG] Available airEntries:`, freshFloorData?.airEntries?.map((e, i) => ({ index: i, type: e.type })));
       return;
     }
     
@@ -1143,27 +1163,66 @@ export default function WizardDesign() {
       // Get fresh airEntries from store, not from props/useMemo
       const freshAirEntries = freshFloorData.airEntries || [];
       
+      console.log(`🔍 [SAVE CHANGES DEBUG] About to update airEntries:`, {
+        freshAirEntriesCount: freshAirEntries.length,
+        targetIndex: index,
+        currentFloor,
+        floorName
+      });
+      
       // Create a deep copy of the air entries array with structuredClone
       const updatedAirEntries = freshAirEntries.map((entry, i) =>
         i === index ? deepClonedEntry : { ...entry },
       );
 
+      console.log(`🔍 [SAVE CHANGES DEBUG] Updated airEntries created:`, {
+        originalCount: freshAirEntries.length,
+        updatedCount: updatedAirEntries.length,
+        updatedEntry: updatedAirEntries[index] ? {
+          type: updatedAirEntries[index].type,
+          position: updatedAirEntries[index].position,
+          dimensions: updatedAirEntries[index].dimensions
+        } : 'NOT_FOUND'
+      });
+
       // Set the air entries with the deep copy
       setAirEntries(updatedAirEntries);
+      
+      console.log(`🔍 [SAVE CHANGES DEBUG] setAirEntries called with ${updatedAirEntries.length} entries`);
 
       // Also update the floors data to keep everything in sync
       const updatedFloors = { ...floors };
       if (updatedFloors[floorName]) {
+        console.log(`🔍 [SAVE CHANGES DEBUG] Before floors update:`, {
+          originalFloorAirEntries: updatedFloors[floorName].airEntries?.length || 0,
+          newAirEntriesCount: updatedAirEntries.length
+        });
+        
         updatedFloors[floorName] = {
           ...updatedFloors[floorName],
           airEntries: [...updatedAirEntries],
         };
+        
+        console.log(`🔍 [SAVE CHANGES DEBUG] After floors update:`, {
+          updatedFloorAirEntries: updatedFloors[floorName].airEntries?.length || 0
+        });
+        
         // Update floor data in the store
         useRoomStore.getState().setFloors(updatedFloors);
+        
+        console.log(`🔍 [SAVE CHANGES DEBUG] Store setFloors called`);
       }
 
       // Update store for synchronization
+      console.log(`🔍 [SAVE CHANGES DEBUG] About to call updateAirEntry:`, {
+        floorName,
+        index,
+        entryType: deepClonedEntry.type
+      });
+      
       useRoomStore.getState().updateAirEntry(floorName, index, deepClonedEntry);
+      
+      console.log(`🔍 [SAVE CHANGES DEBUG] updateAirEntry completed`);
 
       // Entry updated successfully
 
