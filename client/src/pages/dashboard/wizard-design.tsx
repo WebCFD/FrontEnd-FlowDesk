@@ -360,6 +360,7 @@ export default function WizardDesign() {
   // Only change when structural data (lines, airEntries positions, walls) changes
   // NOT when metadata (properties, dimensions) changes
   const floors = useMemo(() => {
+    console.log(`🎯 [USEMEMO EXECUTION] floors useMemo triggered - this will cause scene rebuild`);
     // Helper function to normalize floating point numbers to prevent precision errors
     const normalizeNum = (num: number, precision = 2): number => {
       return Math.round(num * Math.pow(10, precision)) / Math.pow(10, precision);
@@ -1111,12 +1112,35 @@ export default function WizardDesign() {
     index: number,
     updatedEntry: AirEntry,
   ) => {
+    console.log(`🎯 [SAVE DEBUG] handleUpdateAirEntryFrom3D called:`, {
+      floorName,
+      index,
+      updatedEntryType: updatedEntry.type,
+      updatedPosition: updatedEntry.position,
+      updatedDimensions: updatedEntry.dimensions
+    });
+    
     // CRITICAL FIX: Get fresh data from reactive store, not props/useMemo
     const freshFloorData = useRoomStore.getState().floors[floorName];
     const existingEntry = freshFloorData?.airEntries?.[index];
     
+    console.log(`🎯 [SAVE DEBUG] Fresh store data:`, {
+      floorExists: !!freshFloorData,
+      airEntriesCount: freshFloorData?.airEntries?.length || 0,
+      requestedIndex: index,
+      foundEntry: !!existingEntry,
+      existingEntryType: existingEntry?.type,
+      existingPosition: existingEntry?.position
+    });
+    
     if (!existingEntry) {
       console.error(`❌ AirEntry index ${index} not found in floor ${floorName}`);
+      console.log(`🎯 [SAVE DEBUG] Available airEntries:`, freshFloorData?.airEntries?.map((e, i) => ({
+        index: i,
+        type: e.type,
+        position: e.position,
+        id: (e as any).id
+      })));
       return;
     }
     
@@ -1127,10 +1151,25 @@ export default function WizardDesign() {
       wallPosition: updatedEntry.dimensions?.wallPosition ?? existingEntry?.dimensions?.wallPosition
     };
     
+    console.log(`🎯 [SAVE DEBUG] Preserving wallPosition:`, {
+      updatedWallPosition: updatedEntry.dimensions?.wallPosition,
+      existingWallPosition: existingEntry?.dimensions?.wallPosition,
+      finalWallPosition: preservedDimensions.wallPosition,
+      updatedPosition: updatedEntry.position,
+      existingPosition: existingEntry.position
+    });
+    
     const deepClonedEntry = {
       ...JSON.parse(JSON.stringify(updatedEntry)),
       dimensions: preservedDimensions
     };
+    
+    console.log(`🎯 [SAVE DEBUG] Final entry to save:`, {
+      type: deepClonedEntry.type,
+      position: deepClonedEntry.position,
+      dimensions: deepClonedEntry.dimensions,
+      line: deepClonedEntry.line
+    });
 
     // Use the store's setAirEntries function when updating the current floor
     if (floorName === currentFloor) {
