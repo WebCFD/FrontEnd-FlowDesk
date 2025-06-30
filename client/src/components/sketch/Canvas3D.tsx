@@ -1211,6 +1211,175 @@ export default function Canvas3D({
     };
   } | null>(null);
 
+  // PHASE 1: Function to find coordinate system elements for a specific AirEntry
+  const findCoordinateSystemElements = useCallback((entryIndex: number, floorName: string) => {
+    const elements = {
+      marker: null as THREE.Mesh | null,
+      xAxis: null as THREE.Mesh | null, 
+      yAxis: null as THREE.Mesh | null,
+      zAxis: null as THREE.Mesh | null,
+      label: null as THREE.Sprite | null
+    };
+    
+    if (!sceneRef.current) return elements;
+    
+    sceneRef.current.traverse((object) => {
+      // Check if this object belongs to our target AirEntry
+      const belongsToEntry = (
+        object.userData?.parentEntryIndex === entryIndex || 
+        object.userData?.actualEntryIndex === entryIndex ||
+        (object.userData?.entryIndex === entryIndex && doFloorsMatch(object.userData?.floorName || '', floorName))
+      );
+      
+      if (belongsToEntry) {
+        // Identify axis elements
+        if (object.userData?.type === 'axis' && object instanceof THREE.Mesh) {
+          const direction = object.userData.direction;
+          if (direction === 'x') elements.xAxis = object;
+          if (direction === 'y') elements.yAxis = object;
+          if (direction === 'z') elements.zAxis = object;
+        }
+        
+        // Identify yellow marker (sphere with yellow color)
+        if (object instanceof THREE.Mesh && 
+            object.material instanceof THREE.MeshBasicMaterial &&
+            object.material.color?.getHex() === 0xffff00 &&
+            object.geometry instanceof THREE.SphereGeometry) {
+          elements.marker = object;
+        }
+        
+        // Identify coordinate label
+        if (object instanceof THREE.Sprite && 
+            (object.userData?.isCoordinateLabel || 
+             object.userData?.type === 'coordinate-label')) {
+          elements.label = object;
+        }
+      }
+    });
+    
+    return elements;
+  }, []);
+
+  // PHASE 3: Helper function to update axis positions based on new AirEntry position
+  const updateAxisPositions = useCallback((
+    elements: { xAxis: THREE.Mesh | null; yAxis: THREE.Mesh | null; zAxis: THREE.Mesh | null },
+    newPosition: THREE.Vector3,
+    newZPosition: number,
+    airEntry: AirEntry
+  ) => {
+    const axisLength = 40; // Same as original creation
+    const axisOrigin = new THREE.Vector3(newPosition.x, newPosition.y, newZPosition);
+
+    // Calculate wall direction from line (same logic as original)
+    const wallDirection = new THREE.Vector3(
+      airEntry.line.end.x - airEntry.line.start.x,
+      airEntry.line.end.y - airEntry.line.start.y,
+      0
+    ).normalize();
+
+    // Z direction (normal to wall, outward)
+    const zDirection = new THREE.Vector3(-wallDirection.y, wallDirection.x, 0).normalize();
+
+    // X direction (perpendicular to wall, horizontal)
+    const xDirection = wallDirection.clone();
+
+    // Update X axis position and orientation
+    if (elements.xAxis) {
+      const xAxisMidpoint = new THREE.Vector3(
+        axisOrigin.x + (axisLength / 2) * xDirection.x,
+        axisOrigin.y + (axisLength / 2) * xDirection.y,
+        axisOrigin.z
+      );
+      elements.xAxis.position.copy(xAxisMidpoint);
+      
+      // Recalculate orientation
+      const xAxisUp = new THREE.Vector3(0, 1, 0);
+      elements.xAxis.quaternion.setFromUnitVectors(xAxisUp, xDirection);
+    }
+
+    // Update Y axis position (always vertical)
+    if (elements.yAxis) {
+      const yAxisMidpoint = new THREE.Vector3(
+        axisOrigin.x,
+        axisOrigin.y,
+        axisOrigin.z + axisLength / 2
+      );
+      elements.yAxis.position.copy(yAxisMidpoint);
+    }
+
+    // Update Z axis position and orientation
+    if (elements.zAxis) {
+      const zAxisMidpoint = new THREE.Vector3(
+        axisOrigin.x + (axisLength / 2) * zDirection.x,
+        axisOrigin.y + (axisLength / 2) * zDirection.y,
+        axisOrigin.z
+      );
+      elements.zAxis.position.copy(zAxisMidpoint);
+      
+      // Recalculate orientation
+      const zAxisUp = new THREE.Vector3(0, 1, 0);
+      elements.zAxis.quaternion.setFromUnitVectors(zAxisUp, zDirection);
+    }
+  }, []);
+
+  // PHASE 3: Helper function to update coordinate label text and position
+  const updateLabelText = useCallback((
+    label: THREE.Sprite,
+    newPosition: THREE.Vector3,
+    newZPosition: number
+  ) => {
+    const coordText = `(${Math.round(newPosition.x)}, ${Math.round(newPosition.y)}, ${Math.round(newZPosition)}) cm`;
+    
+    // Update text content by regenerating the sprite
+    const newLabelSprite = makeTextSprite(coordText, {
+      fontsize: 140,
+      fontface: "Arial",
+      textColor: { r: 0, g: 0, b: 0, a: 1.0 },
+      backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 },
+    });
+    
+    // Copy material and texture to existing sprite
+    if (newLabelSprite.material instanceof THREE.SpriteMaterial && 
+        label.material instanceof THREE.SpriteMaterial) {
+      label.material.map = newLabelSprite.material.map;
+      label.material.needsUpdate = true;
+    }
+  }, []);
+
+  // PHASE 3: Main coordinate system update function
+  const updateCoordinateSystemPosition = useCallback((
+    entryIndex: number, 
+    floorName: string, 
+    newPosition: THREE.Vector3,
+    newZPosition: number,
+    airEntry?: AirEntry
+  ): boolean => {
+    try {
+      const elements = findCoordinateSystemElements(entryIndex, floorName);
+      
+      // Update yellow marker position
+      if (elements.marker) {
+        elements.marker.position.set(newPosition.x, newPosition.y, newZPosition);
+      }
+      
+      // Update axis positions if we have airEntry data for calculations
+      if (airEntry && (elements.xAxis || elements.yAxis || elements.zAxis)) {
+        updateAxisPositions(elements, newPosition, newZPosition, airEntry);
+      }
+      
+      // Update coordinate label
+      if (elements.label) {
+        elements.label.position.set(newPosition.x, newPosition.y, newZPosition + 15);
+        updateLabelText(elements.label, newPosition, newZPosition);
+      }
+      
+      return true; // Success
+    } catch (error) {
+      console.warn('Coordinate system update failed:', error);
+      return false; // Graceful failure - won't affect AirEntry operations
+    }
+  }, [findCoordinateSystemElements, updateAxisPositions, updateLabelText]);
+
   // PHASE 1: Function to find AirEntry mesh by floor and index - REFINED
   const findAirEntryMesh = useCallback((floorName: string, entryIndex: number): THREE.Mesh | null => {
     if (!sceneRef.current) return null;
@@ -2363,11 +2532,14 @@ export default function Canvas3D({
       const xAxisUp = new THREE.Vector3(0, 1, 0); // Cylinder's default axis
       xAxis.quaternion.setFromUnitVectors(xAxisUp, xAxisDirectionVector);
       
+      // PHASE 2: Enhanced userData for X axis
       xAxis.userData = { 
         type: 'axis', 
         direction: 'x',
-        parentEntryIndex: parentMeshIndex, // Reference to the parent mesh
-        actualEntryIndex: index // Store the actual entry index from the floor data
+        parentEntryIndex: parentMeshIndex,
+        actualEntryIndex: index,
+        floorName: floorData.name,
+        entryIndex: index
       };
 
       // Y axis - Green (Vertical)
@@ -2395,10 +2567,14 @@ export default function Canvas3D({
       // Use quaternion to rotate cylinder to align with Y direction
       const yAxisUp = new THREE.Vector3(0, 1, 0); // Cylinder's default axis
       yAxis.quaternion.setFromUnitVectors(yAxisUp, yAxisDirection);
+      // PHASE 2: Enhanced userData for Y axis
       yAxis.userData = { 
         type: 'axis', 
         direction: 'y',
-        parentEntryIndex: objects.length - 1
+        parentEntryIndex: parentMeshIndex,
+        actualEntryIndex: index,
+        floorName: floorData.name,
+        entryIndex: index
       };
 
       // Z axis - Blue (Normal to wall, pointing outward)
@@ -2430,24 +2606,36 @@ export default function Canvas3D({
       const zAxisUp = new THREE.Vector3(0, 1, 0); // Cylinder's default axis
       zAxis.quaternion.setFromUnitVectors(zAxisUp, zAxisDirectionVector);
       
+      // PHASE 2: Enhanced userData for Z axis
       zAxis.userData = { 
         type: 'axis', 
         direction: 'z',
-        parentEntryIndex: objects.length - 1
+        parentEntryIndex: parentMeshIndex,
+        actualEntryIndex: index,
+        floorName: floorData.name,
+        entryIndex: index
       };
 
       // Add coordinate system, marker and labels - only show when not in presentation mode
       if (!presentationMode) {
-        // Add yellow sphere marker
+        // PHASE 2: Enhanced userData for yellow sphere marker
         const markerGeometry = new THREE.SphereGeometry(5, 16, 16);
         const markerMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
         const marker = new THREE.Mesh(markerGeometry, markerMaterial);
         marker.position.set(position.x, position.y, zPosition);
+        marker.userData = {
+          type: 'coordinate-marker',
+          parentEntryIndex: parentMeshIndex,
+          actualEntryIndex: index,
+          floorName: floorData.name,
+          entryIndex: index
+        };
         objects.push(marker);
 
         // Add the axis meshes to the objects array
         objects.push(xAxis, yAxis, zAxis);
 
+        // PHASE 2: Enhanced userData for coordinate label
         const coordText = `(${Math.round(position.x)}, ${Math.round(position.y)}, ${Math.round(zPosition)}) cm`;
         const labelSprite = makeTextSprite(coordText, {
           fontsize: 140,
@@ -2456,6 +2644,14 @@ export default function Canvas3D({
           backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 },
         });
         labelSprite.position.set(position.x, position.y, zPosition + 15);
+        labelSprite.userData = {
+          type: 'coordinate-label',
+          isCoordinateLabel: true,
+          parentEntryIndex: parentMeshIndex,
+          actualEntryIndex: index,
+          floorName: floorData.name,
+          entryIndex: index
+        };
         objects.push(labelSprite);
       }
     });
@@ -4457,6 +4653,24 @@ export default function Canvas3D({
       mesh.geometry.computeVertexNormals();
       mesh.geometry.computeBoundingBox();
       mesh.geometry.computeBoundingSphere();
+    }
+
+    // PHASE 4: Update coordinate system after successful AirEntry modification
+    if (needsPositionUpdate && !presentationMode) {
+      try {
+        const position3D = transform2DTo3D(changes.position || mesh.userData.position);
+        const zPos = getFloorBaseHeight(floorName) + (mesh.userData.dimensions?.distanceToFloor || 0);
+        
+        // Get AirEntry data for axis calculations (find matching entry from store)
+        const floorData = finalFloors[floorName];
+        const airEntry = floorData?.airEntries?.[entryIndex];
+        
+        // Update coordinate system (completely separate from AirEntry logic)
+        updateCoordinateSystemPosition(entryIndex, floorName, position3D, zPos, airEntry);
+      } catch (error) {
+        // Coordinate system update failure won't affect AirEntry operations
+        console.warn('Coordinate system update failed during AirEntry modification:', error);
+      }
     }
 
     return true;
