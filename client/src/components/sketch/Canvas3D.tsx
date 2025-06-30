@@ -348,98 +348,7 @@ const createRoomPerimeter = (lines: Line[]): Point[] => {
 // Utility function to highlight the selected axis
 // Replace the entire highlightSelectedAxis function with this corrected version:
 
-// Utility function to highlight the selected axis
-const highlightSelectedAxis = (
-  scene: THREE.Scene,
-  airEntry: THREE.Mesh,
-  axisType: "x" | "y" | "z" | null,
-) => {
-  /*console.log(
-    `Highlighting axis: ${axisType} for air entry at position:`,
-    airEntry.position,
-  );*/
 
-  // Find all arrow helpers near the air entry
-  const arrows: THREE.ArrowHelper[] = [];
-  scene.traverse((object) => {
-    if (object instanceof THREE.ArrowHelper) {
-      // Check if this arrow is close to our air entry
-      const distance = object.position.distanceTo(airEntry.position);
-      console.log(`Arrow found, distance: ${distance}`);
-      if (distance < 60) {
-        // Increased detection radius
-        arrows.push(object);
-        console.log(
-          `Added arrow to highlight check, color: ${(object.line.material as THREE.LineBasicMaterial).color.getHex().toString(16)}`,
-        );
-      }
-    }
-  });
-
- // console.log(`Found ${arrows.length} arrows to process for highlighting`);
-
-  // First reset all arrows to normal scale and appearance
-  arrows.forEach((arrow) => {
-    arrow.scale.set(1, 1, 1);
-    const arrowLineMaterial = arrow.line.material as THREE.LineBasicMaterial;
-
-    // Reset line opacity
-    arrowLineMaterial.opacity = 0.8;
-
-    // Reset cone appearance if we can access it
-    if (arrow.cone && arrow.cone.material) {
-      const coneMaterial = arrow.cone.material as THREE.Material;
-
-      // Set opacity if material supports it
-      if ("opacity" in coneMaterial) {
-        (coneMaterial as any).opacity = 0.8;
-      }
-    }
-  });
-
-  // If an axis is selected, highlight it
-  if (axisType) {
-    //console.log(`Applying highlight to ${axisType} axis`);
-    let targetColor: number = 0;
-    
-    // Set the target color based on the axis type
-    if (axisType === "x") {
-      targetColor = 0xff0000; // Red for X
-    } else if (axisType === "y") {
-      targetColor = 0x00ff00; // Green for Y
-    } else if (axisType === "z") {
-      targetColor = 0x0000ff; // Blue for Z
-    }
-
-    arrows.forEach((arrow) => {
-      const arrowLineMaterial = arrow.line.material as THREE.LineBasicMaterial;
-      const colorHex = arrowLineMaterial.color.getHex();
-
-      if (colorHex === targetColor) {
-
-
-        // Highlight this arrow by making it larger
-        arrow.scale.set(2, 2, 2);
-
-        // Make line more opaque
-        arrowLineMaterial.opacity = 1.0;
-
-        // Enhance cone if possible
-        if (arrow.cone && arrow.cone.material) {
-          const coneMaterial = arrow.cone.material as THREE.Material;
-
-          if ("opacity" in coneMaterial) {
-            (coneMaterial as any).opacity = 1.0;
-          }
-
-          if ("color" in coneMaterial) {
-            (coneMaterial as any).color.copy(arrowLineMaterial.color);
-          }
-        }
-      }
-    });
-  }
-};
 
 // Replace the entire highlightHoveredArrow function with this corrected version:
 
@@ -1645,15 +1554,9 @@ export default function Canvas3D({
     object: THREE.Mesh | null;
   } | null>(null);
 
-  // Track which axis is selected for movement (x, y, or z)
-  const [selectedAxis, setSelectedAxis] = useState<"x" | "y" | "z" | null>(null);
 
-  // Track if currently dragging
-  const [isDragging, setIsDragging] = useState<boolean>(false);
 
-  // Store the original position for reference
-  const [dragStartPosition, setDragStartPosition] =
-    useState<THREE.Vector3 | null>(null);
+
     
   // For eraser mode - track what element is being hovered and its original material
   const [hoveredEraseTarget, setHoveredEraseTarget] = useState<{
@@ -1784,15 +1687,7 @@ export default function Canvas3D({
     }
   }, [isEraserMode, hoveredEraseTarget]);
 
-  // Store the initial mouse position for calculating drag distance
-  const [initialMousePosition, setInitialMousePosition] = useState<{
-    x: number;
-    y: number;
-  } | null>(null);
-  const [hoveredArrow, setHoveredArrow] = useState<{
-    object: THREE.ArrowHelper;
-    type: "x" | "y" | "z";
-  } | null>(null);
+
 
   // Measurement state variables
   const [isMeasuring, setIsMeasuring] = useState(false);
@@ -1875,21 +1770,7 @@ export default function Canvas3D({
       }
     }
   }>({});
-  const dragStateRef = useRef({
-    isDragging: false,
-    selectedAxis: null as "x" | "y" | "z" | null,
-    startPosition: null as THREE.Vector3 | null,
-    initialMousePosition: null as {x: number, y: number} | null,
-    selectedObject: null as THREE.Mesh | null,
-    currentMousePosition: null as {x: number, y: number} | null,
-    entryIndex: -1,
-    // Direction vectors for local axis movement
-    axisDirectionVectors: {
-      x: null as THREE.Vector3 | null,
-      y: null as THREE.Vector3 | null,
-      z: null as THREE.Vector3 | null
-    }
-  });
+
 
   // Add this ref to track measurement state
   const measurementStateRef = useRef({
