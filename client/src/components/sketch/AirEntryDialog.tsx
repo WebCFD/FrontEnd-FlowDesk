@@ -1179,7 +1179,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           max="100"
                           step="any"
                           inputMode="decimal"
-                          value={parseFloat((typeof wallPosition === 'number' ? wallPosition : 50).toFixed(2))}
+                          value={parseFloat(wallPosition.toFixed(2))}
                           onChange={(e) => {
                             const value = parseFloat(e.target.value);
                             if (!isNaN(value)) {
