@@ -3352,7 +3352,6 @@ export default function Canvas3D({
         console.log("Mesh intersections:", meshIntersects.length);
         // Clicked on empty space, clear selection
         setSelectedAirEntry(null);
-        setSelectedAxis(null);
 
         // Enable camera controls for panning with right-click
         if (controlsRef.current) {
@@ -4065,8 +4064,6 @@ export default function Canvas3D({
             // Clean up any references in our state
             if (selectedAirEntry && selectedAirEntry.index === foundIndex) {
               setSelectedAirEntry(null);
-              setSelectedAxis(null);
-              setIsDragging(false);
             }
             
             // Remove from updatedAirEntryPositionsRef if it exists
@@ -4138,8 +4135,6 @@ export default function Canvas3D({
               // Clean up any references in our state
               if (selectedAirEntry && selectedAirEntry.index === foundIndex) {
                 setSelectedAirEntry(null);
-                setSelectedAxis(null);
-                setIsDragging(false);
               }
               
               // Re-enable controls after deletion
@@ -4591,35 +4586,13 @@ export default function Canvas3D({
             });
 
             // Apply visual feedback
-            highlightSelectedAirEntry(newMeshObject, true, isDragging);
+            highlightSelectedAirEntry(newMeshObject, true, false);
 
-            if (sceneRef.current && selectedAxis) {
-              highlightSelectedAxis(
-                sceneRef.current,
-                newMeshObject,
-                selectedAxis,
-              );
-            }
+            // Axis highlighting removed with drag functionality
           } else {
             // If we couldn't find the matching object, reset selection
             console.log("Could not find matching mesh for selected air entry, resetting selection");
             setSelectedAirEntry(null);
-            setSelectedAxis(null);
-            setIsDragging(false);
-            dragStateRef.current = {
-              isDragging: false,
-              selectedAxis: null,
-              startPosition: null,
-              initialMousePosition: null,
-              currentMousePosition: null,
-              selectedObject: null,
-              entryIndex: -1,
-              axisDirectionVectors: {
-                x: null,
-                y: null,
-                z: null
-              }
-            };
           }
         } else {
           // Entry no longer exists, reset selection
