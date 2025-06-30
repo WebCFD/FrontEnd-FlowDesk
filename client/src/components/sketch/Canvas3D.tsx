@@ -1319,6 +1319,164 @@ export default function Canvas3D({
     };
   } | null>(null);
 
+  // PHASE 1: Function to find AirEntry mesh by floor and index
+  const findAirEntryMesh = useCallback((floorName: string, entryIndex: number): THREE.Mesh | null => {
+    if (!sceneRef.current) return null;
+    
+    const airEntryId = `${floorName}_${entryIndex}`;
+    let foundMesh: THREE.Mesh | null = null;
+    
+    sceneRef.current.traverse((object) => {
+      if (object instanceof THREE.Mesh && 
+          object.userData?.type && 
+          ["door", "window", "vent"].includes(object.userData.type) &&
+          (object.userData.airEntryId?.includes(`_${entryIndex}`) || 
+           object.userData.entryIndex === entryIndex) &&
+          object.userData.floorName === floorName) {
+        foundMesh = object;
+      }
+    });
+    
+    return foundMesh;
+  }, []);
+
+  // PHASE 1: Function to get all AirEntry meshes for a specific floor
+  const getFloorAirEntryMeshes = useCallback((floorName: string): THREE.Mesh[] => {
+    if (!sceneRef.current) return [];
+    
+    const meshes: THREE.Mesh[] = [];
+    sceneRef.current.traverse((object) => {
+      if (object instanceof THREE.Mesh && 
+          object.userData?.type && 
+          ["door", "window", "vent"].includes(object.userData.type) &&
+          object.userData.floorName === floorName) {
+        meshes.push(object);
+      }
+    });
+    
+    return meshes.sort((a, b) => (a.userData.entryIndex || 0) - (b.userData.entryIndex || 0));
+  }, []);
+
+  // PHASE 2: Interface for AirEntry changes
+  interface AirEntryMeshChanges {
+    dimensions?: {
+      width?: number;
+      height?: number;
+      distanceToFloor?: number;
+      shape?: 'rectangular' | 'circular';
+      wallPosition?: number;
+    };
+    position?: Point;
+    properties?: {
+      state?: 'open' | 'closed';
+      temperature?: number;
+      flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
+      flowValue?: number;
+      flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
+      airOrientation?: 'inflow' | 'outflow';
+      customIntensityValue?: number;
+    };
+  }
+
+  // PHASE 2: Function to update AirEntry mesh directly (like furniture)
+  const updateAirEntryMeshDirectly = useCallback((floorName: string, entryIndex: number, changes: AirEntryMeshChanges): boolean => {
+    const mesh = findAirEntryMesh(floorName, entryIndex);
+    if (!mesh) {
+      console.warn(`❌ [DIRECT UPDATE] AirEntry mesh not found: ${floorName}_${entryIndex}`);
+      return false;
+    }
+
+    console.log(`🔧 [DIRECT UPDATE] Updating AirEntry mesh directly: ${floorName}_${entryIndex}`, changes);
+
+    let needsGeometryUpdate = false;
+    let needsPositionUpdate = false;
+
+    // Update dimensions if provided
+    if (changes.dimensions) {
+      const currentWidth = mesh.userData.dimensions?.width || 60;
+      const currentHeight = mesh.userData.dimensions?.height || 40;
+      
+      const newWidth = changes.dimensions.width ?? currentWidth;
+      const newHeight = changes.dimensions.height ?? currentHeight;
+      
+      // Check if geometry needs to be updated
+      if (newWidth !== currentWidth || newHeight !== currentHeight) {
+        needsGeometryUpdate = true;
+        
+        // Create new geometry with updated dimensions
+        const newGeometry = new THREE.PlaneGeometry(newWidth, newHeight);
+        
+        // Dispose old geometry and assign new one
+        mesh.geometry.dispose();
+        mesh.geometry = newGeometry;
+        
+        console.log(`✅ [DIRECT UPDATE] Updated geometry: ${currentWidth}x${currentHeight} → ${newWidth}x${newHeight}`);
+      }
+
+      // Update userData with new dimensions
+      mesh.userData.dimensions = {
+        ...mesh.userData.dimensions,
+        ...changes.dimensions
+      };
+
+      // Handle position changes if distanceToFloor changed
+      if (changes.dimensions.distanceToFloor !== undefined) {
+        needsPositionUpdate = true;
+      }
+    }
+
+    // Update position if provided
+    if (changes.position) {
+      needsPositionUpdate = true;
+      mesh.userData.position = changes.position;
+    }
+
+    // Update position in 3D space if needed
+    if (needsPositionUpdate) {
+      const entryType = mesh.userData.type;
+      const dimensions = mesh.userData.dimensions;
+      const position = changes.position || mesh.userData.position;
+      
+      // Get floor base height for z-position calculation
+      const currentFloorData = finalFloors[floorName];
+      if (currentFloorData) {
+        const baseHeight = getFloorBaseHeight(floorName);
+        const height = dimensions?.height || 40;
+        const distanceToFloor = dimensions?.distanceToFloor || 0;
+        
+        const zPosition = baseHeight + (entryType === "door" ? height / 2 : distanceToFloor);
+        
+        const position3D = transform2DTo3D(position);
+        mesh.position.set(position3D.x, position3D.y, zPosition);
+        
+        console.log(`✅ [DIRECT UPDATE] Updated position: (${position.x}, ${position.y}) → Z=${zPosition}`);
+      }
+    }
+
+    // Update properties in userData (for consistency)
+    if (changes.properties) {
+      mesh.userData.properties = {
+        ...mesh.userData.properties,
+        ...changes.properties
+      };
+    }
+
+    // Force material update to ensure changes are rendered
+    if (mesh.material instanceof THREE.Material) {
+      mesh.material.needsUpdate = true;
+    }
+
+    // Force geometry update if changed
+    if (needsGeometryUpdate && mesh.geometry instanceof THREE.BufferGeometry) {
+      mesh.geometry.computeVertexNormals();
+      mesh.geometry.computeBoundingBox();
+      mesh.geometry.computeBoundingSphere();
+    }
+
+    console.log(`✅ [DIRECT UPDATE] AirEntry mesh updated successfully with preserved materials`);
+    return true;
+  }, [findAirEntryMesh, finalFloors, getFloorBaseHeight, transform2DTo3D]);
+
   // Calculate initialValues for AirEntry dialog at component level to avoid React hooks violations
   const airEntryInitialValues = useMemo(() => {
     if (!editingAirEntry) return null;
@@ -2355,7 +2513,9 @@ export default function Canvas3D({
           dimensions: entryDimensions, // Use the potentially updated dimensions
           line: entry.line,
           index: objects.length,
-          entryIndex: index  // Add the actual index in the airEntries array
+          entryIndex: index,  // Add the actual index in the airEntries array
+          floorName: floorData.name, // PHASE 1: Add floor identification
+          airEntryId: `${floorData.name}_${entry.type}_${index}` // PHASE 1: Unique identifier for direct mesh updates
         };
 
         // Calculate proper orientation
