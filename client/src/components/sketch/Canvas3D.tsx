@@ -3340,8 +3340,7 @@ export default function Canvas3D({
               object: mesh,
             });
 
-            // We're selecting but not yet dragging
-            setSelectedAxis(null);
+            // Selection without drag functionality
 
             // Make sure controls are enabled when just selecting without dragging
             if (controlsRef.current) {
@@ -3878,11 +3877,7 @@ export default function Canvas3D({
               );
               dummyArrow.userData = hitObject.userData;
 
-              // Set hovered arrow
-              setHoveredArrow({ 
-                object: dummyArrow, 
-                type: axisDirection as "x" | "y" | "z" 
-              });
+              // Arrow hover removed with drag functionality
 
               // Change cursor style
               canvas.style.cursor = "pointer";
@@ -3911,164 +3906,17 @@ export default function Canvas3D({
             else if (colorHex === 0x0000ff) arrowType = "z";
             else return;
 
-            // Set hovered arrow
-            setHoveredArrow({ object: arrowObject, type: arrowType });
-
-            // Change cursor style
-            canvas.style.cursor = "pointer";
+            // Arrow hover and cursor change removed with drag functionality
             return;
           }
         }
 
-        // No arrow under mouse
-        if (hoveredArrow) {
-          setHoveredArrow(null);
-          canvas.style.cursor = "auto";
-        }
+        // Arrow hover management removed with drag functionality
       }
     };
 
       const handleMouseUp = (event: MouseEvent) => {
-        // Only process right mouse button releases when we're dragging
-        if (event.button !== 2) {
-          return;  // Don't reset dragging for non-right clicks
-        }
-
-        // Check if we were dragging from the ref
-        if (!dragStateRef.current.isDragging || 
-            !dragStateRef.current.selectedObject || 
-            !dragStateRef.current.selectedAxis) {
-          // Clean up just in case
-          setIsDragging(false);
-          dragStateRef.current.isDragging = false;
-
-          // Re-enable controls
-          if (controlsRef.current) {
-            controlsRef.current.enabled = true;
-          }
-          return;
-        }
-
-        // Finalize the position change using ref values
-        if (dragStateRef.current.selectedObject && onUpdateAirEntry) {
-          // Get the current floor data
-          const floorData = floors[currentFloor];
-          const entryIndex = dragStateRef.current.entryIndex;
-
-          // Ensure we have valid index
-          if (floorData && floorData.airEntries && entryIndex >= 0 && entryIndex < floorData.airEntries.length) {
-            const currentEntry = floorData.airEntries[entryIndex];
-
-            // Convert the 3D position back to 2D
-            const newPosition3D = dragStateRef.current.selectedObject.position;
-
-            // Update the air entry position using centralized config
-            // Reverse the transform2DTo3D function
-            const newX = newPosition3D.x / PIXELS_TO_CM + CANVAS_CONFIG.centerX;
-            const newY = CANVAS_CONFIG.centerY - newPosition3D.y / PIXELS_TO_CM;
-
-            // Create updated entry with new position
-            const updatedEntry: AirEntry = {
-              ...currentEntry,
-              position: { x: newX, y: newY },
-            };
-
-            // If we moved vertically, update distance to floor
-            if (dragStateRef.current.selectedAxis === "z") {
-              const baseHeight = getFloorBaseHeight(currentFloor);
-              const newDistanceToFloor = newPosition3D.z - baseHeight;
-
-              if (updatedEntry.type !== "door") {
-                updatedEntry.dimensions = {
-                  ...updatedEntry.dimensions,
-                  distanceToFloor: newDistanceToFloor,
-                };
-              }
-            }
-
-            // Call the update callback
-            onUpdateAirEntry(currentFloor, entryIndex, updatedEntry);
-
-            // IMPORTANT: Keep track of the updated entries to prevent them from resetting
-            // We store a mapping of entryIndex -> position to check against when scene rebuilds
-
-            // Normalize the floor name using the shared function
-            const normalizedFloorName = normalizeFloorName(currentFloor);
-
-            // Create storage location with normalized key if it doesn't exist
-            if (!updatedAirEntryPositionsRef.current[normalizedFloorName]) {
-              updatedAirEntryPositionsRef.current[normalizedFloorName] = {};
-            }
-
-            // Store the latest position for this entry index under the normalized key (main storage)
-            // See if we already have an entry with dimensions
-            if (!updatedAirEntryPositionsRef.current[normalizedFloorName][entryIndex]) {
-              // Create a new entry with just the position
-              updatedAirEntryPositionsRef.current[normalizedFloorName][entryIndex] = {
-                position: {
-                  x: updatedEntry.position.x,
-                  y: updatedEntry.position.y
-                }
-              };
-            } else {
-              // Update just the position and preserve any existing dimensions
-              updatedAirEntryPositionsRef.current[normalizedFloorName][entryIndex].position = {
-                x: updatedEntry.position.x,
-                y: updatedEntry.position.y
-              };
-            }
-
-            // For backward compatibility with existing code, also store under 'ground' key 
-            // if this is the ground floor (transitional approach)
-            if (normalizedFloorName === 'groundfloor') {
-              if (!updatedAirEntryPositionsRef.current['ground']) {
-                updatedAirEntryPositionsRef.current['ground'] = {};
-              }
-              
-              // Legacy format for backward compatibility:
-              // Keep this simple format for backward compatibility
-              updatedAirEntryPositionsRef.current['ground'][entryIndex] = {
-                position: {
-                  x: updatedEntry.position.x,
-                  y: updatedEntry.position.y
-                }
-              };
-            }
-
-            // CRITICAL FIX: Update the userData with the new position
-            // This ensures that future position searches can find this object
-            if (dragStateRef.current.selectedObject) {
-              // Update the userData position immediately for the dragged object
-              dragStateRef.current.selectedObject.userData.position = { ...updatedEntry.position };
-
-              // Also update entryIndex to ensure it's correct for next time
-              dragStateRef.current.selectedObject.userData.entryIndex = entryIndex;
-            }
-          }
-        }
-
-        // Reset the React state for UI
-        setIsDragging(false);
-        setInitialMousePosition(null);
-        // Reset selection state after drag is complete
-        setSelectedAirEntry(null);
-        setSelectedAxis(null);
-
-        // Reset the drag state ref completely
-        dragStateRef.current = {
-          isDragging: false,
-          selectedAxis: null,
-          startPosition: null,
-          initialMousePosition: null,
-          currentMousePosition: null,
-          selectedObject: null,
-          entryIndex: -1,
-          axisDirectionVectors: {
-            x: null,
-            y: null,
-            z: null
-          }
-        };
+        // Drag handling removed - maintain controls only
 
         // PREVENTATIVE CONTROL RECREATION
         // Instead of just re-enabling controls, completely recreate them
