@@ -181,13 +181,17 @@ interface FurnitureExport {
     y: number;
     z: number;
   };
-  state?: string;
-  simulationProperties?: {
-    flowType?: string;
+  // Propiedades de simulación térmica para TODOS los tipos de muebles
+  simulationProperties: {
+    temperature: number;    // Temperatura del objeto (°C)
+    emissivity: number;     // Emisividad térmica (0.0 - 1.0)
+    
+    // Propiedades adicionales solo para vents
+    flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
     flowValue?: number;
-    flowIntensity?: string;
-    airOrientation?: string;
-    state?: string;
+    flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
+    airOrientation?: 'inflow' | 'outflow';
+    state?: 'open' | 'closed';
     customIntensityValue?: number;
     verticalAngle?: number;
     horizontalAngle?: number;
@@ -565,6 +569,30 @@ export function generateSimulationData(
         furnitureId = `${furnitureType}_${floorPrefix}_${furnitureTypeCounts[furnitureType as keyof typeof furnitureTypeCounts]}`;
       }
       
+      // Extract thermal properties from userData
+      const properties = obj.userData?.properties || {};
+      const simulationProperties = obj.userData?.simulationProperties || {};
+      
+      // Build base simulation properties for all furniture types
+      const baseSimulationProperties = {
+        temperature: properties.temperature || simulationProperties.airTemperature || 20,
+        emissivity: properties.emissivity || 0.90
+      };
+      
+      // Add vent-specific properties if this is a vent
+      const ventSpecificProperties = obj.userData?.furnitureType === 'vent' ? {
+        flowType: simulationProperties.flowType,
+        flowValue: simulationProperties.flowValue,
+        flowIntensity: simulationProperties.flowIntensity,
+        airOrientation: simulationProperties.airOrientation,
+        state: simulationProperties.state,
+        customIntensityValue: simulationProperties.customIntensityValue,
+        verticalAngle: simulationProperties.verticalAngle,
+        horizontalAngle: simulationProperties.horizontalAngle,
+        airTemperature: simulationProperties.airTemperature,
+        normalVector: simulationProperties.normalVector
+      } : {};
+      
       return {
         id: furnitureId,
         position: {
@@ -582,10 +610,11 @@ export function generateSimulationData(
           y: obj.scale?.y || 1,
           z: obj.scale?.z || 1
         },
-        // Add simulation properties for vent furniture
-        ...(obj.userData?.furnitureType === 'vent' && obj.userData?.simulationProperties && {
-          simulationProperties: obj.userData.simulationProperties
-        })
+        // Include simulation properties for ALL furniture types
+        simulationProperties: {
+          ...baseSimulationProperties,
+          ...ventSpecificProperties
+        }
       };
     });
 
