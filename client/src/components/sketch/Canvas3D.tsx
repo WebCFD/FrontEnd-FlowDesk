@@ -821,7 +821,10 @@ const createFurnitureModel = (
     furnitureType: furnitureItem.type,
     furnitureId: furnitureItem.id,
     floorName: furnitureItem.floorName,
-    isSelectable: true
+    isSelectable: true,
+    // Include properties and simulationProperties for JSON export
+    properties: furnitureItem.properties,
+    simulationProperties: furnitureItem.simulationProperties
   };
 
   // Set the meshId in the furniture item for reference
