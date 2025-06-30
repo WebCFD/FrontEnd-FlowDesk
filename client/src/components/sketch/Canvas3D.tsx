@@ -173,7 +173,47 @@ const RAYCASTER_CONFIG = {
  */
 const normalizeFloorName = (floorName: string): string => {
   // Convert to lowercase and remove spaces - ensure consistent keys for storage/retrieval
-  return floorName.toLowerCase().replace(/\s+/g, '');
+  return floorName.toLowerCase()
+                 .replace(/\s+/g, '')      // "Ground Floor" → "groundfloor"
+                 .replace('floor', '')     // "groundfloor" → "ground"  
+                 .replace('st', '')        // "1st" → "1"
+                 .replace('nd', '')        // "2nd" → "2"
+                 .replace('rd', '')        // "3rd" → "3"
+                 .replace('th', '')        // "4th" → "4"
+                 .trim();
+};
+
+/**
+ * Robust floor name matching - handles all floor naming variations
+ * Used by: findAirEntryMesh for cross-format compatibility
+ */
+const FLOOR_MAPPINGS: Record<string, string[]> = {
+  'ground': ['ground', 'groundfloor', '0f', '0', 'ground floor'],
+  'first': ['first', 'firstfloor', '1f', '1', '1st', 'first floor'],
+  'second': ['second', 'secondfloor', '2f', '2', '2nd', 'second floor'],
+  'third': ['third', 'thirdfloor', '3f', '3', '3rd', 'third floor'],
+  'fourth': ['fourth', 'fourthfloor', '4f', '4', '4th', 'fourth floor'],
+  'fifth': ['fifth', 'fifthfloor', '5f', '5', '5th', 'fifth floor']
+};
+
+const doFloorsMatch = (floorName1: string, floorName2: string): boolean => {
+  const normalized1 = normalizeFloorName(floorName1);
+  const normalized2 = normalizeFloorName(floorName2);
+  
+  // Direct normalized match
+  if (normalized1 === normalized2) return true;
+  
+  // Check if both floors belong to the same mapping group
+  for (const [baseFloor, variations] of Object.entries(FLOOR_MAPPINGS)) {
+    const variations1 = variations.map(v => normalizeFloorName(v));
+    const variations2 = variations.map(v => normalizeFloorName(v));
+    
+    if (variations1.includes(normalized1) && variations2.includes(normalized2)) {
+      return true;
+    }
+  }
+  
+  return false;
 };
 
 /**
@@ -1342,18 +1382,11 @@ export default function Canvas3D({
           hasTexture: object.material instanceof THREE.MeshPhongMaterial && object.material.map ? 'YES' : 'NO'
         });
         
-        // Multiple search criteria - be more flexible with floor naming
-        const normalizedFloorName = normalizeFloorName(floorName);
+        // Robust floor matching using new system
         const meshFloorName = object.userData.floorName;
-        const normalizedMeshFloorName = normalizeFloorName(meshFloorName || '');
+        const floorMatches = doFloorsMatch(meshFloorName || '', floorName);
         
-        const floorMatches = (
-          meshFloorName === floorName ||                    // Exact match
-          normalizedMeshFloorName === normalizedFloorName || // Normalized match
-          meshFloorName === 'ground' && floorName === 'ground' || // Ground variations
-          meshFloorName === 'groundfloor' && floorName === 'ground' ||
-          meshFloorName === 'ground' && floorName === 'groundfloor'
-        );
+        console.log(`🔍 [MESH SEARCH] Floor matching: mesh='${meshFloorName}' vs search='${floorName}' → ${floorMatches}`);
         
         const indexMatches = (
           object.userData.entryIndex === entryIndex ||      // Direct index match
