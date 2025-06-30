@@ -3127,8 +3127,7 @@ export default function Canvas3D({
 
                   console.log("Found closest air entry at distance:", closestDistance);
 
-                  // Set the axis for movement in the React state (for UI highlighting)
-                  setSelectedAxis(axisDirection as "x" | "y" | "z");
+                  // Axis selection removed with drag functionality
 
                   // Cast to our mesh interface for more specific typing
                   const typedAirEntry = closestAirEntry as AirEntryMesh;
@@ -3264,23 +3263,7 @@ export default function Canvas3D({
                     object: closestAirEntry,
                   });
 
-                  // Update React state for UI
-                  setDragStartPosition(
-                    new THREE.Vector3(
-                      (closestAirEntry as THREE.Mesh).position.x,
-                      (closestAirEntry as THREE.Mesh).position.y,
-                      (closestAirEntry as THREE.Mesh).position.z,
-                    ),
-                  );
-
-                  // Update React state for UI
-                  setInitialMousePosition({
-                    x: event.clientX,
-                    y: event.clientY,
-                  });
-
-                  // Start dragging - update React state for UI
-                  setIsDragging(true);
+                  // Drag state initialization removed
 
                   // Find the air entry object in the scene to get the local axis vectors
                   // Need to use the actual entry index as the reference for finding axis objects
@@ -3317,55 +3300,7 @@ export default function Canvas3D({
                     }
                   });
 
-                  // IMPORTANT: Update the ref for actual dragging logic
-                  dragStateRef.current = {
-                    isDragging: true,
-                    selectedAxis: axisDirection as "x" | "y" | "z",
-                    startPosition: new THREE.Vector3(
-                      (closestAirEntry as THREE.Mesh).position.x,
-                      (closestAirEntry as THREE.Mesh).position.y,
-                      (closestAirEntry as THREE.Mesh).position.z
-                    ),
-                    initialMousePosition: {
-                      x: event.clientX,
-                      y: event.clientY
-                    },
-                    currentMousePosition: {
-                      x: event.clientX,
-                      y: event.clientY
-                    },
-                    selectedObject: closestAirEntry,
-                    entryIndex: index,
-                    axisDirectionVectors: {
-                      x: xAxisDirection,
-                      y: yAxisDirection,
-                      z: zAxisDirection
-                    }
-                  };
-
-                  // Immediately disable controls when dragging starts
-                  if (controlsRef.current) {
-                    controlsRef.current.enabled = false;
-                  }
-
-              console.log("Started dragging with axis:", axisDirection);
-              console.log("Started dragging", { axis: axisDirection });
-
-              // Log detailed drag state at drag start
-              console.log("DRAG STATE INITIALIZED:", {
-                axis: dragStateRef.current.selectedAxis,
-                isDragging: dragStateRef.current.isDragging,
-                entryIndex: dragStateRef.current.entryIndex,
-                selectedObject: dragStateRef.current.selectedObject ? "exists" : "null",
-                reactState: {
-                  selectedAirEntry: selectedAirEntry ? {
-                    index: selectedAirEntry.index,
-                    type: selectedAirEntry.entry.type,
-                  } : null,
-                  selectedAxis,
-                  isDragging
-                }
-              });
+                  // Drag state initialization and control disabling removed
             }
             }
             }
