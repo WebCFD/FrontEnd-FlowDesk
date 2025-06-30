@@ -5817,6 +5817,11 @@ export default function Canvas3D({
       if (data.properties) {
         furnitureGroup.userData.properties = data.properties;
       }
+      
+      // Store simulation properties in userData for JSON export
+      if (data.simulationProperties) {
+        furnitureGroup.userData.simulationProperties = data.simulationProperties;
+      }
 
       // Save data to persistent store
       if (onUpdateFurniture) {
