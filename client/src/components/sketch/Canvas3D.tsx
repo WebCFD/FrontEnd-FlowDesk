@@ -1952,8 +1952,6 @@ export default function Canvas3D({
   ) => {
     if (!editingAirEntry || !onUpdateAirEntry) return;
 
-    console.log(`🔧 [HYBRID UPDATE] Starting AirEntry edit: ${currentFloor}_${index}`, data);
-
     // STEP 1: Try direct mesh update first (preserves textures)
     const directUpdateSuccess = updateAirEntryMeshDirectly(currentFloor, index, {
       dimensions: {
@@ -1965,12 +1963,6 @@ export default function Canvas3D({
       },
       properties: data.properties
     });
-
-    if (directUpdateSuccess) {
-      console.log(`✅ [HYBRID UPDATE] Direct mesh update successful - textures preserved`);
-    } else {
-      console.warn(`⚠️ [HYBRID UPDATE] Direct mesh update failed - falling back to store-only update`);
-    }
 
     // STEP 2: Update store for synchronization (with skip rebuild flag concept)
     const updatedEntry = {
@@ -2001,10 +1993,7 @@ export default function Canvas3D({
     }
 
     // STEP 3: Update store with awareness that mesh was already updated
-    console.log(`📥 [HYBRID UPDATE] Updating store for synchronization: ${currentFloor}_${index}`);
     onUpdateAirEntry(currentFloor, index, updatedEntry);
-    
-    console.log(`✅ [HYBRID UPDATE] Store updated - other views will sync, RSP textures preserved`);
     
     setEditingAirEntry(null);
   };
