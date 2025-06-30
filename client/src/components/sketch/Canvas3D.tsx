@@ -1363,30 +1363,16 @@ export default function Canvas3D({
   const findAirEntryMesh = useCallback((floorName: string, entryIndex: number): THREE.Mesh | null => {
     if (!sceneRef.current) return null;
     
-    console.log(`🔍 [MESH SEARCH] Looking for AirEntry: floor=${floorName}, index=${entryIndex}`);
-    
     let foundMesh: THREE.Mesh | null = null;
-    let debugInfo: any[] = [];
     
     sceneRef.current.traverse((object) => {
       if (object instanceof THREE.Mesh && 
           object.userData?.type && 
           ["door", "window", "vent"].includes(object.userData.type)) {
         
-        // Log all AirEntry meshes for debugging
-        debugInfo.push({
-          type: object.userData.type,
-          entryIndex: object.userData.entryIndex,
-          floorName: object.userData.floorName,
-          airEntryId: object.userData.airEntryId,
-          hasTexture: object.material instanceof THREE.MeshPhongMaterial && object.material.map ? 'YES' : 'NO'
-        });
-        
         // Robust floor matching using new system
         const meshFloorName = object.userData.floorName;
         const floorMatches = doFloorsMatch(meshFloorName || '', floorName);
-        
-        console.log(`🔍 [MESH SEARCH] Floor matching: mesh='${meshFloorName}' vs search='${floorName}' → ${floorMatches}`);
         
         const indexMatches = (
           object.userData.entryIndex === entryIndex ||      // Direct index match
@@ -1395,20 +1381,9 @@ export default function Canvas3D({
         
         if (floorMatches && indexMatches) {
           foundMesh = object;
-          console.log(`✅ [MESH SEARCH] Found matching mesh:`, {
-            type: object.userData.type,
-            floorName: meshFloorName,
-            entryIndex: object.userData.entryIndex,
-            hasTexture: object.material instanceof THREE.MeshPhongMaterial && object.material.map ? 'YES' : 'NO'
-          });
         }
       }
     });
-    
-    if (!foundMesh) {
-      console.warn(`❌ [MESH SEARCH] No mesh found for ${floorName}_${entryIndex}`);
-      console.log(`🔍 [MESH SEARCH] Available AirEntry meshes:`, debugInfo);
-    }
     
     return foundMesh;
   }, []);
@@ -4890,9 +4865,6 @@ export default function Canvas3D({
   const finalFloors = useMemo(() => {
     const sourceFloors = Object.keys(reactiveStoreFloors).length > 0 ? reactiveStoreFloors : floors;
     
-    console.log(`🔧 [MEMOIZATION] Evaluating floors for structural changes only`);
-    console.log(`🔧 [MEMOIZATION] Source: ${Object.keys(reactiveStoreFloors).length > 0 ? 'STORE' : 'PROPS'}`);
-    
     // Return source floors directly - the key is in the dependency array to prevent unnecessary rebuilds
     return sourceFloors;
   }, [
@@ -4926,19 +4898,8 @@ export default function Canvas3D({
   const updateAirEntryMeshDirectly = useCallback((floorName: string, entryIndex: number, changes: AirEntryMeshChanges): boolean => {
     const mesh = findAirEntryMesh(floorName, entryIndex);
     if (!mesh) {
-      console.warn(`❌ [DIRECT UPDATE] AirEntry mesh not found: ${floorName}_${entryIndex}`);
       return false;
     }
-
-    // DIAGNOSTIC: Check texture state before update
-    const hasTextureBefore = mesh.material instanceof THREE.MeshPhongMaterial && mesh.material.map;
-    console.log(`🔍 [TEXTURE DIAGNOSTIC] BEFORE UPDATE - ${floorName}_${entryIndex}:`, {
-      hasTexture: hasTextureBefore,
-      materialType: mesh.material.constructor.name,
-      textureMap: hasTextureBefore ? 'YES' : 'NO'
-    });
-
-    console.log(`🔧 [DIRECT UPDATE] Updating AirEntry mesh directly: ${floorName}_${entryIndex}`, changes);
 
     let needsGeometryUpdate = false;
     let needsPositionUpdate = false;
@@ -4962,7 +4923,7 @@ export default function Canvas3D({
         mesh.geometry.dispose();
         mesh.geometry = newGeometry;
         
-        console.log(`✅ [DIRECT UPDATE] Updated geometry: ${currentWidth}x${currentHeight} → ${newWidth}x${newHeight}`);
+
       }
 
       // Update userData with new dimensions
@@ -5001,7 +4962,7 @@ export default function Canvas3D({
         const position3D = transform2DTo3D(position);
         mesh.position.set(position3D.x, position3D.y, zPosition);
         
-        console.log(`✅ [DIRECT UPDATE] Updated position: (${position.x}, ${position.y}) → Z=${zPosition}`);
+
       }
     }
 
@@ -5025,38 +4986,11 @@ export default function Canvas3D({
       mesh.geometry.computeBoundingSphere();
     }
 
-    // DIAGNOSTIC: Check texture state after update
-    const hasTextureAfter = mesh.material instanceof THREE.MeshPhongMaterial && mesh.material.map;
-    console.log(`🔍 [TEXTURE DIAGNOSTIC] AFTER UPDATE - ${floorName}_${entryIndex}:`, {
-      hasTexture: hasTextureAfter,
-      materialType: mesh.material.constructor.name,
-      textureMap: hasTextureAfter ? 'YES' : 'NO',
-      texturePreserved: hasTextureBefore === hasTextureAfter
-    });
-
-    console.log(`✅ [DIRECT UPDATE] AirEntry mesh updated successfully with preserved materials`);
     return true;
   }, [findAirEntryMesh, finalFloors, getFloorBaseHeight, transform2DTo3D]);
 
   useEffect(() => {
     // Scene rebuild using store data when available, fallback to props
-    console.log(`🔥 [SCENE REBUILD TRIGGER] useEffect triggered - dependencies changed`);
-    console.log(`🔥 [SCENE REBUILD] Source: ${Object.keys(reactiveStoreFloors).length > 0 ? 'STORE DATA' : 'PROPS DATA'}`);
-    
-    // Check if AirEntry textures exist before rebuild
-    if (sceneRef.current) {
-      let textureCount = 0;
-      sceneRef.current.traverse((object) => {
-        if (object instanceof THREE.Mesh && 
-            object.userData?.type && 
-            ["door", "window", "vent"].includes(object.userData.type) &&
-            object.material instanceof THREE.MeshPhongMaterial && 
-            object.material.map) {
-          textureCount++;
-        }
-      });
-      console.log(`🔥 [SCENE REBUILD] AirEntries with textures BEFORE rebuild: ${textureCount}`);
-    }
 
     // Don't reset selection state here - we'll handle it after rebuilding the scene
     // This prevents losing the selection when the scene is updated
