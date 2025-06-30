@@ -1,0 +1,95 @@
+Canvas3D.tsx:4710 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4720 Double-click found entry using stored entryIndex: 0
+AirEntryDialog.tsx:368 🟠 [DIALOG INIT] Dialog opened, isEditing: true
+AirEntryDialog.tsx:369 🟠 [DIALOG INIT] Props received: {data-replit-metadata: 'client/src/components/sketch/Canvas3D.tsx:6204:6', data-component-name: 'AirEntryDialog', type: 'vent', isOpen: true, onClose: ƒ, …}
+AirEntryDialog.tsx:374 🟠 [DIALOG INIT] airEntryProps.initialValues: {width: 102, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 35, …}
+AirEntryDialog.tsx:390 🟠 [DIALOG INIT] Searching for wallPosition:
+AirEntryDialog.tsx:391 🟠 [DIALOG INIT] - From properties: undefined
+AirEntryDialog.tsx:392 🟠 [DIALOG INIT] - From direct: 35
+AirEntryDialog.tsx:393 🟠 [DIALOG INIT] - Final savedWallPosition: 35
+AirEntryDialog.tsx:404 🟠 [DIALOG INIT] Setting wallPosition to saved value: 35
+AirEntryDialog.tsx:245 🔴 [WALLPOS DEBUG] handleWallPositionChange called with: 36
+AirEntryDialog.tsx:250 🔴 [WALLPOS DEBUG] Calculated new position: {x: 178.66441410212752, y: 211.51098125212837}
+AirEntryDialog.tsx:266 🔴 [WALLPOS DEBUG] Calling onPositionUpdate with position: {x: 178.66441410212752, y: 211.51098125212837}
+AirEntryDialog.tsx:260 🔴 [WALLPOS DEBUG] Updated form values: {width: 102, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 36, …}
+room-store.ts:438 ✅ STORE: AirEntry actualizado en el store, notificando a 2 listeners
+room-store.ts:442 📢 STORE: Notificando listener 1/2
+room-store.ts:442 📢 STORE: Notificando listener 2/2
+RoomSketchPro.tsx:859 📥 RSP: Recibida notificación de cambio AirEntry - piso: ground, índice: 0
+RoomSketchPro.tsx:860 📥 RSP: Tipo: vent, posición: (178.66441410212752, 211.51098125212837)
+RoomSketchPro.tsx:864 🎨 RSP: Re-aplicando texturas después del cambio de AirEntry en ground
+RoomSketchPro.tsx:859 📥 RSP: Recibida notificación de cambio AirEntry - piso: ground, índice: 0
+RoomSketchPro.tsx:860 📥 RSP: Tipo: vent, posición: (178.66441410212752, 211.51098125212837)
+RoomSketchPro.tsx:864 🎨 RSP: Re-aplicando texturas después del cambio de AirEntry en ground
+Canvas3D.tsx:4939 🔥 [SCENE REBUILD TRIGGER] useEffect triggered - dependencies changed
+Canvas3D.tsx:4940 🔥 [SCENE REBUILD] Source: STORE DATA
+Canvas3D.tsx:4954 🔥 [SCENE REBUILD] AirEntries with textures BEFORE rebuild: 1
+Canvas3D.tsx:2380 🔧 [SCENE REBUILD] Creating new material for vent at index 0
+AirEntryDialog.tsx:579 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+AirEntryDialog.tsx:580 🎯 [SAVE BUTTON CLICKED] Event type: submit
+AirEntryDialog.tsx:581 🎯 [SAVE BUTTON CLICKED] Props type: vent
+AirEntryDialog.tsx:582 🎯 [SAVE BUTTON CLICKED] Current values: {width: 102, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 36, …}
+AirEntryDialog.tsx:583 🎯 [SAVE BUTTON CLICKED] wallPosition from values: 36
+AirEntryDialog.tsx:584 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 36
+AirEntryDialog.tsx:679 🎯 [PROPS.ONCONFIRM] About to call props.onConfirm with canvasData
+AirEntryDialog.tsx:680 🎯 [PROPS.ONCONFIRM] canvasData being sent: {width: 102, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 36, …}
+AirEntryDialog.tsx:681 🎯 [PROPS.ONCONFIRM] canvasData.wallPosition: 36
+AirEntryDialog.tsx:682 🎯 [PROPS.ONCONFIRM] canvasData.position: {x: 178.66441410212752, y: 211.51098125212837}
+AirEntryDialog.tsx:683 🎯 [PROPS.ONCONFIRM] This should trigger handleAirEntryEdit in Canvas2D
+Canvas3D.tsx:1907 🔧 [HYBRID UPDATE] Starting AirEntry edit: ground_0 {width: 102, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 36, …}
+Canvas3D.tsx:4825 ❌ [DIRECT UPDATE] AirEntry mesh not found: ground_0
+(anonymous) @ Canvas3D.tsx:4825
+handleAirEntryEdit @ Canvas3D.tsx:1910
+onConfirm @ Canvas3D.tsx:6212
+handleSubmit @ AirEntryDialog.tsx:685
+callCallback2 @ chunk-WERSD76P.js?v=cfa7cc5f:3674
+invokeGuardedCallbackDev @ chunk-WERSD76P.js?v=cfa7cc5f:3699
+invokeGuardedCallback @ chunk-WERSD76P.js?v=cfa7cc5f:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-WERSD76P.js?v=cfa7cc5f:3736
+executeDispatch @ chunk-WERSD76P.js?v=cfa7cc5f:7014
+processDispatchQueueItemsInOrder @ chunk-WERSD76P.js?v=cfa7cc5f:7034
+processDispatchQueue @ chunk-WERSD76P.js?v=cfa7cc5f:7043
+dispatchEventsForPlugins @ chunk-WERSD76P.js?v=cfa7cc5f:7051
+(anonymous) @ chunk-WERSD76P.js?v=cfa7cc5f:7174
+batchedUpdates$1 @ chunk-WERSD76P.js?v=cfa7cc5f:18913
+batchedUpdates @ chunk-WERSD76P.js?v=cfa7cc5f:3579
+dispatchEventForPluginEventSystem @ chunk-WERSD76P.js?v=cfa7cc5f:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-WERSD76P.js?v=cfa7cc5f:5478
+dispatchEvent @ chunk-WERSD76P.js?v=cfa7cc5f:5472
+dispatchDiscreteEvent @ chunk-WERSD76P.js?v=cfa7cc5f:5449
+Canvas3D.tsx:1924 ⚠️ [HYBRID UPDATE] Direct mesh update failed - falling back to store-only update
+handleAirEntryEdit @ Canvas3D.tsx:1924
+onConfirm @ Canvas3D.tsx:6212
+handleSubmit @ AirEntryDialog.tsx:685
+callCallback2 @ chunk-WERSD76P.js?v=cfa7cc5f:3674
+invokeGuardedCallbackDev @ chunk-WERSD76P.js?v=cfa7cc5f:3699
+invokeGuardedCallback @ chunk-WERSD76P.js?v=cfa7cc5f:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-WERSD76P.js?v=cfa7cc5f:3736
+executeDispatch @ chunk-WERSD76P.js?v=cfa7cc5f:7014
+processDispatchQueueItemsInOrder @ chunk-WERSD76P.js?v=cfa7cc5f:7034
+processDispatchQueue @ chunk-WERSD76P.js?v=cfa7cc5f:7043
+dispatchEventsForPlugins @ chunk-WERSD76P.js?v=cfa7cc5f:7051
+(anonymous) @ chunk-WERSD76P.js?v=cfa7cc5f:7174
+batchedUpdates$1 @ chunk-WERSD76P.js?v=cfa7cc5f:18913
+batchedUpdates @ chunk-WERSD76P.js?v=cfa7cc5f:3579
+dispatchEventForPluginEventSystem @ chunk-WERSD76P.js?v=cfa7cc5f:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-WERSD76P.js?v=cfa7cc5f:5478
+dispatchEvent @ chunk-WERSD76P.js?v=cfa7cc5f:5472
+dispatchDiscreteEvent @ chunk-WERSD76P.js?v=cfa7cc5f:5449
+Canvas3D.tsx:1956 📥 [HYBRID UPDATE] Updating store for synchronization: ground_0
+room-store.ts:438 ✅ STORE: AirEntry actualizado en el store, notificando a 2 listeners
+room-store.ts:442 📢 STORE: Notificando listener 1/2
+room-store.ts:442 📢 STORE: Notificando listener 2/2
+RoomSketchPro.tsx:859 📥 RSP: Recibida notificación de cambio AirEntry - piso: ground, índice: 0
+RoomSketchPro.tsx:860 📥 RSP: Tipo: vent, posición: (178.66441410212752, 211.51098125212837)
+RoomSketchPro.tsx:864 🎨 RSP: Re-aplicando texturas después del cambio de AirEntry en ground
+RoomSketchPro.tsx:859 📥 RSP: Recibida notificación de cambio AirEntry - piso: ground, índice: 0
+RoomSketchPro.tsx:860 📥 RSP: Tipo: vent, posición: (178.66441410212752, 211.51098125212837)
+RoomSketchPro.tsx:864 🎨 RSP: Re-aplicando texturas después del cambio de AirEntry en ground
+Canvas3D.tsx:1959 ✅ [HYBRID UPDATE] Store updated - other views will sync, RSP textures preserved
+AirEntryDialog.tsx:687 🎯 [PROPS.ONCONFIRM] props.onConfirm completed
+AirEntryDialog.tsx:688 🎯 [PROPS.ONCONFIRM] Now calling onClose() to close dialog
+Canvas3D.tsx:4939 🔥 [SCENE REBUILD TRIGGER] useEffect triggered - dependencies changed
+Canvas3D.tsx:4940 🔥 [SCENE REBUILD] Source: STORE DATA
+Canvas3D.tsx:4954 🔥 [SCENE REBUILD] AirEntries with textures BEFORE rebuild: 1
+Canvas3D.tsx:2380 🔧 [SCENE REBUILD] Creating new material for vent at index 0
