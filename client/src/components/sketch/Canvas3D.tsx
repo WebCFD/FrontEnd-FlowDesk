@@ -4597,63 +4597,13 @@ export default function Canvas3D({
         } else {
           // Entry no longer exists, reset selection
           setSelectedAirEntry(null);
-          setSelectedAxis(null);
-          setIsDragging(false);
-          dragStateRef.current = {
-            isDragging: false,
-            selectedAxis: null,
-            startPosition: null,
-            initialMousePosition: null,
-            currentMousePosition: null,
-            selectedObject: null,
-            entryIndex: -1,
-            axisDirectionVectors: {
-              x: null,
-              y: null,
-              z: null
-            }
-          };
         }
       } else {
         // Current floor data not found, reset selection
         setSelectedAirEntry(null);
-        setSelectedAxis(null);
-        setIsDragging(false);
-        dragStateRef.current = {
-          isDragging: false,
-          selectedAxis: null,
-          startPosition: null,
-          initialMousePosition: null,
-          currentMousePosition: null,
-          selectedObject: null,
-          entryIndex: -1,
-          axisDirectionVectors: {
-            x: null,
-            y: null,
-            z: null
-          }
-        };
       }
     } else {
       // No previous selection, make sure states are reset
-      setSelectedAxis(null);
-      setIsDragging(false);
-      setInitialMousePosition(null);
-      setDragStartPosition(null);
-      dragStateRef.current = {
-        isDragging: false,
-        selectedAxis: null,
-        startPosition: null,
-        initialMousePosition: null,
-        currentMousePosition: null,
-        selectedObject: null,
-        entryIndex: -1,
-        axisDirectionVectors: {
-          x: null,
-          y: null,
-          z: null
-        }
-      };
     }
   }, [finalFloors, currentFloor, ceilingHeight, floorDeckThickness]);
 
