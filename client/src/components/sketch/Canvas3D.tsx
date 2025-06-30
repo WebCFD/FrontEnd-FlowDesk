@@ -2841,29 +2841,7 @@ export default function Canvas3D({
         controlsRef.current.update();
         needsRenderRef.current = true; // Controls moving requires a render
       }
-      // Apply visual feedback if selection state changed
-      if (selectedAirEntry?.object && sceneRef.current) {
-        highlightSelectedAirEntry(selectedAirEntry.object, true, isDragging);
-        highlightSelectedAxis(
-          sceneRef.current,
-          selectedAirEntry.object,
-          selectedAxis,
-        );
-        needsRenderRef.current = true; // Selection state changed, needs a render
-      }
-
-      // Apply hover effect
-      if (sceneRef.current) {
-        highlightHoveredArrow(
-          sceneRef.current,
-          hoveredArrow,
-          selectedAirEntry,
-          selectedAxis,
-        );
-        if (hoveredArrow) {
-          needsRenderRef.current = true;
-        }
-      }
+      // Visual highlighting removed - coordinate system display only
         // Render the scene if needed
         if (
           rendererRef.current &&
@@ -2871,21 +2849,13 @@ export default function Canvas3D({
           cameraRef.current &&
           (needsRenderRef.current || isEraserMode) // Force render every frame in eraser mode
         ) {
-          // Always render during drag operations or eraser mode for smooth feedback
-          const isDraggingNow = dragStateRef.current.isDragging;
+          // Always render during eraser mode for smooth feedback
           
-        /*  // Log rendering reason
-          if (isDraggingNow) {
-            console.log("Rendering during drag operation");
-          } else if (isEraserMode) {
-            console.log("Force rendering in eraser mode for hover detection");
-          }*/
-
           // Always render the scene
           rendererRef.current.render(sceneRef.current, cameraRef.current);
 
-          // Only reset the needs render flag if we're not in a state that requires continuous rendering
-          if (!isDraggingNow && !isEraserMode) {
+          // Only reset the needs render flag if we're not in eraser mode
+          if (!isEraserMode) {
             needsRenderRef.current = false;
           } else {
             // Make sure we keep rendering on the next frame
@@ -3033,21 +3003,7 @@ export default function Canvas3D({
         isMeasureMode: isMeasureMode
       });
 
-      // Log current selection and drag state
-      console.log("SELECTION STATE AT MOUSE DOWN:", {
-        selectedAirEntry: selectedAirEntry ? {
-          index: selectedAirEntry.index,
-          type: selectedAirEntry.entry.type,
-          position: selectedAirEntry.entry.position
-        } : null,
-        selectedAxis: selectedAxis,
-        isDragging: isDragging,
-        dragStateRef: {
-          isDragging: dragStateRef.current.isDragging,
-          selectedAxis: dragStateRef.current.selectedAxis,
-          entryIndex: dragStateRef.current.entryIndex
-        }
-      });
+      // Debug logging removed with drag functionality
 
       // Use the ref to determine if we're in measure mode
       if (isMeasureModeRef.current) {
