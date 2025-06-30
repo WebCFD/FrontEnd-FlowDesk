@@ -3409,8 +3409,8 @@ export default function Canvas3D({
         return;
       }
       
-      // Handle hover detection for eraser mode - using ref to ensure we have the current value
-      if (isEraserModeRef.current && !dragStateRef.current.isDragging) {
+      // Handle hover detection for eraser mode
+      if (isEraserModeRef.current) {
         // Log TrackballControls state
         const controlsState = controlsRef.current ? {
           enabled: controlsRef.current.enabled,
@@ -3808,27 +3808,7 @@ export default function Canvas3D({
         }
       }
 
-      // Regular drag logic
-      if (dragStateRef.current.isDragging) {
-        // Store the current mouse position
-        dragStateRef.current.currentMousePosition = {
-          x: event.clientX,
-          y: event.clientY
-        };
-
-        // Make sure we need to render
-        needsRenderRef.current = true;
-
-        // No position updates here - let the animation loop handle it
-      }
-
-
-        // Flag that we need to re-render
-        needsRenderRef.current = true;
-        // Force immediate render on drag movement
-        if (rendererRef.current && sceneRef.current && cameraRef.current) {
-          rendererRef.current.render(sceneRef.current, cameraRef.current);
-        }
+      // Drag logic removed with drag functionality
 
       // Add hover detection logic
       else {
