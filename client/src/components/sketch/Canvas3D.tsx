@@ -1523,11 +1523,24 @@ export default function Canvas3D({
             object.userData?.entryIndex === editingAirEntry.index) {
           
           // Update the mesh position
-
           const position3D = transform2DTo3D(newPosition);
           object.position.set(position3D.x, position3D.y, object.position.z);
           object.userData.position = newPosition;
 
+          // PHASE 5: Update coordinate system during real-time position changes
+          if (!presentationMode) {
+            try {
+              const zPos = object.position.z; // Use current Z position
+              const floorData = finalFloors[currentFloor];
+              const airEntry = floorData?.airEntries?.[editingAirEntry.index];
+              
+              // Update coordinate system (non-invasive)
+              updateCoordinateSystemPosition(editingAirEntry.index, currentFloor, position3D, zPos, airEntry);
+            } catch (error) {
+              // Coordinate system update failure won't affect AirEntry operations
+              console.warn('Coordinate system update failed during real-time position change:', error);
+            }
+          }
         }
       });
     }
