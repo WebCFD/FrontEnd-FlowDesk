@@ -360,17 +360,16 @@ const createRoomPerimeter = (lines: Line[]): Point[] => {
 const highlightSelectedAirEntry = (
   airEntry: THREE.Mesh | null,
   isSelected: boolean,
-  isDragging: boolean,
 ) => {
   if (!airEntry) return;
 
   const material = airEntry.material as THREE.MeshPhongMaterial;
 
   if (isSelected) {
-    // Highlight by adding an outline effect but maintain 70% base opacity or slightly higher when dragging
-    material.opacity = isDragging ? 0.85 : 0.7;
+    // Highlight with fixed visual feedback (drag functionality removed)
+    material.opacity = 0.7;
     material.emissive.set(0xffff00); // Yellow emissive glow
-    material.emissiveIntensity = isDragging ? 0.5 : 0.3;
+    material.emissiveIntensity = 0.3;
   } else {
     // Reset to fixed 70% opacity for all air entries
     material.opacity = 0.7;
@@ -4586,7 +4585,7 @@ export default function Canvas3D({
             });
 
             // Apply visual feedback
-            highlightSelectedAirEntry(newMeshObject, true, false);
+            highlightSelectedAirEntry(newMeshObject, true);
 
             // Axis highlighting removed with drag functionality
           } else {
@@ -4680,19 +4679,15 @@ export default function Canvas3D({
       needsRenderRef.current = true;
 
 
-      // Disable controls during dragging
+      // Controls always enabled (drag functionality removed)
       if (controlsRef.current) {
-        controlsRef.current.enabled = !isDragging;
+        controlsRef.current.enabled = true;
       }
     }
-  }, [selectedAirEntry, selectedAxis, isDragging]);
+  }, [selectedAirEntry]);
 
   useEffect(() => {
-    // If dialog opens, cancel any dragging operation
-    if (editingAirEntry) {
-      setIsDragging(false);
-      setSelectedAxis(null);
-    }
+    // Dialog open handling (drag references removed)
   }, [editingAirEntry]);
 
   // Update lighting intensity in real-time for presentation mode
