@@ -360,7 +360,6 @@ export default function WizardDesign() {
   // Only change when structural data (lines, airEntries positions, walls) changes
   // NOT when metadata (properties, dimensions) changes
   const floors = useMemo(() => {
-    console.log(`🎯 [USEMEMO EXECUTION] floors useMemo triggered - this will cause scene rebuild`);
     // Helper function to normalize floating point numbers to prevent precision errors
     const normalizeNum = (num: number, precision = 2): number => {
       return Math.round(num * Math.pow(10, precision)) / Math.pow(10, precision);
@@ -396,11 +395,15 @@ export default function WizardDesign() {
             type: entry.type,
             position: entry.position,
             line: entry.line,
-            id: (entry as any).id
-            // COMPLETE EXCLUSION: All mesh-level properties excluded to prevent scene rebuild
-            // Excluded: dimensions (width, height, distanceToFloor, wallPosition, shape), properties (temperature, state, flow, etc.)
-            // These modifications now use furniture model - only mesh updates, no store updates during editing
-            // This prevents the scene rebuild that was destroying textures after Save Changes
+            dimensions: {
+              width: entry.dimensions.width,
+              height: entry.dimensions.height,
+              distanceToFloor: entry.dimensions.distanceToFloor,
+              shape: entry.dimensions.shape,
+              // Include wallPosition to preserve Save Changes data
+              wallPosition: (entry.dimensions as any).wallPosition
+            }
+            // Exclude properties to prevent metadata changes from triggering rebuilds
           })),
           walls: normalizeObject(floorData.walls),
           measurements: normalizeObject(floorData.measurements),
@@ -421,10 +424,7 @@ export default function WizardDesign() {
         .map(floorName => ({
           name: floorName,
           linesLength: rawFloors[floorName]?.lines?.length || 0,
-          // COMPLETE EXCLUSION: AirEntries entirely excluded from useMemo dependencies
-          // AirEntry modifications now use furniture model - direct mesh updates without scene rebuild
-          // This prevents scene reconstruction that destroys RSP textures during Save Changes
-          // airEntriesLength: EXCLUDED to prevent any AirEntry-related rebuilds
+          airEntriesLength: rawFloors[floorName]?.airEntries?.length || 0,
           furnitureItemsLength: rawFloors[floorName]?.furnitureItems?.length || 0,
           stairPolygonsLength: rawFloors[floorName]?.stairPolygons?.length || 0,
           stairPolygonsHash: JSON.stringify(rawFloors[floorName]?.stairPolygons || []),
@@ -1112,37 +1112,9 @@ export default function WizardDesign() {
     index: number,
     updatedEntry: AirEntry,
   ) => {
-    console.log(`🎯 [SAVE DEBUG] handleUpdateAirEntryFrom3D called:`, {
-      floorName,
-      index,
-      updatedEntryType: updatedEntry.type,
-      updatedPosition: updatedEntry.position,
-      updatedDimensions: updatedEntry.dimensions
-    });
     
-    // CRITICAL FIX: Get fresh data from reactive store, not props/useMemo
-    const freshFloorData = useRoomStore.getState().floors[floorName];
-    const existingEntry = freshFloorData?.airEntries?.[index];
-    
-    console.log(`🎯 [SAVE DEBUG] Fresh store data:`, {
-      floorExists: !!freshFloorData,
-      airEntriesCount: freshFloorData?.airEntries?.length || 0,
-      requestedIndex: index,
-      foundEntry: !!existingEntry,
-      existingEntryType: existingEntry?.type,
-      existingPosition: existingEntry?.position
-    });
-    
-    if (!existingEntry) {
-      console.error(`❌ AirEntry index ${index} not found in floor ${floorName}`);
-      console.log(`🎯 [SAVE DEBUG] Available airEntries:`, freshFloorData?.airEntries?.map((e, i) => ({
-        index: i,
-        type: e.type,
-        position: e.position,
-        id: (e as any).id
-      })));
-      return;
-    }
+    // CRITICAL FIX: Preserve wallPosition from existing store data
+    const existingEntry = airEntries[index];
     
     // Create merged entry preserving wallPosition
     const preservedDimensions = {
@@ -1151,34 +1123,16 @@ export default function WizardDesign() {
       wallPosition: updatedEntry.dimensions?.wallPosition ?? existingEntry?.dimensions?.wallPosition
     };
     
-    console.log(`🎯 [SAVE DEBUG] Preserving wallPosition:`, {
-      updatedWallPosition: updatedEntry.dimensions?.wallPosition,
-      existingWallPosition: existingEntry?.dimensions?.wallPosition,
-      finalWallPosition: preservedDimensions.wallPosition,
-      updatedPosition: updatedEntry.position,
-      existingPosition: existingEntry.position
-    });
-    
     const deepClonedEntry = {
       ...JSON.parse(JSON.stringify(updatedEntry)),
       dimensions: preservedDimensions
     };
-    
-    console.log(`🎯 [SAVE DEBUG] Final entry to save:`, {
-      type: deepClonedEntry.type,
-      position: deepClonedEntry.position,
-      dimensions: deepClonedEntry.dimensions,
-      line: deepClonedEntry.line
-    });
 
     // Use the store's setAirEntries function when updating the current floor
     if (floorName === currentFloor) {
       
-      // Get fresh airEntries from store, not from props/useMemo
-      const freshAirEntries = freshFloorData.airEntries || [];
-      
       // Create a deep copy of the air entries array with structuredClone
-      const updatedAirEntries = freshAirEntries.map((entry, i) =>
+      const updatedAirEntries = airEntries.map((entry, i) =>
         i === index ? deepClonedEntry : { ...entry },
       );
 
@@ -1188,36 +1142,16 @@ export default function WizardDesign() {
       // Also update the floors data to keep everything in sync
       const updatedFloors = { ...floors };
       if (updatedFloors[floorName]) {
-        console.log(`🔍 [SAVE CHANGES DEBUG] Before floors update:`, {
-          originalFloorAirEntries: updatedFloors[floorName].airEntries?.length || 0,
-          newAirEntriesCount: updatedAirEntries.length
-        });
-        
         updatedFloors[floorName] = {
           ...updatedFloors[floorName],
           airEntries: [...updatedAirEntries],
         };
-        
-        console.log(`🔍 [SAVE CHANGES DEBUG] After floors update:`, {
-          updatedFloorAirEntries: updatedFloors[floorName].airEntries?.length || 0
-        });
-        
         // Update floor data in the store
         useRoomStore.getState().setFloors(updatedFloors);
-        
-        console.log(`🔍 [SAVE CHANGES DEBUG] Store setFloors called`);
       }
 
       // Update store for synchronization
-      console.log(`🔍 [SAVE CHANGES DEBUG] About to call updateAirEntry:`, {
-        floorName,
-        index,
-        entryType: deepClonedEntry.type
-      });
-      
       useRoomStore.getState().updateAirEntry(floorName, index, deepClonedEntry);
-      
-      console.log(`🔍 [SAVE CHANGES DEBUG] updateAirEntry completed`);
 
       // Entry updated successfully
 
