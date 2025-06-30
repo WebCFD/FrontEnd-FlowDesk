@@ -4826,6 +4826,14 @@ export default function Canvas3D({
       return false;
     }
 
+    // DIAGNOSTIC: Check texture state before update
+    const hasTextureBefore = mesh.material instanceof THREE.MeshPhongMaterial && mesh.material.map;
+    console.log(`🔍 [TEXTURE DIAGNOSTIC] BEFORE UPDATE - ${floorName}_${entryIndex}:`, {
+      hasTexture: hasTextureBefore,
+      materialType: mesh.material.constructor.name,
+      textureMap: hasTextureBefore ? 'YES' : 'NO'
+    });
+
     console.log(`🔧 [DIRECT UPDATE] Updating AirEntry mesh directly: ${floorName}_${entryIndex}`, changes);
 
     let needsGeometryUpdate = false;
@@ -4913,12 +4921,38 @@ export default function Canvas3D({
       mesh.geometry.computeBoundingSphere();
     }
 
+    // DIAGNOSTIC: Check texture state after update
+    const hasTextureAfter = mesh.material instanceof THREE.MeshPhongMaterial && mesh.material.map;
+    console.log(`🔍 [TEXTURE DIAGNOSTIC] AFTER UPDATE - ${floorName}_${entryIndex}:`, {
+      hasTexture: hasTextureAfter,
+      materialType: mesh.material.constructor.name,
+      textureMap: hasTextureAfter ? 'YES' : 'NO',
+      texturePreserved: hasTextureBefore === hasTextureAfter
+    });
+
     console.log(`✅ [DIRECT UPDATE] AirEntry mesh updated successfully with preserved materials`);
     return true;
   }, [findAirEntryMesh, finalFloors, getFloorBaseHeight, transform2DTo3D]);
 
   useEffect(() => {
     // Scene rebuild using store data when available, fallback to props
+    console.log(`🔥 [SCENE REBUILD TRIGGER] useEffect triggered - dependencies changed`);
+    console.log(`🔥 [SCENE REBUILD] Source: ${Object.keys(reactiveStoreFloors).length > 0 ? 'STORE DATA' : 'PROPS DATA'}`);
+    
+    // Check if AirEntry textures exist before rebuild
+    if (sceneRef.current) {
+      let textureCount = 0;
+      sceneRef.current.traverse((object) => {
+        if (object instanceof THREE.Mesh && 
+            object.userData?.type && 
+            ["door", "window", "vent"].includes(object.userData.type) &&
+            object.material instanceof THREE.MeshPhongMaterial && 
+            object.material.map) {
+          textureCount++;
+        }
+      });
+      console.log(`🔥 [SCENE REBUILD] AirEntries with textures BEFORE rebuild: ${textureCount}`);
+    }
 
     // Don't reset selection state here - we'll handle it after rebuilding the scene
     // This prevents losing the selection when the scene is updated
@@ -5183,6 +5217,19 @@ export default function Canvas3D({
             (obj) => obj instanceof THREE.GridHelper
           )
         });
+        
+        // DIAGNOSTIC: Check texture count after rebuild
+        let textureCountAfter = 0;
+        sceneRef.current.traverse((object) => {
+          if (object instanceof THREE.Mesh && 
+              object.userData?.type && 
+              ["door", "window", "vent"].includes(object.userData.type) &&
+              object.material instanceof THREE.MeshPhongMaterial && 
+              object.material.map) {
+            textureCountAfter++;
+          }
+        });
+        console.log(`🔥 [SCENE REBUILD] AirEntries with textures AFTER rebuild: ${textureCountAfter}`);
       }
     }
   }, [floors, currentFloor, isMultifloor, floorParameters]);
