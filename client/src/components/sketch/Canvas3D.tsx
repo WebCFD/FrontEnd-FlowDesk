@@ -1624,6 +1624,21 @@ export default function Canvas3D({
             const newZPosition = baseHeight + newDistanceToFloor;
             
             object.position.setZ(newZPosition);
+
+            // PHASE 5: Update coordinate system during real-time Center Height changes
+            if (!presentationMode) {
+              try {
+                const position3D = new THREE.Vector3(object.position.x, object.position.y, 0);
+                const floorData = finalFloors[currentFloor];
+                const airEntry = floorData?.airEntries?.[editingAirEntry.index];
+                
+                // Update coordinate system with new Z position
+                updateCoordinateSystemPosition(editingAirEntry.index, currentFloor, position3D, newZPosition, airEntry);
+              } catch (error) {
+                // Coordinate system update failure won't affect AirEntry operations
+                console.warn('Coordinate system update failed during Center Height change:', error);
+              }
+            }
           }
           
           // Update userData with new dimensions
