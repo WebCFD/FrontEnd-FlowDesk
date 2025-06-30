@@ -1319,23 +1319,63 @@ export default function Canvas3D({
     };
   } | null>(null);
 
-  // PHASE 1: Function to find AirEntry mesh by floor and index
+  // PHASE 1: Function to find AirEntry mesh by floor and index - REFINED
   const findAirEntryMesh = useCallback((floorName: string, entryIndex: number): THREE.Mesh | null => {
     if (!sceneRef.current) return null;
     
-    const airEntryId = `${floorName}_${entryIndex}`;
+    console.log(`🔍 [MESH SEARCH] Looking for AirEntry: floor=${floorName}, index=${entryIndex}`);
+    
     let foundMesh: THREE.Mesh | null = null;
+    let debugInfo: any[] = [];
     
     sceneRef.current.traverse((object) => {
       if (object instanceof THREE.Mesh && 
           object.userData?.type && 
-          ["door", "window", "vent"].includes(object.userData.type) &&
-          (object.userData.airEntryId?.includes(`_${entryIndex}`) || 
-           object.userData.entryIndex === entryIndex) &&
-          object.userData.floorName === floorName) {
-        foundMesh = object;
+          ["door", "window", "vent"].includes(object.userData.type)) {
+        
+        // Log all AirEntry meshes for debugging
+        debugInfo.push({
+          type: object.userData.type,
+          entryIndex: object.userData.entryIndex,
+          floorName: object.userData.floorName,
+          airEntryId: object.userData.airEntryId,
+          hasTexture: object.material instanceof THREE.MeshPhongMaterial && object.material.map ? 'YES' : 'NO'
+        });
+        
+        // Multiple search criteria - be more flexible with floor naming
+        const normalizedFloorName = normalizeFloorName(floorName);
+        const meshFloorName = object.userData.floorName;
+        const normalizedMeshFloorName = normalizeFloorName(meshFloorName || '');
+        
+        const floorMatches = (
+          meshFloorName === floorName ||                    // Exact match
+          normalizedMeshFloorName === normalizedFloorName || // Normalized match
+          meshFloorName === 'ground' && floorName === 'ground' || // Ground variations
+          meshFloorName === 'groundfloor' && floorName === 'ground' ||
+          meshFloorName === 'ground' && floorName === 'groundfloor'
+        );
+        
+        const indexMatches = (
+          object.userData.entryIndex === entryIndex ||      // Direct index match
+          object.userData.index === entryIndex              // Alternative index field
+        );
+        
+        if (floorMatches && indexMatches) {
+          foundMesh = object;
+          console.log(`✅ [MESH SEARCH] Found matching mesh:`, {
+            type: object.userData.type,
+            floorName: meshFloorName,
+            entryIndex: object.userData.entryIndex,
+            hasTexture: object.material instanceof THREE.MeshPhongMaterial && object.material.map ? 'YES' : 'NO'
+          });
+        }
       }
     });
+    
+    if (!foundMesh) {
+      console.warn(`❌ [MESH SEARCH] No mesh found for ${floorName}_${entryIndex}`);
+      console.log(`🔍 [MESH SEARCH] Available AirEntry meshes:`, debugInfo);
+    }
     
     return foundMesh;
   }, []);
