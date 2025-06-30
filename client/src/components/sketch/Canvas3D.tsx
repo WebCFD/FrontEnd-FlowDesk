@@ -4813,10 +4813,41 @@ export default function Canvas3D({
   // SOLUTION: Use reactive store subscription like Canvas2D and wizard-design.tsx
   const reactiveStoreFloors = useRoomStore((state) => state.floors);
   
-  // Use reactive data with fallback to props (same pattern as wizard-design.tsx)
+  // PHASE 4: Refined memoization - only rebuild for STRUCTURAL changes, not property changes
   const finalFloors = useMemo(() => {
-    return Object.keys(reactiveStoreFloors).length > 0 ? reactiveStoreFloors : floors;
-  }, [reactiveStoreFloors, floors, currentFloor]); // React to store changes
+    const sourceFloors = Object.keys(reactiveStoreFloors).length > 0 ? reactiveStoreFloors : floors;
+    
+    console.log(`🔧 [MEMOIZATION] Evaluating floors for structural changes only`);
+    console.log(`🔧 [MEMOIZATION] Source: ${Object.keys(reactiveStoreFloors).length > 0 ? 'STORE' : 'PROPS'}`);
+    
+    // Return source floors directly - the key is in the dependency array to prevent unnecessary rebuilds
+    return sourceFloors;
+  }, [
+    // CRITICAL: Only track structural changes, NOT property changes
+    JSON.stringify({
+      // Track only counts and structural flags
+      floorCount: Object.keys(reactiveStoreFloors).length > 0 ? Object.keys(reactiveStoreFloors).length : Object.keys(floors).length,
+      currentFloor,
+      structuralHashes: Object.keys(reactiveStoreFloors).length > 0 ? 
+        Object.keys(reactiveStoreFloors).map(floorName => ({
+          name: floorName,
+          linesLength: reactiveStoreFloors[floorName]?.lines?.length || 0,
+          airEntriesLength: reactiveStoreFloors[floorName]?.airEntries?.length || 0,
+          furnitureItemsLength: reactiveStoreFloors[floorName]?.furnitureItems?.length || 0,
+          stairPolygonsLength: reactiveStoreFloors[floorName]?.stairPolygons?.length || 0,
+          hasClosedContour: reactiveStoreFloors[floorName]?.hasClosedContour || false
+          // EXCLUDE: airEntry positions, dimensions, properties - these should NOT trigger rebuilds
+        })) :
+        Object.keys(floors).map(floorName => ({
+          name: floorName,
+          linesLength: floors[floorName]?.lines?.length || 0,
+          airEntriesLength: floors[floorName]?.airEntries?.length || 0,
+          furnitureItemsLength: floors[floorName]?.furnitureItems?.length || 0,
+          stairPolygonsLength: floors[floorName]?.stairPolygons?.length || 0,
+          hasClosedContour: floors[floorName]?.hasClosedContour || false
+        }))
+    })
+  ]);
 
   // PHASE 2: Function to update AirEntry mesh directly (like furniture) - placed after finalFloors declaration
   const updateAirEntryMeshDirectly = useCallback((floorName: string, entryIndex: number, changes: AirEntryMeshChanges): boolean => {
