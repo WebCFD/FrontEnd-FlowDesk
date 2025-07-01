@@ -5860,17 +5860,31 @@ export default function Canvas3D({
     });
 
     if (furnitureGroup) {
+      console.log('========== FURNITURE EDIT COORDINATE ANALYSIS ==========');
+      console.log('Furniture Type:', editingFurniture.item.type);
+      console.log('Furniture ID:', editingFurniture.item.id);
+      console.log('Dialog Position Input:', data.position);
+      console.log('Current Object Position:', furnitureGroup.position);
+      console.log('Object Parent:', furnitureGroup.parent ? furnitureGroup.parent.type : 'No parent');
+      
       // COORDINATE SYSTEM FIX: Handle vents and custom objects differently than tables
       if (editingFurniture.item.type === 'vent' || editingFurniture.item.type === 'custom') {
+        console.log('🔄 ENTERING COMPLEX COORDINATE CONVERSION for:', editingFurniture.item.type);
+        
         // For vents and custom objects: Convert world coordinates back to local coordinates
         const parentPosition = new THREE.Vector3();
         const parentQuaternion = new THREE.Quaternion();
         const parentRotation = new THREE.Euler();
         
         if (furnitureGroup.parent) {
+          console.log('📍 Found parent object, extracting world transforms...');
           furnitureGroup.parent.getWorldPosition(parentPosition);
           furnitureGroup.parent.getWorldQuaternion(parentQuaternion);
           parentRotation.setFromQuaternion(parentQuaternion);
+          console.log('Parent World Position:', parentPosition);
+          console.log('Parent World Rotation:', parentRotation);
+        } else {
+          console.log('⚠️ No parent found - using zero transforms');
         }
         
         // Convert world coordinates to local coordinates
@@ -5887,20 +5901,34 @@ export default function Canvas3D({
           z: data.rotation.z - parentRotation.z
         };
         
+        console.log('📊 COORDINATE CONVERSION MATH:');
+        console.log('- Dialog Input (world):', data.position);
+        console.log('- Parent Position:', parentPosition);
+        console.log('- Calculation: dialog - parent');
+        console.log('- Result (local):', localPosition);
+        console.log('- Applying local position to object...');
+        
         furnitureGroup.position.set(localPosition.x, localPosition.y, localPosition.z);
         furnitureGroup.rotation.set(localRotation.x, localRotation.y, localRotation.z);
         furnitureGroup.scale.set(data.scale.x, data.scale.y, data.scale.z);
         
-        console.log(`${editingFurniture.item.type.toUpperCase()} COORDINATE CONVERSION:`);
-        console.log('- Dialog values (world):', { position: data.position, rotation: data.rotation });
-        console.log('- Parent transform:', { position: parentPosition, rotation: parentRotation });
-        console.log('- Applied values (local):', { position: localPosition, rotation: localRotation });
+        console.log('✅ CONVERSION COMPLETE');
+        console.log('Final Object Position:', furnitureGroup.position);
+        
       } else {
+        console.log('➡️ SIMPLE DIRECT ASSIGNMENT for:', editingFurniture.item.type);
+        console.log('- No coordinate conversion needed');
+        console.log('- Applying dialog values directly to object');
+        
         // For tables and other furniture: use existing approach (local coordinates)
         furnitureGroup.position.set(data.position.x, data.position.y, data.position.z);
         furnitureGroup.rotation.set(data.rotation.x, data.rotation.y, data.rotation.z);
         furnitureGroup.scale.set(data.scale.x, data.scale.y, data.scale.z);
+        
+        console.log('✅ DIRECT ASSIGNMENT COMPLETE');
+        console.log('Final Object Position:', furnitureGroup.position);
       }
+      console.log('=========================================================')
       
       furnitureGroup.userData.furnitureName = data.name;
       
