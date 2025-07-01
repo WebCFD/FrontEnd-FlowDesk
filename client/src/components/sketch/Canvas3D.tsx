@@ -827,6 +827,15 @@ const createFurnitureModel = (
     simulationProperties: furnitureItem.simulationProperties
   };
 
+  console.log("🔍 [FURNITURE-CREATE] Created furniture model:", {
+    type: furnitureItem.type,
+    id: furnitureItem.id,
+    floorName: furnitureItem.floorName,
+    hasUserData: !!model.userData,
+    userDataType: model.userData?.type,
+    childrenCount: model.children?.length || 0
+  });
+
   // Set the meshId in the furniture item for reference
   furnitureItem.meshId = model.uuid;
 
@@ -4387,6 +4396,8 @@ export default function Canvas3D({
     };
 
     canvas.addEventListener("mousedown", mouseDownWrapper);
+    canvas.addEventListener("click", handleClick);
+    console.log("🔍 [DELFURN] Event listeners attached to canvas");
 
     // Create named handlers for event tracking - only in interactive mode
     const mouseMoveHandler = (e: MouseEvent) => {
@@ -4541,6 +4552,7 @@ export default function Canvas3D({
           "mousedown",
           mouseDownWrapper,
         );
+        renderer.domElement.removeEventListener("click", handleClick);
         renderer.domElement.removeEventListener("dblclick", handleAirEntryDoubleClick);
 
         // Dispose renderer
@@ -5530,12 +5542,20 @@ export default function Canvas3D({
 
     // Single click handler for furniture deletion
     const handleClick = (event: MouseEvent) => {
+      console.log("🔍 [DELFURN] Click detected, isFurnitureEraserMode:", isFurnitureEraserMode);
+      
       // Only handle clicks in furniture eraser mode
-      if (!isFurnitureEraserMode) return;
+      if (!isFurnitureEraserMode) {
+        console.log("🔍 [DELFURN] Not in furniture eraser mode, ignoring click");
+        return;
+      }
       
       event.preventDefault();
       
-      if (!sceneRef.current || !cameraRef.current) return;
+      if (!sceneRef.current || !cameraRef.current) {
+        console.log("🔍 [DELFURN] Scene or camera not available");
+        return;
+      }
       
       // Get mouse coordinates
       const rect = container.getBoundingClientRect();
@@ -5543,6 +5563,8 @@ export default function Canvas3D({
         ((event.clientX - rect.left) / rect.width) * 2 - 1,
         -((event.clientY - rect.top) / rect.height) * 2 + 1
       );
+      
+      console.log("🔍 [DELFURN] Mouse coordinates:", mouse);
       
       // Create raycaster
       const raycaster = new THREE.Raycaster();
@@ -5553,30 +5575,55 @@ export default function Canvas3D({
       sceneRef.current.traverse((object) => {
         if (object.userData.type === 'furniture') {
           furnitureObjects.push(object);
+          console.log("🔍 [DELFURN] Found furniture object:", {
+            furnitureType: object.userData.furnitureType,
+            furnitureId: object.userData.furnitureId,
+            hasChildren: object.children?.length > 0,
+            childrenCount: object.children?.length || 0
+          });
         }
       });
+      
+      console.log("🔍 [DELFURN] Total furniture objects found:", furnitureObjects.length);
       
       // Check for intersections
       const intersects = raycaster.intersectObjects(furnitureObjects, true);
       
+      console.log("🔍 [DELFURN] Intersections found:", intersects.length);
+      
       if (intersects.length > 0) {
         const intersectedObject = intersects[0].object;
+        console.log("🔍 [DELFURN] First intersected object:", {
+          type: intersectedObject.type,
+          userData: intersectedObject.userData,
+          hasParent: !!intersectedObject.parent,
+          parentUserData: intersectedObject.parent?.userData
+        });
         
         // Find the furniture group - prioritize groups with furnitureId
         let furnitureGroup = intersectedObject;
         
         // First check if the hit object itself has furnitureId
         if (!furnitureGroup.userData.furnitureId) {
+          console.log("🔍 [DELFURN] Hit object has no furnitureId, checking parent");
           // Look for parent with furnitureId
           furnitureGroup = intersectedObject.parent;
+          console.log("🔍 [DELFURN] Parent userData:", furnitureGroup?.userData);
         }
         
         if (furnitureGroup && furnitureGroup.userData.type === 'furniture') {
           const furnitureId = furnitureGroup.userData.furnitureId;
+          console.log("🔍 [DELFURN] Found furniture group to delete:", {
+            furnitureType: furnitureGroup.userData.furnitureType,
+            furnitureId: furnitureId,
+            floorName: furnitureGroup.userData.floorName
+          });
           
           if (furnitureId && onDeleteFurniture) {
             // Find the furniture floor for the callback
             const furnitureFloorName = furnitureGroup.userData.floorName || currentFloor;
+            
+            console.log("🔍 [DELFURN] Proceeding with deletion:", furnitureId, "from floor:", furnitureFloorName);
             
             // Special cleanup for vents with special rendering properties
             if (furnitureGroup.userData.furnitureType === 'vent') {
@@ -5612,8 +5659,16 @@ export default function Canvas3D({
             if (onFurnitureDeleted) {
               onFurnitureDeleted();
             }
+            
+            console.log("🔍 [DELFURN] Deletion completed successfully");
+          } else {
+            console.log("🔍 [DELFURN] Missing furnitureId or onDeleteFurniture callback");
           }
+        } else {
+          console.log("🔍 [DELFURN] No valid furniture group found for deletion");
         }
+      } else {
+        console.log("🔍 [DELFURN] No intersections found with furniture objects");
       }
     };
 
