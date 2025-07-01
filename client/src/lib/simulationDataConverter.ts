@@ -619,16 +619,10 @@ export function generateSimulationData(
         }
       };
 
-      // Add filePath for custom STL objects
-      if (obj.userData?.furnitureType === 'custom') {
-        console.log('[FILEPATH] Export - Processing custom object:', obj.userData?.furnitureId);
-        console.log('[FILEPATH] Export - userData filePath:', obj.userData?.filePath);
-        if (obj.userData?.filePath) {
-          exportObject.filePath = obj.userData.filePath;
-          console.log('[FILEPATH] Export - Added filePath to export object:', exportObject.filePath);
-        } else {
-          console.log('[FILEPATH] Export - No filePath found in userData');
-        }
+      // Add filePath for custom STL objects from userData
+      if (obj.userData?.furnitureType === 'custom' && obj.userData?.filePath) {
+        console.log('[FILEPATH] Export - Adding filePath to export object:', obj.userData.filePath);
+        exportObject.filePath = obj.userData.filePath;
       }
 
       return exportObject;

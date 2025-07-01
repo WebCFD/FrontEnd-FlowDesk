@@ -1895,7 +1895,10 @@ export default function WizardDesign() {
               furnitureType: furnitureItem.type,
               floor: floorName,
               floorName: floorName,
-              surfaceType: furnitureItem.surfaceType // Include surface type for accurate export classification
+              surfaceType: furnitureItem.surfaceType, // Include surface type for accurate export classification
+              properties: furnitureItem.properties, // Include thermal properties for JSON export
+              simulationProperties: furnitureItem.simulationProperties, // Include simulation properties for JSON export
+              filePath: furnitureItem.filePath // Include STL file path for custom objects
             },
             position: {
               x: furnitureItem.position.x,
