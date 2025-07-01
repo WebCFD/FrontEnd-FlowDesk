@@ -4396,8 +4396,6 @@ export default function Canvas3D({
     };
 
     canvas.addEventListener("mousedown", mouseDownWrapper);
-    canvas.addEventListener("click", handleClick);
-    console.log("🔍 [DELFURN] Event listeners attached to canvas");
 
     // Create named handlers for event tracking - only in interactive mode
     const mouseMoveHandler = (e: MouseEvent) => {
@@ -5671,6 +5669,10 @@ export default function Canvas3D({
         console.log("🔍 [DELFURN] No intersections found with furniture objects");
       }
     };
+
+    // Add click event listener after function is defined
+    canvas.addEventListener("click", handleClick);
+    console.log("🔍 [DELFURN] Event listeners attached to canvas");
 
     container.addEventListener("dragenter", handleDragEnter);
     container.addEventListener("dragover", handleDragOver);
