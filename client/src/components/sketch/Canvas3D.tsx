@@ -5821,8 +5821,6 @@ export default function Canvas3D({
         furnitureGroup.scale.set(data.scale.x, data.scale.y, data.scale.z);
       }
       
-      console.log('🔍 LIFECYCLE TRACE - After coordinate modification:');
-
       furnitureGroup.userData.furnitureName = data.name;
       
       // Store properties in userData for reference
