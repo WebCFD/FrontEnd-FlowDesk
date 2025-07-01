@@ -366,17 +366,22 @@ export default function WizardDesign() {
     };
     
     // Helper function to normalize objects with floating point values
-    const normalizeObject = (obj: any): any => {
+    // EXCLUDE furniture scale and properties from normalization
+    const normalizeObject = (obj: any, path: string[] = []): any => {
       if (typeof obj === 'number') {
+        // Don't normalize furniture scale values or user-defined properties
+        if (path.includes('scale') || path.includes('properties') || path.includes('simulationProperties')) {
+          return obj; // Return original value
+        }
         return normalizeNum(obj);
       }
       if (Array.isArray(obj)) {
-        return obj.map(normalizeObject);
+        return obj.map((item, index) => normalizeObject(item, [...path, index.toString()]));
       }
       if (obj && typeof obj === 'object') {
         const normalized: any = {};
         Object.keys(obj).forEach(key => {
-          normalized[key] = normalizeObject(obj[key]);
+          normalized[key] = normalizeObject(obj[key], [...path, key]);
         });
         return normalized;
       }
