@@ -1,0 +1,120 @@
+client:614 [vite] connected.
+chunk-WERSD76P.js?v=cfa7cc5f:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+AnalyticsProvider.tsx:21 Analytics initialized: false
+room-store.ts:467 🔗 STORE: Nueva suscripción añadida. Total listeners: 1
+chunk-WERSD76P.js?v=cfa7cc5f:377 [Violation] 'message' handler took 222ms
+dashboard-sidebar.tsx:65 
+            
+            
+           GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+fetchUserData @ dashboard-sidebar.tsx:65
+(anonymous) @ dashboard-sidebar.tsx:80
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18868
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19432
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+finishConcurrentRender @ chunk-WERSD76P.js?v=cfa7cc5f:18805
+performConcurrentWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18718
+workLoop @ chunk-WERSD76P.js?v=cfa7cc5f:197
+flushWork @ chunk-WERSD76P.js?v=cfa7cc5f:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=cfa7cc5f:384
+analytics.ts:26 Google Analytics initialized with ID: G-XZYY9DVVHW
+useAnalytics.ts:59 Google Analytics initialized successfully
+js?id=G-XZYY9DVVHW:662 [Violation] 'setTimeout' handler took 60ms
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+AnalyticsProvider.tsx:21 Analytics initialized: true
+room-store.ts:475 🔗 STORE: Suscripción eliminada. Total listeners: 0
+room-store.ts:467 🔗 STORE: Nueva suscripción añadida. Total listeners: 1
+Canvas3D.tsx:755 Custom STL object not found in store, cleaning up reference: Obj 0F-1
+createFurnitureModel @ Canvas3D.tsx:755
+(anonymous) @ Canvas3D.tsx:2723
+createFloorObjects @ Canvas3D.tsx:2705
+(anonymous) @ Canvas3D.tsx:4773
+(anonymous) @ Canvas3D.tsx:4757
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19416
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+(anonymous) @ chunk-WERSD76P.js?v=cfa7cc5f:18627
+Canvas3D.tsx:755 Custom STL object not found in store, cleaning up reference: Obj 0F-1
+createFurnitureModel @ Canvas3D.tsx:755
+(anonymous) @ Canvas3D.tsx:2723
+createFloorObjects @ Canvas3D.tsx:2705
+(anonymous) @ Canvas3D.tsx:4773
+(anonymous) @ Canvas3D.tsx:4757
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19416
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+(anonymous) @ chunk-WERSD76P.js?v=cfa7cc5f:18627
+Canvas3D.tsx:4916 🔥 [SCENE REBUILD] AirEntries with textures AFTER rebuild: 0
+Canvas3D.tsx:5180 🔧 [WALL TRANSPARENCY] Updating wall transparency, preserving AirEntry textures
+Canvas3D.tsx:5194 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5194 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5194 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5194 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5194 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+Canvas3D.tsx:5194 🔧 [WALL TRANSPARENCY] Updating wall material opacity to: 0.2
+RoomSketchPro.tsx:856 🔗 RSP: Registrando suscripción para sincronización de AirEntry
+room-store.ts:467 🔗 STORE: Nueva suscripción añadida. Total listeners: 2
+Canvas3D.tsx:4916 🔥 [SCENE REBUILD] AirEntries with textures AFTER rebuild: 0
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 298ms
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
+custom-furniture-store.ts:81 Custom Furniture Store: Cached new geometry geom_-0.5,-0.5,0.5,0.5,-0.5,0.5,0.5,0.5,0.5,-0.5,-0.5,0.5_108
+custom-furniture-store.ts:140 🎯 CUSTOM FURNITURE ID TEST: {originalName: 'test stl basic', floorName: 'ground', existingCustomCount: 0, generatedId: 'Obj 0F-1', timestamp: '2025-07-01T20:13:54.160Z'}
+custom-furniture-store.ts:161 Custom Furniture Store: Added new item {id: 'Obj 0F-1', name: 'test stl basic', dimensions: {…}, totalItems: 1}
+STLProcessor.ts:176 STL Processor: Completed processing {name: 'Obj 0F-1', scaleFactor: 1, dimensions: {…}, vertices: 36, hasThumbnail: true}
+STLUploader.tsx:117 STL Processor: Enhanced processing complete {name: 'Obj 0F-1', vertexCount: 36, dimensions: {…}, fileSize: '1.7KB', hasThumbnail: true}
+wizard-design.tsx:1698 Dragging furniture: {id: 'Obj 0F-1', name: 'Obj 0F-1', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…" cy="8" r="3" fill="#10b981"/>\n      </svg>\n    ', defaultDimensions: {…}}
+Canvas3D.tsx:4916 🔥 [SCENE REBUILD] AirEntries with textures AFTER rebuild: 0
+Canvas3D.tsx:5776 🔍 LIFECYCLE TRACE - Starting furniture edit for: custom Obj 0F-1
+Canvas3D.tsx:5788 🔍 LIFECYCLE TRACE - Found furniture in scene: true
+Canvas3D.tsx:5791 🔍 LIFECYCLE TRACE - Before modification:
+Canvas3D.tsx:5792   - Visible: true
+Canvas3D.tsx:5793   - Parent: Scene
+Canvas3D.tsx:5794   - Children count: 1
+Canvas3D.tsx:5795   - Position: _Vector3 {x: -78.83188651609734, y: 53.91493656110015, z: 0}
+Canvas3D.tsx:5796   - Scale: _Vector3 {x: 100, y: 100, z: 100}
+Canvas3D.tsx:5835 🔍 LIFECYCLE TRACE - After coordinate modification:
+Canvas3D.tsx:5836   - Visible: true
+Canvas3D.tsx:5837   - Parent: Scene
+Canvas3D.tsx:5838   - Children count: 1
+Canvas3D.tsx:5839   - Position: _Vector3 {x: -78.84, y: 53.91, z: 0}
+Canvas3D.tsx:5840   - Scale: _Vector3 {x: 1, y: 1, z: 1}
+Canvas3D.tsx:5841   - userData intact: true
+Canvas3D.tsx:5857 🔍 LIFECYCLE TRACE - About to call onUpdateFurniture with: custom
+Canvas3D.tsx:5871 🔍 LIFECYCLE TRACE - onUpdateFurniture completed
+Canvas3D.tsx:5875 🔍 LIFECYCLE TRACE - About to call onFurnitureAdded
+Canvas3D.tsx:5877 🔍 LIFECYCLE TRACE - onFurnitureAdded completed
+Canvas3D.tsx:5889 🔍 LIFECYCLE TRACE - Final validation:
+Canvas3D.tsx:5890   - Object still in scene after all operations: true
+Canvas3D.tsx:5891   - editingFurniture about to be set to null
+Canvas3D.tsx:5907 🔍 LIFECYCLE TRACE - Delayed validation (100ms after):
+Canvas3D.tsx:5908   - Object still in scene after React updates: true
