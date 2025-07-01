@@ -1,0 +1,84 @@
+wizard-design.tsx:1698 Dragging furniture: {id: 'table', name: 'Table', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…"4" height="8" fill="#8B4513"/>\n      </svg>\n    ', defaultDimensions: {…}}
+Canvas3D.tsx:4916 🔥 [SCENE REBUILD] AirEntries with textures AFTER rebuild: 0
+wizard-design.tsx:1698 Dragging furniture: {id: 'car', name: 'Car', icon: '\n      <svg width="40" height="40" viewBox="0 0 40… cy="32" r="3" fill="#2D3748"/>\n      </svg>\n    ', defaultDimensions: {…}}
+Canvas3D.tsx:4916 🔥 [SCENE REBUILD] AirEntries with textures AFTER rebuild: 0
+Canvas3D.tsx:5540 🗑️ [FURNITURE DELETE] Click detected in furniture eraser mode
+Canvas3D.tsx:5557 🗑️ [FURNITURE SCAN] Found furniture group: {type: 'table', id: 'Table 0F-1', floorName: 'ground', position: _Vector3, scale: _Vector3, …}
+Canvas3D.tsx:5557 🗑️ [FURNITURE SCAN] Found furniture group: {type: 'car', id: 'Car 0F-1', floorName: 'ground', position: _Vector3, scale: _Vector3, …}
+Canvas3D.tsx:5570 🗑️ [FURNITURE SCAN] Total furniture objects found: 2
+Canvas3D.tsx:5575 🗑️ [RAYCAST] Intersections found: 2
+Canvas3D.tsx:5577 🗑️ [RAYCAST] First intersection: {distance: 1568.3369688756054, point: _Vector3, objectType: undefined, objectFurnitureType: undefined, objectId: undefined, …}
+Canvas3D.tsx:5595 🗑️ [GROUP SEARCH] Starting with intersected object: {type: undefined, furnitureType: undefined, id: undefined, hasFurnitureId: false}
+Canvas3D.tsx:5604 🗑️ [GROUP SEARCH] Object has no furnitureId, checking parent
+Canvas3D.tsx:5609 🗑️ [GROUP SEARCH] Parent found: {type: 'furniture', furnitureType: 'table', id: 'Table 0F-1', hasFurnitureId: true}
+Canvas3D.tsx:5623 🗑️ [DELETE ATTEMPT] Furniture group validation: {type: 'table', id: 'Table 0F-1', hasDeleteCallback: true, readyToDelete: true}
+Canvas3D.tsx:5634 🗑️ [DELETE SUCCESS] Deleting furniture: {type: 'table', id: 'Table 0F-1', floorName: 'ground'}
+Canvas3D.tsx:5665 🗑️ [SCENE REMOVAL] Removing furniture from scene: Group {isObject3D: true, uuid: 'e573ebe4-2513-48f3-8bd9-73d18169cae3', name: '', type: 'Group', parent: Scene, …}
+Canvas3D.tsx:5669 🗑️ [CALLBACK] Calling onDeleteFurniture: {furnitureFloorName: 'ground', furnitureId: 'Table 0F-1'}
+Canvas3D.tsx:5674 🗑️ [TEXTURE] Triggering texture re-application
+RoomSketchPro.tsx:827 RSP: Furniture deleted, re-applying textures...
+Canvas3D.tsx:5678 🗑️ [COMPLETE] Furniture deletion process completed successfully
+Canvas3D.tsx:4916 🔥 [SCENE REBUILD] AirEntries with textures AFTER rebuild: 0
+Canvas3D.tsx:5540 🗑️ [FURNITURE DELETE] Click detected in furniture eraser mode
+Canvas3D.tsx:5557 🗑️ [FURNITURE SCAN] Found furniture group: {type: 'car', id: 'Car 0F-1', floorName: 'ground', position: _Vector3, scale: _Vector3, …}
+Canvas3D.tsx:5570 🗑️ [FURNITURE SCAN] Total furniture objects found: 1
+Canvas3D.tsx:5575 🗑️ [RAYCAST] Intersections found: 4
+Canvas3D.tsx:5577 🗑️ [RAYCAST] First intersection: {distance: 1289.18661349513, point: _Vector3, objectType: undefined, objectFurnitureType: undefined, objectId: undefined, …}
+Canvas3D.tsx:5595 🗑️ [GROUP SEARCH] Starting with intersected object: {type: undefined, furnitureType: undefined, id: undefined, hasFurnitureId: false}
+Canvas3D.tsx:5604 🗑️ [GROUP SEARCH] Object has no furnitureId, checking parent
+Canvas3D.tsx:5609 🗑️ [GROUP SEARCH] Parent found: {type: undefined, furnitureType: undefined, id: undefined, hasFurnitureId: false}
+Canvas3D.tsx:5686 🗑️ [FAILED] No valid furniture group found: {furnitureGroup: true, groupType: undefined, isFurniture: false}
+Canvas3D.tsx:5540 🗑️ [FURNITURE DELETE] Click detected in furniture eraser mode
+Canvas3D.tsx:5557 🗑️ [FURNITURE SCAN] Found furniture group: {type: 'car', id: 'Car 0F-1', floorName: 'ground', position: _Vector3, scale: _Vector3, …}
+Canvas3D.tsx:5570 🗑️ [FURNITURE SCAN] Total furniture objects found: 1
+Canvas3D.tsx:5575 🗑️ [RAYCAST] Intersections found: 4
+Canvas3D.tsx:5577 🗑️ [RAYCAST] First intersection: {distance: 1239.031044147362, point: _Vector3, objectType: undefined, objectFurnitureType: undefined, objectId: undefined, …}
+Canvas3D.tsx:5595 🗑️ [GROUP SEARCH] Starting with intersected object: {type: undefined, furnitureType: undefined, id: undefined, hasFurnitureId: false}
+Canvas3D.tsx:5604 🗑️ [GROUP SEARCH] Object has no furnitureId, checking parent
+Canvas3D.tsx:5609 🗑️ [GROUP SEARCH] Parent found: {type: undefined, furnitureType: undefined, id: undefined, hasFurnitureId: false}
+Canvas3D.tsx:5686 🗑️ [FAILED] No valid furniture group found: {furnitureGroup: true, groupType: undefined, isFurniture: false}
+Canvas3D.tsx:5540 🗑️ [FURNITURE DELETE] Click detected in furniture eraser mode
+Canvas3D.tsx:5557 🗑️ [FURNITURE SCAN] Found furniture group: {type: 'car', id: 'Car 0F-1', floorName: 'ground', position: _Vector3, scale: _Vector3, …}
+Canvas3D.tsx:5570 🗑️ [FURNITURE SCAN] Total furniture objects found: 1
+Canvas3D.tsx:5575 🗑️ [RAYCAST] Intersections found: 8
+Canvas3D.tsx:5577 🗑️ [RAYCAST] First intersection: {distance: 1202.7982883896686, point: _Vector3, objectType: undefined, objectFurnitureType: undefined, objectId: undefined, …}
+Canvas3D.tsx:5595 🗑️ [GROUP SEARCH] Starting with intersected object: {type: undefined, furnitureType: undefined, id: undefined, hasFurnitureId: false}
+Canvas3D.tsx:5604 🗑️ [GROUP SEARCH] Object has no furnitureId, checking parent
+Canvas3D.tsx:5609 🗑️ [GROUP SEARCH] Parent found: {type: undefined, furnitureType: undefined, id: undefined, hasFurnitureId: false}
+Canvas3D.tsx:5686 🗑️ [FAILED] No valid furniture group found: {furnitureGroup: true, groupType: undefined, isFurniture: false}
+Canvas3D.tsx:5540 🗑️ [FURNITURE DELETE] Click detected in furniture eraser mode
+Canvas3D.tsx:5557 🗑️ [FURNITURE SCAN] Found furniture group: {type: 'car', id: 'Car 0F-1', floorName: 'ground', position: _Vector3, scale: _Vector3, …}
+Canvas3D.tsx:5570 🗑️ [FURNITURE SCAN] Total furniture objects found: 1
+Canvas3D.tsx:5575 🗑️ [RAYCAST] Intersections found: 4
+Canvas3D.tsx:5577 🗑️ [RAYCAST] First intersection: {distance: 1299.8056540219645, point: _Vector3, objectType: undefined, objectFurnitureType: undefined, objectId: undefined, …}
+Canvas3D.tsx:5595 🗑️ [GROUP SEARCH] Starting with intersected object: {type: undefined, furnitureType: undefined, id: undefined, hasFurnitureId: false}
+Canvas3D.tsx:5604 🗑️ [GROUP SEARCH] Object has no furnitureId, checking parent
+Canvas3D.tsx:5609 🗑️ [GROUP SEARCH] Parent found: {type: undefined, furnitureType: undefined, id: undefined, hasFurnitureId: false}
+Canvas3D.tsx:5686 🗑️ [FAILED] No valid furniture group found: {furnitureGroup: true, groupType: undefined, isFurniture: false}
+Canvas3D.tsx:5540 🗑️ [FURNITURE DELETE] Click detected in furniture eraser mode
+Canvas3D.tsx:5557 🗑️ [FURNITURE SCAN] Found furniture group: {type: 'car', id: 'Car 0F-1', floorName: 'ground', position: _Vector3, scale: _Vector3, …}
+Canvas3D.tsx:5570 🗑️ [FURNITURE SCAN] Total furniture objects found: 1
+Canvas3D.tsx:5575 🗑️ [RAYCAST] Intersections found: 6
+Canvas3D.tsx:5577 🗑️ [RAYCAST] First intersection: {distance: 1267.7705016392922, point: _Vector3, objectType: undefined, objectFurnitureType: undefined, objectId: undefined, …}
+Canvas3D.tsx:5595 🗑️ [GROUP SEARCH] Starting with intersected object: {type: undefined, furnitureType: undefined, id: undefined, hasFurnitureId: false}
+Canvas3D.tsx:5604 🗑️ [GROUP SEARCH] Object has no furnitureId, checking parent
+Canvas3D.tsx:5609 🗑️ [GROUP SEARCH] Parent found: {type: undefined, furnitureType: undefined, id: undefined, hasFurnitureId: false}
+Canvas3D.tsx:5686 🗑️ [FAILED] No valid furniture group found: {furnitureGroup: true, groupType: undefined, isFurniture: false}
+Canvas3D.tsx:5540 🗑️ [FURNITURE DELETE] Click detected in furniture eraser mode
+Canvas3D.tsx:5557 🗑️ [FURNITURE SCAN] Found furniture group: {type: 'car', id: 'Car 0F-1', floorName: 'ground', position: _Vector3, scale: _Vector3, …}
+Canvas3D.tsx:5570 🗑️ [FURNITURE SCAN] Total furniture objects found: 1
+Canvas3D.tsx:5575 🗑️ [RAYCAST] Intersections found: 8
+Canvas3D.tsx:5577 🗑️ [RAYCAST] First intersection: {distance: 1220.481043128022, point: _Vector3, objectType: undefined, objectFurnitureType: undefined, objectId: undefined, …}
+Canvas3D.tsx:5595 🗑️ [GROUP SEARCH] Starting with intersected object: {type: undefined, furnitureType: undefined, id: undefined, hasFurnitureId: false}
+Canvas3D.tsx:5604 🗑️ [GROUP SEARCH] Object has no furnitureId, checking parent
+Canvas3D.tsx:5609 🗑️ [GROUP SEARCH] Parent found: {type: undefined, furnitureType: undefined, id: undefined, hasFurnitureId: false}
+Canvas3D.tsx:5686 🗑️ [FAILED] No valid furniture group found: {furnitureGroup: true, groupType: undefined, isFurniture: false}
+Canvas3D.tsx:5540 🗑️ [FURNITURE DELETE] Click detected in furniture eraser mode
+Canvas3D.tsx:5557 🗑️ [FURNITURE SCAN] Found furniture group: {type: 'car', id: 'Car 0F-1', floorName: 'ground', position: _Vector3, scale: _Vector3, …}
+Canvas3D.tsx:5570 🗑️ [FURNITURE SCAN] Total furniture objects found: 1
+Canvas3D.tsx:5575 🗑️ [RAYCAST] Intersections found: 4
+Canvas3D.tsx:5577 🗑️ [RAYCAST] First intersection: {distance: 1214.1420751873595, point: _Vector3, objectType: undefined, objectFurnitureType: undefined, objectId: undefined, …}
+Canvas3D.tsx:5595 🗑️ [GROUP SEARCH] Starting with intersected object: {type: undefined, furnitureType: undefined, id: undefined, hasFurnitureId: false}
+Canvas3D.tsx:5604 🗑️ [GROUP SEARCH] Object has no furnitureId, checking parent
+Canvas3D.tsx:5609 🗑️ [GROUP SEARCH] Parent found: {type: undefined, furnitureType: undefined, id: undefined, hasFurnitureId: false}
+Canvas3D.tsx:5686 🗑️ [FAILED] No valid furniture group found: {furnitureGroup: true, groupType: undefined, isFurniture: false}

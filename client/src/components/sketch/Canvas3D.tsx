@@ -5599,23 +5599,34 @@ export default function Canvas3D({
           hasFurnitureId: !!intersectedObject.userData.furnitureId
         });
         
-        // First check if the hit object itself has furnitureId
-        if (!furnitureGroup.userData.furnitureId) {
-          console.log("🗑️ [GROUP SEARCH] Object has no furnitureId, checking parent");
-          // Look for parent with furnitureId
-          furnitureGroup = intersectedObject.parent;
+        // Keep traversing up the parent hierarchy until we find a furniture group
+        let traversalDepth = 0;
+        const maxTraversalDepth = 10; // Prevent infinite loops
+        
+        while (furnitureGroup && 
+               furnitureGroup.userData?.type !== 'furniture' && 
+               traversalDepth < maxTraversalDepth) {
           
-          if (furnitureGroup) {
-            console.log("🗑️ [GROUP SEARCH] Parent found:", {
-              type: furnitureGroup.userData.type,
-              furnitureType: furnitureGroup.userData.furnitureType,
-              id: furnitureGroup.userData.furnitureId,
-              hasFurnitureId: !!furnitureGroup.userData.furnitureId
-            });
-          } else {
-            console.log("🗑️ [GROUP SEARCH] No parent found");
-          }
+          console.log(`🗑️ [GROUP SEARCH] Level ${traversalDepth}: Checking object:`, {
+            type: furnitureGroup.userData?.type,
+            furnitureType: furnitureGroup.userData?.furnitureType,
+            id: furnitureGroup.userData?.furnitureId,
+            hasFurnitureId: !!furnitureGroup.userData?.furnitureId,
+            hasParent: !!furnitureGroup.parent
+          });
+          
+          furnitureGroup = furnitureGroup.parent;
+          traversalDepth++;
         }
+        
+        console.log("🗑️ [GROUP SEARCH] Final furniture group found:", {
+          type: furnitureGroup?.userData?.type,
+          furnitureType: furnitureGroup?.userData?.furnitureType,
+          id: furnitureGroup?.userData?.furnitureId,
+          hasFurnitureId: !!furnitureGroup?.userData?.furnitureId,
+          traversalDepth: traversalDepth,
+          isValidFurniture: furnitureGroup?.userData?.type === 'furniture'
+        });
         
         if (furnitureGroup && furnitureGroup.userData.type === 'furniture') {
           const furnitureId = furnitureGroup.userData.furnitureId;
