@@ -4534,10 +4534,6 @@ export default function Canvas3D({
 
     // Add the double-click event listener
     canvas.addEventListener("dblclick", handleAirEntryDoubleClick);
-    
-    // Add click event listener for furniture deletion
-    canvas.addEventListener("click", handleClick);
-    console.log("🔍 [DELFURN] Click event listener added after handleClick function defined");
 
     return () => {
       window.removeEventListener("resize", handleResize);
@@ -4555,7 +4551,7 @@ export default function Canvas3D({
           "mousedown",
           mouseDownWrapper,
         );
-        renderer.domElement.removeEventListener("click", handleClick);
+
         renderer.domElement.removeEventListener("dblclick", handleAirEntryDoubleClick);
 
         // Dispose renderer
@@ -5681,6 +5677,7 @@ export default function Canvas3D({
     container.addEventListener("drop", handleDrop);
     container.addEventListener("dblclick", handleFurnitureDoubleClick);
     container.addEventListener("click", handleClick);
+    console.log("🔍 [DELFURN] Click event listener successfully added after handleClick function defined");
 
     return () => {
       container.removeEventListener("dragenter", handleDragEnter);
