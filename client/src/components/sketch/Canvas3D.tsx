@@ -5537,8 +5537,6 @@ export default function Canvas3D({
       
       if (!sceneRef.current || !cameraRef.current) return;
       
-      console.log("🗑️ [FURNITURE DELETE] Click detected in furniture eraser mode");
-      
       // Get mouse coordinates
       const rect = container.getBoundingClientRect();
       const mouse = new THREE.Vector2(
@@ -5554,50 +5552,18 @@ export default function Canvas3D({
       const furnitureObjects: THREE.Object3D[] = [];
       sceneRef.current.traverse((object) => {
         if (object.userData.type === 'furniture') {
-          console.log("🗑️ [FURNITURE SCAN] Found furniture group:", {
-            type: object.userData.furnitureType,
-            id: object.userData.furnitureId,
-            floorName: object.userData.floorName,
-            position: object.position,
-            scale: object.scale,
-            visible: object.visible,
-            children: object.children.length
-          });
           furnitureObjects.push(object);
         }
       });
       
-      console.log("🗑️ [FURNITURE SCAN] Total furniture objects found:", furnitureObjects.length);
-      
       // Check for intersections
       const intersects = raycaster.intersectObjects(furnitureObjects, true);
-      
-      console.log("🗑️ [RAYCAST] Intersections found:", intersects.length);
-      if (intersects.length > 0) {
-        console.log("🗑️ [RAYCAST] First intersection:", {
-          distance: intersects[0].distance,
-          point: intersects[0].point,
-          objectType: intersects[0].object.userData.type,
-          objectFurnitureType: intersects[0].object.userData.furnitureType,
-          objectId: intersects[0].object.userData.furnitureId,
-          parentType: intersects[0].object.parent?.userData.type,
-          parentFurnitureType: intersects[0].object.parent?.userData.furnitureType,
-          parentId: intersects[0].object.parent?.userData.furnitureId
-        });
-      }
       
       if (intersects.length > 0) {
         const intersectedObject = intersects[0].object;
         
         // Find the furniture group - prioritize groups with furnitureId
         let furnitureGroup = intersectedObject;
-        
-        console.log("🗑️ [GROUP SEARCH] Starting with intersected object:", {
-          type: intersectedObject.userData.type,
-          furnitureType: intersectedObject.userData.furnitureType,
-          id: intersectedObject.userData.furnitureId,
-          hasFurnitureId: !!intersectedObject.userData.furnitureId
-        });
         
         // Keep traversing up the parent hierarchy until we find a furniture group
         let traversalDepth = 0;
@@ -5606,47 +5572,16 @@ export default function Canvas3D({
         while (furnitureGroup && 
                furnitureGroup.userData?.type !== 'furniture' && 
                traversalDepth < maxTraversalDepth) {
-          
-          console.log(`🗑️ [GROUP SEARCH] Level ${traversalDepth}: Checking object:`, {
-            type: furnitureGroup.userData?.type,
-            furnitureType: furnitureGroup.userData?.furnitureType,
-            id: furnitureGroup.userData?.furnitureId,
-            hasFurnitureId: !!furnitureGroup.userData?.furnitureId,
-            hasParent: !!furnitureGroup.parent
-          });
-          
           furnitureGroup = furnitureGroup.parent;
           traversalDepth++;
         }
         
-        console.log("🗑️ [GROUP SEARCH] Final furniture group found:", {
-          type: furnitureGroup?.userData?.type,
-          furnitureType: furnitureGroup?.userData?.furnitureType,
-          id: furnitureGroup?.userData?.furnitureId,
-          hasFurnitureId: !!furnitureGroup?.userData?.furnitureId,
-          traversalDepth: traversalDepth,
-          isValidFurniture: furnitureGroup?.userData?.type === 'furniture'
-        });
-        
         if (furnitureGroup && furnitureGroup.userData.type === 'furniture') {
           const furnitureId = furnitureGroup.userData.furnitureId;
-          
-          console.log("🗑️ [DELETE ATTEMPT] Furniture group validation:", {
-            type: furnitureGroup.userData.furnitureType,
-            id: furnitureId,
-            hasDeleteCallback: !!onDeleteFurniture,
-            readyToDelete: !!(furnitureId && onDeleteFurniture)
-          });
           
           if (furnitureId && onDeleteFurniture) {
             // Find the furniture floor for the callback
             const furnitureFloorName = furnitureGroup.userData.floorName || currentFloor;
-            
-            console.log("🗑️ [DELETE SUCCESS] Deleting furniture:", {
-              type: furnitureGroup.userData.furnitureType,
-              id: furnitureId,
-              floorName: furnitureFloorName
-            });
             
             // Special cleanup for vents with special rendering properties
             if (furnitureGroup.userData.furnitureType === 'vent') {
@@ -5736,16 +5671,6 @@ export default function Canvas3D({
     });
 
     if (furnitureGroup) {
-      console.log(`🪑 [FURNITURE DIRECT] Updating position directly for ${editingFurniture.item.type} - NO texture callbacks needed`);
-      
-      // Check material/texture state before modification
-      let materialInfo = 'No materials found';
-      furnitureGroup.traverse((child) => {
-        if (child instanceof THREE.Mesh && child.material) {
-          materialInfo = `Material: ${child.material.constructor.name}, HasTexture: ${!!(child.material as any).map}`;
-        }
-      });
-      console.log(`🪑 [FURNITURE DIRECT] Current material state: ${materialInfo}`);
       
       // COORDINATE SYSTEM FIX: Apply same conversion as confirm button
       if (editingFurniture.item.type === 'vent' || editingFurniture.item.type === 'custom') {
@@ -5767,8 +5692,6 @@ export default function Canvas3D({
         // For tables and other furniture: direct application
         furnitureGroup.position.set(newPosition.x, newPosition.y, newPosition.z);
       }
-      
-      console.log(`✅ [FURNITURE DIRECT] Position updated - textures preserved automatically`);
     }
   };
 
@@ -5860,31 +5783,17 @@ export default function Canvas3D({
     });
 
     if (furnitureGroup) {
-      console.log('========== FURNITURE EDIT COORDINATE ANALYSIS ==========');
-      console.log('Furniture Type:', editingFurniture.item.type);
-      console.log('Furniture ID:', editingFurniture.item.id);
-      console.log('Dialog Position Input:', data.position);
-      console.log('Current Object Position:', furnitureGroup.position);
-      console.log('Object Parent:', furnitureGroup.parent ? furnitureGroup.parent.type : 'No parent');
-      
       // COORDINATE SYSTEM FIX: Handle vents and custom objects differently than tables
       if (editingFurniture.item.type === 'vent' || editingFurniture.item.type === 'custom') {
-        console.log('🔄 ENTERING COMPLEX COORDINATE CONVERSION for:', editingFurniture.item.type);
-        
         // For vents and custom objects: Convert world coordinates back to local coordinates
         const parentPosition = new THREE.Vector3();
         const parentQuaternion = new THREE.Quaternion();
         const parentRotation = new THREE.Euler();
         
         if (furnitureGroup.parent) {
-          console.log('📍 Found parent object, extracting world transforms...');
           furnitureGroup.parent.getWorldPosition(parentPosition);
           furnitureGroup.parent.getWorldQuaternion(parentQuaternion);
           parentRotation.setFromQuaternion(parentQuaternion);
-          console.log('Parent World Position:', parentPosition);
-          console.log('Parent World Rotation:', parentRotation);
-        } else {
-          console.log('⚠️ No parent found - using zero transforms');
         }
         
         // Convert world coordinates to local coordinates
@@ -5901,34 +5810,16 @@ export default function Canvas3D({
           z: data.rotation.z - parentRotation.z
         };
         
-        console.log('📊 COORDINATE CONVERSION MATH:');
-        console.log('- Dialog Input (world):', data.position);
-        console.log('- Parent Position:', parentPosition);
-        console.log('- Calculation: dialog - parent');
-        console.log('- Result (local):', localPosition);
-        console.log('- Applying local position to object...');
-        
         furnitureGroup.position.set(localPosition.x, localPosition.y, localPosition.z);
         furnitureGroup.rotation.set(localRotation.x, localRotation.y, localRotation.z);
         furnitureGroup.scale.set(data.scale.x, data.scale.y, data.scale.z);
         
-        console.log('✅ CONVERSION COMPLETE');
-        console.log('Final Object Position:', furnitureGroup.position);
-        
       } else {
-        console.log('➡️ SIMPLE DIRECT ASSIGNMENT for:', editingFurniture.item.type);
-        console.log('- No coordinate conversion needed');
-        console.log('- Applying dialog values directly to object');
-        
         // For tables and other furniture: use existing approach (local coordinates)
         furnitureGroup.position.set(data.position.x, data.position.y, data.position.z);
         furnitureGroup.rotation.set(data.rotation.x, data.rotation.y, data.rotation.z);
         furnitureGroup.scale.set(data.scale.x, data.scale.y, data.scale.z);
-        
-        console.log('✅ DIRECT ASSIGNMENT COMPLETE');
-        console.log('Final Object Position:', furnitureGroup.position);
       }
-      console.log('=========================================================')
       
       furnitureGroup.userData.furnitureName = data.name;
       

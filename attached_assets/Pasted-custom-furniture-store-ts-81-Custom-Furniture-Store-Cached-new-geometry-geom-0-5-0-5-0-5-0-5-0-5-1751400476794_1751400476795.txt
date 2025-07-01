@@ -1,0 +1,38 @@
+custom-furniture-store.ts:81 Custom Furniture Store: Cached new geometry geom_-0.5,-0.5,0.5,0.5,-0.5,0.5,0.5,0.5,0.5,-0.5,-0.5,0.5_108
+custom-furniture-store.ts:140 🎯 CUSTOM FURNITURE ID TEST: {originalName: 'test stl basic', floorName: 'ground', existingCustomCount: 0, generatedId: 'Obj 0F-1', timestamp: '2025-07-01T20:07:34.123Z'}
+custom-furniture-store.ts:161 Custom Furniture Store: Added new item {id: 'Obj 0F-1', name: 'test stl basic', dimensions: {…}, totalItems: 1}
+STLProcessor.ts:176 STL Processor: Completed processing {name: 'Obj 0F-1', scaleFactor: 1, dimensions: {…}, vertices: 36, hasThumbnail: true}
+STLUploader.tsx:117 STL Processor: Enhanced processing complete {name: 'Obj 0F-1', vertexCount: 36, dimensions: {…}, fileSize: '1.7KB', hasThumbnail: true}
+wizard-design.tsx:1698 Dragging furniture: {id: 'Obj 0F-1', name: 'Obj 0F-1', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…" cy="8" r="3" fill="#10b981"/>\n      </svg>\n    ', defaultDimensions: {…}}
+Canvas3D.tsx:4916 🔥 [SCENE REBUILD] AirEntries with textures AFTER rebuild: 0
+Canvas3D.tsx:5739 🪑 [FURNITURE DIRECT] Updating position directly for custom - NO texture callbacks needed
+Canvas3D.tsx:5748 🪑 [FURNITURE DIRECT] Current material state: Material: MeshLambertMaterial, HasTexture: false
+Canvas3D.tsx:5771 ✅ [FURNITURE DIRECT] Position updated - textures preserved automatically
+Canvas3D.tsx:5739 🪑 [FURNITURE DIRECT] Updating position directly for custom - NO texture callbacks needed
+Canvas3D.tsx:5748 🪑 [FURNITURE DIRECT] Current material state: Material: MeshLambertMaterial, HasTexture: false
+Canvas3D.tsx:5771 ✅ [FURNITURE DIRECT] Position updated - textures preserved automatically
+Canvas3D.tsx:5739 🪑 [FURNITURE DIRECT] Updating position directly for custom - NO texture callbacks needed
+Canvas3D.tsx:5748 🪑 [FURNITURE DIRECT] Current material state: Material: MeshLambertMaterial, HasTexture: false
+Canvas3D.tsx:5771 ✅ [FURNITURE DIRECT] Position updated - textures preserved automatically
+Canvas3D.tsx:5739 🪑 [FURNITURE DIRECT] Updating position directly for custom - NO texture callbacks needed
+Canvas3D.tsx:5748 🪑 [FURNITURE DIRECT] Current material state: Material: MeshLambertMaterial, HasTexture: false
+Canvas3D.tsx:5771 ✅ [FURNITURE DIRECT] Position updated - textures preserved automatically
+Canvas3D.tsx:5863 ========== FURNITURE EDIT COORDINATE ANALYSIS ==========
+Canvas3D.tsx:5864 Furniture Type: custom
+Canvas3D.tsx:5865 Furniture ID: Obj 0F-1
+Canvas3D.tsx:5866 Dialog Position Input: {x: -72.23, y: -46.08, z: -0.01}
+Canvas3D.tsx:5867 Current Object Position: _Vector3 {x: -72.23, y: -46.08, z: -0.01}
+Canvas3D.tsx:5868 Object Parent: Scene
+Canvas3D.tsx:5872 🔄 ENTERING COMPLEX COORDINATE CONVERSION for: custom
+Canvas3D.tsx:5880 📍 Found parent object, extracting world transforms...
+Canvas3D.tsx:5884 Parent World Position: _Vector3 {x: 0, y: 0, z: 0}
+Canvas3D.tsx:5885 Parent World Rotation: _Euler {isEuler: true, _x: -0, _y: 0, _z: -0, _order: 'XYZ'}
+Canvas3D.tsx:5904 📊 COORDINATE CONVERSION MATH:
+Canvas3D.tsx:5905 - Dialog Input (world): {x: -72.23, y: -46.08, z: -0.01}
+Canvas3D.tsx:5906 - Parent Position: _Vector3 {x: 0, y: 0, z: 0}
+Canvas3D.tsx:5907 - Calculation: dialog - parent
+Canvas3D.tsx:5908 - Result (local): {x: -72.23, y: -46.08, z: -0.01}
+Canvas3D.tsx:5909 - Applying local position to object...
+Canvas3D.tsx:5915 ✅ CONVERSION COMPLETE
+Canvas3D.tsx:5916 Final Object Position: _Vector3 {x: -72.23, y: -46.08, z: -0.01}
+Canvas3D.tsx:5931 =========================================================
