@@ -1887,6 +1887,10 @@ export default function WizardDesign() {
       
       if (floorData.furnitureItems && floorData.furnitureItems.length > 0) {
         floorData.furnitureItems.forEach((furnitureItem) => {
+          console.log('[SCALE DEBUG 4] Mock Object Creation - ID:', furnitureItem.id);
+          console.log('[SCALE DEBUG 4] Type:', furnitureItem.type);
+          console.log('[SCALE DEBUG 4] Store scale data:', furnitureItem.scale);
+          
           // Crear un objeto THREE.Object3D simulado con la información necesaria
           const mockObject3D = {
             userData: {
@@ -1916,6 +1920,8 @@ export default function WizardDesign() {
               z: furnitureItem.scale?.z || 1
             }
           };
+          
+          console.log('[SCALE DEBUG 4] Mock object scale:', mockObject3D.scale);
           furnitureObjects.push(mockObject3D as any);
         });
       }

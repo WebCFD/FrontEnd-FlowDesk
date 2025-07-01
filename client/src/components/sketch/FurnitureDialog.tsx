@@ -402,6 +402,10 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
         }
       })
     };
+
+    console.log('[SCALE DEBUG 2] Dialog Submission - Type:', type);
+    console.log('[SCALE DEBUG 2] elementScale state:', elementScale);
+    console.log('[SCALE DEBUG 2] Sending to Canvas3D:', furnitureData.scale);
     
     // ROOT CAUSE INVESTIGATION: Log dialog submission
     if (type === 'vent') {
