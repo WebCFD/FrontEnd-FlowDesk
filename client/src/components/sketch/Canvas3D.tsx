@@ -816,7 +816,7 @@ const createFurnitureModel = (
   }
 
   // Add metadata to the model for identification
-  model.userData = {
+  const userData: any = {
     type: 'furniture',
     furnitureType: furnitureItem.type,
     furnitureId: furnitureItem.id,
@@ -826,6 +826,16 @@ const createFurnitureModel = (
     properties: furnitureItem.properties,
     simulationProperties: furnitureItem.simulationProperties
   };
+
+  // For custom STL objects, include the file path for JSON export
+  if (furnitureItem.type === 'custom') {
+    const customData = customFurnitureStore.getCustomFurniture(furnitureItem.id);
+    if (customData?.originalFile) {
+      userData.filePath = customData.originalFile.name;
+    }
+  }
+
+  model.userData = userData;
 
   // Set the meshId in the furniture item for reference
   furnitureItem.meshId = model.uuid;
