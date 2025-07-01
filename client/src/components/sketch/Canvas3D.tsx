@@ -829,12 +829,9 @@ const createFurnitureModel = (
 
   // For custom STL objects, include the file path for JSON export
   if (furnitureItem.type === 'custom') {
-    console.log('[FILEPATH] Custom furniture item:', furnitureItem.id);
     const customData = customFurnitureStore.getCustomFurniture(furnitureItem.id);
-    console.log('[FILEPATH] Custom data found:', !!customData, customData?.originalFile?.name);
     if (customData?.originalFile) {
       userData.filePath = customData.originalFile.name;
-      console.log('[FILEPATH] Added filePath to userData:', userData.filePath);
     }
   }
 
@@ -1063,6 +1060,18 @@ export default function Canvas3D({
       
 
 
+      // For custom objects, get the filePath from the custom furniture store
+      let filePath: string | undefined;
+      if (furnitureType === 'custom') {
+        console.log('[FILEPATH] Creating custom furniture item:', generatedId);
+        const customData = customFurnitureStore.getCustomFurniture(generatedId);
+        console.log('[FILEPATH] Custom data found:', !!customData, customData?.originalFile?.name);
+        if (customData?.originalFile) {
+          filePath = customData.originalFile.name;
+          console.log('[FILEPATH] Adding filePath to furniture item:', filePath);
+        }
+      }
+
       // Create furniture item with proper default properties
       const furnitureItem: FurnitureItem = {
         id: generatedId,
@@ -1074,6 +1083,7 @@ export default function Canvas3D({
         dimensions: dimensions,
         information: `${generatedId} placed on ${surfaceDetection.surfaceType} of ${surfaceDetection.floorName}`,
         surfaceType: surfaceDetection.surfaceType, // Store the surface type for export
+        filePath: filePath, // Store STL file path for custom objects
         properties: furnitureType === 'vent' ? {
           // Vent type maintains original thermal properties system
           temperature: 20,
