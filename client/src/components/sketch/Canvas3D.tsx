@@ -829,9 +829,12 @@ const createFurnitureModel = (
 
   // For custom STL objects, include the file path for JSON export
   if (furnitureItem.type === 'custom') {
+    console.log('[FILEPATH] Custom furniture item:', furnitureItem.id);
     const customData = customFurnitureStore.getCustomFurniture(furnitureItem.id);
+    console.log('[FILEPATH] Custom data found:', !!customData, customData?.originalFile?.name);
     if (customData?.originalFile) {
       userData.filePath = customData.originalFile.name;
+      console.log('[FILEPATH] Added filePath to userData:', userData.filePath);
     }
   }
 
