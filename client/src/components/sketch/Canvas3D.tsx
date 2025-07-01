@@ -5772,6 +5772,9 @@ export default function Canvas3D({
   ) => {
     if (!editingFurniture || !sceneRef.current) return;
 
+    // LIFECYCLE TRACE: Start of furniture edit process
+    console.log('🔍 LIFECYCLE TRACE - Starting furniture edit for:', editingFurniture.item.type, editingFurniture.item.id);
+
     // Find the furniture object in the scene by ID
     const furnitureId = editingFurniture.item.id;
     let furnitureGroup: THREE.Group | null = null;
@@ -5782,7 +5785,15 @@ export default function Canvas3D({
       }
     });
 
+    console.log('🔍 LIFECYCLE TRACE - Found furniture in scene:', !!furnitureGroup);
+    
     if (furnitureGroup) {
+      console.log('🔍 LIFECYCLE TRACE - Before modification:');
+      console.log('  - Visible:', furnitureGroup.visible);
+      console.log('  - Parent:', furnitureGroup.parent?.type);
+      console.log('  - Children count:', furnitureGroup.children.length);
+      console.log('  - Position:', furnitureGroup.position);
+      console.log('  - Scale:', furnitureGroup.scale);
       // COORDINATE SYSTEM FIX: Handle vents and custom objects differently than tables
       if (editingFurniture.item.type === 'vent' || editingFurniture.item.type === 'custom') {
         // For vents and custom objects: Convert world coordinates back to local coordinates
@@ -5821,6 +5832,14 @@ export default function Canvas3D({
         furnitureGroup.scale.set(data.scale.x, data.scale.y, data.scale.z);
       }
       
+      console.log('🔍 LIFECYCLE TRACE - After coordinate modification:');
+      console.log('  - Visible:', furnitureGroup.visible);
+      console.log('  - Parent:', furnitureGroup.parent?.type);
+      console.log('  - Children count:', furnitureGroup.children.length);
+      console.log('  - Position:', furnitureGroup.position);
+      console.log('  - Scale:', furnitureGroup.scale);
+      console.log('  - userData intact:', !!furnitureGroup.userData.furnitureId);
+      
       furnitureGroup.userData.furnitureName = data.name;
       
       // Store properties in userData for reference
@@ -5835,6 +5854,8 @@ export default function Canvas3D({
 
       // Save data to persistent store
       if (onUpdateFurniture) {
+        console.log('🔍 LIFECYCLE TRACE - About to call onUpdateFurniture with:', editingFurniture.item.type);
+        
         const updatedFurnitureItem: FurnitureItem = {
           ...editingFurniture.item,
           name: data.name,
@@ -5847,16 +5868,45 @@ export default function Canvas3D({
         };
 
         onUpdateFurniture(editingFurniture.item.floorName, editingFurniture.item.id, updatedFurnitureItem);
+        console.log('🔍 LIFECYCLE TRACE - onUpdateFurniture completed');
         
         // Trigger texture recovery for RSP
         if (onFurnitureAdded) {
+          console.log('🔍 LIFECYCLE TRACE - About to call onFurnitureAdded');
           onFurnitureAdded();
+          console.log('🔍 LIFECYCLE TRACE - onFurnitureAdded completed');
         }
       }
+
+      // Final validation: Check if object is still in scene after all modifications
+      let finalValidation = false;
+      sceneRef.current.traverse((child) => {
+        if (child.userData.furnitureId === furnitureId && child.userData.type === 'furniture') {
+          finalValidation = true;
+        }
+      });
+      
+      console.log('🔍 LIFECYCLE TRACE - Final validation:');
+      console.log('  - Object still in scene after all operations:', finalValidation);
+      console.log('  - editingFurniture about to be set to null');
 
     } else {
       console.error("❌ Could not find furniture object in scene with ID:", furnitureId);
     }
+    
+    // Add a delayed check to see if object disappears after React state updates
+    setTimeout(() => {
+      let delayedValidation = false;
+      if (sceneRef.current) {
+        sceneRef.current.traverse((child) => {
+          if (child.userData.furnitureId === furnitureId && child.userData.type === 'furniture') {
+            delayedValidation = true;
+          }
+        });
+      }
+      console.log('🔍 LIFECYCLE TRACE - Delayed validation (100ms after):');
+      console.log('  - Object still in scene after React updates:', delayedValidation);
+    }, 100);
     
     setEditingFurniture(null);
   };
