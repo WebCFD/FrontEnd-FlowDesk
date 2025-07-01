@@ -519,7 +519,7 @@ export function generateSimulationData(
     });
 
     // Filtrar el mobiliario que pertenece a este piso con coordenadas normalizadas
-    const allFloorObjects = furniture.filter(obj => obj.userData?.floor === floorName && obj.userData?.type === 'furniture');
+    const allFloorObjects = furniture.filter(obj => obj.userData?.floorName === floorName && obj.userData?.type === 'furniture');
     
     // Separar vents del resto de furniture para procesamiento diferenciado
     const ventFurnitureObjects = allFloorObjects.filter(obj => obj.userData?.furnitureType === 'vent');
