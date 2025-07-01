@@ -1896,7 +1896,8 @@ export default function WizardDesign() {
 
 
     // Recopilar todos los elementos de mobiliario de todos los pisos
-    Object.entries(floors).forEach(([floorName, floorData]) => {
+    // CRITICAL FIX: Use rawFloors for export to get original scale values
+    Object.entries(rawFloors).forEach(([floorName, floorData]) => {
 
       
       if (floorData.furnitureItems && floorData.furnitureItems.length > 0) {
@@ -1904,6 +1905,7 @@ export default function WizardDesign() {
           console.log('[SCALE DEBUG 4] Mock Object Creation - ID:', furnitureItem.id);
           console.log('[SCALE DEBUG 4] Type:', furnitureItem.type);
           console.log('[SCALE DEBUG 4] Store scale data:', furnitureItem.scale);
+          console.log('[SCALE DEBUG 4] Raw floors source:', floorData === rawFloors[floorName] ? 'rawFloors' : 'normalizedFloors');
           
           // Crear un objeto THREE.Object3D simulado con la información necesaria
           const mockObject3D = {
@@ -1944,8 +1946,9 @@ export default function WizardDesign() {
 
 
     // Generar los datos de simulación completos
+    // CRITICAL FIX: Use rawFloors for simulation data generation to preserve original scale values
     return generateSimulationData(
-      floors,
+      rawFloors,
       furnitureObjects,
       getCurrentCeilingHeight() / 100,
       floorParameters
