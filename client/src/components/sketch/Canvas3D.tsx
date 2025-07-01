@@ -827,6 +827,15 @@ const createFurnitureModel = (
     simulationProperties: furnitureItem.simulationProperties
   };
 
+  // Add STL file path for custom objects
+  if (furnitureItem.type === 'custom') {
+    const processor = STLProcessor.getInstance();
+    const customData = customFurnitureStore.getCustomFurniture(furnitureItem.id);
+    if (customData && customData.originalFile) {
+      model.userData.stlFilePath = customData.originalFile.name;
+    }
+  }
+
   // Set the meshId in the furniture item for reference
   furnitureItem.meshId = model.uuid;
 
