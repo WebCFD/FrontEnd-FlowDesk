@@ -4396,6 +4396,7 @@ export default function Canvas3D({
     };
 
     canvas.addEventListener("mousedown", mouseDownWrapper);
+    canvas.addEventListener("click", handleClick);
     console.log("🔍 [DELFURN] Event listeners attached to canvas");
 
     // Create named handlers for event tracking - only in interactive mode
@@ -4551,7 +4552,7 @@ export default function Canvas3D({
           "mousedown",
           mouseDownWrapper,
         );
-
+        renderer.domElement.removeEventListener("click", handleClick);
         renderer.domElement.removeEventListener("dblclick", handleAirEntryDoubleClick);
 
         // Dispose renderer
@@ -5677,7 +5678,6 @@ export default function Canvas3D({
     container.addEventListener("drop", handleDrop);
     container.addEventListener("dblclick", handleFurnitureDoubleClick);
     container.addEventListener("click", handleClick);
-    console.log("🔍 [DELFURN] Click event listener successfully added after handleClick function defined");
 
     return () => {
       container.removeEventListener("dragenter", handleDragEnter);
