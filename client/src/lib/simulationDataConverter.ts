@@ -621,7 +621,6 @@ export function generateSimulationData(
 
       // Add filePath for custom STL objects from userData
       if (obj.userData?.furnitureType === 'custom' && obj.userData?.filePath) {
-        console.log('[FILEPATH] Export - Adding filePath to export object:', obj.userData.filePath);
         exportObject.filePath = obj.userData.filePath;
       }
 
