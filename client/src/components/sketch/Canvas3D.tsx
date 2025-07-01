@@ -5869,6 +5869,11 @@ export default function Canvas3D({
           updatedAt: Date.now()
         };
 
+        console.log('[SCALE DEBUG 3] Canvas3D Store Update - ID:', editingFurniture.item.id);
+        console.log('[SCALE DEBUG 3] Received from dialog:', data.scale);
+        console.log('[SCALE DEBUG 3] Original item scale:', editingFurniture.item.scale);
+        console.log('[SCALE DEBUG 3] Saving to store:', updatedFurnitureItem.scale);
+
         onUpdateFurniture(editingFurniture.item.floorName, editingFurniture.item.id, updatedFurnitureItem);
         
         // Trigger texture recovery for RSP
@@ -6096,10 +6101,18 @@ export default function Canvas3D({
                     };
                   }
                 });
+                console.log('[SCALE DEBUG 1] Dialog Initialization - Custom object:', editingFurniture.item.id);
+                console.log('[SCALE DEBUG 1] Store scale:', editingFurniture.item.scale);
+                console.log('[SCALE DEBUG 1] Actual 3D scale:', actualScale);
+                console.log('[SCALE DEBUG 1] Sending to dialog:', actualScale);
                 return actualScale;
               } else {
                 // For standard furniture: use stored scale normally
-                return editingFurniture.item.scale || { x: 1, y: 1, z: 1 };
+                const storedScale = editingFurniture.item.scale || { x: 1, y: 1, z: 1 };
+                console.log('[SCALE DEBUG 1] Dialog Initialization - Standard furniture:', editingFurniture.item.id);
+                console.log('[SCALE DEBUG 1] Store scale:', editingFurniture.item.scale);
+                console.log('[SCALE DEBUG 1] Sending to dialog:', storedScale);
+                return storedScale;
               }
             })(),
             // CRITICAL FIX: Use actual furniture properties instead of hardcoded defaults
