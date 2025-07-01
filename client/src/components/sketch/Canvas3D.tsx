@@ -5679,7 +5679,6 @@ export default function Canvas3D({
     container.addEventListener("dragleave", handleDragLeave);
     container.addEventListener("drop", handleDrop);
     container.addEventListener("dblclick", handleFurnitureDoubleClick);
-    container.addEventListener("click", handleClick);
 
     return () => {
       container.removeEventListener("dragenter", handleDragEnter);
@@ -5687,7 +5686,6 @@ export default function Canvas3D({
       container.removeEventListener("dragleave", handleDragLeave);
       container.removeEventListener("drop", handleDrop);
       container.removeEventListener("dblclick", handleFurnitureDoubleClick);
-      container.removeEventListener("click", handleClick);
     };
   }, [currentFloor, onFurnitureAdd, isMultifloor, floorParameters, isFurnitureEraserMode, onDeleteFurniture]);
 
