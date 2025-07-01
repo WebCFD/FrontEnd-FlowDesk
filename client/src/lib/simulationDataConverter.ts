@@ -181,6 +181,8 @@ interface FurnitureExport {
     y: number;
     z: number;
   };
+  // STL file location for custom objects only
+  stlFilePath?: string;
   // Propiedades de simulación térmica para TODOS los tipos de muebles
   simulationProperties: {
     temperature: number;    // Temperatura del objeto (°C)
@@ -593,7 +595,7 @@ export function generateSimulationData(
         normalVector: simulationProperties.normalVector
       } : {};
       
-      return {
+      const exportData: FurnitureExport = {
         id: furnitureId,
         position: {
           x: cmToM(obj.position.x), // Direct conversion: cm to meters
@@ -616,6 +618,13 @@ export function generateSimulationData(
           ...ventSpecificProperties
         }
       };
+
+      // Add STL file path for custom objects only
+      if (obj.userData?.furnitureType === 'custom' && obj.userData?.stlFilePath) {
+        exportData.stlFilePath = obj.userData.stlFilePath;
+      }
+
+      return exportData;
     });
 
     // Obtener los parámetros específicos del piso actual
