@@ -5772,9 +5772,6 @@ export default function Canvas3D({
   ) => {
     if (!editingFurniture || !sceneRef.current) return;
 
-    // LIFECYCLE TRACE: Start of furniture edit process
-    console.log('🔍 LIFECYCLE TRACE - Starting furniture edit for:', editingFurniture.item.type, editingFurniture.item.id);
-
     // Find the furniture object in the scene by ID
     const furnitureId = editingFurniture.item.id;
     let furnitureGroup: THREE.Group | null = null;
@@ -5785,15 +5782,7 @@ export default function Canvas3D({
       }
     });
 
-    console.log('🔍 LIFECYCLE TRACE - Found furniture in scene:', !!furnitureGroup);
-    
     if (furnitureGroup) {
-      console.log('🔍 LIFECYCLE TRACE - Before modification:');
-      console.log('  - Visible:', furnitureGroup.visible);
-      console.log('  - Parent:', furnitureGroup.parent?.type);
-      console.log('  - Children count:', furnitureGroup.children.length);
-      console.log('  - Position:', furnitureGroup.position);
-      console.log('  - Scale:', furnitureGroup.scale);
       // COORDINATE SYSTEM FIX: Handle vents and custom objects differently than tables
       if (editingFurniture.item.type === 'vent' || editingFurniture.item.type === 'custom') {
         // For vents and custom objects: Convert world coordinates back to local coordinates
@@ -5833,13 +5822,7 @@ export default function Canvas3D({
       }
       
       console.log('🔍 LIFECYCLE TRACE - After coordinate modification:');
-      console.log('  - Visible:', furnitureGroup.visible);
-      console.log('  - Parent:', furnitureGroup.parent?.type);
-      console.log('  - Children count:', furnitureGroup.children.length);
-      console.log('  - Position:', furnitureGroup.position);
-      console.log('  - Scale:', furnitureGroup.scale);
-      console.log('  - userData intact:', !!furnitureGroup.userData.furnitureId);
-      
+
       furnitureGroup.userData.furnitureName = data.name;
       
       // Store properties in userData for reference
@@ -5854,8 +5837,6 @@ export default function Canvas3D({
 
       // Save data to persistent store
       if (onUpdateFurniture) {
-        console.log('🔍 LIFECYCLE TRACE - About to call onUpdateFurniture with:', editingFurniture.item.type);
-        
         const updatedFurnitureItem: FurnitureItem = {
           ...editingFurniture.item,
           name: data.name,
@@ -5868,13 +5849,10 @@ export default function Canvas3D({
         };
 
         onUpdateFurniture(editingFurniture.item.floorName, editingFurniture.item.id, updatedFurnitureItem);
-        console.log('🔍 LIFECYCLE TRACE - onUpdateFurniture completed');
         
         // Trigger texture recovery for RSP
         if (onFurnitureAdded) {
-          console.log('🔍 LIFECYCLE TRACE - About to call onFurnitureAdded');
           onFurnitureAdded();
-          console.log('🔍 LIFECYCLE TRACE - onFurnitureAdded completed');
         }
       }
 
@@ -6082,7 +6060,27 @@ export default function Canvas3D({
             name: editingFurniture.item.name,
             position: editingFurniture.item.position,
             rotation: editingFurniture.item.rotation,
-            scale: editingFurniture.item.scale || { x: 1, y: 1, z: 1 },
+            scale: (() => {
+              // SOLUTION 1: For custom objects, read actual 3D scale instead of stored scale
+              if (editingFurniture.item.type === 'custom' && sceneRef.current) {
+                // Find the actual 3D object to get its real scale
+                let actualScale = { x: 1, y: 1, z: 1 };
+                sceneRef.current.traverse((child) => {
+                  if (child.userData.furnitureId === editingFurniture.item.id && child.userData.type === 'furniture') {
+                    const furnitureGroup = child as THREE.Group;
+                    actualScale = {
+                      x: furnitureGroup.scale.x,
+                      y: furnitureGroup.scale.y,
+                      z: furnitureGroup.scale.z
+                    };
+                  }
+                });
+                return actualScale;
+              } else {
+                // For standard furniture: use stored scale normally
+                return editingFurniture.item.scale || { x: 1, y: 1, z: 1 };
+              }
+            })(),
             // CRITICAL FIX: Use actual furniture properties instead of hardcoded defaults
             properties: editingFurniture.item.properties || (editingFurniture.item.type === 'vent' ? {
               temperature: 20,
