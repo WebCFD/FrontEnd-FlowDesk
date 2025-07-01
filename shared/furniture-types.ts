@@ -13,6 +13,7 @@ export interface FurnitureItem {
   scale?: { x: number; y: number; z: number };
   dimensions: { width: number; height: number; depth: number };
   surfaceType?: 'floor' | 'ceiling'; // Surface where the item was placed (for vents)
+  filePath?: string; // STL file path for custom objects
   
   // Fields for furniture dialog
   information?: string;
