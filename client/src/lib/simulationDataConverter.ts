@@ -595,6 +595,17 @@ export function generateSimulationData(
         normalVector: simulationProperties.normalVector
       } : {};
       
+      const scaleValues = {
+        x: obj.scale?.x || 1,
+        y: obj.scale?.y || 1,
+        z: obj.scale?.z || 1
+      };
+
+      console.log('[SCALE DEBUG 5] JSON Export - ID:', furnitureId);
+      console.log('[SCALE DEBUG 5] Type:', obj.userData?.furnitureType);
+      console.log('[SCALE DEBUG 5] Raw obj.scale:', obj.scale);
+      console.log('[SCALE DEBUG 5] Export scale values:', scaleValues);
+
       const exportObject: FurnitureExport = {
         id: furnitureId,
         position: {
@@ -607,11 +618,7 @@ export function generateSimulationData(
           y: obj.rotation.y || 0, // Keep radians (SI units)
           z: obj.rotation.z || 0  // Keep radians (SI units)
         },
-        scale: {
-          x: obj.scale?.x || 1,
-          y: obj.scale?.y || 1,
-          z: obj.scale?.z || 1
-        },
+        scale: scaleValues,
         // Include simulation properties for ALL furniture types
         simulationProperties: {
           ...baseSimulationProperties,
