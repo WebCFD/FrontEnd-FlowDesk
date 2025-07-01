@@ -1,0 +1,88 @@
+custom-furniture-store.ts:81 Custom Furniture Store: Cached new geometry geom_-0.5,-0.5,0.5,0.5,-0.5,0.5,0.5,0.5,0.5,-0.5,-0.5,0.5_108
+custom-furniture-store.ts:140 🎯 CUSTOM FURNITURE ID TEST: {originalName: 'test stl basic', floorName: 'ground', existingCustomCount: 0, generatedId: 'Obj 0F-1', timestamp: '2025-07-01T21:02:47.325Z'}
+custom-furniture-store.ts:161 Custom Furniture Store: Added new item {id: 'Obj 0F-1', name: 'test stl basic', dimensions: {…}, totalItems: 1}
+STLProcessor.ts:176 STL Processor: Completed processing {name: 'Obj 0F-1', scaleFactor: 1, dimensions: {…}, vertices: 36, hasThumbnail: true}
+STLUploader.tsx:117 STL Processor: Enhanced processing complete {name: 'Obj 0F-1', vertexCount: 36, dimensions: {…}, fileSize: '1.7KB', hasThumbnail: true}
+wizard-design.tsx:1698 Dragging furniture: {id: 'Obj 0F-1', name: 'Obj 0F-1', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…" cy="8" r="3" fill="#10b981"/>\n      </svg>\n    ', defaultDimensions: {…}}
+Canvas3D.tsx:1066 [FILEPATH] Creating custom furniture item: Obj 0F-1
+Canvas3D.tsx:1068 [FILEPATH] Custom data found: true test-stl-basic.stl
+Canvas3D.tsx:1071 [FILEPATH] Adding filePath to furniture item: test-stl-basic.stl
+Canvas3D.tsx:4939 🔥 [SCENE REBUILD] AirEntries with textures AFTER rebuild: 0
+Canvas3D.tsx:6104 [SCALE DEBUG 1] Dialog Initialization - Custom object: Obj 0F-1
+Canvas3D.tsx:6105 [SCALE DEBUG 1] Store scale: undefined
+Canvas3D.tsx:6106 [SCALE DEBUG 1] Actual 3D scale: {x: 100, y: 100, z: 100}
+Canvas3D.tsx:6107 [SCALE DEBUG 1] Sending to dialog: {x: 100, y: 100, z: 100}
+FurnitureDialog.tsx:406 [SCALE DEBUG 2] Dialog Submission - Type: custom
+FurnitureDialog.tsx:407 [SCALE DEBUG 2] elementScale state: {x: 100, y: 100, z: 100}
+FurnitureDialog.tsx:408 [SCALE DEBUG 2] Sending to Canvas3D: {x: 100, y: 100, z: 100}
+Canvas3D.tsx:5872 [SCALE DEBUG 3] Canvas3D Store Update - ID: Obj 0F-1
+Canvas3D.tsx:5873 [SCALE DEBUG 3] Received from dialog: {x: 100, y: 100, z: 100}
+Canvas3D.tsx:5874 [SCALE DEBUG 3] Original item scale: undefined
+Canvas3D.tsx:5875 [SCALE DEBUG 3] Saving to store: {x: 100, y: 100, z: 100}
+Canvas3D.tsx:5893 🔍 LIFECYCLE TRACE - Final validation:
+Canvas3D.tsx:5894   - Object still in scene after all operations: true
+Canvas3D.tsx:5895   - editingFurniture about to be set to null
+Canvas3D.tsx:5911 🔍 LIFECYCLE TRACE - Delayed validation (100ms after):
+Canvas3D.tsx:5912   - Object still in scene after React updates: true
+custom-furniture-store.ts:81 Custom Furniture Store: Cached new geometry geom_-3.2782554626464844e-7,0.5555704832077026,-0.8314696550369263,-3.2782554626464844e-7,0.7071070671081543,-0.7071067690849304,0.1379493772983551,0.693520188331604,-0.7071067690849304,-3.2782554626464844e-7,0.5555704832077026,-0.8314696550369263_8640
+custom-furniture-store.ts:140 🎯 CUSTOM FURNITURE ID TEST: {originalName: 'uploads files 3593527 Gray sphere', floorName: 'ground', existingCustomCount: 1, generatedId: 'Obj 0F-2', timestamp: '2025-07-01T21:03:01.772Z'}
+custom-furniture-store.ts:161 Custom Furniture Store: Added new item {id: 'Obj 0F-2', name: 'uploads files 3593527 Gray sphere', dimensions: {…}, totalItems: 2}
+STLProcessor.ts:176 STL Processor: Completed processing {name: 'Obj 0F-2', scaleFactor: 1, dimensions: {…}, vertices: 2880, hasThumbnail: true}
+STLUploader.tsx:117 STL Processor: Enhanced processing complete {name: 'Obj 0F-2', vertexCount: 2880, dimensions: {…}, fileSize: '47.0KB', hasThumbnail: true}
+wizard-design.tsx:1698 Dragging furniture: {id: 'Obj 0F-2', name: 'Obj 0F-2', icon: '\n      <svg width="40" height="40" viewBox="0 0 40…" cy="8" r="3" fill="#10b981"/>\n      </svg>\n    ', defaultDimensions: {…}}
+Canvas3D.tsx:1066 [FILEPATH] Creating custom furniture item: Obj 0F-2
+Canvas3D.tsx:1068 [FILEPATH] Custom data found: true uploads_files_3593527_Gray+sphere.stl
+Canvas3D.tsx:1071 [FILEPATH] Adding filePath to furniture item: uploads_files_3593527_Gray+sphere.stl
+Canvas3D.tsx:4939 🔥 [SCENE REBUILD] AirEntries with textures AFTER rebuild: 0
+Canvas3D.tsx:6104 [SCALE DEBUG 1] Dialog Initialization - Custom object: Obj 0F-2
+Canvas3D.tsx:6105 [SCALE DEBUG 1] Store scale: undefined
+Canvas3D.tsx:6106 [SCALE DEBUG 1] Actual 3D scale: {x: 200, y: 200, z: 200}
+Canvas3D.tsx:6107 [SCALE DEBUG 1] Sending to dialog: {x: 200, y: 200, z: 200}
+FurnitureDialog.tsx:406 [SCALE DEBUG 2] Dialog Submission - Type: custom
+FurnitureDialog.tsx:407 [SCALE DEBUG 2] elementScale state: {x: 200, y: 200, z: 200}
+FurnitureDialog.tsx:408 [SCALE DEBUG 2] Sending to Canvas3D: {x: 200, y: 200, z: 200}
+Canvas3D.tsx:5872 [SCALE DEBUG 3] Canvas3D Store Update - ID: Obj 0F-2
+Canvas3D.tsx:5873 [SCALE DEBUG 3] Received from dialog: {x: 200, y: 200, z: 200}
+Canvas3D.tsx:5874 [SCALE DEBUG 3] Original item scale: undefined
+Canvas3D.tsx:5875 [SCALE DEBUG 3] Saving to store: {x: 200, y: 200, z: 200}
+Canvas3D.tsx:5893 🔍 LIFECYCLE TRACE - Final validation:
+Canvas3D.tsx:5894   - Object still in scene after all operations: true
+Canvas3D.tsx:5895   - editingFurniture about to be set to null
+Canvas3D.tsx:5911 🔍 LIFECYCLE TRACE - Delayed validation (100ms after):
+Canvas3D.tsx:5912   - Object still in scene after React updates: true
+wizard-design.tsx:1890 [SCALE DEBUG 4] Mock Object Creation - ID: Table 0F-1
+wizard-design.tsx:1891 [SCALE DEBUG 4] Type: table
+wizard-design.tsx:1892 [SCALE DEBUG 4] Store scale data: {x: 1, y: 1, z: 1}
+wizard-design.tsx:1924 [SCALE DEBUG 4] Mock object scale: {x: 1, y: 1, z: 1}
+wizard-design.tsx:1890 [SCALE DEBUG 4] Mock Object Creation - ID: Obj 0F-1
+wizard-design.tsx:1891 [SCALE DEBUG 4] Type: custom
+wizard-design.tsx:1892 [SCALE DEBUG 4] Store scale data: {x: 100, y: 100, z: 100}
+wizard-design.tsx:1924 [SCALE DEBUG 4] Mock object scale: {x: 100, y: 100, z: 100}
+wizard-design.tsx:1890 [SCALE DEBUG 4] Mock Object Creation - ID: Obj 0F-2
+wizard-design.tsx:1891 [SCALE DEBUG 4] Type: custom
+wizard-design.tsx:1892 [SCALE DEBUG 4] Store scale data: undefined
+wizard-design.tsx:1924 [SCALE DEBUG 4] Mock object scale: {x: 1, y: 1, z: 1}
+simulationDataConverter.ts:604 [SCALE DEBUG 5] JSON Export - ID: table_0F_1
+simulationDataConverter.ts:605 [SCALE DEBUG 5] Type: table
+simulationDataConverter.ts:606 [SCALE DEBUG 5] Raw obj.scale: {x: 1, y: 1, z: 1}
+simulationDataConverter.ts:607 [SCALE DEBUG 5] Export scale values: {x: 1, y: 1, z: 1}
+simulationDataConverter.ts:604 [SCALE DEBUG 5] JSON Export - ID: custom_0F_1
+simulationDataConverter.ts:605 [SCALE DEBUG 5] Type: custom
+simulationDataConverter.ts:606 [SCALE DEBUG 5] Raw obj.scale: {x: 100, y: 100, z: 100}
+simulationDataConverter.ts:607 [SCALE DEBUG 5] Export scale values: {x: 100, y: 100, z: 100}
+simulationDataConverter.ts:604 [SCALE DEBUG 5] JSON Export - ID: custom_0F_2
+simulationDataConverter.ts:605 [SCALE DEBUG 5] Type: custom
+simulationDataConverter.ts:606 [SCALE DEBUG 5] Raw obj.scale: {x: 1, y: 1, z: 1}
+simulationDataConverter.ts:607 [SCALE DEBUG 5] Export scale values: {x: 1, y: 1, z: 1}
+analytics.ts:62 📊 Analytics Event: {category: 'simulation', action: 'save_simulation', label: 'file_download', value: 2, status: 'sent'}
+Canvas3D.tsx:5528 Using world coordinates for custom dialog:
+Canvas3D.tsx:5529 - Position: {x: -242.3, y: -15.02, z: 0}
+Canvas3D.tsx:5530 - Rotation: {x: -0, y: 0, z: -0}
+Canvas3D.tsx:6104 [SCALE DEBUG 1] Dialog Initialization - Custom object: Obj 0F-2
+Canvas3D.tsx:6105 [SCALE DEBUG 1] Store scale: undefined
+Canvas3D.tsx:6106 [SCALE DEBUG 1] Actual 3D scale: {x: 200, y: 200, z: 200}
+Canvas3D.tsx:6107 [SCALE DEBUG 1] Sending to dialog: {x: 200, y: 200, z: 200}
+Canvas3D.tsx:6104 [SCALE DEBUG 1] Dialog Initialization - Custom object: Obj 0F-2
+Canvas3D.tsx:6105 [SCALE DEBUG 1] Store scale: undefined
+Canvas3D.tsx:6106 [SCALE DEBUG 1] Actual 3D scale: {x: 200, y: 200, z: 200}
+Canvas3D.tsx:6107 [SCALE DEBUG 1] Sending to dialog: {x: 200, y: 200, z: 200}
