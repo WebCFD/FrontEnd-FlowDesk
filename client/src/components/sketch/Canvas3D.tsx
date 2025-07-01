@@ -5537,6 +5537,8 @@ export default function Canvas3D({
       
       if (!sceneRef.current || !cameraRef.current) return;
       
+      console.log("🗑️ [FURNITURE DELETE] Click detected in furniture eraser mode");
+      
       // Get mouse coordinates
       const rect = container.getBoundingClientRect();
       const mouse = new THREE.Vector2(
@@ -5552,12 +5554,37 @@ export default function Canvas3D({
       const furnitureObjects: THREE.Object3D[] = [];
       sceneRef.current.traverse((object) => {
         if (object.userData.type === 'furniture') {
+          console.log("🗑️ [FURNITURE SCAN] Found furniture group:", {
+            type: object.userData.furnitureType,
+            id: object.userData.furnitureId,
+            floorName: object.userData.floorName,
+            position: object.position,
+            scale: object.scale,
+            visible: object.visible,
+            children: object.children.length
+          });
           furnitureObjects.push(object);
         }
       });
       
+      console.log("🗑️ [FURNITURE SCAN] Total furniture objects found:", furnitureObjects.length);
+      
       // Check for intersections
       const intersects = raycaster.intersectObjects(furnitureObjects, true);
+      
+      console.log("🗑️ [RAYCAST] Intersections found:", intersects.length);
+      if (intersects.length > 0) {
+        console.log("🗑️ [RAYCAST] First intersection:", {
+          distance: intersects[0].distance,
+          point: intersects[0].point,
+          objectType: intersects[0].object.userData.type,
+          objectFurnitureType: intersects[0].object.userData.furnitureType,
+          objectId: intersects[0].object.userData.furnitureId,
+          parentType: intersects[0].object.parent?.userData.type,
+          parentFurnitureType: intersects[0].object.parent?.userData.furnitureType,
+          parentId: intersects[0].object.parent?.userData.furnitureId
+        });
+      }
       
       if (intersects.length > 0) {
         const intersectedObject = intersects[0].object;
@@ -5565,18 +5592,50 @@ export default function Canvas3D({
         // Find the furniture group - prioritize groups with furnitureId
         let furnitureGroup = intersectedObject;
         
+        console.log("🗑️ [GROUP SEARCH] Starting with intersected object:", {
+          type: intersectedObject.userData.type,
+          furnitureType: intersectedObject.userData.furnitureType,
+          id: intersectedObject.userData.furnitureId,
+          hasFurnitureId: !!intersectedObject.userData.furnitureId
+        });
+        
         // First check if the hit object itself has furnitureId
         if (!furnitureGroup.userData.furnitureId) {
+          console.log("🗑️ [GROUP SEARCH] Object has no furnitureId, checking parent");
           // Look for parent with furnitureId
           furnitureGroup = intersectedObject.parent;
+          
+          if (furnitureGroup) {
+            console.log("🗑️ [GROUP SEARCH] Parent found:", {
+              type: furnitureGroup.userData.type,
+              furnitureType: furnitureGroup.userData.furnitureType,
+              id: furnitureGroup.userData.furnitureId,
+              hasFurnitureId: !!furnitureGroup.userData.furnitureId
+            });
+          } else {
+            console.log("🗑️ [GROUP SEARCH] No parent found");
+          }
         }
         
         if (furnitureGroup && furnitureGroup.userData.type === 'furniture') {
           const furnitureId = furnitureGroup.userData.furnitureId;
           
+          console.log("🗑️ [DELETE ATTEMPT] Furniture group validation:", {
+            type: furnitureGroup.userData.furnitureType,
+            id: furnitureId,
+            hasDeleteCallback: !!onDeleteFurniture,
+            readyToDelete: !!(furnitureId && onDeleteFurniture)
+          });
+          
           if (furnitureId && onDeleteFurniture) {
             // Find the furniture floor for the callback
             const furnitureFloorName = furnitureGroup.userData.floorName || currentFloor;
+            
+            console.log("🗑️ [DELETE SUCCESS] Deleting furniture:", {
+              type: furnitureGroup.userData.furnitureType,
+              id: furnitureId,
+              floorName: furnitureFloorName
+            });
             
             // Special cleanup for vents with special rendering properties
             if (furnitureGroup.userData.furnitureType === 'vent') {
@@ -5603,17 +5662,35 @@ export default function Canvas3D({
             }
             
             // Remove from scene
+            console.log("🗑️ [SCENE REMOVAL] Removing furniture from scene:", furnitureGroup);
             sceneRef.current.remove(furnitureGroup);
             
             // Call deletion callback with floor name and furniture ID
+            console.log("🗑️ [CALLBACK] Calling onDeleteFurniture:", { furnitureFloorName, furnitureId });
             onDeleteFurniture(furnitureFloorName, furnitureId);
             
             // Trigger texture re-application after furniture deletion
             if (onFurnitureDeleted) {
+              console.log("🗑️ [TEXTURE] Triggering texture re-application");
               onFurnitureDeleted();
             }
+            
+            console.log("🗑️ [COMPLETE] Furniture deletion process completed successfully");
+          } else {
+            console.log("🗑️ [FAILED] Deletion failed - missing furnitureId or callback:", {
+              furnitureId: !!furnitureId,
+              onDeleteFurniture: !!onDeleteFurniture
+            });
           }
+        } else {
+          console.log("🗑️ [FAILED] No valid furniture group found:", {
+            furnitureGroup: !!furnitureGroup,
+            groupType: furnitureGroup?.userData.type,
+            isFurniture: furnitureGroup?.userData.type === 'furniture'
+          });
         }
+      } else {
+        console.log("🗑️ [NO INTERSECTION] No furniture intersections found");
       }
     };
 
