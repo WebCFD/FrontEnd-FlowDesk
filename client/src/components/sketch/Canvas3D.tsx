@@ -113,6 +113,20 @@ interface Canvas3DProps {
     floorName: string,
     index: number
   ) => void;
+  onPropertiesUpdate?: (
+    floorName: string,
+    index: number,
+    properties: {
+      state?: 'open' | 'closed';
+      temperature?: number;
+      airOrientation?: 'inflow' | 'outflow';
+      flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
+      flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
+      customIntensityValue?: number;
+      verticalAngle?: number;
+      horizontalAngle?: number;
+    }
+  ) => void;
   onViewChange?: (callback: (direction: ViewDirection) => void) => void;
   onSceneReady?: (scene: THREE.Scene, renderer: THREE.WebGLRenderer, camera: THREE.Camera) => void; // For RSP texture access
   onFurnitureAdded?: () => void; // Callback to notify when new furniture is added to scene
@@ -923,6 +937,7 @@ export default function Canvas3D({
   walls = [], // Phase 1: Add walls prop with default
   onUpdateAirEntry,
   onDeleteAirEntry,
+  onPropertiesUpdate,
   onViewChange,
   onSceneReady,
   onFurnitureAdded,
@@ -5972,6 +5987,10 @@ export default function Canvas3D({
           wallContext={editingAirEntry.wallContext}
           onPositionUpdate={handleAirEntryPositionUpdate}
           onDimensionsUpdate={handleAirEntryDimensionsUpdate}
+          onPropertiesUpdate={onPropertiesUpdate ? (properties) => {
+            // Real-time properties synchronization
+            onPropertiesUpdate(currentFloor, editingAirEntry.index, properties);
+          } : undefined}
         />
       )}
 

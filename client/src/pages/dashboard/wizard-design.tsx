@@ -1235,6 +1235,40 @@ export default function WizardDesign() {
     }
   };
 
+  // Real-time properties synchronization handler
+  const handlePropertiesUpdateFrom3D = (
+    floorName: string,
+    index: number,
+    properties: {
+      state?: 'open' | 'closed';
+      temperature?: number;
+      airOrientation?: 'inflow' | 'outflow';
+      flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
+      flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
+      customIntensityValue?: number;
+      verticalAngle?: number;
+      horizontalAngle?: number;
+    }
+  ) => {
+    // Update only the properties in real-time without triggering scene rebuild
+    const currentFloors = useRoomStore.getState().floors;
+    useRoomStore.getState().setFloors({
+      ...currentFloors,
+      [floorName]: {
+        ...currentFloors[floorName],
+        airEntries: currentFloors[floorName].airEntries.map((entry, i) => 
+          i === index ? {
+            ...entry,
+            properties: {
+              ...entry.properties,
+              ...properties
+            }
+          } : entry
+        )
+      }
+    });
+  };
+
   // Phase 2: Furniture callback handlers
   const handleFurnitureAdd = useCallback((floorName: string, item: FurnitureItem) => {
     addFurnitureToFloor(floorName, item);
@@ -2545,6 +2579,7 @@ export default function WizardDesign() {
               onUpdateFurniture={handleFurnitureUpdate}
               onDeleteFurniture={handleFurnitureDelete}
               onUpdateAirEntry={handleUpdateAirEntryFrom3D} // CRITICAL: Connect RSP to store sync
+              onPropertiesUpdate={handlePropertiesUpdateFrom3D}
               isFurnitureEraserMode={isFurnitureEraserMode}
               onToggleFurnitureEraserMode={handleToggleFurnitureEraserMode}
               // Add onFloorsUpdate callback to enable 2D vent real-time updates in RSP
@@ -2617,6 +2652,7 @@ export default function WizardDesign() {
                 useRoomStore.getState().setFloors(updatedFloors);
               }}
               onLineSelect={handleLineSelect}
+              onPropertiesUpdate={handlePropertiesUpdateFrom3D}
             />
           ) : (
             <Canvas3D
@@ -2639,6 +2675,7 @@ export default function WizardDesign() {
               }
               onUpdateAirEntry={handleUpdateAirEntryFrom3D}
               onDeleteAirEntry={handleDeleteAirEntryFrom3D}
+              onPropertiesUpdate={handlePropertiesUpdateFrom3D}
               onViewChange={handleViewChange}
               onSceneReady={(scene, renderer, camera) => {
                 wizardSceneRef.current = scene;
