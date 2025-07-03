@@ -5798,6 +5798,7 @@ export default function Canvas3D({
       position: { x: number; y: number; z: number };
       rotation: { x: number; y: number; z: number };
       scale: { x: number; y: number; z: number };
+      dimensions?: { width: number; height: number; depth: number };
       properties?: {
         material?: string;
         temperature?: number;
@@ -5806,6 +5807,7 @@ export default function Canvas3D({
         heatCapacity?: number;
         emissivity?: number;
       };
+      simulationProperties?: any;
     }
   ) => {
     if (!editingFurniture || !sceneRef.current) return;

@@ -34,6 +34,7 @@ interface UnifiedVentDialogProps {
     position: { x: number; y: number; z: number };
     rotation: { x: number; y: number; z: number };
     scale: { x: number; y: number; z: number };
+    dimensions?: { width: number; height: number; depth: number };
     properties?: {
       temperature?: number;
     };
@@ -95,11 +96,20 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
 
   // State to track current dimensions for accurate real-time updates
   const [currentDimensions, setCurrentDimensions] = useState(() => {
-    const scale = props.initialValues?.scale || { x: 1, y: 1, z: 1 };
-    return {
-      width: scale.x * 50,
-      height: scale.y * 50  // Corrected: Height maps to Y (vertical) not Z (depth)
-    };
+    // CRITICAL FIX: Read from dimensions property first, fallback to scale calculation
+    if (props.initialValues?.dimensions) {
+      return {
+        width: props.initialValues.dimensions.width,
+        height: props.initialValues.dimensions.height
+      };
+    } else {
+      // Fallback: calculate from scale for backward compatibility
+      const scale = props.initialValues?.scale || { x: 1, y: 1, z: 1 };
+      return {
+        width: scale.x * 50,
+        height: scale.y * 50
+      };
+    }
   });
 
   // State to track current position and rotation for accurate real-time updates
@@ -152,6 +162,12 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
         x: newScaleX, 
         y: newScaleY, // Height controls Y scale (vertical)
         z: props.initialValues?.scale?.z || 1  // Keep Z scale unchanged (depth)
+      },
+      // CRITICAL FIX: Update dimensions property to persist width/height changes
+      dimensions: {
+        width: airEntryData.width || currentDimensions.width,
+        height: airEntryData.height || currentDimensions.height,
+        depth: props.initialValues?.dimensions?.depth || 50  // Keep existing depth
       },
       properties: {
         temperature: airEntryData.properties?.temperature || 20
