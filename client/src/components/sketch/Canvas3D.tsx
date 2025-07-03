@@ -5881,15 +5881,18 @@ export default function Canvas3D({
           position: data.position,
           rotation: data.rotation,
           scale: data.scale,
+          dimensions: data.dimensions || editingFurniture.item.dimensions,
           properties: data.properties,
           simulationProperties: data.simulationProperties,
           updatedAt: Date.now()
         };
 
-        console.log('[SCALE DEBUG 3] Canvas3D Store Update - ID:', editingFurniture.item.id);
-        console.log('[SCALE DEBUG 3] Received from dialog:', data.scale);
-        console.log('[SCALE DEBUG 3] Original item scale:', editingFurniture.item.scale);
-        console.log('[SCALE DEBUG 3] Saving to store:', updatedFurnitureItem.scale);
+        console.log('[DIMENSION DEBUG 3] Canvas3D Store Update - ID:', editingFurniture.item.id);
+        console.log('[DIMENSION DEBUG 3] Received from dialog - data.dimensions:', data.dimensions);
+        console.log('[DIMENSION DEBUG 3] Received from dialog - data.scale:', data.scale);
+        console.log('[DIMENSION DEBUG 3] Original item dimensions:', editingFurniture.item.dimensions);
+        console.log('[DIMENSION DEBUG 3] Final updatedFurnitureItem.dimensions:', updatedFurnitureItem.dimensions);
+        console.log('[DIMENSION DEBUG 3] Final updatedFurnitureItem.scale:', updatedFurnitureItem.scale);
 
         onUpdateFurniture(editingFurniture.item.floorName, editingFurniture.item.id, updatedFurnitureItem);
         
