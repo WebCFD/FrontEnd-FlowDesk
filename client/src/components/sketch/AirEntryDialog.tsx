@@ -290,9 +290,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     // Update form values for persistence
     setValues(prev => ({ ...prev, width: newWidth }));
     
-    // Trigger real-time dimension updates
+    // Trigger real-time dimension updates - PASS BOTH DIMENSIONS LIKE POSITION
     if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
-      props.onDimensionsUpdate({ width: newWidth });
+      props.onDimensionsUpdate({ width: newWidth, height: localHeight });
     }
   };
 
@@ -303,9 +303,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     // Update form values for persistence
     setValues(prev => ({ ...prev, height: newHeight }));
     
-    // Trigger real-time dimension updates
+    // Trigger real-time dimension updates - PASS BOTH DIMENSIONS LIKE POSITION
     if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
-      props.onDimensionsUpdate({ height: newHeight });
+      props.onDimensionsUpdate({ width: localWidth, height: newHeight });
     }
   };
 
