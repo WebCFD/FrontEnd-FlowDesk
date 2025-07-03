@@ -192,17 +192,19 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
       rotation={currentRotation}
       // Add dimensions update callback for real-time updates
       onDimensionsUpdate={(newDimensions) => {
-        // Update current dimensions state with proper fallbacks
+        // Update current dimensions state with proper fallbacks - SAME PATTERN AS POSITION
         const updatedDimensions = {
           width: newDimensions.width ?? currentDimensions.width,
           height: newDimensions.height ?? currentDimensions.height
         };
         
+        // CRITICAL FIX: Update local state first (same as position)
         setCurrentDimensions(updatedDimensions);
         
         const newScaleX = updatedDimensions.width / 50;
         const newScaleY = updatedDimensions.height / 50;  // Corrected: Height to Y scale
         
+        // CRITICAL FIX: Call callback for real-time scene updates (same as position)
         stableOnScaleUpdate({
           x: newScaleX,
           y: newScaleY,  // Height controls Y scale (vertical)
