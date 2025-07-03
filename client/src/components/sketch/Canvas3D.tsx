@@ -6039,20 +6039,30 @@ export default function Canvas3D({
           onPositionUpdate={handleRealTimePositionUpdate}
           onRotationUpdate={handleRealTimeRotationUpdate}
           onScaleUpdate={handleRealTimeScaleUpdate}
-          initialValues={{
-            name: editingFurniture.item.name,
-            position: editingFurniture.item.position,
-            rotation: editingFurniture.item.rotation,
-            scale: editingFurniture.item.scale || { x: 1, y: 1, z: 1 },
-            properties: editingFurniture.item.properties || {
-              temperature: 20,
-              thermalConductivity: 0.12,
-              density: 600,
-              heatCapacity: 1200,
-              emissivity: 0.85
-            },
-            simulationProperties: editingFurniture.item.simulationProperties
-          }}
+          initialValues={(() => {
+            const initialValues = {
+              name: editingFurniture.item.name,
+              position: editingFurniture.item.position,
+              rotation: editingFurniture.item.rotation,
+              scale: editingFurniture.item.scale || { x: 1, y: 1, z: 1 },
+              dimensions: editingFurniture.item.dimensions || { width: 50, height: 50, depth: 10 },
+              properties: editingFurniture.item.properties || {
+                temperature: 20,
+                thermalConductivity: 0.12,
+                density: 600,
+                heatCapacity: 1200,
+                emissivity: 0.85
+              },
+              simulationProperties: editingFurniture.item.simulationProperties
+            };
+            
+            console.log('[DIMENSION DEBUG 5] Dialog Initialization - ID:', editingFurniture.item.id);
+            console.log('[DIMENSION DEBUG 5] Stored item dimensions:', editingFurniture.item.dimensions);
+            console.log('[DIMENSION DEBUG 5] Initial values dimensions:', initialValues.dimensions);
+            console.log('[DIMENSION DEBUG 5] Complete initial values:', initialValues);
+            
+            return initialValues;
+          })()}
           isEditing={true}
           floorContext={{
             floorName: editingFurniture.item.floorName,
