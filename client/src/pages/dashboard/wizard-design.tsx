@@ -1280,16 +1280,18 @@ export default function WizardDesign() {
   }, [addFurnitureToFloor, toast]);
 
   const handleFurnitureUpdate = (floorName: string, itemId: string, item: FurnitureItem) => {
-    console.log('[SCALE DEBUG 3.5] Store Update Callback - ID:', itemId);
-    console.log('[SCALE DEBUG 3.5] Floor:', floorName);
-    console.log('[SCALE DEBUG 3.5] Item scale being stored:', item.scale);
+    console.log('[DIMENSION DEBUG 4] Store Update Callback - ID:', itemId);
+    console.log('[DIMENSION DEBUG 4] Floor:', floorName);
+    console.log('[DIMENSION DEBUG 4] Item dimensions being stored:', item.dimensions);
+    console.log('[DIMENSION DEBUG 4] Item scale being stored:', item.scale);
     
     updateFurnitureInFloor(floorName, itemId, item);
     
-    // Verify the scale was stored correctly
+    // Verify the dimensions and scale were stored correctly
     const updatedFloors = useRoomStore.getState().floors;
     const updatedItem = updatedFloors[floorName]?.furnitureItems?.find(f => f.id === itemId);
-    console.log('[SCALE DEBUG 3.5] Verification - Scale in store after update:', updatedItem?.scale);
+    console.log('[DIMENSION DEBUG 4] Verification - Dimensions in store after update:', updatedItem?.dimensions);
+    console.log('[DIMENSION DEBUG 4] Verification - Scale in store after update:', updatedItem?.scale);
     
     toast({
       title: "Furniture Updated",
