@@ -287,6 +287,20 @@ interface Canvas2DProps {
   onMeasurementsUpdate?: (measurements: Measurement[]) => void;
   onStairPolygonsUpdate?: (stairPolygons: StairPolygon[]) => void;
   onLineSelect?: (line: Line, clickPoint: Point) => void;
+  onPropertiesUpdate?: (
+    floorName: string,
+    index: number,
+    properties: {
+      state?: 'open' | 'closed';
+      temperature?: number;
+      airOrientation?: 'inflow' | 'outflow';
+      flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
+      flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
+      customIntensityValue?: number;
+      verticalAngle?: number;
+      horizontalAngle?: number;
+    }
+  ) => void;
 }
 
 export default function Canvas2D({
@@ -310,6 +324,7 @@ export default function Canvas2D({
   onMeasurementsUpdate,
   onStairPolygonsUpdate,
   onLineSelect,
+  onPropertiesUpdate,
 }: Canvas2DProps) {
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -3584,6 +3599,10 @@ export default function Canvas2D({
             // Save Changes: Update element properties and close dialog
             handleAirEntryEdit(editingAirEntry.index, data as any);
           }}
+          onPropertiesUpdate={onPropertiesUpdate ? (properties) => {
+            // Real-time properties synchronization
+            onPropertiesUpdate(currentFloor, editingAirEntry.index, properties);
+          } : undefined}
           initialValues={{
             ...editingAirEntry.entry.dimensions,
             shape: (editingAirEntry.entry.dimensions as any).shape,

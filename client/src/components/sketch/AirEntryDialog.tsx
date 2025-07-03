@@ -73,6 +73,16 @@ interface AirEntryDialogProps {
   onPositionUpdate?: (newPosition: { x: number; y: number }) => void | ((newPosition: { x: number; y: number; z: number }) => void);
   onRotationUpdate?: (newRotation: { x: number; y: number; z: number }) => void;
   onDimensionsUpdate?: (newDimensions: { width?: number; height?: number; distanceToFloor?: number }) => void;
+  onPropertiesUpdate?: (properties: {
+    state?: 'open' | 'closed';
+    temperature?: number;
+    airOrientation?: 'inflow' | 'outflow';
+    flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
+    flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
+    customIntensityValue?: number;
+    verticalAngle?: number;
+    horizontalAngle?: number;
+  }) => void;
   // 3D specific props for furnVent mode
   position?: { x: number; y: number; z: number };
   rotation?: { x: number; y: number; z: number };
@@ -296,6 +306,110 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     // Trigger real-time dimension updates
     if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
       props.onDimensionsUpdate({ height: newHeight });
+    }
+  };
+
+  // Funciones para manejar cambios de Simulation Conditions en tiempo real
+  const handleElementStatusChange = (newStatus: boolean) => {
+    setIsElementOpen(newStatus);
+    
+    // Update form values for persistence
+    setValues(prev => ({ ...prev, state: newStatus ? 'open' : 'closed' }));
+    
+    // Trigger real-time properties update
+    if (props.type !== 'wall' && 'onPropertiesUpdate' in props && props.onPropertiesUpdate) {
+      props.onPropertiesUpdate({ state: newStatus ? 'open' : 'closed' });
+    }
+  };
+
+  const handleTemperatureChange = (newTemperature: number) => {
+    setElementTemperature(newTemperature);
+    
+    // Update form values for persistence
+    setValues(prev => ({ ...prev, temperature: newTemperature }));
+    
+    // Trigger real-time properties update
+    if (props.type !== 'wall' && 'onPropertiesUpdate' in props && props.onPropertiesUpdate) {
+      props.onPropertiesUpdate({ temperature: newTemperature });
+    }
+  };
+
+  const handleAirDirectionChange = (newDirection: 'inflow' | 'outflow') => {
+    setAirDirection(newDirection);
+    
+    // Update form values for persistence
+    setValues(prev => ({ ...prev, airOrientation: newDirection }));
+    
+    // Trigger real-time properties update
+    if (props.type !== 'wall' && 'onPropertiesUpdate' in props && props.onPropertiesUpdate) {
+      props.onPropertiesUpdate({ airOrientation: newDirection });
+    }
+  };
+
+  const handleFlowIntensityChange = (newIntensity: 'low' | 'medium' | 'high' | 'custom') => {
+    setIntensityLevel(newIntensity);
+    
+    // Update form values for persistence
+    setValues(prev => ({ ...prev, flowIntensity: newIntensity }));
+    
+    // Trigger real-time properties update
+    if (props.type !== 'wall' && 'onPropertiesUpdate' in props && props.onPropertiesUpdate) {
+      props.onPropertiesUpdate({ flowIntensity: newIntensity });
+    }
+  };
+
+  const handleCustomIntensityChange = (newValue: number) => {
+    setCustomIntensity(newValue);
+    
+    // Update form values for persistence
+    setValues(prev => ({ ...prev, customIntensityValue: newValue }));
+    
+    // Trigger real-time properties update
+    if (props.type !== 'wall' && 'onPropertiesUpdate' in props && props.onPropertiesUpdate) {
+      props.onPropertiesUpdate({ customIntensityValue: newValue });
+    }
+  };
+
+  const handleFlowTypeChange = (newFlowType: 'massflow' | 'velocity' | 'pressure') => {
+    setVentMeasurementType(newFlowType);
+    
+    // Convert to proper format for properties
+    const flowTypeMapping = {
+      'massflow': 'Air Mass Flow',
+      'velocity': 'Air Velocity',
+      'pressure': 'Pressure'
+    } as const;
+    
+    // Update form values for persistence
+    setValues(prev => ({ ...prev, flowType: flowTypeMapping[newFlowType] }));
+    
+    // Trigger real-time properties update
+    if (props.type !== 'wall' && 'onPropertiesUpdate' in props && props.onPropertiesUpdate) {
+      props.onPropertiesUpdate({ flowType: flowTypeMapping[newFlowType] });
+    }
+  };
+
+  const handleVerticalAngleChange = (newAngle: number) => {
+    setVerticalAngle(newAngle);
+    
+    // Update form values for persistence
+    setValues(prev => ({ ...prev, verticalAngle: newAngle }));
+    
+    // Trigger real-time properties update
+    if (props.type !== 'wall' && 'onPropertiesUpdate' in props && props.onPropertiesUpdate) {
+      props.onPropertiesUpdate({ verticalAngle: newAngle });
+    }
+  };
+
+  const handleHorizontalAngleChange = (newAngle: number) => {
+    setHorizontalAngle(newAngle);
+    
+    // Update form values for persistence
+    setValues(prev => ({ ...prev, horizontalAngle: newAngle }));
+    
+    // Trigger real-time properties update
+    if (props.type !== 'wall' && 'onPropertiesUpdate' in props && props.onPropertiesUpdate) {
+      props.onPropertiesUpdate({ horizontalAngle: newAngle });
     }
   };
 
@@ -1370,7 +1484,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                       </div>
                       <Switch
                         checked={isElementOpen}
-                        onCheckedChange={setIsElementOpen}
+                        onCheckedChange={handleElementStatusChange}
                         className="ml-4"
                       />
                     </div>
@@ -1406,7 +1520,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           type="number"
                           step="0.1"
                           value={elementTemperature}
-                          onChange={(e) => setElementTemperature(Number(e.target.value))}
+                          onChange={(e) => handleTemperatureChange(Number(e.target.value))}
                           className="h-8 text-sm"
                           placeholder="20.0"
                         />
@@ -1440,7 +1554,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               </Tooltip>
                             </TooltipProvider>
                           </div>
-                          <Select value={airDirection} onValueChange={(value: 'inflow' | 'outflow') => setAirDirection(value)}>
+                          <Select value={airDirection} onValueChange={(value: 'inflow' | 'outflow') => handleAirDirectionChange(value)}>
                             <SelectTrigger className="h-8 text-sm">
                               <SelectValue placeholder="Select direction" />
                             </SelectTrigger>
@@ -1499,7 +1613,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                                   max="45"
                                   step="1"
                                   value={verticalAngle}
-                                  onChange={(e) => setVerticalAngle(Number(e.target.value))}
+                                  onChange={(e) => handleVerticalAngleChange(Number(e.target.value))}
                                   className="h-8 text-sm"
                                   placeholder="0"
                                 />
@@ -1537,7 +1651,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                                   max="45"
                                   step="1"
                                   value={horizontalAngle}
-                                  onChange={(e) => setHorizontalAngle(Number(e.target.value))}
+                                  onChange={(e) => handleHorizontalAngleChange(Number(e.target.value))}
                                   className="h-8 text-sm"
                                   placeholder="0"
                                 />
@@ -1562,7 +1676,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                                   name="ventMeasurementType"
                                   value="massflow"
                                   checked={ventMeasurementType === 'massflow'}
-                                  onChange={(e) => setVentMeasurementType(e.target.value as 'massflow' | 'velocity' | 'pressure')}
+                                  onChange={(e) => handleFlowTypeChange(e.target.value as 'massflow' | 'velocity' | 'pressure')}
                                   className="w-4 h-4 text-blue-600"
                                 />
                                 <Label htmlFor="massflow" className="text-xs">Mass Flow</Label>
@@ -1574,7 +1688,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                                   name="ventMeasurementType"
                                   value="velocity"
                                   checked={ventMeasurementType === 'velocity'}
-                                  onChange={(e) => setVentMeasurementType(e.target.value as 'massflow' | 'velocity' | 'pressure')}
+                                  onChange={(e) => handleFlowTypeChange(e.target.value as 'massflow' | 'velocity' | 'pressure')}
                                   className="w-4 h-4 text-blue-600"
                                 />
                                 <Label htmlFor="velocity" className="text-xs">Velocity</Label>
@@ -1586,7 +1700,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                                   name="ventMeasurementType"
                                   value="pressure"
                                   checked={ventMeasurementType === 'pressure'}
-                                  onChange={(e) => setVentMeasurementType(e.target.value as 'massflow' | 'velocity' | 'pressure')}
+                                  onChange={(e) => handleFlowTypeChange(e.target.value as 'massflow' | 'velocity' | 'pressure')}
                                   className="w-4 h-4 text-blue-600"
                                 />
                                 <Label htmlFor="pressure" className="text-xs">Pressure</Label>
@@ -1615,7 +1729,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               </Tooltip>
                             </TooltipProvider>
                           </div>
-                          <Select value={intensityLevel} onValueChange={(value: 'high' | 'medium' | 'low' | 'custom') => setIntensityLevel(value)}>
+                          <Select value={intensityLevel} onValueChange={(value: 'high' | 'medium' | 'low' | 'custom') => handleFlowIntensityChange(value)}>
                             <SelectTrigger className="h-8 text-sm">
                               <SelectValue placeholder="Select intensity" />
                             </SelectTrigger>
@@ -1736,7 +1850,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                                 step="0.1"
                                 min="0"
                                 value={customIntensity}
-                                onChange={(e) => setCustomIntensity(Number(e.target.value))}
+                                onChange={(e) => handleCustomIntensityChange(Number(e.target.value))}
                                 className="h-8 text-sm"
                                 placeholder="0.5"
                               />
