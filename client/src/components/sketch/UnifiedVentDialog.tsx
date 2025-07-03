@@ -34,7 +34,6 @@ interface UnifiedVentDialogProps {
     position: { x: number; y: number; z: number };
     rotation: { x: number; y: number; z: number };
     scale: { x: number; y: number; z: number };
-    dimensions?: { width: number; height: number; depth: number };
     properties?: {
       temperature?: number;
     };
@@ -96,29 +95,11 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
 
   // State to track current dimensions for accurate real-time updates
   const [currentDimensions, setCurrentDimensions] = useState(() => {
-    // CRITICAL FIX: Read from dimensions property first, fallback to scale calculation
-    console.log('[DIMENSION DEBUG 1] UnifiedVentDialog Initialization');
-    console.log('[DIMENSION DEBUG 1] props.initialValues:', props.initialValues);
-    console.log('[DIMENSION DEBUG 1] props.initialValues?.dimensions:', props.initialValues?.dimensions);
-    console.log('[DIMENSION DEBUG 1] props.initialValues?.scale:', props.initialValues?.scale);
-    
-    if (props.initialValues?.dimensions) {
-      const result = {
-        width: props.initialValues.dimensions.width,
-        height: props.initialValues.dimensions.height
-      };
-      console.log('[DIMENSION DEBUG 1] Using dimensions property:', result);
-      return result;
-    } else {
-      // Fallback: calculate from scale for backward compatibility
-      const scale = props.initialValues?.scale || { x: 1, y: 1, z: 1 };
-      const result = {
-        width: scale.x * 50,
-        height: scale.y * 50
-      };
-      console.log('[DIMENSION DEBUG 1] Using scale fallback:', result);
-      return result;
-    }
+    const scale = props.initialValues?.scale || { x: 1, y: 1, z: 1 };
+    return {
+      width: scale.x * 50,
+      height: scale.y * 50  // Corrected: Height maps to Y (vertical) not Z (depth)
+    };
   });
 
   // State to track current position and rotation for accurate real-time updates
@@ -159,21 +140,9 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
 
   // Map AirEntry format back to FurnitureItem format
   const mapFromAirEntryFormat = (airEntryData: any) => {
-    console.log('[DIMENSION DEBUG 2] mapFromAirEntryFormat called');
-    console.log('[DIMENSION DEBUG 2] airEntryData:', airEntryData);
-    console.log('[DIMENSION DEBUG 2] currentDimensions:', currentDimensions);
-    
     // Calculate scale from current dimensions state
     const newScaleX = (airEntryData.width || currentDimensions.width) / 50; // width to scale.x
     const newScaleY = (airEntryData.height || currentDimensions.height) / 50; // height to scale.y (corrected)
-    
-    const finalDimensions = {
-      width: airEntryData.width || currentDimensions.width,
-      height: airEntryData.height || currentDimensions.height,
-      depth: props.initialValues?.dimensions?.depth || 50  // Keep existing depth
-    };
-    
-    console.log('[DIMENSION DEBUG 2] Final dimensions to save:', finalDimensions);
     
     const furnitureData = {
       name: props.initialValues?.name || 'Vent',
@@ -184,8 +153,6 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
         y: newScaleY, // Height controls Y scale (vertical)
         z: props.initialValues?.scale?.z || 1  // Keep Z scale unchanged (depth)
       },
-      // CRITICAL FIX: Update dimensions property to persist width/height changes
-      dimensions: finalDimensions,
       properties: {
         temperature: airEntryData.properties?.temperature || 20
       },
