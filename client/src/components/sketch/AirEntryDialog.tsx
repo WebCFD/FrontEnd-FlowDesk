@@ -806,11 +806,11 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         }
       };
       
-      console.log("🎯 [PROPS.ONCONFIRM] About to call props.onConfirm with canvasData");
-      console.log("🎯 [PROPS.ONCONFIRM] canvasData being sent:", canvasData);
-      console.log("🎯 [PROPS.ONCONFIRM] canvasData.wallPosition:", canvasData.wallPosition);
-      console.log("🎯 [PROPS.ONCONFIRM] canvasData.position:", canvasData.position);
-      console.log("🎯 [PROPS.ONCONFIRM] This should trigger handleAirEntryEdit in Canvas2D");
+      console.log("🎯 [SAVE TEST] About to call props.onConfirm with dimensions:");
+      console.log("🎯 [SAVE TEST] - width sent:", canvasData.width);
+      console.log("🎯 [SAVE TEST] - height sent:", canvasData.height);
+      console.log("🎯 [SAVE TEST] - Expected scale.x (width/50):", canvasData.width / 50);
+      console.log("🎯 [SAVE TEST] - Expected scale.y (height/50):", canvasData.height / 50);
       
       props.onConfirm(canvasData);
       

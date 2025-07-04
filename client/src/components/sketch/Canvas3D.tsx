@@ -5884,10 +5884,9 @@ export default function Canvas3D({
           updatedAt: Date.now()
         };
 
-        console.log('[SCALE DEBUG 3] Canvas3D Store Update - ID:', editingFurniture.item.id);
-        console.log('[SCALE DEBUG 3] Received from dialog:', data.scale);
-        console.log('[SCALE DEBUG 3] Original item scale:', editingFurniture.item.scale);
-        console.log('[SCALE DEBUG 3] Saving to store:', updatedFurnitureItem.scale);
+        console.log('🎯 [STORE SAVE] Canvas3D Store Update - ID:', editingFurniture.item.id);
+        console.log('🎯 [STORE SAVE] Received scale from dialog:', data.scale);
+        console.log('🎯 [STORE SAVE] Saving scale to store:', updatedFurnitureItem.scale);
 
         onUpdateFurniture(editingFurniture.item.floorName, editingFurniture.item.id, updatedFurnitureItem);
         
