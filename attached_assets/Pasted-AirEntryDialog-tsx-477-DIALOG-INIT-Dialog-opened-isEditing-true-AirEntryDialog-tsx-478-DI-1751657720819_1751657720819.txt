@@ -1,0 +1,28 @@
+AirEntryDialog.tsx:477 🟠 [DIALOG INIT] Dialog opened, isEditing: true
+AirEntryDialog.tsx:478 🟠 [DIALOG INIT] Props received: {data-replit-metadata: 'client/src/components/sketch/Canvas2D.tsx:3689:6', data-component-name: 'AirEntryDialog', type: 'wall', isOpen: true, onClose: ƒ, …}
+AirEntryDialog.tsx:483 🟠 [DIALOG INIT] airEntryProps.initialValues: {temperature: 55}
+AirEntryDialog.tsx:686 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+AirEntryDialog.tsx:687 🎯 [SAVE BUTTON CLICKED] Event type: submit
+AirEntryDialog.tsx:688 🎯 [SAVE BUTTON CLICKED] Props type: wall
+AirEntryDialog.tsx:689 🎯 [SAVE BUTTON CLICKED] Current values: {temperature: 35}
+AirEntryDialog.tsx:690 🎯 [SAVE BUTTON CLICKED] wallPosition from values: undefined
+AirEntryDialog.tsx:691 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 50
+Canvas2D.tsx:1351 🏠 [WALL SAVE] handleWallPropertiesSave called - ID: wall_0F_3, Temperature: 35
+Canvas2D.tsx:1352 🏠 [WALL SAVE] Current walls count: 3
+Canvas2D.tsx:1353 🏠 [WALL SAVE] Wall being updated: {id: 'wall_0F_3', uuid: 'a7c9-4cd1-33f2', floor: 'Ground Floor', lineRef: '720,60_112,464', startPoint: {…}, …}
+Canvas2D.tsx:1361 🏠 [WALL SAVE] Updated walls: (3) [{…}, {…}, {…}]
+Canvas2D.tsx:1363 🏠 [WALL SAVE] onWallsUpdate called successfully
+AirEntryDialog.tsx:477 🟠 [DIALOG INIT] Dialog opened, isEditing: true
+AirEntryDialog.tsx:478 🟠 [DIALOG INIT] Props received: {data-replit-metadata: 'client/src/components/sketch/Canvas2D.tsx:3689:6', data-component-name: 'AirEntryDialog', type: 'wall', isOpen: true, onClose: ƒ, …}
+AirEntryDialog.tsx:483 🟠 [DIALOG INIT] airEntryProps.initialValues: {temperature: 55}
+AirEntryDialog.tsx:686 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+AirEntryDialog.tsx:687 🎯 [SAVE BUTTON CLICKED] Event type: submit
+AirEntryDialog.tsx:688 🎯 [SAVE BUTTON CLICKED] Props type: wall
+AirEntryDialog.tsx:689 🎯 [SAVE BUTTON CLICKED] Current values: {temperature: 55}
+AirEntryDialog.tsx:690 🎯 [SAVE BUTTON CLICKED] wallPosition from values: undefined
+AirEntryDialog.tsx:691 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 50
+Canvas2D.tsx:1351 🏠 [WALL SAVE] handleWallPropertiesSave called - ID: wall_0F_3, Temperature: 55
+Canvas2D.tsx:1352 🏠 [WALL SAVE] Current walls count: 3
+Canvas2D.tsx:1353 🏠 [WALL SAVE] Wall being updated: {id: 'wall_0F_3', uuid: 'a7c9-4cd1-33f2', floor: 'Ground Floor', lineRef: '720,60_112,464', startPoint: {…}, …}
+Canvas2D.tsx:1361 🏠 [WALL SAVE] Updated walls: (3) [{…}, {…}, {…}]
+Canvas2D.tsx:1363 🏠 [WALL SAVE] onWallsUpdate called successfully
