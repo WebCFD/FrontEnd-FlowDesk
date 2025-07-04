@@ -2714,6 +2714,7 @@ export default function WizardDesign() {
               onUpdateAirEntry={handleUpdateAirEntryFrom3D}
               onDeleteAirEntry={handleDeleteAirEntryFrom3D}
               onPropertiesUpdate={handlePropertiesUpdateFrom3D}
+              onDimensionsUpdate={handleDimensionsUpdateFrom3D}
               onViewChange={handleViewChange}
               onSceneReady={(scene, renderer, camera) => {
                 wizardSceneRef.current = scene;

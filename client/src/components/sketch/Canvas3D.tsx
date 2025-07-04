@@ -127,6 +127,15 @@ interface Canvas3DProps {
       horizontalAngle?: number;
     }
   ) => void;
+  onDimensionsUpdate?: (
+    floorName: string,
+    index: number,
+    dimensions: {
+      width?: number;
+      height?: number;
+      distanceToFloor?: number;
+    }
+  ) => void;
   onViewChange?: (callback: (direction: ViewDirection) => void) => void;
   onSceneReady?: (scene: THREE.Scene, renderer: THREE.WebGLRenderer, camera: THREE.Camera) => void; // For RSP texture access
   onFurnitureAdded?: () => void; // Callback to notify when new furniture is added to scene
@@ -938,6 +947,7 @@ export default function Canvas3D({
   onUpdateAirEntry,
   onDeleteAirEntry,
   onPropertiesUpdate,
+  onDimensionsUpdate,
   onViewChange,
   onSceneReady,
   onFurnitureAdded,
@@ -5925,7 +5935,10 @@ export default function Canvas3D({
           isEditing={true}
           wallContext={editingAirEntry.wallContext}
           onPositionUpdate={handleAirEntryPositionUpdate}
-
+          onDimensionsUpdate={onDimensionsUpdate ? (dimensions) => {
+            // Real-time dimensions synchronization for Center Height updates
+            onDimensionsUpdate(currentFloor, editingAirEntry.index, dimensions);
+          } : undefined}
           onPropertiesUpdate={onPropertiesUpdate ? (properties) => {
             // Real-time properties synchronization
             onPropertiesUpdate(currentFloor, editingAirEntry.index, properties);
