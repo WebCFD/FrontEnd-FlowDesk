@@ -311,17 +311,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     // Update form values for persistence
     setValues(prev => ({ ...prev, state: newStatus ? 'open' : 'closed' }));
     
-    // Real-time properties synchronization - pass all current properties for mesh persistence
+    // Trigger real-time properties update
     if (props.type !== 'wall' && 'onPropertiesUpdate' in props && props.onPropertiesUpdate) {
-      props.onPropertiesUpdate({
-        state: newStatus ? 'open' : 'closed',
-        temperature: elementTemperature,
-        airOrientation: airDirection,
-        flowIntensity: intensityLevel,
-        flowType: ventMeasurementType === 'massflow' ? 'Air Mass Flow' : 
-                  ventMeasurementType === 'velocity' ? 'Air Velocity' : 'Pressure',
-        ...(intensityLevel === 'custom' && { customIntensityValue: customIntensity })
-      });
+      props.onPropertiesUpdate({ state: newStatus ? 'open' : 'closed' });
     }
   };
 
@@ -331,17 +323,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     // Update form values for persistence
     setValues(prev => ({ ...prev, temperature: newTemperature }));
     
-    // Real-time properties synchronization - pass all current properties for mesh persistence
+    // Trigger real-time properties update
     if (props.type !== 'wall' && 'onPropertiesUpdate' in props && props.onPropertiesUpdate) {
-      props.onPropertiesUpdate({
-        state: isElementOpen ? 'open' : 'closed',
-        temperature: newTemperature,
-        airOrientation: airDirection,
-        flowIntensity: intensityLevel,
-        flowType: ventMeasurementType === 'massflow' ? 'Air Mass Flow' : 
-                  ventMeasurementType === 'velocity' ? 'Air Velocity' : 'Pressure',
-        ...(intensityLevel === 'custom' && { customIntensityValue: customIntensity })
-      });
+      props.onPropertiesUpdate({ temperature: newTemperature });
     }
   };
 
@@ -351,17 +335,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     // Update form values for persistence
     setValues(prev => ({ ...prev, airOrientation: newDirection }));
     
-    // Real-time properties synchronization - pass all current properties for mesh persistence
+    // Trigger real-time properties update
     if (props.type !== 'wall' && 'onPropertiesUpdate' in props && props.onPropertiesUpdate) {
-      props.onPropertiesUpdate({
-        state: isElementOpen ? 'open' : 'closed',
-        temperature: elementTemperature,
-        airOrientation: newDirection,
-        flowIntensity: intensityLevel,
-        flowType: ventMeasurementType === 'massflow' ? 'Air Mass Flow' : 
-                  ventMeasurementType === 'velocity' ? 'Air Velocity' : 'Pressure',
-        ...(intensityLevel === 'custom' && { customIntensityValue: customIntensity })
-      });
+      props.onPropertiesUpdate({ airOrientation: newDirection });
     }
   };
 
@@ -371,17 +347,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     // Update form values for persistence
     setValues(prev => ({ ...prev, flowIntensity: newIntensity }));
     
-    // Real-time properties synchronization - pass all current properties for mesh persistence
+    // Trigger real-time properties update
     if (props.type !== 'wall' && 'onPropertiesUpdate' in props && props.onPropertiesUpdate) {
-      props.onPropertiesUpdate({
-        state: isElementOpen ? 'open' : 'closed',
-        temperature: elementTemperature,
-        airOrientation: airDirection,
-        flowIntensity: newIntensity,
-        flowType: ventMeasurementType === 'massflow' ? 'Air Mass Flow' : 
-                  ventMeasurementType === 'velocity' ? 'Air Velocity' : 'Pressure',
-        ...(newIntensity === 'custom' && { customIntensityValue: customIntensity })
-      });
+      props.onPropertiesUpdate({ flowIntensity: newIntensity });
     }
   };
 
@@ -391,17 +359,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     // Update form values for persistence
     setValues(prev => ({ ...prev, customIntensityValue: newValue }));
     
-    // Real-time properties synchronization - pass all current properties for mesh persistence
+    // Trigger real-time properties update
     if (props.type !== 'wall' && 'onPropertiesUpdate' in props && props.onPropertiesUpdate) {
-      props.onPropertiesUpdate({
-        state: isElementOpen ? 'open' : 'closed',
-        temperature: elementTemperature,
-        airOrientation: airDirection,
-        flowIntensity: intensityLevel,
-        flowType: ventMeasurementType === 'massflow' ? 'Air Mass Flow' : 
-                  ventMeasurementType === 'velocity' ? 'Air Velocity' : 'Pressure',
-        customIntensityValue: newValue
-      });
+      props.onPropertiesUpdate({ customIntensityValue: newValue });
     }
   };
 
@@ -418,16 +378,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     // Update form values for persistence
     setValues(prev => ({ ...prev, flowType: flowTypeMapping[newFlowType] }));
     
-    // Real-time properties synchronization - pass all current properties for mesh persistence
+    // Trigger real-time properties update
     if (props.type !== 'wall' && 'onPropertiesUpdate' in props && props.onPropertiesUpdate) {
-      props.onPropertiesUpdate({
-        state: isElementOpen ? 'open' : 'closed',
-        temperature: elementTemperature,
-        airOrientation: airDirection,
-        flowIntensity: intensityLevel,
-        flowType: flowTypeMapping[newFlowType],
-        ...(intensityLevel === 'custom' && { customIntensityValue: customIntensity })
-      });
+      props.onPropertiesUpdate({ flowType: flowTypeMapping[newFlowType] });
     }
   };
 
@@ -437,19 +390,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     // Update form values for persistence
     setValues(prev => ({ ...prev, verticalAngle: newAngle }));
     
-    // Real-time properties synchronization - pass all current properties for mesh persistence
+    // Trigger real-time properties update
     if (props.type !== 'wall' && 'onPropertiesUpdate' in props && props.onPropertiesUpdate) {
-      props.onPropertiesUpdate({
-        state: isElementOpen ? 'open' : 'closed',
-        temperature: elementTemperature,
-        airOrientation: airDirection,
-        flowIntensity: intensityLevel,
-        flowType: ventMeasurementType === 'massflow' ? 'Air Mass Flow' : 
-                  ventMeasurementType === 'velocity' ? 'Air Velocity' : 'Pressure',
-        verticalAngle: newAngle,
-        horizontalAngle: horizontalAngle,
-        ...(intensityLevel === 'custom' && { customIntensityValue: customIntensity })
-      });
+      props.onPropertiesUpdate({ verticalAngle: newAngle });
     }
   };
 
@@ -459,19 +402,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     // Update form values for persistence
     setValues(prev => ({ ...prev, horizontalAngle: newAngle }));
     
-    // Real-time properties synchronization - pass all current properties for mesh persistence
+    // Trigger real-time properties update
     if (props.type !== 'wall' && 'onPropertiesUpdate' in props && props.onPropertiesUpdate) {
-      props.onPropertiesUpdate({
-        state: isElementOpen ? 'open' : 'closed',
-        temperature: elementTemperature,
-        airOrientation: airDirection,
-        flowIntensity: intensityLevel,
-        flowType: ventMeasurementType === 'massflow' ? 'Air Mass Flow' : 
-                  ventMeasurementType === 'velocity' ? 'Air Velocity' : 'Pressure',
-        verticalAngle: verticalAngle,
-        horizontalAngle: newAngle,
-        ...(intensityLevel === 'custom' && { customIntensityValue: customIntensity })
-      });
+      props.onPropertiesUpdate({ horizontalAngle: newAngle });
     }
   };
 
