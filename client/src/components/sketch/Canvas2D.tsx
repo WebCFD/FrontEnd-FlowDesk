@@ -3659,30 +3659,10 @@ export default function Canvas2D({
             handleAirEntryPositionUpdate(editingAirEntry.index, newPosition);
           }}
           onDimensionsUpdate={(newDimensions) => {
-            // Actualizar las dimensiones del Air Entry en tiempo real
-            const updatedAirEntries = [...airEntries];
-            updatedAirEntries[editingAirEntry.index] = {
-              ...editingAirEntry.entry,
-              dimensions: {
-                ...editingAirEntry.entry.dimensions,
-                ...newDimensions
-              }
-            };
-            onAirEntriesUpdate?.(updatedAirEntries);
-            
-            // También actualizar el estado local para que el diálogo mantenga la referencia correcta
-            setEditingAirEntries(prev => prev.map(item => 
-              item.index === editingAirEntry.index ? {
-                ...item,
-                entry: {
-                  ...item.entry,
-                  dimensions: {
-                    ...item.entry.dimensions,
-                    ...newDimensions
-                  }
-                }
-              } : item
-            ));
+            // Use the same callback pattern as Position Along Wall for real-time store updates
+            if (onDimensionsUpdate) {
+              onDimensionsUpdate(currentFloor, editingAirEntry.index, newDimensions);
+            }
           }}
         />
       ))}
