@@ -5676,6 +5676,42 @@ export default function Canvas3D({
     }
   };
 
+  const handleRealTimePropertiesUpdate = (properties: {
+    state?: 'open' | 'closed';
+    temperature?: number;
+    airOrientation?: 'inflow' | 'outflow';
+    flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
+    flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
+    customIntensityValue?: number;
+    verticalAngle?: number;
+    horizontalAngle?: number;
+    airTemperature?: number;
+  }) => {
+    if (!editingFurniture || !sceneRef.current) return;
+
+    const furnitureId = editingFurniture.item.id;
+    let furnitureGroup: THREE.Group | null = null;
+
+    sceneRef.current.traverse((child) => {
+      if (child.userData.furnitureId === furnitureId && child.userData.type === 'furniture') {
+        furnitureGroup = child as THREE.Group;
+      }
+    });
+
+    if (furnitureGroup) {
+      // Update userData.simulationProperties in real-time for JSON export
+      if (!furnitureGroup.userData.simulationProperties) {
+        furnitureGroup.userData.simulationProperties = {};
+      }
+      
+      // Merge new properties with existing ones
+      furnitureGroup.userData.simulationProperties = {
+        ...furnitureGroup.userData.simulationProperties,
+        ...properties
+      };
+    }
+  };
+
 
 
   // Handler for updating furniture
@@ -5921,6 +5957,7 @@ export default function Canvas3D({
           onPositionUpdate={handleRealTimePositionUpdate}
           onRotationUpdate={handleRealTimeRotationUpdate}
           onScaleUpdate={handleRealTimeScaleUpdate}
+          onPropertiesUpdate={handleRealTimePropertiesUpdate}
           initialValues={{
             name: editingFurniture.item.name,
             position: editingFurniture.item.position,
@@ -5988,6 +6025,7 @@ export default function Canvas3D({
           onPositionUpdate={handleRealTimePositionUpdate}
           onRotationUpdate={handleRealTimeRotationUpdate}
           onScaleUpdate={handleRealTimeScaleUpdate}
+          onPropertiesUpdate={handleRealTimePropertiesUpdate}
           initialValues={{
             name: editingFurniture.item.name,
             position: editingFurniture.item.position,

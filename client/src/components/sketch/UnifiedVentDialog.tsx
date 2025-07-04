@@ -58,6 +58,17 @@ interface UnifiedVentDialogProps {
   onPositionUpdate?: (newPosition: { x: number; y: number; z: number }) => void;
   onRotationUpdate?: (newRotation: { x: number; y: number; z: number }) => void;
   onScaleUpdate?: (newScale: { x: number; y: number; z: number }) => void;
+  onPropertiesUpdate?: (properties: {
+    state?: 'open' | 'closed';
+    temperature?: number;
+    airOrientation?: 'inflow' | 'outflow';
+    flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
+    flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
+    customIntensityValue?: number;
+    verticalAngle?: number;
+    horizontalAngle?: number;
+    airTemperature?: number;
+  }) => void;
   debugKey?: string;
 }
 
@@ -66,6 +77,7 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
     onPositionUpdate,
     onRotationUpdate,
     onScaleUpdate,
+    onPropertiesUpdate,
     debugKey
   } = props;
 
@@ -88,10 +100,26 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
     }
   }, [onScaleUpdate]);
 
+  const stableOnPropertiesUpdate = useCallback((properties: {
+    state?: 'open' | 'closed';
+    temperature?: number;
+    airOrientation?: 'inflow' | 'outflow';
+    flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
+    flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
+    customIntensityValue?: number;
+    verticalAngle?: number;
+    horizontalAngle?: number;
+    airTemperature?: number;
+  }) => {
+    if (onPropertiesUpdate) {
+      onPropertiesUpdate(properties);
+    }
+  }, [onPropertiesUpdate]);
+
   // Track callback updates (cleaned up)
   useEffect(() => {
     // Callback monitoring for debugging
-  }, [onPositionUpdate, onRotationUpdate, onScaleUpdate, debugKey]);
+  }, [onPositionUpdate, onRotationUpdate, onScaleUpdate, onPropertiesUpdate, debugKey]);
 
   // State to track current dimensions for accurate real-time updates
   const [currentDimensions, setCurrentDimensions] = useState(() => {
@@ -222,6 +250,22 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
       onRotationUpdate={(newRotation) => {
         setCurrentRotation(newRotation);
         stableOnRotationUpdate(newRotation);
+      }}
+      // Add properties update callback for real-time Simulation Conditions updates
+      onPropertiesUpdate={(newProperties) => {
+        // Map AirEntry format to UnifiedVent format and trigger callback
+        const mappedProperties = {
+          state: newProperties.state,
+          temperature: newProperties.temperature,
+          airOrientation: newProperties.airOrientation,
+          flowIntensity: newProperties.flowIntensity,
+          flowType: newProperties.flowType,
+          customIntensityValue: newProperties.customIntensityValue,
+          verticalAngle: newProperties.verticalAngle,
+          horizontalAngle: newProperties.horizontalAngle,
+          airTemperature: newProperties.temperature, // Map temperature to airTemperature
+        };
+        stableOnPropertiesUpdate(mappedProperties);
       }}
       // Pass floor context for Information section
       floorContext={props.floorContext}
