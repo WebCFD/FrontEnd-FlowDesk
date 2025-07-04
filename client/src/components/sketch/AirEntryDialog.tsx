@@ -108,6 +108,9 @@ interface WallPropertiesDialogProps {
   initialValues?: {
     temperature: number;
   };
+  // Add missing callback props to make union type compatible
+  onDimensionsUpdate?: (newDimensions: { width?: number; height?: number; distanceToFloor?: number }) => void;
+  onPropertiesUpdate?: (properties: any) => void;
 }
 
 // Tipo unión para ambos casos
