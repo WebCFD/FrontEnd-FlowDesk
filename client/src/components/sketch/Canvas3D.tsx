@@ -5744,6 +5744,14 @@ export default function Canvas3D({
   ) => {
     if (!editingFurniture || !sceneRef.current) return;
 
+    console.log('🔄 [SAVE CHANGES] handleFurnitureEdit received data:', data);
+    console.log('🔄 [SAVE CHANGES] Rotation in radians:', data.rotation);
+    console.log('🔄 [SAVE CHANGES] Rotation in degrees:', {
+      x: data.rotation.x * 180 / Math.PI,
+      y: data.rotation.y * 180 / Math.PI,
+      z: data.rotation.z * 180 / Math.PI
+    });
+
     // Find the furniture object in the scene by ID
     const furnitureId = editingFurniture.item.id;
     let furnitureGroup: THREE.Group | null = null;
