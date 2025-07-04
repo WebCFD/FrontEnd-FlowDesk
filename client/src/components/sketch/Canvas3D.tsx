@@ -5676,6 +5676,25 @@ export default function Canvas3D({
     }
   };
 
+  // Memoize simulation properties from 3D object to prevent infinite loops
+  const currentSimulationProperties = useMemo(() => {
+    if (!editingFurniture || !sceneRef.current) {
+      return editingFurniture?.item.simulationProperties;
+    }
+
+    let updatedSimulationProperties = editingFurniture.item.simulationProperties;
+    
+    sceneRef.current.traverse((child) => {
+      if (child.userData.furnitureId === editingFurniture.item.id && child.userData.type === 'furniture') {
+        if (child.userData.simulationProperties) {
+          updatedSimulationProperties = child.userData.simulationProperties;
+        }
+      }
+    });
+    
+    return updatedSimulationProperties;
+  }, [editingFurniture?.item.id, editingFurniture?.item.simulationProperties]);
+
   const handleRealTimePropertiesUpdate = (properties: {
     state?: 'open' | 'closed';
     temperature?: number;
@@ -5970,25 +5989,8 @@ export default function Canvas3D({
               heatCapacity: 1200,
               emissivity: 0.85
             },
-            // READ UPDATED SIMULATION PROPERTIES FROM 3D OBJECT INSTEAD OF STALE STORE DATA
-            simulationProperties: (() => {
-              // Get updated simulationProperties from the actual 3D object userData
-              if (sceneRef.current) {
-                let updatedSimulationProperties = editingFurniture.item.simulationProperties;
-                
-                sceneRef.current.traverse((child) => {
-                  if (child.userData.furnitureId === editingFurniture.item.id && child.userData.type === 'furniture') {
-                    if (child.userData.simulationProperties) {
-                      updatedSimulationProperties = child.userData.simulationProperties;
-                      console.log('🔧 [DIALOG INIT] Reading updated simulationProperties from 3D object:', updatedSimulationProperties);
-                    }
-                  }
-                });
-                
-                return updatedSimulationProperties;
-              }
-              return editingFurniture.item.simulationProperties;
-            })()
+            // Use memoized simulation properties to prevent infinite loops
+            simulationProperties: currentSimulationProperties
           }}
           isEditing={true}
           floorContext={{
@@ -6091,25 +6093,8 @@ export default function Canvas3D({
               density: 600,
               heatCapacity: 1200
             }),
-            // Add simulation properties for vent furniture persistence - READ FROM 3D OBJECT INSTEAD OF STORE
-            simulationProperties: (() => {
-              // Get updated simulationProperties from the actual 3D object userData
-              if (sceneRef.current) {
-                let updatedSimulationProperties = editingFurniture.item.simulationProperties;
-                
-                sceneRef.current.traverse((child) => {
-                  if (child.userData.furnitureId === editingFurniture.item.id && child.userData.type === 'furniture') {
-                    if (child.userData.simulationProperties) {
-                      updatedSimulationProperties = child.userData.simulationProperties;
-                      console.log('🔧 [DIALOG INIT] Reading updated simulationProperties from 3D object:', updatedSimulationProperties);
-                    }
-                  }
-                });
-                
-                return updatedSimulationProperties;
-              }
-              return editingFurniture.item.simulationProperties;
-            })()
+            // Use memoized simulation properties to prevent infinite loops
+            simulationProperties: currentSimulationProperties
           }}
           isEditing={true}
           floorContext={{
