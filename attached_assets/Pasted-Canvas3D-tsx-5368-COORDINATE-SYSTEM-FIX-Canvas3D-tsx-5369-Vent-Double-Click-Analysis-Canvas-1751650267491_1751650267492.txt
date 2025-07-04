@@ -1,0 +1,101 @@
+Canvas3D.tsx:5368 === COORDINATE SYSTEM FIX ===
+Canvas3D.tsx:5369 Vent Double-Click Analysis:
+Canvas3D.tsx:5370 - Original stored position: {x: 156.88, y: 0, z: 220}
+Canvas3D.tsx:5371 - Local furnitureGroup.position: {x: 0, y: 0, z: 0}
+Canvas3D.tsx:5376 - World position (visual): {x: 156.88, y: 0, z: 220}
+Canvas3D.tsx:5381 - USING WORLD COORDINATES for dialog consistency
+Canvas3D.tsx:5382 ===============================
+Canvas3D.tsx:5420 Using world coordinates for vent dialog:
+Canvas3D.tsx:5421 - Position: {x: 156.88, y: 0, z: 220}
+Canvas3D.tsx:5422 - Rotation: {x: 0.2, y: 0, z: -0}
+AirEntryDialog.tsx:477 🟠 [DIALOG INIT] Dialog opened, isEditing: true
+AirEntryDialog.tsx:478 🟠 [DIALOG INIT] Props received: {data-replit-metadata: 'client/src/components/sketch/UnifiedVentDialog.tsx:214:4', data-component-name: 'AirEntryDialog', type: 'vent', mode: 'furnVent', isOpen: true, …}
+AirEntryDialog.tsx:483 🟠 [DIALOG INIT] airEntryProps.initialValues: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+UnifiedVentDialog.tsx:262 🔧 [UNIFIED VENT DIALOG] onPropertiesUpdate triggered from AirEntryDialog with: {temperature: 5}
+UnifiedVentDialog.tsx:277 🔧 [UNIFIED VENT DIALOG] Mapped properties: {state: undefined, temperature: 5, airOrientation: undefined, flowIntensity: undefined, flowType: undefined, …}
+UnifiedVentDialog.tsx:114 🔧 [UNIFIED VENT DIALOG] stableOnPropertiesUpdate called with: {state: undefined, temperature: 5, airOrientation: undefined, flowIntensity: undefined, flowType: undefined, …}
+UnifiedVentDialog.tsx:115 🔧 [UNIFIED VENT DIALOG] onPropertiesUpdate callback exists: true
+Canvas3D.tsx:5690 🔧 [CANVAS3D] handleRealTimePropertiesUpdate called with: {state: undefined, temperature: 5, airOrientation: undefined, flowIntensity: undefined, flowType: undefined, …}
+Canvas3D.tsx:5691 🔧 [CANVAS3D] editingFurniture exists: true
+Canvas3D.tsx:5692 🔧 [CANVAS3D] sceneRef.current exists: true
+Canvas3D.tsx:5700 🔧 [CANVAS3D] Looking for furniture with ID: Vent 0F-1
+Canvas3D.tsx:5707 ✅ [CANVAS3D] Found furniture group in scene
+Canvas3D.tsx:5707 ✅ [CANVAS3D] Found furniture group in scene
+Canvas3D.tsx:5715 🔧 [CANVAS3D] Created new simulationProperties object
+Canvas3D.tsx:5723 ✅ [CANVAS3D] Updated simulationProperties: {state: undefined, temperature: 5, airOrientation: undefined, flowIntensity: undefined, flowType: undefined, …}
+UnifiedVentDialog.tsx:119 ✅ [UNIFIED VENT DIALOG] Properties update sent to Canvas3D
+UnifiedVentDialog.tsx:262 🔧 [UNIFIED VENT DIALOG] onPropertiesUpdate triggered from AirEntryDialog with: {temperature: 50}
+UnifiedVentDialog.tsx:277 🔧 [UNIFIED VENT DIALOG] Mapped properties: {state: undefined, temperature: 50, airOrientation: undefined, flowIntensity: undefined, flowType: undefined, …}
+UnifiedVentDialog.tsx:114 🔧 [UNIFIED VENT DIALOG] stableOnPropertiesUpdate called with: {state: undefined, temperature: 50, airOrientation: undefined, flowIntensity: undefined, flowType: undefined, …}
+UnifiedVentDialog.tsx:115 🔧 [UNIFIED VENT DIALOG] onPropertiesUpdate callback exists: true
+Canvas3D.tsx:5690 🔧 [CANVAS3D] handleRealTimePropertiesUpdate called with: {state: undefined, temperature: 50, airOrientation: undefined, flowIntensity: undefined, flowType: undefined, …}
+Canvas3D.tsx:5691 🔧 [CANVAS3D] editingFurniture exists: true
+Canvas3D.tsx:5692 🔧 [CANVAS3D] sceneRef.current exists: true
+Canvas3D.tsx:5700 🔧 [CANVAS3D] Looking for furniture with ID: Vent 0F-1
+Canvas3D.tsx:5707 ✅ [CANVAS3D] Found furniture group in scene
+Canvas3D.tsx:5707 ✅ [CANVAS3D] Found furniture group in scene
+Canvas3D.tsx:5723 ✅ [CANVAS3D] Updated simulationProperties: {state: undefined, temperature: 50, airOrientation: undefined, flowIntensity: undefined, flowType: undefined, …}
+UnifiedVentDialog.tsx:119 ✅ [UNIFIED VENT DIALOG] Properties update sent to Canvas3D
+AirEntryDialog.tsx:686 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+AirEntryDialog.tsx:687 🎯 [SAVE BUTTON CLICKED] Event type: submit
+AirEntryDialog.tsx:688 🎯 [SAVE BUTTON CLICKED] Props type: vent
+AirEntryDialog.tsx:689 🎯 [SAVE BUTTON CLICKED] Current values: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:690 🎯 [SAVE BUTTON CLICKED] wallPosition from values: undefined
+AirEntryDialog.tsx:691 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 100
+AirEntryDialog.tsx:758 🔵 [DIMENSIONS DEBUG] Reading dimensions from values object:
+AirEntryDialog.tsx:759 🔵 [DIMENSIONS DEBUG] values object: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:760 🔵 [DIMENSIONS DEBUG] (values as any).width: 50
+AirEntryDialog.tsx:761 🔵 [DIMENSIONS DEBUG] (values as any).height: 50
+AirEntryDialog.tsx:762 🔵 [DIMENSIONS DEBUG] localWidth state: 50
+AirEntryDialog.tsx:763 🔵 [DIMENSIONS DEBUG] localHeight state: 50
+AirEntryDialog.tsx:764 🔵 [DIMENSIONS DEBUG] shapeType: rectangular
+Canvas3D.tsx:5825 🎯 [STORE SAVE] Canvas3D Store Update - ID: Vent 0F-1
+Canvas3D.tsx:5826 🎯 [STORE SAVE] Received scale from dialog: {x: 1, y: 1, z: 1}
+Canvas3D.tsx:5827 🎯 [STORE SAVE] Saving scale to store: {x: 1, y: 1, z: 1}
+wizard-design.tsx:1283 [SCALE DEBUG 3.5] Store Update Callback - ID: Vent 0F-1
+wizard-design.tsx:1284 [SCALE DEBUG 3.5] Floor: ground
+wizard-design.tsx:1285 [SCALE DEBUG 3.5] Item scale being stored: {x: 1, y: 1, z: 1}
+wizard-design.tsx:1292 [SCALE DEBUG 3.5] Verification - Scale in store after update: {x: 1, y: 1, z: 1}
+Canvas3D.tsx:5845 🔍 LIFECYCLE TRACE - Final validation:
+Canvas3D.tsx:5846   - Object still in scene after all operations: true
+Canvas3D.tsx:5847   - editingFurniture about to be set to null
+Canvas3D.tsx:5863 🔍 LIFECYCLE TRACE - Delayed validation (100ms after):
+Canvas3D.tsx:5864   - Object still in scene after React updates: true
+Canvas3D.tsx:5368 === COORDINATE SYSTEM FIX ===
+Canvas3D.tsx:5369 Vent Double-Click Analysis:
+Canvas3D.tsx:5370 - Original stored position: {x: 156.88, y: 0, z: 220}
+Canvas3D.tsx:5371 - Local furnitureGroup.position: {x: 0, y: 0, z: 0}
+Canvas3D.tsx:5376 - World position (visual): {x: 156.88, y: 0, z: 220}
+Canvas3D.tsx:5381 - USING WORLD COORDINATES for dialog consistency
+Canvas3D.tsx:5382 ===============================
+Canvas3D.tsx:5420 Using world coordinates for vent dialog:
+Canvas3D.tsx:5421 - Position: {x: 156.88, y: 0, z: 220}
+Canvas3D.tsx:5422 - Rotation: {x: 0.2, y: 0, z: -0}
+AirEntryDialog.tsx:477 🟠 [DIALOG INIT] Dialog opened, isEditing: true
+AirEntryDialog.tsx:478 🟠 [DIALOG INIT] Props received: {data-replit-metadata: 'client/src/components/sketch/UnifiedVentDialog.tsx:214:4', data-component-name: 'AirEntryDialog', type: 'vent', mode: 'furnVent', isOpen: true, …}
+AirEntryDialog.tsx:483 🟠 [DIALOG INIT] airEntryProps.initialValues: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:686 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+AirEntryDialog.tsx:687 🎯 [SAVE BUTTON CLICKED] Event type: submit
+AirEntryDialog.tsx:688 🎯 [SAVE BUTTON CLICKED] Props type: vent
+AirEntryDialog.tsx:689 🎯 [SAVE BUTTON CLICKED] Current values: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:690 🎯 [SAVE BUTTON CLICKED] wallPosition from values: undefined
+AirEntryDialog.tsx:691 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 100
+AirEntryDialog.tsx:758 🔵 [DIMENSIONS DEBUG] Reading dimensions from values object:
+AirEntryDialog.tsx:759 🔵 [DIMENSIONS DEBUG] values object: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:760 🔵 [DIMENSIONS DEBUG] (values as any).width: 50
+AirEntryDialog.tsx:761 🔵 [DIMENSIONS DEBUG] (values as any).height: 50
+AirEntryDialog.tsx:762 🔵 [DIMENSIONS DEBUG] localWidth state: 50
+AirEntryDialog.tsx:763 🔵 [DIMENSIONS DEBUG] localHeight state: 50
+AirEntryDialog.tsx:764 🔵 [DIMENSIONS DEBUG] shapeType: rectangular
+Canvas3D.tsx:5825 🎯 [STORE SAVE] Canvas3D Store Update - ID: Vent 0F-1
+Canvas3D.tsx:5826 🎯 [STORE SAVE] Received scale from dialog: {x: 1, y: 1, z: 1}
+Canvas3D.tsx:5827 🎯 [STORE SAVE] Saving scale to store: {x: 1, y: 1, z: 1}
+wizard-design.tsx:1283 [SCALE DEBUG 3.5] Store Update Callback - ID: Vent 0F-1
+wizard-design.tsx:1284 [SCALE DEBUG 3.5] Floor: ground
+wizard-design.tsx:1285 [SCALE DEBUG 3.5] Item scale being stored: {x: 1, y: 1, z: 1}
+wizard-design.tsx:1292 [SCALE DEBUG 3.5] Verification - Scale in store after update: {x: 1, y: 1, z: 1}
+Canvas3D.tsx:5845 🔍 LIFECYCLE TRACE - Final validation:
+Canvas3D.tsx:5846   - Object still in scene after all operations: true
+Canvas3D.tsx:5847   - editingFurniture about to be set to null
+Canvas3D.tsx:5863 🔍 LIFECYCLE TRACE - Delayed validation (100ms after):
+Canvas3D.tsx:5864   - Object still in scene after React updates: true
