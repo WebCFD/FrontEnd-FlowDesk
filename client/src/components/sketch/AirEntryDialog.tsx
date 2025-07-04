@@ -496,34 +496,19 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           const savedWallPosition = (airEntryProps.initialValues as any).properties?.wallPosition || 
                                   (airEntryProps.initialValues as any).wallPosition;
           
-          console.log("🟠 [DIALOG INIT] Searching for wallPosition:");
-          console.log("🟠 [DIALOG INIT] - From properties:", (airEntryProps.initialValues as any).properties?.wallPosition);
-          console.log("🟠 [DIALOG INIT] - From direct:", (airEntryProps.initialValues as any).wallPosition);
-          console.log("🟠 [DIALOG INIT] - Final savedWallPosition:", savedWallPosition);
+
           
-          // Also set in form values for persistence
-          console.log("🔵 [DIMENSIONS FIX] Setting initial values in setValues:");
-          console.log("🔵 [DIMENSIONS FIX] - initialWidth:", initialWidth);
-          console.log("🔵 [DIMENSIONS FIX] - initialHeight:", initialHeight);
-          console.log("🔵 [DIMENSIONS FIX] - initialDistanceToFloor:", initialDistanceToFloor);
-          console.log("🔵 [DIMENSIONS FIX] - savedWallPosition:", savedWallPosition);
-          
-          setValues(prev => {
-            const newValues = { 
-              ...prev, 
-              width: initialWidth,
-              height: initialHeight,
-              distanceToFloor: initialDistanceToFloor,
-              wallPosition: savedWallPosition 
-            };
-            console.log("🔵 [DIMENSIONS FIX] Previous values:", prev);
-            console.log("🔵 [DIMENSIONS FIX] New values being set:", newValues);
-            return newValues;
-          });
+          // Set form values for persistence
+          setValues(prev => ({ 
+            ...prev, 
+            width: initialWidth,
+            height: initialHeight,
+            distanceToFloor: initialDistanceToFloor,
+            wallPosition: savedWallPosition 
+          }));
           
           // If we have a saved wallPosition, use it directly
           if (savedWallPosition !== undefined && savedWallPosition !== null) {
-            console.log("🟠 [DIALOG INIT] Setting wallPosition to saved value:", savedWallPosition);
             setWallPosition(savedWallPosition);
           }
           // Otherwise, calculate from current position
@@ -806,16 +791,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         }
       };
       
-      console.log("🎯 [SAVE TEST] About to call props.onConfirm with dimensions:");
-      console.log("🎯 [SAVE TEST] - width sent:", canvasData.width);
-      console.log("🎯 [SAVE TEST] - height sent:", canvasData.height);
-      console.log("🎯 [SAVE TEST] - Expected scale.x (width/50):", canvasData.width / 50);
-      console.log("🎯 [SAVE TEST] - Expected scale.y (height/50):", canvasData.height / 50);
-      
       props.onConfirm(canvasData);
-      
-      console.log("🎯 [PROPS.ONCONFIRM] props.onConfirm completed");
-      console.log("🎯 [PROPS.ONCONFIRM] Now calling onClose() to close dialog");
     }
     onClose();
   };

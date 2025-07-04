@@ -5481,12 +5481,7 @@ export default function Canvas3D({
             const allFurnitureItems = getAllFurnitureForFloor(floorName);
             const actualFurnitureItem = allFurnitureItems.find(item => item.id === furnitureId);
             
-            // DEBUG: Check what scale is being read from store
-            if (actualFurnitureItem && actualFurnitureItem.type === 'vent') {
-              console.log('🎯 [STORE READ] Canvas3D reading from store for dialog:');
-              console.log('🎯 [STORE READ] - furnitureId:', furnitureId);
-              console.log('🎯 [STORE READ] - actualFurnitureItem.scale from store:', actualFurnitureItem.scale);
-            }
+
             
             if (actualFurnitureItem) {
               // COORDINATE SYSTEM FIX: Use world coordinates for dialog consistency
@@ -5559,13 +5554,7 @@ export default function Canvas3D({
                 z: furnitureGroup.scale.z
               };
 
-              // DEBUG: Verify we're reading current mesh scale, not obsolete store scale
-              if (actualFurnitureItem.type === 'vent') {
-                console.log('🔧 [MESH READ] Canvas3D reading scale from mesh for dialog:');
-                console.log('🔧 [MESH READ] - furnitureId:', furnitureId);
-                console.log('🔧 [MESH READ] - currentMeshScale (CURRENT):', currentMeshScale);
-                console.log('🔧 [MESH READ] - actualFurnitureItem.scale (OBSOLETE):', actualFurnitureItem.scale);
-              }
+
 
               // Use the actual stored item with all its properties including simulationProperties
               const furnitureItemWithCurrentPosition: FurnitureItem = {
