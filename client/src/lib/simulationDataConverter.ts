@@ -886,6 +886,19 @@ export function findWallForLine(walls: Wall[], line: Line): Wall | undefined {
   );
 }
 
+/**
+ * Finds a wall with similar coordinates to preserve temperature during wall recreation
+ * Uses a larger tolerance to account for floating-point precision differences
+ */
+export function findSimilarWallForLine(walls: Wall[], line: Line): Wall | undefined {
+  const SIMILARITY_TOLERANCE = 1.0; // 1 pixel tolerance for finding similar walls
+  
+  return walls.find(wall => 
+    arePointsEqual(wall.startPoint, line.start, SIMILARITY_TOLERANCE) &&
+    arePointsEqual(wall.endPoint, line.end, SIMILARITY_TOLERANCE)
+  );
+}
+
 // ================== WALL SYNCHRONIZATION SYSTEM ==================
 
 /**
@@ -934,8 +947,12 @@ export function addMissingWalls(
     const existingWall = findWallForLine(existingWalls, line);
     
     if (!existingWall) {
-      // Create a new wall for this line
-      const newWall = createWallFromLine(line, floorName, existingWalls.concat(wallsToAdd), defaultTemperature);
+      // Check if there's a wall with similar coordinates but different precision that might have custom temperature
+      const similarWall = findSimilarWallForLine(existingWalls, line);
+      const preservedTemperature = similarWall?.properties?.temperature || defaultTemperature;
+      
+      // Create a new wall for this line, preserving temperature if found
+      const newWall = createWallFromLine(line, floorName, existingWalls.concat(wallsToAdd), preservedTemperature);
       wallsToAdd.push(newWall);
     }
   });
