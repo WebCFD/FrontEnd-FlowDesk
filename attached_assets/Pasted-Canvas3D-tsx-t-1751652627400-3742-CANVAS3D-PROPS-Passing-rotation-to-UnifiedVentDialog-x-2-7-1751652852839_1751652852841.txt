@@ -1,0 +1,673 @@
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+UnifiedVentDialog.tsx:140 🔄 [DIALOG INIT] UnifiedVentDialog rotation radians: {x: 2.71, y: 0, z: -0}
+UnifiedVentDialog.tsx:141 🔄 [DIALOG INIT] UnifiedVentDialog rotation degrees: {x: 155.2715624804531, y: 0, z: -0}
+AirEntryDialog.tsx:477 🟠 [DIALOG INIT] Dialog opened, isEditing: true
+AirEntryDialog.tsx:478 🟠 [DIALOG INIT] Props received: {data-replit-metadata: 'client/src/components/sketch/UnifiedVentDialog.tsx:215:4', data-component-name: 'AirEntryDialog', type: 'vent', mode: 'furnVent', isOpen: true, …}
+AirEntryDialog.tsx:483 🟠 [DIALOG INIT] airEntryProps.initialValues: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+AirEntryDialog.tsx:1052 🔄 [ROTATION X] Input: 1 → Radians: 0.017453292519943295 → Back to degrees: 1
+AirEntryDialog.tsx:1056 🔄 [ROTATION X] Calling onRotationUpdate with: {x: 0.017453292519943295, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3408 🔄 [CANVAS3D] handleRealTimeRotationUpdate received: {x: 0.017453292519943295, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3409 🔄 [CANVAS3D] Converting to degrees: {x: 1, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+AirEntryDialog.tsx:1052 🔄 [ROTATION X] Input: 15 → Radians: 0.2617993877991494 → Back to degrees: 14.999999999999998
+AirEntryDialog.tsx:1056 🔄 [ROTATION X] Calling onRotationUpdate with: {x: 0.2617993877991494, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3408 🔄 [CANVAS3D] handleRealTimeRotationUpdate received: {x: 0.2617993877991494, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3409 🔄 [CANVAS3D] Converting to degrees: {x: 14.999999999999998, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+AirEntryDialog.tsx:1052 🔄 [ROTATION X] Input: 155 → Radians: 2.705260340591211 → Back to degrees: 155
+AirEntryDialog.tsx:1056 🔄 [ROTATION X] Calling onRotationUpdate with: {x: 2.705260340591211, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3408 🔄 [CANVAS3D] handleRealTimeRotationUpdate received: {x: 2.705260340591211, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3409 🔄 [CANVAS3D] Converting to degrees: {x: 155, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+AirEntryDialog.tsx:1052 🔄 [ROTATION X] Input: 155.5 → Radians: 2.7139869868511823 → Back to degrees: 155.5
+AirEntryDialog.tsx:1056 🔄 [ROTATION X] Calling onRotationUpdate with: {x: 2.7139869868511823, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3408 🔄 [CANVAS3D] handleRealTimeRotationUpdate received: {x: 2.7139869868511823, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3409 🔄 [CANVAS3D] Converting to degrees: {x: 155.5, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+AirEntryDialog.tsx:1052 🔄 [ROTATION X] Input: 155.55 → Radians: 2.71485965147718 → Back to degrees: 155.55
+AirEntryDialog.tsx:1056 🔄 [ROTATION X] Calling onRotationUpdate with: {x: 2.71485965147718, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3408 🔄 [CANVAS3D] handleRealTimeRotationUpdate received: {x: 2.71485965147718, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3409 🔄 [CANVAS3D] Converting to degrees: {x: 155.55, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+AirEntryDialog.tsx:686 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+AirEntryDialog.tsx:687 🎯 [SAVE BUTTON CLICKED] Event type: submit
+AirEntryDialog.tsx:688 🎯 [SAVE BUTTON CLICKED] Props type: vent
+AirEntryDialog.tsx:689 🎯 [SAVE BUTTON CLICKED] Current values: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:690 🎯 [SAVE BUTTON CLICKED] wallPosition from values: undefined
+AirEntryDialog.tsx:691 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 0
+AirEntryDialog.tsx:758 🔵 [DIMENSIONS DEBUG] Reading dimensions from values object:
+AirEntryDialog.tsx:759 🔵 [DIMENSIONS DEBUG] values object: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:760 🔵 [DIMENSIONS DEBUG] (values as any).width: 50
+AirEntryDialog.tsx:761 🔵 [DIMENSIONS DEBUG] (values as any).height: 50
+AirEntryDialog.tsx:762 🔵 [DIMENSIONS DEBUG] localWidth state: 50
+AirEntryDialog.tsx:763 🔵 [DIMENSIONS DEBUG] localHeight state: 50
+AirEntryDialog.tsx:764 🔵 [DIMENSIONS DEBUG] shapeType: rectangular
+Canvas3D.tsx?t=1751652627400:3488 🔄 [SAVE CHANGES] handleFurnitureEdit received data: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+Canvas3D.tsx?t=1751652627400:3489 🔄 [SAVE CHANGES] Rotation in radians: {x: 2.71485965147718, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3490 🔄 [SAVE CHANGES] Rotation in degrees: {x: 155.55, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3548 🎯 [STORE SAVE] Canvas3D Store Update - ID: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3549 🎯 [STORE SAVE] Received rotation from dialog: {x: 2.71485965147718, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3550 🎯 [STORE SAVE] Saving rotation to store: {x: 2.71485965147718, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3551 🎯 [STORE SAVE] Received scale from dialog: {x: 1, y: 1, z: 1}
+Canvas3D.tsx?t=1751652627400:3552 🎯 [STORE SAVE] Saving scale to store: {x: 1, y: 1, z: 1}
+wizard-design.tsx?t=1751652627400:917 [SCALE DEBUG 3.5] Store Update Callback - ID: Vent 0F-1
+wizard-design.tsx?t=1751652627400:918 [SCALE DEBUG 3.5] Floor: ground
+wizard-design.tsx?t=1751652627400:919 [SCALE DEBUG 3.5] Item scale being stored: {x: 1, y: 1, z: 1}
+wizard-design.tsx?t=1751652627400:923 [SCALE DEBUG 3.5] Verification - Scale in store after update: {x: 1, y: 1, z: 1}
+Canvas3D.tsx?t=1751652627400:3564 🔍 LIFECYCLE TRACE - Final validation:
+Canvas3D.tsx?t=1751652627400:3565   - Object still in scene after all operations: true
+Canvas3D.tsx?t=1751652627400:3566   - editingFurniture about to be set to null
+Canvas3D.tsx?t=1751652627400:3579 🔍 LIFECYCLE TRACE - Delayed validation (100ms after):
+Canvas3D.tsx?t=1751652627400:3580   - Object still in scene after React updates: true
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+UnifiedVentDialog.tsx:140 🔄 [DIALOG INIT] UnifiedVentDialog rotation radians: {x: 2.71, y: 0, z: -0}
+UnifiedVentDialog.tsx:141 🔄 [DIALOG INIT] UnifiedVentDialog rotation degrees: {x: 155.2715624804531, y: 0, z: -0}
+AirEntryDialog.tsx:477 🟠 [DIALOG INIT] Dialog opened, isEditing: true
+AirEntryDialog.tsx:478 🟠 [DIALOG INIT] Props received: {data-replit-metadata: 'client/src/components/sketch/UnifiedVentDialog.tsx:215:4', data-component-name: 'AirEntryDialog', type: 'vent', mode: 'furnVent', isOpen: true, …}
+AirEntryDialog.tsx:483 🟠 [DIALOG INIT] airEntryProps.initialValues: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3742 🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3743 🔄 [CANVAS3D PROPS] editingFurniture.item.id: Vent 0F-1
+AirEntryDialog.tsx:686 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+AirEntryDialog.tsx:687 🎯 [SAVE BUTTON CLICKED] Event type: submit
+AirEntryDialog.tsx:688 🎯 [SAVE BUTTON CLICKED] Props type: vent
+AirEntryDialog.tsx:689 🎯 [SAVE BUTTON CLICKED] Current values: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:690 🎯 [SAVE BUTTON CLICKED] wallPosition from values: undefined
+AirEntryDialog.tsx:691 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 0
+AirEntryDialog.tsx:758 🔵 [DIMENSIONS DEBUG] Reading dimensions from values object:
+AirEntryDialog.tsx:759 🔵 [DIMENSIONS DEBUG] values object: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:760 🔵 [DIMENSIONS DEBUG] (values as any).width: 50
+AirEntryDialog.tsx:761 🔵 [DIMENSIONS DEBUG] (values as any).height: 50
+AirEntryDialog.tsx:762 🔵 [DIMENSIONS DEBUG] localWidth state: 50
+AirEntryDialog.tsx:763 🔵 [DIMENSIONS DEBUG] localHeight state: 50
+AirEntryDialog.tsx:764 🔵 [DIMENSIONS DEBUG] shapeType: rectangular
+Canvas3D.tsx?t=1751652627400:3488 🔄 [SAVE CHANGES] handleFurnitureEdit received data: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+Canvas3D.tsx?t=1751652627400:3489 🔄 [SAVE CHANGES] Rotation in radians: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3490 🔄 [SAVE CHANGES] Rotation in degrees: {x: 155.2715624804531, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3548 🎯 [STORE SAVE] Canvas3D Store Update - ID: Vent 0F-1
+Canvas3D.tsx?t=1751652627400:3549 🎯 [STORE SAVE] Received rotation from dialog: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3550 🎯 [STORE SAVE] Saving rotation to store: {x: 2.71, y: 0, z: -0}
+Canvas3D.tsx?t=1751652627400:3551 🎯 [STORE SAVE] Received scale from dialog: {x: 1, y: 1, z: 1}
+Canvas3D.tsx?t=1751652627400:3552 🎯 [STORE SAVE] Saving scale to store: {x: 1, y: 1, z: 1}
+wizard-design.tsx?t=1751652627400:917 [SCALE DEBUG 3.5] Store Update Callback - ID: Vent 0F-1
+wizard-design.tsx?t=1751652627400:918 [SCALE DEBUG 3.5] Floor: ground
+wizard-design.tsx?t=1751652627400:919 [SCALE DEBUG 3.5] Item scale being stored: {x: 1, y: 1, z: 1}
+wizard-design.tsx?t=1751652627400:923 [SCALE DEBUG 3.5] Verification - Scale in store after update: {x: 1, y: 1, z: 1}
+Canvas3D.tsx?t=1751652627400:3564 🔍 LIFECYCLE TRACE - Final validation:
+Canvas3D.tsx?t=1751652627400:3565   - Object still in scene after all operations: true
+Canvas3D.tsx?t=1751652627400:3566   - editingFurniture about to be set to null
+Canvas3D.tsx?t=1751652627400:3579 🔍 LIFECYCLE TRACE - Delayed validation (100ms after):
+Canvas3D.tsx?t=1751652627400:3580   - Object still in scene after React updates: true
+client:223 [vite] hot updated: /src/pages/dashboard/wizard-design.tsx
+client:223 [vite] hot updated: /src/index.css?v=jbiyU40YT6gR4YnwglEGd
+client:64 [vite] invalidate /src/components/sketch/Canvas3D.tsx: Could not Fast Refresh ("generateSharedFloorGeometry" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+client:223 [vite] hot updated: /src/components/sketch/Canvas3D.tsx
+client:223 [vite] hot updated: /src/index.css?v=jbiyU40YT6gR4YnwglEGd
+client:223 [vite] hot updated: /src/index.css?v=jbiyU40YT6gR4YnwglEGd
+client:223 [vite] hot updated: /src/pages/test-fase2.tsx
+client:223 [vite] hot updated: /src/pages/test-canvas3d.tsx
+client:223 [vite] hot updated: /src/pages/dashboard/wizard-design.tsx
+client:223 [vite] hot updated: /src/components/sketch/RoomSketchPro.tsx
+room-store.ts:475 🔗 STORE: Suscripción eliminada. Total listeners: 0
+room-store.ts:467 🔗 STORE: Nueva suscripción añadida. Total listeners: 1
+@react-refresh:675 [Violation] 'setTimeout' handler took 198ms
+wizard-design:1 [.WebGL-0x6bc0b3bb100] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x6bc0b3bb100] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x6bc0b3bb100] GL_INVALID_OPERATION: Texture is immutable.
+UnifiedVentDialog.tsx:140 🔄 [DIALOG INIT] UnifiedVentDialog rotation radians: {x: 2.71, y: 0, z: -0}
+UnifiedVentDialog.tsx:141 🔄 [DIALOG INIT] UnifiedVentDialog rotation degrees: {x: 155.2715624804531, y: 0, z: -0}
+AirEntryDialog.tsx:477 🟠 [DIALOG INIT] Dialog opened, isEditing: true
+AirEntryDialog.tsx:478 🟠 [DIALOG INIT] Props received: {data-replit-metadata: 'client/src/components/sketch/UnifiedVentDialog.tsx:215:4', data-component-name: 'AirEntryDialog', type: 'vent', mode: 'furnVent', isOpen: true, …}
+AirEntryDialog.tsx:483 🟠 [DIALOG INIT] airEntryProps.initialValues: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:1052 🔄 [ROTATION X] Input: 1 → Radians: 0.017453292519943295 → Back to degrees: 1
+AirEntryDialog.tsx:1056 🔄 [ROTATION X] Calling onRotationUpdate with: {x: 0.017453292519943295, y: 0, z: -0}
+Canvas3D.tsx?t=1751652776905:3408 🔄 [CANVAS3D] handleRealTimeRotationUpdate received: {x: 0.017453292519943295, y: 0, z: -0}
+Canvas3D.tsx?t=1751652776905:3409 🔄 [CANVAS3D] Converting to degrees: {x: 1, y: 0, z: -0}
+AirEntryDialog.tsx:1052 🔄 [ROTATION X] Input: 15 → Radians: 0.2617993877991494 → Back to degrees: 14.999999999999998
+AirEntryDialog.tsx:1056 🔄 [ROTATION X] Calling onRotationUpdate with: {x: 0.2617993877991494, y: 0, z: -0}
+Canvas3D.tsx?t=1751652776905:3408 🔄 [CANVAS3D] handleRealTimeRotationUpdate received: {x: 0.2617993877991494, y: 0, z: -0}
+Canvas3D.tsx?t=1751652776905:3409 🔄 [CANVAS3D] Converting to degrees: {x: 14.999999999999998, y: 0, z: -0}
+AirEntryDialog.tsx:1052 🔄 [ROTATION X] Input: 155 → Radians: 2.705260340591211 → Back to degrees: 155
+AirEntryDialog.tsx:1056 🔄 [ROTATION X] Calling onRotationUpdate with: {x: 2.705260340591211, y: 0, z: -0}
+Canvas3D.tsx?t=1751652776905:3408 🔄 [CANVAS3D] handleRealTimeRotationUpdate received: {x: 2.705260340591211, y: 0, z: -0}
+Canvas3D.tsx?t=1751652776905:3409 🔄 [CANVAS3D] Converting to degrees: {x: 155, y: 0, z: -0}
+client:64 [vite] invalidate /src/components/sketch/Canvas3D.tsx: Could not Fast Refresh ("generateSharedFloorGeometry" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+client:223 [vite] hot updated: /src/components/sketch/Canvas3D.tsx
+client:223 [vite] hot updated: /src/index.css?v=jbiyU40YT6gR4YnwglEGd
+AirEntryDialog.tsx:1052 🔄 [ROTATION X] Input: 155.5 → Radians: 2.7139869868511823 → Back to degrees: 155.5
+AirEntryDialog.tsx:1056 🔄 [ROTATION X] Calling onRotationUpdate with: {x: 2.7139869868511823, y: 0, z: -0}
+Canvas3D.tsx?t=1751652776905:3408 🔄 [CANVAS3D] handleRealTimeRotationUpdate received: {x: 2.7139869868511823, y: 0, z: -0}
+Canvas3D.tsx?t=1751652776905:3409 🔄 [CANVAS3D] Converting to degrees: {x: 155.5, y: 0, z: -0}
+AirEntryDialog.tsx:1052 🔄 [ROTATION X] Input: 155.55 → Radians: 2.71485965147718 → Back to degrees: 155.55
+AirEntryDialog.tsx:1056 🔄 [ROTATION X] Calling onRotationUpdate with: {x: 2.71485965147718, y: 0, z: -0}
+Canvas3D.tsx?t=1751652776905:3408 🔄 [CANVAS3D] handleRealTimeRotationUpdate received: {x: 2.71485965147718, y: 0, z: -0}
+Canvas3D.tsx?t=1751652776905:3409 🔄 [CANVAS3D] Converting to degrees: {x: 155.55, y: 0, z: -0}
+AirEntryDialog.tsx:686 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+AirEntryDialog.tsx:687 🎯 [SAVE BUTTON CLICKED] Event type: submit
+AirEntryDialog.tsx:688 🎯 [SAVE BUTTON CLICKED] Props type: vent
+AirEntryDialog.tsx:689 🎯 [SAVE BUTTON CLICKED] Current values: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:690 🎯 [SAVE BUTTON CLICKED] wallPosition from values: undefined
+AirEntryDialog.tsx:691 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 0
+AirEntryDialog.tsx:758 🔵 [DIMENSIONS DEBUG] Reading dimensions from values object:
+AirEntryDialog.tsx:759 🔵 [DIMENSIONS DEBUG] values object: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:760 🔵 [DIMENSIONS DEBUG] (values as any).width: 50
+AirEntryDialog.tsx:761 🔵 [DIMENSIONS DEBUG] (values as any).height: 50
+AirEntryDialog.tsx:762 🔵 [DIMENSIONS DEBUG] localWidth state: 50
+AirEntryDialog.tsx:763 🔵 [DIMENSIONS DEBUG] localHeight state: 50
+AirEntryDialog.tsx:764 🔵 [DIMENSIONS DEBUG] shapeType: rectangular
+Canvas3D.tsx?t=1751652776905:3488 🔄 [SAVE CHANGES] handleFurnitureEdit received data: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+Canvas3D.tsx?t=1751652776905:3489 🔄 [SAVE CHANGES] Rotation in radians: {x: 2.71485965147718, y: 0, z: -0}
+Canvas3D.tsx?t=1751652776905:3490 🔄 [SAVE CHANGES] Rotation in degrees: {x: 155.55, y: 0, z: -0}
+Canvas3D.tsx?t=1751652776905:3548 🎯 [STORE SAVE] Canvas3D Store Update - ID: Vent 0F-1
+Canvas3D.tsx?t=1751652776905:3549 🎯 [STORE SAVE] Received rotation from dialog: {x: 2.71485965147718, y: 0, z: -0}
+Canvas3D.tsx?t=1751652776905:3550 🎯 [STORE SAVE] Saving rotation to store: {x: 2.71485965147718, y: 0, z: -0}
+Canvas3D.tsx?t=1751652776905:3551 🎯 [STORE SAVE] Received scale from dialog: {x: 1, y: 1, z: 1}
+Canvas3D.tsx?t=1751652776905:3552 🎯 [STORE SAVE] Saving scale to store: {x: 1, y: 1, z: 1}
+wizard-design.tsx:1283 [SCALE DEBUG 3.5] Store Update Callback - ID: Vent 0F-1
+wizard-design.tsx:1284 [SCALE DEBUG 3.5] Floor: ground
+wizard-design.tsx:1285 [SCALE DEBUG 3.5] Item scale being stored: {x: 1, y: 1, z: 1}
+wizard-design.tsx:1292 [SCALE DEBUG 3.5] Verification - Scale in store after update: {x: 1, y: 1, z: 1}
+Canvas3D.tsx?t=1751652776905:3564 🔍 LIFECYCLE TRACE - Final validation:
+Canvas3D.tsx?t=1751652776905:3565   - Object still in scene after all operations: true
+Canvas3D.tsx?t=1751652776905:3566   - editingFurniture about to be set to null
+Canvas3D.tsx?t=1751652776905:3579 🔍 LIFECYCLE TRACE - Delayed validation (100ms after):
+Canvas3D.tsx?t=1751652776905:3580   - Object still in scene after React updates: true
+client:223 [vite] hot updated: /src/index.css?v=jbiyU40YT6gR4YnwglEGd
+client:223 [vite] hot updated: /src/pages/test-fase2.tsx
+client:223 [vite] hot updated: /src/pages/test-canvas3d.tsx
+client:223 [vite] hot updated: /src/pages/dashboard/wizard-design.tsx
+client:223 [vite] hot updated: /src/components/sketch/RoomSketchPro.tsx
+room-store.ts:475 🔗 STORE: Suscripción eliminada. Total listeners: 0
+room-store.ts:467 🔗 STORE: Nueva suscripción añadida. Total listeners: 1
+@react-refresh:675 [Violation] 'setTimeout' handler took 314ms
+wizard-design:1 [.WebGL-0x6bc0b3b8e00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x6bc0b3b8e00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x6bc0b3b8e00] GL_INVALID_OPERATION: Texture is immutable.
+ 🔄 [DIALOG INIT] UnifiedVentDialog rotation radians: {x: 2.71, y: 0, z: -0}
+ 🔄 [DIALOG INIT] UnifiedVentDialog rotation degrees: {x: 155.2715624804531, y: 0, z: -0}
+ 🟠 [DIALOG INIT] Dialog opened, isEditing: true
+ 🟠 [DIALOG INIT] Props received: {data-replit-metadata: 'client/src/components/sketch/UnifiedVentDialog.tsx:215:4', data-component-name: 'AirEntryDialog', type: 'vent', mode: 'furnVent', isOpen: true, …}
+ 🟠 [DIALOG INIT] airEntryProps.initialValues: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+ 🔄 [ROTATION X] Input: 1 → Radians: 0.017453292519943295 → Back to degrees: 1
+ 🔄 [ROTATION X] Calling onRotationUpdate with: {x: 0.017453292519943295, y: 0, z: -0}
+ 🔄 [CANVAS3D] handleRealTimeRotationUpdate received: {x: 0.017453292519943295, y: 0, z: -0}
+ 🔄 [CANVAS3D] Converting to degrees: {x: 1, y: 0, z: -0}
+ 🔄 [ROTATION X] Input: 15 → Radians: 0.2617993877991494 → Back to degrees: 14.999999999999998
+ 🔄 [ROTATION X] Calling onRotationUpdate with: {x: 0.2617993877991494, y: 0, z: -0}
+ 🔄 [CANVAS3D] handleRealTimeRotationUpdate received: {x: 0.2617993877991494, y: 0, z: -0}
+ 🔄 [CANVAS3D] Converting to degrees: {x: 14.999999999999998, y: 0, z: -0}
+ 🔄 [ROTATION X] Input: 155 → Radians: 2.705260340591211 → Back to degrees: 155
+ 🔄 [ROTATION X] Calling onRotationUpdate with: {x: 2.705260340591211, y: 0, z: -0}
+ 🔄 [CANVAS3D] handleRealTimeRotationUpdate received: {x: 2.705260340591211, y: 0, z: -0}
+ 🔄 [CANVAS3D] Converting to degrees: {x: 155, y: 0, z: -0}
+ 🔄 [ROTATION X] Input: 155.5 → Radians: 2.7139869868511823 → Back to degrees: 155.5
+ 🔄 [ROTATION X] Calling onRotationUpdate with: {x: 2.7139869868511823, y: 0, z: -0}
+ 🔄 [CANVAS3D] handleRealTimeRotationUpdate received: {x: 2.7139869868511823, y: 0, z: -0}
+ 🔄 [CANVAS3D] Converting to degrees: {x: 155.5, y: 0, z: -0}
+ 🔄 [ROTATION X] Input: 155.55 → Radians: 2.71485965147718 → Back to degrees: 155.55
+ 🔄 [ROTATION X] Calling onRotationUpdate with: {x: 2.71485965147718, y: 0, z: -0}
+ 🔄 [CANVAS3D] handleRealTimeRotationUpdate received: {x: 2.71485965147718, y: 0, z: -0}
+ 🔄 [CANVAS3D] Converting to degrees: {x: 155.55, y: 0, z: -0}
+ 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+ 🎯 [SAVE BUTTON CLICKED] Event type: submit
+ 🎯 [SAVE BUTTON CLICKED] Props type: vent
+ 🎯 [SAVE BUTTON CLICKED] Current values: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+ 🎯 [SAVE BUTTON CLICKED] wallPosition from values: undefined
+ 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 0
+ 🔵 [DIMENSIONS DEBUG] Reading dimensions from values object:
+ 🔵 [DIMENSIONS DEBUG] values object: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+ 🔵 [DIMENSIONS DEBUG] (values as any).width: 50
+ 🔵 [DIMENSIONS DEBUG] (values as any).height: 50
+ 🔵 [DIMENSIONS DEBUG] localWidth state: 50
+ 🔵 [DIMENSIONS DEBUG] localHeight state: 50
+ 🔵 [DIMENSIONS DEBUG] shapeType: rectangular
+ 🔄 [SAVE CHANGES] handleFurnitureEdit received data: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+ 🔄 [SAVE CHANGES] Rotation in radians: {x: 2.71485965147718, y: 0, z: -0}
+ 🔄 [SAVE CHANGES] Rotation in degrees: {x: 155.55, y: 0, z: -0}
+ [SCALE DEBUG 3.5] Store Update Callback - ID: Vent 0F-1
+ [SCALE DEBUG 3.5] Floor: ground
+ [SCALE DEBUG 3.5] Item scale being stored: {x: 1, y: 1, z: 1}
+ [SCALE DEBUG 3.5] Verification - Scale in store after update: {x: 1, y: 1, z: 1}
+ 🔍 LIFECYCLE TRACE - Final validation:
+   - Object still in scene after all operations: true
+   - editingFurniture about to be set to null
+ 🔍 LIFECYCLE TRACE - Delayed validation (100ms after):
+   - Object still in scene after React updates: true
+ 🔄 [DIALOG INIT] UnifiedVentDialog rotation radians: {x: 2.71, y: 0, z: -0}
+ 🔄 [DIALOG INIT] UnifiedVentDialog rotation degrees: {x: 155.2715624804531, y: 0, z: -0}
+ 🟠 [DIALOG INIT] Dialog opened, isEditing: true
+ 🟠 [DIALOG INIT] Props received: {data-replit-metadata: 'client/src/components/sketch/UnifiedVentDialog.tsx:215:4', data-component-name: 'AirEntryDialog', type: 'vent', mode: 'furnVent', isOpen: true, …}
+ 🟠 [DIALOG INIT] airEntryProps.initialValues: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+ 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+ 🎯 [SAVE BUTTON CLICKED] Event type: submit
+ 🎯 [SAVE BUTTON CLICKED] Props type: vent
+ 🎯 [SAVE BUTTON CLICKED] Current values: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+ 🎯 [SAVE BUTTON CLICKED] wallPosition from values: undefined
+ 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 0
+ 🔵 [DIMENSIONS DEBUG] Reading dimensions from values object:
+ 🔵 [DIMENSIONS DEBUG] values object: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+ 🔵 [DIMENSIONS DEBUG] (values as any).width: 50
+ 🔵 [DIMENSIONS DEBUG] (values as any).height: 50
+ 🔵 [DIMENSIONS DEBUG] localWidth state: 50
+ 🔵 [DIMENSIONS DEBUG] localHeight state: 50
+ 🔵 [DIMENSIONS DEBUG] shapeType: rectangular
+ 🔄 [SAVE CHANGES] handleFurnitureEdit received data: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+ 🔄 [SAVE CHANGES] Rotation in radians: {x: 2.71, y: 0, z: -0}
+ 🔄 [SAVE CHANGES] Rotation in degrees: {x: 155.2715624804531, y: 0, z: -0}
+ [SCALE DEBUG 3.5] Store Update Callback - ID: Vent 0F-1
+ [SCALE DEBUG 3.5] Floor: ground
+ [SCALE DEBUG 3.5] Item scale being stored: {x: 1, y: 1, z: 1}
+ [SCALE DEBUG 3.5] Verification - Scale in store after update: {x: 1, y: 1, z: 1}
+ 🔍 LIFECYCLE TRACE - Final validation:
+   - Object still in scene after all operations: true
+   - editingFurniture about to be set to null
+ 🔍 LIFECYCLE TRACE - Delayed validation (100ms after):
+   - Object still in scene after React updates: true
+ 🔄 [DIALOG INIT] UnifiedVentDialog rotation radians: {x: 2.71, y: 0, z: -0}
+ 🔄 [DIALOG INIT] UnifiedVentDialog rotation degrees: {x: 155.2715624804531, y: 0, z: -0}
+ 🟠 [DIALOG INIT] Dialog opened, isEditing: true
+ 🟠 [DIALOG INIT] Props received: {data-replit-metadata: 'client/src/components/sketch/UnifiedVentDialog.tsx:215:4', data-component-name: 'AirEntryDialog', type: 'vent', mode: 'furnVent', isOpen: true, …}
+ 🟠 [DIALOG INIT] airEntryProps.initialValues: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+ 🔄 [ROTATION X] Input: 1 → Radians: 0.017453292519943295 → Back to degrees: 1
+ 🔄 [ROTATION X] Calling onRotationUpdate with: {x: 0.017453292519943295, y: 0, z: -0}
+ 🔄 [CANVAS3D] handleRealTimeRotationUpdate received: {x: 0.017453292519943295, y: 0, z: -0}
+ 🔄 [CANVAS3D] Converting to degrees: {x: 1, y: 0, z: -0}
+ 🔄 [ROTATION X] Input: 15 → Radians: 0.2617993877991494 → Back to degrees: 14.999999999999998
+ 🔄 [ROTATION X] Calling onRotationUpdate with: {x: 0.2617993877991494, y: 0, z: -0}
+ 🔄 [CANVAS3D] handleRealTimeRotationUpdate received: {x: 0.2617993877991494, y: 0, z: -0}
+ 🔄 [CANVAS3D] Converting to degrees: {x: 14.999999999999998, y: 0, z: -0}
+ 🔄 [ROTATION X] Input: 155 → Radians: 2.705260340591211 → Back to degrees: 155
+ 🔄 [ROTATION X] Calling onRotationUpdate with: {x: 2.705260340591211, y: 0, z: -0}
+ 🔄 [CANVAS3D] handleRealTimeRotationUpdate received: {x: 2.705260340591211, y: 0, z: -0}
+ 🔄 [CANVAS3D] Converting to degrees: {x: 155, y: 0, z: -0}
+ 🔄 [ROTATION X] Input: 155.5 → Radians: 2.7139869868511823 → Back to degrees: 155.5
+ 🔄 [ROTATION X] Calling onRotationUpdate with: {x: 2.7139869868511823, y: 0, z: -0}
+ 🔄 [CANVAS3D] handleRealTimeRotationUpdate received: {x: 2.7139869868511823, y: 0, z: -0}
+ 🔄 [CANVAS3D] Converting to degrees: {x: 155.5, y: 0, z: -0}
+ 🔄 [ROTATION X] Input: 155.55 → Radians: 2.71485965147718 → Back to degrees: 155.55
+ 🔄 [ROTATION X] Calling onRotationUpdate with: {x: 2.71485965147718, y: 0, z: -0}
+ 🔄 [CANVAS3D] handleRealTimeRotationUpdate received: {x: 2.71485965147718, y: 0, z: -0}
+ 🔄 [CANVAS3D] Converting to degrees: {x: 155.55, y: 0, z: -0}
+ 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+ 🎯 [SAVE BUTTON CLICKED] Event type: submit
+ 🎯 [SAVE BUTTON CLICKED] Props type: vent
+ 🎯 [SAVE BUTTON CLICKED] Current values: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+ 🎯 [SAVE BUTTON CLICKED] wallPosition from values: undefined
+ 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 0
+ 🔵 [DIMENSIONS DEBUG] Reading dimensions from values object:
+ 🔵 [DIMENSIONS DEBUG] values object: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+ 🔵 [DIMENSIONS DEBUG] (values as any).width: 50
+ 🔵 [DIMENSIONS DEBUG] (values as any).height: 50
+ 🔵 [DIMENSIONS DEBUG] localWidth state: 50
+ 🔵 [DIMENSIONS DEBUG] localHeight state: 50
+ 🔵 [DIMENSIONS DEBUG] shapeType: rectangular
+ 🔄 [SAVE CHANGES] handleFurnitureEdit received data: {name: 'Vent 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}, …}
+ 🔄 [SAVE CHANGES] Rotation in radians: {x: 2.71485965147718, y: 0, z: -0}
+ 🔄 [SAVE CHANGES] Rotation in degrees: {x: 155.55, y: 0, z: -0}
+ [SCALE DEBUG 3.5] Store Update Callback - ID: Vent 0F-1
+ [SCALE DEBUG 3.5] Floor: ground
+ [SCALE DEBUG 3.5] Item scale being stored: {x: 1, y: 1, z: 1}
+ [SCALE DEBUG 3.5] Verification - Scale in store after update: {x: 1, y: 1, z: 1}
+ 🔍 LIFECYCLE TRACE - Final validation:
+   - Object still in scene after all operations: true
+   - editingFurniture about to be set to null
+ 🔍 LIFECYCLE TRACE - Delayed validation (100ms after):
+   - Object still in scene after React updates: true
+ 🔄 [DIALOG INIT] UnifiedVentDialog rotation radians: {x: 2.71, y: 0, z: -0}
+ 🔄 [DIALOG INIT] UnifiedVentDialog rotation degrees: {x: 155.2715624804531, y: 0, z: -0}
+ 🟠 [DIALOG INIT] Dialog opened, isEditing: true
+ 🟠 [DIALOG INIT] Props received: {data-replit-metadata: 'client/src/components/sketch/UnifiedVentDialog.tsx:215:4', data-component-name: 'AirEntryDialog', type: 'vent', mode: 'furnVent', isOpen: true, …}
+ 🟠 [DIALOG INIT] airEntryProps.initialValues: {width: 50, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+ Custom Furniture Store: Memory cleanup completed. Cleaned 0 geometries, 0 remaining in cache

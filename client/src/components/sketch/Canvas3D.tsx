@@ -5398,9 +5398,9 @@ export default function Canvas3D({
                 };
                 
                 dialogRotation = {
-                  x: Math.round(worldRotation.x * 100) / 100,
-                  y: Math.round(worldRotation.y * 100) / 100,
-                  z: Math.round(worldRotation.z * 100) / 100
+                  x: worldRotation.x,
+                  y: worldRotation.y,
+                  z: worldRotation.z
                 };
                 
 
