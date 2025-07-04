@@ -3370,27 +3370,36 @@ export default function Canvas2D({
     height?: number; 
     distanceToFloor?: number 
   }) => {
-    console.log("🟢 [CANVAS2D DEBUG] handleAirEntryDimensionsUpdate called with index:", index, "dimensions:", newDimensions);
+    console.log("🔴 [CANVAS2D DEBUG] handleAirEntryDimensionsUpdate called:", { index, newDimensions, currentFloor });
+    console.log("🔴 [CANVAS2D DEBUG] onDimensionsUpdate callback exists:", !!onDimensionsUpdate);
     
-    // Update the store immediately to maintain visual consistency
-    const updatedAirEntries = [...airEntries];
-    if (updatedAirEntries[index]) {
-      const originalEntry = updatedAirEntries[index];
-      console.log("🟢 [CANVAS2D DEBUG] Original entry before dimensions update:", originalEntry);
+    if (onDimensionsUpdate) {
+      console.log("🔴 [CANVAS2D DEBUG] Calling onDimensionsUpdate with:", { currentFloor, index, newDimensions });
+      onDimensionsUpdate(currentFloor, index, newDimensions);
+      console.log("🔴 [CANVAS2D DEBUG] ✅ onDimensionsUpdate called successfully");
+    } else {
+      console.log("🔴 [CANVAS2D DEBUG] ❌ onDimensionsUpdate callback is missing! Falling back to direct store update");
       
-      // Update dimensions while preserving other properties
-      updatedAirEntries[index] = {
-        ...updatedAirEntries[index],
-        dimensions: {
-          ...updatedAirEntries[index].dimensions,
-          ...newDimensions
-        }
-      };
-      
-      console.log("🟢 [CANVAS2D DEBUG] Updated entry after dimensions change:", updatedAirEntries[index]);
-      
-      // Call parent callback to update store
-      onAirEntriesUpdate?.(updatedAirEntries);
+      // Fallback: Update the store immediately to maintain visual consistency
+      const updatedAirEntries = [...airEntries];
+      if (updatedAirEntries[index]) {
+        const originalEntry = updatedAirEntries[index];
+        console.log("🔴 [CANVAS2D DEBUG] Original entry before dimensions update:", originalEntry);
+        
+        // Update dimensions while preserving other properties
+        updatedAirEntries[index] = {
+          ...updatedAirEntries[index],
+          dimensions: {
+            ...updatedAirEntries[index].dimensions,
+            ...newDimensions
+          }
+        };
+        
+        console.log("🔴 [CANVAS2D DEBUG] Updated entry after dimensions change:", updatedAirEntries[index]);
+        
+        // Call parent callback to update store
+        onAirEntriesUpdate?.(updatedAirEntries);
+      }
     }
   };
 

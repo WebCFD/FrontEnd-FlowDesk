@@ -1226,8 +1226,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               // Trigger real-time updates for Canvas3D
                               if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
                                 console.log("🔵 [CENTER HEIGHT DEBUG] Calling onDimensionsUpdate with:", { distanceToFloor: rounded });
-                                props.onDimensionsUpdate({ distanceToFloor: rounded });
-                                console.log("🔵 [CENTER HEIGHT DEBUG] ✅ Successfully called onDimensionsUpdate callback");
+                              console.log("🔵 [CENTER HEIGHT DEBUG] Props available:", Object.keys(props).filter(key => key.startsWith('on')));
+                              console.log("🔵 [CENTER HEIGHT DEBUG] onDimensionsUpdate exists:", !!props.onDimensionsUpdate);
+                              props.onDimensionsUpdate({ distanceToFloor: rounded });
+                              console.log("🔵 [CENTER HEIGHT DEBUG] ✅ Successfully called onDimensionsUpdate callback");
                               } else {
                                 console.log("🔵 [CENTER HEIGHT DEBUG] ✅ Successfully called onDimensionsUpdate callback");
                               }
