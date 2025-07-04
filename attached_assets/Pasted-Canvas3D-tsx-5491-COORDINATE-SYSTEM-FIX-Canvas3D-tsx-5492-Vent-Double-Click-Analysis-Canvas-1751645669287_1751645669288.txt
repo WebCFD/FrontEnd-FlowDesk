@@ -1,0 +1,114 @@
+Canvas3D.tsx:5491 === COORDINATE SYSTEM FIX ===
+Canvas3D.tsx:5492 Vent Double-Click Analysis:
+Canvas3D.tsx:5493 - Original stored position: {x: 135, y: 0, z: 220}
+Canvas3D.tsx:5494 - Local furnitureGroup.position: {x: 0, y: 0, z: 0}
+Canvas3D.tsx:5499 - World position (visual): {x: 135, y: 0, z: 220}
+Canvas3D.tsx:5504 - USING WORLD COORDINATES for dialog consistency
+Canvas3D.tsx:5505 ===============================
+Canvas3D.tsx:5543 Using world coordinates for vent dialog:
+Canvas3D.tsx:5544 - Position: {x: 135, y: 0, z: 220}
+Canvas3D.tsx:5545 - Rotation: {x: -0, y: 0, z: -0}
+AirEntryDialog.tsx:477 🟠 [DIALOG INIT] Dialog opened, isEditing: true
+AirEntryDialog.tsx:478 🟠 [DIALOG INIT] Props received: {data-replit-metadata: 'client/src/components/sketch/UnifiedVentDialog.tsx:177:4', data-component-name: 'AirEntryDialog', type: 'vent', mode: 'furnVent', isOpen: true, …}
+AirEntryDialog.tsx:483 🟠 [DIALOG INIT] airEntryProps.initialValues: {width: 61, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:499 🟠 [DIALOG INIT] Searching for wallPosition:
+AirEntryDialog.tsx:500 🟠 [DIALOG INIT] - From properties: undefined
+AirEntryDialog.tsx:501 🟠 [DIALOG INIT] - From direct: undefined
+AirEntryDialog.tsx:502 🟠 [DIALOG INIT] - Final savedWallPosition: undefined
+AirEntryDialog.tsx:505 🔵 [DIMENSIONS FIX] Setting initial values in setValues:
+AirEntryDialog.tsx:506 🔵 [DIMENSIONS FIX] - initialWidth: 61
+AirEntryDialog.tsx:507 🔵 [DIMENSIONS FIX] - initialHeight: 50
+AirEntryDialog.tsx:508 🔵 [DIMENSIONS FIX] - initialDistanceToFloor: 120
+AirEntryDialog.tsx:509 🔵 [DIMENSIONS FIX] - savedWallPosition: undefined
+AirEntryDialog.tsx:519 🔵 [DIMENSIONS FIX] Previous values: {width: 61, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:520 🔵 [DIMENSIONS FIX] New values being set: {width: 61, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:701 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+AirEntryDialog.tsx:702 🎯 [SAVE BUTTON CLICKED] Event type: submit
+AirEntryDialog.tsx:703 🎯 [SAVE BUTTON CLICKED] Props type: vent
+AirEntryDialog.tsx:704 🎯 [SAVE BUTTON CLICKED] Current values: {width: 70, height: 71, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:705 🎯 [SAVE BUTTON CLICKED] wallPosition from values: undefined
+AirEntryDialog.tsx:706 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 99.99999999999999
+AirEntryDialog.tsx:773 🔵 [DIMENSIONS DEBUG] Reading dimensions from values object:
+AirEntryDialog.tsx:774 🔵 [DIMENSIONS DEBUG] values object: {width: 70, height: 71, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:775 🔵 [DIMENSIONS DEBUG] (values as any).width: 70
+AirEntryDialog.tsx:776 🔵 [DIMENSIONS DEBUG] (values as any).height: 71
+AirEntryDialog.tsx:777 🔵 [DIMENSIONS DEBUG] localWidth state: 70
+AirEntryDialog.tsx:778 🔵 [DIMENSIONS DEBUG] localHeight state: 71
+AirEntryDialog.tsx:779 🔵 [DIMENSIONS DEBUG] shapeType: rectangular
+AirEntryDialog.tsx:809 🎯 [PROPS.ONCONFIRM] About to call props.onConfirm with canvasData
+AirEntryDialog.tsx:810 🎯 [PROPS.ONCONFIRM] canvasData being sent: {width: 70, height: 71, distanceToFloor: 120, shape: 'rectangular', wallPosition: 99.99999999999999, …}
+AirEntryDialog.tsx:811 🎯 [PROPS.ONCONFIRM] canvasData.wallPosition: 99.99999999999999
+AirEntryDialog.tsx:812 🎯 [PROPS.ONCONFIRM] canvasData.position: {x: 139, y: 0, z: 220}
+AirEntryDialog.tsx:813 🎯 [PROPS.ONCONFIRM] This should trigger handleAirEntryEdit in Canvas2D
+Canvas3D.tsx:5887 [SCALE DEBUG 3] Canvas3D Store Update - ID: Vent 0F-1
+Canvas3D.tsx:5888 [SCALE DEBUG 3] Received from dialog: {x: 1.4, y: 1.42, z: 1}
+Canvas3D.tsx:5889 [SCALE DEBUG 3] Original item scale: {x: 1.22, y: 1, z: 1}
+Canvas3D.tsx:5890 [SCALE DEBUG 3] Saving to store: {x: 1.4, y: 1.42, z: 1}
+wizard-design.tsx:1283 [SCALE DEBUG 3.5] Store Update Callback - ID: Vent 0F-1
+wizard-design.tsx:1284 [SCALE DEBUG 3.5] Floor: ground
+wizard-design.tsx:1285 [SCALE DEBUG 3.5] Item scale being stored: {x: 1.4, y: 1.42, z: 1}
+wizard-design.tsx:1292 [SCALE DEBUG 3.5] Verification - Scale in store after update: {x: 1.4, y: 1.42, z: 1}
+Canvas3D.tsx:5908 🔍 LIFECYCLE TRACE - Final validation:
+Canvas3D.tsx:5909   - Object still in scene after all operations: true
+Canvas3D.tsx:5910   - editingFurniture about to be set to null
+AirEntryDialog.tsx:817 🎯 [PROPS.ONCONFIRM] props.onConfirm completed
+AirEntryDialog.tsx:818 🎯 [PROPS.ONCONFIRM] Now calling onClose() to close dialog
+Canvas3D.tsx:5926 🔍 LIFECYCLE TRACE - Delayed validation (100ms after):
+Canvas3D.tsx:5927   - Object still in scene after React updates: true
+Canvas3D.tsx:5491 === COORDINATE SYSTEM FIX ===
+Canvas3D.tsx:5492 Vent Double-Click Analysis:
+Canvas3D.tsx:5493 - Original stored position: {x: 135, y: 0, z: 220}
+Canvas3D.tsx:5494 - Local furnitureGroup.position: {x: 4, y: 0, z: 0}
+Canvas3D.tsx:5499 - World position (visual): {x: 139.88, y: 0, z: 220}
+Canvas3D.tsx:5504 - USING WORLD COORDINATES for dialog consistency
+Canvas3D.tsx:5505 ===============================
+Canvas3D.tsx:5543 Using world coordinates for vent dialog:
+Canvas3D.tsx:5544 - Position: {x: 139.88, y: 0, z: 220}
+Canvas3D.tsx:5545 - Rotation: {x: -0, y: 0, z: -0}
+AirEntryDialog.tsx:477 🟠 [DIALOG INIT] Dialog opened, isEditing: true
+AirEntryDialog.tsx:478 🟠 [DIALOG INIT] Props received: {data-replit-metadata: 'client/src/components/sketch/UnifiedVentDialog.tsx:177:4', data-component-name: 'AirEntryDialog', type: 'vent', mode: 'furnVent', isOpen: true, …}
+AirEntryDialog.tsx:483 🟠 [DIALOG INIT] airEntryProps.initialValues: {width: 61, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:499 🟠 [DIALOG INIT] Searching for wallPosition:
+AirEntryDialog.tsx:500 🟠 [DIALOG INIT] - From properties: undefined
+AirEntryDialog.tsx:501 🟠 [DIALOG INIT] - From direct: undefined
+AirEntryDialog.tsx:502 🟠 [DIALOG INIT] - Final savedWallPosition: undefined
+AirEntryDialog.tsx:505 🔵 [DIMENSIONS FIX] Setting initial values in setValues:
+AirEntryDialog.tsx:506 🔵 [DIMENSIONS FIX] - initialWidth: 61
+AirEntryDialog.tsx:507 🔵 [DIMENSIONS FIX] - initialHeight: 50
+AirEntryDialog.tsx:508 🔵 [DIMENSIONS FIX] - initialDistanceToFloor: 120
+AirEntryDialog.tsx:509 🔵 [DIMENSIONS FIX] - savedWallPosition: undefined
+AirEntryDialog.tsx:519 🔵 [DIMENSIONS FIX] Previous values: {width: 61, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:520 🔵 [DIMENSIONS FIX] New values being set: {width: 61, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:701 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+AirEntryDialog.tsx:702 🎯 [SAVE BUTTON CLICKED] Event type: submit
+AirEntryDialog.tsx:703 🎯 [SAVE BUTTON CLICKED] Props type: vent
+AirEntryDialog.tsx:704 🎯 [SAVE BUTTON CLICKED] Current values: {width: 61, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:705 🎯 [SAVE BUTTON CLICKED] wallPosition from values: undefined
+AirEntryDialog.tsx:706 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 99.99999999999999
+AirEntryDialog.tsx:773 🔵 [DIMENSIONS DEBUG] Reading dimensions from values object:
+AirEntryDialog.tsx:774 🔵 [DIMENSIONS DEBUG] values object: {width: 61, height: 50, distanceToFloor: 120, position: {…}, rotation: {…}, …}
+AirEntryDialog.tsx:775 🔵 [DIMENSIONS DEBUG] (values as any).width: 61
+AirEntryDialog.tsx:776 🔵 [DIMENSIONS DEBUG] (values as any).height: 50
+AirEntryDialog.tsx:777 🔵 [DIMENSIONS DEBUG] localWidth state: 61
+AirEntryDialog.tsx:778 🔵 [DIMENSIONS DEBUG] localHeight state: 50
+AirEntryDialog.tsx:779 🔵 [DIMENSIONS DEBUG] shapeType: rectangular
+AirEntryDialog.tsx:809 🎯 [PROPS.ONCONFIRM] About to call props.onConfirm with canvasData
+AirEntryDialog.tsx:810 🎯 [PROPS.ONCONFIRM] canvasData being sent: {width: 61, height: 50, distanceToFloor: 120, shape: 'rectangular', wallPosition: 99.99999999999999, …}
+AirEntryDialog.tsx:811 🎯 [PROPS.ONCONFIRM] canvasData.wallPosition: 99.99999999999999
+AirEntryDialog.tsx:812 🎯 [PROPS.ONCONFIRM] canvasData.position: {x: 139.88, y: 0, z: 220}
+AirEntryDialog.tsx:813 🎯 [PROPS.ONCONFIRM] This should trigger handleAirEntryEdit in Canvas2D
+Canvas3D.tsx:5887 [SCALE DEBUG 3] Canvas3D Store Update - ID: Vent 0F-1
+Canvas3D.tsx:5888 [SCALE DEBUG 3] Received from dialog: {x: 1.22, y: 1, z: 1}
+Canvas3D.tsx:5889 [SCALE DEBUG 3] Original item scale: {x: 1.22, y: 1, z: 1}
+Canvas3D.tsx:5890 [SCALE DEBUG 3] Saving to store: {x: 1.22, y: 1, z: 1}
+wizard-design.tsx:1283 [SCALE DEBUG 3.5] Store Update Callback - ID: Vent 0F-1
+wizard-design.tsx:1284 [SCALE DEBUG 3.5] Floor: ground
+wizard-design.tsx:1285 [SCALE DEBUG 3.5] Item scale being stored: {x: 1.22, y: 1, z: 1}
+wizard-design.tsx:1292 [SCALE DEBUG 3.5] Verification - Scale in store after update: {x: 1.22, y: 1, z: 1}
+Canvas3D.tsx:5908 🔍 LIFECYCLE TRACE - Final validation:
+Canvas3D.tsx:5909   - Object still in scene after all operations: true
+Canvas3D.tsx:5910   - editingFurniture about to be set to null
+AirEntryDialog.tsx:817 🎯 [PROPS.ONCONFIRM] props.onConfirm completed
+AirEntryDialog.tsx:818 🎯 [PROPS.ONCONFIRM] Now calling onClose() to close dialog
+Canvas3D.tsx:5926 🔍 LIFECYCLE TRACE - Delayed validation (100ms after):
+Canvas3D.tsx:5927   - Object still in scene after React updates: true
