@@ -5925,7 +5925,105 @@ export default function Canvas3D({
           isEditing={true}
           wallContext={editingAirEntry.wallContext}
           onPositionUpdate={handleAirEntryPositionUpdate}
+          onDimensionsUpdate={(newDimensions) => {
+            console.log("🔵 [CANVAS3D DEBUG] onDimensionsUpdate received:", newDimensions);
+            console.log("🔵 [CANVAS3D DEBUG] editingAirEntry:", editingAirEntry);
+            console.log("🔵 [CANVAS3D DEBUG] currentFloor:", currentFloor);
+            
+            if (!editingAirEntry || !onUpdateAirEntry) {
+              console.log("🔵 [CANVAS3D DEBUG] Missing dependencies:", {
+                hasEditingAirEntry: !!editingAirEntry,
+                hasOnUpdateAirEntry: !!onUpdateAirEntry
+              });
+              return;
+            }
 
+            // Update entry with new dimensions similar to handleAirEntryPositionUpdate
+            const updatedEntry = {
+              ...editingAirEntry.entry,
+              dimensions: {
+                ...editingAirEntry.entry.dimensions,
+                ...newDimensions
+              }
+            };
+            
+            console.log("🔵 [CANVAS3D DEBUG] Updated entry:", updatedEntry);
+            
+            // Store updated dimensions in ref for immediate visual update
+            const normalizedFloorName = normalizeFloorName(currentFloor);
+            if (!updatedAirEntryPositionsRef.current[normalizedFloorName]) {
+              updatedAirEntryPositionsRef.current[normalizedFloorName] = {};
+            }
+            
+            if (!updatedAirEntryPositionsRef.current[normalizedFloorName][editingAirEntry.index]) {
+              updatedAirEntryPositionsRef.current[normalizedFloorName][editingAirEntry.index] = {
+                position: editingAirEntry.entry.position,
+                dimensions: updatedEntry.dimensions
+              };
+            } else {
+              updatedAirEntryPositionsRef.current[normalizedFloorName][editingAirEntry.index].dimensions = updatedEntry.dimensions;
+            }
+            
+            console.log("🔵 [CANVAS3D DEBUG] Stored in ref:", updatedAirEntryPositionsRef.current[normalizedFloorName][editingAirEntry.index]);
+            
+            // Update local editing state for immediate responsiveness
+            setEditingAirEntry(prev => prev ? {
+              ...prev,
+              entry: updatedEntry
+            } : null);
+            
+            console.log("🔵 [CANVAS3D DEBUG] Updated editingAirEntry state");
+            
+            // Force immediate visual update in 3D scene if distanceToFloor changed
+            if (newDimensions.distanceToFloor !== undefined && sceneRef.current) {
+              console.log("🔵 [CANVAS3D DEBUG] Updating 3D scene distanceToFloor:", newDimensions.distanceToFloor);
+              
+              sceneRef.current.traverse((object) => {
+                if (object instanceof THREE.Mesh &&
+                    object.userData &&
+                    object.userData.type &&
+                    ["window", "door", "vent"].includes(object.userData.type) &&
+                    object.userData.position) {
+                  
+                  const entryPos = object.userData.position;
+                  const currentPos = editingAirEntry.entry.position;
+                  
+                  if (Math.abs(entryPos.x - currentPos.x) < 0.1 &&
+                      Math.abs(entryPos.y - currentPos.y) < 0.1) {
+                    
+                    console.log("🔵 [CANVAS3D DEBUG] Found matching 3D object, updating Z position");
+                    
+                    // Calculate new Z position based on floor height and distance to floor
+                    const floorHeight = floorParameters[currentFloor]?.ceilingHeight || ceilingHeight;
+                    const baseHeight = 0; // Floor level
+                    const newZPosition = baseHeight + newDimensions.distanceToFloor;
+                    
+                    console.log("🔵 [CANVAS3D DEBUG] Z position calculation:", {
+                      baseHeight,
+                      distanceToFloor: newDimensions.distanceToFloor,
+                      newZPosition,
+                      oldZPosition: object.position.z
+                    });
+                    
+                    object.position.setZ(newZPosition);
+                    object.userData.dimensions = updatedEntry.dimensions;
+                    
+                    console.log("🔵 [CANVAS3D DEBUG] 3D object updated successfully");
+                  }
+                }
+              });
+            }
+            
+            // Debounced store update (similar to position updates)
+            if (updateTimeoutRef.current) {
+              clearTimeout(updateTimeoutRef.current);
+            }
+            
+            updateTimeoutRef.current = setTimeout(() => {
+              console.log("🔵 [CANVAS3D DEBUG] Calling onUpdateAirEntry with debounced update");
+              onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
+            }, 150);
+          }}
           onPropertiesUpdate={onPropertiesUpdate ? (properties) => {
             // Real-time properties synchronization
             onPropertiesUpdate(currentFloor, editingAirEntry.index, properties);

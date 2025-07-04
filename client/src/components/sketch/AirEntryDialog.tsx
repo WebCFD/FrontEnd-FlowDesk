@@ -1213,14 +1213,42 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               const value = Number(e.target.value);
                               // Redondear a 2 decimales máximo
                               const rounded = Math.round(value * 100) / 100;
+                              console.log("🔵 [CENTER HEIGHT DEBUG] Input change detected:", {
+                                rawValue: e.target.value,
+                                parsedValue: value,
+                                roundedValue: rounded,
+                                currentDistanceToFloor: distanceToFloor
+                              });
+                              
                               setDistanceToFloor(rounded);
+                              console.log("🔵 [CENTER HEIGHT DEBUG] State updated to:", rounded);
                               
                               // Update form values for persistence
-                              setValues(prev => ({ ...prev, distanceToFloor: rounded }));
+                              setValues(prev => {
+                                const newValues = { ...prev, distanceToFloor: rounded };
+                                console.log("🔵 [CENTER HEIGHT DEBUG] Form values updated:", newValues);
+                                return newValues;
+                              });
                               
                               // Trigger real-time updates for Canvas3D
+                              console.log("🔵 [CENTER HEIGHT DEBUG] Checking callback conditions:", {
+                                propsType: props.type,
+                                isNotWall: props.type !== 'wall',
+                                hasOnDimensionsUpdate: 'onDimensionsUpdate' in props,
+                                callbackExists: 'onDimensionsUpdate' in props ? !!props.onDimensionsUpdate : false
+                              });
+                              
                               if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
-                                props.onDimensionsUpdate({ distanceToFloor: rounded });
+                                const callbackData = { 
+                                  distanceToFloor: rounded,
+                                  width: localWidth,
+                                  height: localHeight
+                                };
+                                console.log("🔵 [CENTER HEIGHT DEBUG] Calling onDimensionsUpdate with:", callbackData);
+                                props.onDimensionsUpdate(callbackData);
+                                console.log("🔵 [CENTER HEIGHT DEBUG] Callback executed successfully");
+                              } else {
+                                console.log("🔵 [CENTER HEIGHT DEBUG] Callback not executed - conditions not met");
                               }
                             }
                           }}
