@@ -58,6 +58,16 @@ interface UnifiedVentDialogProps {
   onPositionUpdate?: (newPosition: { x: number; y: number; z: number }) => void;
   onRotationUpdate?: (newRotation: { x: number; y: number; z: number }) => void;
   onScaleUpdate?: (newScale: { x: number; y: number; z: number }) => void;
+  onPropertiesUpdate?: (properties: {
+    state?: 'open' | 'closed';
+    temperature?: number;
+    airOrientation?: 'inflow' | 'outflow';
+    flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
+    flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
+    customIntensityValue?: number;
+    verticalAngle?: number;
+    horizontalAngle?: number;
+  }) => void;
   debugKey?: string;
 }
 
@@ -222,6 +232,16 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
       onRotationUpdate={(newRotation) => {
         setCurrentRotation(newRotation);
         stableOnRotationUpdate(newRotation);
+      }}
+      // Add properties update callback for real-time mesh persistence following dimensions pattern
+      onPropertiesUpdate={(newProperties) => {
+        // Update state for persistence
+        // Note: Properties persistence follows same pattern as dimensions/position
+        // Canvas3D will handle real-time mesh updates directly
+        // This callback ensures properties are updated in 3D scene immediately
+        if (props.onPropertiesUpdate) {
+          props.onPropertiesUpdate(newProperties);
+        }
       }}
       // Pass floor context for Information section
       floorContext={props.floorContext}
