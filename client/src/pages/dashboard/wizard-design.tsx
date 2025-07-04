@@ -369,8 +369,8 @@ export default function WizardDesign() {
     // EXCLUDE furniture scale and properties from normalization
     const normalizeObject = (obj: any, path: string[] = []): any => {
       if (typeof obj === 'number') {
-        // Don't normalize furniture scale values or user-defined properties
-        if (path.includes('scale') || path.includes('properties') || path.includes('simulationProperties')) {
+        // Don't normalize furniture scale, rotation values or user-defined properties
+        if (path.includes('scale') || path.includes('rotation') || path.includes('properties') || path.includes('simulationProperties')) {
           return obj; // Return original value
         }
         return normalizeNum(obj);
