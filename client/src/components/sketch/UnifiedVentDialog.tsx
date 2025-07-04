@@ -119,27 +119,14 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
     const simProps = props.initialValues?.simulationProperties;
     
     // DIMENSIONS PERSISTENCE FIX: Convert scale back to dimensions
-    // Priority: currentDimensions (real-time changes) → stored scale → defaults
+    // Priority: stored scale (persistent) → currentDimensions (real-time) → defaults
     const storedScale = props.initialValues?.scale;
     const widthFromScale = storedScale ? storedScale.x * 50 : 50;
     const heightFromScale = storedScale ? storedScale.y * 50 : 50;
     
-    console.log("🔧 [PERSISTENCE FIX] mapToAirEntryFormat conversion:");
-    console.log("🔧 [PERSISTENCE FIX] - storedScale:", storedScale);
-    console.log("🔧 [PERSISTENCE FIX] - widthFromScale:", widthFromScale);
-    console.log("🔧 [PERSISTENCE FIX] - heightFromScale:", heightFromScale);
-    console.log("🔧 [PERSISTENCE FIX] - currentDimensions.width:", currentDimensions.width);
-    console.log("🔧 [PERSISTENCE FIX] - currentDimensions.height:", currentDimensions.height);
-    
-    const finalWidth = currentDimensions.width || widthFromScale;
-    const finalHeight = currentDimensions.height || heightFromScale;
-    
-    console.log("🔧 [PERSISTENCE FIX] - FINAL width:", finalWidth);
-    console.log("🔧 [PERSISTENCE FIX] - FINAL height:", finalHeight);
-    
     return {
-      width: finalWidth, // Current state OR converted from stored scale
-      height: finalHeight, // Current state OR converted from stored scale
+      width: widthFromScale || currentDimensions.width, // Stored scale FIRST, then current state
+      height: heightFromScale || currentDimensions.height, // Stored scale FIRST, then current state
       distanceToFloor: 120, // Default (not used in 3D)
       position: currentPosition, // Use current state instead of initial values
       rotation: currentRotation, // Use current state instead of initial values
