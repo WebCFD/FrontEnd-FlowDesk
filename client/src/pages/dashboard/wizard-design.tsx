@@ -1277,6 +1277,39 @@ export default function WizardDesign() {
     });
   };
 
+  // Real-time dimensions synchronization handler - mirrors handlePropertiesUpdateFrom3D
+  const handleDimensionsUpdateFrom2D = (
+    floorName: string,
+    index: number,
+    dimensions: {
+      width?: number;
+      height?: number;
+      distanceToFloor?: number;
+    }
+  ) => {
+    console.log("🟢 [WIZARD DEBUG] handleDimensionsUpdateFrom2D called:", { floorName, index, dimensions });
+    
+    // Update only the dimensions in real-time without triggering scene rebuild
+    const currentFloors = useRoomStore.getState().floors;
+    useRoomStore.getState().setFloors({
+      ...currentFloors,
+      [floorName]: {
+        ...currentFloors[floorName],
+        airEntries: currentFloors[floorName].airEntries.map((entry, i) => 
+          i === index ? {
+            ...entry,
+            dimensions: {
+              ...entry.dimensions,
+              ...dimensions
+            }
+          } : entry
+        )
+      }
+    });
+    
+    console.log("🟢 [WIZARD DEBUG] Store updated with new dimensions");
+  };
+
   // Phase 2: Furniture callback handlers
   const handleFurnitureAdd = useCallback((floorName: string, item: FurnitureItem) => {
     addFurnitureToFloor(floorName, item);
@@ -2661,10 +2694,7 @@ export default function WizardDesign() {
               }}
               onLineSelect={handleLineSelect}
               onPropertiesUpdate={handlePropertiesUpdateFrom3D}
-              // 🔵 [CENTER HEIGHT DEBUG] Missing onDimensionsUpdate callback prop
-              // Position Along Wall works because it uses onPositionUpdate -> handleUpdateAirEntryFrom3D
-              // Center Height fails because it calls onDimensionsUpdate but Canvas2D has no such prop
-              // onDimensionsUpdate={handleDimensionsUpdateFrom3D} // NOT IMPLEMENTED YET
+              onDimensionsUpdate={handleDimensionsUpdateFrom2D}
             />
           ) : (
             <Canvas3D

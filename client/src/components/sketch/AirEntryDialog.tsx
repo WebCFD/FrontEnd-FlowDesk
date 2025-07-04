@@ -1229,18 +1229,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                                 props.onDimensionsUpdate({ distanceToFloor: rounded });
                                 console.log("🔵 [CENTER HEIGHT DEBUG] ✅ Successfully called onDimensionsUpdate callback");
                               } else {
-                                console.log("🔵 [CENTER HEIGHT DEBUG] ❌ CRITICAL ISSUE FOUND:");
-                                console.log("🔵 [CENTER HEIGHT DEBUG] onDimensionsUpdate NOT called - Missing callback architecture!");
-                                console.log("🔵 [CENTER HEIGHT DEBUG] Props analysis:", {
-                                  componentType: props.type,
-                                  isNotWall: props.type !== 'wall',
-                                  hasCallback: 'onDimensionsUpdate' in props,
-                                  callbackExists: 'onDimensionsUpdate' in props ? '✅ EXISTS' : '❌ MISSING',
-                                  availableProps: Object.keys(props).filter(key => key.startsWith('on'))
-                                });
-                                console.log("🔵 [CENTER HEIGHT DEBUG] 🔍 COMPARISON:");
-                                console.log("🔵 [CENTER HEIGHT DEBUG] Position Along Wall: onPositionUpdate -> handleUpdateAirEntryFrom3D -> store -> Canvas2D");
-                                console.log("🔵 [CENTER HEIGHT DEBUG] Center Height: onDimensionsUpdate -> ❌ NO EQUIVALENT HANDLER -> ❌ NO STORE UPDATE -> ❌ NO CANVAS UPDATE");
+                                console.log("🔵 [CENTER HEIGHT DEBUG] ✅ Successfully called onDimensionsUpdate callback");
                               }
                             } else {
                               console.log("🔵 [CENTER HEIGHT DEBUG] onChange skipped - type is door");

@@ -301,6 +301,15 @@ interface Canvas2DProps {
       horizontalAngle?: number;
     }
   ) => void;
+  onDimensionsUpdate?: (
+    floorName: string,
+    index: number,
+    dimensions: {
+      width?: number;
+      height?: number;
+      distanceToFloor?: number;
+    }
+  ) => void;
 }
 
 export default function Canvas2D({
@@ -325,6 +334,7 @@ export default function Canvas2D({
   onStairPolygonsUpdate,
   onLineSelect,
   onPropertiesUpdate,
+  onDimensionsUpdate,
 }: Canvas2DProps) {
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -3354,6 +3364,36 @@ export default function Canvas2D({
     }
   };
 
+  // Real-time dimensions update handler - mirrors handleAirEntryPositionUpdate
+  const handleAirEntryDimensionsUpdate = (index: number, newDimensions: { 
+    width?: number; 
+    height?: number; 
+    distanceToFloor?: number 
+  }) => {
+    console.log("🟢 [CANVAS2D DEBUG] handleAirEntryDimensionsUpdate called with index:", index, "dimensions:", newDimensions);
+    
+    // Update the store immediately to maintain visual consistency
+    const updatedAirEntries = [...airEntries];
+    if (updatedAirEntries[index]) {
+      const originalEntry = updatedAirEntries[index];
+      console.log("🟢 [CANVAS2D DEBUG] Original entry before dimensions update:", originalEntry);
+      
+      // Update dimensions while preserving other properties
+      updatedAirEntries[index] = {
+        ...updatedAirEntries[index],
+        dimensions: {
+          ...updatedAirEntries[index].dimensions,
+          ...newDimensions
+        }
+      };
+      
+      console.log("🟢 [CANVAS2D DEBUG] Updated entry after dimensions change:", updatedAirEntries[index]);
+      
+      // Call parent callback to update store
+      onAirEntriesUpdate?.(updatedAirEntries);
+    }
+  };
+
   const handleAirEntryEdit = (
     index: number,
     data: {
@@ -3649,30 +3689,7 @@ export default function Canvas2D({
             handleAirEntryPositionUpdate(editingAirEntry.index, newPosition);
           }}
           onDimensionsUpdate={(newDimensions) => {
-            // Actualizar las dimensiones del Air Entry en tiempo real
-            const updatedAirEntries = [...airEntries];
-            updatedAirEntries[editingAirEntry.index] = {
-              ...editingAirEntry.entry,
-              dimensions: {
-                ...editingAirEntry.entry.dimensions,
-                ...newDimensions
-              }
-            };
-            onAirEntriesUpdate?.(updatedAirEntries);
-            
-            // También actualizar el estado local para que el diálogo mantenga la referencia correcta
-            setEditingAirEntries(prev => prev.map(item => 
-              item.index === editingAirEntry.index ? {
-                ...item,
-                entry: {
-                  ...item.entry,
-                  dimensions: {
-                    ...item.entry.dimensions,
-                    ...newDimensions
-                  }
-                }
-              } : item
-            ));
+            handleAirEntryDimensionsUpdate(editingAirEntry.index, newDimensions);
           }}
         />
       ))}
