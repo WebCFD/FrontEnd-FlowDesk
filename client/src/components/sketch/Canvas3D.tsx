@@ -1512,34 +1512,6 @@ export default function Canvas3D({
     mode: 'creation' | 'edit'; // Phase 2: Add mode tracking
   } | null>(null);
 
-  // Calculate initialValues for FurnVent dialog at component level to avoid React hooks violations
-  const furnVentInitialValues = useMemo(() => {
-    if (!editingFurniture || editingFurniture.item.type !== 'vent') return null;
-    
-    const item = editingFurniture.item;
-    const initialValues = {
-      name: item.name,
-      position: item.position,
-      rotation: item.rotation,
-      scale: item.scale || { x: 1, y: 1, z: 1 },
-      dimensions: item.dimensions || { width: 50, height: 50, depth: 10 },
-      properties: item.properties || {
-        temperature: 20,
-        thermalConductivity: 0.12,
-        density: 600,
-        heatCapacity: 1200,
-        emissivity: 0.85
-      },
-      simulationProperties: item.simulationProperties
-    };
-    
-    console.log('[DIMENSION DEBUG 5] Dialog Initialization - ID:', item.id);
-    console.log('[DIMENSION DEBUG 5] Stored item dimensions:', item.dimensions);
-    console.log('[DIMENSION DEBUG 5] Initial values dimensions:', initialValues.dimensions);
-    
-    return initialValues;
-  }, [editingFurniture]);
-
   // Track editingAirEntry state changes
   useEffect(() => {
     // State change monitoring for air entry dialogs
@@ -6062,14 +6034,19 @@ export default function Canvas3D({
           onPositionUpdate={handleRealTimePositionUpdate}
           onRotationUpdate={handleRealTimeRotationUpdate}
           onScaleUpdate={handleRealTimeScaleUpdate}
-          initialValues={furnVentInitialValues || {
-            name: 'Vent',
-            position: { x: 0, y: 0, z: 0 },
-            rotation: { x: 0, y: 0, z: 0 },
-            scale: { x: 1, y: 1, z: 1 },
-            dimensions: { width: 50, height: 50, depth: 10 },
-            properties: { temperature: 20 },
-            simulationProperties: undefined
+          initialValues={{
+            name: editingFurniture.item.name,
+            position: editingFurniture.item.position,
+            rotation: editingFurniture.item.rotation,
+            scale: editingFurniture.item.scale || { x: 1, y: 1, z: 1 },
+            properties: editingFurniture.item.properties || {
+              temperature: 20,
+              thermalConductivity: 0.12,
+              density: 600,
+              heatCapacity: 1200,
+              emissivity: 0.85
+            },
+            simulationProperties: editingFurniture.item.simulationProperties
           }}
           isEditing={true}
           floorContext={{
