@@ -502,13 +502,24 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           console.log("🟠 [DIALOG INIT] - Final savedWallPosition:", savedWallPosition);
           
           // Also set in form values for persistence
-          setValues(prev => ({ 
-            ...prev, 
-            width: initialWidth,
-            height: initialHeight,
-            distanceToFloor: initialDistanceToFloor,
-            wallPosition: savedWallPosition 
-          }));
+          console.log("🔵 [DIMENSIONS FIX] Setting initial values in setValues:");
+          console.log("🔵 [DIMENSIONS FIX] - initialWidth:", initialWidth);
+          console.log("🔵 [DIMENSIONS FIX] - initialHeight:", initialHeight);
+          console.log("🔵 [DIMENSIONS FIX] - initialDistanceToFloor:", initialDistanceToFloor);
+          console.log("🔵 [DIMENSIONS FIX] - savedWallPosition:", savedWallPosition);
+          
+          setValues(prev => {
+            const newValues = { 
+              ...prev, 
+              width: initialWidth,
+              height: initialHeight,
+              distanceToFloor: initialDistanceToFloor,
+              wallPosition: savedWallPosition 
+            };
+            console.log("🔵 [DIMENSIONS FIX] Previous values:", prev);
+            console.log("🔵 [DIMENSIONS FIX] New values being set:", newValues);
+            return newValues;
+          });
           
           // If we have a saved wallPosition, use it directly
           if (savedWallPosition !== undefined && savedWallPosition !== null) {
@@ -758,6 +769,14 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
       // Transform data to match Canvas2D expectations
       
 
+      
+      console.log("🔵 [DIMENSIONS DEBUG] Reading dimensions from values object:");
+      console.log("🔵 [DIMENSIONS DEBUG] values object:", values);
+      console.log("🔵 [DIMENSIONS DEBUG] (values as any).width:", (values as any).width);
+      console.log("🔵 [DIMENSIONS DEBUG] (values as any).height:", (values as any).height);
+      console.log("🔵 [DIMENSIONS DEBUG] localWidth state:", localWidth);
+      console.log("🔵 [DIMENSIONS DEBUG] localHeight state:", localHeight);
+      console.log("🔵 [DIMENSIONS DEBUG] shapeType:", shapeType);
       
       const canvasData = {
         width: shapeType === 'rectangular' ? (values as any).width : (values as any).width, // For circular, width = diameter
