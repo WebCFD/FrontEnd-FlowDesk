@@ -5552,12 +5552,29 @@ export default function Canvas3D({
                 console.log('- Rotation:', dialogRotation);
               }
 
+              // DIMENSIONS FIX: Read scale from actual mesh instead of store
+              const currentMeshScale = {
+                x: furnitureGroup.scale.x,
+                y: furnitureGroup.scale.y,
+                z: furnitureGroup.scale.z
+              };
+
+              // DEBUG: Verify we're reading current mesh scale, not obsolete store scale
+              if (actualFurnitureItem.type === 'vent') {
+                console.log('🔧 [MESH READ] Canvas3D reading scale from mesh for dialog:');
+                console.log('🔧 [MESH READ] - furnitureId:', furnitureId);
+                console.log('🔧 [MESH READ] - currentMeshScale (CURRENT):', currentMeshScale);
+                console.log('🔧 [MESH READ] - actualFurnitureItem.scale (OBSOLETE):', actualFurnitureItem.scale);
+              }
+
               // Use the actual stored item with all its properties including simulationProperties
               const furnitureItemWithCurrentPosition: FurnitureItem = {
                 ...actualFurnitureItem,
                 // For all furniture types: position and rotation from appropriate coordinate system
                 position: dialogPosition,
-                rotation: dialogRotation
+                rotation: dialogRotation,
+                // DIMENSIONS FIX: Use current mesh scale instead of obsolete store scale
+                scale: currentMeshScale
               };
               
 
