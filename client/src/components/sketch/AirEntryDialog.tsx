@@ -247,12 +247,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
   // Función para manejar el cambio de posición a lo largo del wall
   const handleWallPositionChange = (newPercentage: number) => {
-    console.log("🔴 [WALLPOS DEBUG] handleWallPositionChange called with:", newPercentage);
     setWallPosition(newPercentage);
     
     // Calcular la nueva posición y actualizar en tiempo real
     const newPosition = calculatePositionFromPercentage(newPercentage);
-    console.log("🔴 [WALLPOS DEBUG] Calculated new position:", newPosition);
     
     if (newPosition) {
       // Update form values for persistence
@@ -262,19 +260,14 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           position: newPosition,
           wallPosition: newPercentage 
         };
-        console.log("🔴 [WALLPOS DEBUG] Updated form values:", newValues);
+
         return newValues;
       });
       
       // Trigger real-time position updates
       if (props.type !== 'wall' && 'onPositionUpdate' in props && props.onPositionUpdate) {
-        console.log("🔴 [WALLPOS DEBUG] Calling onPositionUpdate with position:", newPosition);
         props.onPositionUpdate(newPosition);
-      } else {
-        console.log("🔴 [WALLPOS DEBUG] onPositionUpdate NOT called - props check failed");
       }
-    } else {
-      console.log("🔴 [WALLPOS DEBUG] newPosition is null, skipping updates");
     }
   };
 
@@ -474,13 +467,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   // Inicializar valores cuando se abre el diálogo
   useEffect(() => {
     if (dialogOpen) {
-      console.log("🟠 [DIALOG INIT] Dialog opened, isEditing:", isEditing);
-      console.log("🟠 [DIALOG INIT] Props received:", props);
-      
       if (isEditing) {
         // En modo edición, usar los valores actuales del elemento
         const airEntryProps = props as AirEntryDialogProps;
-        console.log("🟠 [DIALOG INIT] airEntryProps.initialValues:", airEntryProps.initialValues);
         
         if (airEntryProps.initialValues) {
           const initialDistanceToFloor = airEntryProps.initialValues.distanceToFloor || 0;
@@ -683,12 +672,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   }, [dialogOpen, type, isEditing]);
 
   const handleSubmit = (e: React.FormEvent) => {
-    console.log("🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered");
-    console.log("🎯 [SAVE BUTTON CLICKED] Event type:", e.type);
-    console.log("🎯 [SAVE BUTTON CLICKED] Props type:", props.type);
-    console.log("🎯 [SAVE BUTTON CLICKED] Current values:", values);
-    console.log("🎯 [SAVE BUTTON CLICKED] wallPosition from values:", (values as any).wallPosition);
-    console.log("🎯 [SAVE BUTTON CLICKED] wallPosition from state:", wallPosition);
+
     
     e.preventDefault();
     if (props.type === 'wall') {
@@ -755,13 +739,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
       
 
       
-      console.log("🔵 [DIMENSIONS DEBUG] Reading dimensions from values object:");
-      console.log("🔵 [DIMENSIONS DEBUG] values object:", values);
-      console.log("🔵 [DIMENSIONS DEBUG] (values as any).width:", (values as any).width);
-      console.log("🔵 [DIMENSIONS DEBUG] (values as any).height:", (values as any).height);
-      console.log("🔵 [DIMENSIONS DEBUG] localWidth state:", localWidth);
-      console.log("🔵 [DIMENSIONS DEBUG] localHeight state:", localHeight);
-      console.log("🔵 [DIMENSIONS DEBUG] shapeType:", shapeType);
+
       
       const canvasData = {
         width: shapeType === 'rectangular' ? (values as any).width : (values as any).width, // For circular, width = diameter

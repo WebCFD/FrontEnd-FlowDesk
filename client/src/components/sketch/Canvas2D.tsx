@@ -1335,8 +1335,7 @@ export default function Canvas2D({
     if (nearbyLines.length > 0) {
       const associatedWall = findWallForLine(walls, nearbyLines[0]);
       if (associatedWall) {
-        console.log(`🔍 [WALL DIALOG] Setting editingWall:`, { id: associatedWall.id, temp: associatedWall.properties.temperature });
-        console.log(`🔍 [WALL DIALOG] Current walls array:`, walls.map(w => ({ id: w.id, temp: w.properties.temperature })));
+
         setEditingWall(associatedWall);
         setWallPropertiesDialogOpen(true);
         debugLog(`Opening wall properties for wall: ${associatedWall.id}`);
@@ -1350,9 +1349,7 @@ export default function Canvas2D({
 
   // Handle wall properties save
   const handleWallPropertiesSave = (wallId: string, temperature: number) => {
-    console.log(`🏠 [WALL SAVE] handleWallPropertiesSave called - ID: ${wallId}, Temperature: ${temperature}`);
-    console.log(`🏠 [WALL SAVE] Current walls count: ${walls.length}`);
-    console.log(`🏠 [WALL SAVE] Wall being updated:`, walls.find(w => w.id === wallId));
+
     
     if (onWallsUpdate) {
       const updatedWalls = walls.map(wall => 
@@ -1360,18 +1357,16 @@ export default function Canvas2D({
           ? { ...wall, properties: { ...wall.properties, temperature } }
           : wall
       );
-      console.log(`🏠 [WALL SAVE] Updated walls:`, updatedWalls.map(w => ({ id: w.id, temp: w.properties.temperature })));
       onWallsUpdate(updatedWalls);
-      console.log(`🏠 [WALL SAVE] onWallsUpdate called successfully`);
       
       // CRITICAL FIX: Update editingWall to reflect the new temperature
       if (editingWall && editingWall.id === wallId) {
         const updatedEditingWall = { ...editingWall, properties: { ...editingWall.properties, temperature } };
-        console.log(`🏠 [WALL SAVE] Updating editingWall:`, { oldTemp: editingWall.properties.temperature, newTemp: temperature });
+
         setEditingWall(updatedEditingWall);
       }
     } else {
-      console.log(`🏠 [WALL SAVE] ERROR: onWallsUpdate is not available`);
+
     }
   }
 
