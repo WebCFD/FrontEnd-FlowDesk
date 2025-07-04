@@ -135,6 +135,15 @@ const wallDefaults = {
 };
 
 export default function AirEntryDialog(props: PropertyDialogProps) {
+  // 🔴 TYPE VERIFICATION LOGS - Check if onDimensionsUpdate prop is received
+  console.log("🔴 [TYPE DEBUG] AirEntryDialog props received:", {
+    propsType: typeof props,
+    allProps: Object.keys(props),
+    callbackProps: Object.keys(props).filter(key => key.startsWith('on')),
+    hasOnDimensionsUpdate: 'onDimensionsUpdate' in props,
+    onDimensionsUpdateType: typeof props.onDimensionsUpdate,
+    onDimensionsUpdateValue: props.onDimensionsUpdate
+  });
   const { type, isOpen: dialogOpen, onClose, isEditing = false } = props;
   const onCancel = 'onCancel' in props ? props.onCancel : undefined;
   const isCreating = 'isCreating' in props ? props.isCreating : false;

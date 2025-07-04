@@ -3698,6 +3698,11 @@ export default function Canvas2D({
             handleAirEntryPositionUpdate(editingAirEntry.index, newPosition);
           }}
           onDimensionsUpdate={(newDimensions) => {
+            console.log("🔴 [CANVAS2D DEBUG] onDimensionsUpdate callback triggered:", {
+              index: editingAirEntry.index,
+              newDimensions,
+              handlerExists: typeof handleAirEntryDimensionsUpdate === 'function'
+            });
             handleAirEntryDimensionsUpdate(editingAirEntry.index, newDimensions);
           }}
         />
