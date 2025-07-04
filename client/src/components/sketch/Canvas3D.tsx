@@ -5608,6 +5608,13 @@ export default function Canvas3D({
   const handleRealTimeRotationUpdate = (newRotation: { x: number; y: number; z: number }) => {
     if (!editingFurniture || !sceneRef.current) return;
 
+    console.log('🔄 [CANVAS3D] handleRealTimeRotationUpdate received:', newRotation);
+    console.log('🔄 [CANVAS3D] Converting to degrees:', {
+      x: newRotation.x * 180 / Math.PI,
+      y: newRotation.y * 180 / Math.PI,
+      z: newRotation.z * 180 / Math.PI
+    });
+
     const furnitureId = editingFurniture.item.id;
     let furnitureGroup: THREE.Group | null = null;
 
