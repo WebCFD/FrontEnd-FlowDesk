@@ -1226,12 +1226,19 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               // Trigger real-time updates for Canvas3D
                               if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
                                 console.log("🔵 [CENTER HEIGHT DEBUG] Calling onDimensionsUpdate with:", { distanceToFloor: rounded });
-                              console.log("🔵 [CENTER HEIGHT DEBUG] Props available:", Object.keys(props).filter(key => key.startsWith('on')));
-                              console.log("🔵 [CENTER HEIGHT DEBUG] onDimensionsUpdate exists:", !!props.onDimensionsUpdate);
-                              props.onDimensionsUpdate({ distanceToFloor: rounded });
-                              console.log("🔵 [CENTER HEIGHT DEBUG] ✅ Successfully called onDimensionsUpdate callback");
-                              } else {
+                                console.log("🔵 [CENTER HEIGHT DEBUG] Props available:", Object.keys(props).filter(key => key.startsWith('on')));
+                                console.log("🔵 [CENTER HEIGHT DEBUG] onDimensionsUpdate exists:", !!props.onDimensionsUpdate);
+                                props.onDimensionsUpdate({ distanceToFloor: rounded });
                                 console.log("🔵 [CENTER HEIGHT DEBUG] ✅ Successfully called onDimensionsUpdate callback");
+                              } else {
+                                console.log("🔵 [CENTER HEIGHT DEBUG] ❌ onDimensionsUpdate NOT called - Missing callback!");
+                                console.log("🔵 [CENTER HEIGHT DEBUG] Props type:", props.type);
+                                console.log("🔵 [CENTER HEIGHT DEBUG] Props analysis:", {
+                                  typeCheck: props.type !== 'wall',
+                                  hasCallback: 'onDimensionsUpdate' in props,
+                                  callbackExists: !!props.onDimensionsUpdate,
+                                  availableCallbacks: Object.keys(props).filter(key => key.startsWith('on'))
+                                });
                               }
                             } else {
                               console.log("🔵 [CENTER HEIGHT DEBUG] onChange skipped - type is door");
