@@ -301,6 +301,15 @@ interface Canvas2DProps {
       horizontalAngle?: number;
     }
   ) => void;
+  onDimensionsUpdate?: (
+    floorName: string,
+    index: number,
+    dimensions: {
+      distanceToFloor?: number;
+      width?: number;
+      height?: number;
+    }
+  ) => void;
 }
 
 export default function Canvas2D({
@@ -325,6 +334,7 @@ export default function Canvas2D({
   onStairPolygonsUpdate,
   onLineSelect,
   onPropertiesUpdate,
+  onDimensionsUpdate,
 }: Canvas2DProps) {
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
