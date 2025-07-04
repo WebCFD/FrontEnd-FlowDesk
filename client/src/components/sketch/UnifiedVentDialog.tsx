@@ -124,24 +124,11 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
     const widthFromScale = storedScale ? storedScale.x * 50 : 50;
     const heightFromScale = storedScale ? storedScale.y * 50 : 50;
     
-    console.log("🔍 [HYPOTHESIS TEST] mapToAirEntryFormat validation:");
-    console.log("🔍 [HYPOTHESIS TEST] - props.initialValues:", props.initialValues);
-    console.log("🔍 [HYPOTHESIS TEST] - props.initialValues?.scale:", props.initialValues?.scale);
-    console.log("🔍 [HYPOTHESIS TEST] - storedScale:", storedScale);
-    console.log("🔍 [HYPOTHESIS TEST] - widthFromScale (storedScale.x * 50):", widthFromScale);
-    console.log("🔍 [HYPOTHESIS TEST] - heightFromScale (storedScale.y * 50):", heightFromScale);
-    console.log("🔍 [HYPOTHESIS TEST] - currentDimensions.width:", currentDimensions.width);
-    console.log("🔍 [HYPOTHESIS TEST] - currentDimensions.height:", currentDimensions.height);
-    
-    const finalWidth = widthFromScale || currentDimensions.width;
-    const finalHeight = heightFromScale || currentDimensions.height;
-    
-    console.log("🔍 [HYPOTHESIS TEST] - FINAL width (widthFromScale || currentDimensions.width):", finalWidth);
-    console.log("🔍 [HYPOTHESIS TEST] - FINAL height (heightFromScale || currentDimensions.height):", finalHeight);
+    // Remove logs to eliminate loop
     
     return {
-      width: finalWidth, // Stored scale FIRST, then current state
-      height: finalHeight, // Stored scale FIRST, then current state
+      width: widthFromScale || currentDimensions.width, // Stored scale FIRST, then current state
+      height: heightFromScale || currentDimensions.height, // Stored scale FIRST, then current state
       distanceToFloor: 120, // Default (not used in 3D)
       position: currentPosition, // Use current state instead of initial values
       rotation: currentRotation, // Use current state instead of initial values
