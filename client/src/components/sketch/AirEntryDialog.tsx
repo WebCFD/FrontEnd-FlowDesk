@@ -1043,7 +1043,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                             <label className="text-xs">X</label>
                             <Input
                               type="number"
-                              step="1"
+                              step="0.01"
                               value={Math.round((element3DRotation.x * 180 / Math.PI) * 100) / 100}
                               onChange={(e) => {
                                 const newXDegrees = Number(e.target.value);
@@ -1062,7 +1062,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                             <label className="text-xs">Y</label>
                             <Input
                               type="number"
-                              step="1"
+                              step="0.01"
                               value={Math.round((element3DRotation.y * 180 / Math.PI) * 100) / 100}
                               onChange={(e) => {
                                 const newYDegrees = Number(e.target.value);
