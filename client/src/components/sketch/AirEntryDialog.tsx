@@ -108,9 +108,6 @@ interface WallPropertiesDialogProps {
   initialValues?: {
     temperature: number;
   };
-  // Add missing callback props to make union type compatible
-  onDimensionsUpdate?: (newDimensions: { width?: number; height?: number; distanceToFloor?: number }) => void;
-  onPropertiesUpdate?: (properties: any) => void;
 }
 
 // Tipo unión para ambos casos
@@ -138,15 +135,6 @@ const wallDefaults = {
 };
 
 export default function AirEntryDialog(props: PropertyDialogProps) {
-  // 🔴 TYPE VERIFICATION LOGS - Check if onDimensionsUpdate prop is received
-  console.log("🔴 [TYPE DEBUG] AirEntryDialog props received:", {
-    propsType: typeof props,
-    allProps: Object.keys(props),
-    callbackProps: Object.keys(props).filter(key => key.startsWith('on')),
-    hasOnDimensionsUpdate: 'onDimensionsUpdate' in props,
-    onDimensionsUpdateType: typeof props.onDimensionsUpdate,
-    onDimensionsUpdateValue: props.onDimensionsUpdate
-  });
   const { type, isOpen: dialogOpen, onClose, isEditing = false } = props;
   const onCancel = 'onCancel' in props ? props.onCancel : undefined;
   const isCreating = 'isCreating' in props ? props.isCreating : false;
@@ -278,11 +266,6 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
       
       // Trigger real-time position updates
       if (props.type !== 'wall' && 'onPositionUpdate' in props && props.onPositionUpdate) {
-        console.log("🔵 [POSITION DEBUG] onPositionUpdate callback triggered:", {
-          newPosition,
-          callbackExists: !!props.onPositionUpdate,
-          propsType: props.type
-        });
         props.onPositionUpdate(newPosition);
       }
     }
@@ -310,12 +293,6 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     
     // Trigger real-time dimension updates - PASS BOTH DIMENSIONS LIKE POSITION
     if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
-      console.log("🔴 [DIMENSIONS DEBUG] onDimensionsUpdate callback triggered:", {
-        dimensions: { width: localWidth, height: newHeight },
-        callbackExists: !!props.onDimensionsUpdate,
-        propsType: props.type,
-        hasCallback: 'onDimensionsUpdate' in props
-      });
       props.onDimensionsUpdate({ width: localWidth, height: newHeight });
     }
   };
@@ -1249,19 +1226,21 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               // Trigger real-time updates for Canvas3D
                               if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
                                 console.log("🔵 [CENTER HEIGHT DEBUG] Calling onDimensionsUpdate with:", { distanceToFloor: rounded });
-                                console.log("🔵 [CENTER HEIGHT DEBUG] Props available:", Object.keys(props).filter(key => key.startsWith('on')));
-                                console.log("🔵 [CENTER HEIGHT DEBUG] onDimensionsUpdate exists:", !!props.onDimensionsUpdate);
                                 props.onDimensionsUpdate({ distanceToFloor: rounded });
                                 console.log("🔵 [CENTER HEIGHT DEBUG] ✅ Successfully called onDimensionsUpdate callback");
                               } else {
-                                console.log("🔵 [CENTER HEIGHT DEBUG] ❌ onDimensionsUpdate NOT called - Missing callback!");
-                                console.log("🔵 [CENTER HEIGHT DEBUG] Props type:", props.type);
+                                console.log("🔵 [CENTER HEIGHT DEBUG] ❌ CRITICAL ISSUE FOUND:");
+                                console.log("🔵 [CENTER HEIGHT DEBUG] onDimensionsUpdate NOT called - Missing callback architecture!");
                                 console.log("🔵 [CENTER HEIGHT DEBUG] Props analysis:", {
-                                  typeCheck: props.type !== 'wall',
+                                  componentType: props.type,
+                                  isNotWall: props.type !== 'wall',
                                   hasCallback: 'onDimensionsUpdate' in props,
-                                  callbackExists: !!props.onDimensionsUpdate,
-                                  availableCallbacks: Object.keys(props).filter(key => key.startsWith('on'))
+                                  callbackExists: 'onDimensionsUpdate' in props ? '✅ EXISTS' : '❌ MISSING',
+                                  availableProps: Object.keys(props).filter(key => key.startsWith('on'))
                                 });
+                                console.log("🔵 [CENTER HEIGHT DEBUG] 🔍 COMPARISON:");
+                                console.log("🔵 [CENTER HEIGHT DEBUG] Position Along Wall: onPositionUpdate -> handleUpdateAirEntryFrom3D -> store -> Canvas2D");
+                                console.log("🔵 [CENTER HEIGHT DEBUG] Center Height: onDimensionsUpdate -> ❌ NO EQUIVALENT HANDLER -> ❌ NO STORE UPDATE -> ❌ NO CANVAS UPDATE");
                               }
                             } else {
                               console.log("🔵 [CENTER HEIGHT DEBUG] onChange skipped - type is door");
