@@ -111,14 +111,8 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
     horizontalAngle?: number;
     airTemperature?: number;
   }) => {
-    console.log('🔧 [UNIFIED VENT DIALOG] stableOnPropertiesUpdate called with:', properties);
-    console.log('🔧 [UNIFIED VENT DIALOG] onPropertiesUpdate callback exists:', !!onPropertiesUpdate);
-    
     if (onPropertiesUpdate) {
       onPropertiesUpdate(properties);
-      console.log('✅ [UNIFIED VENT DIALOG] Properties update sent to Canvas3D');
-    } else {
-      console.log('❌ [UNIFIED VENT DIALOG] No onPropertiesUpdate callback provided');
     }
   }, [onPropertiesUpdate]);
 
@@ -259,8 +253,6 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
       }}
       // Add properties update callback for real-time Simulation Conditions updates
       onPropertiesUpdate={(newProperties) => {
-        console.log('🔧 [UNIFIED VENT DIALOG] onPropertiesUpdate triggered from AirEntryDialog with:', newProperties);
-        
         // Map AirEntry format to UnifiedVent format and trigger callback
         const mappedProperties = {
           state: newProperties.state,
@@ -274,7 +266,6 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
           airTemperature: newProperties.temperature, // Map temperature to airTemperature
         };
         
-        console.log('🔧 [UNIFIED VENT DIALOG] Mapped properties:', mappedProperties);
         stableOnPropertiesUpdate(mappedProperties);
       }}
       // Pass floor context for Information section
