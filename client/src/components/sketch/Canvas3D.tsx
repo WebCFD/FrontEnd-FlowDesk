@@ -5687,14 +5687,24 @@ export default function Canvas3D({
     horizontalAngle?: number;
     airTemperature?: number;
   }) => {
-    if (!editingFurniture || !sceneRef.current) return;
+    console.log('🔧 [CANVAS3D] handleRealTimePropertiesUpdate called with:', properties);
+    console.log('🔧 [CANVAS3D] editingFurniture exists:', !!editingFurniture);
+    console.log('🔧 [CANVAS3D] sceneRef.current exists:', !!sceneRef.current);
+    
+    if (!editingFurniture || !sceneRef.current) {
+      console.log('❌ [CANVAS3D] Missing editingFurniture or sceneRef, returning');
+      return;
+    }
 
     const furnitureId = editingFurniture.item.id;
+    console.log('🔧 [CANVAS3D] Looking for furniture with ID:', furnitureId);
+    
     let furnitureGroup: THREE.Group | null = null;
 
     sceneRef.current.traverse((child) => {
       if (child.userData.furnitureId === furnitureId && child.userData.type === 'furniture') {
         furnitureGroup = child as THREE.Group;
+        console.log('✅ [CANVAS3D] Found furniture group in scene');
       }
     });
 
@@ -5702,6 +5712,7 @@ export default function Canvas3D({
       // Update userData.simulationProperties in real-time for JSON export
       if (!furnitureGroup.userData.simulationProperties) {
         furnitureGroup.userData.simulationProperties = {};
+        console.log('🔧 [CANVAS3D] Created new simulationProperties object');
       }
       
       // Merge new properties with existing ones
@@ -5709,6 +5720,9 @@ export default function Canvas3D({
         ...furnitureGroup.userData.simulationProperties,
         ...properties
       };
+      console.log('✅ [CANVAS3D] Updated simulationProperties:', furnitureGroup.userData.simulationProperties);
+    } else {
+      console.log('❌ [CANVAS3D] Could not find furniture group in scene');
     }
   };
 
@@ -6025,7 +6039,6 @@ export default function Canvas3D({
           onPositionUpdate={handleRealTimePositionUpdate}
           onRotationUpdate={handleRealTimeRotationUpdate}
           onScaleUpdate={handleRealTimeScaleUpdate}
-          onPropertiesUpdate={handleRealTimePropertiesUpdate}
           initialValues={{
             name: editingFurniture.item.name,
             position: editingFurniture.item.position,
