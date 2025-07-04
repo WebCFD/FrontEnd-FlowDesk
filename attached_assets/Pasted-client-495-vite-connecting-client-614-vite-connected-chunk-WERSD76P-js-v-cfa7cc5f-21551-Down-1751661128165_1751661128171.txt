@@ -1,0 +1,615 @@
+client:495 [vite] connecting...
+client:614 [vite] connected.
+chunk-WERSD76P.js?v=cfa7cc5f:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+AnalyticsProvider.tsx:21 Analytics initialized: false
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+room-store.ts:467 🔗 STORE: Nueva suscripción añadida. Total listeners: 1
+chunk-WERSD76P.js?v=cfa7cc5f:377 [Violation] 'message' handler took 281ms
+dashboard-sidebar.tsx:65 
+            
+            
+           GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+fetchUserData @ dashboard-sidebar.tsx:65
+(anonymous) @ dashboard-sidebar.tsx:80
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18868
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19432
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+finishConcurrentRender @ chunk-WERSD76P.js?v=cfa7cc5f:18805
+performConcurrentWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18718
+workLoop @ chunk-WERSD76P.js?v=cfa7cc5f:197
+flushWork @ chunk-WERSD76P.js?v=cfa7cc5f:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=cfa7cc5f:384
+analytics.ts:26 Google Analytics initialized with ID: G-XZYY9DVVHW
+useAnalytics.ts:59 Google Analytics initialized successfully
+js?id=G-XZYY9DVVHW:661 [Violation] 'setTimeout' handler took 363ms
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+AnalyticsProvider.tsx:21 Analytics initialized: true
+analytics.ts:62 📊 Analytics Event: {category: 'ui_interaction', action: 'change_tab', label: 'view_3d_preview', value: undefined, status: 'sent'}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+room-store.ts:475 🔗 STORE: Suscripción eliminada. Total listeners: 0
+room-store.ts:467 🔗 STORE: Nueva suscripción añadida. Total listeners: 1
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 195ms
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+Canvas3D.tsx:3989 Hovering over axis mesh: x
+Canvas3D.tsx:3989 Hovering over axis mesh: x
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+Canvas3D.tsx:3989 Hovering over axis mesh: x
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+Canvas3D.tsx:4371 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4381 Double-click found entry using stored entryIndex: 0
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:1236 🔵 [CENTER HEIGHT DEBUG] onChange called with value: 113
+AirEntryDialog.tsx:1254 🔵 [CENTER HEIGHT DEBUG] ❌ onDimensionsUpdate NOT called - Missing callback!
+AirEntryDialog.tsx:1255 🔵 [CENTER HEIGHT DEBUG] Props type: window
+AirEntryDialog.tsx:1256 🔵 [CENTER HEIGHT DEBUG] Props analysis: {typeCheck: true, hasCallback: false, callbackExists: false, availableCallbacks: Array(5)}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:1242 🔵 [CENTER HEIGHT DEBUG] Updated form values: {width: 70, height: 40, distanceToFloor: 113, shape: 'rectangular', wallPosition: 95, …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:1236 🔵 [CENTER HEIGHT DEBUG] onChange called with value: 114
+AirEntryDialog.tsx:1254 🔵 [CENTER HEIGHT DEBUG] ❌ onDimensionsUpdate NOT called - Missing callback!
+AirEntryDialog.tsx:1255 🔵 [CENTER HEIGHT DEBUG] Props type: window
+AirEntryDialog.tsx:1256 🔵 [CENTER HEIGHT DEBUG] Props analysis: {typeCheck: true, hasCallback: false, callbackExists: false, availableCallbacks: Array(5)}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:1242 🔵 [CENTER HEIGHT DEBUG] Updated form values: {width: 70, height: 40, distanceToFloor: 114, shape: 'rectangular', wallPosition: 95, …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:1236 🔵 [CENTER HEIGHT DEBUG] onChange called with value: 115
+AirEntryDialog.tsx:1254 🔵 [CENTER HEIGHT DEBUG] ❌ onDimensionsUpdate NOT called - Missing callback!
+AirEntryDialog.tsx:1255 🔵 [CENTER HEIGHT DEBUG] Props type: window
+AirEntryDialog.tsx:1256 🔵 [CENTER HEIGHT DEBUG] Props analysis: {typeCheck: true, hasCallback: false, callbackExists: false, availableCallbacks: Array(5)}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:1242 🔵 [CENTER HEIGHT DEBUG] Updated form values: {width: 70, height: 40, distanceToFloor: 115, shape: 'rectangular', wallPosition: 95, …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:1236 🔵 [CENTER HEIGHT DEBUG] onChange called with value: 116
+AirEntryDialog.tsx:1254 🔵 [CENTER HEIGHT DEBUG] ❌ onDimensionsUpdate NOT called - Missing callback!
+AirEntryDialog.tsx:1255 🔵 [CENTER HEIGHT DEBUG] Props type: window
+AirEntryDialog.tsx:1256 🔵 [CENTER HEIGHT DEBUG] Props analysis: {typeCheck: true, hasCallback: false, callbackExists: false, availableCallbacks: Array(5)}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:1242 🔵 [CENTER HEIGHT DEBUG] Updated form values: {width: 70, height: 40, distanceToFloor: 116, shape: 'rectangular', wallPosition: 95, …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:1236 🔵 [CENTER HEIGHT DEBUG] onChange called with value: 117
+AirEntryDialog.tsx:1254 🔵 [CENTER HEIGHT DEBUG] ❌ onDimensionsUpdate NOT called - Missing callback!
+AirEntryDialog.tsx:1255 🔵 [CENTER HEIGHT DEBUG] Props type: window
+AirEntryDialog.tsx:1256 🔵 [CENTER HEIGHT DEBUG] Props analysis: {typeCheck: true, hasCallback: false, callbackExists: false, availableCallbacks: Array(5)}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:1242 🔵 [CENTER HEIGHT DEBUG] Updated form values: {width: 70, height: 40, distanceToFloor: 117, shape: 'rectangular', wallPosition: 95, …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:1236 🔵 [CENTER HEIGHT DEBUG] onChange called with value: 118
+AirEntryDialog.tsx:1254 🔵 [CENTER HEIGHT DEBUG] ❌ onDimensionsUpdate NOT called - Missing callback!
+AirEntryDialog.tsx:1255 🔵 [CENTER HEIGHT DEBUG] Props type: window
+AirEntryDialog.tsx:1256 🔵 [CENTER HEIGHT DEBUG] Props analysis: {typeCheck: true, hasCallback: false, callbackExists: false, availableCallbacks: Array(5)}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:1242 🔵 [CENTER HEIGHT DEBUG] Updated form values: {width: 70, height: 40, distanceToFloor: 118, shape: 'rectangular', wallPosition: 95, …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:1236 🔵 [CENTER HEIGHT DEBUG] onChange called with value: 119
+AirEntryDialog.tsx:1254 🔵 [CENTER HEIGHT DEBUG] ❌ onDimensionsUpdate NOT called - Missing callback!
+AirEntryDialog.tsx:1255 🔵 [CENTER HEIGHT DEBUG] Props type: window
+AirEntryDialog.tsx:1256 🔵 [CENTER HEIGHT DEBUG] Props analysis: {typeCheck: true, hasCallback: false, callbackExists: false, availableCallbacks: Array(5)}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:1242 🔵 [CENTER HEIGHT DEBUG] Updated form values: {width: 70, height: 40, distanceToFloor: 119, shape: 'rectangular', wallPosition: 95, …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:1236 🔵 [CENTER HEIGHT DEBUG] onChange called with value: 120
+AirEntryDialog.tsx:1254 🔵 [CENTER HEIGHT DEBUG] ❌ onDimensionsUpdate NOT called - Missing callback!
+AirEntryDialog.tsx:1255 🔵 [CENTER HEIGHT DEBUG] Props type: window
+AirEntryDialog.tsx:1256 🔵 [CENTER HEIGHT DEBUG] Props analysis: {typeCheck: true, hasCallback: false, callbackExists: false, availableCallbacks: Array(5)}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:1242 🔵 [CENTER HEIGHT DEBUG] Updated form values: {width: 70, height: 40, distanceToFloor: 120, shape: 'rectangular', wallPosition: 95, …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(14), callbackProps: Array(5), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+room-store.ts:438 ✅ STORE: AirEntry actualizado en el store, notificando a 1 listeners
+room-store.ts:442 📢 STORE: Notificando listener 1/1
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+analytics.ts:62 📊 Analytics Event: {category: 'ui_interaction', action: 'change_tab', label: 'view_2d_editor', value: undefined, status: 'sent'}
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+room-store.ts:475 🔗 STORE: Suscripción eliminada. Total listeners: 0
+room-store.ts:467 🔗 STORE: Nueva suscripción añadida. Total listeners: 1
+AirEntryDialog.tsx:139 🔴 [TYPE DEBUG] AirEntryDialog props received: {propsType: 'object', allProps: Array(6), callbackProps: Array(2), hasOnDimensionsUpdate: false, onDimensionsUpdateType: 'undefined', …}
+wizard-design:1 [.WebGL-0x6bc0b6b9b00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x6bc0b6b9b00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x6bc0b6b9b00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x6bc0b6b9b00] GL_INVALID_OPERATION: Texture is immutable.
