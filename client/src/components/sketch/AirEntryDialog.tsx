@@ -1044,7 +1044,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                             <Input
                               type="number"
                               step="0.01"
-                              value={Math.round((element3DRotation.x * 180 / Math.PI) * 100) / 100}
+                              value={parseFloat((element3DRotation.x * 180 / Math.PI).toFixed(2))}
                               onChange={(e) => {
                                 const newXDegrees = Number(e.target.value);
                                 const newXRadians = newXDegrees * Math.PI / 180;
@@ -1063,7 +1063,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                             <Input
                               type="number"
                               step="0.01"
-                              value={Math.round((element3DRotation.y * 180 / Math.PI) * 100) / 100}
+                              value={parseFloat((element3DRotation.y * 180 / Math.PI).toFixed(2))}
                               onChange={(e) => {
                                 const newYDegrees = Number(e.target.value);
                                 const newYRadians = newYDegrees * Math.PI / 180;
@@ -1082,7 +1082,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                             <Input
                               type="number"
                               step="0.01"
-                              value={Math.round((element3DRotation.z * 180 / Math.PI) * 100) / 100}
+                              value={parseFloat((element3DRotation.z * 180 / Math.PI).toFixed(2))}
                               onChange={(e) => {
                                 const newZDegrees = Number(e.target.value);
                                 const newZRadians = newZDegrees * Math.PI / 180;
