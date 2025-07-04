@@ -360,6 +360,7 @@ export default function WizardDesign() {
   // Only change when structural data (lines, airEntries positions, walls) changes
   // NOT when metadata (properties, dimensions) changes
   const floors = useMemo(() => {
+    console.log(`🔄 [FLOORS MEMO] useMemo triggered - floors object being rebuilt`);
     // Helper function to normalize floating point numbers to prevent precision errors
     const normalizeNum = (num: number, precision = 2): number => {
       return Math.round(num * Math.pow(10, precision)) / Math.pow(10, precision);
@@ -423,8 +424,8 @@ export default function WizardDesign() {
     return structuralFloors;
   }, [
     // Single stable dependency hash to prevent useMemo warning
-    JSON.stringify(
-      Object.keys(rawFloors)
+    (() => {
+      const dependencyData = Object.keys(rawFloors)
         .sort()
         .map(floorName => ({
           name: floorName,
@@ -433,9 +434,17 @@ export default function WizardDesign() {
           furnitureItemsLength: rawFloors[floorName]?.furnitureItems?.length || 0,
           stairPolygonsLength: rawFloors[floorName]?.stairPolygons?.length || 0,
           stairPolygonsHash: JSON.stringify(rawFloors[floorName]?.stairPolygons || []),
-          hasClosedContour: rawFloors[floorName]?.hasClosedContour || false
-        }))
-    )
+          hasClosedContour: rawFloors[floorName]?.hasClosedContour || false,
+          // Log wall data but DON'T track it in dependencies yet
+          wallsLength: rawFloors[floorName]?.walls?.length || 0,
+          wallsData: rawFloors[floorName]?.walls?.map(w => ({ id: w.id, temp: w.properties?.temperature })) || []
+        }));
+      
+      console.log(`📊 [MEMO DEPS] Dependency calculation:`, dependencyData);
+      console.log(`📊 [MEMO DEPS] Current floor walls:`, dependencyData.find(f => f.name === currentFloor)?.wallsData);
+      
+      return JSON.stringify(dependencyData);
+    })()
   ]);
 
 
@@ -444,6 +453,9 @@ export default function WizardDesign() {
   const currentFloorData = floors[currentFloor];
   const { lines, airEntries, walls, measurements, hasClosedContour, furnitureItems } =
     currentFloorData;
+  
+  // Log memoized wall data to track persistence issue
+  console.log(`🔄 [MEMOIZED WALLS] Canvas2D will receive walls:`, walls?.map(w => ({ id: w.id, temp: w.properties?.temperature })) || []);
   
   // Get stairPolygons directly from store to ensure real-time updates
   const stairPolygons = currentFloorData.stairPolygons || [];
