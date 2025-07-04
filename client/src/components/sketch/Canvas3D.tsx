@@ -1543,6 +1543,21 @@ export default function Canvas3D({
           if (object.userData.dimensions) {
             object.userData.dimensions = { ...object.userData.dimensions, ...newDimensions };
           }
+
+          // PHASE 5: Update coordinate system during real-time Center Height changes
+          if (!presentationMode) {
+            try {
+              const position3D = transform2DTo3D(object.userData.position || editingAirEntry.entry.position);
+              const floorData = finalFloors[currentFloor];
+              const airEntry = floorData?.airEntries?.[editingAirEntry.index];
+              
+              // Update coordinate system (non-invasive)
+              updateCoordinateSystemPosition(editingAirEntry.index, currentFloor, position3D, newZ, airEntry);
+            } catch (error) {
+              // Coordinate system update failure won't affect AirEntry operations
+              console.warn('Coordinate system update failed during real-time dimension change:', error);
+            }
+          }
         }
       });
     }
