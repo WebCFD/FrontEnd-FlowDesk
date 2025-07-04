@@ -1348,13 +1348,21 @@ export default function Canvas2D({
 
   // Handle wall properties save
   const handleWallPropertiesSave = (wallId: string, temperature: number) => {
+    console.log(`🏠 [WALL SAVE] handleWallPropertiesSave called - ID: ${wallId}, Temperature: ${temperature}`);
+    console.log(`🏠 [WALL SAVE] Current walls count: ${walls.length}`);
+    console.log(`🏠 [WALL SAVE] Wall being updated:`, walls.find(w => w.id === wallId));
+    
     if (onWallsUpdate) {
       const updatedWalls = walls.map(wall => 
         wall.id === wallId 
           ? { ...wall, properties: { ...wall.properties, temperature } }
           : wall
       );
+      console.log(`🏠 [WALL SAVE] Updated walls:`, updatedWalls.map(w => ({ id: w.id, temp: w.properties.temperature })));
       onWallsUpdate(updatedWalls);
+      console.log(`🏠 [WALL SAVE] onWallsUpdate called successfully`);
+    } else {
+      console.log(`🏠 [WALL SAVE] ERROR: onWallsUpdate is not available`);
     }
   }
 
