@@ -987,33 +987,7 @@ export default function Canvas3D({
     };
   };
 
-  // PHASE 6: Unified furniture counting across standard and custom items
-  const getAllFurnitureForFloor = useCallback((floorName: string): FurnitureItem[] => {
-    const floorData = migratedFloors[floorName];
-    if (!floorData) return [];
-    
-    // Combine floor furniture with custom furniture from store
-    const floorFurniture = floorData.furnitureItems || [];
-    const customFurnitureItems = customFurnitureStore.getAllCustomFurniture()
-      .filter(custom => {
-        // Check if this custom item is already in floor furniture
-        return !floorFurniture.some(item => item.id === custom.id);
-      })
-      .map(custom => ({
-        id: custom.id,
-        type: 'custom' as const,
-        name: custom.name,
-        floorName: floorName,
-        position: { x: 0, y: 0, z: 0 }, // Default position
-        rotation: { x: 0, y: 0, z: 0 },
-        dimensions: custom.dimensions,
-        meshId: custom.id,
-        createdAt: custom.createdAt,
-        updatedAt: custom.createdAt
-      }));
-    
-    return [...floorFurniture, ...customFurnitureItems];
-  }, [migratedFloors]);
+
 
 
 
@@ -1063,8 +1037,9 @@ export default function Canvas3D({
         furnitureType // Pass furniture type for position calculation
       );
       
-      // PHASE 6: Get all existing furniture from current floor (including custom items)
-      const existingFurniture = getAllFurnitureForFloor(surfaceDetection.floorName);
+      // Get existing furniture from current floor for ID generation
+      const floorData = migratedFloors[surfaceDetection.floorName];
+      const existingFurniture = floorData?.furnitureItems || [];
       
       // For custom objects, use the pre-assigned ID from the store; for others, generate new ID
       const generatedId = isCustomObject 
@@ -1596,107 +1571,7 @@ export default function Canvas3D({
     }, 150);
   }, [editingAirEntry, onUpdateAirEntry, currentFloor]);
 
-  const handleAirEntryDimensionsUpdate = useCallback((newDimensions: any) => {
-    if (!editingAirEntry || !onUpdateAirEntry) return;
-    
-    // Clear any pending updates
-    if (updateTimeoutRef.current) {
-      clearTimeout(updateTimeoutRef.current);
-    }
-    
-    const updatedEntry = {
-      ...editingAirEntry.entry,
-      dimensions: {
-        ...editingAirEntry.entry.dimensions,
-        ...newDimensions
-      }
-    };
-    
-    // Store the updated dimensions in the reference for immediate visual update
-    const normalizedFloorName = normalizeFloorName(currentFloor);
-    if (!updatedAirEntryPositionsRef.current[normalizedFloorName]) {
-      updatedAirEntryPositionsRef.current[normalizedFloorName] = {};
-    }
-    
-    // Update or create entry with new dimensions
-    if (!updatedAirEntryPositionsRef.current[normalizedFloorName][editingAirEntry.index]) {
-      updatedAirEntryPositionsRef.current[normalizedFloorName][editingAirEntry.index] = {
-        position: editingAirEntry.entry.position,
-        dimensions: updatedEntry.dimensions
-      };
-    } else {
-      updatedAirEntryPositionsRef.current[normalizedFloorName][editingAirEntry.index].dimensions = updatedEntry.dimensions;
-    }
-    
-    // Update local state immediately for responsiveness
-    setEditingAirEntry(prev => prev ? {
-      ...prev,
-      entry: updatedEntry
-    } : null);
-    
-    // Force immediate geometry and position updates for visual feedback
-    const currentFloorData = migratedFloors[currentFloor];
-    if (currentFloorData && sceneRef.current) {
-      // Find and update the specific air entry mesh
-      sceneRef.current.traverse((object) => {
-        if (object instanceof THREE.Mesh && 
-            object.userData?.type === editingAirEntry.entry.type &&
-            object.userData?.entryIndex === editingAirEntry.index) {
-          
-          // Update geometry if width or height changed
-          if (newDimensions.width !== undefined || newDimensions.height !== undefined) {
-            const newWidth = newDimensions.width || updatedEntry.dimensions.width;
-            const newHeight = newDimensions.height || updatedEntry.dimensions.height;
-            
-            console.log(`🔧 [AIRENTRY DIRECT] Updating geometry directly for ${object.userData.type} - oldSize: ${object.geometry.parameters?.width}x${object.geometry.parameters?.height}, newSize: ${newWidth}x${newHeight}`);
-            
-            const newGeometry = new THREE.PlaneGeometry(newWidth, newHeight);
-            object.geometry.dispose(); // Clean up old geometry
-            object.geometry = newGeometry;
-            
-            console.log(`✅ [AIRENTRY DIRECT] Geometry updated successfully - Material type: ${object.material.constructor.name}, Has texture: ${!!(object.material as any).map}`);
-          }
-          
-          // Update Z-position if distanceToFloor changed
-          if (newDimensions.distanceToFloor !== undefined && editingAirEntry.entry.type !== "door") {
-            const baseHeight = getFloorBaseHeight(currentFloor);
-            const newDistanceToFloor = newDimensions.distanceToFloor;
-            // CRITICAL FIX: distanceToFloor already represents center height, no need to add height/2
-            const newZPosition = baseHeight + newDistanceToFloor;
-            
-            object.position.setZ(newZPosition);
 
-            // PHASE 5: Update coordinate system during real-time Center Height changes
-            if (!presentationMode) {
-              try {
-                const position3D = new THREE.Vector3(object.position.x, object.position.y, 0);
-                const floorData = finalFloors[currentFloor];
-                const airEntry = floorData?.airEntries?.[editingAirEntry.index];
-                
-                // Update coordinate system with new Z position
-                updateCoordinateSystemPosition(editingAirEntry.index, currentFloor, position3D, newZPosition, airEntry);
-              } catch (error) {
-                // Coordinate system update failure won't affect AirEntry operations
-                console.warn('Coordinate system update failed during Center Height change:', error);
-              }
-            }
-          }
-          
-          // Update userData with new dimensions
-          object.userData.dimensions = updatedEntry.dimensions;
-        }
-      });
-    }
-    
-    // Debounce parent callback to prevent excessive updates
-    updateTimeoutRef.current = setTimeout(() => {
-      if (onUpdateAirEntry && editingAirEntry) {
-        onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
-      }
-      
-      // OPTIMIZATION: No callback needed - textures preserved automatically during direct modification
-    }, 150);
-  }, [editingAirEntry, onUpdateAirEntry, currentFloor, migratedFloors]);
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -5478,8 +5353,8 @@ export default function Canvas3D({
           if (furnitureId) {
             // Get the actual furniture item from the store
             const floorName = furnitureGroup.userData.floorName || currentFloor;
-            const allFurnitureItems = getAllFurnitureForFloor(floorName);
-            const actualFurnitureItem = allFurnitureItems.find(item => item.id === furnitureId);
+            const floorData = migratedFloors[floorName];
+            const actualFurnitureItem = floorData?.furnitureItems?.find(item => item.id === furnitureId);
             
 
             
@@ -5998,7 +5873,7 @@ export default function Canvas3D({
           isEditing={true}
           wallContext={editingAirEntry.wallContext}
           onPositionUpdate={handleAirEntryPositionUpdate}
-          onDimensionsUpdate={handleAirEntryDimensionsUpdate}
+
           onPropertiesUpdate={onPropertiesUpdate ? (properties) => {
             // Real-time properties synchronization
             onPropertiesUpdate(currentFloor, editingAirEntry.index, properties);
