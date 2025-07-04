@@ -1049,9 +1049,11 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                                 const newXDegrees = Number(e.target.value);
                                 const newXRadians = newXDegrees * Math.PI / 180;
                                 const newRotation = { ...element3DRotation, x: newXRadians };
+                                console.log('🔄 [ROTATION X] Input:', newXDegrees, '→ Radians:', newXRadians, '→ Back to degrees:', (newXRadians * 180 / Math.PI));
                                 setElement3DRotation(newRotation);
                                 
                                 if ('onRotationUpdate' in props && props.onRotationUpdate) {
+                                  console.log('🔄 [ROTATION X] Calling onRotationUpdate with:', newRotation);
                                   props.onRotationUpdate(newRotation);
                                 }
                               }}
