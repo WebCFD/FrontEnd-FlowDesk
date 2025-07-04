@@ -2346,12 +2346,12 @@ export default function Canvas3D({
         
         if (existingMesh && existingMesh.material instanceof THREE.MeshPhongMaterial && existingMesh.material.map) {
           // PRESERVE EXISTING TEXTURE: Reuse material with texture
-          console.log(`✅ [SCENE REBUILD] Preserving texture for ${entry.type} at index ${index}`);
+
           material = existingMesh.material.clone();
           material.needsUpdate = true;
         } else {
           // CREATE NEW MATERIAL: No existing texture found
-          console.log(`🔧 [SCENE REBUILD] Creating new material for ${entry.type} at index ${index}`);
+
           material = new THREE.MeshPhongMaterial({
             color:
               entry.type === "window"
@@ -4826,7 +4826,7 @@ export default function Canvas3D({
             textureCountAfter++;
           }
         });
-        console.log(`🔥 [SCENE REBUILD] AirEntries with textures AFTER rebuild: ${textureCountAfter}`);
+
       }
     }
   }, [floors, currentFloor, isMultifloor, floorParameters]);
@@ -5090,7 +5090,7 @@ export default function Canvas3D({
 
   useEffect(() => {
     if (sceneRef.current) {
-      console.log('🔧 [WALL TRANSPARENCY] Updating wall transparency, preserving AirEntry textures');
+
       
       // Update the opacity of only wall materials in the scene, not air entries
       sceneRef.current.traverse((object) => {
@@ -5104,12 +5104,12 @@ export default function Canvas3D({
 
           if (!isAirEntry) {
             // This is a wall material that needs updating
-            console.log('🔧 [WALL TRANSPARENCY] Updating wall material opacity to:', wallTransparency);
+
             object.material.opacity = wallTransparency;
             object.material.needsUpdate = true;
           } else {
             // CRITICAL: This is an AirEntry - preserve its texture and current opacity
-            console.log('✅ [WALL TRANSPARENCY] Preserving AirEntry material - hasTexture:', !!object.material.map, 'opacity:', object.material.opacity);
+
             // DO NOT modify AirEntry materials - they are managed by RSP texture system
           }
         }
@@ -5365,21 +5365,7 @@ export default function Canvas3D({
                 const worldPosition = new THREE.Vector3();
                 furnitureGroup.getWorldPosition(worldPosition);
                 
-                console.log('=== COORDINATE SYSTEM FIX ===');
-                console.log('Vent Double-Click Analysis:');
-                console.log('- Original stored position:', actualFurnitureItem.position);
-                console.log('- Local furnitureGroup.position:', {
-                  x: furnitureGroup.position.x,
-                  y: furnitureGroup.position.y, 
-                  z: furnitureGroup.position.z
-                });
-                console.log('- World position (visual):', {
-                  x: Math.round(worldPosition.x * 100) / 100,
-                  y: Math.round(worldPosition.y * 100) / 100,
-                  z: Math.round(worldPosition.z * 100) / 100
-                });
-                console.log('- USING WORLD COORDINATES for dialog consistency');
-                console.log('===============================');
+
               }
               
               // COORDINATE SYSTEM FIX: Use world coordinates for vents to match visual positioning
@@ -5417,9 +5403,7 @@ export default function Canvas3D({
                   z: Math.round(worldRotation.z * 100) / 100
                 };
                 
-                console.log(`Using world coordinates for ${actualFurnitureItem.type} dialog:`);
-                console.log('- Position:', dialogPosition);
-                console.log('- Rotation:', dialogRotation);
+
               }
 
               // DIMENSIONS FIX: Read scale from actual mesh instead of store
