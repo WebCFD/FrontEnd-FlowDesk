@@ -1506,6 +1506,53 @@ export default function Canvas3D({
   const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Stable callbacks for AirEntry dialog real-time updates
+  const handleAirEntryDimensionsUpdate = useCallback((newDimensions: any) => {
+    if (!editingAirEntry || !onDimensionsUpdate) return;
+    
+    // Clear any pending updates
+    if (updateTimeoutRef.current) {
+      clearTimeout(updateTimeoutRef.current);
+    }
+    
+    const updatedEntry = {
+      ...editingAirEntry.entry,
+      dimensions: {
+        ...editingAirEntry.entry.dimensions,
+        ...newDimensions
+      }
+    };
+    
+    // Update local state immediately for responsiveness
+    setEditingAirEntry(prev => prev ? {
+      ...prev,
+      entry: updatedEntry
+    } : null);
+    
+    // Force immediate dimension update for visual feedback (especially Center Height)
+    if (sceneRef.current && newDimensions.distanceToFloor !== undefined) {
+      sceneRef.current.traverse((object) => {
+        if (object instanceof THREE.Mesh && 
+            object.userData?.type === editingAirEntry.entry.type &&
+            object.userData?.entryIndex === editingAirEntry.index) {
+          
+          // Update the mesh Z position for Center Height (distanceToFloor)
+          const newZ = newDimensions.distanceToFloor;
+          object.position.setZ(newZ);
+          
+          // Update userData for persistence
+          if (object.userData.dimensions) {
+            object.userData.dimensions = { ...object.userData.dimensions, ...newDimensions };
+          }
+        }
+      });
+    }
+    
+    // Debounced callback to parent for store updates
+    updateTimeoutRef.current = setTimeout(() => {
+      onDimensionsUpdate(currentFloor, editingAirEntry.index, newDimensions);
+    }, 100);
+  }, [editingAirEntry, onDimensionsUpdate, currentFloor]);
+
   const handleAirEntryPositionUpdate = useCallback((newPosition: any) => {
     if (!editingAirEntry || !onUpdateAirEntry) return;
     
@@ -5935,10 +5982,7 @@ export default function Canvas3D({
           isEditing={true}
           wallContext={editingAirEntry.wallContext}
           onPositionUpdate={handleAirEntryPositionUpdate}
-          onDimensionsUpdate={onDimensionsUpdate ? (dimensions) => {
-            // Real-time dimensions synchronization for Center Height updates
-            onDimensionsUpdate(currentFloor, editingAirEntry.index, dimensions);
-          } : undefined}
+          onDimensionsUpdate={handleAirEntryDimensionsUpdate}
           onPropertiesUpdate={onPropertiesUpdate ? (properties) => {
             // Real-time properties synchronization
             onPropertiesUpdate(currentFloor, editingAirEntry.index, properties);
