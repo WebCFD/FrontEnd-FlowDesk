@@ -1,0 +1,127 @@
+client:495 [vite] connecting...
+client:614 [vite] connected.
+chunk-WERSD76P.js?v=cfa7cc5f:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+AnalyticsProvider.tsx:21 Analytics initialized: false
+wizard-design.tsx:443 📊 [MEMO DEPS] Dependency calculation: [{…}]
+wizard-design.tsx:444 📊 [MEMO DEPS] Current floor walls: (3) [{…}, {…}, {…}]
+wizard-design.tsx:363 🔄 [FLOORS MEMO] useMemo triggered - floors object being rebuilt
+wizard-design.tsx:458 🔄 [MEMOIZED WALLS] Canvas2D will receive walls: (3) [{…}, {…}, {…}]
+room-store.ts:467 🔗 STORE: Nueva suscripción añadida. Total listeners: 1
+chunk-WERSD76P.js?v=cfa7cc5f:377 [Violation] 'message' handler took 228ms
+dashboard-sidebar.tsx:65 
+            
+            
+           GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+fetchUserData @ dashboard-sidebar.tsx:65
+(anonymous) @ dashboard-sidebar.tsx:80
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18868
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19432
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+finishConcurrentRender @ chunk-WERSD76P.js?v=cfa7cc5f:18805
+performConcurrentWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18718
+workLoop @ chunk-WERSD76P.js?v=cfa7cc5f:197
+flushWork @ chunk-WERSD76P.js?v=cfa7cc5f:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=cfa7cc5f:384
+analytics.ts:26 Google Analytics initialized with ID: G-XZYY9DVVHW
+useAnalytics.ts:59 Google Analytics initialized successfully
+js?id=G-XZYY9DVVHW:661 [Violation] 'setTimeout' handler took 50ms
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+AnalyticsProvider.tsx:21 Analytics initialized: true
+Canvas2D.tsx:1338 🔍 [WALL DIALOG] Setting editingWall: {id: 'wall_0F_3', temp: 55}
+Canvas2D.tsx:1339 🔍 [WALL DIALOG] Current walls array: (3) [{…}, {…}, {…}]
+AirEntryDialog.tsx:477 🟠 [DIALOG INIT] Dialog opened, isEditing: true
+AirEntryDialog.tsx:478 🟠 [DIALOG INIT] Props received: {data-replit-metadata: 'client/src/components/sketch/Canvas2D.tsx:3698:6', data-component-name: 'AirEntryDialog', type: 'wall', isOpen: true, onClose: ƒ, …}
+AirEntryDialog.tsx:483 🟠 [DIALOG INIT] airEntryProps.initialValues: {temperature: 55}
+AirEntryDialog.tsx:686 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+AirEntryDialog.tsx:687 🎯 [SAVE BUTTON CLICKED] Event type: submit
+AirEntryDialog.tsx:688 🎯 [SAVE BUTTON CLICKED] Props type: wall
+AirEntryDialog.tsx:689 🎯 [SAVE BUTTON CLICKED] Current values: {temperature: 35}
+AirEntryDialog.tsx:690 🎯 [SAVE BUTTON CLICKED] wallPosition from values: undefined
+AirEntryDialog.tsx:691 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 50
+Canvas2D.tsx:1353 🏠 [WALL SAVE] handleWallPropertiesSave called - ID: wall_0F_3, Temperature: 35
+Canvas2D.tsx:1354 🏠 [WALL SAVE] Current walls count: 3
+Canvas2D.tsx:1355 🏠 [WALL SAVE] Wall being updated: {id: 'wall_0F_3', uuid: 'a7c9-4cd1-33f2', floor: 'Ground Floor', lineRef: '720,60_112,464', startPoint: {…}, …}
+Canvas2D.tsx:1363 🏠 [WALL SAVE] Updated walls: (3) [{…}, {…}, {…}]
+Canvas2D.tsx:1365 🏠 [WALL SAVE] onWallsUpdate called successfully
+Canvas2D.tsx:1370 🏠 [WALL SAVE] Updating editingWall: {oldTemp: 55, newTemp: 35}
+wizard-design.tsx:443 📊 [MEMO DEPS] Dependency calculation: [{…}]
+wizard-design.tsx:444 📊 [MEMO DEPS] Current floor walls: (3) [{…}, {…}, {…}]
+wizard-design.tsx:363 🔄 [FLOORS MEMO] useMemo triggered - floors object being rebuilt
+wizard-design.tsx:458 🔄 [MEMOIZED WALLS] Canvas2D will receive walls: (3) [{…}, {…}, {…}]0: {id: 'wall_0F_1', temp: 20}1: {id: 'wall_0F_2', temp: 150}2: {id: 'wall_0F_3', temp: 35}length: 3[[Prototype]]: Array(0)
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
+Canvas2D.tsx:1338 🔍 [WALL DIALOG] Setting editingWall: {id: 'wall_0F_3', temp: 35}
+Canvas2D.tsx:1339 🔍 [WALL DIALOG] Current walls array: (3) [{…}, {…}, {…}]
+AirEntryDialog.tsx:477 🟠 [DIALOG INIT] Dialog opened, isEditing: true
+AirEntryDialog.tsx:478 🟠 [DIALOG INIT] Props received: {data-replit-metadata: 'client/src/components/sketch/Canvas2D.tsx:3698:6', data-component-name: 'AirEntryDialog', type: 'wall', isOpen: true, onClose: ƒ, …}
+AirEntryDialog.tsx:483 🟠 [DIALOG INIT] airEntryProps.initialValues: {temperature: 35}
+AirEntryDialog.tsx:686 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+AirEntryDialog.tsx:687 🎯 [SAVE BUTTON CLICKED] Event type: submit
+AirEntryDialog.tsx:688 🎯 [SAVE BUTTON CLICKED] Props type: wall
+AirEntryDialog.tsx:689 🎯 [SAVE BUTTON CLICKED] Current values: {temperature: 35}
+AirEntryDialog.tsx:690 🎯 [SAVE BUTTON CLICKED] wallPosition from values: undefined
+AirEntryDialog.tsx:691 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 50
+Canvas2D.tsx:1353 🏠 [WALL SAVE] handleWallPropertiesSave called - ID: wall_0F_3, Temperature: 35
+Canvas2D.tsx:1354 🏠 [WALL SAVE] Current walls count: 3
+Canvas2D.tsx:1355 🏠 [WALL SAVE] Wall being updated: {id: 'wall_0F_3', uuid: 'a7c9-4cd1-33f2', floor: 'Ground Floor', lineRef: '720,60_112,464', startPoint: {…}, …}
+Canvas2D.tsx:1363 🏠 [WALL SAVE] Updated walls: (3) [{…}, {…}, {…}]
+Canvas2D.tsx:1365 🏠 [WALL SAVE] onWallsUpdate called successfully
+Canvas2D.tsx:1370 🏠 [WALL SAVE] Updating editingWall: {oldTemp: 35, newTemp: 35}
+wizard-design.tsx:443 📊 [MEMO DEPS] Dependency calculation: [{…}]
+wizard-design.tsx:444 📊 [MEMO DEPS] Current floor walls: (3) [{…}, {…}, {…}]
+wizard-design.tsx:458 🔄 [MEMOIZED WALLS] Canvas2D will receive walls: (3) [{…}, {…}, {…}]
+Canvas2D.tsx:1338 🔍 [WALL DIALOG] Setting editingWall: {id: 'wall_0F_3', temp: 35}
+Canvas2D.tsx:1339 🔍 [WALL DIALOG] Current walls array: (3) [{…}, {…}, {…}]
+AirEntryDialog.tsx:477 🟠 [DIALOG INIT] Dialog opened, isEditing: true
+AirEntryDialog.tsx:478 🟠 [DIALOG INIT] Props received: {data-replit-metadata: 'client/src/components/sketch/Canvas2D.tsx:3698:6', data-component-name: 'AirEntryDialog', type: 'wall', isOpen: true, onClose: ƒ, …}
+AirEntryDialog.tsx:483 🟠 [DIALOG INIT] airEntryProps.initialValues: {temperature: 35}
+AirEntryDialog.tsx:686 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+AirEntryDialog.tsx:687 🎯 [SAVE BUTTON CLICKED] Event type: submit
+AirEntryDialog.tsx:688 🎯 [SAVE BUTTON CLICKED] Props type: wall
+AirEntryDialog.tsx:689 🎯 [SAVE BUTTON CLICKED] Current values: {temperature: 120}
+AirEntryDialog.tsx:690 🎯 [SAVE BUTTON CLICKED] wallPosition from values: undefined
+AirEntryDialog.tsx:691 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 50
+Canvas2D.tsx:1353 🏠 [WALL SAVE] handleWallPropertiesSave called - ID: wall_0F_3, Temperature: 120
+Canvas2D.tsx:1354 🏠 [WALL SAVE] Current walls count: 3
+Canvas2D.tsx:1355 🏠 [WALL SAVE] Wall being updated: {id: 'wall_0F_3', uuid: 'a7c9-4cd1-33f2', floor: 'Ground Floor', lineRef: '720,60_112,464', startPoint: {…}, …}
+Canvas2D.tsx:1363 🏠 [WALL SAVE] Updated walls: (3) [{…}, {…}, {…}]
+Canvas2D.tsx:1365 🏠 [WALL SAVE] onWallsUpdate called successfully
+Canvas2D.tsx:1370 🏠 [WALL SAVE] Updating editingWall: {oldTemp: 35, newTemp: 120}
+wizard-design.tsx:443 📊 [MEMO DEPS] Dependency calculation: [{…}]
+wizard-design.tsx:444 📊 [MEMO DEPS] Current floor walls: (3) [{…}, {…}, {…}]
+wizard-design.tsx:363 🔄 [FLOORS MEMO] useMemo triggered - floors object being rebuilt
+wizard-design.tsx:458 🔄 [MEMOIZED WALLS] Canvas2D will receive walls: (3) [{…}, {…}, {…}]
+Canvas2D.tsx:1338 🔍 [WALL DIALOG] Setting editingWall: {id: 'wall_0F_3', temp: 120}
+Canvas2D.tsx:1339 🔍 [WALL DIALOG] Current walls array: (3) [{…}, {…}, {…}]
+AirEntryDialog.tsx:477 🟠 [DIALOG INIT] Dialog opened, isEditing: true
+AirEntryDialog.tsx:478 🟠 [DIALOG INIT] Props received: {data-replit-metadata: 'client/src/components/sketch/Canvas2D.tsx:3698:6', data-component-name: 'AirEntryDialog', type: 'wall', isOpen: true, onClose: ƒ, …}
+AirEntryDialog.tsx:483 🟠 [DIALOG INIT] airEntryProps.initialValues: {temperature: 120}
+AirEntryDialog.tsx:686 🎯 [SAVE BUTTON CLICKED] AirEntryDialog handleSubmit triggered
+AirEntryDialog.tsx:687 🎯 [SAVE BUTTON CLICKED] Event type: submit
+AirEntryDialog.tsx:688 🎯 [SAVE BUTTON CLICKED] Props type: wall
+AirEntryDialog.tsx:689 🎯 [SAVE BUTTON CLICKED] Current values: {temperature: 200}
+AirEntryDialog.tsx:690 🎯 [SAVE BUTTON CLICKED] wallPosition from values: undefined
+AirEntryDialog.tsx:691 🎯 [SAVE BUTTON CLICKED] wallPosition from state: 50
+Canvas2D.tsx:1353 🏠 [WALL SAVE] handleWallPropertiesSave called - ID: wall_0F_3, Temperature: 200
+Canvas2D.tsx:1354 🏠 [WALL SAVE] Current walls count: 3
+Canvas2D.tsx:1355 🏠 [WALL SAVE] Wall being updated: {id: 'wall_0F_3', uuid: 'a7c9-4cd1-33f2', floor: 'Ground Floor', lineRef: '720,60_112,464', startPoint: {…}, …}
+Canvas2D.tsx:1363 🏠 [WALL SAVE] Updated walls: (3) [{…}, {…}, {…}]
+Canvas2D.tsx:1365 🏠 [WALL SAVE] onWallsUpdate called successfully
+Canvas2D.tsx:1370 🏠 [WALL SAVE] Updating editingWall: {oldTemp: 120, newTemp: 200}
+wizard-design.tsx:443 📊 [MEMO DEPS] Dependency calculation: [{…}]
+wizard-design.tsx:444 📊 [MEMO DEPS] Current floor walls: (3) [{…}, {…}, {…}]
+wizard-design.tsx:363 🔄 [FLOORS MEMO] useMemo triggered - floors object being rebuilt
+wizard-design.tsx:458 🔄 [MEMOIZED WALLS] Canvas2D will receive walls: (3) [{…}, {…}, {…}]
