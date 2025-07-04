@@ -5826,11 +5826,7 @@ export default function Canvas3D({
           updatedAt: Date.now()
         };
 
-        console.log('🎯 [STORE SAVE] Canvas3D Store Update - ID:', editingFurniture.item.id);
-        console.log('🎯 [STORE SAVE] Received rotation from dialog:', data.rotation);
-        console.log('🎯 [STORE SAVE] Saving rotation to store:', updatedFurnitureItem.rotation);
-        console.log('🎯 [STORE SAVE] Received scale from dialog:', data.scale);
-        console.log('🎯 [STORE SAVE] Saving scale to store:', updatedFurnitureItem.scale);
+
 
         onUpdateFurniture(editingFurniture.item.floorName, editingFurniture.item.id, updatedFurnitureItem);
         
@@ -5981,11 +5977,7 @@ export default function Canvas3D({
           initialValues={{
             name: editingFurniture.item.name,
             position: editingFurniture.item.position,
-            rotation: (() => {
-              console.log('🔄 [CANVAS3D PROPS] Passing rotation to UnifiedVentDialog:', editingFurniture.item.rotation);
-              console.log('🔄 [CANVAS3D PROPS] editingFurniture.item.id:', editingFurniture.item.id);
-              return editingFurniture.item.rotation;
-            })(),
+            rotation: editingFurniture.item.rotation,
             scale: editingFurniture.item.scale || { x: 1, y: 1, z: 1 },
             properties: editingFurniture.item.properties || {
               temperature: 20,
