@@ -2661,6 +2661,10 @@ export default function WizardDesign() {
               }}
               onLineSelect={handleLineSelect}
               onPropertiesUpdate={handlePropertiesUpdateFrom3D}
+              // 🔵 [CENTER HEIGHT DEBUG] Missing onDimensionsUpdate callback prop
+              // Position Along Wall works because it uses onPositionUpdate -> handleUpdateAirEntryFrom3D
+              // Center Height fails because it calls onDimensionsUpdate but Canvas2D has no such prop
+              // onDimensionsUpdate={handleDimensionsUpdateFrom3D} // NOT IMPLEMENTED YET
             />
           ) : (
             <Canvas3D

@@ -1213,15 +1213,37 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               const value = Number(e.target.value);
                               // Redondear a 2 decimales máximo
                               const rounded = Math.round(value * 100) / 100;
+                              console.log("🔵 [CENTER HEIGHT DEBUG] onChange called with value:", rounded);
                               setDistanceToFloor(rounded);
                               
                               // Update form values for persistence
-                              setValues(prev => ({ ...prev, distanceToFloor: rounded }));
+                              setValues(prev => {
+                                const newValues = { ...prev, distanceToFloor: rounded };
+                                console.log("🔵 [CENTER HEIGHT DEBUG] Updated form values:", newValues);
+                                return newValues;
+                              });
                               
                               // Trigger real-time updates for Canvas3D
                               if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
+                                console.log("🔵 [CENTER HEIGHT DEBUG] Calling onDimensionsUpdate with:", { distanceToFloor: rounded });
                                 props.onDimensionsUpdate({ distanceToFloor: rounded });
+                                console.log("🔵 [CENTER HEIGHT DEBUG] ✅ Successfully called onDimensionsUpdate callback");
+                              } else {
+                                console.log("🔵 [CENTER HEIGHT DEBUG] ❌ CRITICAL ISSUE FOUND:");
+                                console.log("🔵 [CENTER HEIGHT DEBUG] onDimensionsUpdate NOT called - Missing callback architecture!");
+                                console.log("🔵 [CENTER HEIGHT DEBUG] Props analysis:", {
+                                  componentType: props.type,
+                                  isNotWall: props.type !== 'wall',
+                                  hasCallback: 'onDimensionsUpdate' in props,
+                                  callbackExists: 'onDimensionsUpdate' in props ? '✅ EXISTS' : '❌ MISSING',
+                                  availableProps: Object.keys(props).filter(key => key.startsWith('on'))
+                                });
+                                console.log("🔵 [CENTER HEIGHT DEBUG] 🔍 COMPARISON:");
+                                console.log("🔵 [CENTER HEIGHT DEBUG] Position Along Wall: onPositionUpdate -> handleUpdateAirEntryFrom3D -> store -> Canvas2D");
+                                console.log("🔵 [CENTER HEIGHT DEBUG] Center Height: onDimensionsUpdate -> ❌ NO EQUIVALENT HANDLER -> ❌ NO STORE UPDATE -> ❌ NO CANVAS UPDATE");
                               }
+                            } else {
+                              console.log("🔵 [CENTER HEIGHT DEBUG] onChange skipped - type is door");
                             }
                           }}
                           className={`h-8 text-sm ${type === 'door' ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
