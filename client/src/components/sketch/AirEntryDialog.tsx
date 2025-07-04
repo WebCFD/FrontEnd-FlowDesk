@@ -275,6 +275,11 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
       
       // Trigger real-time position updates
       if (props.type !== 'wall' && 'onPositionUpdate' in props && props.onPositionUpdate) {
+        console.log("🔵 [POSITION DEBUG] onPositionUpdate callback triggered:", {
+          newPosition,
+          callbackExists: !!props.onPositionUpdate,
+          propsType: props.type
+        });
         props.onPositionUpdate(newPosition);
       }
     }
@@ -302,6 +307,12 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     
     // Trigger real-time dimension updates - PASS BOTH DIMENSIONS LIKE POSITION
     if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
+      console.log("🔴 [DIMENSIONS DEBUG] onDimensionsUpdate callback triggered:", {
+        dimensions: { width: localWidth, height: newHeight },
+        callbackExists: !!props.onDimensionsUpdate,
+        propsType: props.type,
+        hasCallback: 'onDimensionsUpdate' in props
+      });
       props.onDimensionsUpdate({ width: localWidth, height: newHeight });
     }
   };
