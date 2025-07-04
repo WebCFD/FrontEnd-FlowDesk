@@ -136,7 +136,14 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
   });
   
   const [currentRotation, setCurrentRotation] = useState(() => {
-    return props.initialValues?.rotation || { x: 0, y: 0, z: 0 };
+    const rotation = props.initialValues?.rotation || { x: 0, y: 0, z: 0 };
+    console.log('🔄 [DIALOG INIT] UnifiedVentDialog rotation radians:', rotation);
+    console.log('🔄 [DIALOG INIT] UnifiedVentDialog rotation degrees:', {
+      x: rotation.x * 180 / Math.PI,
+      y: rotation.y * 180 / Math.PI,
+      z: rotation.z * 180 / Math.PI
+    });
+    return rotation;
   });
 
   // No useEffect needed - state is initialized correctly and should not reset to initial values
