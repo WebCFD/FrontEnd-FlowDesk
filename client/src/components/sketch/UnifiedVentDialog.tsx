@@ -118,17 +118,12 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
   const mapToAirEntryFormat = () => {
     const simProps = props.initialValues?.simulationProperties;
     
-    // DIMENSIONS PERSISTENCE FIX: Convert scale back to dimensions
-    // Priority: stored scale (persistent) → currentDimensions (real-time) → defaults
-    const storedScale = props.initialValues?.scale;
-    const widthFromScale = storedScale ? storedScale.x * 50 : 50;
-    const heightFromScale = storedScale ? storedScale.y * 50 : 50;
-    
-    // Remove logs to eliminate loop
+    // DIMENSIONS REAL-TIME FIX: Use ONLY currentDimensions state (like position pattern)
+    // No store dependency - follow positions architecture exactly
     
     return {
-      width: widthFromScale || currentDimensions.width, // Stored scale FIRST, then current state
-      height: heightFromScale || currentDimensions.height, // Stored scale FIRST, then current state
+      width: currentDimensions.width,   // ✅ Real-time state only
+      height: currentDimensions.height, // ✅ Real-time state only
       distanceToFloor: 120, // Default (not used in 3D)
       position: currentPosition, // Use current state instead of initial values
       rotation: currentRotation, // Use current state instead of initial values
