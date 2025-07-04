@@ -504,6 +504,8 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           // Also set in form values for persistence
           setValues(prev => ({ 
             ...prev, 
+            width: initialWidth,
+            height: initialHeight,
             distanceToFloor: initialDistanceToFloor,
             wallPosition: savedWallPosition 
           }));
