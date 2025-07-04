@@ -5481,6 +5481,13 @@ export default function Canvas3D({
             const allFurnitureItems = getAllFurnitureForFloor(floorName);
             const actualFurnitureItem = allFurnitureItems.find(item => item.id === furnitureId);
             
+            // DEBUG: Check what scale is being read from store
+            if (actualFurnitureItem && actualFurnitureItem.type === 'vent') {
+              console.log('🎯 [STORE READ] Canvas3D reading from store for dialog:');
+              console.log('🎯 [STORE READ] - furnitureId:', furnitureId);
+              console.log('🎯 [STORE READ] - actualFurnitureItem.scale from store:', actualFurnitureItem.scale);
+            }
+            
             if (actualFurnitureItem) {
               // COORDINATE SYSTEM FIX: Use world coordinates for dialog consistency
               if (actualFurnitureItem.type === 'vent') {
