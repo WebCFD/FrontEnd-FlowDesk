@@ -2616,7 +2616,6 @@ export default function WizardDesign() {
               onUpdateFurniture={handleFurnitureUpdate}
               onDeleteFurniture={handleFurnitureDelete}
               onUpdateAirEntry={handleUpdateAirEntryFrom3D} // CRITICAL: Connect RSP to store sync
-              onPropertiesUpdate={handlePropertiesUpdateFrom3D}
               isFurnitureEraserMode={isFurnitureEraserMode}
               onToggleFurnitureEraserMode={handleToggleFurnitureEraserMode}
               // Add onFloorsUpdate callback to enable 2D vent real-time updates in RSP
@@ -2626,6 +2625,19 @@ export default function WizardDesign() {
               // Pass wizard scene callback to RoomSketchPro for proper scene reference
               onWizardSceneReady={(scene) => {
                 wizardSceneRef.current = scene;
+              }}
+              // Real-time update callbacks for RSP synchronization
+              onPositionUpdate={(floorName, index, position) => {
+                // Use the same handler as Canvas3D for consistency
+                handleUpdateAirEntryFrom3D(floorName, index, { position });
+              }}
+              onDimensionsUpdate={(floorName, index, dimensions) => {
+                // Use the dimensions update handler for real-time updates
+                handleDimensionsUpdateFrom3D(floorName, index, dimensions);
+              }}
+              onPropertiesUpdate={(floorName, index, properties) => {
+                // Use the properties update handler for real-time updates
+                handlePropertiesUpdateFrom3D(floorName, index, properties);
               }}
             />
           ) : tab === "2d-editor" ? (

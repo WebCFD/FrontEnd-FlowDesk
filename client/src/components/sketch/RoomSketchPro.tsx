@@ -51,6 +51,19 @@ interface RoomSketchProProps {
   onUpdateFurniture?: (floorName: string, index: number, item: FurnitureItem) => void;
   onDeleteFurniture?: (floorName: string, index: number) => void;
   onUpdateAirEntry?: (floorName: string, index: number, updatedEntry: AirEntry) => void; // CRITICAL: Missing callback for RSP sync
+  // Real-time update callbacks for RSP synchronization
+  onPositionUpdate?: (floorName: string, index: number, position: { x: number; y: number; z: number }) => void;
+  onDimensionsUpdate?: (floorName: string, index: number, dimensions: { width?: number; height?: number; distanceToFloor?: number }) => void;
+  onPropertiesUpdate?: (floorName: string, index: number, properties: {
+    state?: 'open' | 'closed';
+    temperature?: number;
+    airOrientation?: 'inflow' | 'outflow';
+    flowIntensity?: 'low' | 'medium' | 'high';
+    flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
+    customIntensityValue?: number;
+    verticalAngle?: number;
+    horizontalAngle?: number;
+  }) => void;
   wallTransparency: number;
   onWallTransparencyChange: (value: number) => void;
   airEntryTransparency?: number;
@@ -84,6 +97,9 @@ export function RoomSketchPro({
   onUpdateFurniture,
   onDeleteFurniture,
   onUpdateAirEntry, // CRITICAL: Receive callback from wizard-design.tsx
+  onPositionUpdate, // Real-time position updates
+  onDimensionsUpdate, // Real-time dimensions updates
+  onPropertiesUpdate, // Real-time properties updates
   wallTransparency,
   onWallTransparencyChange,
   airEntryTransparency = 1.0,
@@ -945,6 +961,9 @@ export function RoomSketchPro({
         isMultifloor={isMultifloor}
         floorParameters={floorParameters}
         onUpdateAirEntry={onUpdateAirEntry}
+        onPositionUpdate={onPositionUpdate}
+        onDimensionsUpdate={onDimensionsUpdate}
+        onPropertiesUpdate={onPropertiesUpdate}
         onDeleteAirEntry={undefined}
         onSceneReady={handleSceneReady}
         onFurnitureAdded={handleFurnitureAdded} // Callback to re-apply textures when furniture is added
