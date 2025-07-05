@@ -3364,6 +3364,37 @@ export default function Canvas2D({
     }
   };
 
+  // Real-time dimensions update handler - updates store immediately during dialog interactions
+  const handleAirEntryDimensionsUpdate = (index: number, newDimensions: { width?: number; height?: number; distanceToFloor?: number }) => {
+    // Update the store immediately to maintain visual consistency for Width changes
+    const updatedAirEntries = [...airEntries];
+    if (updatedAirEntries[index]) {
+      updatedAirEntries[index] = {
+        ...updatedAirEntries[index],
+        dimensions: {
+          ...updatedAirEntries[index].dimensions,
+          ...newDimensions
+        }
+      };
+      
+      onAirEntriesUpdate?.(updatedAirEntries);
+      
+      // Also update the editing state for immediate visual feedback
+      setEditingAirEntries(prev => prev.map(item => 
+        item.index === index ? {
+          ...item,
+          entry: {
+            ...item.entry,
+            dimensions: {
+              ...item.entry.dimensions,
+              ...newDimensions
+            }
+          }
+        } : item
+      ));
+    }
+  };
+
   const handleAirEntryEdit = (
     index: number,
     data: {
@@ -3659,7 +3690,10 @@ export default function Canvas2D({
             handleAirEntryPositionUpdate(editingAirEntry.index, newPosition);
           }}
           onDimensionsUpdate={(newDimensions) => {
-            // Use the same callback pattern as Position Along Wall for real-time store updates
+            // Use the local handler for immediate visual updates in Canvas2D
+            handleAirEntryDimensionsUpdate(editingAirEntry.index, newDimensions);
+            
+            // Also propagate to parent for store synchronization
             if (onDimensionsUpdate) {
               onDimensionsUpdate(currentFloor, editingAirEntry.index, newDimensions);
             }
