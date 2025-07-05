@@ -1528,31 +1528,45 @@ export default function Canvas3D({
       entry: updatedEntry
     } : null);
     
-    // Force immediate dimension update for visual feedback (especially Center Height)
-    if (sceneRef.current && newDimensions.distanceToFloor !== undefined) {
+    // Force immediate dimension update for visual feedback (Center Height, Width, Height)
+    if (sceneRef.current && (newDimensions.distanceToFloor !== undefined || newDimensions.width !== undefined || newDimensions.height !== undefined)) {
       sceneRef.current.traverse((object) => {
         if (object instanceof THREE.Mesh && 
             object.userData?.type === editingAirEntry.entry.type &&
             object.userData?.entryIndex === editingAirEntry.index) {
           
           // Update the mesh Z position for Center Height (distanceToFloor)
-          const newZ = newDimensions.distanceToFloor;
-          object.position.setZ(newZ);
+          if (newDimensions.distanceToFloor !== undefined) {
+            const newZ = newDimensions.distanceToFloor;
+            object.position.setZ(newZ);
+          }
+
+          // Update mesh scale for Width and Height
+          if (newDimensions.width !== undefined || newDimensions.height !== undefined) {
+            const currentDimensions = object.userData.dimensions || editingAirEntry.entry.dimensions;
+            const newWidth = newDimensions.width !== undefined ? newDimensions.width : currentDimensions.width;
+            const newHeight = newDimensions.height !== undefined ? newDimensions.height : currentDimensions.height;
+            
+            // Update scale - convert from cm to Three.js units
+            const scaleX = (newWidth / 100) || 1; // Convert cm to meters
+            const scaleY = (newHeight / 100) || 1; // Convert cm to meters
+            object.scale.set(scaleX, scaleY, object.scale.z);
+          }
           
           // Update userData for persistence
           if (object.userData.dimensions) {
             object.userData.dimensions = { ...object.userData.dimensions, ...newDimensions };
           }
 
-          // PHASE 5: Update coordinate system during real-time Center Height changes
-          if (!presentationMode) {
+          // PHASE 5: Update coordinate system during real-time dimension changes
+          if (!presentationMode && newDimensions.distanceToFloor !== undefined) {
             try {
               const position3D = transform2DTo3D(object.userData.position || editingAirEntry.entry.position);
               const floorData = finalFloors[currentFloor];
               const airEntry = floorData?.airEntries?.[editingAirEntry.index];
               
-              // Update coordinate system (non-invasive)
-              updateCoordinateSystemPosition(editingAirEntry.index, currentFloor, position3D, newZ, airEntry);
+              // Update coordinate system (non-invasive) - only for height changes
+              updateCoordinateSystemPosition(editingAirEntry.index, currentFloor, position3D, newDimensions.distanceToFloor, airEntry);
             } catch (error) {
               // Coordinate system update failure won't affect AirEntry operations
               console.warn('Coordinate system update failed during real-time dimension change:', error);
