@@ -1480,7 +1480,15 @@ export default function Canvas3D({
     const baseEntry = editingAirEntry.entry;
     const dimensions = baseEntry.dimensions;
     const wallPosition = (dimensions as any).wallPosition || (baseEntry as any).properties?.wallPosition;
-    const properties = (baseEntry as any).properties;
+    
+    // CRITICAL FIX: Read simulation properties directly from reactive store to fix persistence issue
+    // This ensures Simulation Conditions show current values when dialog reopens
+    const reactiveStoreFloors = useRoomStore.getState().floors;
+    const currentAirEntry = reactiveStoreFloors[currentFloor]?.airEntries?.[editingAirEntry.index];
+    const reactiveProperties = currentAirEntry?.properties;
+    
+    // Use reactive properties if available, fallback to baseEntry properties
+    const properties = reactiveProperties || (baseEntry as any).properties;
     
     console.log("📖 [CANVAS3D INIT] Dialog opening with values:", {
       elementStatus: properties?.state,
@@ -1488,7 +1496,8 @@ export default function Canvas3D({
       airDirection: properties?.airOrientation,
       flowIntensity: properties?.flowIntensity,
       index: editingAirEntry.index,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      source: reactiveProperties ? 'reactive_store' : 'base_entry'
     });
     
     return {
@@ -1498,7 +1507,7 @@ export default function Canvas3D({
       position: baseEntry.position,
       wallPosition: wallPosition
     };
-  }, [editingAirEntry]);
+  }, [editingAirEntry, currentFloor]);
   
   // State for editing furniture
   const [editingFurniture, setEditingFurniture] = useState<{
