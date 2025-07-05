@@ -1480,11 +1480,21 @@ export default function Canvas3D({
     const baseEntry = editingAirEntry.entry;
     const dimensions = baseEntry.dimensions;
     const wallPosition = (dimensions as any).wallPosition || (baseEntry as any).properties?.wallPosition;
+    const properties = (baseEntry as any).properties;
+    
+    console.log("📖 [CANVAS3D INIT] Dialog opening with values:", {
+      elementStatus: properties?.state,
+      temperature: properties?.temperature,
+      airDirection: properties?.airOrientation,
+      flowIntensity: properties?.flowIntensity,
+      index: editingAirEntry.index,
+      timestamp: new Date().toISOString()
+    });
     
     return {
       ...dimensions,
       shape: (dimensions as any).shape,
-      properties: (baseEntry as any).properties,
+      properties: properties,
       position: baseEntry.position,
       wallPosition: wallPosition
     };
@@ -5993,7 +6003,14 @@ export default function Canvas3D({
           onClose={() => setEditingAirEntry(null)}
           onCancel={() => setEditingAirEntry(null)}
           onConfirm={(data) => {
-
+            console.log("💾 [CANVAS3D SAVE] Save Changes clicked with values:", {
+              elementStatus: data.properties?.state,
+              temperature: data.properties?.temperature,
+              airDirection: data.properties?.airOrientation,
+              flowIntensity: data.properties?.flowIntensity,
+              index: editingAirEntry.index,
+              timestamp: new Date().toISOString()
+            });
 
             handleAirEntryEdit(editingAirEntry.index, {
               width: data.width,
@@ -6014,6 +6031,13 @@ export default function Canvas3D({
           onDimensionsUpdate={handleAirEntryDimensionsUpdate}
           onPropertiesUpdate={onPropertiesUpdate ? (properties) => {
             // Real-time properties synchronization
+            console.log("🔄 [CANVAS3D PROPERTIES] Real-time update:", {
+              elementStatus: properties.state,
+              temperature: properties.temperature,
+              airDirection: properties.airOrientation,
+              flowIntensity: properties.flowIntensity,
+              index: editingAirEntry.index
+            });
             onPropertiesUpdate(currentFloor, editingAirEntry.index, properties);
           } : undefined}
         />
