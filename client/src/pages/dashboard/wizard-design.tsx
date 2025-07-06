@@ -617,9 +617,33 @@ export default function WizardDesign() {
       hasClosedContour: false,
     };
 
+    console.log("🔄 [FLOOR LOAD DEBUG] Source data before copy:", {
+      floorName: loadFromFloor,
+      airEntriesCount: sourceFloorData.airEntries?.length || 0,
+      airEntries: sourceFloorData.airEntries?.map(entry => ({
+        id: entry.id,
+        type: entry.type,
+        hasProperties: !!entry.properties,
+        properties: entry.properties,
+        propertiesRef: entry.properties
+      }))
+    });
+
     // Regenerate IDs for all copied elements
     const newLines = regenerateLineIds([...sourceFloorData.lines]);
     const newAirEntries = regenerateAirEntryIds([...sourceFloorData.airEntries], currentFloor);
+    
+    console.log("🔄 [FLOOR LOAD DEBUG] After regenerateAirEntryIds:", {
+      targetFloor: currentFloor,
+      newAirEntriesCount: newAirEntries?.length || 0,
+      newAirEntries: newAirEntries?.map(entry => ({
+        id: entry.id,
+        type: entry.type,
+        hasProperties: !!entry.properties,
+        properties: entry.properties,
+        propertiesRef: entry.properties
+      }))
+    });
     const newWalls = regenerateWallIds([...(sourceFloorData.walls || [])], currentFloor);
     const newMeasurements = regenerateMeasurementIds([...sourceFloorData.measurements]);
 
