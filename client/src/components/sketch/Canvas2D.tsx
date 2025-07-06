@@ -3443,7 +3443,7 @@ export default function Canvas2D({
     
     console.log("🟢 [CANVAS2D EDIT] Final updated entry:", updatedAirEntries[index]);
     console.log("🟢 [CANVAS2D EDIT] Final wallPosition:", updatedAirEntries[index].dimensions?.wallPosition);
-
+    console.log("🟢 [CANVAS2D EDIT] Final properties ref:", updatedAirEntries[index].properties);
 
     
     onAirEntriesUpdate?.(updatedAirEntries);

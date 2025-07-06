@@ -408,8 +408,29 @@ export const useRoomStore = create<RoomState>()(
             floorName,
             index,
             properties,
+            propertiesRef: properties,
             entryId: state.floors[floorName]?.airEntries?.[index]?.id
           });
+          
+          // CRITICAL DEBUG: Check if incoming properties are already shared BEFORE processing
+          let incomingSharedCount = 0;
+          Object.keys(state.floors).forEach(otherFloorName => {
+            state.floors[otherFloorName]?.airEntries?.forEach((entry, entryIndex) => {
+              if (entry.properties === properties) {
+                incomingSharedCount++;
+                console.log("🚨 [STORE DEBUG] INCOMING PROPERTIES ALREADY SHARED:", {
+                  sharedWithFloor: otherFloorName,
+                  sharedWithIndex: entryIndex,
+                  sharedWithId: entry.id,
+                  incomingPropertiesRef: properties
+                });
+              }
+            });
+          });
+          
+          if (incomingSharedCount > 0) {
+            console.log("🚨 [STORE DEBUG] INCOMING SHARED REFERENCE COUNT:", incomingSharedCount);
+          }
           
           const currentFloors = { ...state.floors };
           
