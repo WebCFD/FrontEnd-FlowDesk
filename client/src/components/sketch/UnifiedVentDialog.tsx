@@ -170,8 +170,9 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
         flowIntensity: simProps?.flowIntensity || 'medium',
         airOrientation: simProps?.airOrientation || 'inflow',
         customIntensityValue: simProps?.customIntensityValue || 0.5,
-        // For AirEntryDialog, we need to include vertical/horizontal angles in a way it understands
-        // The angles will be handled internally by the AirEntryDialog's vent logic
+        // Include vertical/horizontal angles following airTemperature pattern
+        verticalAngle: simProps?.verticalAngle || 0,
+        horizontalAngle: simProps?.horizontalAngle || 0,
       }
     };
   };
@@ -201,8 +202,8 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
         airOrientation: airEntryData.properties?.airOrientation || 'inflow',
         state: airEntryData.properties?.state || 'open',
         customIntensityValue: airEntryData.properties?.customIntensityValue || 0.5,
-        verticalAngle: 0, // Will be set by AirEntryDialog's internal logic
-        horizontalAngle: 0, // Will be set by AirEntryDialog's internal logic
+        verticalAngle: airEntryData.properties?.verticalAngle || 0,
+        horizontalAngle: airEntryData.properties?.horizontalAngle || 0,
         airTemperature: airEntryData.properties?.temperature || 20,
         normalVector: props.initialValues?.simulationProperties?.normalVector || { x: 0, y: 0, z: 1 }
       }
