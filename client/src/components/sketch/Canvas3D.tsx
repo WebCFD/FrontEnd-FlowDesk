@@ -1490,18 +1490,7 @@ export default function Canvas3D({
     // Use reactive properties if available, fallback to baseEntry properties
     const properties = reactiveProperties || (baseEntry as any).properties;
     
-    console.log("📖 [CANVAS3D INIT] Dialog opening with values:", {
-      elementStatus: properties?.state,
-      temperature: properties?.temperature,
-      airDirection: properties?.airOrientation,
-      flowIntensity: properties?.flowIntensity,
-      verticalAngle: properties?.verticalAngle,
-      horizontalAngle: properties?.horizontalAngle,
-      index: editingAirEntry.index,
-      timestamp: new Date().toISOString(),
-      source: reactiveProperties ? 'reactive_store' : 'base_entry',
-      allProperties: properties
-    });
+
     
     return {
       ...dimensions,
