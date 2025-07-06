@@ -535,21 +535,25 @@ export default function WizardDesign() {
     });
     
     return airEntries.map((entry, entryIndex) => {
+      // Deep clone the entire entry to avoid shared references
+      const anyEntry = entry as any;
       const newEntry = {
         ...entry,
-        properties: entry.properties ? { ...entry.properties } : undefined,
+        // Create completely independent properties object using deep clone
+        properties: anyEntry.properties ? 
+          JSON.parse(JSON.stringify(anyEntry.properties)) : undefined,
+        // Create completely independent position object
+        position: entry.position ? 
+          { x: entry.position.x, y: entry.position.y } : { x: 0, y: 0 },
+        // Create completely independent dimensions object
+        dimensions: entry.dimensions ? {
+          width: entry.dimensions.width,
+          height: entry.dimensions.height,
+          distanceToFloor: entry.dimensions.distanceToFloor
+        } : { width: 100, height: 100, distanceToFloor: 0 },
+        // Generate new unique ID
         id: `${entry.type}_${floorPrefix}_${typeCounters[entry.type]++}`
       } as any;
-      
-      console.log("🔄 [REGENERATE DEBUG] Processing entry:", {
-        originalId: entry.id,
-        newId: newEntry.id,
-        originalProperties: entry.properties,
-        newProperties: newEntry.properties,
-        arePropertiesSameRef: entry.properties === newEntry.properties,
-        hasProperties: !!entry.properties,
-        entryIndex
-      });
       
       return newEntry;
     });
