@@ -1614,17 +1614,9 @@ export default function Canvas3D({
             object.position.setZ(newZ);
           }
 
-          // Update mesh scale for Width and Height
-          if (newDimensions.width !== undefined || newDimensions.height !== undefined) {
-            const currentDimensions = object.userData.dimensions || editingAirEntry.entry.dimensions;
-            const newWidth = newDimensions.width !== undefined ? newDimensions.width : currentDimensions.width;
-            const newHeight = newDimensions.height !== undefined ? newDimensions.height : currentDimensions.height;
-            
-            // Update scale - convert from cm to Three.js units
-            const scaleX = (newWidth / 100) || 1; // Convert cm to meters
-            const scaleY = (newHeight / 100) || 1; // Convert cm to meters
-            object.scale.set(scaleX, scaleY, object.scale.z);
-          }
+          // Width and Height updates: Remove redundant scale conversion
+          // The geometry already has correct dimensions from creation - no scale modification needed
+          // Only userData update is required for persistence
           
           // Update userData for persistence
           if (object.userData.dimensions) {
