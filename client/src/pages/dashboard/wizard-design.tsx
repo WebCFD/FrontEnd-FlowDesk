@@ -504,25 +504,23 @@ export default function WizardDesign() {
 
   const [isFloorLoadDialogOpen, setIsFloorLoadDialogOpen] = useState(false);
 
-  // Helper functions for ID regeneration
-  const regenerateAirEntryIds = (airEntries: AirEntry[], floor: string) => {
-    // Get floor prefix same as walls
-    const floorPrefix = floor === 'ground' ? '0F' : 
-                       floor === 'first' ? '1F' :
-                       floor === 'second' ? '2F' :
-                       floor === 'third' ? '3F' :
-                       floor === 'fourth' ? '4F' :
-                       floor === 'fifth' ? '5F' : '0F';
+  // Helper function to create fresh AirEntry from scratch (like manual click)
+  const createFreshAirEntry = (sourceEntry: any, targetWall: any, targetFloor: string) => {
+    // Get floor prefix for target floor
+    const floorPrefix = targetFloor === 'ground' ? '0F' : 
+                       targetFloor === 'first' ? '1F' :
+                       targetFloor === 'second' ? '2F' :
+                       targetFloor === 'third' ? '3F' :
+                       targetFloor === 'fourth' ? '4F' :
+                       targetFloor === 'fifth' ? '5F' : '0F';
     
-    // Get existing air entries in target floor to avoid ID conflicts
-    const existingEntries = floors[currentFloor]?.airEntries || [];
+    // Count existing entries in target floor to generate unique IDs
+    const existingEntries = floors[targetFloor]?.airEntries || [];
     const typeCounters = { window: 1, door: 1, vent: 1 };
     
-    // Count existing entries to start numbering from the next available number
     existingEntries.forEach(entry => {
       const anyEntry = entry as any;
       if (anyEntry.id) {
-        // Updated regex to match new format: window_0F_1, door_1F_2, etc.
         const match = anyEntry.id.match(new RegExp(`^(window|door|vent)_${floorPrefix}_(\\d+)$`));
         if (match) {
           const type = match[1] as keyof typeof typeCounters;
@@ -533,30 +531,92 @@ export default function WizardDesign() {
         }
       }
     });
+
+    // Calculate wall identifier for matching
+    const wallId = `${floorPrefix}_wall_${targetWall.id || 'unknown'}`;
     
-    return airEntries.map((entry, entryIndex) => {
-      // Deep clone the entire entry to avoid shared references
-      const anyEntry = entry as any;
-      const newEntry = {
-        ...entry,
-        // Create completely independent properties object using deep clone
-        properties: anyEntry.properties ? 
-          JSON.parse(JSON.stringify(anyEntry.properties)) : undefined,
-        // Create completely independent position object
-        position: entry.position ? 
-          { x: entry.position.x, y: entry.position.y } : { x: 0, y: 0 },
-        // Create completely independent dimensions object
-        dimensions: entry.dimensions ? {
-          width: entry.dimensions.width,
-          height: entry.dimensions.height,
-          distanceToFloor: entry.dimensions.distanceToFloor
-        } : { width: 100, height: 100, distanceToFloor: 0 },
-        // Generate new unique ID
-        id: `${entry.type}_${floorPrefix}_${typeCounters[entry.type]++}`
-      } as any;
-      
-      return newEntry;
+    // Get current ceiling height for target floor
+    const currentCeilingHeight = floorParameters[targetFloor]?.ceilingHeight || 280;
+    
+    // Create completely fresh AirEntry object (exactly like manual creation)
+    const freshAirEntry = {
+      type: sourceEntry.type,
+      position: {
+        x: sourceEntry.position.x,
+        y: sourceEntry.position.y
+      },
+      dimensions: {
+        width: sourceEntry.dimensions?.width || (sourceEntry.type === 'door' ? 80 : 60),
+        height: sourceEntry.dimensions?.height || (sourceEntry.type === 'door' ? 200 : 40),
+        distanceToFloor: sourceEntry.dimensions?.distanceToFloor || (sourceEntry.type === 'door' ? 0 : 110),
+        shape: 'rectangular',
+      },
+      line: targetWall.line || { 
+        start: targetWall.startPoint, 
+        end: targetWall.endPoint,
+        id: targetWall.lineRef
+      },
+      lineId: targetWall.lineRef,
+      // Create completely new properties object (never shared)
+      properties: {
+        state: sourceEntry.properties?.state || 'closed',
+        temperature: sourceEntry.properties?.temperature || 20,
+        flowType: sourceEntry.properties?.flowType || 'Air Mass Flow',
+        flowValue: sourceEntry.properties?.flowValue || 0.5,
+        flowIntensity: sourceEntry.properties?.flowIntensity || 'medium',
+        airOrientation: sourceEntry.properties?.airOrientation || 'inflow',
+        customIntensityValue: sourceEntry.properties?.customIntensityValue || 0.5,
+        verticalAngle: sourceEntry.properties?.verticalAngle || 0,
+        horizontalAngle: sourceEntry.properties?.horizontalAngle || 0,
+      },
+      // Generate unique ID for target floor
+      id: `${sourceEntry.type}_${floorPrefix}_${typeCounters[sourceEntry.type]++}`,
+      wallContext: {
+        wallId: wallId,
+        floorName: targetFloor,
+        wallStart: { x: targetWall.startPoint.x, y: targetWall.startPoint.y },
+        wallEnd: { x: targetWall.endPoint.x, y: targetWall.endPoint.y },
+        clickPosition: { x: sourceEntry.position.x, y: sourceEntry.position.y },
+        ceilingHeight: currentCeilingHeight * 100 // Convert to cm
+      }
+    } as any;
+
+    return freshAirEntry;
+  }
+
+  // Helper function to recreate AirEntries from source floor data
+  const recreateAirEntriesFromScratch = (sourceAirEntries: any[], sourceWalls: any[], targetWalls: any[], targetFloor: string) => {
+    const recreatedEntries: any[] = [];
+
+    sourceAirEntries.forEach(sourceEntry => {
+      // Find the corresponding wall in source floor
+      const sourceWall = sourceWalls.find(wall => {
+        // Match by wall reference or position
+        return wall.lineRef === sourceEntry.lineId ||
+               (Math.abs(wall.startPoint.x - sourceEntry.line?.start?.x) < 1 &&
+                Math.abs(wall.startPoint.y - sourceEntry.line?.start?.y) < 1 &&
+                Math.abs(wall.endPoint.x - sourceEntry.line?.end?.x) < 1 &&
+                Math.abs(wall.endPoint.y - sourceEntry.line?.end?.y) < 1);
+      });
+
+      if (sourceWall) {
+        // Find corresponding wall in target floor (same position)
+        const targetWall = targetWalls.find(wall =>
+          Math.abs(wall.startPoint.x - sourceWall.startPoint.x) < 1 &&
+          Math.abs(wall.startPoint.y - sourceWall.startPoint.y) < 1 &&
+          Math.abs(wall.endPoint.x - sourceWall.endPoint.x) < 1 &&
+          Math.abs(wall.endPoint.y - sourceWall.endPoint.y) < 1
+        );
+
+        if (targetWall) {
+          // Create fresh AirEntry from scratch
+          const freshEntry = createFreshAirEntry(sourceEntry, targetWall, targetFloor);
+          recreatedEntries.push(freshEntry);
+        }
+      }
     });
+
+    return recreatedEntries;
   };
 
   const regenerateWallIds = (walls: Wall[], floor: string): Wall[] => {
@@ -635,9 +695,19 @@ export default function WizardDesign() {
 
     // Regenerate IDs for all copied elements
     const newLines = regenerateLineIds([...sourceFloorData.lines]);
-    const newAirEntries = regenerateAirEntryIds([...sourceFloorData.airEntries], currentFloor);
     
-    console.log("🔄 [FLOOR LOAD DEBUG] After regenerateAirEntryIds:", {
+    // First copy walls to establish wall mapping
+    const newWalls = regenerateWallIds([...(sourceFloorData.walls || [])], currentFloor);
+    
+    // Recreate AirEntries from scratch (like manual user clicks)
+    const newAirEntries = recreateAirEntriesFromScratch(
+      sourceFloorData.airEntries || [],
+      sourceFloorData.walls || [],
+      newWalls,
+      currentFloor
+    );
+    
+    console.log("🔄 [FLOOR LOAD DEBUG] After recreating AirEntries from scratch:", {
       targetFloor: currentFloor,
       newAirEntriesCount: newAirEntries?.length || 0,
       newAirEntries: newAirEntries?.map(entry => ({
@@ -648,7 +718,6 @@ export default function WizardDesign() {
         propertiesRef: entry.properties
       }))
     });
-    const newWalls = regenerateWallIds([...(sourceFloorData.walls || [])], currentFloor);
     const newMeasurements = regenerateMeasurementIds([...sourceFloorData.measurements]);
 
     // Special handling for stairs
