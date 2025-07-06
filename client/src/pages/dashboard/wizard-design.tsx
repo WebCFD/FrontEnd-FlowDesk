@@ -504,149 +504,55 @@ export default function WizardDesign() {
 
   const [isFloorLoadDialogOpen, setIsFloorLoadDialogOpen] = useState(false);
 
-  // COMPLETELY NEW APPROACH: Extract the exact click simulation logic from Canvas2D
-  // This uses the SAME function that handles user mouse clicks to place AirEntries
-  const simulateAirEntryPlacement = (
-    airEntryType: 'window' | 'door' | 'vent',
-    originalEntry: any,
-    targetLine: Line,
-    targetFloorName: string,
-    existingAirEntries: any[]
-  ): any => {
-    const floorPrefix = `${targetFloorName.charAt(0).toUpperCase()}F`;
-    const floorText = targetFloorName === 'ground' ? 'Ground Floor' : 
-                     targetFloorName === 'first' ? 'First Floor' : 
-                     targetFloorName === 'second' ? 'Second Floor' : targetFloorName;
-
-    // Calculate wall position percentage from original entry
-    const originalWallLength = Math.sqrt(
-      Math.pow(originalEntry.line.end.x - originalEntry.line.start.x, 2) +
-      Math.pow(originalEntry.line.end.y - originalEntry.line.start.y, 2)
-    );
-    const originalDistanceFromStart = Math.sqrt(
-      Math.pow(originalEntry.position.x - originalEntry.line.start.x, 2) +
-      Math.pow(originalEntry.position.y - originalEntry.line.start.y, 2)
-    );
-    const wallPositionPercentage = originalDistanceFromStart / originalWallLength;
-
-    // Calculate exact click position on target wall
-    const targetWallLength = Math.sqrt(
-      Math.pow(targetLine.end.x - targetLine.start.x, 2) +
-      Math.pow(targetLine.end.y - targetLine.start.y, 2)
-    );
-    const targetDistanceFromStart = wallPositionPercentage * targetWallLength;
+  // Helper functions for ID regeneration
+  const regenerateAirEntryIds = (airEntries: AirEntry[], floor: string) => {
+    // Get floor prefix same as walls
+    const floorPrefix = floor === 'ground' ? '0F' : 
+                       floor === 'first' ? '1F' :
+                       floor === 'second' ? '2F' :
+                       floor === 'third' ? '3F' :
+                       floor === 'fourth' ? '4F' :
+                       floor === 'fifth' ? '5F' : '0F';
     
-    const wallVector = {
-      x: targetLine.end.x - targetLine.start.x,
-      y: targetLine.end.y - targetLine.start.y
-    };
-    const normalizedWallVector = {
-      x: wallVector.x / targetWallLength,
-      y: wallVector.y / targetWallLength
-    };
+    // Get existing air entries in target floor to avoid ID conflicts
+    const existingEntries = floors[currentFloor]?.airEntries || [];
+    const typeCounters = { window: 1, door: 1, vent: 1 };
     
-    const exactClickPoint = {
-      x: targetLine.start.x + normalizedWallVector.x * targetDistanceFromStart,
-      y: targetLine.start.y + normalizedWallVector.y * targetDistanceFromStart
-    };
-
-    // Use the EXACT same logic as Canvas2D mouse click handler (lines 1750-1789)
-    const typeCounters: { [key: string]: number } = { window: 0, door: 0, vent: 0 };
-    
-    // Count existing AirEntries to get proper counter (EXACT Canvas2D logic)
-    existingAirEntries.forEach((entry: any) => {
-      const match = entry.id?.match(/^(window|door|vent)_\w+_(\d+)$/);
-      if (match) {
-        const type = match[1] as keyof typeof typeCounters;
-        const num = parseInt(match[2]);
-        if (typeCounters[type] <= num) {
-          typeCounters[type] = num + 1;
+    // Count existing entries to start numbering from the next available number
+    existingEntries.forEach(entry => {
+      const anyEntry = entry as any;
+      if (anyEntry.id) {
+        // Updated regex to match new format: window_0F_1, door_1F_2, etc.
+        const match = anyEntry.id.match(new RegExp(`^(window|door|vent)_${floorPrefix}_(\\d+)$`));
+        if (match) {
+          const type = match[1] as keyof typeof typeCounters;
+          const num = parseInt(match[2]);
+          if (typeCounters[type] <= num) {
+            typeCounters[type] = num + 1;
+          }
         }
       }
     });
-
-    // Calculate position along wall (EXACT Canvas2D calculatePositionAlongWall function)
-    const calculatePositionAlongWall = (line: Line, clickPoint: { x: number; y: number }) => {
-      const lineVector = { x: line.end.x - line.start.x, y: line.end.y - line.start.y };
-      const lineLength = Math.sqrt(lineVector.x * lineVector.x + lineVector.y * lineVector.y);
-      const normalizedLine = { x: lineVector.x / lineLength, y: lineVector.y / lineLength };
+    
+    return airEntries.map((entry, entryIndex) => {
+      const newEntry = {
+        ...entry,
+        properties: entry.properties ? { ...entry.properties } : undefined,
+        id: `${entry.type}_${floorPrefix}_${typeCounters[entry.type]++}`
+      } as any;
       
-      const clickVector = { x: clickPoint.x - line.start.x, y: clickPoint.y - line.start.y };
-      const projection = clickVector.x * normalizedLine.x + clickVector.y * normalizedLine.y;
+      console.log("🔄 [REGENERATE DEBUG] Processing entry:", {
+        originalId: entry.id,
+        newId: newEntry.id,
+        originalProperties: entry.properties,
+        newProperties: newEntry.properties,
+        arePropertiesSameRef: entry.properties === newEntry.properties,
+        hasProperties: !!entry.properties,
+        entryIndex
+      });
       
-      return {
-        x: line.start.x + normalizedLine.x * projection,
-        y: line.start.y + normalizedLine.y * projection,
-      };
-    };
-
-    // Create new AirEntry using EXACT Canvas2D logic (lines 1761-1789)
-    return {
-      type: airEntryType,
-      position: calculatePositionAlongWall(targetLine, exactClickPoint),
-      dimensions: {
-        width: originalEntry.dimensions?.width || (airEntryType === 'door' ? 80 : 60),
-        height: originalEntry.dimensions?.height || (airEntryType === 'door' ? 200 : 40),
-        distanceToFloor: originalEntry.dimensions?.distanceToFloor || (airEntryType === 'door' ? 0 : 110),
-        shape: 'rectangular',
-        wallPosition: wallPositionPercentage * 100
-      },
-      line: targetLine,
-      lineId: (targetLine as any).id,
-      properties: {
-        state: originalEntry.properties?.state || 'closed',
-        temperature: originalEntry.properties?.temperature || 20,
-        flowType: originalEntry.properties?.flowType || 'Air Mass Flow',
-        flowValue: originalEntry.properties?.flowValue || 0.5,
-        flowIntensity: originalEntry.properties?.flowIntensity || 'medium',
-        airOrientation: originalEntry.properties?.airOrientation || 'inflow',
-        verticalAngle: originalEntry.properties?.verticalAngle || 0,
-        horizontalAngle: originalEntry.properties?.horizontalAngle || 0,
-        customIntensityValue: originalEntry.properties?.customIntensityValue
-      },
-      id: `${airEntryType}_${floorPrefix}_${typeCounters[airEntryType]}`,
-      wallContext: {
-        wallId: (targetLine as any).id || `${floorText}_wall_unknown`,
-        floorName: floorText,
-        wallStart: { x: targetLine.start.x, y: targetLine.start.y },
-        wallEnd: { x: targetLine.end.x, y: targetLine.end.y },
-        clickPosition: { x: exactClickPoint.x, y: exactClickPoint.y },
-        ceilingHeight: 280
-      }
-    } as AirEntry;
-  };
-
-  // Recreate all AirEntries by simulating user clicks
-  const recreateAirEntriesFromClicks = (
-    sourceAirEntries: AirEntry[],
-    newLines: Line[],
-    targetFloorName: string
-  ): AirEntry[] => {
-    const simulatedAirEntries: AirEntry[] = [];
-
-    sourceAirEntries.forEach((originalEntry: any) => {
-      // Find corresponding line in target floor by matching line IDs
-      const correspondingLine = newLines.find((line: any) => 
-        line.id && originalEntry.lineId && 
-        line.id.replace(new RegExp(`_${targetFloorName}_`, 'g'), '_') === 
-        originalEntry.lineId.replace(new RegExp(`_[^_]+_`, 'g'), '_')
-      );
-
-      if (correspondingLine) {
-        // Simulate click placement using exact Canvas2D logic
-        const simulatedAirEntry = simulateAirEntryPlacement(
-          originalEntry.type as 'window' | 'door' | 'vent',
-          originalEntry,
-          correspondingLine,
-          targetFloorName,
-          simulatedAirEntries // Pass existing simulated entries for counter
-        );
-
-        simulatedAirEntries.push(simulatedAirEntry);
-      }
+      return newEntry;
     });
-
-    return simulatedAirEntries;
   };
 
   const regenerateWallIds = (walls: Wall[], floor: string): Wall[] => {
@@ -725,18 +631,9 @@ export default function WizardDesign() {
 
     // Regenerate IDs for all copied elements
     const newLines = regenerateLineIds([...sourceFloorData.lines]);
+    const newAirEntries = regenerateAirEntryIds([...sourceFloorData.airEntries], currentFloor);
     
-    // First copy walls to establish wall mapping
-    const newWalls = regenerateWallIds([...(sourceFloorData.walls || [])], currentFloor);
-    
-    // Recreate AirEntries by simulating user clicks (REAL CLICK SIMULATION)
-    const newAirEntries = recreateAirEntriesFromClicks(
-      sourceFloorData.airEntries || [],
-      newLines, // Use lines for proper line-to-line mapping
-      currentFloor
-    );
-    
-    console.log("🔄 [FLOOR LOAD DEBUG] After recreating AirEntries from scratch:", {
+    console.log("🔄 [FLOOR LOAD DEBUG] After regenerateAirEntryIds:", {
       targetFloor: currentFloor,
       newAirEntriesCount: newAirEntries?.length || 0,
       newAirEntries: newAirEntries?.map(entry => ({
@@ -747,6 +644,7 @@ export default function WizardDesign() {
         propertiesRef: entry.properties
       }))
     });
+    const newWalls = regenerateWallIds([...(sourceFloorData.walls || [])], currentFloor);
     const newMeasurements = regenerateMeasurementIds([...sourceFloorData.measurements]);
 
     // Special handling for stairs
