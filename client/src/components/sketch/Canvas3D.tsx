@@ -1287,6 +1287,7 @@ export default function Canvas3D({
   }, []);
 
   // PHASE 3: Helper function to update axis positions based on new AirEntry position
+  // UNIFIED ORIENTATION: Now uses calculateAirEntryOrientation for consistent results
   const updateAxisPositions = useCallback((
     elements: { xAxis: THREE.Mesh | null; yAxis: THREE.Mesh | null; zAxis: THREE.Mesh | null },
     newPosition: THREE.Vector3,
@@ -1296,18 +1297,10 @@ export default function Canvas3D({
     const axisLength = 40; // Same as original creation
     const axisOrigin = new THREE.Vector3(newPosition.x, newPosition.y, newZPosition);
 
-    // Calculate wall direction from line (same logic as original)
-    const wallDirection = new THREE.Vector3(
-      airEntry.line.end.x - airEntry.line.start.x,
-      airEntry.line.end.y - airEntry.line.start.y,
-      0
-    ).normalize();
+    // UNIFIED ORIENTATION: Use same calculation as initial creation
+    const { xDirection, yDirection, zDirection } = calculateAirEntryOrientation(airEntry);
 
-    // Z direction (normal to wall, outward)
-    const zDirection = new THREE.Vector3(-wallDirection.y, wallDirection.x, 0).normalize();
 
-    // X direction (perpendicular to wall, horizontal)
-    const xDirection = wallDirection.clone();
 
     // Update X axis position and orientation
     if (elements.xAxis) {
@@ -1318,7 +1311,7 @@ export default function Canvas3D({
       );
       elements.xAxis.position.copy(xAxisMidpoint);
       
-      // Recalculate orientation
+      // Recalculate orientation using UNIFIED direction vectors
       const xAxisUp = new THREE.Vector3(0, 1, 0);
       elements.xAxis.quaternion.setFromUnitVectors(xAxisUp, xDirection);
     }
@@ -1342,11 +1335,11 @@ export default function Canvas3D({
       );
       elements.zAxis.position.copy(zAxisMidpoint);
       
-      // Recalculate orientation
+      // Recalculate orientation using UNIFIED direction vectors
       const zAxisUp = new THREE.Vector3(0, 1, 0);
       elements.zAxis.quaternion.setFromUnitVectors(zAxisUp, zDirection);
     }
-  }, []);
+  }, [calculateAirEntryOrientation]);
 
   // PHASE 3: Helper function to update coordinate label text and position
   const updateLabelText = useCallback((
@@ -2253,6 +2246,52 @@ export default function Canvas3D({
     return objects;
   };
 
+  // UNIFIED ORIENTATION FUNCTION: Calculate AirEntry coordinate system orientation
+  // Uses same mathematical approach for both initial creation and real-time updates
+  // This ensures coordinate system orientation remains consistent during position changes
+  const calculateAirEntryOrientation = useCallback((airEntry: AirEntry) => {
+    // Use the CORRECT formula from initial creation (lines 2487-2535)
+    const wallDir = new THREE.Vector3()
+      .subVectors(
+        transform2DTo3D(airEntry.line.end),
+        transform2DTo3D(airEntry.line.start),
+      )
+      .normalize();
+    const worldUp = new THREE.Vector3(0, 0, 1);
+    const wallNormal = new THREE.Vector3()
+      .crossVectors(wallDir, worldUp)
+      .normalize();
+
+    // Calculate coordinate system vectors using proven approach
+    const forward = wallNormal.clone();
+    const up = new THREE.Vector3(0, 0, 1);
+    const right = new THREE.Vector3().crossVectors(up, forward).normalize();
+    forward.crossVectors(right, up).normalize();
+
+    // Z axis points perpendicular to wall (normal to surface)
+    const zDirection = forward.clone();
+    
+    // Y axis is always vertical
+    const yDirection = new THREE.Vector3(0, 0, 1);
+    
+    // X axis is horizontal and perpendicular to Z
+    const rotationAxis = new THREE.Vector3(0, 0, 1);
+    const xDirection = zDirection.clone()
+      .applyAxisAngle(rotationAxis, Math.PI/2)
+      .normalize();
+
+    return { 
+      xDirection, 
+      yDirection, 
+      zDirection, 
+      forward, 
+      right, 
+      up,
+      wallDir,
+      wallNormal 
+    };
+  }, []);
+
   // Create scene objects for a single floor
   const createFloorObjects = (
     floorData: FloorData,
@@ -2483,22 +2522,12 @@ export default function Canvas3D({
           airEntryId: `${floorData.name}_${entry.type}_${index}` // PHASE 1: Unique identifier for direct mesh updates
         };
 
-        // Calculate proper orientation
-        const wallDir = new THREE.Vector3()
-          .subVectors(
-            transform2DTo3D(entry.line.end),
-            transform2DTo3D(entry.line.start),
-          )
-          .normalize();
-        const worldUp = new THREE.Vector3(0, 0, 1);
-        const wallNormal = new THREE.Vector3()
-          .crossVectors(wallDir, worldUp)
-          .normalize();
+        // UNIFIED ORIENTATION: Use calculateAirEntryOrientation function
+        const orientationData = calculateAirEntryOrientation(entry);
+        const { forward, up, right, xDirection, yDirection, zDirection } = orientationData;
+        
 
-        const forward = wallNormal.clone();
-        const up = new THREE.Vector3(0, 0, 1);
-        const right = new THREE.Vector3().crossVectors(up, forward).normalize();
-        forward.crossVectors(right, up).normalize();
+        
         const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
         mesh.setRotationFromMatrix(rotationMatrix);
 
@@ -2514,25 +2543,8 @@ export default function Canvas3D({
 
       // Create custom axis meshes that are better for intersection detection
       
-      // Create the local coordinate system for this air entry:
-      // - Z axis (blue) is normal to the wall surface (using the 'forward' vector) 
-      // - Y axis (green) is vertical (pointing upward)
-      // - X axis (red) is horizontal and perpendicular to Z (using the 2D perpendicular vector technique)
-      
-      // Z axis should point perpendicular to the wall (normal to the surface)
-      // This is the "forward" vector in the mesh's orientation
-      const zDirection = forward.clone();
-
-      
-      // Y axis is always vertical
-      const verticalDirection = new THREE.Vector3(0, 0, 1);
-      
-      // Create X direction by rotating the Z-axis 90 degrees around the vertical axis
-      // This ensures it's perpendicular to Z and in the floor plane
-      const rotationAxis = new THREE.Vector3(0, 0, 1); // Vertical axis
-      const xDirection = zDirection.clone()
-        .applyAxisAngle(rotationAxis, Math.PI/2)
-        .normalize();
+      // UNIFIED ORIENTATION: Use coordinate system vectors from unified function (already extracted above)
+      // Variables xDirection, yDirection, zDirection are already available from orientationData
 
       
       // Verify perpendicularity - dot product should be close to 0
