@@ -195,7 +195,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   }, [mode]);
   
   // Estados para condiciones de simulación
-  const [isElementOpen, setIsElementOpen] = useState(true);
+  const [elementState, setElementState] = useState<'open' | 'closed'>('closed');
   const [elementTemperature, setElementTemperature] = useState(20);
   const [airDirection, setAirDirection] = useState<'inflow' | 'outflow'>('inflow');
   const [intensityLevel, setIntensityLevel] = useState<'high' | 'medium' | 'low' | 'custom'>('medium');
@@ -299,14 +299,15 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
   // Funciones para manejar cambios de Simulation Conditions en tiempo real
   const handleElementStatusChange = (newStatus: boolean) => {
-    setIsElementOpen(newStatus);
+    const newState = newStatus ? 'open' : 'closed';
+    setElementState(newState);
     
     // Update form values for persistence
-    setValues(prev => ({ ...prev, state: newStatus ? 'open' : 'closed' }));
+    setValues(prev => ({ ...prev, state: newState }));
     
     // Trigger real-time properties update
     if (props.type !== 'wall' && 'onPropertiesUpdate' in props && props.onPropertiesUpdate) {
-      props.onPropertiesUpdate({ state: newStatus ? 'open' : 'closed' });
+      props.onPropertiesUpdate({ state: newState });
     }
   };
 
@@ -632,7 +633,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         
         // Load common properties
         if (savedProps.state !== undefined) {
-          setIsElementOpen(savedProps.state === 'open');
+          setElementState(savedProps.state);
         }
         if (savedProps.temperature !== undefined) {
           setElementTemperature(savedProps.temperature);
@@ -698,13 +699,13 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         
         // Extended properties for JSON
         shape: shapeType,
-        isOpen: isElementOpen,
+        isOpen: elementState === 'open',
         temperature: elementTemperature,
         airDirection: airDirection,
         flowIntensity: intensityLevel,
         customIntensityValue: intensityLevel === 'custom' ? customIntensity : null,
         ventFlowType: type === 'vent' ? ventMeasurementType : null,
-        airOrientation: (type === 'vent' && isElementOpen && airDirection === 'inflow') ? {
+        airOrientation: (type === 'vent' && elementState === 'open' && airDirection === 'inflow') ? {
           verticalAngle: verticalAngle,
           horizontalAngle: horizontalAngle
         } : null,
@@ -720,13 +721,11 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
       if ((props.type === 'window' || props.type === 'door' || props.type === 'vent') && 'airEntryIndex' in props && props.airEntryIndex !== undefined && props.currentFloor) {
         const simulationProperties: any = {};
         
-        // Properties for windows and doors
-        if (props.type === 'window' || props.type === 'door') {
-          simulationProperties.state = isElementOpen ? 'open' : 'closed';
-          simulationProperties.temperature = elementTemperature;
-        }
+        // Common properties for ALL types (replicando patrón de temperature)
+        simulationProperties.state = elementState;
+        simulationProperties.temperature = elementTemperature;
         
-        // Properties for vents  
+        // Type-specific properties for vents  
         if (props.type === 'vent') {
           simulationProperties.flowType = ventMeasurementType;
           simulationProperties.flowValue = customIntensity;
@@ -766,7 +765,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           rotation: element3DRotation,
         }),
         properties: {
-          state: (isElementOpen ? 'open' : 'closed') as 'open' | 'closed',
+          state: elementState,
           temperature: elementTemperature,
           flowIntensity: intensityLevel as 'low' | 'medium' | 'high' | 'custom',
           airOrientation: airDirection as 'inflow' | 'outflow',
@@ -1464,14 +1463,14 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                       <div className="space-y-1">
                         <Label className="text-sm font-medium text-slate-700">Element Status</Label>
                         <p className="text-xs text-slate-500">
-                          {isElementOpen 
+                          {elementState === 'open'
                             ? `${type === 'window' ? 'Window' : type === 'door' ? 'Door' : 'Vent'} is open and allows airflow` 
                             : `${type === 'window' ? 'Window' : type === 'door' ? 'Door' : 'Vent'} is closed, no airflow`
                           }
                         </p>
                       </div>
                       <Switch
-                        checked={isElementOpen}
+                        checked={elementState === 'open'}
                         onCheckedChange={handleElementStatusChange}
                         className="ml-4"
                       />
@@ -1481,7 +1480,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                     <div className="space-y-2">
                       <div className="flex items-center space-x-1">
                         <Label htmlFor="element-temperature" className="text-xs text-slate-600">
-                          {isElementOpen 
+                          {elementState === 'open'
                             ? "Air Inflow Temperature"
                             : `${type === 'window' ? 'Window' : type === 'door' ? 'Door' : 'Vent'} Temperature`
                           }
@@ -1493,7 +1492,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                             </TooltipTrigger>
                             <TooltipContent side="right" sideOffset={5}>
                               <p className="text-xs max-w-48">
-                                {isElementOpen
+                                {elementState === 'open'
                                   ? "Valid for both inflow and backflow entering the interior domain. This temperature affects the comfort and energy balance when air passes through the opening."
                                   : "Surface temperature used to calculate heat transfer to the interior domain. This affects comfort through temperature gain or loss through the closed element."
                                 }
@@ -1515,7 +1514,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                         <span className="text-xs text-slate-500">°C</span>
                       </div>
                       <p className="text-xs text-gray-500">
-                        {isElementOpen 
+                        {elementState === 'open'
                           ? "Temperature of air entering the room"
                           : `Temperature on the ${type === 'window' ? 'window' : type === 'door' ? 'door' : 'vent'} surface`
                         }
@@ -1523,7 +1522,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                     </div>
 
                     {/* Campos condicionales que aparecen solo cuando está abierto */}
-                    {isElementOpen && (
+                    {elementState === 'open' && (
                       <div className="space-y-4 border-t pt-4">
                         {/* Dirección del flujo de aire */}
                         <div className="space-y-2">
@@ -1570,7 +1569,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                         </div>
 
                         {/* Air Orientation - Solo para vents con inflow */}
-                        {type === 'vent' && isElementOpen && airDirection === 'inflow' && (
+                        {type === 'vent' && elementState === 'open' && airDirection === 'inflow' && (
                           <div className="space-y-2 border-t pt-4">
                             <Label className="text-xs text-slate-600">Air Orientation</Label>
                             

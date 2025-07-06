@@ -678,7 +678,7 @@ export function generateSimulationData(
           shape: "rectangular" as const
         },
         simulation: {
-          state: (ventObj.userData?.simulationProperties?.state as "open" | "closed") || "open",
+          state: (ventObj.userData?.simulationProperties?.state as "open" | "closed") || "closed",
           temperature: ventObj.userData?.simulationProperties?.airTemperature || 20,
           airDirection: (ventObj.userData?.simulationProperties?.airOrientation as "inflow" | "outflow") || "inflow",
           flowType: mapFlowType(ventObj.userData?.simulationProperties?.flowType) || "Air Velocity",
