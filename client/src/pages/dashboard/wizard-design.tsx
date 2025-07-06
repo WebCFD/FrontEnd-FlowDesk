@@ -534,10 +534,23 @@ export default function WizardDesign() {
       }
     });
     
-    return airEntries.map(entry => ({
-      ...entry,
-      id: `${entry.type}_${floorPrefix}_${typeCounters[entry.type]++}`
-    } as any));
+    return airEntries.map((entry, entryIndex) => {
+      const newEntry = {
+        ...entry,
+        id: `${entry.type}_${floorPrefix}_${typeCounters[entry.type]++}`
+      } as any;
+      
+      console.log("🔄 [REGENERATE DEBUG] Processing entry:", {
+        originalId: entry.id,
+        newId: newEntry.id,
+        originalPropertiesRef: entry.properties,
+        newPropertiesRef: newEntry.properties,
+        arePropertiesSameRef: entry.properties === newEntry.properties,
+        entryIndex
+      });
+      
+      return newEntry;
+    });
   };
 
   const regenerateWallIds = (walls: Wall[], floor: string): Wall[] => {
