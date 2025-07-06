@@ -1,0 +1,48 @@
+Canvas3D.tsx:6190 [SCALE DEBUG 1] Dialog Initialization - Standard furniture: Table 0F-1
+Canvas3D.tsx:6191 [SCALE DEBUG 1] Store scale: {x: 1, y: 1, z: 1}
+Canvas3D.tsx:6192 [SCALE DEBUG 1] Sending to dialog: {x: 1, y: 1, z: 1}
+Canvas3D.tsx:6199 🔍 [DIALOG INIT] Properties being sent to dialog: {material: 'glass', temperature: 24, emissivity: 0.92}
+FurnitureDialog.tsx:406 [SCALE DEBUG 2] Dialog Submission - Type: table
+FurnitureDialog.tsx:407 [SCALE DEBUG 2] elementScale state: {x: 1, y: 1, z: 1}
+FurnitureDialog.tsx:408 [SCALE DEBUG 2] Sending to Canvas3D: {x: 1, y: 1, z: 1}
+Canvas3D.tsx:5851 🔄 [SAVE CHANGES] handleFurnitureEdit received data: {name: 'Table 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}}
+Canvas3D.tsx:5852 🔍 [PROPERTIES TRACE] data.properties: {material: 'wood', temperature: 21, emissivity: 0.9}
+Canvas3D.tsx:5853 🔍 [PROPERTIES TRACE] data.simulationProperties: undefined
+Canvas3D.tsx:5931 🔍 [TO STORE] Sending to onUpdateFurniture: {properties: {…}, simulationProperties: undefined}
+wizard-design.tsx:1320 [SCALE DEBUG 3.5] Store Update Callback - ID: Table 0F-1
+wizard-design.tsx:1321 [SCALE DEBUG 3.5] Floor: ground
+wizard-design.tsx:1322 [SCALE DEBUG 3.5] Item scale being stored: {x: 1, y: 1, z: 1}
+wizard-design.tsx:1323 🔍 [STORE RECEIVED] properties: {material: 'wood', temperature: 21, emissivity: 0.9}
+wizard-design.tsx:1324 🔍 [STORE RECEIVED] simulationProperties: undefined
+wizard-design.tsx:1331 [SCALE DEBUG 3.5] Verification - Scale in store after update: {x: 1, y: 1, z: 1}
+Canvas3D.tsx:5951 🔍 LIFECYCLE TRACE - Final validation:
+Canvas3D.tsx:5952   - Object still in scene after all operations: true
+Canvas3D.tsx:5953   - editingFurniture about to be set to null
+Canvas3D.tsx:5969 🔍 LIFECYCLE TRACE - Delayed validation (100ms after):
+Canvas3D.tsx:5970   - Object still in scene after React updates: true
+Canvas3D.tsx:6190 [SCALE DEBUG 1] Dialog Initialization - Standard furniture: Table 0F-1
+Canvas3D.tsx:6191 [SCALE DEBUG 1] Store scale: {x: 1, y: 1, z: 1}
+Canvas3D.tsx:6192 [SCALE DEBUG 1] Sending to dialog: {x: 1, y: 1, z: 1}
+Canvas3D.tsx:6199 🔍 [DIALOG INIT] Properties being sent to dialog: {material: 'glass', temperature: 24, emissivity: 0.92}
+FurnitureDialog.tsx:406 [SCALE DEBUG 2] Dialog Submission - Type: table
+FurnitureDialog.tsx:407 [SCALE DEBUG 2] elementScale state: {x: 1, y: 1, z: 1}
+FurnitureDialog.tsx:408 [SCALE DEBUG 2] Sending to Canvas3D: {x: 1, y: 1, z: 1}
+Canvas3D.tsx:5851 🔄 [SAVE CHANGES] handleFurnitureEdit received data: {name: 'Table 0F-1', position: {…}, rotation: {…}, scale: {…}, properties: {…}}
+Canvas3D.tsx:5852 🔍 [PROPERTIES TRACE] data.properties: {material: 'glass', temperature: 24, emissivity: 0.92}
+Canvas3D.tsx:5853 🔍 [PROPERTIES TRACE] data.simulationProperties: undefined
+Canvas3D.tsx:5931 🔍 [TO STORE] Sending to onUpdateFurniture: {properties: {…}, simulationProperties: undefined}
+wizard-design.tsx:1320 [SCALE DEBUG 3.5] Store Update Callback - ID: Table 0F-1
+wizard-design.tsx:1321 [SCALE DEBUG 3.5] Floor: ground
+wizard-design.tsx:1322 [SCALE DEBUG 3.5] Item scale being stored: {x: 1, y: 1, z: 1}
+wizard-design.tsx:1323 🔍 [STORE RECEIVED] properties: {material: 'glass', temperature: 24, emissivity: 0.92}
+wizard-design.tsx:1324 🔍 [STORE RECEIVED] simulationProperties: undefined
+wizard-design.tsx:1331 [SCALE DEBUG 3.5] Verification - Scale in store after update: {x: 1, y: 1, z: 1}
+Canvas3D.tsx:5951 🔍 LIFECYCLE TRACE - Final validation:
+Canvas3D.tsx:5952   - Object still in scene after all operations: true
+Canvas3D.tsx:5953   - editingFurniture about to be set to null
+Canvas3D.tsx:5969 🔍 LIFECYCLE TRACE - Delayed validation (100ms after):
+Canvas3D.tsx:5970   - Object still in scene after React updates: true
+Canvas3D.tsx:6190 [SCALE DEBUG 1] Dialog Initialization - Standard furniture: Table 0F-1
+Canvas3D.tsx:6191 [SCALE DEBUG 1] Store scale: {x: 1, y: 1, z: 1}
+Canvas3D.tsx:6192 [SCALE DEBUG 1] Sending to dialog: {x: 1, y: 1, z: 1}
+Canvas3D.tsx:6199 🔍 [DIALOG INIT] Properties being sent to dialog: {material: 'glass', temperature: 24, emissivity: 0.92}

@@ -5455,10 +5455,18 @@ export default function Canvas3D({
 
           
           if (furnitureId) {
-            // Get the actual furniture item from the store
+            // Get the actual furniture item from the reactive store (not memoized data)
             const floorName = furnitureGroup.userData.floorName || currentFloor;
-            const floorData = migratedFloors[floorName];
+            const reactiveFloors = useRoomStore.getState().floors;
+            const floorData = reactiveFloors[floorName];
             const actualFurnitureItem = floorData?.furnitureItems?.find(item => item.id === furnitureId);
+            
+            // DEBUG: Track which data source we're using
+            console.log('🔍 [DIALOG INIT] Reading furniture from reactive store:', {
+              furnitureId,
+              floorName,
+              properties: actualFurnitureItem?.properties
+            });
             
 
             
