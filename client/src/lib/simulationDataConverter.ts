@@ -681,10 +681,26 @@ export function generateSimulationData(
           state: (ventObj.userData?.simulationProperties?.state as "open" | "closed") || "closed",
           temperature: ventObj.userData?.simulationProperties?.airTemperature || 20,
           airDirection: (ventObj.userData?.simulationProperties?.airOrientation as "inflow" | "outflow") || "inflow",
+          
+          // Air Orientation (FurnVent-specific, matching AirEntry format exactly)
+          ...(ventObj.userData?.simulationProperties?.state === "open" && 
+              ventObj.userData?.simulationProperties?.airOrientation === "inflow" ? {
+            airOrientation: {
+              verticalAngle: ventObj.userData?.simulationProperties?.verticalAngle || 0,
+              horizontalAngle: ventObj.userData?.simulationProperties?.horizontalAngle || 0
+            }
+          } : {}),
+          
           flowType: mapFlowType(ventObj.userData?.simulationProperties?.flowType) || "Air Velocity",
           flowIntensity: (ventObj.userData?.simulationProperties?.flowIntensity as "low" | "medium" | "high" | "custom") || "medium"
         }
       };
+      
+      // Add customValue if flow intensity is custom (matching AirEntry pattern)
+      if (ventObj.userData?.simulationProperties?.flowIntensity === "custom" && 
+          ventObj.userData?.simulationProperties?.customIntensityValue !== undefined) {
+        airEntry.simulation.customValue = ventObj.userData.simulationProperties.customIntensityValue;
+      }
       
       if (isFloorVent) {
         floorSurfAirEntries.push(airEntry);
