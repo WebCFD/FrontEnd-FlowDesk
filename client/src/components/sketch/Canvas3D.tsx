@@ -1359,20 +1359,16 @@ export default function Canvas3D({
     };
   }, []);
 
-  // PHASE 3: Helper function to update axis positions based on new AirEntry position
-  // UNIFIED ORIENTATION: Now uses calculateAirEntryOrientationCallback for consistent results
+  // Helper function to update axis positions during real-time AirEntry modifications
   const updateAxisPositions = useCallback((
     elements: { xAxis: THREE.Mesh | null; yAxis: THREE.Mesh | null; zAxis: THREE.Mesh | null },
     newPosition: THREE.Vector3,
     newZPosition: number,
     airEntry: AirEntry
   ) => {
-    // UNIFIED COORDINATE SYSTEM: Use complete coordinate system data from unified function
     const coordSysData = calculateAirEntryCoordinateSystemComplete(airEntry);
     const { xDirection, yDirection, zDirection, axisLength } = coordSysData;
     const axisOrigin = new THREE.Vector3(newPosition.x, newPosition.y, newZPosition);
-
-
 
     // Update X axis position and orientation
     if (elements.xAxis) {
@@ -1383,7 +1379,6 @@ export default function Canvas3D({
       );
       elements.xAxis.position.copy(xAxisMidpoint);
       
-      // Recalculate orientation using UNIFIED direction vectors
       const xAxisUp = new THREE.Vector3(0, 1, 0);
       elements.xAxis.quaternion.setFromUnitVectors(xAxisUp, xDirection);
     }
@@ -1407,13 +1402,12 @@ export default function Canvas3D({
       );
       elements.zAxis.position.copy(zAxisMidpoint);
       
-      // Recalculate orientation using UNIFIED direction vectors
       const zAxisUp = new THREE.Vector3(0, 1, 0);
       elements.zAxis.quaternion.setFromUnitVectors(zAxisUp, zDirection);
     }
   }, [calculateAirEntryCoordinateSystemComplete]);
 
-  // PHASE 3: Helper function to update coordinate label text and position
+  // Helper function to update coordinate label text and position
   const updateLabelText = useCallback((
     label: THREE.Sprite,
     newPosition: THREE.Vector3,
@@ -1421,8 +1415,6 @@ export default function Canvas3D({
     airEntry: AirEntry
   ) => {
     const coordText = `(${Math.round(newPosition.x)}, ${Math.round(newPosition.y)}, ${Math.round(newZPosition)}) cm`;
-    
-    // UNIFIED COORDINATE SYSTEM: Use label properties from unified function
     const coordSysData = calculateAirEntryCoordinateSystemComplete(airEntry);
     
     // Update text content by regenerating the sprite
@@ -1441,7 +1433,7 @@ export default function Canvas3D({
     }
   }, [calculateAirEntryCoordinateSystemComplete]);
 
-  // PHASE 3: Main coordinate system update function
+  // Main coordinate system update function
   const updateCoordinateSystemPosition = useCallback((
     entryIndex: number, 
     floorName: string, 
@@ -2551,11 +2543,10 @@ export default function Canvas3D({
           line: entry.line,
           index: objects.length,
           entryIndex: index,  // Add the actual index in the airEntries array
-          floorName: floorData.name, // PHASE 1: Add floor identification
-          airEntryId: `${floorData.name}_${entry.type}_${index}` // PHASE 1: Unique identifier for direct mesh updates
+          floorName: floorData.name,
+          airEntryId: `${floorData.name}_${entry.type}_${index}`
         };
 
-        // UNIFIED ORIENTATION: Use calculateAirEntryCoordinateSystemComplete function
         const orientationData = calculateAirEntryCoordinateSystemComplete(entry);
         const { forward, up, right, xDirection, yDirection, zDirection } = orientationData;
         
@@ -2564,29 +2555,18 @@ export default function Canvas3D({
 
       objects.push(mesh);
 
-      // Store the entry's index in airEntries array for direct reference
       const parentMeshIndex = objects.length - 1;
-
-      // COORDINATE SYSTEM DATA: Already calculated above for orientation
       const coordSysData = orientationData;
       const { 
         axisLength, axisRadius, axisSegments, axisOpacity, axisColors 
       } = coordSysData;
 
-      // Verify perpendicularity - dot product should be close to 0
-      const dotProduct = xDirection.dot(zDirection);
-
-      // X axis - Red (Perpendicular to both Y and Z axes)
+      // X axis - Red
       const xAxisGeometry = new THREE.CylinderGeometry(axisRadius, axisRadius, axisLength, axisSegments);
       const xAxisMaterial = new THREE.MeshBasicMaterial({ color: axisColors.x, transparent: true, opacity: axisOpacity });
       const xAxis = new THREE.Mesh(xAxisGeometry, xAxisMaterial);
       
-      // Get origin point at the air entry position
       const axisOrigin = new THREE.Vector3(position.x, position.y, zPosition);
-      
-      // Debug the axis origin and direction vectors
-
-
       
       // Calculate the endpoint of the axis
       const xAxisEndPoint = new THREE.Vector3(
@@ -2609,7 +2589,6 @@ export default function Canvas3D({
       const xAxisUp = new THREE.Vector3(0, 1, 0); // Cylinder's default axis
       xAxis.quaternion.setFromUnitVectors(xAxisUp, xAxisDirectionVector);
       
-      // PHASE 2: Enhanced userData for X axis
       xAxis.userData = { 
         type: 'axis', 
         direction: 'x',
@@ -2644,7 +2623,6 @@ export default function Canvas3D({
       // Use quaternion to rotate cylinder to align with Y direction
       const yAxisUp = new THREE.Vector3(0, 1, 0); // Cylinder's default axis
       yAxis.quaternion.setFromUnitVectors(yAxisUp, yAxisDirection);
-      // PHASE 2: Enhanced userData for Y axis
       yAxis.userData = { 
         type: 'axis', 
         direction: 'y',
@@ -2654,13 +2632,10 @@ export default function Canvas3D({
         entryIndex: index
       };
 
-      // Z axis - Blue (Normal to wall, pointing outward)
+      // Z axis - Blue
       const zAxisGeometry = new THREE.CylinderGeometry(axisRadius, axisRadius, axisLength, axisSegments);
       const zAxisMaterial = new THREE.MeshBasicMaterial({ color: axisColors.z, transparent: true, opacity: axisOpacity });
       const zAxis = new THREE.Mesh(zAxisGeometry, zAxisMaterial);
-      
-      // Debug the Z axis direction vector
-
       
       // Calculate the endpoint of the Z axis
       const zAxisEndPoint = new THREE.Vector3(
@@ -2682,7 +2657,6 @@ export default function Canvas3D({
       const zAxisUp = new THREE.Vector3(0, 1, 0); // Cylinder's default axis
       zAxis.quaternion.setFromUnitVectors(zAxisUp, zAxisDirectionVector);
       
-      // PHASE 2: Enhanced userData for Z axis
       zAxis.userData = { 
         type: 'axis', 
         direction: 'z',
@@ -2694,7 +2668,6 @@ export default function Canvas3D({
 
       // Add coordinate system, marker and labels - only show when not in presentation mode
       if (!presentationMode) {
-        // PHASE 2: Enhanced userData for yellow sphere marker
         const markerGeometry = new THREE.SphereGeometry(coordSysData.markerRadius, coordSysData.markerWidthSegments, coordSysData.markerHeightSegments);
         const markerMaterial = new THREE.MeshBasicMaterial({ color: coordSysData.markerColor });
         const marker = new THREE.Mesh(markerGeometry, markerMaterial);
@@ -2711,7 +2684,6 @@ export default function Canvas3D({
         // Add the axis meshes to the objects array
         objects.push(xAxis, yAxis, zAxis);
 
-        // PHASE 2: Enhanced userData for coordinate label
         const coordText = `(${Math.round(position.x)}, ${Math.round(position.y)}, ${Math.round(zPosition)}) cm`;
         const labelSprite = makeTextSprite(coordText, {
           fontsize: coordSysData.labelFontSize,
