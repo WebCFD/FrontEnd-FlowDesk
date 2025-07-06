@@ -1320,6 +1320,8 @@ export default function WizardDesign() {
     console.log('[SCALE DEBUG 3.5] Store Update Callback - ID:', itemId);
     console.log('[SCALE DEBUG 3.5] Floor:', floorName);
     console.log('[SCALE DEBUG 3.5] Item scale being stored:', item.scale);
+    console.log('🔍 [STORE RECEIVED] properties:', item.properties);
+    console.log('🔍 [STORE RECEIVED] simulationProperties:', item.simulationProperties);
     
     updateFurnitureInFloor(floorName, itemId, item);
     

@@ -5849,12 +5849,8 @@ export default function Canvas3D({
     if (!editingFurniture || !sceneRef.current) return;
 
     console.log('🔄 [SAVE CHANGES] handleFurnitureEdit received data:', data);
-    console.log('🔄 [SAVE CHANGES] Rotation in radians:', data.rotation);
-    console.log('🔄 [SAVE CHANGES] Rotation in degrees:', {
-      x: data.rotation.x * 180 / Math.PI,
-      y: data.rotation.y * 180 / Math.PI,
-      z: data.rotation.z * 180 / Math.PI
-    });
+    console.log('🔍 [PROPERTIES TRACE] data.properties:', data.properties);
+    console.log('🔍 [PROPERTIES TRACE] data.simulationProperties:', data.simulationProperties);
 
     // Find the furniture object in the scene by ID
     const furnitureId = editingFurniture.item.id;
@@ -5932,6 +5928,10 @@ export default function Canvas3D({
 
 
 
+        console.log('🔍 [TO STORE] Sending to onUpdateFurniture:', {
+          properties: updatedFurnitureItem.properties,
+          simulationProperties: updatedFurnitureItem.simulationProperties
+        });
         onUpdateFurniture(editingFurniture.item.floorName, editingFurniture.item.id, updatedFurnitureItem);
         
         // Trigger texture recovery for RSP
