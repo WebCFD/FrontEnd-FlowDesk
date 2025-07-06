@@ -1614,9 +1614,17 @@ export default function Canvas3D({
             object.position.setZ(newZ);
           }
 
-          // Width and Height updates: Remove redundant scale conversion
-          // The geometry already has correct dimensions from creation - no scale modification needed
-          // Only userData update is required for persistence
+          // Update mesh geometry for Width and Height (same approach as creation)
+          if (newDimensions.width !== undefined || newDimensions.height !== undefined) {
+            const currentDimensions = object.userData.dimensions || editingAirEntry.entry.dimensions;
+            const newWidth = newDimensions.width !== undefined ? newDimensions.width : currentDimensions.width;
+            const newHeight = newDimensions.height !== undefined ? newDimensions.height : currentDimensions.height;
+            
+            // Update geometry directly (same as creation) - no scale conversion
+            const newGeometry = new THREE.PlaneGeometry(newWidth, newHeight);
+            object.geometry.dispose(); // Clean up old geometry
+            object.geometry = newGeometry;
+          }
           
           // Update userData for persistence
           if (object.userData.dimensions) {
