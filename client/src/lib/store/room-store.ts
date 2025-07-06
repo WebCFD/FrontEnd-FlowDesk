@@ -410,7 +410,7 @@ export const useRoomStore = create<RoomState>()(
             const updatedAirEntries = [...currentFloors[floorName].airEntries];
             updatedAirEntries[index] = {
               ...updatedAirEntries[index],
-              properties: properties
+              properties: { ...properties }
             };
             
             currentFloors[floorName] = {
