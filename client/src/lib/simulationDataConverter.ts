@@ -575,6 +575,12 @@ export function generateSimulationData(
       const properties = obj.userData?.properties || {};
       const simulationProperties = obj.userData?.simulationProperties || {};
       
+      console.log('🔍 [JSON EXPORT] Reading from userData:', {
+        furnitureId,
+        properties,
+        simulationProperties
+      });
+      
       // Build base simulation properties for all furniture types
       const baseSimulationProperties = {
         temperature: properties.temperature || simulationProperties.airTemperature || 20,
