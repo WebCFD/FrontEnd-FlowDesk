@@ -1286,11 +1286,11 @@ export default function Canvas3D({
     return elements;
   }, []);
 
-  // UNIFIED ORIENTATION FUNCTION: Calculate AirEntry coordinate system orientation
-  // Uses same mathematical approach for both initial creation and real-time updates
-  // This ensures coordinate system orientation remains consistent during position changes
-  const calculateAirEntryOrientationCallback = useCallback((airEntry: AirEntry) => {
-    // Use the CORRECT formula from initial creation (lines 2487-2535)
+  // UNIFIED COORDINATE SYSTEM FUNCTION: Calculate AirEntry complete coordinate system properties
+  // Combines orientation calculations with dimensional properties for both initial creation and real-time updates
+  // This ensures complete consistency in orientation, dimensions, colors, and visual properties
+  const calculateAirEntryCoordinateSystemComplete = useCallback((airEntry: AirEntry) => {
+    // ORIENTATION CALCULATIONS: Same mathematical approach as before
     const wallDir = new THREE.Vector3()
       .subVectors(
         transform2DTo3D(airEntry.line.end),
@@ -1321,6 +1321,7 @@ export default function Canvas3D({
       .normalize();
 
     return { 
+      // ORIENTATION VECTORS
       xDirection, 
       yDirection, 
       zDirection, 
@@ -1328,7 +1329,33 @@ export default function Canvas3D({
       right, 
       up,
       wallDir,
-      wallNormal 
+      wallNormal,
+      
+      // AXIS PROPERTIES (Cylinders)
+      axisLength: 50,
+      axisRadius: 3,
+      axisSegments: 8,
+      axisOpacity: 0.8,
+      
+      // AXIS COLORS
+      axisColors: {
+        x: 0xff0000,  // Red
+        y: 0x00ff00,  // Green
+        z: 0x0066ff   // Blue
+      },
+      
+      // MARKER PROPERTIES (Yellow Sphere)
+      markerRadius: 5,
+      markerWidthSegments: 16,
+      markerHeightSegments: 16,
+      markerColor: 0xffff00,
+      
+      // LABEL PROPERTIES (Coordinate Text)
+      labelOffset: 15,
+      labelFontSize: 140,
+      labelFontFace: "Arial",
+      labelTextColor: { r: 0, g: 0, b: 0, a: 1.0 },
+      labelBackgroundColor: { r: 255, g: 255, b: 255, a: 0.0 }
     };
   }, []);
 
@@ -1340,11 +1367,10 @@ export default function Canvas3D({
     newZPosition: number,
     airEntry: AirEntry
   ) => {
-    const axisLength = 40; // Same as original creation
+    // UNIFIED COORDINATE SYSTEM: Use complete coordinate system data from unified function
+    const coordSysData = calculateAirEntryCoordinateSystemComplete(airEntry);
+    const { xDirection, yDirection, zDirection, axisLength } = coordSysData;
     const axisOrigin = new THREE.Vector3(newPosition.x, newPosition.y, newZPosition);
-
-    // UNIFIED ORIENTATION: Use same calculation as initial creation
-    const { xDirection, yDirection, zDirection } = calculateAirEntryOrientationCallback(airEntry);
 
 
 
@@ -1385,22 +1411,26 @@ export default function Canvas3D({
       const zAxisUp = new THREE.Vector3(0, 1, 0);
       elements.zAxis.quaternion.setFromUnitVectors(zAxisUp, zDirection);
     }
-  }, [calculateAirEntryOrientationCallback]);
+  }, [calculateAirEntryCoordinateSystemComplete]);
 
   // PHASE 3: Helper function to update coordinate label text and position
   const updateLabelText = useCallback((
     label: THREE.Sprite,
     newPosition: THREE.Vector3,
-    newZPosition: number
+    newZPosition: number,
+    airEntry: AirEntry
   ) => {
     const coordText = `(${Math.round(newPosition.x)}, ${Math.round(newPosition.y)}, ${Math.round(newZPosition)}) cm`;
     
+    // UNIFIED COORDINATE SYSTEM: Use label properties from unified function
+    const coordSysData = calculateAirEntryCoordinateSystemComplete(airEntry);
+    
     // Update text content by regenerating the sprite
     const newLabelSprite = makeTextSprite(coordText, {
-      fontsize: 140,
-      fontface: "Arial",
-      textColor: { r: 0, g: 0, b: 0, a: 1.0 },
-      backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 },
+      fontsize: coordSysData.labelFontSize,
+      fontface: coordSysData.labelFontFace,
+      textColor: coordSysData.labelTextColor,
+      backgroundColor: coordSysData.labelBackgroundColor,
     });
     
     // Copy material and texture to existing sprite
@@ -1409,7 +1439,7 @@ export default function Canvas3D({
       label.material.map = newLabelSprite.material.map;
       label.material.needsUpdate = true;
     }
-  }, []);
+  }, [calculateAirEntryCoordinateSystemComplete]);
 
   // PHASE 3: Main coordinate system update function
   const updateCoordinateSystemPosition = useCallback((
@@ -1433,9 +1463,10 @@ export default function Canvas3D({
       }
       
       // Update coordinate label
-      if (elements.label) {
-        elements.label.position.set(newPosition.x, newPosition.y, newZPosition + 15);
-        updateLabelText(elements.label, newPosition, newZPosition);
+      if (elements.label && airEntry) {
+        const coordSysData = calculateAirEntryCoordinateSystemComplete(airEntry);
+        elements.label.position.set(newPosition.x, newPosition.y, newZPosition + coordSysData.labelOffset);
+        updateLabelText(elements.label, newPosition, newZPosition, airEntry);
       }
       
       return true; // Success
@@ -2524,39 +2555,30 @@ export default function Canvas3D({
           airEntryId: `${floorData.name}_${entry.type}_${index}` // PHASE 1: Unique identifier for direct mesh updates
         };
 
-        // UNIFIED ORIENTATION: Use calculateAirEntryOrientationCallback function
-        const orientationData = calculateAirEntryOrientationCallback(entry);
+        // UNIFIED ORIENTATION: Use calculateAirEntryCoordinateSystemComplete function
+        const orientationData = calculateAirEntryCoordinateSystemComplete(entry);
         const { forward, up, right, xDirection, yDirection, zDirection } = orientationData;
-        
-
         
         const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
         mesh.setRotationFromMatrix(rotationMatrix);
 
       objects.push(mesh);
 
-      // Add coordinate system axes
-      const axisLength = 50; // Length of the coordinate axes
-
-
       // Store the entry's index in airEntries array for direct reference
       const parentMeshIndex = objects.length - 1;
 
+      // COORDINATE SYSTEM DATA: Already calculated above for orientation
+      const coordSysData = orientationData;
+      const { 
+        axisLength, axisRadius, axisSegments, axisOpacity, axisColors 
+      } = coordSysData;
 
-      // Create custom axis meshes that are better for intersection detection
-      
-      // UNIFIED ORIENTATION: Use coordinate system vectors from unified function (already extracted above)
-      // Variables xDirection, yDirection, zDirection are already available from orientationData
-
-      
       // Verify perpendicularity - dot product should be close to 0
       const dotProduct = xDirection.dot(zDirection);
 
-      
       // X axis - Red (Perpendicular to both Y and Z axes)
-      const xAxisGeometry = new THREE.CylinderGeometry(3, 3, axisLength, 8); // Increased thickness for visibility
-      // We'll properly align the cylinder along its length instead of with rotation
-      const xAxisMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.8 }); // Increased opacity
+      const xAxisGeometry = new THREE.CylinderGeometry(axisRadius, axisRadius, axisLength, axisSegments);
+      const xAxisMaterial = new THREE.MeshBasicMaterial({ color: axisColors.x, transparent: true, opacity: axisOpacity });
       const xAxis = new THREE.Mesh(xAxisGeometry, xAxisMaterial);
       
       // Get origin point at the air entry position
@@ -2598,8 +2620,8 @@ export default function Canvas3D({
       };
 
       // Y axis - Green (Vertical)
-      const yAxisGeometry = new THREE.CylinderGeometry(3, 3, axisLength, 8); // Same thickness as X axis
-      const yAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.8 }); // Increased opacity
+      const yAxisGeometry = new THREE.CylinderGeometry(axisRadius, axisRadius, axisLength, axisSegments);
+      const yAxisMaterial = new THREE.MeshBasicMaterial({ color: axisColors.y, transparent: true, opacity: axisOpacity });
       const yAxis = new THREE.Mesh(yAxisGeometry, yAxisMaterial);
       
       // Calculate the endpoint of the Y axis (vertical)
@@ -2633,9 +2655,8 @@ export default function Canvas3D({
       };
 
       // Z axis - Blue (Normal to wall, pointing outward)
-      const zAxisGeometry = new THREE.CylinderGeometry(3, 3, axisLength, 12); // Same thickness as X axis
-      const zAxisMaterial = new THREE.MeshBasicMaterial({ color: 0x0066ff, transparent: true, opacity: 0.3
-                                                        }); // Brighter blue
+      const zAxisGeometry = new THREE.CylinderGeometry(axisRadius, axisRadius, axisLength, axisSegments);
+      const zAxisMaterial = new THREE.MeshBasicMaterial({ color: axisColors.z, transparent: true, opacity: axisOpacity });
       const zAxis = new THREE.Mesh(zAxisGeometry, zAxisMaterial);
       
       // Debug the Z axis direction vector
@@ -2674,8 +2695,8 @@ export default function Canvas3D({
       // Add coordinate system, marker and labels - only show when not in presentation mode
       if (!presentationMode) {
         // PHASE 2: Enhanced userData for yellow sphere marker
-        const markerGeometry = new THREE.SphereGeometry(5, 16, 16);
-        const markerMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+        const markerGeometry = new THREE.SphereGeometry(coordSysData.markerRadius, coordSysData.markerWidthSegments, coordSysData.markerHeightSegments);
+        const markerMaterial = new THREE.MeshBasicMaterial({ color: coordSysData.markerColor });
         const marker = new THREE.Mesh(markerGeometry, markerMaterial);
         marker.position.set(position.x, position.y, zPosition);
         marker.userData = {
@@ -2693,12 +2714,12 @@ export default function Canvas3D({
         // PHASE 2: Enhanced userData for coordinate label
         const coordText = `(${Math.round(position.x)}, ${Math.round(position.y)}, ${Math.round(zPosition)}) cm`;
         const labelSprite = makeTextSprite(coordText, {
-          fontsize: 140,
-          fontface: "Arial",
-          textColor: { r: 0, g: 0, b: 0, a: 1.0 },
-          backgroundColor: { r: 255, g: 255, b: 255, a: 0.0 },
+          fontsize: coordSysData.labelFontSize,
+          fontface: coordSysData.labelFontFace,
+          textColor: coordSysData.labelTextColor,
+          backgroundColor: coordSysData.labelBackgroundColor,
         });
-        labelSprite.position.set(position.x, position.y, zPosition + 15);
+        labelSprite.position.set(position.x, position.y, zPosition + coordSysData.labelOffset);
         labelSprite.userData = {
           type: 'coordinate-label',
           isCoordinateLabel: true,
