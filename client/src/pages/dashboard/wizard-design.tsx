@@ -606,8 +606,8 @@ export default function WizardDesign() {
     // Close the dialog
     setIsFloorLoadDialogOpen(false);
 
-    // Begin by looking at the source floor data
-    const sourceFloorData = floors[loadFromFloor];
+    // Begin by looking at the source floor data - READ FROM STORE NOT MEMOIZED DATA
+    const sourceFloorData = rawFloors[loadFromFloor];
     const targetFloorData = floors[currentFloor] || {
       lines: [],
       airEntries: [],
