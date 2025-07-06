@@ -5914,6 +5914,7 @@ export default function Canvas3D({
       // Store properties in userData for reference
       if (data.properties) {
         furnitureGroup.userData.properties = data.properties;
+        console.log('🔍 [JSON EXPORT] Properties stored in userData:', data.properties);
       }
       
       // Store simulation properties in userData for JSON export
