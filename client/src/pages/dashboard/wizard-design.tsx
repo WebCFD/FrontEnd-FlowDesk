@@ -691,7 +691,15 @@ export default function WizardDesign() {
 
     // Regenerate IDs for all copied elements
     const newLines = regenerateLineIds([...sourceFloorData.lines]);
-    const newAirEntries = regenerateAirEntryIds([...sourceFloorData.airEntries], currentFloor, newLines, true);
+    // Deep copy AirEntries to prevent modifying original objects
+    const deepCopiedAirEntries = sourceFloorData.airEntries.map(entry => ({
+      ...entry,
+      position: { ...entry.position },
+      dimensions: { ...entry.dimensions },
+      line: { ...entry.line },
+      properties: entry.properties ? { ...entry.properties } : undefined
+    }));
+    const newAirEntries = regenerateAirEntryIds(deepCopiedAirEntries, currentFloor, newLines, true);
     
     console.log("🔄 [FLOOR LOAD DEBUG] After regenerateAirEntryIds:", {
       targetFloor: currentFloor,
