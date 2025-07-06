@@ -404,14 +404,53 @@ export const useRoomStore = create<RoomState>()(
 
         // Function to update air entry properties
         updateAirEntryProperties: (floorName: string, index: number, properties: SimulationProperties) => set((state) => {
+          console.log("🔧 [STORE DEBUG] updateAirEntryProperties called:", {
+            floorName,
+            index,
+            properties,
+            entryId: state.floors[floorName]?.airEntries?.[index]?.id
+          });
+          
           const currentFloors = { ...state.floors };
           
           if (currentFloors[floorName]?.airEntries && currentFloors[floorName].airEntries[index]) {
             const updatedAirEntries = [...currentFloors[floorName].airEntries];
+            const oldProperties = updatedAirEntries[index].properties;
+            
+            console.log("🔧 [STORE DEBUG] Before update:", {
+              entryId: updatedAirEntries[index].id,
+              oldProperties,
+              oldPropertiesRef: oldProperties
+            });
+            
             updatedAirEntries[index] = {
               ...updatedAirEntries[index],
               properties: { ...properties }
             };
+            
+            const newProperties = updatedAirEntries[index].properties;
+            console.log("🔧 [STORE DEBUG] After update:", {
+              entryId: updatedAirEntries[index].id,
+              newProperties,
+              newPropertiesRef: newProperties,
+              areReferencesSame: oldProperties === newProperties
+            });
+            
+            // Check if this change affects other floors
+            Object.keys(currentFloors).forEach(otherFloorName => {
+              if (otherFloorName !== floorName) {
+                currentFloors[otherFloorName]?.airEntries?.forEach((entry, entryIndex) => {
+                  if (entry.properties === oldProperties) {
+                    console.log("🚨 [STORE DEBUG] SHARED REFERENCE DETECTED:", {
+                      affectedFloor: otherFloorName,
+                      affectedIndex: entryIndex,
+                      affectedEntryId: entry.id,
+                      sharedPropertiesRef: entry.properties
+                    });
+                  }
+                });
+              }
+            });
             
             currentFloors[floorName] = {
               ...currentFloors[floorName],
