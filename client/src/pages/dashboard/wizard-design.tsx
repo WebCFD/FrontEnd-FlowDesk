@@ -505,7 +505,7 @@ export default function WizardDesign() {
   const [isFloorLoadDialogOpen, setIsFloorLoadDialogOpen] = useState(false);
 
   // Helper functions for ID regeneration
-  const regenerateAirEntryIds = (airEntries: AirEntry[], floor: string, targetLines?: any[], useNewCreation: boolean = false) => {
+  const regenerateAirEntryIds = (airEntries: AirEntry[], floor: string) => {
     // Get floor prefix same as walls
     const floorPrefix = floor === 'ground' ? '0F' : 
                        floor === 'first' ? '1F' :
@@ -534,85 +534,25 @@ export default function WizardDesign() {
       }
     });
     
-    if (useNewCreation && targetLines) {
-      return airEntries.map((templateEntry, entryIndex) => {
-        const newEntry = createAirEntryFromTemplate(templateEntry, targetLines, floorPrefix, typeCounters);
-        
-        console.log("🔄 [REGENERATE DEBUG] Creating new entry from template:", {
-          templateId: (templateEntry as any).id,
-          newId: newEntry.id,
-          method: 'new_creation',
-          hasSharedReferences: false,
-          entryIndex
-        });
-        
-        return newEntry;
+    return airEntries.map((entry, entryIndex) => {
+      const newEntry = {
+        ...entry,
+        properties: entry.properties ? { ...entry.properties } : undefined,
+        id: `${entry.type}_${floorPrefix}_${typeCounters[entry.type]++}`
+      } as any;
+      
+      console.log("🔄 [REGENERATE DEBUG] Processing entry:", {
+        originalId: entry.id,
+        newId: newEntry.id,
+        originalProperties: entry.properties,
+        newProperties: newEntry.properties,
+        arePropertiesSameRef: entry.properties === newEntry.properties,
+        hasProperties: !!entry.properties,
+        entryIndex
       });
-    } else {
-      // Fallback to existing cloning method
-      return airEntries.map((entry, entryIndex) => {
-        const newEntry = {
-          ...entry,
-          properties: entry.properties ? { ...entry.properties } : undefined,
-          id: `${entry.type}_${floorPrefix}_${typeCounters[entry.type]++}`
-        } as any;
-        
-        console.log("🔄 [REGENERATE DEBUG] Cloning entry (fallback):", {
-          originalId: (entry as any).id,
-          newId: newEntry.id,
-          method: 'cloning',
-          arePropertiesSameRef: entry.properties === newEntry.properties,
-          entryIndex
-        });
-        
-        return newEntry;
-      });
-    }
-  };
-
-  // NEW: Create AirEntry from template using creation logic instead of cloning
-  const createAirEntryFromTemplate = (templateEntry: any, targetLines: any[], floorPrefix: string, typeCounters: any) => {
-    // Find corresponding line in target floor by index
-    const templateLineId = templateEntry.lineId;
-    const sourceLines = rawFloors[loadFromFloor]?.lines || [];
-    const templateLineIndex = sourceLines.findIndex(line => line.id === templateLineId);
-    const targetLine = targetLines[templateLineIndex] || targetLines[0];
-    
-    // Create completely new AirEntry with template values but new objects
-    return {
-      type: templateEntry.type,
-      position: { ...templateEntry.position }, // New position object
-      dimensions: {
-        width: templateEntry.dimensions?.width || (templateEntry.type === 'door' ? 80 : 60),
-        height: templateEntry.dimensions?.height || (templateEntry.type === 'door' ? 200 : 40),
-        distanceToFloor: templateEntry.dimensions?.distanceToFloor || (templateEntry.type === 'door' ? 0 : 110),
-        shape: templateEntry.dimensions?.shape || 'rectangular',
-        ...(templateEntry.dimensions?.wallPosition !== undefined && { wallPosition: templateEntry.dimensions.wallPosition })
-      },
-      line: targetLine, // Target floor line
-      lineId: targetLine.id,
-      properties: {
-        // Create new properties object with template values
-        state: templateEntry.properties?.state || 'closed',
-        temperature: templateEntry.properties?.temperature || 20,
-        flowType: templateEntry.properties?.flowType || 'Air Mass Flow',
-        flowValue: templateEntry.properties?.flowValue || 0.5,
-        flowIntensity: templateEntry.properties?.flowIntensity || 'medium',
-        airOrientation: templateEntry.properties?.airOrientation || 'inflow',
-        ...(templateEntry.properties?.customIntensityValue !== undefined && { customIntensityValue: templateEntry.properties.customIntensityValue }),
-        ...(templateEntry.properties?.verticalAngle !== undefined && { verticalAngle: templateEntry.properties.verticalAngle }),
-        ...(templateEntry.properties?.horizontalAngle !== undefined && { horizontalAngle: templateEntry.properties.horizontalAngle })
-      },
-      id: `${templateEntry.type}_${floorPrefix}_${typeCounters[templateEntry.type]++}`,
-      wallContext: {
-        wallId: `${floorPrefix}_wall_unknown`,
-        floorName: floorPrefix,
-        wallStart: { x: targetLine.start.x, y: targetLine.start.y },
-        wallEnd: { x: targetLine.end.x, y: targetLine.end.y },
-        clickPosition: { ...templateEntry.position },
-        ceilingHeight: templateEntry.wallContext?.ceilingHeight || 280
-      }
-    };
+      
+      return newEntry;
+    });
   };
 
   const regenerateWallIds = (walls: Wall[], floor: string): Wall[] => {
@@ -691,9 +631,7 @@ export default function WizardDesign() {
 
     // Regenerate IDs for all copied elements
     const newLines = regenerateLineIds([...sourceFloorData.lines]);
-    // Deep copy AirEntries to prevent modifying original objects
-    const deepCopiedAirEntries = JSON.parse(JSON.stringify(sourceFloorData.airEntries));
-    const newAirEntries = regenerateAirEntryIds(deepCopiedAirEntries, currentFloor, newLines, true);
+    const newAirEntries = regenerateAirEntryIds([...sourceFloorData.airEntries], currentFloor);
     
     console.log("🔄 [FLOOR LOAD DEBUG] After regenerateAirEntryIds:", {
       targetFloor: currentFloor,
