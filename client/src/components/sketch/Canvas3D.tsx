@@ -1495,9 +1495,12 @@ export default function Canvas3D({
       temperature: properties?.temperature,
       airDirection: properties?.airOrientation,
       flowIntensity: properties?.flowIntensity,
+      verticalAngle: properties?.verticalAngle,
+      horizontalAngle: properties?.horizontalAngle,
       index: editingAirEntry.index,
       timestamp: new Date().toISOString(),
-      source: reactiveProperties ? 'reactive_store' : 'base_entry'
+      source: reactiveProperties ? 'reactive_store' : 'base_entry',
+      allProperties: properties
     });
     
     return {
