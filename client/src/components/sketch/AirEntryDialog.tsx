@@ -668,11 +668,11 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           }
           
           // CRITICAL FIX: Load vertical and horizontal angles for persistence
-          if ((savedProps as any).verticalAngle !== undefined) {
-            setVerticalAngle((savedProps as any).verticalAngle);
+          if (savedProps.verticalAngle !== undefined) {
+            setVerticalAngle(savedProps.verticalAngle);
           }
-          if ((savedProps as any).horizontalAngle !== undefined) {
-            setHorizontalAngle((savedProps as any).horizontalAngle);
+          if (savedProps.horizontalAngle !== undefined) {
+            setHorizontalAngle(savedProps.horizontalAngle);
           }
         }
       }
