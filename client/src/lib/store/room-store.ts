@@ -25,6 +25,8 @@ interface VentSimulationProperties {
   flowValue?: number;
   flowIntensity?: 'low' | 'medium' | 'high';
   airOrientation?: 'inflow' | 'outflow';
+  verticalAngle?: number;
+  horizontalAngle?: number;
 }
 
 // Propiedades unificadas que incluyen todos los campos posibles
