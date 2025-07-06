@@ -671,6 +671,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           console.log("🔍 [ANGLES DEBUG] Loading angles from savedProps:", {
             verticalAngle: savedProps.verticalAngle,
             horizontalAngle: savedProps.horizontalAngle,
+            temperature: savedProps.temperature,
+            airOrientation: savedProps.airOrientation,
+            flowIntensity: savedProps.flowIntensity,
             allSavedProps: savedProps
           });
           
