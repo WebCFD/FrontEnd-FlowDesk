@@ -668,22 +668,11 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           }
           
           // CRITICAL FIX: Load vertical and horizontal angles for persistence
-          console.log("🔍 [ANGLES DEBUG] Loading angles from savedProps:", {
-            verticalAngle: savedProps.verticalAngle,
-            horizontalAngle: savedProps.horizontalAngle,
-            temperature: savedProps.temperature,
-            airOrientation: savedProps.airOrientation,
-            flowIntensity: savedProps.flowIntensity,
-            allSavedProps: savedProps
-          });
-          
           if (savedProps.verticalAngle !== undefined) {
             setVerticalAngle(savedProps.verticalAngle);
-            console.log("✅ [ANGLES DEBUG] Set verticalAngle to:", savedProps.verticalAngle);
           }
           if (savedProps.horizontalAngle !== undefined) {
             setHorizontalAngle(savedProps.horizontalAngle);
-            console.log("✅ [ANGLES DEBUG] Set horizontalAngle to:", savedProps.horizontalAngle);
           }
         }
       }
@@ -746,12 +735,6 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           // CRITICAL FIX: Save vertical and horizontal angles to store for persistence
           simulationProperties.verticalAngle = verticalAngle;
           simulationProperties.horizontalAngle = horizontalAngle;
-          
-          console.log("💾 [ANGLES DEBUG] Saving angles to store:", {
-            verticalAngle: verticalAngle,
-            horizontalAngle: horizontalAngle,
-            allSimulationProperties: simulationProperties
-          });
         }
         
         // Always save wallPosition for all air entry types
@@ -793,6 +776,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           ...(type === 'vent' && {
             flowType: (ventMeasurementType === 'massflow' ? 'Air Mass Flow' : ventMeasurementType === 'velocity' ? 'Air Velocity' : 'Pressure') as 'Air Mass Flow' | 'Air Velocity' | 'Pressure',
             flowValue: customIntensity,
+            // CRITICAL FIX: Include angles in properties object for Canvas2D/Canvas3D persistence
+            verticalAngle: verticalAngle,
+            horizontalAngle: horizontalAngle,
           })
         }
       };
