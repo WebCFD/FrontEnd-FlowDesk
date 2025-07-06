@@ -6194,7 +6194,11 @@ export default function Canvas3D({
               }
             })(),
             // CRITICAL FIX: Use actual furniture properties instead of hardcoded defaults
-            properties: editingFurniture.item.properties || (editingFurniture.item.type === 'vent' ? {
+            properties: (() => {
+              const storedProperties = editingFurniture.item.properties;
+              console.log('🔍 [DIALOG INIT] Properties being sent to dialog:', storedProperties);
+              return storedProperties;
+            })() || (editingFurniture.item.type === 'vent' ? {
               temperature: 20,
               thermalConductivity: 0.12,
               density: 600,
