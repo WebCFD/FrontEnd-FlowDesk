@@ -1,0 +1,135 @@
+Canvas3D.tsx:4093 Hovering over axis mesh: x
+Canvas3D.tsx:4093 Hovering over axis mesh: x
+custom-furniture-store.ts:290 Custom Furniture Store: Complete reset (Logout)
+room-store.ts:516 🔗 STORE: Suscripción eliminada. Total listeners: 0
+e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/:1 [.WebGL-0x223402c86a00] GL_INVALID_OPERATION: Texture is immutable.
+e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/:1 [.WebGL-0x223402c86a00] GL_INVALID_OPERATION: Texture is immutable.
+e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/:1 [.WebGL-0x223402c86a00] GL_INVALID_OPERATION: Texture is immutable.
+e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/:1 [.WebGL-0x223402c86a00] GL_INVALID_OPERATION: Texture is immutable.
+e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/:1 [.WebGL-0x223402c86a00] GL_INVALID_OPERATION: Texture is immutable.
+room-store.ts:508 🔗 STORE: Nueva suscripción añadida. Total listeners: 1
+dashboard-sidebar.tsx:65 
+            
+            
+           GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+fetchUserData @ dashboard-sidebar.tsx:65
+(anonymous) @ dashboard-sidebar.tsx:80
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19416
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+(anonymous) @ chunk-WERSD76P.js?v=cfa7cc5f:18627
+simulationDataConverter.ts:945 🔧 [WALL SYNC] syncWallsWithLines called for floor: Ground Floor
+simulationDataConverter.ts:946 🔧 [WALL SYNC] Lines: 1, Existing walls: 0, Default temp: 20
+simulationDataConverter.ts:950 🔧 [WALL SYNC] After removing orphans: 0 valid walls
+simulationDataConverter.ts:980 🔧 [WALL SYNC] addMissingWalls called for floor: Ground Floor
+simulationDataConverter.ts:981 🔧 [WALL SYNC] Input: 1 lines, 0 existing walls
+simulationDataConverter.ts:982 🔧 [WALL SYNC] Existing walls: []
+simulationDataConverter.ts:991 🔧 [WALL SYNC] Line 0 needs new wall: {start: {…}, end: {…}}
+simulationDataConverter.ts:912 🔍 [SIMILAR WALL] Looking for similar wall for line: {start: {…}, end: {…}}
+simulationDataConverter.ts:913 🔍 [SIMILAR WALL] Checking against 0 walls with tolerance 1
+simulationDataConverter.ts:930 🔍 [SIMILAR WALL] Found similar wall: none
+simulationDataConverter.ts:997 🔧 [WALL SYNC] Similar wall found: none
+simulationDataConverter.ts:998 🔧 [WALL SYNC] Using temperature: 20 (default: 20)
+simulationDataConverter.ts:1002 🔧 [WALL SYNC] Created new wall: {id: 'wall_0F_1', temp: 20}
+simulationDataConverter.ts:1009 🔧 [WALL SYNC] Result: 1 walls added, 1 total walls
+simulationDataConverter.ts:954 🔧 [WALL SYNC] Final result: 1 total walls
+simulationDataConverter.ts:945 🔧 [WALL SYNC] syncWallsWithLines called for floor: Ground Floor
+simulationDataConverter.ts:946 🔧 [WALL SYNC] Lines: 2, Existing walls: 1, Default temp: 20
+simulationDataConverter.ts:950 🔧 [WALL SYNC] After removing orphans: 1 valid walls
+simulationDataConverter.ts:980 🔧 [WALL SYNC] addMissingWalls called for floor: Ground Floor
+simulationDataConverter.ts:981 🔧 [WALL SYNC] Input: 2 lines, 1 existing walls
+simulationDataConverter.ts:982 🔧 [WALL SYNC] Existing walls: [{…}]
+simulationDataConverter.ts:1005 🔧 [WALL SYNC] Line 0 has existing wall: {id: 'wall_0F_1', temp: 20}
+simulationDataConverter.ts:991 🔧 [WALL SYNC] Line 1 needs new wall: {start: {…}, end: {…}}
+simulationDataConverter.ts:912 🔍 [SIMILAR WALL] Looking for similar wall for line: {start: {…}, end: {…}}
+simulationDataConverter.ts:913 🔍 [SIMILAR WALL] Checking against 1 walls with tolerance 1
+simulationDataConverter.ts:919 🔍 [SIMILAR WALL] Wall wall_0F_1: {wallStart: {…}, wallEnd: {…}, startMatch: false, endMatch: false, temp: 20}
+simulationDataConverter.ts:930 🔍 [SIMILAR WALL] Found similar wall: none
+simulationDataConverter.ts:997 🔧 [WALL SYNC] Similar wall found: none
+simulationDataConverter.ts:998 🔧 [WALL SYNC] Using temperature: 20 (default: 20)
+simulationDataConverter.ts:1002 🔧 [WALL SYNC] Created new wall: {id: 'wall_0F_2', temp: 20}
+simulationDataConverter.ts:1009 🔧 [WALL SYNC] Result: 1 walls added, 2 total walls
+simulationDataConverter.ts:954 🔧 [WALL SYNC] Final result: 2 total walls
+simulationDataConverter.ts:945 🔧 [WALL SYNC] syncWallsWithLines called for floor: Ground Floor
+simulationDataConverter.ts:946 🔧 [WALL SYNC] Lines: 3, Existing walls: 2, Default temp: 20
+simulationDataConverter.ts:950 🔧 [WALL SYNC] After removing orphans: 2 valid walls
+simulationDataConverter.ts:980 🔧 [WALL SYNC] addMissingWalls called for floor: Ground Floor
+simulationDataConverter.ts:981 🔧 [WALL SYNC] Input: 3 lines, 2 existing walls
+simulationDataConverter.ts:982 🔧 [WALL SYNC] Existing walls: (2) [{…}, {…}]
+simulationDataConverter.ts:1005 🔧 [WALL SYNC] Line 0 has existing wall: {id: 'wall_0F_1', temp: 20}
+simulationDataConverter.ts:1005 🔧 [WALL SYNC] Line 1 has existing wall: {id: 'wall_0F_2', temp: 20}
+simulationDataConverter.ts:991 🔧 [WALL SYNC] Line 2 needs new wall: {start: {…}, end: {…}}
+simulationDataConverter.ts:912 🔍 [SIMILAR WALL] Looking for similar wall for line: {start: {…}, end: {…}}
+simulationDataConverter.ts:913 🔍 [SIMILAR WALL] Checking against 2 walls with tolerance 1
+simulationDataConverter.ts:919 🔍 [SIMILAR WALL] Wall wall_0F_1: {wallStart: {…}, wallEnd: {…}, startMatch: false, endMatch: false, temp: 20}
+simulationDataConverter.ts:919 🔍 [SIMILAR WALL] Wall wall_0F_2: {wallStart: {…}, wallEnd: {…}, startMatch: false, endMatch: false, temp: 20}
+simulationDataConverter.ts:930 🔍 [SIMILAR WALL] Found similar wall: none
+simulationDataConverter.ts:997 🔧 [WALL SYNC] Similar wall found: none
+simulationDataConverter.ts:998 🔧 [WALL SYNC] Using temperature: 20 (default: 20)
+simulationDataConverter.ts:1002 🔧 [WALL SYNC] Created new wall: {id: 'wall_0F_3', temp: 20}
+simulationDataConverter.ts:1009 🔧 [WALL SYNC] Result: 1 walls added, 3 total walls
+simulationDataConverter.ts:954 🔧 [WALL SYNC] Final result: 3 total walls
+analytics.ts:62 📊 Analytics Event: {category: 'design_tool', action: 'add_window', label: 'select_window_tool', value: undefined, status: 'sent'}
+room-store.ts:407 🔧 [STORE DEBUG] updateAirEntryProperties called: {floorName: 'ground', index: 0, properties: {…}, entryId: 'window_0F_1'}
+room-store.ts:420 🔧 [STORE DEBUG] Before update: {entryId: 'window_0F_1', oldProperties: {…}, oldPropertiesRef: {…}}
+room-store.ts:432 🔧 [STORE DEBUG] After update: {entryId: 'window_0F_1', newProperties: {…}, newPropertiesRef: {…}, areReferencesSame: false}
+Canvas2D.tsx:3417 🟢 [CANVAS2D EDIT] handleAirEntryEdit called with index: 0
+Canvas2D.tsx:3418 🟢 [CANVAS2D EDIT] Received data: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 48.92878434002977, …}
+Canvas2D.tsx:3419 🟢 [CANVAS2D EDIT] data.wallPosition: 48.92878434002977
+Canvas2D.tsx:3427 🟢 [CANVAS2D EDIT] Original entry: {type: 'window', position: {…}, dimensions: {…}, line: {…}, lineId: '1751814525728_t00pqnlsz', …}
+Canvas2D.tsx:3428 🟢 [CANVAS2D EDIT] Original wallPosition: undefined
+Canvas2D.tsx:3429 🟢 [CANVAS2D EDIT] Current store position: {x: 379.8828468527105, y: 422.49558324921077}
+Canvas2D.tsx:3444 🟢 [CANVAS2D EDIT] Final updated entry: {type: 'window', position: {…}, dimensions: {…}, line: {…}, lineId: '1751814525728_t00pqnlsz', …}
+Canvas2D.tsx:3445 🟢 [CANVAS2D EDIT] Final wallPosition: 48.92878434002977
+room-store.ts:516 🔗 STORE: Suscripción eliminada. Total listeners: 0
+room-store.ts:508 🔗 STORE: Nueva suscripción añadida. Total listeners: 1
+wizard-design.tsx:543 🔄 [REGENERATE DEBUG] Processing entry: {originalId: undefined, newId: 'window_1F_1', originalPropertiesRef: undefined, newPropertiesRef: undefined, arePropertiesSameRef: true, …}
+simulationDataConverter.ts:945 🔧 [WALL SYNC] syncWallsWithLines called for floor: first
+simulationDataConverter.ts:946 🔧 [WALL SYNC] Lines: 3, Existing walls: 0, Default temp: 20
+simulationDataConverter.ts:950 🔧 [WALL SYNC] After removing orphans: 0 valid walls
+simulationDataConverter.ts:980 🔧 [WALL SYNC] addMissingWalls called for floor: first
+simulationDataConverter.ts:981 🔧 [WALL SYNC] Input: 3 lines, 0 existing walls
+simulationDataConverter.ts:982 🔧 [WALL SYNC] Existing walls: []
+simulationDataConverter.ts:991 🔧 [WALL SYNC] Line 0 needs new wall: {start: {…}, end: {…}}
+simulationDataConverter.ts:912 🔍 [SIMILAR WALL] Looking for similar wall for line: {start: {…}, end: {…}}
+simulationDataConverter.ts:913 🔍 [SIMILAR WALL] Checking against 0 walls with tolerance 1
+simulationDataConverter.ts:930 🔍 [SIMILAR WALL] Found similar wall: none
+simulationDataConverter.ts:997 🔧 [WALL SYNC] Similar wall found: none
+simulationDataConverter.ts:998 🔧 [WALL SYNC] Using temperature: 20 (default: 20)
+simulationDataConverter.ts:1002 🔧 [WALL SYNC] Created new wall: {id: 'wall_1F_1', temp: 20}
+simulationDataConverter.ts:991 🔧 [WALL SYNC] Line 1 needs new wall: {start: {…}, end: {…}}
+simulationDataConverter.ts:912 🔍 [SIMILAR WALL] Looking for similar wall for line: {start: {…}, end: {…}}
+simulationDataConverter.ts:913 🔍 [SIMILAR WALL] Checking against 0 walls with tolerance 1
+simulationDataConverter.ts:930 🔍 [SIMILAR WALL] Found similar wall: none
+simulationDataConverter.ts:997 🔧 [WALL SYNC] Similar wall found: none
+simulationDataConverter.ts:998 🔧 [WALL SYNC] Using temperature: 20 (default: 20)
+simulationDataConverter.ts:1002 🔧 [WALL SYNC] Created new wall: {id: 'wall_1F_2', temp: 20}
+simulationDataConverter.ts:991 🔧 [WALL SYNC] Line 2 needs new wall: {start: {…}, end: {…}}
+simulationDataConverter.ts:912 🔍 [SIMILAR WALL] Looking for similar wall for line: {start: {…}, end: {…}}
+simulationDataConverter.ts:913 🔍 [SIMILAR WALL] Checking against 0 walls with tolerance 1
+simulationDataConverter.ts:930 🔍 [SIMILAR WALL] Found similar wall: none
+simulationDataConverter.ts:997 🔧 [WALL SYNC] Similar wall found: none
+simulationDataConverter.ts:998 🔧 [WALL SYNC] Using temperature: 20 (default: 20)
+simulationDataConverter.ts:1002 🔧 [WALL SYNC] Created new wall: {id: 'wall_1F_3', temp: 20}
+simulationDataConverter.ts:1009 🔧 [WALL SYNC] Result: 3 walls added, 3 total walls
+simulationDataConverter.ts:954 🔧 [WALL SYNC] Final result: 3 total walls
+analytics.ts:62 📊 Analytics Event: {category: 'ui_interaction', action: 'change_tab', label: 'view_3d_preview', value: undefined, status: 'sent'}
+room-store.ts:516 🔗 STORE: Suscripción eliminada. Total listeners: 0
+room-store.ts:508 🔗 STORE: Nueva suscripción añadida. Total listeners: 1
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 271ms
+Canvas3D.tsx:4475 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4485 Double-click found entry using stored entryIndex: 0
+room-store.ts:407 🔧 [STORE DEBUG] updateAirEntryProperties called: {floorName: 'first', index: 0, properties: {…}, entryId: 'window_1F_1'}
+room-store.ts:420 🔧 [STORE DEBUG] Before update: {entryId: 'window_1F_1', oldProperties: undefined, oldPropertiesRef: undefined}
+room-store.ts:432 🔧 [STORE DEBUG] After update: {entryId: 'window_1F_1', newProperties: {…}, newPropertiesRef: {…}, areReferencesSame: false}
+Canvas3D.tsx:6017 💾 [CANVAS3D SAVE] Save Changes clicked with values: {elementStatus: 'closed', temperature: 20, airDirection: 'inflow', flowIntensity: 'medium', index: 0, …}
+room-store.ts:479 ✅ STORE: AirEntry actualizado en el store, notificando a 1 listeners
+room-store.ts:483 📢 STORE: Notificando listener 1/1
