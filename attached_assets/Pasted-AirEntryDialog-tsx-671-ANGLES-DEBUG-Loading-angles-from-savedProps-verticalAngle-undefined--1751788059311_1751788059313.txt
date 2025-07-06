@@ -1,0 +1,20 @@
+AirEntryDialog.tsx:671 🔍 [ANGLES DEBUG] Loading angles from savedProps: {verticalAngle: undefined, horizontalAngle: undefined, allSavedProps: {…}}
+AirEntryDialog.tsx:747 💾 [ANGLES DEBUG] Saving angles to store: {verticalAngle: 33, horizontalAngle: 0, allSimulationProperties: {…}}
+Canvas2D.tsx:3417 🟢 [CANVAS2D EDIT] handleAirEntryEdit called with index: 3
+Canvas2D.tsx:3418 🟢 [CANVAS2D EDIT] Received data: {width: 150, height: 50, distanceToFloor: 100, shape: 'rectangular', wallPosition: 50, …}
+Canvas2D.tsx:3419 🟢 [CANVAS2D EDIT] data.wallPosition: 50
+Canvas2D.tsx:3427 🟢 [CANVAS2D EDIT] Original entry: {type: 'vent', position: {…}, dimensions: {…}, line: {…}, lineId: '1751785780361_r7knoo66y', …}
+Canvas2D.tsx:3428 🟢 [CANVAS2D EDIT] Original wallPosition: 50
+Canvas2D.tsx:3429 🟢 [CANVAS2D EDIT] Current store position: {x: 600, y: -100}
+Canvas2D.tsx:3444 🟢 [CANVAS2D EDIT] Final updated entry: {type: 'vent', position: {…}, dimensions: {…}, line: {…}, lineId: '1751785780361_r7knoo66y', …}
+Canvas2D.tsx:3445 🟢 [CANVAS2D EDIT] Final wallPosition: 50
+AirEntryDialog.tsx:671 🔍 [ANGLES DEBUG] Loading angles from savedProps: {verticalAngle: undefined, horizontalAngle: undefined, allSavedProps: {…}}
+AirEntryDialog.tsx:747 💾 [ANGLES DEBUG] Saving angles to store: {verticalAngle: 0, horizontalAngle: 0, allSimulationProperties: {…}}
+Canvas2D.tsx:3417 🟢 [CANVAS2D EDIT] handleAirEntryEdit called with index: 3
+Canvas2D.tsx:3418 🟢 [CANVAS2D EDIT] Received data: {width: 150, height: 50, distanceToFloor: 100, shape: 'rectangular', wallPosition: 50, …}
+Canvas2D.tsx:3419 🟢 [CANVAS2D EDIT] data.wallPosition: 50
+Canvas2D.tsx:3427 🟢 [CANVAS2D EDIT] Original entry: {type: 'vent', position: {…}, dimensions: {…}, line: {…}, lineId: '1751785780361_r7knoo66y', …}
+Canvas2D.tsx:3428 🟢 [CANVAS2D EDIT] Original wallPosition: 50
+Canvas2D.tsx:3429 🟢 [CANVAS2D EDIT] Current store position: {x: 600, y: -100}
+Canvas2D.tsx:3444 🟢 [CANVAS2D EDIT] Final updated entry: {type: 'vent', position: {…}, dimensions: {…}, line: {…}, lineId: '1751785780361_r7knoo66y', …}
+Canvas2D.tsx:3445 🟢 [CANVAS2D EDIT] Final wallPosition: 50
