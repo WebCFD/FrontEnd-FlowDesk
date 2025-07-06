@@ -666,6 +666,14 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           if (savedProps.flowValue !== undefined && savedProps.customIntensityValue === undefined) {
             setCustomIntensity(savedProps.flowValue);
           }
+          
+          // CRITICAL FIX: Load vertical and horizontal angles for persistence
+          if ((savedProps as any).verticalAngle !== undefined) {
+            setVerticalAngle((savedProps as any).verticalAngle);
+          }
+          if ((savedProps as any).horizontalAngle !== undefined) {
+            setHorizontalAngle((savedProps as any).horizontalAngle);
+          }
         }
       }
     }
@@ -724,6 +732,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           simulationProperties.flowValue = customIntensity;
           simulationProperties.flowIntensity = intensityLevel === 'custom' ? 'medium' : intensityLevel;
           simulationProperties.airOrientation = airDirection;
+          // CRITICAL FIX: Save vertical and horizontal angles to store for persistence
+          simulationProperties.verticalAngle = verticalAngle;
+          simulationProperties.horizontalAngle = horizontalAngle;
         }
         
         // Always save wallPosition for all air entry types
