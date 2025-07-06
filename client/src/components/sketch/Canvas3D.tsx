@@ -1620,13 +1620,9 @@ export default function Canvas3D({
             const newWidth = newDimensions.width !== undefined ? newDimensions.width : currentDimensions.width;
             const newHeight = newDimensions.height !== undefined ? newDimensions.height : currentDimensions.height;
             
-            // Calculate scale relative to original geometry dimensions
-            // Original geometry was created with PlaneGeometry(originalWidth, originalHeight)
-            const originalWidth = currentDimensions.width;
-            const originalHeight = currentDimensions.height;
-            
-            const scaleX = (newWidth / originalWidth) || 1;
-            const scaleY = (newHeight / originalHeight) || 1;
+            // Update scale - convert from cm to Three.js units
+            const scaleX = (newWidth / 100) || 1; // Convert cm to meters
+            const scaleY = (newHeight / 100) || 1; // Convert cm to meters
             object.scale.set(scaleX, scaleY, object.scale.z);
           }
           
