@@ -5461,12 +5461,7 @@ export default function Canvas3D({
             const floorData = reactiveFloors[floorName];
             const actualFurnitureItem = floorData?.furnitureItems?.find(item => item.id === furnitureId);
             
-            // DEBUG: Track which data source we're using
-            console.log('🔍 [DIALOG INIT] Reading furniture from reactive store:', {
-              furnitureId,
-              floorName,
-              properties: actualFurnitureItem?.properties
-            });
+
             
 
             
@@ -5914,7 +5909,6 @@ export default function Canvas3D({
       // Store properties in userData for reference
       if (data.properties) {
         furnitureGroup.userData.properties = data.properties;
-        console.log('🔍 [JSON EXPORT] Properties stored in userData:', data.properties);
       }
       
       // Store simulation properties in userData for JSON export
@@ -6203,11 +6197,7 @@ export default function Canvas3D({
               }
             })(),
             // CRITICAL FIX: Use actual furniture properties instead of hardcoded defaults
-            properties: (() => {
-              const storedProperties = editingFurniture.item.properties;
-              console.log('🔍 [DIALOG INIT] Properties being sent to dialog:', storedProperties);
-              return storedProperties;
-            })() || (editingFurniture.item.type === 'vent' ? {
+            properties: editingFurniture.item.properties || (editingFurniture.item.type === 'vent' ? {
               temperature: 20,
               thermalConductivity: 0.12,
               density: 600,
