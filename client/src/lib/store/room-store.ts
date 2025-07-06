@@ -436,21 +436,24 @@ export const useRoomStore = create<RoomState>()(
               areReferencesSame: oldProperties === newProperties
             });
             
-            // Check if this change affects other floors
+            // Check if this change affects other floors - BEFORE making changes
+            const affectedEntries: any[] = [];
             Object.keys(currentFloors).forEach(otherFloorName => {
-              if (otherFloorName !== floorName) {
-                currentFloors[otherFloorName]?.airEntries?.forEach((entry, entryIndex) => {
-                  if (entry.properties === oldProperties) {
-                    console.log("🚨 [STORE DEBUG] SHARED REFERENCE DETECTED:", {
-                      affectedFloor: otherFloorName,
-                      affectedIndex: entryIndex,
-                      affectedEntryId: entry.id,
-                      sharedPropertiesRef: entry.properties
-                    });
-                  }
-                });
-              }
+              currentFloors[otherFloorName]?.airEntries?.forEach((entry, entryIndex) => {
+                if (entry.properties === oldProperties && oldProperties !== undefined) {
+                  affectedEntries.push({
+                    floor: otherFloorName,
+                    index: entryIndex,
+                    id: entry.id,
+                    propertiesRef: entry.properties
+                  });
+                }
+              });
             });
+            
+            if (affectedEntries.length > 0) {
+              console.log("🚨 [STORE DEBUG] SHARED REFERENCE DETECTED - WILL AFFECT:", affectedEntries);
+            }
             
             currentFloors[floorName] = {
               ...currentFloors[floorName],

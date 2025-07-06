@@ -537,15 +537,17 @@ export default function WizardDesign() {
     return airEntries.map((entry, entryIndex) => {
       const newEntry = {
         ...entry,
+        properties: entry.properties ? { ...entry.properties } : undefined,
         id: `${entry.type}_${floorPrefix}_${typeCounters[entry.type]++}`
       } as any;
       
       console.log("🔄 [REGENERATE DEBUG] Processing entry:", {
         originalId: entry.id,
         newId: newEntry.id,
-        originalPropertiesRef: entry.properties,
-        newPropertiesRef: newEntry.properties,
+        originalProperties: entry.properties,
+        newProperties: newEntry.properties,
         arePropertiesSameRef: entry.properties === newEntry.properties,
+        hasProperties: !!entry.properties,
         entryIndex
       });
       
