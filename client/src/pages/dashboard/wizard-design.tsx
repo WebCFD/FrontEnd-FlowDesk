@@ -616,7 +616,7 @@ export default function WizardDesign() {
         // Copy wallContext if it exists (Canvas2D creates this)
         ...(entry.wallContext && { wallContext: {
           wallId: entry.wallContext.wallId,
-          floorName: targetFloorName,
+          floorName: currentFloor,
           wallStart: { x: entry.wallContext.wallStart.x, y: entry.wallContext.wallStart.y },
           wallEnd: { x: entry.wallContext.wallEnd.x, y: entry.wallContext.wallEnd.y },
           clickPosition: { x: entry.wallContext.clickPosition.x, y: entry.wallContext.clickPosition.y },
