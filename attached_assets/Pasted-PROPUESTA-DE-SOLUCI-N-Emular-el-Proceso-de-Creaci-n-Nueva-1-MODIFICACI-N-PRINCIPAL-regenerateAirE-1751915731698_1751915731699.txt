@@ -1,0 +1,79 @@
+PROPUESTA DE SOLUCIÓN: Emular el Proceso de Creación Nueva
+1. MODIFICACIÓN PRINCIPAL: regenerateAirEntryIds
+Archivo: client/src/pages/dashboard/wizard-design.tsx (línea ~540)
+
+Cambio propuesto:
+
+// REEMPLAZAR ESTA LÍNEA:
+properties: entry.properties ? { ...entry.properties } : undefined,
+// POR ESTE BLOQUE:
+properties: entry.properties ? createFreshProperties(entry.properties) : createDefaultProperties(),
+2. NUEVA FUNCIÓN: createFreshProperties
+Ubicación: Dentro de regenerateAirEntryIds, antes del return
+
+const createFreshProperties = (originalProperties: any) => {
+  // Create completely new object with primitive values (prevents reference sharing)
+  return {
+    state: originalProperties.state || 'closed',
+    temperature: originalProperties.temperature || 20,
+    flowType: originalProperties.flowType || 'Air Mass Flow',
+    flowValue: originalProperties.flowValue || 0.5,
+    flowIntensity: originalProperties.flowIntensity || 'medium',
+    airOrientation: originalProperties.airOrientation || 'inflow',
+    verticalAngle: originalProperties.verticalAngle || 0,
+    horizontalAngle: originalProperties.horizontalAngle || 0,
+    // Include customIntensityValue only if it exists
+    ...(originalProperties.customIntensityValue !== undefined && {
+      customIntensityValue: originalProperties.customIntensityValue
+    })
+  };
+};
+3. NUEVA FUNCIÓN: createDefaultProperties
+const createDefaultProperties = () => {
+  // Return exact same defaults as new window creation in Canvas2D.tsx
+  return {
+    state: 'closed',
+    temperature: 20,
+    flowType: 'Air Mass Flow',
+    flowValue: 0.5,
+    flowIntensity: 'medium',
+    airOrientation: 'inflow',
+    verticalAngle: 0,
+    horizontalAngle: 0
+  };
+};
+4. VENTAJAS DE ESTA SOLUCIÓN
+✅ Mantiene intacto el sistema existente:
+
+No modifica store (updateAirEntryProperties)
+No modifica callbacks (handlePropertiesUpdateFrom3D)
+No modifica diálogos (AirEntryDialog)
+No modifica persistencia
+✅ Emula exactamente "crear nueva":
+
+Usa objetos literales con valores primitivos
+Evita spread operator sobre referencias contaminadas
+Preserva valores del usuario pero en objetos independientes
+✅ Solución quirúrgica:
+
+Solo una función afectada (regenerateAirEntryIds)
+Cambio mínimo de código (~15 líneas)
+Riesgo de regresión muy bajo
+5. TESTING ESPERADO POST-IMPLEMENTACIÓN
+Escenario de prueba:
+
+Crear window_0F_1 en Piso 0
+Modificar temperatura a 25°C
+Load Piso 0 → Piso 1 (crea window_1F_1)
+Modificar window_0F_1 temperatura a 30°C
+Resultado esperado: window_1F_1 mantiene 25°C (independiente)
+6. ¿POR QUÉ ESTA SOLUCIÓN FUNCIONA?
+Problema actual:
+
+Piso 0: window_0F_1.properties → [Ref A] ← COMPARTIDA
+Piso 1: window_1F_1.properties → [Ref A] ← MISMA REFERENCIA
+Solución propuesta:
+
+Piso 0: window_0F_1.properties → [Ref A]
+Piso 1: window_1F_1.properties → [Ref B] ← COMPLETAMENTE NUEVA
+La clave está en que createFreshProperties() construye objetos con asignaciones de valores primitivos, no con referencias a objetos, replicando exactamente lo que hace Canvas2D.tsx al crear ventanas nuevas.
