@@ -514,24 +514,33 @@ export default function WizardDesign() {
                        floor === 'fourth' ? '4F' :
                        floor === 'fifth' ? '5F' : '0F';
     
-    // Get existing air entries in target floor to avoid ID conflicts
-    const existingEntries = floors[currentFloor]?.airEntries || [];
+    // Get existing air entries in ALL floors to avoid ID conflicts across the entire building
     const typeCounters = { window: 1, door: 1, vent: 1 };
     
-    // Count existing entries to start numbering from the next available number
-    existingEntries.forEach(entry => {
-      const anyEntry = entry as any;
-      if (anyEntry.id) {
-        // Updated regex to match new format: window_0F_1, door_1F_2, etc.
-        const match = anyEntry.id.match(new RegExp(`^(window|door|vent)_${floorPrefix}_(\\d+)$`));
-        if (match) {
-          const type = match[1] as keyof typeof typeCounters;
-          const num = parseInt(match[2]);
-          if (typeCounters[type] <= num) {
-            typeCounters[type] = num + 1;
+    // Count existing entries in ALL floors for this floor prefix to avoid conflicts
+    Object.keys(floors).forEach(floorName => {
+      const floorEntries = floors[floorName]?.airEntries || [];
+      floorEntries.forEach(entry => {
+        const anyEntry = entry as any;
+        if (anyEntry.id) {
+          // Updated regex to match new format: window_0F_1, door_1F_2, etc.
+          const match = anyEntry.id.match(new RegExp(`^(window|door|vent)_${floorPrefix}_(\\d+)$`));
+          if (match) {
+            const type = match[1] as keyof typeof typeCounters;
+            const num = parseInt(match[2]);
+            if (typeCounters[type] <= num) {
+              typeCounters[type] = num + 1;
+            }
           }
         }
-      }
+      });
+    });
+    
+    console.log("🔄 [ID GENERATION DEBUG] Final type counters:", {
+      floorPrefix,
+      targetFloor: floor,
+      typeCounters: {...typeCounters},
+      totalFloorsChecked: Object.keys(floors).length
     });
     
     // CRITICAL FIX: Create completely fresh properties objects to prevent shared references
@@ -578,14 +587,10 @@ export default function WizardDesign() {
       console.log("🔄 [REGENERATE DEBUG] Processing entry:", {
         originalId: entry.id,
         newId: newEntry.id,
-        originalProperties: entry.properties,
-        newProperties: newEntry.properties,
+        entryType: entry.type,
+        floorPrefix: floorPrefix,
+        typeCounter: typeCounters[entry.type] - 1, // Show the counter used (before increment)
         arePropertiesSameRef: entry.properties === newEntry.properties,
-        hasProperties: !!entry.properties,
-        entryIndex,
-        freshObjectCreated: true,
-        originalPropertiesRef: entry.properties,
-        newPropertiesRef: newEntry.properties,
         functionUsed: entry.properties ? 'createFreshProperties' : 'createDefaultProperties'
       });
       
