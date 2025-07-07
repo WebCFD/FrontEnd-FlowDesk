@@ -444,9 +444,45 @@ export const useRoomStore = create<RoomState>()(
               oldPropertiesRef: oldProperties
             });
             
+            // CRITICAL DEBUG: Check the properties parameter source before spread operation
+            console.log("🚨 [SPREAD DEBUG] About to execute { ...properties } where properties is:", {
+              properties,
+              propertiesRef: properties,
+              propertiesType: typeof properties,
+              propertiesKeys: Object.keys(properties || {}),
+              isPropertiesShared: incomingSharedCount > 0
+            });
+
+            // Check if this properties object is currently used by other entries
+            let propertiesCurrentlySharedWith = [];
+            Object.keys(currentFloors).forEach(otherFloorName => {
+              currentFloors[otherFloorName]?.airEntries?.forEach((entry, entryIndex) => {
+                if (entry.properties === properties) {
+                  propertiesCurrentlySharedWith.push({
+                    floor: otherFloorName,
+                    index: entryIndex,
+                    id: entry.id
+                  });
+                }
+              });
+            });
+
+            if (propertiesCurrentlySharedWith.length > 0) {
+              console.log("🚨 [SPREAD DEBUG] PROPERTIES PARAM IS CURRENTLY SHARED WITH:", propertiesCurrentlySharedWith);
+            }
+
+            // Execute the spread operation and immediately check result
+            const spreadResult = { ...properties };
+            console.log("🚨 [SPREAD DEBUG] Spread operation result:", {
+              spreadResult,
+              spreadResultRef: spreadResult,
+              isSpreadSameAsSource: spreadResult === properties,
+              spreadKeys: Object.keys(spreadResult || {})
+            });
+
             updatedAirEntries[index] = {
               ...updatedAirEntries[index],
-              properties: { ...properties }
+              properties: spreadResult
             };
             
             const newProperties = updatedAirEntries[index].properties;
@@ -454,7 +490,9 @@ export const useRoomStore = create<RoomState>()(
               entryId: updatedAirEntries[index].id,
               newProperties,
               newPropertiesRef: newProperties,
-              areReferencesSame: oldProperties === newProperties
+              areReferencesSame: oldProperties === newProperties,
+              isNewPropertiesSameAsSpread: newProperties === spreadResult,
+              isNewPropertiesSameAsSource: newProperties === properties
             });
             
             // Check if this change affects other floors - BEFORE making changes
@@ -480,6 +518,24 @@ export const useRoomStore = create<RoomState>()(
               ...currentFloors[floorName],
               airEntries: updatedAirEntries
             };
+
+            // FINAL DEBUG: Check if the new properties object ended up being shared
+            console.log("🚨 [FINAL SPREAD DEBUG] Checking if new properties are now shared across floors:");
+            Object.keys(currentFloors).forEach(otherFloorName => {
+              currentFloors[otherFloorName]?.airEntries?.forEach((entry, entryIndex) => {
+                if (entry.properties === newProperties && entry.properties) {
+                  console.log("🚨 [FINAL SPREAD DEBUG] NEW PROPERTIES NOW SHARED WITH:", {
+                    targetFloor: floorName,
+                    targetIndex: index,
+                    targetId: updatedAirEntries[index].id,
+                    sharedWithFloor: otherFloorName,
+                    sharedWithIndex: entryIndex,
+                    sharedWithId: entry.id,
+                    sharedPropertiesRef: entry.properties
+                  });
+                }
+              });
+            });
           }
           
           return { floors: currentFloors };
