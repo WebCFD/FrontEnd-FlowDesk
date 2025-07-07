@@ -573,60 +573,56 @@ export default function WizardDesign() {
     };
     
     return airEntries.map((entry, entryIndex) => {
-      // Create BRAND NEW object exactly like mouse insertion creates (no prototype chain sharing)
-      const brandNewEntry = Object.create(null);
-      
-      // Build every property from scratch like Canvas2D.tsx does for new windows
-      brandNewEntry.type = entry.type;
-      
-      // Create completely new position object with no shared references
-      brandNewEntry.position = Object.create(null);
-      brandNewEntry.position.x = entry.position.x;
-      brandNewEntry.position.y = entry.position.y;
-      
-      // Create completely new dimensions object
-      brandNewEntry.dimensions = Object.create(null);
-      brandNewEntry.dimensions.width = entry.dimensions.width;
-      brandNewEntry.dimensions.height = entry.dimensions.height;
-      brandNewEntry.dimensions.distanceToFloor = entry.dimensions.distanceToFloor;
-      brandNewEntry.dimensions.shape = entry.dimensions.shape;
-      
-      // Create completely new line object with no shared references
-      brandNewEntry.line = Object.create(null);
-      brandNewEntry.line.start = Object.create(null);
-      brandNewEntry.line.start.x = entry.line.start.x;
-      brandNewEntry.line.start.y = entry.line.start.y;
-      brandNewEntry.line.end = Object.create(null);
-      brandNewEntry.line.end.x = entry.line.end.x;
-      brandNewEntry.line.end.y = entry.line.end.y;
-      
-      // Create completely new properties object
-      brandNewEntry.properties = Object.create(null);
-      const sourceProps = entry.properties || {};
-      brandNewEntry.properties.state = sourceProps.state || 'closed';
-      brandNewEntry.properties.temperature = sourceProps.temperature || 20;
-      brandNewEntry.properties.flowType = sourceProps.flowType || 'Air Mass Flow';
-      brandNewEntry.properties.flowValue = sourceProps.flowValue || 0.5;
-      brandNewEntry.properties.flowIntensity = sourceProps.flowIntensity || 'medium';
-      brandNewEntry.properties.airOrientation = sourceProps.airOrientation || 'inflow';
-      brandNewEntry.properties.verticalAngle = sourceProps.verticalAngle || 0;
-      brandNewEntry.properties.horizontalAngle = sourceProps.horizontalAngle || 0;
-      if (sourceProps.customIntensityValue !== undefined) {
-        brandNewEntry.properties.customIntensityValue = sourceProps.customIntensityValue;
-      }
-      
-      // Set unique ID for new floor
-      brandNewEntry.id = `${entry.type}_${floorPrefix}_${typeCounters[entry.type]++}`;
-      
-      // Copy additional properties if they exist
-      if (entry.wallPosition !== undefined) {
-        brandNewEntry.wallPosition = entry.wallPosition;
-      }
-      if (entry.lineId !== undefined) {
-        brandNewEntry.lineId = entry.lineId;
-      }
-      
-      const newEntry = brandNewEntry;
+      // REPLICATE EXACT Canvas2D object creation process (lines 1761-1789)
+      const newEntry: AirEntry = {
+        type: entry.type,
+        position: {
+          x: entry.position.x,
+          y: entry.position.y
+        },
+        dimensions: {
+          width: entry.dimensions.width,
+          height: entry.dimensions.height,
+          distanceToFloor: entry.dimensions.distanceToFloor,
+          shape: entry.dimensions.shape
+        },
+        line: {
+          start: {
+            x: entry.line.start.x,
+            y: entry.line.start.y
+          },
+          end: {
+            x: entry.line.end.x,
+            y: entry.line.end.y
+          }
+        },
+        lineId: entry.lineId,
+        properties: {
+          state: entry.properties?.state || 'closed',
+          temperature: entry.properties?.temperature || 20,
+          flowType: entry.properties?.flowType || 'Air Mass Flow',
+          flowValue: entry.properties?.flowValue || 0.5,
+          flowIntensity: entry.properties?.flowIntensity || 'medium',
+          airOrientation: entry.properties?.airOrientation || 'inflow',
+          verticalAngle: entry.properties?.verticalAngle || 0,
+          horizontalAngle: entry.properties?.horizontalAngle || 0,
+          ...(entry.properties?.customIntensityValue !== undefined && {
+            customIntensityValue: entry.properties.customIntensityValue
+          })
+        },
+        id: `${entry.type}_${floorPrefix}_${typeCounters[entry.type]++}`,
+        // Copy wallPosition exactly like Canvas2D
+        ...(entry.wallPosition !== undefined && { wallPosition: entry.wallPosition }),
+        // Copy wallContext if it exists (Canvas2D creates this)
+        ...(entry.wallContext && { wallContext: {
+          wallId: entry.wallContext.wallId,
+          floorName: targetFloorName,
+          wallStart: { x: entry.wallContext.wallStart.x, y: entry.wallContext.wallStart.y },
+          wallEnd: { x: entry.wallContext.wallEnd.x, y: entry.wallContext.wallEnd.y },
+          clickPosition: { x: entry.wallContext.clickPosition.x, y: entry.wallContext.clickPosition.y },
+          ceilingHeight: entry.wallContext.ceilingHeight
+        }})
+      } as any;
       
       // DEEP MEMORY DIAGNOSTIC: Check complete object tree independence
       console.log("🧠 [DEEP MEMORY CHECK] Complete object independence analysis:", {
