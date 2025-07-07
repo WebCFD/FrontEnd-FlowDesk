@@ -573,35 +573,60 @@ export default function WizardDesign() {
     };
     
     return airEntries.map((entry, entryIndex) => {
-      // Create completely independent AirEntry object (no shared references)
-      const newEntry = {
-        type: entry.type,
-        position: {
-          x: parseFloat((entry.position.x + 0.000001).toString()) - 0.000001,
-          y: parseFloat((entry.position.y + 0.000001).toString()) - 0.000001
-        },
-        dimensions: {
-          width: entry.dimensions.width,
-          height: entry.dimensions.height,
-          distanceToFloor: entry.dimensions.distanceToFloor,
-          shape: entry.dimensions.shape
-        },
-        line: {
-          start: {
-            x: parseFloat((entry.line.start.x + 0.000001).toString()) - 0.000001,
-            y: parseFloat((entry.line.start.y + 0.000001).toString()) - 0.000001
-          },
-          end: {
-            x: parseFloat((entry.line.end.x + 0.000001).toString()) - 0.000001,
-            y: parseFloat((entry.line.end.y + 0.000001).toString()) - 0.000001
-          }
-        },
-        properties: entry.properties ? createFreshProperties(entry.properties) : createDefaultProperties(),
-        id: `${entry.type}_${floorPrefix}_${typeCounters[entry.type]++}`,
-        // Copy any additional fields that might exist
-        ...(entry.wallPosition !== undefined && { wallPosition: entry.wallPosition }),
-        ...(entry.lineId !== undefined && { lineId: entry.lineId })
-      } as any;
+      // Create BRAND NEW object exactly like mouse insertion creates (no prototype chain sharing)
+      const brandNewEntry = Object.create(null);
+      
+      // Build every property from scratch like Canvas2D.tsx does for new windows
+      brandNewEntry.type = entry.type;
+      
+      // Create completely new position object with no shared references
+      brandNewEntry.position = Object.create(null);
+      brandNewEntry.position.x = entry.position.x;
+      brandNewEntry.position.y = entry.position.y;
+      
+      // Create completely new dimensions object
+      brandNewEntry.dimensions = Object.create(null);
+      brandNewEntry.dimensions.width = entry.dimensions.width;
+      brandNewEntry.dimensions.height = entry.dimensions.height;
+      brandNewEntry.dimensions.distanceToFloor = entry.dimensions.distanceToFloor;
+      brandNewEntry.dimensions.shape = entry.dimensions.shape;
+      
+      // Create completely new line object with no shared references
+      brandNewEntry.line = Object.create(null);
+      brandNewEntry.line.start = Object.create(null);
+      brandNewEntry.line.start.x = entry.line.start.x;
+      brandNewEntry.line.start.y = entry.line.start.y;
+      brandNewEntry.line.end = Object.create(null);
+      brandNewEntry.line.end.x = entry.line.end.x;
+      brandNewEntry.line.end.y = entry.line.end.y;
+      
+      // Create completely new properties object
+      brandNewEntry.properties = Object.create(null);
+      const sourceProps = entry.properties || {};
+      brandNewEntry.properties.state = sourceProps.state || 'closed';
+      brandNewEntry.properties.temperature = sourceProps.temperature || 20;
+      brandNewEntry.properties.flowType = sourceProps.flowType || 'Air Mass Flow';
+      brandNewEntry.properties.flowValue = sourceProps.flowValue || 0.5;
+      brandNewEntry.properties.flowIntensity = sourceProps.flowIntensity || 'medium';
+      brandNewEntry.properties.airOrientation = sourceProps.airOrientation || 'inflow';
+      brandNewEntry.properties.verticalAngle = sourceProps.verticalAngle || 0;
+      brandNewEntry.properties.horizontalAngle = sourceProps.horizontalAngle || 0;
+      if (sourceProps.customIntensityValue !== undefined) {
+        brandNewEntry.properties.customIntensityValue = sourceProps.customIntensityValue;
+      }
+      
+      // Set unique ID for new floor
+      brandNewEntry.id = `${entry.type}_${floorPrefix}_${typeCounters[entry.type]++}`;
+      
+      // Copy additional properties if they exist
+      if (entry.wallPosition !== undefined) {
+        brandNewEntry.wallPosition = entry.wallPosition;
+      }
+      if (entry.lineId !== undefined) {
+        brandNewEntry.lineId = entry.lineId;
+      }
+      
+      const newEntry = brandNewEntry;
       
       // DEEP MEMORY DIAGNOSTIC: Check complete object tree independence
       console.log("🧠 [DEEP MEMORY CHECK] Complete object independence analysis:", {
