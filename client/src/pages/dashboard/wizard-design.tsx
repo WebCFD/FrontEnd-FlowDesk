@@ -578,10 +578,34 @@ export default function WizardDesign() {
     };
     
     return airEntries.map((entry, entryIndex) => {
+      // Create completely independent AirEntry object (no shared references)
       const newEntry = {
-        ...entry,
+        type: entry.type,
+        position: {
+          x: entry.position.x,
+          y: entry.position.y
+        },
+        dimensions: {
+          width: entry.dimensions.width,
+          height: entry.dimensions.height,
+          distanceToFloor: entry.dimensions.distanceToFloor,
+          shape: entry.dimensions.shape
+        },
+        line: {
+          start: {
+            x: entry.line.start.x,
+            y: entry.line.start.y
+          },
+          end: {
+            x: entry.line.end.x,
+            y: entry.line.end.y
+          }
+        },
         properties: entry.properties ? createFreshProperties(entry.properties) : createDefaultProperties(),
-        id: `${entry.type}_${floorPrefix}_${typeCounters[entry.type]++}`
+        id: `${entry.type}_${floorPrefix}_${typeCounters[entry.type]++}`,
+        // Copy any additional fields that might exist
+        ...(entry.wallPosition !== undefined && { wallPosition: entry.wallPosition }),
+        ...(entry.lineId !== undefined && { lineId: entry.lineId })
       } as any;
       
       console.log("🔄 [REGENERATE DEBUG] Processing entry:", {
