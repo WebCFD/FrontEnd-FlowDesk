@@ -536,12 +536,7 @@ export default function WizardDesign() {
       });
     });
     
-    console.log("🔄 [ID GENERATION DEBUG] Final type counters:", {
-      floorPrefix,
-      targetFloor: floor,
-      typeCounters: {...typeCounters},
-      totalFloorsChecked: Object.keys(floors).length
-    });
+    // Removed ID generation debug log
     
     // CRITICAL FIX: Create completely fresh properties objects to prevent shared references
     // This emulates the "create new window" process instead of copying potentially contaminated references
@@ -608,14 +603,31 @@ export default function WizardDesign() {
         ...(entry.lineId !== undefined && { lineId: entry.lineId })
       } as any;
       
-      console.log("🔄 [REGENERATE DEBUG] Processing entry:", {
-        originalId: entry.id,
-        newId: newEntry.id,
-        entryType: entry.type,
-        floorPrefix: floorPrefix,
-        typeCounter: typeCounters[entry.type] - 1, // Show the counter used (before increment)
-        arePropertiesSameRef: entry.properties === newEntry.properties,
-        functionUsed: entry.properties ? 'createFreshProperties' : 'createDefaultProperties'
+      // MEMORY DIAGNOSTIC: Check if new object is truly independent
+      console.log("🧠 [MEMORY CHECK] AFTER regeneration - Object independence:", {
+        originalEntry: {
+          id: entry.id,
+          entryRef: entry,
+          positionRef: entry.position,
+          lineRef: entry.line,
+          dimensionsRef: entry.dimensions,
+          propertiesRef: entry.properties
+        },
+        newEntry: {
+          id: newEntry.id,
+          entryRef: newEntry,
+          positionRef: newEntry.position,
+          lineRef: newEntry.line,
+          dimensionsRef: newEntry.dimensions,
+          propertiesRef: newEntry.properties
+        },
+        independence: {
+          entryRefSame: entry === newEntry,
+          positionRefSame: entry.position === newEntry.position,
+          lineRefSame: entry.line === newEntry.line,
+          dimensionsRefSame: entry.dimensions === newEntry.dimensions,
+          propertiesRefSame: entry.properties === newEntry.properties
+        }
       });
       
       return newEntry;
@@ -684,14 +696,16 @@ export default function WizardDesign() {
       hasClosedContour: false,
     };
 
-    console.log("🔄 [FLOOR LOAD DEBUG] Source data before copy:", {
-      floorName: loadFromFloor,
-      airEntriesCount: sourceFloorData.airEntries?.length || 0,
-      airEntries: sourceFloorData.airEntries?.map(entry => ({
+    // MEMORY DIAGNOSTIC: Check object references BEFORE regeneration
+    console.log("🧠 [MEMORY CHECK] BEFORE regeneration - Original objects in source floor:", {
+      sourceFloor: loadFromFloor,
+      entries: sourceFloorData.airEntries?.map((entry, idx) => ({
         id: entry.id,
         type: entry.type,
-        hasProperties: !!entry.properties,
-        properties: entry.properties,
+        objectRef: entry,
+        positionRef: entry.position,
+        lineRef: entry.line,
+        dimensionsRef: entry.dimensions,
         propertiesRef: entry.properties
       }))
     });
@@ -700,35 +714,21 @@ export default function WizardDesign() {
     const newLines = regenerateLineIds([...sourceFloorData.lines]);
     const newAirEntries = regenerateAirEntryIds([...sourceFloorData.airEntries], currentFloor);
     
-    console.log("🔄 [FLOOR LOAD DEBUG] After regenerateAirEntryIds:", {
+    // MEMORY DIAGNOSTIC: Check final objects before store assignment
+    console.log("🧠 [MEMORY CHECK] FINAL objects ready for store assignment:", {
       targetFloor: currentFloor,
-      newAirEntriesCount: newAirEntries?.length || 0,
-      newAirEntries: newAirEntries?.map(entry => ({
+      entries: newAirEntries?.map((entry, idx) => ({
         id: entry.id,
         type: entry.type,
-        hasProperties: !!entry.properties,
-        properties: entry.properties,
+        objectRef: entry,
+        positionRef: entry.position,
+        lineRef: entry.line,
+        dimensionsRef: entry.dimensions,
         propertiesRef: entry.properties
       }))
     });
 
-    // CRITICAL DEBUG: Check if any new entries share references with source entries
-    console.log("🚨 [REFERENCE CHECK] Checking for shared references after regeneration:");
-    newAirEntries?.forEach((newEntry, newIndex) => {
-      sourceFloorData.airEntries?.forEach((sourceEntry, sourceIndex) => {
-        if (newEntry.properties === (sourceEntry as any).properties && newEntry.properties) {
-          console.log("🚨 [REFERENCE CHECK] SHARED REFERENCE FOUND:", {
-            newEntryId: newEntry.id,
-            newEntryIndex: newIndex,
-            sourceEntryId: (sourceEntry as any).id,
-            sourceEntryIndex: sourceIndex,
-            sharedPropertiesRef: newEntry.properties,
-            sourceFloor: loadFromFloor,
-            targetFloor: currentFloor
-          });
-        }
-      });
-    });
+    // REMOVED: Old reference check (replaced with comprehensive memory diagnostic)
     const newWalls = regenerateWallIds([...(sourceFloorData.walls || [])], currentFloor);
     const newMeasurements = regenerateMeasurementIds([...sourceFloorData.measurements]);
 
@@ -772,29 +772,50 @@ export default function WizardDesign() {
     setStairPolygons(newStairPolygons);
     setHasClosedContour(sourceFloorData.hasClosedContour);
 
-    // FINAL DEBUG: Check state after setting new air entries
-    console.log("🚨 [FINAL CHECK] Air entries set in store, checking for cross-floor references:");
+    // MEMORY DIAGNOSTIC: Cross-floor reference verification after store assignment
     setTimeout(() => {
       const finalFloors = useRoomStore.getState().floors;
+      const allEntries: any[] = [];
+      
+      // Collect all entries from all floors
       Object.keys(finalFloors).forEach(floorName => {
         finalFloors[floorName]?.airEntries?.forEach((entry, index) => {
-          Object.keys(finalFloors).forEach(otherFloorName => {
-            if (floorName !== otherFloorName) {
-              finalFloors[otherFloorName]?.airEntries?.forEach((otherEntry, otherIndex) => {
-                if (entry.properties === (otherEntry as any).properties && entry.properties) {
-                  console.log("🚨 [FINAL CHECK] CROSS-FLOOR SHARED REFERENCE:", {
-                    floor1: floorName,
-                    entry1Id: (entry as any).id,
-                    entry1Index: index,
-                    floor2: otherFloorName,
-                    entry2Id: (otherEntry as any).id,
-                    entry2Index: otherIndex,
-                    sharedPropertiesRef: entry.properties
-                  });
-                }
+          allEntries.push({
+            floorName,
+            index,
+            id: entry.id,
+            entryRef: entry,
+            positionRef: entry.position,
+            lineRef: entry.line,
+            dimensionsRef: entry.dimensions,
+            propertiesRef: entry.properties
+          });
+        });
+      });
+      
+      console.log("🧠 [MEMORY CHECK] POST-STORE: All entries in memory:", allEntries);
+      
+      // Check for shared references between different floors
+      allEntries.forEach((entryA, idxA) => {
+        allEntries.forEach((entryB, idxB) => {
+          if (idxA !== idxB && entryA.floorName !== entryB.floorName) {
+            const shared = {
+              entryRefSame: entryA.entryRef === entryB.entryRef,
+              positionRefSame: entryA.positionRef === entryB.positionRef,
+              lineRefSame: entryA.lineRef === entryB.lineRef,
+              dimensionsRefSame: entryA.dimensionsRef === entryB.dimensionsRef,
+              propertiesRefSame: entryA.propertiesRef === entryB.propertiesRef
+            };
+            
+            const hasSharedRefs = Object.values(shared).some(Boolean);
+            if (hasSharedRefs) {
+              console.log("🚨 [MEMORY CHECK] SHARED REFERENCES DETECTED:", {
+                entryA: `${entryA.floorName}[${entryA.index}]:${entryA.id}`,
+                entryB: `${entryB.floorName}[${entryB.index}]:${entryB.id}`,
+                sharedReferences: shared
               });
             }
-          });
+          }
         });
       });
     }, 100);
