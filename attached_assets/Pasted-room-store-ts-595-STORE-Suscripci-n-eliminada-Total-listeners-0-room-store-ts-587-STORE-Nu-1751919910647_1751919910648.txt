@@ -1,0 +1,63 @@
+room-store.ts:595 🔗 STORE: Suscripción eliminada. Total listeners: 0
+room-store.ts:587 🔗 STORE: Nueva suscripción añadida. Total listeners: 1
+wizard-design.tsx:738 🧠 [MEMORY CHECK] BEFORE regeneration - Original objects in source floor: {sourceFloor: 'ground', entries: Array(1)}entries: [{…}]sourceFloor: "ground"[[Prototype]]: Object
+wizard-design.tsx:619 Uncaught ReferenceError: targetFloorName is not defined
+    at wizard-design.tsx:619:22
+    at Array.map (<anonymous>)
+    at regenerateAirEntryIds (wizard-design.tsx:575:23)
+    at performFloorLoad (wizard-design.tsx:753:27)
+    at handleEvent (chunk-OPKK5FMW.js?v=cfa7cc5f:93:45)
+    at HTMLUnknownElement.callCallback2 (chunk-WERSD76P.js?v=cfa7cc5f:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-WERSD76P.js?v=cfa7cc5f:3699:24)
+    at invokeGuardedCallback (chunk-WERSD76P.js?v=cfa7cc5f:3733:39)
+    at invokeGuardedCallbackAndCatchFirstError (chunk-WERSD76P.js?v=cfa7cc5f:3736:33)
+    at executeDispatch (chunk-WERSD76P.js?v=cfa7cc5f:7014:11)
+(anonymous) @ wizard-design.tsx:619
+regenerateAirEntryIds @ wizard-design.tsx:575
+performFloorLoad @ wizard-design.tsx:753
+handleEvent @ chunk-OPKK5FMW.js?v=cfa7cc5f:93
+callCallback2 @ chunk-WERSD76P.js?v=cfa7cc5f:3674
+invokeGuardedCallbackDev @ chunk-WERSD76P.js?v=cfa7cc5f:3699
+invokeGuardedCallback @ chunk-WERSD76P.js?v=cfa7cc5f:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-WERSD76P.js?v=cfa7cc5f:3736
+executeDispatch @ chunk-WERSD76P.js?v=cfa7cc5f:7014
+processDispatchQueueItemsInOrder @ chunk-WERSD76P.js?v=cfa7cc5f:7034
+processDispatchQueue @ chunk-WERSD76P.js?v=cfa7cc5f:7043
+dispatchEventsForPlugins @ chunk-WERSD76P.js?v=cfa7cc5f:7051
+(anonymous) @ chunk-WERSD76P.js?v=cfa7cc5f:7174
+batchedUpdates$1 @ chunk-WERSD76P.js?v=cfa7cc5f:18913
+batchedUpdates @ chunk-WERSD76P.js?v=cfa7cc5f:3579
+dispatchEventForPluginEventSystem @ chunk-WERSD76P.js?v=cfa7cc5f:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-WERSD76P.js?v=cfa7cc5f:5478
+dispatchEvent @ chunk-WERSD76P.js?v=cfa7cc5f:5472
+dispatchDiscreteEvent @ chunk-WERSD76P.js?v=cfa7cc5f:5449
+chunk-WERSD76P.js?v=cfa7cc5f:3750 Uncaught ReferenceError: targetFloorName is not defined
+    at wizard-design.tsx:619:22
+    at Array.map (<anonymous>)
+    at regenerateAirEntryIds (wizard-design.tsx:575:23)
+    at performFloorLoad (wizard-design.tsx:753:27)
+    at handleEvent (chunk-OPKK5FMW.js?v=cfa7cc5f:93:45)
+    at HTMLUnknownElement.callCallback2 (chunk-WERSD76P.js?v=cfa7cc5f:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-WERSD76P.js?v=cfa7cc5f:3699:24)
+    at invokeGuardedCallback (chunk-WERSD76P.js?v=cfa7cc5f:3733:39)
+    at invokeGuardedCallbackAndCatchFirstError (chunk-WERSD76P.js?v=cfa7cc5f:3736:33)
+    at executeDispatch (chunk-WERSD76P.js?v=cfa7cc5f:7014:11)
+(anonymous) @ wizard-design.tsx:619
+regenerateAirEntryIds @ wizard-design.tsx:575
+performFloorLoad @ wizard-design.tsx:753
+handleEvent @ chunk-OPKK5FMW.js?v=cfa7cc5f:93
+callCallback2 @ chunk-WERSD76P.js?v=cfa7cc5f:3674
+invokeGuardedCallbackDev @ chunk-WERSD76P.js?v=cfa7cc5f:3699
+invokeGuardedCallback @ chunk-WERSD76P.js?v=cfa7cc5f:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-WERSD76P.js?v=cfa7cc5f:3736
+executeDispatch @ chunk-WERSD76P.js?v=cfa7cc5f:7014
+processDispatchQueueItemsInOrder @ chunk-WERSD76P.js?v=cfa7cc5f:7034
+processDispatchQueue @ chunk-WERSD76P.js?v=cfa7cc5f:7043
+dispatchEventsForPlugins @ chunk-WERSD76P.js?v=cfa7cc5f:7051
+(anonymous) @ chunk-WERSD76P.js?v=cfa7cc5f:7174
+batchedUpdates$1 @ chunk-WERSD76P.js?v=cfa7cc5f:18913
+batchedUpdates @ chunk-WERSD76P.js?v=cfa7cc5f:3579
+dispatchEventForPluginEventSystem @ chunk-WERSD76P.js?v=cfa7cc5f:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-WERSD76P.js?v=cfa7cc5f:5478
+dispatchEvent @ chunk-WERSD76P.js?v=cfa7cc5f:5472
+dispatchDiscreteEvent @ chunk-WERSD76P.js?v=cfa7cc5f:5449
