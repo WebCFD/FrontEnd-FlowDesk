@@ -593,9 +593,19 @@ export default function WizardDesign() {
       lineEndObj.x = entry.line.end.x;
       lineEndObj.y = entry.line.end.y;
       
-      const lineObj = new Object();
-      lineObj.start = lineStartObj;
-      lineObj.end = lineEndObj;
+      // CRITICAL: Find corresponding line in target floor instead of copying reference
+      // This mimics how Canvas2D uses selectedLine from current floor
+      const correspondingLine = newLines.find(line => 
+        Math.abs(line.start.x - entry.line.start.x) < 0.1 &&
+        Math.abs(line.start.y - entry.line.start.y) < 0.1 &&
+        Math.abs(line.end.x - entry.line.end.x) < 0.1 &&
+        Math.abs(line.end.y - entry.line.end.y) < 0.1
+      );
+      
+      const lineObj = correspondingLine || {
+        start: lineStartObj,
+        end: lineEndObj
+      };
       
       const propertiesObj = new Object();
       propertiesObj.state = entry.properties?.state || 'closed';
