@@ -603,28 +603,45 @@ export default function WizardDesign() {
         ...(entry.lineId !== undefined && { lineId: entry.lineId })
       } as any;
       
-      // MEMORY DIAGNOSTIC: Check if new object is truly independent
-      console.log("🧠 [MEMORY CHECK] AFTER regeneration - Object independence:", {
+      // DEEP MEMORY DIAGNOSTIC: Check complete object tree independence
+      console.log("🧠 [DEEP MEMORY CHECK] Complete object independence analysis:", {
         originalEntry: {
           id: entry.id,
-          entryRef: entry,
+          fullEntryRef: entry,
           positionRef: entry.position,
+          positionXRef: entry.position?.x,
+          positionYRef: entry.position?.y,
           lineRef: entry.line,
+          lineStartRef: entry.line?.start,
+          lineEndRef: entry.line?.end,
           dimensionsRef: entry.dimensions,
           propertiesRef: entry.properties
         },
         newEntry: {
           id: newEntry.id,
-          entryRef: newEntry,
+          fullEntryRef: newEntry,
           positionRef: newEntry.position,
+          positionXRef: newEntry.position?.x,
+          positionYRef: newEntry.position?.y,
           lineRef: newEntry.line,
+          lineStartRef: newEntry.line?.start,
+          lineEndRef: newEntry.line?.end,
           dimensionsRef: newEntry.dimensions,
           propertiesRef: newEntry.properties
         },
         independence: {
           entryRefSame: entry === newEntry,
           positionRefSame: entry.position === newEntry.position,
+          positionStartValuesSame: entry.position?.x === newEntry.position?.x && entry.position?.y === newEntry.position?.y,
           lineRefSame: entry.line === newEntry.line,
+          lineStartRefSame: entry.line?.start === newEntry.line?.start,
+          lineEndRefSame: entry.line?.end === newEntry.line?.end,
+          lineValuesComparison: {
+            startX: { original: entry.line?.start?.x, new: newEntry.line?.start?.x, same: entry.line?.start?.x === newEntry.line?.start?.x },
+            startY: { original: entry.line?.start?.y, new: newEntry.line?.start?.y, same: entry.line?.start?.y === newEntry.line?.start?.y },
+            endX: { original: entry.line?.end?.x, new: newEntry.line?.end?.x, same: entry.line?.end?.x === newEntry.line?.end?.x },
+            endY: { original: entry.line?.end?.y, new: newEntry.line?.end?.y, same: entry.line?.end?.y === newEntry.line?.end?.y }
+          },
           dimensionsRefSame: entry.dimensions === newEntry.dimensions,
           propertiesRefSame: entry.properties === newEntry.properties
         }
@@ -772,12 +789,12 @@ export default function WizardDesign() {
     setStairPolygons(newStairPolygons);
     setHasClosedContour(sourceFloorData.hasClosedContour);
 
-    // MEMORY DIAGNOSTIC: Cross-floor reference verification after store assignment
+    // COMPREHENSIVE STORE DIAGNOSTIC: Deep analysis after store assignment
     setTimeout(() => {
       const finalFloors = useRoomStore.getState().floors;
       const allEntries: any[] = [];
       
-      // Collect all entries from all floors
+      // Collect ALL data from all floors with deep reference tracking
       Object.keys(finalFloors).forEach(floorName => {
         finalFloors[floorName]?.airEntries?.forEach((entry, index) => {
           allEntries.push({
@@ -786,35 +803,70 @@ export default function WizardDesign() {
             id: entry.id,
             entryRef: entry,
             positionRef: entry.position,
+            positionXRef: entry.position?.x,
+            positionYRef: entry.position?.y,
             lineRef: entry.line,
+            lineStartRef: entry.line?.start,
+            lineEndRef: entry.line?.end,
+            lineStartXRef: entry.line?.start?.x,
+            lineStartYRef: entry.line?.start?.y,
+            lineEndXRef: entry.line?.end?.x,
+            lineEndYRef: entry.line?.end?.y,
             dimensionsRef: entry.dimensions,
-            propertiesRef: entry.properties
+            propertiesRef: entry.properties,
+            lineIdValue: entry.lineId,
+            wallPositionValue: entry.dimensions?.wallPosition
           });
         });
       });
       
-      console.log("🧠 [MEMORY CHECK] POST-STORE: All entries in memory:", allEntries);
+      console.log("🧠 [COMPREHENSIVE STORE CHECK] ALL entries with deep references:", allEntries);
       
-      // Check for shared references between different floors
+      // Deep comparison between different floors
       allEntries.forEach((entryA, idxA) => {
         allEntries.forEach((entryB, idxB) => {
           if (idxA !== idxB && entryA.floorName !== entryB.floorName) {
             const shared = {
               entryRefSame: entryA.entryRef === entryB.entryRef,
               positionRefSame: entryA.positionRef === entryB.positionRef,
+              positionXRefSame: entryA.positionXRef === entryB.positionXRef,
+              positionYRefSame: entryA.positionYRef === entryB.positionYRef,
               lineRefSame: entryA.lineRef === entryB.lineRef,
+              lineStartRefSame: entryA.lineStartRef === entryB.lineStartRef,
+              lineEndRefSame: entryA.lineEndRef === entryB.lineEndRef,
+              lineStartXRefSame: entryA.lineStartXRef === entryB.lineStartXRef,
+              lineStartYRefSame: entryA.lineStartYRef === entryB.lineStartYRef,
+              lineEndXRefSame: entryA.lineEndXRef === entryB.lineEndXRef,
+              lineEndYRefSame: entryA.lineEndYRef === entryB.lineEndYRef,
               dimensionsRefSame: entryA.dimensionsRef === entryB.dimensionsRef,
-              propertiesRefSame: entryA.propertiesRef === entryB.propertiesRef
+              propertiesRefSame: entryA.propertiesRef === entryB.propertiesRef,
+              lineIdSame: entryA.lineIdValue === entryB.lineIdValue,
+              wallPositionSame: entryA.wallPositionValue === entryB.wallPositionValue
             };
             
             const hasSharedRefs = Object.values(shared).some(Boolean);
             if (hasSharedRefs) {
-              console.log("🚨 [MEMORY CHECK] SHARED REFERENCES DETECTED:", {
+              console.log("🚨 [COMPREHENSIVE STORE CHECK] SHARED REFERENCES DETECTED:", {
                 entryA: `${entryA.floorName}[${entryA.index}]:${entryA.id}`,
                 entryB: `${entryB.floorName}[${entryB.index}]:${entryB.id}`,
-                sharedReferences: shared
+                deepSharedAnalysis: shared
               });
             }
+          }
+        });
+      });
+      
+      // CRITICAL: Also check if any entries point to the SAME line object
+      console.log("🔍 [LINE REFERENCE CHECK] Checking for shared line references:");
+      allEntries.forEach((entryA, idxA) => {
+        allEntries.forEach((entryB, idxB) => {
+          if (idxA !== idxB && entryA.lineRef === entryB.lineRef && entryA.lineRef !== undefined) {
+            console.log("🚨 [LINE REFERENCE CHECK] SHARED LINE DETECTED:", {
+              entryA: `${entryA.floorName}[${entryA.index}]:${entryA.id}`,
+              entryB: `${entryB.floorName}[${entryB.index}]:${entryB.id}`,
+              sharedLineRef: entryA.lineRef,
+              lineId: entryA.lineIdValue
+            });
           }
         });
       });
