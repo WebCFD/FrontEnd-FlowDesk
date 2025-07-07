@@ -1,0 +1,16 @@
+analytics.ts:62 📊 Analytics Event: {category: 'design_tool', action: 'add_window', label: 'select_window_tool', value: undefined, status: 'sent'}
+room-store.ts:407 🔧 [STORE DEBUG] updateAirEntryProperties called: {floorName: 'ground', index: 0, properties: {…}, propertiesRef: {…}, entryId: 'window_0F_1'}
+room-store.ts:441 🔧 [STORE DEBUG] Before update: {entryId: 'window_0F_1', oldProperties: {…}, oldPropertiesRef: {…}}
+room-store.ts:448 🚨 [SPREAD DEBUG] About to execute { ...properties } where properties is: {properties: {…}, propertiesRef: {…}, propertiesType: 'object', propertiesKeys: Array(3), isPropertiesShared: false}
+room-store.ts:476 🚨 [SPREAD DEBUG] Spread operation result: {spreadResult: {…}, spreadResultRef: {…}, isSpreadSameAsSource: false, spreadKeys: Array(3)}
+room-store.ts:489 🔧 [STORE DEBUG] After update: {entryId: 'window_0F_1', newProperties: {…}, newPropertiesRef: {…}, areReferencesSame: false, isNewPropertiesSameAsSpread: true, …}
+room-store.ts:525 🚨 [FINAL SPREAD DEBUG] Checking if new properties are now shared across floors:
+Canvas2D.tsx:3417 🟢 [CANVAS2D EDIT] handleAirEntryEdit called with index: 0
+Canvas2D.tsx:3418 🟢 [CANVAS2D EDIT] Received data: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 63.30976445486526, …}
+Canvas2D.tsx:3419 🟢 [CANVAS2D EDIT] data.wallPosition: 63.30976445486526
+Canvas2D.tsx:3427 🟢 [CANVAS2D EDIT] Original entry: {type: 'window', position: {…}, dimensions: {…}, line: {…}, lineId: '1751916644060_rekqif64b', …}
+Canvas2D.tsx:3428 🟢 [CANVAS2D EDIT] Original wallPosition: undefined
+Canvas2D.tsx:3429 🟢 [CANVAS2D EDIT] Current store position: {x: 601.0139599724374, y: 171.737890708636}
+Canvas2D.tsx:3444 🟢 [CANVAS2D EDIT] Final updated entry: {type: 'window', position: {…}, dimensions: {…}, line: {…}, lineId: '1751916644060_rekqif64b', …}
+Canvas2D.tsx:3445 🟢 [CANVAS2D EDIT] Final wallPosition: 63.30976445486526
+Canvas2D.tsx:3446 🟢 [CANVAS2D EDIT] Final properties ref: {state: 'closed', temperature: 20, flowIntensity: 'medium', airOrientation: 'inflow'}
