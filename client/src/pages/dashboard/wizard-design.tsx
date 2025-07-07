@@ -534,10 +534,44 @@ export default function WizardDesign() {
       }
     });
     
+    // CRITICAL FIX: Create completely fresh properties objects to prevent shared references
+    // This emulates the "create new window" process instead of copying potentially contaminated references
+    const createFreshProperties = (originalProperties: any) => {
+      // Create completely new object with primitive values (prevents reference sharing)
+      return {
+        state: originalProperties.state || 'closed',
+        temperature: originalProperties.temperature || 20,
+        flowType: originalProperties.flowType || 'Air Mass Flow',
+        flowValue: originalProperties.flowValue || 0.5,
+        flowIntensity: originalProperties.flowIntensity || 'medium',
+        airOrientation: originalProperties.airOrientation || 'inflow',
+        verticalAngle: originalProperties.verticalAngle || 0,
+        horizontalAngle: originalProperties.horizontalAngle || 0,
+        // Include customIntensityValue only if it exists
+        ...(originalProperties.customIntensityValue !== undefined && {
+          customIntensityValue: originalProperties.customIntensityValue
+        })
+      };
+    };
+
+    const createDefaultProperties = () => {
+      // Return exact same defaults as new window creation in Canvas2D.tsx
+      return {
+        state: 'closed',
+        temperature: 20,
+        flowType: 'Air Mass Flow',
+        flowValue: 0.5,
+        flowIntensity: 'medium',
+        airOrientation: 'inflow',
+        verticalAngle: 0,
+        horizontalAngle: 0
+      };
+    };
+    
     return airEntries.map((entry, entryIndex) => {
       const newEntry = {
         ...entry,
-        properties: entry.properties ? { ...entry.properties } : undefined,
+        properties: entry.properties ? createFreshProperties(entry.properties) : createDefaultProperties(),
         id: `${entry.type}_${floorPrefix}_${typeCounters[entry.type]++}`
       } as any;
       
@@ -548,7 +582,8 @@ export default function WizardDesign() {
         newProperties: newEntry.properties,
         arePropertiesSameRef: entry.properties === newEntry.properties,
         hasProperties: !!entry.properties,
-        entryIndex
+        entryIndex,
+        freshObjectCreated: true
       });
       
       return newEntry;
