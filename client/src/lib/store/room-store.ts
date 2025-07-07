@@ -499,7 +499,9 @@ export const useRoomStore = create<RoomState>()(
             const affectedEntries: any[] = [];
             Object.keys(currentFloors).forEach(otherFloorName => {
               currentFloors[otherFloorName]?.airEntries?.forEach((entry, entryIndex) => {
-                if (entry.properties === oldProperties && oldProperties !== undefined) {
+                // Exclude the entry being updated (avoid false positive auto-reference)
+                const isCurrentEntry = (otherFloorName === floorName && entryIndex === index);
+                if (entry.properties === oldProperties && oldProperties !== undefined && !isCurrentEntry) {
                   affectedEntries.push({
                     floor: otherFloorName,
                     index: entryIndex,
@@ -523,7 +525,9 @@ export const useRoomStore = create<RoomState>()(
             console.log("🚨 [FINAL SPREAD DEBUG] Checking if new properties are now shared across floors:");
             Object.keys(currentFloors).forEach(otherFloorName => {
               currentFloors[otherFloorName]?.airEntries?.forEach((entry, entryIndex) => {
-                if (entry.properties === newProperties && entry.properties) {
+                // Exclude the entry being updated (avoid false positive auto-reference)
+                const isCurrentEntry = (otherFloorName === floorName && entryIndex === index);
+                if (entry.properties === newProperties && entry.properties && !isCurrentEntry) {
                   console.log("🚨 [FINAL SPREAD DEBUG] NEW PROPERTIES NOW SHARED WITH:", {
                     targetFloor: floorName,
                     targetIndex: index,
