@@ -577,8 +577,8 @@ export default function WizardDesign() {
       const newEntry = {
         type: entry.type,
         position: {
-          x: entry.position.x,
-          y: entry.position.y
+          x: parseFloat((entry.position.x + 0.000001).toString()) - 0.000001,
+          y: parseFloat((entry.position.y + 0.000001).toString()) - 0.000001
         },
         dimensions: {
           width: entry.dimensions.width,
@@ -588,12 +588,12 @@ export default function WizardDesign() {
         },
         line: {
           start: {
-            x: entry.line.start.x,
-            y: entry.line.start.y
+            x: parseFloat((entry.line.start.x + 0.000001).toString()) - 0.000001,
+            y: parseFloat((entry.line.start.y + 0.000001).toString()) - 0.000001
           },
           end: {
-            x: entry.line.end.x,
-            y: entry.line.end.y
+            x: parseFloat((entry.line.end.x + 0.000001).toString()) - 0.000001,
+            y: parseFloat((entry.line.end.y + 0.000001).toString()) - 0.000001
           }
         },
         properties: entry.properties ? createFreshProperties(entry.properties) : createDefaultProperties(),
