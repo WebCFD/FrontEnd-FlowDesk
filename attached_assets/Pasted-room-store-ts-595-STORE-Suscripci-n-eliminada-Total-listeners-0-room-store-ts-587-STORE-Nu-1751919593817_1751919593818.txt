@@ -1,0 +1,38 @@
+room-store.ts:595 🔗 STORE: Suscripción eliminada. Total listeners: 0
+room-store.ts:587 🔗 STORE: Nueva suscripción añadida. Total listeners: 1
+wizard-design.tsx:717 🧠 [MEMORY CHECK] BEFORE regeneration - Original objects in source floor: {sourceFloor: 'ground', entries: Array(1)}entries: [{…}]sourceFloor: "ground"[[Prototype]]: Object
+wizard-design.tsx:607 🧠 [DEEP MEMORY CHECK] Complete object independence analysis: {originalEntry: {…}, newEntry: {…}, independence: {…}}independence: {entryRefSame: false, positionRefSame: false, positionStartValuesSame: true, lineRefSame: false, lineStartRefSame: false, …}newEntry: {id: 'window_1F_1', fullEntryRef: {…}, positionRef: {…}, positionXRef: 377.25340474310445, positionYRef: 402.0664498852475, …}originalEntry: {id: 'window_0F_1', fullEntryRef: {…}, positionRef: {…}, positionXRef: 377.25340474310445, positionYRef: 402.0664498852475, …}[[Prototype]]: Object
+wizard-design.tsx:735 🧠 [MEMORY CHECK] FINAL objects ready for store assignment: {targetFloor: 'first', entries: Array(1)}entries: [{…}]targetFloor: "first"[[Prototype]]: Object
+simulationDataConverter.ts:945 🔧 [WALL SYNC] syncWallsWithLines called for floor: first
+simulationDataConverter.ts:946 🔧 [WALL SYNC] Lines: 3, Existing walls: 0, Default temp: 20
+simulationDataConverter.ts:950 🔧 [WALL SYNC] After removing orphans: 0 valid walls
+simulationDataConverter.ts:980 🔧 [WALL SYNC] addMissingWalls called for floor: first
+simulationDataConverter.ts:981 🔧 [WALL SYNC] Input: 3 lines, 0 existing walls
+simulationDataConverter.ts:982 🔧 [WALL SYNC] Existing walls: []
+simulationDataConverter.ts:991 🔧 [WALL SYNC] Line 0 needs new wall: {start: {…}, end: {…}}
+simulationDataConverter.ts:912 🔍 [SIMILAR WALL] Looking for similar wall for line: {start: {…}, end: {…}}
+simulationDataConverter.ts:913 🔍 [SIMILAR WALL] Checking against 0 walls with tolerance 1
+simulationDataConverter.ts:930 🔍 [SIMILAR WALL] Found similar wall: none
+simulationDataConverter.ts:997 🔧 [WALL SYNC] Similar wall found: none
+simulationDataConverter.ts:998 🔧 [WALL SYNC] Using temperature: 20 (default: 20)
+simulationDataConverter.ts:1002 🔧 [WALL SYNC] Created new wall: {id: 'wall_1F_1', temp: 20}
+simulationDataConverter.ts:991 🔧 [WALL SYNC] Line 1 needs new wall: {start: {…}, end: {…}}
+simulationDataConverter.ts:912 🔍 [SIMILAR WALL] Looking for similar wall for line: {start: {…}, end: {…}}
+simulationDataConverter.ts:913 🔍 [SIMILAR WALL] Checking against 0 walls with tolerance 1
+simulationDataConverter.ts:930 🔍 [SIMILAR WALL] Found similar wall: none
+simulationDataConverter.ts:997 🔧 [WALL SYNC] Similar wall found: none
+simulationDataConverter.ts:998 🔧 [WALL SYNC] Using temperature: 20 (default: 20)
+simulationDataConverter.ts:1002 🔧 [WALL SYNC] Created new wall: {id: 'wall_1F_2', temp: 20}
+simulationDataConverter.ts:991 🔧 [WALL SYNC] Line 2 needs new wall: {start: {…}, end: {…}}
+simulationDataConverter.ts:912 🔍 [SIMILAR WALL] Looking for similar wall for line: {start: {…}, end: {…}}
+simulationDataConverter.ts:913 🔍 [SIMILAR WALL] Checking against 0 walls with tolerance 1
+simulationDataConverter.ts:930 🔍 [SIMILAR WALL] Found similar wall: none
+simulationDataConverter.ts:997 🔧 [WALL SYNC] Similar wall found: none
+simulationDataConverter.ts:998 🔧 [WALL SYNC] Using temperature: 20 (default: 20)
+simulationDataConverter.ts:1002 🔧 [WALL SYNC] Created new wall: {id: 'wall_1F_3', temp: 20}id: "wall_1F_3"temp: 20[[Prototype]]: Object
+simulationDataConverter.ts:1009 🔧 [WALL SYNC] Result: 3 walls added, 3 total walls
+simulationDataConverter.ts:954 🔧 [WALL SYNC] Final result: 3 total walls
+wizard-design.tsx:823 🧠 [COMPREHENSIVE STORE CHECK] ALL entries with deep references: (2) [{…}, {…}]0: {floorName: 'ground', index: 0, id: 'window_0F_1', entryRef: {…}, positionRef: {…}, …}1: {floorName: 'first', index: 0, id: 'window_1F_1', entryRef: {…}, positionRef: {…}, …}length: 2[[Prototype]]: Array(0)
+wizard-design.tsx:849 🚨 [COMPREHENSIVE STORE CHECK] SHARED REFERENCES DETECTED: {entryA: 'ground[0]:window_0F_1', entryB: 'first[0]:window_1F_1', deepSharedAnalysis: {…}}deepSharedAnalysis: {entryRefSame: false, positionRefSame: false, positionXRefSame: true, positionYRefSame: true, lineRefSame: false, …}entryA: "ground[0]:window_0F_1"entryB: "first[0]:window_1F_1"[[Prototype]]: Object
+wizard-design.tsx:849 🚨 [COMPREHENSIVE STORE CHECK] SHARED REFERENCES DETECTED: {entryA: 'first[0]:window_1F_1', entryB: 'ground[0]:window_0F_1', deepSharedAnalysis: {…}}deepSharedAnalysis: {entryRefSame: false, positionRefSame: false, positionXRefSame: true, positionYRefSame: true, lineRefSame: false, …}entryA: "first[0]:window_1F_1"entryB: "ground[0]:window_0F_1"[[Prototype]]: Object
+wizard-design.tsx:860 🔍 [LINE REFERENCE CHECK] Checking for shared line references:

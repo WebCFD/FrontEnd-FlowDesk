@@ -789,6 +789,40 @@ export default function WizardDesign() {
     setStairPolygons(newStairPolygons);
     setHasClosedContour(sourceFloorData.hasClosedContour);
 
+    // CRITICAL: Force source floor to also regenerate numeric values to break primitive sharing
+    setTimeout(() => {
+      const sourceFloorCurrentData = useRoomStore.getState().floors[loadFromFloor];
+      if (sourceFloorCurrentData?.airEntries?.length > 0) {
+        const updatedSourceEntries = sourceFloorCurrentData.airEntries.map(entry => ({
+          ...entry,
+          position: {
+            x: parseFloat((entry.position.x + 0.000002).toString()) - 0.000002,
+            y: parseFloat((entry.position.y + 0.000002).toString()) - 0.000002
+          },
+          line: {
+            start: {
+              x: parseFloat((entry.line.start.x + 0.000002).toString()) - 0.000002,
+              y: parseFloat((entry.line.start.y + 0.000002).toString()) - 0.000002
+            },
+            end: {
+              x: parseFloat((entry.line.end.x + 0.000002).toString()) - 0.000002,
+              y: parseFloat((entry.line.end.y + 0.000002).toString()) - 0.000002
+            }
+          }
+        }));
+        
+        useRoomStore.getState().setFloors({
+          ...useRoomStore.getState().floors,
+          [loadFromFloor]: {
+            ...sourceFloorCurrentData,
+            airEntries: updatedSourceEntries
+          }
+        });
+        
+        console.log(`🔄 [PRIMITIVE BREAK] Updated source floor ${loadFromFloor} to break primitive sharing`);
+      }
+    }, 200);
+
     // COMPREHENSIVE STORE DIAGNOSTIC: Deep analysis after store assignment
     setTimeout(() => {
       const finalFloors = useRoomStore.getState().floors;
