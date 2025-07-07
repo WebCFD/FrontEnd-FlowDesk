@@ -573,56 +573,79 @@ export default function WizardDesign() {
     };
     
     return airEntries.map((entry, entryIndex) => {
-      // REPLICATE EXACT Canvas2D object creation process (lines 1761-1789)
-      const newEntry: AirEntry = {
-        type: entry.type,
-        position: {
-          x: entry.position.x,
-          y: entry.position.y
-        },
-        dimensions: {
-          width: entry.dimensions.width,
-          height: entry.dimensions.height,
-          distanceToFloor: entry.dimensions.distanceToFloor,
-          shape: entry.dimensions.shape
-        },
-        line: {
-          start: {
-            x: entry.line.start.x,
-            y: entry.line.start.y
-          },
-          end: {
-            x: entry.line.end.x,
-            y: entry.line.end.y
-          }
-        },
-        lineId: entry.lineId,
-        properties: {
-          state: entry.properties?.state || 'closed',
-          temperature: entry.properties?.temperature || 20,
-          flowType: entry.properties?.flowType || 'Air Mass Flow',
-          flowValue: entry.properties?.flowValue || 0.5,
-          flowIntensity: entry.properties?.flowIntensity || 'medium',
-          airOrientation: entry.properties?.airOrientation || 'inflow',
-          verticalAngle: entry.properties?.verticalAngle || 0,
-          horizontalAngle: entry.properties?.horizontalAngle || 0,
-          ...(entry.properties?.customIntensityValue !== undefined && {
-            customIntensityValue: entry.properties.customIntensityValue
-          })
-        },
-        id: `${entry.type}_${floorPrefix}_${typeCounters[entry.type]++}`,
-        // Copy wallPosition exactly like Canvas2D
-        ...(entry.wallPosition !== undefined && { wallPosition: entry.wallPosition }),
-        // Copy wallContext if it exists (Canvas2D creates this)
-        ...(entry.wallContext && { wallContext: {
-          wallId: entry.wallContext.wallId,
-          floorName: currentFloor,
-          wallStart: { x: entry.wallContext.wallStart.x, y: entry.wallContext.wallStart.y },
-          wallEnd: { x: entry.wallContext.wallEnd.x, y: entry.wallContext.wallEnd.y },
-          clickPosition: { x: entry.wallContext.clickPosition.x, y: entry.wallContext.clickPosition.y },
-          ceilingHeight: entry.wallContext.ceilingHeight
-        }})
-      } as any;
+      // FORCE COMPLETELY INDEPENDENT OBJECT CREATION using constructor pattern
+      // This mimics how Canvas2D creates objects but forces unique memory allocation
+      const positionObj = new Object();
+      positionObj.x = entry.position.x;
+      positionObj.y = entry.position.y;
+      
+      const dimensionsObj = new Object();
+      dimensionsObj.width = entry.dimensions.width;
+      dimensionsObj.height = entry.dimensions.height;
+      dimensionsObj.distanceToFloor = entry.dimensions.distanceToFloor;
+      dimensionsObj.shape = entry.dimensions.shape;
+      
+      const lineStartObj = new Object();
+      lineStartObj.x = entry.line.start.x;
+      lineStartObj.y = entry.line.start.y;
+      
+      const lineEndObj = new Object();
+      lineEndObj.x = entry.line.end.x;
+      lineEndObj.y = entry.line.end.y;
+      
+      const lineObj = new Object();
+      lineObj.start = lineStartObj;
+      lineObj.end = lineEndObj;
+      
+      const propertiesObj = new Object();
+      propertiesObj.state = entry.properties?.state || 'closed';
+      propertiesObj.temperature = entry.properties?.temperature || 20;
+      propertiesObj.flowType = entry.properties?.flowType || 'Air Mass Flow';
+      propertiesObj.flowValue = entry.properties?.flowValue || 0.5;
+      propertiesObj.flowIntensity = entry.properties?.flowIntensity || 'medium';
+      propertiesObj.airOrientation = entry.properties?.airOrientation || 'inflow';
+      propertiesObj.verticalAngle = entry.properties?.verticalAngle || 0;
+      propertiesObj.horizontalAngle = entry.properties?.horizontalAngle || 0;
+      if (entry.properties?.customIntensityValue !== undefined) {
+        propertiesObj.customIntensityValue = entry.properties.customIntensityValue;
+      }
+      
+      const newEntry = new Object();
+      newEntry.type = entry.type;
+      newEntry.position = positionObj;
+      newEntry.dimensions = dimensionsObj;
+      newEntry.line = lineObj;
+      newEntry.lineId = entry.lineId;
+      newEntry.properties = propertiesObj;
+      newEntry.id = `${entry.type}_${floorPrefix}_${typeCounters[entry.type]++}`;
+      
+      if (entry.wallPosition !== undefined) {
+        newEntry.wallPosition = entry.wallPosition;
+      }
+      
+      if (entry.wallContext) {
+        const wallContextObj = new Object();
+        wallContextObj.wallId = entry.wallContext.wallId;
+        wallContextObj.floorName = currentFloor;
+        
+        const wallStartObj = new Object();
+        wallStartObj.x = entry.wallContext.wallStart.x;
+        wallStartObj.y = entry.wallContext.wallStart.y;
+        wallContextObj.wallStart = wallStartObj;
+        
+        const wallEndObj = new Object();
+        wallEndObj.x = entry.wallContext.wallEnd.x;
+        wallEndObj.y = entry.wallContext.wallEnd.y;
+        wallContextObj.wallEnd = wallEndObj;
+        
+        const clickPositionObj = new Object();
+        clickPositionObj.x = entry.wallContext.clickPosition.x;
+        clickPositionObj.y = entry.wallContext.clickPosition.y;
+        wallContextObj.clickPosition = clickPositionObj;
+        
+        wallContextObj.ceilingHeight = entry.wallContext.ceilingHeight;
+        newEntry.wallContext = wallContextObj;
+      }
       
       // DEEP MEMORY DIAGNOSTIC: Check complete object tree independence
       console.log("🧠 [DEEP MEMORY CHECK] Complete object independence analysis:", {
