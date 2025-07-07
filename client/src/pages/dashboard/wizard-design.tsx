@@ -583,7 +583,10 @@ export default function WizardDesign() {
         arePropertiesSameRef: entry.properties === newEntry.properties,
         hasProperties: !!entry.properties,
         entryIndex,
-        freshObjectCreated: true
+        freshObjectCreated: true,
+        originalPropertiesRef: entry.properties,
+        newPropertiesRef: newEntry.properties,
+        functionUsed: entry.properties ? 'createFreshProperties' : 'createDefaultProperties'
       });
       
       return newEntry;
@@ -679,6 +682,24 @@ export default function WizardDesign() {
         propertiesRef: entry.properties
       }))
     });
+
+    // CRITICAL DEBUG: Check if any new entries share references with source entries
+    console.log("🚨 [REFERENCE CHECK] Checking for shared references after regeneration:");
+    newAirEntries?.forEach((newEntry, newIndex) => {
+      sourceFloorData.airEntries?.forEach((sourceEntry, sourceIndex) => {
+        if (newEntry.properties === (sourceEntry as any).properties && newEntry.properties) {
+          console.log("🚨 [REFERENCE CHECK] SHARED REFERENCE FOUND:", {
+            newEntryId: newEntry.id,
+            newEntryIndex: newIndex,
+            sourceEntryId: (sourceEntry as any).id,
+            sourceEntryIndex: sourceIndex,
+            sharedPropertiesRef: newEntry.properties,
+            sourceFloor: loadFromFloor,
+            targetFloor: currentFloor
+          });
+        }
+      });
+    });
     const newWalls = regenerateWallIds([...(sourceFloorData.walls || [])], currentFloor);
     const newMeasurements = regenerateMeasurementIds([...sourceFloorData.measurements]);
 
@@ -721,6 +742,33 @@ export default function WizardDesign() {
     setMeasurements(newMeasurements);
     setStairPolygons(newStairPolygons);
     setHasClosedContour(sourceFloorData.hasClosedContour);
+
+    // FINAL DEBUG: Check state after setting new air entries
+    console.log("🚨 [FINAL CHECK] Air entries set in store, checking for cross-floor references:");
+    setTimeout(() => {
+      const finalFloors = useRoomStore.getState().floors;
+      Object.keys(finalFloors).forEach(floorName => {
+        finalFloors[floorName]?.airEntries?.forEach((entry, index) => {
+          Object.keys(finalFloors).forEach(otherFloorName => {
+            if (floorName !== otherFloorName) {
+              finalFloors[otherFloorName]?.airEntries?.forEach((otherEntry, otherIndex) => {
+                if (entry.properties === (otherEntry as any).properties && entry.properties) {
+                  console.log("🚨 [FINAL CHECK] CROSS-FLOOR SHARED REFERENCE:", {
+                    floor1: floorName,
+                    entry1Id: (entry as any).id,
+                    entry1Index: index,
+                    floor2: otherFloorName,
+                    entry2Id: (otherEntry as any).id,
+                    entry2Index: otherIndex,
+                    sharedPropertiesRef: entry.properties
+                  });
+                }
+              });
+            }
+          });
+        });
+      });
+    }, 100);
 
     // Project stairs from adjacent floors after template load
     setTimeout(() => {
@@ -1332,8 +1380,50 @@ export default function WizardDesign() {
       horizontalAngle?: number;
     }
   ) => {
+    console.log("🚨 [PROPERTIES UPDATE DEBUG] handlePropertiesUpdateFrom3D called:", {
+      floorName,
+      index,
+      incomingProperties: properties,
+      incomingPropertiesRef: properties
+    });
+
     // Update only the properties in real-time without triggering scene rebuild
     const currentFloors = useRoomStore.getState().floors;
+    
+    const targetEntry = currentFloors[floorName]?.airEntries?.[index];
+    console.log("🚨 [PROPERTIES UPDATE DEBUG] Target entry before update:", {
+      targetEntryId: targetEntry?.id,
+      existingProperties: targetEntry?.properties,
+      existingPropertiesRef: targetEntry?.properties
+    });
+
+    // Check if this properties object is shared with other entries
+    let sharedCount = 0;
+    Object.keys(currentFloors).forEach(otherFloorName => {
+      currentFloors[otherFloorName]?.airEntries?.forEach((entry, entryIndex) => {
+        if (entry.properties === targetEntry?.properties && targetEntry?.properties) {
+          sharedCount++;
+          console.log("🚨 [PROPERTIES UPDATE DEBUG] SHARED REFERENCE DETECTED:", {
+            sharedWithFloor: otherFloorName,
+            sharedWithIndex: entryIndex,
+            sharedWithId: entry.id,
+            sharedPropertiesRef: entry.properties
+          });
+        }
+      });
+    });
+
+    const newProperties = {
+      ...targetEntry?.properties,
+      ...properties
+    };
+
+    console.log("🚨 [PROPERTIES UPDATE DEBUG] New properties object:", {
+      newProperties,
+      newPropertiesRef: newProperties,
+      wasSharedBefore: sharedCount > 1
+    });
+
     useRoomStore.getState().setFloors({
       ...currentFloors,
       [floorName]: {
@@ -1341,10 +1431,7 @@ export default function WizardDesign() {
         airEntries: currentFloors[floorName].airEntries.map((entry, i) => 
           i === index ? {
             ...entry,
-            properties: {
-              ...entry.properties,
-              ...properties
-            }
+            properties: newProperties
           } : entry
         )
       }
