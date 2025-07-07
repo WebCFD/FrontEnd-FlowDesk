@@ -414,22 +414,20 @@ export const useRoomStore = create<RoomState>()(
           
           // CRITICAL DEBUG: Check if incoming properties are already shared BEFORE processing
           let incomingSharedCount = 0;
+          let sharedDetails = [];
           Object.keys(state.floors).forEach(otherFloorName => {
             state.floors[otherFloorName]?.airEntries?.forEach((entry, entryIndex) => {
               if (entry.properties === properties) {
                 incomingSharedCount++;
-                console.log("🚨 [STORE DEBUG] INCOMING PROPERTIES ALREADY SHARED:", {
-                  sharedWithFloor: otherFloorName,
-                  sharedWithIndex: entryIndex,
-                  sharedWithId: entry.id,
-                  incomingPropertiesRef: properties
-                });
+                sharedDetails.push(`${otherFloorName}[${entryIndex}]:${entry.id}`);
               }
             });
           });
           
           if (incomingSharedCount > 0) {
-            console.log("🚨 [STORE DEBUG] INCOMING SHARED REFERENCE COUNT:", incomingSharedCount);
+            console.log(`🚨 [STORE DEBUG] INCOMING SHARED - COUNT: ${incomingSharedCount}, WITH: ${sharedDetails.join(', ')}`);
+          } else {
+            console.log("✅ [STORE DEBUG] INCOMING PROPERTIES NOT SHARED");
           }
           
           const currentFloors = { ...state.floors };
@@ -454,21 +452,19 @@ export const useRoomStore = create<RoomState>()(
             });
 
             // Check if this properties object is currently used by other entries
-            let propertiesCurrentlySharedWith = [];
+            let currentlySharedWith = [];
             Object.keys(currentFloors).forEach(otherFloorName => {
               currentFloors[otherFloorName]?.airEntries?.forEach((entry, entryIndex) => {
                 if (entry.properties === properties) {
-                  propertiesCurrentlySharedWith.push({
-                    floor: otherFloorName,
-                    index: entryIndex,
-                    id: entry.id
-                  });
+                  currentlySharedWith.push(`${otherFloorName}[${entryIndex}]:${entry.id}`);
                 }
               });
             });
 
-            if (propertiesCurrentlySharedWith.length > 0) {
-              console.log("🚨 [SPREAD DEBUG] PROPERTIES PARAM IS CURRENTLY SHARED WITH:", propertiesCurrentlySharedWith);
+            if (currentlySharedWith.length > 0) {
+              console.log(`🚨 [SPREAD DEBUG] PROPERTIES CURRENTLY SHARED WITH: ${currentlySharedWith.join(', ')}`);
+            } else {
+              console.log("✅ [SPREAD DEBUG] PROPERTIES NOT CURRENTLY SHARED");
             }
 
             // Execute the spread operation and immediately check result
@@ -523,23 +519,22 @@ export const useRoomStore = create<RoomState>()(
 
             // FINAL DEBUG: Check if the new properties object ended up being shared
             console.log("🚨 [FINAL SPREAD DEBUG] Checking if new properties are now shared across floors:");
+            let finalSharedWith = [];
             Object.keys(currentFloors).forEach(otherFloorName => {
               currentFloors[otherFloorName]?.airEntries?.forEach((entry, entryIndex) => {
                 // Exclude the entry being updated (avoid false positive auto-reference)
                 const isCurrentEntry = (otherFloorName === floorName && entryIndex === index);
                 if (entry.properties === newProperties && entry.properties && !isCurrentEntry) {
-                  console.log("🚨 [FINAL SPREAD DEBUG] NEW PROPERTIES NOW SHARED WITH:", {
-                    targetFloor: floorName,
-                    targetIndex: index,
-                    targetId: updatedAirEntries[index].id,
-                    sharedWithFloor: otherFloorName,
-                    sharedWithIndex: entryIndex,
-                    sharedWithId: entry.id,
-                    sharedPropertiesRef: entry.properties
-                  });
+                  finalSharedWith.push(`${otherFloorName}[${entryIndex}]:${entry.id}`);
                 }
               });
             });
+            
+            if (finalSharedWith.length > 0) {
+              console.log(`🚨 [FINAL SPREAD DEBUG] NEW PROPERTIES SHARED WITH: ${finalSharedWith.join(', ')}`);
+            } else {
+              console.log("✅ [FINAL SPREAD DEBUG] NEW PROPERTIES NOT SHARED - SUCCESS");
+            }
           }
           
           return { floors: currentFloors };
