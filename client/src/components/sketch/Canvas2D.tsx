@@ -3330,74 +3330,69 @@ export default function Canvas2D({
   // SAVE CHANGES LOGIC: Updates existing element properties
   // This is called for BOTH newly created elements (from wall click) and existing elements (from double-click)
   // The workflow treats both cases identically - just updating an existing element in the array
-  // Real-time position update handler - uses element ID for targeting but maintains callback propagation
-  const handleAirEntryPositionUpdate = (elementId: string, newPosition: { x: number; y: number }) => {
-    // Find element by ID to get the correct index
-    const elementIndex = airEntries.findIndex(entry => entry.id === elementId);
-    if (elementIndex === -1) return;
+  // Real-time position update handler - updates store immediately during dialog interactions
+  const handleAirEntryPositionUpdate = (index: number, newPosition: { x: number; y: number }) => {
+    console.log("🟢 [CANVAS2D DEBUG] handleAirEntryPositionUpdate called with index:", index, "position:", newPosition);
     
     // Update the store immediately to maintain visual consistency
     const updatedAirEntries = [...airEntries];
-    updatedAirEntries[elementIndex] = {
-      ...updatedAirEntries[elementIndex],
-      position: newPosition
-    };
+    if (updatedAirEntries[index]) {
+      const originalEntry = updatedAirEntries[index];
+      console.log("🟢 [CANVAS2D DEBUG] Original entry before update:", originalEntry);
+      console.log("🟢 [CANVAS2D DEBUG] Original wallPosition:", originalEntry.dimensions?.wallPosition);
+      
+      updatedAirEntries[index] = {
+        ...updatedAirEntries[index],
+        position: newPosition
+      };
+      
+      console.log("🟢 [CANVAS2D DEBUG] Updated entry after position change:", updatedAirEntries[index]);
+      console.log("🟢 [CANVAS2D DEBUG] wallPosition preserved?:", updatedAirEntries[index].dimensions?.wallPosition);
 
-    onAirEntriesUpdate?.(updatedAirEntries);
-    
-    // CRITICAL: Propagate to parent for cross-component synchronization
-    if (onPositionUpdate) {
-      onPositionUpdate(currentFloor, elementIndex, updatedAirEntries[elementIndex]);
+      onAirEntriesUpdate?.(updatedAirEntries);
+      
+      // Also update the editing state for immediate visual feedback
+      setEditingAirEntries(prev => prev.map(item => 
+        item.index === index ? {
+          ...item,
+          entry: {
+            ...item.entry,
+            position: newPosition
+          }
+        } : item
+      ));
     }
-    
-    // Also update the editing state for immediate visual feedback using element ID
-    setEditingAirEntries(prev => prev.map(item => 
-      item.entry.id === elementId ? {
-        ...item,
-        entry: {
-          ...item.entry,
-          position: newPosition
-        }
-      } : item
-    ));
   };
 
-  // Real-time dimensions update handler - uses element ID for targeting but maintains callback propagation
-  const handleAirEntryDimensionsUpdate = (elementId: string, newDimensions: { width?: number; height?: number; distanceToFloor?: number }) => {
-    // Find element by ID to get the correct index
-    const elementIndex = airEntries.findIndex(entry => entry.id === elementId);
-    if (elementIndex === -1) return;
-    
+  // Real-time dimensions update handler - updates store immediately during dialog interactions
+  const handleAirEntryDimensionsUpdate = (index: number, newDimensions: { width?: number; height?: number; distanceToFloor?: number }) => {
     // Update the store immediately to maintain visual consistency for Width changes
     const updatedAirEntries = [...airEntries];
-    updatedAirEntries[elementIndex] = {
-      ...updatedAirEntries[elementIndex],
-      dimensions: {
-        ...updatedAirEntries[elementIndex].dimensions,
-        ...newDimensions
-      }
-    };
-    
-    onAirEntriesUpdate?.(updatedAirEntries);
-    
-    // CRITICAL: Propagate to parent for cross-component synchronization
-    if (onDimensionsUpdate) {
-      onDimensionsUpdate(currentFloor, elementIndex, newDimensions);
-    }
-    
-    // Also update the editing state for immediate visual feedback using element ID
-    setEditingAirEntries(prev => prev.map(item => 
-      item.entry.id === elementId ? {
-        ...item,
-        entry: {
-          ...item.entry,
-          dimensions: {
-            ...item.entry.dimensions,
-            ...newDimensions
-          }
+    if (updatedAirEntries[index]) {
+      updatedAirEntries[index] = {
+        ...updatedAirEntries[index],
+        dimensions: {
+          ...updatedAirEntries[index].dimensions,
+          ...newDimensions
         }
-      } : item
-    ));
+      };
+      
+      onAirEntriesUpdate?.(updatedAirEntries);
+      
+      // Also update the editing state for immediate visual feedback
+      setEditingAirEntries(prev => prev.map(item => 
+        item.index === index ? {
+          ...item,
+          entry: {
+            ...item.entry,
+            dimensions: {
+              ...item.entry.dimensions,
+              ...newDimensions
+            }
+          }
+        } : item
+      ));
+    }
   };
 
   const handleAirEntryEdit = (
@@ -3691,14 +3686,17 @@ export default function Canvas2D({
             ceilingHeight: ceilingHeight * 100 // Convert to cm
           }}
           onPositionUpdate={(newPosition) => {
-            // CRITICAL FIX: Use element ID instead of index for precise targeting
-            handleAirEntryPositionUpdate(editingAirEntry.entry.id, newPosition);
+            // Use the simplified real-time position update mechanism
+            handleAirEntryPositionUpdate(editingAirEntry.index, newPosition);
           }}
           onDimensionsUpdate={(newDimensions) => {
-            // CRITICAL FIX: Use element ID instead of index for precise targeting
-            handleAirEntryDimensionsUpdate(editingAirEntry.entry.id, newDimensions);
+            // Use the local handler for immediate visual updates in Canvas2D
+            handleAirEntryDimensionsUpdate(editingAirEntry.index, newDimensions);
             
-            // Propagation handled by handleAirEntryDimensionsUpdate
+            // Also propagate to parent for store synchronization
+            if (onDimensionsUpdate) {
+              onDimensionsUpdate(currentFloor, editingAirEntry.index, newDimensions);
+            }
           }}
         />
       ))}
