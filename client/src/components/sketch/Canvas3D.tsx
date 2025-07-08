@@ -4489,18 +4489,13 @@ export default function Canvas3D({
           floorData = finalFloors[targetFloorName];
           
           if (floorData && floorData.airEntries) {
-            console.log("Double-click position search (using userData floor):", {
-              airEntryData: airEntryData,
-              entryPosition: airEntryData.position,
-              storedEntryIndex: airEntryData.entryIndex,
-              targetFloor: targetFloorName
-            });
+            // Double-click position search using userData floor
 
             // First try to use the stored entryIndex if available (most reliable)
             if (typeof airEntryData.entryIndex === 'number') {
               if (airEntryData.entryIndex >= 0 && airEntryData.entryIndex < floorData.airEntries.length) {
                 foundIndex = airEntryData.entryIndex;
-                console.log("Double-click found entry using stored entryIndex:", foundIndex, "in floor:", targetFloorName);
+                // Found entry using stored entryIndex
               }
             }
 
@@ -4529,7 +4524,6 @@ export default function Canvas3D({
 
         // If not found using userData floor, search through ALL floors
         if (foundIndex === -1) {
-          console.log("Searching through all floors for AirEntry...");
           
           for (const [floorName, currentFloorData] of Object.entries(finalFloors)) {
             if (currentFloorData && currentFloorData.airEntries) {
