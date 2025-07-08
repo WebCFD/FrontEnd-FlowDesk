@@ -4611,6 +4611,41 @@ export default function Canvas3D({
     })
   ]);
 
+  // Helper function to calculate position from wallPosition percentage
+  const calculatePositionFromWallPosition = useCallback((
+    wallPosition: number,
+    line: { start: Point; end: Point },
+    options: { width: number }
+  ): Point | null => {
+    const { width } = options;
+    
+    // Calculate wall length
+    const wallLength = Math.sqrt(
+      Math.pow(line.end.x - line.start.x, 2) + 
+      Math.pow(line.end.y - line.start.y, 2)
+    );
+    
+    // Convert element width from cm to pixels
+    const PIXELS_TO_CM = 1.25;
+    const elementWidthPixels = width / PIXELS_TO_CM;
+    const halfElementWidth = elementWidthPixels / 2;
+    
+    // Calculate effective length (wall length - element width)
+    const effectiveLength = Math.max(0, wallLength - elementWidthPixels);
+    
+    // Convert percentage to actual distance
+    const t = wallPosition / 100;
+    const actualDistance = halfElementWidth + (effectiveLength * t);
+    
+    // Calculate final position
+    const normalizedT = actualDistance / wallLength;
+    
+    return {
+      x: line.start.x + (line.end.x - line.start.x) * normalizedT,
+      y: line.start.y + (line.end.y - line.start.y) * normalizedT
+    };
+  }, []);
+
   // PHASE 2: Function to update AirEntry mesh directly (like furniture) - placed after finalFloors declaration
   const updateAirEntryMeshDirectly = useCallback((floorName: string, entryIndex: number, changes: AirEntryMeshChanges): boolean => {
     const mesh = findAirEntryMesh(floorName, entryIndex);
@@ -4652,6 +4687,29 @@ export default function Canvas3D({
       // Handle position changes if distanceToFloor changed
       if (changes.dimensions.distanceToFloor !== undefined) {
         needsPositionUpdate = true;
+      }
+
+      // Handle wallPosition changes - convert percentage to coordinates
+      if (changes.dimensions.wallPosition !== undefined) {
+        const wallPosition = changes.dimensions.wallPosition;
+        const line = mesh.userData.line;
+        
+        if (line) {
+          // Calculate new position from wallPosition percentage
+          const newPosition = calculatePositionFromWallPosition(wallPosition, line, {
+            width: mesh.userData.dimensions?.width || 60
+          });
+          
+          if (newPosition) {
+            needsPositionUpdate = true;
+            mesh.userData.position = newPosition;
+            
+            // Also update the position in changes for consistency
+            if (!changes.position) {
+              changes.position = newPosition;
+            }
+          }
+        }
       }
     }
 
@@ -4722,7 +4780,7 @@ export default function Canvas3D({
     }
 
     return true;
-  }, [findAirEntryMesh, finalFloors, getFloorBaseHeight, transform2DTo3D]);
+  }, [findAirEntryMesh, finalFloors, getFloorBaseHeight, transform2DTo3D, calculatePositionFromWallPosition]);
 
   useEffect(() => {
     // Scene rebuild using store data when available, fallback to props
