@@ -504,7 +504,56 @@ export default function WizardDesign() {
 
   const [isFloorLoadDialogOpen, setIsFloorLoadDialogOpen] = useState(false);
 
-
+  // Helper functions for ID regeneration
+  const regenerateAirEntryIds = (airEntries: AirEntry[], floor: string) => {
+    // Get floor prefix same as walls
+    const floorPrefix = floor === 'ground' ? '0F' : 
+                       floor === 'first' ? '1F' :
+                       floor === 'second' ? '2F' :
+                       floor === 'third' ? '3F' :
+                       floor === 'fourth' ? '4F' :
+                       floor === 'fifth' ? '5F' : '0F';
+    
+    // Get existing air entries in target floor to avoid ID conflicts
+    const existingEntries = floors[currentFloor]?.airEntries || [];
+    const typeCounters = { window: 1, door: 1, vent: 1 };
+    
+    // Count existing entries to start numbering from the next available number
+    existingEntries.forEach(entry => {
+      const anyEntry = entry as any;
+      if (anyEntry.id) {
+        // Updated regex to match new format: window_0F_1, door_1F_2, etc.
+        const match = anyEntry.id.match(new RegExp(`^(window|door|vent)_${floorPrefix}_(\\d+)$`));
+        if (match) {
+          const type = match[1] as keyof typeof typeCounters;
+          const num = parseInt(match[2]);
+          if (typeCounters[type] <= num) {
+            typeCounters[type] = num + 1;
+          }
+        }
+      }
+    });
+    
+    return airEntries.map((entry, entryIndex) => {
+      const newEntry = {
+        ...entry,
+        properties: entry.properties ? { ...entry.properties } : undefined,
+        id: `${entry.type}_${floorPrefix}_${typeCounters[entry.type]++}`
+      } as any;
+      
+      console.log("🔄 [REGENERATE DEBUG] Processing entry:", {
+        originalId: entry.id,
+        newId: newEntry.id,
+        originalProperties: entry.properties,
+        newProperties: newEntry.properties,
+        arePropertiesSameRef: entry.properties === newEntry.properties,
+        hasProperties: !!entry.properties,
+        entryIndex
+      });
+      
+      return newEntry;
+    });
+  };
 
   const regenerateWallIds = (walls: Wall[], floor: string): Wall[] => {
     const floorPrefix = floor === 'ground' ? '0F' : 
@@ -568,15 +617,33 @@ export default function WizardDesign() {
       hasClosedContour: false,
     };
 
-    // REMOVED: Memory diagnostic - AirEntries no longer copied
+    console.log("🔄 [FLOOR LOAD DEBUG] Source data before copy:", {
+      floorName: loadFromFloor,
+      airEntriesCount: sourceFloorData.airEntries?.length || 0,
+      airEntries: sourceFloorData.airEntries?.map(entry => ({
+        id: entry.id,
+        type: entry.type,
+        hasProperties: !!entry.properties,
+        properties: entry.properties,
+        propertiesRef: entry.properties
+      }))
+    });
 
-    // Regenerate IDs for all copied elements (AIRENTRY COPYING ELIMINATED)
+    // Regenerate IDs for all copied elements
     const newLines = regenerateLineIds([...sourceFloorData.lines]);
-    // REMOVED: AirEntry copying functionality - users must manually create AirEntries
+    const newAirEntries = regenerateAirEntryIds([...sourceFloorData.airEntries], currentFloor);
     
-    // REMOVED: Memory diagnostic for AirEntries - no longer copied
-
-    // REMOVED: Old reference check (replaced with comprehensive memory diagnostic)
+    console.log("🔄 [FLOOR LOAD DEBUG] After regenerateAirEntryIds:", {
+      targetFloor: currentFloor,
+      newAirEntriesCount: newAirEntries?.length || 0,
+      newAirEntries: newAirEntries?.map(entry => ({
+        id: entry.id,
+        type: entry.type,
+        hasProperties: !!entry.properties,
+        properties: entry.properties,
+        propertiesRef: entry.properties
+      }))
+    });
     const newWalls = regenerateWallIds([...(sourceFloorData.walls || [])], currentFloor);
     const newMeasurements = regenerateMeasurementIds([...sourceFloorData.measurements]);
 
@@ -612,15 +679,13 @@ export default function WizardDesign() {
       }));
     }
 
-    // Set new data for the current floor (AirEntries NOT copied)
+    // Set new data for the current floor
     setLines(newLines);
-    // REMOVED: setAirEntries(newAirEntries) - AirEntries are no longer copied during Load
+    setAirEntries(newAirEntries);
     setWalls(newWalls);
     setMeasurements(newMeasurements);
     setStairPolygons(newStairPolygons);
     setHasClosedContour(sourceFloorData.hasClosedContour);
-
-    // REMOVED: All diagnostic code - AirEntries are no longer copied
 
     // Project stairs from adjacent floors after template load
     setTimeout(() => {
@@ -1232,50 +1297,8 @@ export default function WizardDesign() {
       horizontalAngle?: number;
     }
   ) => {
-    console.log("🚨 [PROPERTIES UPDATE DEBUG] handlePropertiesUpdateFrom3D called:", {
-      floorName,
-      index,
-      incomingProperties: properties,
-      incomingPropertiesRef: properties
-    });
-
     // Update only the properties in real-time without triggering scene rebuild
     const currentFloors = useRoomStore.getState().floors;
-    
-    const targetEntry = currentFloors[floorName]?.airEntries?.[index];
-    console.log("🚨 [PROPERTIES UPDATE DEBUG] Target entry before update:", {
-      targetEntryId: targetEntry?.id,
-      existingProperties: targetEntry?.properties,
-      existingPropertiesRef: targetEntry?.properties
-    });
-
-    // Check if this properties object is shared with other entries
-    let sharedCount = 0;
-    Object.keys(currentFloors).forEach(otherFloorName => {
-      currentFloors[otherFloorName]?.airEntries?.forEach((entry, entryIndex) => {
-        if (entry.properties === targetEntry?.properties && targetEntry?.properties) {
-          sharedCount++;
-          console.log("🚨 [PROPERTIES UPDATE DEBUG] SHARED REFERENCE DETECTED:", {
-            sharedWithFloor: otherFloorName,
-            sharedWithIndex: entryIndex,
-            sharedWithId: entry.id,
-            sharedPropertiesRef: entry.properties
-          });
-        }
-      });
-    });
-
-    const newProperties = {
-      ...targetEntry?.properties,
-      ...properties
-    };
-
-    console.log("🚨 [PROPERTIES UPDATE DEBUG] New properties object:", {
-      newProperties,
-      newPropertiesRef: newProperties,
-      wasSharedBefore: sharedCount > 1
-    });
-
     useRoomStore.getState().setFloors({
       ...currentFloors,
       [floorName]: {
@@ -1283,7 +1306,10 @@ export default function WizardDesign() {
         airEntries: currentFloors[floorName].airEntries.map((entry, i) => 
           i === index ? {
             ...entry,
-            properties: newProperties
+            properties: {
+              ...entry.properties,
+              ...properties
+            }
           } : entry
         )
       }
