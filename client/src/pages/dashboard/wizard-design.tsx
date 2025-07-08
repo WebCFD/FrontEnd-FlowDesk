@@ -1092,8 +1092,8 @@ export default function WizardDesign() {
     updatedEntry: AirEntry,
   ) => {
     
-    // CRITICAL FIX: Preserve wallPosition from existing store data
-    const existingEntry = airEntries[index];
+    // CRITICAL FIX: Preserve wallPosition from existing store data using correct floor
+    const existingEntry = rawFloors[floorName]?.airEntries?.[index];
     
     // Create merged entry preserving wallPosition
     const preservedDimensions = {
@@ -1141,8 +1141,8 @@ export default function WizardDesign() {
       return;
     }
 
-    // For other floors, create a deep copy of the floors object
-    const updatedFloors = { ...floors };
+    // For other floors, create a deep copy of the floors object using raw store data
+    const updatedFloors = { ...rawFloors };
 
     // Check if the floor and its air entries exist
     if (updatedFloors[floorName]?.airEntries) {
