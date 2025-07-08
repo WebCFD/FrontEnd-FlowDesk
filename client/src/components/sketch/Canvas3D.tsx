@@ -1986,6 +1986,24 @@ export default function Canvas3D({
     }
   }>({});
 
+  // CRITICAL FIX: Expose position cache clearing function to prevent cross-floor interference
+  // This function is called when elements are copied with Load to ensure position independence
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as any).clearCanvas3DPositionCache = (floorName: string) => {
+        const normalizedFloorName = normalizeFloorName(floorName);
+        if (updatedAirEntryPositionsRef.current[normalizedFloorName]) {
+          delete updatedAirEntryPositionsRef.current[normalizedFloorName];
+        }
+      };
+    }
+    return () => {
+      if (typeof window !== 'undefined') {
+        delete (window as any).clearCanvas3DPositionCache;
+      }
+    };
+  }, []);
+
 
   // Add this ref to track measurement state
   const measurementStateRef = useRef({
