@@ -4656,6 +4656,17 @@ export default function Canvas3D({
       return false;
     }
 
+    // Compare mesh data with store data for debugging
+    const storeFloors = useRoomStore.getState().floors;
+    const storeEntry = storeFloors[floorName]?.airEntries?.[entryIndex];
+    console.log(`🔧 [DATA COMPARISON] Store AirEntry data:`, storeEntry);
+    console.log(`🔧 [DATA COMPARISON] Mesh userData:`, {
+      position: mesh.userData.position,
+      dimensions: mesh.userData.dimensions,
+      line: mesh.userData.line,
+      type: mesh.userData.type
+    });
+
     let needsGeometryUpdate = false;
     let needsPositionUpdate = false;
 
@@ -4694,40 +4705,73 @@ export default function Canvas3D({
 
       // Handle wallPosition changes - convert percentage to coordinates
       if (changes.dimensions.wallPosition !== undefined) {
-        console.log(`🔧 [WALLPOSITION FIX] wallPosition change detected: ${changes.dimensions.wallPosition}%`);
+        console.log(`🔧 [POSITION COMPARISON] ===== SAVECHANGES ANALYSIS =====`);
+        console.log(`🔧 [POSITION COMPARISON] Dialog says wallPosition should be: ${changes.dimensions.wallPosition}%`);
+        
+        // Log current mesh position BEFORE any changes
+        const currentMeshPosition = mesh.position;
+        const currentUserDataPosition = mesh.userData.position;
+        console.log(`🔧 [POSITION COMPARISON] Current mesh.position (3D world):`, {
+          x: currentMeshPosition.x, 
+          y: currentMeshPosition.y, 
+          z: currentMeshPosition.z
+        });
+        console.log(`🔧 [POSITION COMPARISON] Current mesh.userData.position (2D):`, currentUserDataPosition);
+        
         const wallPosition = changes.dimensions.wallPosition;
         const line = mesh.userData.line;
         
-        console.log(`🔧 [WALLPOSITION FIX] mesh.userData.line:`, line);
-        console.log(`🔧 [WALLPOSITION FIX] mesh.userData.dimensions:`, mesh.userData.dimensions);
+        console.log(`🔧 [POSITION COMPARISON] Using mesh.userData.line:`, {
+          start: line?.start,
+          end: line?.end,
+          id: line?.id
+        });
+        console.log(`🔧 [POSITION COMPARISON] Using mesh.userData.dimensions:`, mesh.userData.dimensions);
         
         if (line) {
+          // Calculate wall length for comparison
+          const wallLength = Math.sqrt(
+            Math.pow(line.end.x - line.start.x, 2) + 
+            Math.pow(line.end.y - line.start.y, 2)
+          );
+          console.log(`🔧 [POSITION COMPARISON] Wall length: ${wallLength} pixels`);
+          
           // Calculate new position from wallPosition percentage
           const newPosition = calculatePositionFromWallPosition(wallPosition, line, {
             width: mesh.userData.dimensions?.width || 60
           });
           
-          console.log(`🔧 [WALLPOSITION FIX] Calculated newPosition:`, newPosition);
-          console.log(`🔧 [WALLPOSITION FIX] Original mesh.userData.position:`, mesh.userData.position);
+          console.log(`🔧 [POSITION COMPARISON] Calculated newPosition for ${wallPosition}%:`, newPosition);
+          
+          // Calculate what percentage the CURRENT position represents
+          if (currentUserDataPosition && line) {
+            const currentDistanceFromStart = Math.sqrt(
+              Math.pow(currentUserDataPosition.x - line.start.x, 2) + 
+              Math.pow(currentUserDataPosition.y - line.start.y, 2)
+            );
+            const currentPercentage = (currentDistanceFromStart / wallLength) * 100;
+            console.log(`🔧 [POSITION COMPARISON] CURRENT position represents: ${currentPercentage.toFixed(1)}%`);
+            console.log(`🔧 [POSITION COMPARISON] DIALOG says it should be: ${wallPosition}%`);
+            console.log(`🔧 [POSITION COMPARISON] DIFFERENCE: ${Math.abs(currentPercentage - wallPosition).toFixed(1)}%`);
+          }
           
           if (newPosition) {
             needsPositionUpdate = true;
             mesh.userData.position = newPosition;
             
-            console.log(`🔧 [WALLPOSITION FIX] needsPositionUpdate set to true`);
-            console.log(`🔧 [WALLPOSITION FIX] Updated mesh.userData.position:`, mesh.userData.position);
+            console.log(`🔧 [POSITION COMPARISON] Position will be updated to:`, newPosition);
             
             // Also update the position in changes for consistency
             if (!changes.position) {
               changes.position = newPosition;
-              console.log(`🔧 [WALLPOSITION FIX] Updated changes.position:`, changes.position);
             }
           } else {
-            console.log(`🔧 [WALLPOSITION FIX] ❌ calculatePositionFromWallPosition returned null`);
+            console.log(`🔧 [POSITION COMPARISON] ❌ calculatePositionFromWallPosition returned null`);
           }
         } else {
-          console.log(`🔧 [WALLPOSITION FIX] ❌ No line found in mesh.userData`);
+          console.log(`🔧 [POSITION COMPARISON] ❌ No line found in mesh.userData`);
         }
+        console.log(`🔧 [POSITION COMPARISON] ===== END ANALYSIS =====`);
       }
     }
 
