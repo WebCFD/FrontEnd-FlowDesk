@@ -1227,6 +1227,7 @@ export default function Canvas3D({
   const [editingAirEntry, setEditingAirEntry] = useState<{
     index: number;
     entry: AirEntry;
+    floorName?: string; // CRITICAL: Add floor name for cross-floor persistence
     wallContext?: {
       wallId: string;
       floorName: string;
@@ -1543,10 +1544,11 @@ export default function Canvas3D({
     const dimensions = baseEntry.dimensions;
     const wallPosition = (dimensions as any).wallPosition || (baseEntry as any).properties?.wallPosition;
     
-    // CRITICAL FIX: Read simulation properties directly from reactive store to fix persistence issue
-    // This ensures Simulation Conditions show current values when dialog reopens
+    // CRITICAL FIX: Read simulation properties from the CORRECT floor for cross-floor persistence
+    // Use the stored floorName from editingAirEntry, fallback to currentFloor for backward compatibility
     const reactiveStoreFloors = useRoomStore.getState().floors;
-    const currentAirEntry = reactiveStoreFloors[currentFloor]?.airEntries?.[editingAirEntry.index];
+    const targetFloor = editingAirEntry.floorName || currentFloor;
+    const currentAirEntry = reactiveStoreFloors[targetFloor]?.airEntries?.[editingAirEntry.index];
     const reactiveProperties = currentAirEntry?.properties;
     
     // Use reactive properties if available, fallback to baseEntry properties
@@ -4584,7 +4586,8 @@ export default function Canvas3D({
           setEditingAirEntry({
             index: foundIndex,
             entry: mergedEntry,
-            wallContext
+            wallContext,
+            floorName: targetFloorName // CRITICAL: Store the correct floor name for persistence
           });
         }
       }
