@@ -505,55 +505,7 @@ export default function WizardDesign() {
   const [isFloorLoadDialogOpen, setIsFloorLoadDialogOpen] = useState(false);
 
   // Helper functions for ID regeneration
-  const regenerateAirEntryIds = (airEntries: AirEntry[], floor: string) => {
-    // Get floor prefix same as walls
-    const floorPrefix = floor === 'ground' ? '0F' : 
-                       floor === 'first' ? '1F' :
-                       floor === 'second' ? '2F' :
-                       floor === 'third' ? '3F' :
-                       floor === 'fourth' ? '4F' :
-                       floor === 'fifth' ? '5F' : '0F';
-    
-    // Get existing air entries in target floor to avoid ID conflicts
-    const existingEntries = floors[currentFloor]?.airEntries || [];
-    const typeCounters = { window: 1, door: 1, vent: 1 };
-    
-    // Count existing entries to start numbering from the next available number
-    existingEntries.forEach(entry => {
-      const anyEntry = entry as any;
-      if (anyEntry.id) {
-        // Updated regex to match new format: window_0F_1, door_1F_2, etc.
-        const match = anyEntry.id.match(new RegExp(`^(window|door|vent)_${floorPrefix}_(\\d+)$`));
-        if (match) {
-          const type = match[1] as keyof typeof typeCounters;
-          const num = parseInt(match[2]);
-          if (typeCounters[type] <= num) {
-            typeCounters[type] = num + 1;
-          }
-        }
-      }
-    });
-    
-    return airEntries.map((entry, entryIndex) => {
-      const newEntry = {
-        ...entry,
-        properties: entry.properties ? { ...entry.properties } : undefined,
-        id: `${entry.type}_${floorPrefix}_${typeCounters[entry.type]++}`
-      } as any;
-      
-      console.log("🔄 [REGENERATE DEBUG] Processing entry:", {
-        originalId: entry.id,
-        newId: newEntry.id,
-        originalProperties: entry.properties,
-        newProperties: newEntry.properties,
-        arePropertiesSameRef: entry.properties === newEntry.properties,
-        hasProperties: !!entry.properties,
-        entryIndex
-      });
-      
-      return newEntry;
-    });
-  };
+
 
   const regenerateWallIds = (walls: Wall[], floor: string): Wall[] => {
     const floorPrefix = floor === 'ground' ? '0F' : 
@@ -617,33 +569,8 @@ export default function WizardDesign() {
       hasClosedContour: false,
     };
 
-    console.log("🔄 [FLOOR LOAD DEBUG] Source data before copy:", {
-      floorName: loadFromFloor,
-      airEntriesCount: sourceFloorData.airEntries?.length || 0,
-      airEntries: sourceFloorData.airEntries?.map(entry => ({
-        id: entry.id,
-        type: entry.type,
-        hasProperties: !!entry.properties,
-        properties: entry.properties,
-        propertiesRef: entry.properties
-      }))
-    });
-
-    // Regenerate IDs for all copied elements
+    // Regenerate IDs for copied elements (excluding AirEntries)
     const newLines = regenerateLineIds([...sourceFloorData.lines]);
-    const newAirEntries = regenerateAirEntryIds([...sourceFloorData.airEntries], currentFloor);
-    
-    console.log("🔄 [FLOOR LOAD DEBUG] After regenerateAirEntryIds:", {
-      targetFloor: currentFloor,
-      newAirEntriesCount: newAirEntries?.length || 0,
-      newAirEntries: newAirEntries?.map(entry => ({
-        id: entry.id,
-        type: entry.type,
-        hasProperties: !!entry.properties,
-        properties: entry.properties,
-        propertiesRef: entry.properties
-      }))
-    });
     const newWalls = regenerateWallIds([...(sourceFloorData.walls || [])], currentFloor);
     const newMeasurements = regenerateMeasurementIds([...sourceFloorData.measurements]);
 
@@ -679,9 +606,9 @@ export default function WizardDesign() {
       }));
     }
 
-    // Set new data for the current floor
+    // Set new data for the current floor (keeping existing AirEntries)
     setLines(newLines);
-    setAirEntries(newAirEntries);
+    // Note: AirEntries are NOT copied - each floor maintains its own air entries
     setWalls(newWalls);
     setMeasurements(newMeasurements);
     setStairPolygons(newStairPolygons);
@@ -697,7 +624,7 @@ export default function WizardDesign() {
 
     toast({
       title: "Floor Template Loaded",
-      description: `Successfully loaded ${formatFloorText(loadFromFloor)} as template for ${formatFloorText(currentFloor)}`,
+      description: `Successfully loaded ${formatFloorText(loadFromFloor)} layout to ${formatFloorText(currentFloor)} (air entries preserved)`,
     });
   };
 
