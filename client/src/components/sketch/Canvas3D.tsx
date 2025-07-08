@@ -4703,75 +4703,18 @@ export default function Canvas3D({
         needsPositionUpdate = true;
       }
 
-      // Handle wallPosition changes - convert percentage to coordinates
+      // Handle wallPosition changes - following Center Height pattern (no conversion)
       if (changes.dimensions.wallPosition !== undefined) {
-        console.log(`🔧 [POSITION COMPARISON] ===== SAVECHANGES ANALYSIS =====`);
-        console.log(`🔧 [POSITION COMPARISON] Dialog says wallPosition should be: ${changes.dimensions.wallPosition}%`);
+        console.log(`🔧 [WALLPOSITION FIX] wallPosition change detected: ${changes.dimensions.wallPosition}%`);
+        console.log(`🔧 [WALLPOSITION FIX] Following Center Height pattern - NO conversion, direct needsPositionUpdate`);
         
-        // Log current mesh position BEFORE any changes
-        const currentMeshPosition = mesh.position;
-        const currentUserDataPosition = mesh.userData.position;
-        console.log(`🔧 [POSITION COMPARISON] Current mesh.position (3D world):`, {
-          x: currentMeshPosition.x, 
-          y: currentMeshPosition.y, 
-          z: currentMeshPosition.z
-        });
-        console.log(`🔧 [POSITION COMPARISON] Current mesh.userData.position (2D):`, currentUserDataPosition);
+        // SOLUTION: Follow Center Height pattern exactly
+        // Instead of converting wallPosition to coordinates here (which uses obsolete data),
+        // just set needsPositionUpdate = true and let the position update section handle it
+        needsPositionUpdate = true;
         
-        const wallPosition = changes.dimensions.wallPosition;
-        const line = mesh.userData.line;
-        
-        console.log(`🔧 [POSITION COMPARISON] Using mesh.userData.line:`, {
-          start: line?.start,
-          end: line?.end,
-          id: line?.id
-        });
-        console.log(`🔧 [POSITION COMPARISON] Using mesh.userData.dimensions:`, mesh.userData.dimensions);
-        
-        if (line) {
-          // Calculate wall length for comparison
-          const wallLength = Math.sqrt(
-            Math.pow(line.end.x - line.start.x, 2) + 
-            Math.pow(line.end.y - line.start.y, 2)
-          );
-          console.log(`🔧 [POSITION COMPARISON] Wall length: ${wallLength} pixels`);
-          
-          // Calculate new position from wallPosition percentage
-          const newPosition = calculatePositionFromWallPosition(wallPosition, line, {
-            width: mesh.userData.dimensions?.width || 60
-          });
-          
-          console.log(`🔧 [POSITION COMPARISON] Calculated newPosition for ${wallPosition}%:`, newPosition);
-          
-          // Calculate what percentage the CURRENT position represents
-          if (currentUserDataPosition && line) {
-            const currentDistanceFromStart = Math.sqrt(
-              Math.pow(currentUserDataPosition.x - line.start.x, 2) + 
-              Math.pow(currentUserDataPosition.y - line.start.y, 2)
-            );
-            const currentPercentage = (currentDistanceFromStart / wallLength) * 100;
-            console.log(`🔧 [POSITION COMPARISON] CURRENT position represents: ${currentPercentage.toFixed(1)}%`);
-            console.log(`🔧 [POSITION COMPARISON] DIALOG says it should be: ${wallPosition}%`);
-            console.log(`🔧 [POSITION COMPARISON] DIFFERENCE: ${Math.abs(currentPercentage - wallPosition).toFixed(1)}%`);
-          }
-          
-          if (newPosition) {
-            needsPositionUpdate = true;
-            mesh.userData.position = newPosition;
-            
-            console.log(`🔧 [POSITION COMPARISON] Position will be updated to:`, newPosition);
-            
-            // Also update the position in changes for consistency
-            if (!changes.position) {
-              changes.position = newPosition;
-            }
-          } else {
-            console.log(`🔧 [POSITION COMPARISON] ❌ calculatePositionFromWallPosition returned null`);
-          }
-        } else {
-          console.log(`🔧 [POSITION COMPARISON] ❌ No line found in mesh.userData`);
-        }
-        console.log(`🔧 [POSITION COMPARISON] ===== END ANALYSIS =====`);
+        console.log(`🔧 [WALLPOSITION FIX] needsPositionUpdate set to true (Center Height pattern)`);
+        console.log(`🔧 [WALLPOSITION FIX] Position will be calculated in needsPositionUpdate section with fresh data`);
       }
     }
 
@@ -4785,7 +4728,40 @@ export default function Canvas3D({
     if (needsPositionUpdate) {
       const entryType = mesh.userData.type;
       const dimensions = mesh.userData.dimensions;
-      const position = changes.position || mesh.userData.position;
+      let position = changes.position || mesh.userData.position;
+      
+      // SOLUTION: Handle wallPosition with fresh data (following Center Height pattern)
+      if (changes.dimensions?.wallPosition !== undefined) {
+        console.log(`🔧 [WALLPOSITION FIX] Processing wallPosition in needsPositionUpdate section`);
+        
+        // Get fresh data from store instead of obsolete mesh.userData.line
+        const storeFloors = useRoomStore.getState().floors;
+        const storeEntry = storeFloors[floorName]?.airEntries?.[mesh.userData.entryIndex];
+        
+        if (storeEntry && storeEntry.line) {
+          console.log(`🔧 [WALLPOSITION FIX] Using FRESH store data for wallPosition conversion`);
+          console.log(`🔧 [WALLPOSITION FIX] Fresh store line:`, storeEntry.line);
+          
+          // Calculate position using fresh store data
+          const freshPosition = calculatePositionFromWallPosition(
+            changes.dimensions.wallPosition, 
+            storeEntry.line, 
+            { width: dimensions?.width || 60 }
+          );
+          
+          if (freshPosition) {
+            position = freshPosition;
+            console.log(`🔧 [WALLPOSITION FIX] Calculated position with fresh data:`, freshPosition);
+            
+            // Update mesh userData with fresh position
+            mesh.userData.position = freshPosition;
+          } else {
+            console.log(`🔧 [WALLPOSITION FIX] ❌ Failed to calculate position with fresh data`);
+          }
+        } else {
+          console.log(`🔧 [WALLPOSITION FIX] ❌ No fresh store data available`);
+        }
+      }
       
       // Get floor base height for z-position calculation
       const currentFloorData = finalFloors[floorName];
@@ -4799,7 +4775,11 @@ export default function Canvas3D({
         const position3D = transform2DTo3D(position);
         mesh.position.set(position3D.x, position3D.y, zPosition);
         
-
+        console.log(`🔧 [WALLPOSITION FIX] Final mesh position set to:`, {
+          x: position3D.x, 
+          y: position3D.y, 
+          z: zPosition
+        });
       }
     }
 
