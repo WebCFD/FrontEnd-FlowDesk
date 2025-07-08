@@ -4578,7 +4578,18 @@ export default function Canvas3D({
       document.removeEventListener("mousemove", mouseMoveHandler);
       document.removeEventListener("mouseup", mouseUpHandler);
     };
-  }, []);
+  }, [
+    // CRITICAL FIX: Include dependencies to ensure event listeners reconfigure after Load operations
+    currentFloor,
+    isEraserMode,
+    isMeasureMode,
+    presentationMode,
+    // Key props that trigger Canvas3D reconstruction
+    JSON.stringify(floors), // Detect floor data changes that trigger recreation
+    wallTransparency,
+    ceilingHeight,
+    floorDeckThickness
+  ]);
 
   // SOLUTION: Use reactive store subscription like Canvas2D and wizard-design.tsx
   const reactiveStoreFloors = useRoomStore((state) => state.floors);
