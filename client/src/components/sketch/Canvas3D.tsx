@@ -1606,7 +1606,7 @@ export default function Canvas3D({
       sceneRef.current.traverse((object) => {
         if (object instanceof THREE.Mesh && 
             object.userData?.type === editingAirEntry.entry.type &&
-            object.userData?.entryIndex === editingAirEntry.index) {
+            object.userData?.elementId === editingAirEntry.entry.id) {
           
           // Update the mesh Z position for Center Height (distanceToFloor)
           if (newDimensions.distanceToFloor !== undefined) {
@@ -1668,20 +1668,22 @@ export default function Canvas3D({
       position: newPosition
     };
     
-    // Store the updated position in the reference for immediate visual update
+    // CRITICAL FIX: Store position using element ID instead of index to prevent cross-floor interference
     const normalizedFloorName = normalizeFloorName(currentFloor);
+    const elementId = editingAirEntry.entry.id;
+    
     if (!updatedAirEntryPositionsRef.current[normalizedFloorName]) {
       updatedAirEntryPositionsRef.current[normalizedFloorName] = {};
     }
     
-    // Update or create entry with new position
-    if (!updatedAirEntryPositionsRef.current[normalizedFloorName][editingAirEntry.index]) {
-      updatedAirEntryPositionsRef.current[normalizedFloorName][editingAirEntry.index] = {
+    // Update or create entry with new position using element ID
+    if (!updatedAirEntryPositionsRef.current[normalizedFloorName][elementId]) {
+      updatedAirEntryPositionsRef.current[normalizedFloorName][elementId] = {
         position: newPosition,
         dimensions: editingAirEntry.entry.dimensions
       };
     } else {
-      updatedAirEntryPositionsRef.current[normalizedFloorName][editingAirEntry.index].position = newPosition;
+      updatedAirEntryPositionsRef.current[normalizedFloorName][elementId].position = newPosition;
     }
     
     // Update local state immediately for responsiveness
@@ -1695,7 +1697,7 @@ export default function Canvas3D({
       sceneRef.current.traverse((object) => {
         if (object instanceof THREE.Mesh && 
             object.userData?.type === editingAirEntry.entry.type &&
-            object.userData?.entryIndex === editingAirEntry.index) {
+            object.userData?.elementId === editingAirEntry.entry.id) {
           
           // Update the mesh position
           const position3D = transform2DTo3D(newPosition);
@@ -1970,12 +1972,12 @@ export default function Canvas3D({
 
   const isMeasureModeRef = useRef(false);
 
-  // Store the positions and dimensions of air entries that have been updated
-  // This is used to ensure they keep their properties when the scene is rebuilt
-  // Format: { floorName: { entryIndex: { position: { x, y }, dimensions?: { width, height, distanceToFloor? } } } }
+  // CRITICAL FIX: Store positions and dimensions using ELEMENT IDs instead of indices
+  // This prevents cross-floor interference when elements are copied with Load
+  // Format: { floorName: { elementId: { position: { x, y }, dimensions?: { width, height, distanceToFloor? } } } }
   const updatedAirEntryPositionsRef = useRef<{
     [floorName: string]: {
-      [entryIndex: number]: {
+      [elementId: string]: {
         position: { x: number, y: number },
         dimensions?: {
           width: number,
@@ -1990,10 +1992,18 @@ export default function Canvas3D({
   // This function is called when elements are copied with Load to ensure position independence
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      (window as any).clearCanvas3DPositionCache = (floorName: string) => {
+      (window as any).clearCanvas3DPositionCache = (floorName: string, elementIds?: string[]) => {
         const normalizedFloorName = normalizeFloorName(floorName);
         if (updatedAirEntryPositionsRef.current[normalizedFloorName]) {
-          delete updatedAirEntryPositionsRef.current[normalizedFloorName];
+          if (elementIds && elementIds.length > 0) {
+            // Clear specific elements only
+            elementIds.forEach(elementId => {
+              delete updatedAirEntryPositionsRef.current[normalizedFloorName][elementId];
+            });
+          } else {
+            // Clear entire floor cache (legacy behavior)
+            delete updatedAirEntryPositionsRef.current[normalizedFloorName];
+          }
         }
       };
     }
