@@ -535,21 +535,18 @@ export default function WizardDesign() {
     });
     
     return airEntries.map((entry, entryIndex) => {
+      // DEEP CLONE: Create completely independent copies to prevent reference sharing
       const newEntry = {
         ...entry,
-        properties: entry.properties ? { ...entry.properties } : undefined,
+        // Deep clone properties to prevent reference sharing between original and copied elements
+        properties: entry.properties ? JSON.parse(JSON.stringify(entry.properties)) : undefined,
+        // Deep clone dimensions to prevent reference sharing
+        dimensions: entry.dimensions ? JSON.parse(JSON.stringify(entry.dimensions)) : undefined,
+        // Deep clone line reference to prevent shared references
+        line: entry.line ? JSON.parse(JSON.stringify(entry.line)) : undefined,
+        // Generate new unique ID for the target floor
         id: `${entry.type}_${floorPrefix}_${typeCounters[entry.type]++}`
       } as any;
-      
-      console.log("🔄 [REGENERATE DEBUG] Processing entry:", {
-        originalId: entry.id,
-        newId: newEntry.id,
-        originalProperties: entry.properties,
-        newProperties: newEntry.properties,
-        arePropertiesSameRef: entry.properties === newEntry.properties,
-        hasProperties: !!entry.properties,
-        entryIndex
-      });
       
       return newEntry;
     });
@@ -691,6 +688,12 @@ export default function WizardDesign() {
     setTimeout(() => {
       projectStairsFromAdjacentFloors(currentFloor);
     }, 100);
+
+    // CRITICAL FIX: Clear Canvas3D position cache for copied elements to prevent cross-floor interference
+    // This ensures that copied AirEntry elements don't share position references with their originals
+    if (typeof window !== 'undefined' && (window as any).clearCanvas3DPositionCache) {
+      (window as any).clearCanvas3DPositionCache(currentFloor);
+    }
 
     // Force Canvas3D re-render for immediate visual feedback
     setCanvas3DKey(prev => prev + 1);
