@@ -4472,74 +4472,120 @@ export default function Canvas3D({
         const mesh = intersects[0].object as THREE.Mesh;
         const airEntryData = mesh.userData;
 
-        // Find the index of this air entry in the floors data
+        // MODIFICATION: Search in ALL floors instead of only currentFloor
         let foundIndex = -1;
-        const floorData = finalFloors[currentFloor];
+        let targetFloorName = '';
+        let floorData = null;
 
-        if (floorData && floorData.airEntries) {
-          console.log("Double-click position search:", {
-            airEntryData: airEntryData,
-            entryPosition: airEntryData.position,
-            storedEntryIndex: airEntryData.entryIndex
-          });
+        // First try to get the floor name from the mesh userData if available
+        if (airEntryData.floorName) {
+          targetFloorName = airEntryData.floorName;
+          floorData = finalFloors[targetFloorName];
+          
+          if (floorData && floorData.airEntries) {
+            console.log("Double-click position search (using userData floor):", {
+              airEntryData: airEntryData,
+              entryPosition: airEntryData.position,
+              storedEntryIndex: airEntryData.entryIndex,
+              targetFloor: targetFloorName
+            });
 
-          // First try to use the stored entryIndex if available (most reliable)
-          if (typeof airEntryData.entryIndex === 'number') {
-            if (airEntryData.entryIndex >= 0 && airEntryData.entryIndex < floorData.airEntries.length) {
-              foundIndex = airEntryData.entryIndex;
-              console.log("Double-click found entry using stored entryIndex:", foundIndex);
+            // First try to use the stored entryIndex if available (most reliable)
+            if (typeof airEntryData.entryIndex === 'number') {
+              if (airEntryData.entryIndex >= 0 && airEntryData.entryIndex < floorData.airEntries.length) {
+                foundIndex = airEntryData.entryIndex;
+                console.log("Double-click found entry using stored entryIndex:", foundIndex, "in floor:", targetFloorName);
+              }
+            }
+
+            // Fall back to position search if needed
+            if (foundIndex === -1) {
+              // Try exact match first
+              foundIndex = floorData.airEntries.findIndex(
+                (entry) =>
+                  entry.position.x === airEntryData.position.x &&
+                  entry.position.y === airEntryData.position.y,
+              );
+
+              // If exact match fails, try approximate match with larger tolerance
+              if (foundIndex === -1) {
+                const POSITION_TOLERANCE = 70;
+                foundIndex = floorData.airEntries.findIndex(
+                  (entry) =>
+                    Math.abs(entry.position.x - airEntryData.position.x) < POSITION_TOLERANCE &&
+                    Math.abs(entry.position.y - airEntryData.position.y) < POSITION_TOLERANCE
+                );
+                console.log("Double-click found entry by approximate position (with higher tolerance):", foundIndex, "in floor:", targetFloorName);
+              }
             }
           }
+        }
 
-          // Fall back to position search if needed
-          if (foundIndex === -1) {
-            // Try exact match first
-            foundIndex = floorData.airEntries.findIndex(
-              (entry) =>
-                entry.position.x === airEntryData.position.x &&
-                entry.position.y === airEntryData.position.y,
-            );
+        // If not found using userData floor, search through ALL floors
+        if (foundIndex === -1) {
+          console.log("Searching through all floors for AirEntry...");
+          
+          for (const [floorName, currentFloorData] of Object.entries(finalFloors)) {
+            if (currentFloorData && currentFloorData.airEntries) {
+              // Try exact match first
+              const exactIndex = currentFloorData.airEntries.findIndex(
+                (entry) =>
+                  entry.position.x === airEntryData.position.x &&
+                  entry.position.y === airEntryData.position.y,
+              );
 
-            // If exact match fails, try approximate match with larger tolerance
-            if (foundIndex === -1) {
-              const POSITION_TOLERANCE = 70; // Match the value used in handleRightMouseDown
-              foundIndex = floorData.airEntries.findIndex(
+              if (exactIndex !== -1) {
+                foundIndex = exactIndex;
+                targetFloorName = floorName;
+                floorData = currentFloorData;
+                console.log("Double-click found entry by exact position in floor:", floorName, "index:", foundIndex);
+                break;
+              }
+
+              // If exact match fails, try approximate match
+              const POSITION_TOLERANCE = 70;
+              const approxIndex = currentFloorData.airEntries.findIndex(
                 (entry) =>
                   Math.abs(entry.position.x - airEntryData.position.x) < POSITION_TOLERANCE &&
                   Math.abs(entry.position.y - airEntryData.position.y) < POSITION_TOLERANCE
               );
-              console.log("Double-click found entry by approximate position (with higher tolerance):", foundIndex);
+
+              if (approxIndex !== -1) {
+                foundIndex = approxIndex;
+                targetFloorName = floorName;
+                floorData = currentFloorData;
+                console.log("Double-click found entry by approximate position in floor:", floorName, "index:", foundIndex);
+                break;
+              }
             }
           }
+        }
 
-          if (foundIndex !== -1) {
-            // Get the base entry from floor data
-            const baseEntry = floorData.airEntries[foundIndex];
-            // Canvas3D now uses reactive store data like Canvas2D and wizard-design.tsx
-            
-            // Check if we have updated dimensions for this entry in our ref
-            const normalizedFloorName = normalizeFloorName(currentFloor);
-            const updatedData = updatedAirEntryPositionsRef.current[normalizedFloorName]?.[foundIndex];
+        if (foundIndex !== -1 && floorData) {
+          // Get the base entry from floor data
+          const baseEntry = floorData.airEntries[foundIndex];
+          // Canvas3D now uses reactive store data like Canvas2D and wizard-design.tsx
+          
+          // Check if we have updated dimensions for this entry in our ref
+          const normalizedFloorName = normalizeFloorName(targetFloorName);
+          const updatedData = updatedAirEntryPositionsRef.current[normalizedFloorName]?.[foundIndex];
 
-            
-            // Create a merged entry with the latest dimensions
-            const mergedEntry = {
-              ...baseEntry,
-              dimensions: updatedData?.dimensions || baseEntry.dimensions
-            };
+          
+          // Create a merged entry with the latest dimensions
+          const mergedEntry = {
+            ...baseEntry,
+            dimensions: updatedData?.dimensions || baseEntry.dimensions
+          };
 
-            
-            // Phase 3: Create wall context for unified dialog experience
-            const wallContext = createWallContext(mergedEntry);
-            
-            setEditingAirEntry({
-              index: foundIndex,
-              entry: mergedEntry,
-              wallContext
-            });
-            
-
-          }
+          
+          // Phase 3: Create wall context for unified dialog experience
+          const wallContext = createWallContext(mergedEntry);
+          
+          setEditingAirEntry({
+            index: foundIndex,
+            entry: mergedEntry,
+            wallContext
+          });
         }
       }
     };
