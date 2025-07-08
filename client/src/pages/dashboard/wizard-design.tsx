@@ -535,18 +535,21 @@ export default function WizardDesign() {
     });
     
     return airEntries.map((entry, entryIndex) => {
-      // DEEP CLONE: Create completely independent copies to prevent reference sharing
       const newEntry = {
         ...entry,
-        // Deep clone properties to prevent reference sharing between original and copied elements
-        properties: entry.properties ? JSON.parse(JSON.stringify(entry.properties)) : undefined,
-        // Deep clone dimensions to prevent reference sharing
-        dimensions: entry.dimensions ? JSON.parse(JSON.stringify(entry.dimensions)) : undefined,
-        // Deep clone line reference to prevent shared references
-        line: entry.line ? JSON.parse(JSON.stringify(entry.line)) : undefined,
-        // Generate new unique ID for the target floor
+        properties: entry.properties ? { ...entry.properties } : undefined,
         id: `${entry.type}_${floorPrefix}_${typeCounters[entry.type]++}`
       } as any;
+      
+      console.log("🔄 [REGENERATE DEBUG] Processing entry:", {
+        originalId: entry.id,
+        newId: newEntry.id,
+        originalProperties: entry.properties,
+        newProperties: newEntry.properties,
+        arePropertiesSameRef: entry.properties === newEntry.properties,
+        hasProperties: !!entry.properties,
+        entryIndex
+      });
       
       return newEntry;
     });
@@ -688,13 +691,6 @@ export default function WizardDesign() {
     setTimeout(() => {
       projectStairsFromAdjacentFloors(currentFloor);
     }, 100);
-
-    // CRITICAL FIX: Clear Canvas3D position cache for specific copied elements to prevent cross-floor interference
-    // This ensures that copied AirEntry elements don't share position references with their originals
-    if (typeof window !== 'undefined' && (window as any).clearCanvas3DPositionCache) {
-      const newElementIds = newAirEntries.map(entry => entry.id);
-      (window as any).clearCanvas3DPositionCache(currentFloor, newElementIds);
-    }
 
     // Force Canvas3D re-render for immediate visual feedback
     setCanvas3DKey(prev => prev + 1);
@@ -1169,17 +1165,8 @@ export default function WizardDesign() {
     updatedEntry: AirEntry,
   ) => {
     
-    // CRITICAL FIX: Use element ID to find correct entry instead of trusting index
-    // This prevents cross-floor interference when elements have the same indices after Load
-    const targetFloorEntries = floors[floorName]?.airEntries || [];
-    const actualIndex = targetFloorEntries.findIndex(entry => entry.id === updatedEntry.id);
-    
-    if (actualIndex === -1) {
-      console.warn(`Element ${updatedEntry.id} not found in floor ${floorName}`);
-      return;
-    }
-    
-    const existingEntry = targetFloorEntries[actualIndex];
+    // CRITICAL FIX: Preserve wallPosition from existing store data
+    const existingEntry = airEntries[index];
     
     // Create merged entry preserving wallPosition
     const preservedDimensions = {
@@ -1196,9 +1183,9 @@ export default function WizardDesign() {
     // Use the store's setAirEntries function when updating the current floor
     if (floorName === currentFloor) {
       
-      // Create a deep copy of the air entries array using actualIndex
+      // Create a deep copy of the air entries array with structuredClone
       const updatedAirEntries = airEntries.map((entry, i) =>
-        i === actualIndex ? deepClonedEntry : { ...entry },
+        i === index ? deepClonedEntry : { ...entry },
       );
 
       // Set the air entries with the deep copy
@@ -1215,8 +1202,8 @@ export default function WizardDesign() {
         useRoomStore.getState().setFloors(updatedFloors);
       }
 
-      // Update store for synchronization using actualIndex
-      useRoomStore.getState().updateAirEntry(floorName, actualIndex, deepClonedEntry);
+      // Update store for synchronization
+      useRoomStore.getState().updateAirEntry(floorName, index, deepClonedEntry);
 
       // Entry updated successfully
 
@@ -1235,11 +1222,39 @@ export default function WizardDesign() {
       // Create a copy of the air entries array
       const floorAirEntries = [...updatedFloors[floorName].airEntries];
 
+      // Log the floor air entries before updating
+      console.log(
+        "PARENT COMPONENT DEBUG - BEFORE UPDATE (NON-CURRENT FLOOR):",
+        {
+          floor: floorName,
+          allEntries: floorAirEntries.map((entry, i) => ({
+            index: i,
+            type: entry.type,
+            position: entry.position,
+            isTargeted: i === index,
+          })),
+        },
+      );
+
       // Create a deep clone of the updated entry to prevent reference issues
       const deepClonedEntry = JSON.parse(JSON.stringify(updatedEntry));
 
-      // Update the specific air entry with deep cloned data using actualIndex
-      floorAirEntries[actualIndex] = deepClonedEntry;
+      // Update the specific air entry with deep cloned data
+      floorAirEntries[index] = deepClonedEntry;
+
+      // Log the floor air entries after updating
+      console.log(
+        "PARENT COMPONENT DEBUG - AFTER UPDATE (NON-CURRENT FLOOR):",
+        {
+          floor: floorName,
+          allEntries: floorAirEntries.map((entry, i) => ({
+            index: i,
+            type: entry.type,
+            position: entry.position,
+            isUpdated: i === index,
+          })),
+        },
+      );
 
       // Create a copy of the floor data with the updated air entries
       updatedFloors[floorName] = {
