@@ -4611,61 +4611,12 @@ export default function Canvas3D({
     })
   ]);
 
-  // Helper function to calculate position from wallPosition percentage
-  const calculatePositionFromWallPosition = useCallback((
-    wallPosition: number,
-    line: { start: Point; end: Point },
-    options: { width: number }
-  ): Point | null => {
-    const { width } = options;
-    
-    // Calculate wall length
-    const wallLength = Math.sqrt(
-      Math.pow(line.end.x - line.start.x, 2) + 
-      Math.pow(line.end.y - line.start.y, 2)
-    );
-    
-    // Convert element width from cm to pixels
-    const PIXELS_TO_CM = 1.25;
-    const elementWidthPixels = width / PIXELS_TO_CM;
-    const halfElementWidth = elementWidthPixels / 2;
-    
-    // Calculate effective length (wall length - element width)
-    const effectiveLength = Math.max(0, wallLength - elementWidthPixels);
-    
-    // Convert percentage to actual distance
-    const t = wallPosition / 100;
-    const actualDistance = halfElementWidth + (effectiveLength * t);
-    
-    // Calculate final position
-    const normalizedT = actualDistance / wallLength;
-    
-    return {
-      x: line.start.x + (line.end.x - line.start.x) * normalizedT,
-      y: line.start.y + (line.end.y - line.start.y) * normalizedT
-    };
-  }, []);
-
   // PHASE 2: Function to update AirEntry mesh directly (like furniture) - placed after finalFloors declaration
   const updateAirEntryMeshDirectly = useCallback((floorName: string, entryIndex: number, changes: AirEntryMeshChanges): boolean => {
-    console.log(`🔧 [WALLPOSITION DEBUG] updateAirEntryMeshDirectly called:`, { floorName, entryIndex, changes });
-    
     const mesh = findAirEntryMesh(floorName, entryIndex);
     if (!mesh) {
-      console.log(`🔧 [WALLPOSITION DEBUG] ❌ No mesh found for ${floorName}, entry ${entryIndex}`);
       return false;
     }
-
-    // Compare mesh data with store data for debugging
-    const storeFloors = useRoomStore.getState().floors;
-    const storeEntry = storeFloors[floorName]?.airEntries?.[entryIndex];
-    console.log(`🔧 [DATA COMPARISON] Store AirEntry data:`, storeEntry);
-    console.log(`🔧 [DATA COMPARISON] Mesh userData:`, {
-      position: mesh.userData.position,
-      dimensions: mesh.userData.dimensions,
-      line: mesh.userData.line,
-      type: mesh.userData.type
-    });
 
     let needsGeometryUpdate = false;
     let needsPositionUpdate = false;
@@ -4702,20 +4653,6 @@ export default function Canvas3D({
       if (changes.dimensions.distanceToFloor !== undefined) {
         needsPositionUpdate = true;
       }
-
-      // Handle wallPosition changes - following Center Height pattern (no conversion)
-      if (changes.dimensions.wallPosition !== undefined) {
-        console.log(`🔧 [WALLPOSITION FIX] wallPosition change detected: ${changes.dimensions.wallPosition}%`);
-        console.log(`🔧 [WALLPOSITION FIX] Following Center Height pattern - NO conversion, direct needsPositionUpdate`);
-        
-        // SOLUTION: Follow Center Height pattern exactly
-        // Instead of converting wallPosition to coordinates here (which uses obsolete data),
-        // just set needsPositionUpdate = true and let the position update section handle it
-        needsPositionUpdate = true;
-        
-        console.log(`🔧 [WALLPOSITION FIX] needsPositionUpdate set to true (Center Height pattern)`);
-        console.log(`🔧 [WALLPOSITION FIX] Position will be calculated in needsPositionUpdate section with fresh data`);
-      }
     }
 
     // Update position if provided
@@ -4728,40 +4665,7 @@ export default function Canvas3D({
     if (needsPositionUpdate) {
       const entryType = mesh.userData.type;
       const dimensions = mesh.userData.dimensions;
-      let position = changes.position || mesh.userData.position;
-      
-      // SOLUTION: Handle wallPosition with fresh data (following Center Height pattern)
-      if (changes.dimensions?.wallPosition !== undefined) {
-        console.log(`🔧 [WALLPOSITION FIX] Processing wallPosition in needsPositionUpdate section`);
-        
-        // Get fresh data from store instead of obsolete mesh.userData.line
-        const storeFloors = useRoomStore.getState().floors;
-        const storeEntry = storeFloors[floorName]?.airEntries?.[mesh.userData.entryIndex];
-        
-        if (storeEntry && storeEntry.line) {
-          console.log(`🔧 [WALLPOSITION FIX] Using FRESH store data for wallPosition conversion`);
-          console.log(`🔧 [WALLPOSITION FIX] Fresh store line:`, storeEntry.line);
-          
-          // Calculate position using fresh store data
-          const freshPosition = calculatePositionFromWallPosition(
-            changes.dimensions.wallPosition, 
-            storeEntry.line, 
-            { width: dimensions?.width || 60 }
-          );
-          
-          if (freshPosition) {
-            position = freshPosition;
-            console.log(`🔧 [WALLPOSITION FIX] Calculated position with fresh data:`, freshPosition);
-            
-            // Update mesh userData with fresh position
-            mesh.userData.position = freshPosition;
-          } else {
-            console.log(`🔧 [WALLPOSITION FIX] ❌ Failed to calculate position with fresh data`);
-          }
-        } else {
-          console.log(`🔧 [WALLPOSITION FIX] ❌ No fresh store data available`);
-        }
-      }
+      const position = changes.position || mesh.userData.position;
       
       // Get floor base height for z-position calculation
       const currentFloorData = finalFloors[floorName];
@@ -4775,11 +4679,7 @@ export default function Canvas3D({
         const position3D = transform2DTo3D(position);
         mesh.position.set(position3D.x, position3D.y, zPosition);
         
-        console.log(`🔧 [WALLPOSITION FIX] Final mesh position set to:`, {
-          x: position3D.x, 
-          y: position3D.y, 
-          z: zPosition
-        });
+
       }
     }
 
@@ -4822,7 +4722,7 @@ export default function Canvas3D({
     }
 
     return true;
-  }, [findAirEntryMesh, finalFloors, getFloorBaseHeight, transform2DTo3D, calculatePositionFromWallPosition]);
+  }, [findAirEntryMesh, finalFloors, getFloorBaseHeight, transform2DTo3D]);
 
   useEffect(() => {
     // Scene rebuild using store data when available, fallback to props
@@ -6123,15 +6023,6 @@ export default function Canvas3D({
               timestamp: new Date().toISOString()
             });
 
-            console.log(`🔧 [WALLPOSITION DEBUG] handleAirEntryEdit called with data:`, {
-              width: data.width,
-              height: data.height,
-              distanceToFloor: data.distanceToFloor,
-              shape: data.shape,
-              wallPosition: data.wallPosition,
-              properties: data.properties
-            });
-            
             handleAirEntryEdit(editingAirEntry.index, {
               width: data.width,
               height: data.height,
