@@ -4648,8 +4648,11 @@ export default function Canvas3D({
 
   // PHASE 2: Function to update AirEntry mesh directly (like furniture) - placed after finalFloors declaration
   const updateAirEntryMeshDirectly = useCallback((floorName: string, entryIndex: number, changes: AirEntryMeshChanges): boolean => {
+    console.log(`🔧 [WALLPOSITION DEBUG] updateAirEntryMeshDirectly called:`, { floorName, entryIndex, changes });
+    
     const mesh = findAirEntryMesh(floorName, entryIndex);
     if (!mesh) {
+      console.log(`🔧 [WALLPOSITION DEBUG] ❌ No mesh found for ${floorName}, entry ${entryIndex}`);
       return false;
     }
 
@@ -4691,8 +4694,12 @@ export default function Canvas3D({
 
       // Handle wallPosition changes - convert percentage to coordinates
       if (changes.dimensions.wallPosition !== undefined) {
+        console.log(`🔧 [WALLPOSITION FIX] wallPosition change detected: ${changes.dimensions.wallPosition}%`);
         const wallPosition = changes.dimensions.wallPosition;
         const line = mesh.userData.line;
+        
+        console.log(`🔧 [WALLPOSITION FIX] mesh.userData.line:`, line);
+        console.log(`🔧 [WALLPOSITION FIX] mesh.userData.dimensions:`, mesh.userData.dimensions);
         
         if (line) {
           // Calculate new position from wallPosition percentage
@@ -4700,15 +4707,26 @@ export default function Canvas3D({
             width: mesh.userData.dimensions?.width || 60
           });
           
+          console.log(`🔧 [WALLPOSITION FIX] Calculated newPosition:`, newPosition);
+          console.log(`🔧 [WALLPOSITION FIX] Original mesh.userData.position:`, mesh.userData.position);
+          
           if (newPosition) {
             needsPositionUpdate = true;
             mesh.userData.position = newPosition;
             
+            console.log(`🔧 [WALLPOSITION FIX] needsPositionUpdate set to true`);
+            console.log(`🔧 [WALLPOSITION FIX] Updated mesh.userData.position:`, mesh.userData.position);
+            
             // Also update the position in changes for consistency
             if (!changes.position) {
               changes.position = newPosition;
+              console.log(`🔧 [WALLPOSITION FIX] Updated changes.position:`, changes.position);
             }
+          } else {
+            console.log(`🔧 [WALLPOSITION FIX] ❌ calculatePositionFromWallPosition returned null`);
           }
+        } else {
+          console.log(`🔧 [WALLPOSITION FIX] ❌ No line found in mesh.userData`);
         }
       }
     }
@@ -6081,6 +6099,15 @@ export default function Canvas3D({
               timestamp: new Date().toISOString()
             });
 
+            console.log(`🔧 [WALLPOSITION DEBUG] handleAirEntryEdit called with data:`, {
+              width: data.width,
+              height: data.height,
+              distanceToFloor: data.distanceToFloor,
+              shape: data.shape,
+              wallPosition: data.wallPosition,
+              properties: data.properties
+            });
+            
             handleAirEntryEdit(editingAirEntry.index, {
               width: data.width,
               height: data.height,
