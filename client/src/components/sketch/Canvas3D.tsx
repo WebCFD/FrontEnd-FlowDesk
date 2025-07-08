@@ -2455,47 +2455,46 @@ export default function Canvas3D({
       
 
       floorData.airEntries.forEach((entry, index) => {
-
         
-        // Check if we have stored data for this entry (position and/or dimensions)
+        // CRITICAL FIX: Always use current store data instead of potentially stale finalFloors data
+        // This ensures AirEntry position changes persist during floor switches
+        const currentStoreFloors = useRoomStore.getState().floors;
+        const currentStoreEntry = currentStoreFloors[floorData.name]?.airEntries?.[index];
+        
+        // Use store data if available (most recent), fallback to entry data
+        const entryPosition = currentStoreEntry?.position || entry.position;
+        const entryDimensions = currentStoreEntry?.dimensions || entry.dimensions;
+        
+        // Check if we have additional real-time updates in the ref (for in-progress edits)
         const updatedEntryData = updatedPositions[index];
-
-
-        // Create working copies of entry position and dimensions
-        let entryPosition = { ...entry.position };
-        let entryDimensions = { ...entry.dimensions };
+        let finalPosition = { ...entryPosition };
+        let finalDimensions = { ...entryDimensions };
         
-        // Handle backward compatibility with old storage format
+        // Handle backward compatibility with old storage format for real-time updates
         if (updatedEntryData) {
           // Check if this is the old format (direct x/y properties) or new format (position/dimensions props)
           if ('x' in updatedEntryData && 'y' in updatedEntryData) {
             // Old format - just position data
-
-            entryPosition = { x: updatedEntryData.x, y: updatedEntryData.y };
+            finalPosition = { x: updatedEntryData.x, y: updatedEntryData.y };
           } else if (updatedEntryData.position) {
             // New format - has position and maybe dimensions
-
-            entryPosition = updatedEntryData.position;
+            finalPosition = updatedEntryData.position;
             
             // If we also have dimensions, use those
             if (updatedEntryData.dimensions) {
-
-              entryDimensions = updatedEntryData.dimensions;
+              finalDimensions = updatedEntryData.dimensions;
             }
           }
-        } else {
-
         }
         
-        // Use dimensions directly as they are already in cm
-        // Now use our possibly updated dimensions
-        const width = entryDimensions.width;
-        const height = entryDimensions.height;
+        // Use final dimensions (store + real-time updates) for rendering
+        const width = finalDimensions.width;
+        const height = finalDimensions.height;
         const zPosition =
           baseHeight +
           (entry.type === "door"
             ? height / 2
-            : entryDimensions.distanceToFloor || 0);
+            : finalDimensions.distanceToFloor || 0);
 
         const geometry = new THREE.PlaneGeometry(width, height);
         // CRITICAL FIX: Check for existing material with textures before creating new one
@@ -2535,7 +2534,7 @@ export default function Canvas3D({
         }
 
         const mesh = new THREE.Mesh(geometry, material);
-        const position = transform2DTo3D(entryPosition);
+        const position = transform2DTo3D(finalPosition);
         mesh.position.set(position.x, position.y, zPosition);
         
         // Set render order to ensure AirEntry elements appear on top of walls
@@ -2544,8 +2543,8 @@ export default function Canvas3D({
         // Add userData for raycasting identification - include the actual entry index for easy mapping
         mesh.userData = {
           type: entry.type,
-          position: entryPosition, // Use the potentially updated position
-          dimensions: entryDimensions, // Use the potentially updated dimensions
+          position: finalPosition, // Use the store-updated position
+          dimensions: finalDimensions, // Use the store-updated dimensions
           line: entry.line,
           index: objects.length,
           entryIndex: index,  // Add the actual index in the airEntries array
