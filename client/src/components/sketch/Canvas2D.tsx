@@ -3330,9 +3330,9 @@ export default function Canvas2D({
   // SAVE CHANGES LOGIC: Updates existing element properties
   // This is called for BOTH newly created elements (from wall click) and existing elements (from double-click)
   // The workflow treats both cases identically - just updating an existing element in the array
-  // CRITICAL FIX: Real-time position update handler - uses ELEMENT ID instead of index for precise targeting
+  // Real-time position update handler - uses element ID for targeting but maintains callback propagation
   const handleAirEntryPositionUpdate = (elementId: string, newPosition: { x: number; y: number }) => {
-    // Find element by ID instead of using index to prevent cross-floor interference
+    // Find element by ID to get the correct index
     const elementIndex = airEntries.findIndex(entry => entry.id === elementId);
     if (elementIndex === -1) return;
     
@@ -3344,6 +3344,11 @@ export default function Canvas2D({
     };
 
     onAirEntriesUpdate?.(updatedAirEntries);
+    
+    // CRITICAL: Propagate to parent for cross-component synchronization
+    if (onPositionUpdate) {
+      onPositionUpdate(currentFloor, elementIndex, updatedAirEntries[elementIndex]);
+    }
     
     // Also update the editing state for immediate visual feedback using element ID
     setEditingAirEntries(prev => prev.map(item => 
@@ -3357,9 +3362,9 @@ export default function Canvas2D({
     ));
   };
 
-  // CRITICAL FIX: Real-time dimensions update handler - uses ELEMENT ID instead of index for precise targeting
+  // Real-time dimensions update handler - uses element ID for targeting but maintains callback propagation
   const handleAirEntryDimensionsUpdate = (elementId: string, newDimensions: { width?: number; height?: number; distanceToFloor?: number }) => {
-    // Find element by ID instead of using index to prevent cross-floor interference
+    // Find element by ID to get the correct index
     const elementIndex = airEntries.findIndex(entry => entry.id === elementId);
     if (elementIndex === -1) return;
     
@@ -3374,6 +3379,11 @@ export default function Canvas2D({
     };
     
     onAirEntriesUpdate?.(updatedAirEntries);
+    
+    // CRITICAL: Propagate to parent for cross-component synchronization
+    if (onDimensionsUpdate) {
+      onDimensionsUpdate(currentFloor, elementIndex, newDimensions);
+    }
     
     // Also update the editing state for immediate visual feedback using element ID
     setEditingAirEntries(prev => prev.map(item => 
@@ -3688,10 +3698,7 @@ export default function Canvas2D({
             // CRITICAL FIX: Use element ID instead of index for precise targeting
             handleAirEntryDimensionsUpdate(editingAirEntry.entry.id, newDimensions);
             
-            // Also propagate to parent for store synchronization using element index
-            if (onDimensionsUpdate) {
-              onDimensionsUpdate(currentFloor, editingAirEntry.index, newDimensions);
-            }
+            // Propagation handled by handleAirEntryDimensionsUpdate
           }}
         />
       ))}

@@ -1169,10 +1169,17 @@ export default function WizardDesign() {
     updatedEntry: AirEntry,
   ) => {
     
-    // CRITICAL FIX: Preserve wallPosition from existing store data - Use correct floor data instead of current floor
-    // This prevents cross-floor interference when elements have the same indices
+    // CRITICAL FIX: Use element ID to find correct entry instead of trusting index
+    // This prevents cross-floor interference when elements have the same indices after Load
     const targetFloorEntries = floors[floorName]?.airEntries || [];
-    const existingEntry = targetFloorEntries[index];
+    const actualIndex = targetFloorEntries.findIndex(entry => entry.id === updatedEntry.id);
+    
+    if (actualIndex === -1) {
+      console.warn(`Element ${updatedEntry.id} not found in floor ${floorName}`);
+      return;
+    }
+    
+    const existingEntry = targetFloorEntries[actualIndex];
     
     // Create merged entry preserving wallPosition
     const preservedDimensions = {
@@ -1189,9 +1196,9 @@ export default function WizardDesign() {
     // Use the store's setAirEntries function when updating the current floor
     if (floorName === currentFloor) {
       
-      // Create a deep copy of the air entries array with structuredClone
+      // Create a deep copy of the air entries array using actualIndex
       const updatedAirEntries = airEntries.map((entry, i) =>
-        i === index ? deepClonedEntry : { ...entry },
+        i === actualIndex ? deepClonedEntry : { ...entry },
       );
 
       // Set the air entries with the deep copy
@@ -1208,8 +1215,8 @@ export default function WizardDesign() {
         useRoomStore.getState().setFloors(updatedFloors);
       }
 
-      // Update store for synchronization
-      useRoomStore.getState().updateAirEntry(floorName, index, deepClonedEntry);
+      // Update store for synchronization using actualIndex
+      useRoomStore.getState().updateAirEntry(floorName, actualIndex, deepClonedEntry);
 
       // Entry updated successfully
 
@@ -1231,8 +1238,8 @@ export default function WizardDesign() {
       // Create a deep clone of the updated entry to prevent reference issues
       const deepClonedEntry = JSON.parse(JSON.stringify(updatedEntry));
 
-      // Update the specific air entry with deep cloned data
-      floorAirEntries[index] = deepClonedEntry;
+      // Update the specific air entry with deep cloned data using actualIndex
+      floorAirEntries[actualIndex] = deepClonedEntry;
 
       // Create a copy of the floor data with the updated air entries
       updatedFloors[floorName] = {
