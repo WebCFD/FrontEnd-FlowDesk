@@ -2047,11 +2047,15 @@ export default function Canvas3D({
         customIntensityValue?: number;
       };
     },
+    targetFloorName?: string // CRITICAL: Add floor parameter for cross-floor editing
   ) => {
     if (!editingAirEntry || !onUpdateAirEntry) return;
 
+    // CRITICAL: Use correct floor for cross-floor editing
+    const effectiveFloor = targetFloorName || editingAirEntry.floorName || currentFloor;
+
     // STEP 1: Try direct mesh update first (preserves textures)
-    const directUpdateSuccess = updateAirEntryMeshDirectly(currentFloor, index, {
+    const directUpdateSuccess = updateAirEntryMeshDirectly(effectiveFloor, index, {
       dimensions: {
         width: data.width,
         height: data.height,
@@ -2064,7 +2068,7 @@ export default function Canvas3D({
 
     // STEP 2: Get current position from store to preserve real-time updates (matching Canvas2D approach)
     const currentStoreFloors = useRoomStore.getState().floors;
-    const currentStoreEntry = currentStoreFloors[currentFloor]?.airEntries?.[index];
+    const currentStoreEntry = currentStoreFloors[effectiveFloor]?.airEntries?.[index];
     const currentStorePosition = currentStoreEntry?.position;
 
     // STEP 3: Update store for synchronization (matching Canvas2D pattern)
@@ -2082,7 +2086,7 @@ export default function Canvas3D({
     };
 
     // Store the dimensions in our ref to preserve them during any potential scene rebuilds
-    const normalizedFloorName = normalizeFloorName(currentFloor);
+    const normalizedFloorName = normalizeFloorName(effectiveFloor);
     if (!updatedAirEntryPositionsRef.current[normalizedFloorName]) {
       updatedAirEntryPositionsRef.current[normalizedFloorName] = {};
     }
@@ -2097,7 +2101,7 @@ export default function Canvas3D({
     }
 
     // STEP 3: Update store with awareness that mesh was already updated
-    onUpdateAirEntry(currentFloor, index, updatedEntry);
+    onUpdateAirEntry(effectiveFloor, index, updatedEntry);
     
     setEditingAirEntry(null);
   };
@@ -6095,12 +6099,12 @@ export default function Canvas3D({
               shape: data.shape,
               wallPosition: data.wallPosition,
               properties: data.properties
-            } as any);
+            } as any, editingAirEntry.floorName); // CRITICAL: Pass correct floor for cross-floor editing
 
           }}
           initialValues={airEntryInitialValues as any}
           airEntryIndex={editingAirEntry.index}
-          currentFloor={currentFloor}
+          currentFloor={editingAirEntry.floorName || currentFloor}
           isEditing={true}
           wallContext={editingAirEntry.wallContext}
           onPositionUpdate={handleAirEntryPositionUpdate}
