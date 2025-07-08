@@ -2060,9 +2060,15 @@ export default function Canvas3D({
       properties: data.properties
     });
 
-    // STEP 2: Update store for synchronization (with skip rebuild flag concept)
+    // STEP 2: Get current position from store to preserve real-time updates (matching Canvas2D approach)
+    const currentStoreFloors = useRoomStore.getState().floors;
+    const currentStoreEntry = currentStoreFloors[currentFloor]?.airEntries?.[index];
+    const currentStorePosition = currentStoreEntry?.position;
+
+    // STEP 3: Update store for synchronization (matching Canvas2D pattern)
     const updatedEntry = {
       ...editingAirEntry.entry,
+      position: currentStorePosition || editingAirEntry.entry.position, // Preserve store position like Canvas2D
       dimensions: {
         width: data.width,
         height: data.height,
