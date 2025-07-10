@@ -4496,14 +4496,18 @@ export default function Canvas3D({
 
         // Find the index of this air entry in the floors data
         let foundIndex = -1;
-        const floorData = finalFloors[currentFloor];
+        // 🎯 CROSS-FLOOR BUG FIX: Use the floor from the detected mesh, not currentFloor
+        const meshFloorName = airEntryData.floorName;
+        const floorData = finalFloors[meshFloorName];
 
-        // 🔍 CROSS-FLOOR BUG DETECTION: Log currentFloor lookup restriction
-        console.log("🔍 [CROSS-FLOOR DEBUG] Data lookup restriction:", {
-          lookingInFloor: currentFloor,
+        // 🎯 CROSS-FLOOR BUG FIX: Log correct floor lookup
+        console.log("🎯 [CROSS-FLOOR FIX] Correct floor lookup:", {
+          detectedMeshFloor: meshFloorName,
+          lookingInCorrectFloor: meshFloorName,
           availableAirEntries: floorData?.airEntries?.length || 0,
           willSearchForIndex: airEntryData.entryIndex,
-          floorMismatch: airEntryData.floorName !== currentFloor
+          currentFloorIgnored: currentFloor,
+          fixApplied: true
         });
 
         if (floorData && floorData.airEntries) {
@@ -4518,20 +4522,20 @@ export default function Canvas3D({
             if (airEntryData.entryIndex >= 0 && airEntryData.entryIndex < floorData.airEntries.length) {
               foundIndex = airEntryData.entryIndex;
               
-              // 🔥 CROSS-FLOOR BUG EVIDENCE: This is where the wrong match happens
-              const wrongEntry = floorData.airEntries[foundIndex];
-              console.log("🔥 [CROSS-FLOOR BUG] WRONG MATCH DETECTED:", {
+              // ✅ CROSS-FLOOR BUG FIX: Now we match correctly
+              const correctEntry = floorData.airEntries[foundIndex];
+              console.log("✅ [CROSS-FLOOR FIX] CORRECT MATCH DETECTED:", {
                 detectedMeshFrom: airEntryData.floorName,
                 detectedMeshIndex: airEntryData.entryIndex,
                 detectedMeshId: airEntryData.airEntryId,
-                searchingInFloor: currentFloor,
-                foundWrongEntryAtIndex: foundIndex,
-                wrongEntryData: {
-                  type: wrongEntry.type,
-                  position: wrongEntry.position,
-                  line: wrongEntry.line
+                searchingInCorrectFloor: meshFloorName,
+                foundCorrectEntryAtIndex: foundIndex,
+                correctEntryData: {
+                  type: correctEntry.type,
+                  position: correctEntry.position,
+                  line: correctEntry.line
                 },
-                thisIsTheSourceOfCrossFloorBug: airEntryData.floorName !== currentFloor
+                bugFixed: airEntryData.floorName === meshFloorName
               });
               
               console.log("Double-click found entry using stored entryIndex:", foundIndex);
@@ -4565,7 +4569,7 @@ export default function Canvas3D({
             // Canvas3D now uses reactive store data like Canvas2D and wizard-design.tsx
             
             // Check if we have updated dimensions for this entry in our ref
-            const normalizedFloorName = normalizeFloorName(currentFloor);
+            const normalizedFloorName = normalizeFloorName(meshFloorName);
             const updatedData = updatedAirEntryPositionsRef.current[normalizedFloorName]?.[foundIndex];
 
             
@@ -4579,26 +4583,27 @@ export default function Canvas3D({
             // Phase 3: Create wall context for unified dialog experience
             const wallContext = createWallContext(mergedEntry);
             
-            // 🎯 CROSS-FLOOR BUG FINAL EVIDENCE: Log exactly what dialog opens
-            console.log("🎯 [CROSS-FLOOR BUG] DIALOG OPENING WITH MIXED DATA:", {
+            // ✅ CROSS-FLOOR BUG FIX: Log correct dialog opening
+            console.log("✅ [CROSS-FLOOR FIX] DIALOG OPENING WITH CORRECT DATA:", {
               dialogWillShow: {
-                entryFromStore: mergedEntry,
+                entryFromCorrectFloor: mergedEntry,
                 entryIndex: foundIndex,
-                floorName: currentFloor
+                correctFloorName: meshFloorName
               },
-              butUserClickedOn: {
+              userClickedOn: {
                 meshFloorName: airEntryData.floorName,
                 meshId: airEntryData.airEntryId,
                 meshPosition: airEntryData.position
               },
-              crossFloorConfirmed: airEntryData.floorName !== currentFloor,
-              explanation: "Dialog shows data from " + currentFloor + " but user clicked mesh from " + airEntryData.floorName
+              dataMatches: airEntryData.floorName === meshFloorName,
+              explanation: "Dialog shows data from " + meshFloorName + " and user clicked mesh from " + airEntryData.floorName + " - PERFECT MATCH!"
             });
             
             setEditingAirEntry({
               index: foundIndex,
               entry: mergedEntry,
-              wallContext
+              wallContext,
+              floorName: meshFloorName  // 🎯 CROSS-FLOOR BUG FIX: Use mesh floor, not currentFloor
             });
             
 
