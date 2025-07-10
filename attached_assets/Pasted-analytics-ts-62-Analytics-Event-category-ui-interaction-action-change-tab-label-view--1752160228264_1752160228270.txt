@@ -1,0 +1,108 @@
+analytics.ts:62 📊 Analytics Event: {category: 'ui_interaction', action: 'change_tab', label: 'view_3d_preview', value: undefined, status: 'sent'}
+room-store.ts:540 🔗 STORE: Suscripción eliminada. Total listeners: 0
+room-store.ts:532 🔗 STORE: Nueva suscripción añadida. Total listeners: 1
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 259ms
+Canvas3D.tsx:4469 🔍 [CROSS-FLOOR DEBUG] Available AirEntry meshes in scene: (3) [{…}, {…}, {…}]
+Canvas3D.tsx:4478 🔍 [CROSS-FLOOR DEBUG] Current floor selection: first
+Canvas3D.tsx:4488 🔍 [CROSS-FLOOR DEBUG] Detected mesh data: {detectedType: 'window', detectedEntryIndex: 0, detectedFloorName: 'Ground Floor', detectedAirEntryId: 'Ground Floor_window_0', detectedPosition: {…}, …}
+Canvas3D.tsx:4502 🔍 [CROSS-FLOOR DEBUG] Data lookup restriction: {lookingInFloor: 'first', availableAirEntries: 1, willSearchForIndex: 0, floorMismatch: true}
+Canvas3D.tsx:4510 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4523 🔥 [CROSS-FLOOR BUG] WRONG MATCH DETECTED: {detectedMeshFrom: 'Ground Floor', detectedMeshIndex: 0, detectedMeshId: 'Ground Floor_window_0', searchingInFloor: 'first', foundWrongEntryAtIndex: 0, …}
+Canvas3D.tsx:4537 Double-click found entry using stored entryIndex: 0
+Canvas3D.tsx:4583 🎯 [CROSS-FLOOR BUG] DIALOG OPENING WITH MIXED DATA: {dialogWillShow: {…}, butUserClickedOn: {…}, crossFloorConfirmed: true, explanation: 'Dialog shows data from first but user clicked mesh from Ground Floor'}
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
+room-store.ts:407 🔧 [STORE DEBUG] updateAirEntryProperties called: {floorName: 'first', index: 0, properties: {…}, propertiesRef: {…}, entryId: undefined}
+room-store.ts:441 🔧 [STORE DEBUG] Before update: {entryId: undefined, oldProperties: undefined, oldPropertiesRef: undefined}
+room-store.ts:453 🔧 [STORE DEBUG] After update: {entryId: undefined, newProperties: {…}, newPropertiesRef: {…}, areReferencesSame: false}
+Canvas3D.tsx:6085 💾 [CANVAS3D SAVE] Save Changes clicked with values: {elementStatus: 'closed', temperature: 20, airDirection: 'inflow', flowIntensity: 'medium', index: 0, …}
+room-store.ts:503 ✅ STORE: AirEntry actualizado en el store, notificando a 1 listeners
+room-store.ts:507 📢 STORE: Notificando listener 1/1
+Canvas3D.tsx:4098 Hovering over axis mesh: y
+Canvas3D.tsx:4098 Hovering over axis mesh: x
+Canvas3D.tsx:4469 🔍 [CROSS-FLOOR DEBUG] Available AirEntry meshes in scene: (3) [{…}, {…}, {…}]
+Canvas3D.tsx:4478 🔍 [CROSS-FLOOR DEBUG] Current floor selection: first
+Canvas3D.tsx:4488 🔍 [CROSS-FLOOR DEBUG] Detected mesh data: {detectedType: 'door', detectedEntryIndex: 0, detectedFloorName: 'first', detectedAirEntryId: 'first_door_0', detectedPosition: {…}, …}
+Canvas3D.tsx:4502 🔍 [CROSS-FLOOR DEBUG] Data lookup restriction: {lookingInFloor: 'first', availableAirEntries: 1, willSearchForIndex: 0, floorMismatch: false}
+Canvas3D.tsx:4510 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4523 🔥 [CROSS-FLOOR BUG] WRONG MATCH DETECTED: {detectedMeshFrom: 'first', detectedMeshIndex: 0, detectedMeshId: 'first_door_0', searchingInFloor: 'first', foundWrongEntryAtIndex: 0, …}
+Canvas3D.tsx:4537 Double-click found entry using stored entryIndex: 0
+Canvas3D.tsx:4583 🎯 [CROSS-FLOOR BUG] DIALOG OPENING WITH MIXED DATA: {dialogWillShow: {…}, butUserClickedOn: {…}, crossFloorConfirmed: false, explanation: 'Dialog shows data from first but user clicked mesh from first'}
+room-store.ts:407 🔧 [STORE DEBUG] updateAirEntryProperties called: {floorName: 'first', index: 0, properties: {…}, propertiesRef: {…}, entryId: undefined}
+room-store.ts:441 🔧 [STORE DEBUG] Before update: {entryId: undefined, oldProperties: {…}, oldPropertiesRef: {…}}
+room-store.ts:453 🔧 [STORE DEBUG] After update: {entryId: undefined, newProperties: {…}, newPropertiesRef: {…}, areReferencesSame: false}
+room-store.ts:476 🚨 [STORE DEBUG] SHARED REFERENCE DETECTED - WILL AFFECT: [{…}]
+Canvas3D.tsx:6085 💾 [CANVAS3D SAVE] Save Changes clicked with values: {elementStatus: 'closed', temperature: 20, airDirection: 'inflow', flowIntensity: 'medium', index: 0, …}
+room-store.ts:503 ✅ STORE: AirEntry actualizado en el store, notificando a 1 listeners
+room-store.ts:507 📢 STORE: Notificando listener 1/1
+Canvas3D.tsx:3249 RIGHT MOUSE DOWN - Checking measure mode: {isMeasureModeRef: false, isMeasureMode: false}
+Canvas3D.tsx:3263 Right mouse down detected
+Canvas3D.tsx:3289 Right mouse down detected
+Canvas3D.tsx:3291 Starting scene traversal for raycasting targets
+Canvas3D.tsx:3301 Found mesh: bd0ac005 userData: {type: 'floor', floorName: 'Ground Floor'} type: floor
+Canvas3D.tsx:3301 Found mesh: 76adffb3 userData: {type: 'ceiling', floorName: 'Ground Floor'} type: ceiling
+Canvas3D.tsx:3301 Found mesh: 690ee35f userData: {type: 'wall', floorName: 'Ground Floor'} type: wall
+Canvas3D.tsx:3301 Found mesh: 50bb709f userData: {type: 'wall', floorName: 'Ground Floor'} type: wall
+Canvas3D.tsx:3301 Found mesh: a94b4c91 userData: {type: 'wall', floorName: 'Ground Floor'} type: wall
+Canvas3D.tsx:3301 Found mesh: 06a6cc56 userData: {type: 'wall', floorName: 'Ground Floor'} type: wall
+Canvas3D.tsx:3301 Found mesh: 360fc6b9 userData: {type: 'window', position: {…}, dimensions: {…}, line: {…}, index: 6, …} type: window
+Canvas3D.tsx:3326 ✅ Adding to airEntryMeshes
+Canvas3D.tsx:3301 Found mesh: 739a84ae userData: {type: 'coordinate-marker', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'Ground Floor', entryIndex: 0} type: coordinate-marker
+Canvas3D.tsx:3301 Found mesh: 14947376 userData: {type: 'axis', direction: 'x', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'Ground Floor', …} type: axis
+Canvas3D.tsx:3339 ✅ Adding to axesHelpers
+Canvas3D.tsx:3301 Found mesh: 3113efc0 userData: {type: 'axis', direction: 'y', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'Ground Floor', …} type: axis
+Canvas3D.tsx:3339 ✅ Adding to axesHelpers
+Canvas3D.tsx:3301 Found mesh: 3899198e userData: {type: 'axis', direction: 'z', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'Ground Floor', …} type: axis
+Canvas3D.tsx:3339 ✅ Adding to axesHelpers
+Canvas3D.tsx:3301 Found mesh: e045771b userData: {type: 'floor', floorName: 'first'} type: floor
+Canvas3D.tsx:3301 Found mesh: b744dfcb userData: {type: 'ceiling', floorName: 'first'} type: ceiling
+Canvas3D.tsx:3301 Found mesh: 73468676 userData: {type: 'wall', floorName: 'first'} type: wall
+Canvas3D.tsx:3301 Found mesh: bccc4642 userData: {type: 'wall', floorName: 'first'} type: wall
+Canvas3D.tsx:3301 Found mesh: 222b12fa userData: {type: 'wall', floorName: 'first'} type: wall
+Canvas3D.tsx:3301 Found mesh: f54ef54d userData: {type: 'wall', floorName: 'first'} type: wall
+Canvas3D.tsx:3301 Found mesh: f4452e64 userData: {type: 'door', position: {…}, dimensions: {…}, line: {…}, index: 6, …} type: door
+Canvas3D.tsx:3326 ✅ Adding to airEntryMeshes
+Canvas3D.tsx:3301 Found mesh: 68dd417e userData: {type: 'coordinate-marker', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'first', entryIndex: 0} type: coordinate-marker
+Canvas3D.tsx:3301 Found mesh: d9460a13 userData: {type: 'axis', direction: 'x', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'first', …} type: axis
+Canvas3D.tsx:3339 ✅ Adding to axesHelpers
+Canvas3D.tsx:3301 Found mesh: 68b670a1 userData: {type: 'axis', direction: 'y', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'first', …} type: axis
+Canvas3D.tsx:3339 ✅ Adding to axesHelpers
+Canvas3D.tsx:3301 Found mesh: 65963b75 userData: {type: 'axis', direction: 'z', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'first', …} type: axis
+Canvas3D.tsx:3339 ✅ Adding to axesHelpers
+Canvas3D.tsx:3301 Found mesh: 6212d1ba userData: {type: 'floor', floorName: 'second'} type: floor
+Canvas3D.tsx:3301 Found mesh: 9b923757 userData: {type: 'ceiling', floorName: 'second'} type: ceiling
+Canvas3D.tsx:3301 Found mesh: ed90b311 userData: {type: 'wall', floorName: 'second'} type: wall
+Canvas3D.tsx:3301 Found mesh: 01d2934c userData: {type: 'wall', floorName: 'second'} type: wall
+Canvas3D.tsx:3301 Found mesh: b8341b54 userData: {type: 'wall', floorName: 'second'} type: wall
+Canvas3D.tsx:3301 Found mesh: 2a9b2999 userData: {type: 'wall', floorName: 'second'} type: wall
+Canvas3D.tsx:3301 Found mesh: 1a3cdb79 userData: {type: 'vent', position: {…}, dimensions: {…}, line: {…}, index: 6, …} type: vent
+Canvas3D.tsx:3326 ✅ Adding to airEntryMeshes
+Canvas3D.tsx:3301 Found mesh: 46c7e289 userData: {type: 'coordinate-marker', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'second', entryIndex: 0} type: coordinate-marker
+Canvas3D.tsx:3301 Found mesh: 033f1526 userData: {type: 'axis', direction: 'x', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'second', …} type: axis
+Canvas3D.tsx:3339 ✅ Adding to axesHelpers
+Canvas3D.tsx:3301 Found mesh: 151d2483 userData: {type: 'axis', direction: 'y', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'second', …} type: axis
+Canvas3D.tsx:3339 ✅ Adding to axesHelpers
+Canvas3D.tsx:3301 Found mesh: 6008f667 userData: {type: 'axis', direction: 'z', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'second', …} type: axis
+Canvas3D.tsx:3339 ✅ Adding to axesHelpers
+Canvas3D.tsx:3557 Testing intersection with 3 air entries
+Canvas3D.tsx:3568 Mesh intersections found: 0
+Canvas3D.tsx:3600 Mesh intersections: 0
+Canvas3D.tsx:4469 🔍 [CROSS-FLOOR DEBUG] Available AirEntry meshes in scene: (3) [{…}, {…}, {…}]
+Canvas3D.tsx:4478 🔍 [CROSS-FLOOR DEBUG] Current floor selection: first
+Canvas3D.tsx:4488 🔍 [CROSS-FLOOR DEBUG] Detected mesh data: {detectedType: 'vent', detectedEntryIndex: 0, detectedFloorName: 'second', detectedAirEntryId: 'second_vent_0', detectedPosition: {…}, …}
+Canvas3D.tsx:4502 🔍 [CROSS-FLOOR DEBUG] Data lookup restriction: {lookingInFloor: 'first', availableAirEntries: 1, willSearchForIndex: 0, floorMismatch: true}
+Canvas3D.tsx:4510 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4523 🔥 [CROSS-FLOOR BUG] WRONG MATCH DETECTED: {detectedMeshFrom: 'second', detectedMeshIndex: 0, detectedMeshId: 'second_vent_0', searchingInFloor: 'first', foundWrongEntryAtIndex: 0, …}
+Canvas3D.tsx:4537 Double-click found entry using stored entryIndex: 0
+Canvas3D.tsx:4583 🎯 [CROSS-FLOOR BUG] DIALOG OPENING WITH MIXED DATA: {dialogWillShow: {…}, butUserClickedOn: {…}, crossFloorConfirmed: true, explanation: 'Dialog shows data from first but user clicked mesh from second'}
+room-store.ts:407 🔧 [STORE DEBUG] updateAirEntryProperties called: {floorName: 'first', index: 0, properties: {…}, propertiesRef: {…}, entryId: undefined}
+room-store.ts:441 🔧 [STORE DEBUG] Before update: {entryId: undefined, oldProperties: {…}, oldPropertiesRef: {…}}
+room-store.ts:453 🔧 [STORE DEBUG] After update: {entryId: undefined, newProperties: {…}, newPropertiesRef: {…}, areReferencesSame: false}
+room-store.ts:476 🚨 [STORE DEBUG] SHARED REFERENCE DETECTED - WILL AFFECT: [{…}]
+Canvas3D.tsx:6085 💾 [CANVAS3D SAVE] Save Changes clicked with values: {elementStatus: 'closed', temperature: 20, airDirection: 'inflow', flowIntensity: 'medium', index: 0, …}
+room-store.ts:503 ✅ STORE: AirEntry actualizado en el store, notificando a 1 listeners
+room-store.ts:507 📢 STORE: Notificando listener 1/1
