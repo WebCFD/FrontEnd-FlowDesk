@@ -4501,11 +4501,13 @@ export default function Canvas3D({
         const normalizedMeshFloor = normalizeFloorName(meshFloorName);
         
         // 🐛 DEBUG: Log normalization issue
-        console.log("🐛 [NORMALIZATION DEBUG]:", {
+        console.log("🐛 [NORMALIZATION DEBUG] COMPLETE:", {
           original: meshFloorName,
           normalized: normalizedMeshFloor,
           availableKeys: Object.keys(finalFloors),
-          normalizationBroken: meshFloorName === "Ground Floor" && normalizedMeshFloor === "grou"
+          keyMismatch: !Object.keys(finalFloors).includes(normalizedMeshFloor),
+          exactKeys: Object.keys(finalFloors).map(key => `"${key}"`),
+          shouldUseOriginal: Object.keys(finalFloors).includes(meshFloorName)
         });
         
         const floorData = finalFloors[normalizedMeshFloor];
