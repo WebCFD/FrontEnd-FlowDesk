@@ -586,6 +586,17 @@ export const useRoomStore = create<RoomState>()(
           const generatedId = get().generateAirEntryId(floorName, entryWithoutId.type);
           const entryWithId = { ...entryWithoutId, id: generatedId } as any;
           
+          console.log(`🔍 [STORE DEBUG] BEFORE SAVING TO STATE:`, {
+            generatedId,
+            entryWithId: {
+              ...entryWithId,
+              id: entryWithId.id,
+              type: entryWithId.type
+            },
+            floorName,
+            hasId: !!entryWithId.id
+          });
+          
           set((state) => ({
             floors: {
               ...state.floors,
@@ -596,7 +607,19 @@ export const useRoomStore = create<RoomState>()(
             }
           }));
           
+          // Verify the entry was saved correctly
+          const verifyState = get();
+          const savedEntries = verifyState.floors[floorName]?.airEntries || [];
+          const lastEntry = savedEntries[savedEntries.length - 1] as any;
+          
           console.log(`✅ STORE: Added AirEntry with ID: ${generatedId} to floor: ${floorName}`);
+          console.log(`🔍 [STORE DEBUG] VERIFICATION - Entry saved correctly:`, {
+            savedEntryId: lastEntry?.id,
+            savedEntryType: lastEntry?.type,
+            totalEntries: savedEntries.length,
+            allEntriesWithIds: savedEntries.map((e: any) => ({ id: e.id, type: e.type }))
+          });
+          
           return generatedId;
         },
         
