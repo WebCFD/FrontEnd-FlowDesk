@@ -2335,12 +2335,24 @@ export default function WizardDesign() {
           <Label htmlFor="multifloor" className="text-gray-500">Multifloor (Always enabled)</Label>
         </div>
 
-        {isMultifloor && tab === "2d-editor" && (
-          <div className="space-y-4 pt-2">
+        {isMultifloor && (
+          <div className={cn(
+            "space-y-4 pt-2",
+            tab !== "2d-editor" && "opacity-50 pointer-events-none"
+          )}>
             <div className="space-y-2">
               <Label>Current Floor</Label>
-              <Select value={currentFloor} onValueChange={handleFloorChange}>
-                <SelectTrigger>
+              <Select 
+                value={currentFloor} 
+                onValueChange={tab === "2d-editor" ? handleFloorChange : undefined}
+                disabled={tab !== "2d-editor"}
+              >
+                <SelectTrigger 
+                  className={cn(
+                    tab !== "2d-editor" && "cursor-not-allowed"
+                  )}
+                  title={tab !== "2d-editor" ? "Floor management available only in 2D Editor" : undefined}
+                >
                   <SelectValue placeholder="Select floor" />
                 </SelectTrigger>
                 <SelectContent>
@@ -2376,13 +2388,28 @@ export default function WizardDesign() {
                   )}
                 </SelectContent>
               </Select>
+              {tab !== "2d-editor" && (
+                <p className="text-xs text-muted-foreground">
+                  Switch to 2D Editor to manage floors
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
               <Label>Load from Floor</Label>
               <div className="flex gap-2">
-                <Select value={loadFromFloor} onValueChange={setLoadFromFloor}>
-                  <SelectTrigger className="flex-1">
+                <Select 
+                  value={loadFromFloor} 
+                  onValueChange={tab === "2d-editor" ? setLoadFromFloor : undefined}
+                  disabled={tab !== "2d-editor"}
+                >
+                  <SelectTrigger 
+                    className={cn(
+                      "flex-1",
+                      tab !== "2d-editor" && "cursor-not-allowed"
+                    )}
+                    title={tab !== "2d-editor" ? "Floor management available only in 2D Editor" : undefined}
+                  >
                     <SelectValue placeholder="Select floor to load from" />
                   </SelectTrigger>
                   <SelectContent>
@@ -2409,21 +2436,44 @@ export default function WizardDesign() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={handleLoadTemplate}
+                  onClick={tab === "2d-editor" ? handleLoadTemplate : () => {
+                    toast({
+                      title: "Feature Unavailable",
+                      description: "Floor management is available only in 2D Editor",
+                      variant: "destructive",
+                    });
+                  }}
+                  disabled={tab !== "2d-editor"}
+                  className={cn(
+                    tab !== "2d-editor" && "cursor-not-allowed"
+                  )}
+                  title={tab !== "2d-editor" ? "Floor management available only in 2D Editor" : undefined}
                 >
                   Load
                 </Button>
               </div>
+              {tab !== "2d-editor" && (
+                <p className="text-xs text-muted-foreground">
+                  Switch to 2D Editor to load floor templates
+                </p>
+              )}
             </div>
 
 
           </div>
         )}
 
-        {/* Ceiling Height y Floor Deck Parameters - Only show in 2D Editor */}
-        {tab === "2d-editor" && (
-          <div className="space-y-4 pt-4 border-t">
+        {/* Ceiling Height y Floor Deck Parameters */}
+        <div className={cn(
+          "space-y-4 pt-4 border-t",
+          tab !== "2d-editor" && "opacity-50 pointer-events-none"
+        )}>
+          <div className="flex items-center gap-2">
             <h4 className="font-medium text-sm text-gray-700">Building Parameters</h4>
+            {tab !== "2d-editor" && (
+              <span className="text-xs text-muted-foreground">(Available in 2D Editor)</span>
+            )}
+          </div>
           
           {!isMultifloor ? (
             // Modo single floor: solo control de ceiling height
@@ -2553,8 +2603,7 @@ export default function WizardDesign() {
               })}
             </div>
           )}
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );
