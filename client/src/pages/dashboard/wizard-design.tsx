@@ -2335,7 +2335,7 @@ export default function WizardDesign() {
           <Label htmlFor="multifloor" className="text-gray-500">Multifloor (Always enabled)</Label>
         </div>
 
-        {isMultifloor && (
+        {isMultifloor && tab === "2d-editor" && (
           <div className="space-y-4 pt-2">
             <div className="space-y-2">
               <Label>Current Floor</Label>
@@ -2420,9 +2420,10 @@ export default function WizardDesign() {
           </div>
         )}
 
-        {/* Ceiling Height y Floor Deck Parameters */}
-        <div className="space-y-4 pt-4 border-t">
-          <h4 className="font-medium text-sm text-gray-700">Building Parameters</h4>
+        {/* Ceiling Height y Floor Deck Parameters - Only show in 2D Editor */}
+        {tab === "2d-editor" && (
+          <div className="space-y-4 pt-4 border-t">
+            <h4 className="font-medium text-sm text-gray-700">Building Parameters</h4>
           
           {!isMultifloor ? (
             // Modo single floor: solo control de ceiling height
@@ -2552,7 +2553,8 @@ export default function WizardDesign() {
               })}
             </div>
           )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
