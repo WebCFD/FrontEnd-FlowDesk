@@ -1758,11 +1758,30 @@ export default function Canvas2D({
           };
 
           // Use store to add entry WITH generated ID
+          console.log("🔍 [ID CREATION DEBUG] BEFORE addAirEntryToFloor:", {
+            currentFloor,
+            entryType: newAirEntryWithoutId.type,
+            entryWithoutId: newAirEntryWithoutId
+          });
+          
           const generatedId = useRoomStore.getState().addAirEntryToFloor(currentFloor, newAirEntryWithoutId);
+          
+          console.log("🔍 [ID CREATION DEBUG] AFTER addAirEntryToFloor:", {
+            generatedId,
+            currentFloor,
+            storeFloorData: useRoomStore.getState().floors[currentFloor]
+          });
+          
           const newAirEntry = { ...newAirEntryWithoutId, id: generatedId } as any;
 
           // Update local state
           const newAirEntries = [...airEntries, newAirEntry];
+          console.log("🔍 [ID CREATION DEBUG] Updated local airEntries:", {
+            newAirEntriesCount: newAirEntries.length,
+            lastEntryId: newAirEntries[newAirEntries.length - 1]?.id,
+            lastEntryType: newAirEntries[newAirEntries.length - 1]?.type
+          });
+          
           onAirEntriesUpdate?.(newAirEntries);
 
           // Open dialog in "edit mode" for the just-created element

@@ -1,0 +1,869 @@
+Canvas3D.tsx:4108 Hovering over axis mesh: x
+Canvas3D.tsx:4108 Hovering over axis mesh: x
+Canvas3D.tsx:4108 Hovering over axis mesh: y
+Canvas3D.tsx:4108 Hovering over axis mesh: y
+Canvas3D.tsx:4108 Hovering over axis mesh: y
+Canvas3D.tsx:4108 Hovering over axis mesh: y
+Canvas3D.tsx:4108 Hovering over axis mesh: y
+Canvas3D.tsx:4108 Hovering over axis mesh: y
+Canvas3D.tsx:4108 Hovering over axis mesh: y
+Canvas3D.tsx:4108 Hovering over axis mesh: y
+Canvas3D.tsx:4108 Hovering over axis mesh: y
+Canvas3D.tsx:4108 Hovering over axis mesh: y
+Canvas3D.tsx:4479 🔍 [CROSS-FLOOR DEBUG] Available AirEntry meshes in scene: (2) [{…}, {…}]
+Canvas3D.tsx:4488 🔍 [CROSS-FLOOR DEBUG] Current floor selection: first
+Canvas3D.tsx:4498 🔍 [CROSS-FLOOR DEBUG] Detected mesh data: {detectedType: 'window', detectedEntryIndex: 0, detectedFloorName: 'Ground Floor', detectedAirEntryId: 'window_0F_1', detectedPosition: {…}, …}
+Canvas3D.tsx:4523 🎯 [FLOOR KEY MAPPING] SUCCESS: {originalMeshFloor: 'Ground Floor', mappedToStoreKey: 'ground', foundInStore: true, availableAirEntries: 1, storeKeys: Array(2)}
+Canvas3D.tsx:4532 🎯 [CROSS-FLOOR FIX] Correct floor lookup with mapping: {detectedMeshFloor: 'Ground Floor', mappedFloorKey: 'ground', lookingInCorrectFloor: 'ground', availableAirEntries: 1, willSearchForIndex: 0, …}
+Canvas3D.tsx:4543 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4556 ✅ [CROSS-FLOOR FIX] CORRECT MATCH DETECTED: {detectedMeshFrom: 'Ground Floor', detectedMeshIndex: 0, detectedMeshId: 'window_0F_1', searchingInCorrectFloor: 'Ground Floor', foundCorrectEntryAtIndex: 0, …}
+Canvas3D.tsx:4570 Double-click found entry using stored entryIndex: 0
+Canvas3D.tsx:4615 🔍 [ID DEBUG] DIALOG WILL SHOW THESE IDs: {mergedEntryId: undefined, baseEntryId: undefined, meshAirEntryId: 'window_0F_1', expectedFormat: "Should be like 'window_0F_1'", actualId: 'window_0F_1', …}
+Canvas3D.tsx:4625 ✅ [CROSS-FLOOR FIX] DIALOG OPENING WITH CORRECT MAPPED DATA: {dialogWillShow: {…}, userClickedOn: {…}, mapping: {…}, explanation: "Dialog shows data from mapped floor 'ground' matching clicked mesh from 'Ground Floor'"}
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+AirEntryDialog.tsx:1115 🔍 [ID DEBUG] DIALOG ID CALCULATION: {airEntryProps: {…}, currentFloor: 'ground', airEntryIndex: 0, type: 'window', floorsAvailable: Array(2), …}
+AirEntryDialog.tsx:1142 🔍 [ID DEBUG] CURRENT ENTRY DATA: {currentEntry: {…}, entryId: undefined, entryIndex: 0, floorAirEntries: 1, entryType: 'window'}
+AirEntryDialog.tsx:1163 🔍 [ID DEBUG] Using calculated fallback ID: window_1
+room-store.ts:411 🔧 [STORE DEBUG] updateAirEntryProperties called: {floorName: 'ground', index: 0, properties: {…}, propertiesRef: {…}, entryId: undefined}
+room-store.ts:445 🔧 [STORE DEBUG] Before update: {entryId: undefined, oldProperties: undefined, oldPropertiesRef: undefined}
+room-store.ts:458 🔧 [STORE DEBUG] After update: {entryId: undefined, newProperties: {…}, newPropertiesRef: {…}, areReferencesSame: false}
+Canvas3D.tsx:6131 💾 [CANVAS3D SAVE] Save Changes clicked with values: {elementStatus: 'closed', temperature: 20, airDirection: 'inflow', flowIntensity: 'medium', index: 0, …}
+wizard-design.tsx:1122 PARENT COMPONENT DEBUG - BEFORE UPDATE (NON-CURRENT FLOOR): {floor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1142 PARENT COMPONENT DEBUG - AFTER UPDATE (NON-CURRENT FLOOR): {floor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1169 Updating floor ground in the store
