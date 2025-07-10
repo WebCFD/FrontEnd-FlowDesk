@@ -126,6 +126,37 @@ interface RoomState {
 // Global listeners array for AirEntry change notifications
 let airEntryChangeListeners: AirEntryChangeListener[] = [];
 
+// GLOBAL SOLUTION: Deep clone function to prevent shared references
+const deepCloneFloors = (floors: Record<string, FloorData>): Record<string, FloorData> => {
+  const cloned: Record<string, FloorData> = {};
+  
+  Object.keys(floors).forEach(floorKey => {
+    const floor = floors[floorKey];
+    cloned[floorKey] = {
+      ...floor,
+      lines: floor.lines ? [...floor.lines] : [],
+      walls: floor.walls ? floor.walls.map(wall => ({ ...wall })) : [],
+      measurements: floor.measurements ? [...floor.measurements] : [],
+      stairPolygons: floor.stairPolygons ? floor.stairPolygons.map(stair => ({ ...stair })) : [],
+      furnitureItems: floor.furnitureItems ? floor.furnitureItems.map(item => ({ ...item })) : [],
+      // CRITICAL: Deep clone all AirEntries to prevent shared references
+      airEntries: floor.airEntries ? floor.airEntries.map(entry => ({
+        ...entry,
+        position: { ...entry.position },
+        line: {
+          ...entry.line,
+          start: { ...entry.line.start },
+          end: { ...entry.line.end }
+        },
+        properties: entry.properties ? { ...entry.properties } : undefined,
+        simulationProperties: entry.simulationProperties ? { ...entry.simulationProperties } : undefined
+      })) : []
+    };
+  });
+  
+  return cloned;
+};
+
 export const useRoomStore = create<RoomState>()(
   devtools(
     persist(
@@ -144,7 +175,9 @@ export const useRoomStore = create<RoomState>()(
         },
         currentFloor: 'ground',
 
-        setFloors: (floors) => set({ floors }),
+        setFloors: (floors) => set({ 
+          floors: deepCloneFloors(floors) // CRITICAL: Always deep clone when setting floors
+        }),
         setCurrentFloor: (floorName) => set({ currentFloor: floorName }),
 
         // Current floor operations
