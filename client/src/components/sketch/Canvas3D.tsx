@@ -968,7 +968,40 @@ export default function Canvas3D({
   const migratedFloors = useMemo(() => {
     // If store has data, prefer it over props (ensures migration changes are visible)
     const floorsToUse = Object.keys(storeFloors).length > 0 ? storeFloors : floors;
-    return migrateFloorsData(floorsToUse);
+    const migratedData = migrateFloorsData(floorsToUse);
+    
+    // CRITICAL: Force ID migration for ALL AirEntries during floor processing
+    const storeState = useRoomStore.getState();
+    let needsStoreUpdate = false;
+    const updatedFloors = { ...migratedData };
+    
+    Object.keys(migratedData).forEach(floorKey => {
+      const floorData = migratedData[floorKey];
+      if (floorData?.airEntries) {
+        const updatedAirEntries = floorData.airEntries.map((entry, index) => {
+          if (!entry.id || typeof entry.id !== 'string' || entry.id.trim().length === 0) {
+            const newId = storeState.generateAirEntryId(floorKey, entry.type);
+            needsStoreUpdate = true;
+            return { ...entry, id: newId };
+          }
+          return entry;
+        });
+        
+        if (needsStoreUpdate) {
+          updatedFloors[floorKey] = {
+            ...floorData,
+            airEntries: updatedAirEntries
+          };
+        }
+      }
+    });
+    
+    // Update store if any IDs were missing
+    if (needsStoreUpdate) {
+      storeState.setFloors(updatedFloors);
+    }
+    
+    return updatedFloors;
   }, [floors, storeFloors]);
 
   // Phase 2: Wall Association Helper Functions for AirEntry Dialog Unification
@@ -2549,76 +2582,11 @@ export default function Canvas3D({
         // Add userData for raycasting identification - include the actual entry index for easy mapping
         let generatedId = entry.id;
         
-        // MIGRATION SYSTEM: Auto-repair legacy AirEntries without IDs
-        // Check for undefined, null, empty string, or any falsy value
-        const hasValidId = generatedId && typeof generatedId === 'string' && generatedId.trim().length > 0;
-        
-        console.log(`🔍 [MIGRATION CHECK] Entry at index ${index}:`, {
-          entryId: entry.id,
-          entryIdType: typeof entry.id,
-          hasValidId,
-          needsMigration: !hasValidId
-        });
-        
-        if (!hasValidId) {
+        // At this point, IDs should already be migrated by the global migration above
+        // Just ensure we have a valid ID for mesh creation
+        if (!generatedId || typeof generatedId !== 'string' || generatedId.trim().length === 0) {
           generatedId = useRoomStore.getState().generateAirEntryId(floorData.name, entry.type);
-          
-          console.log(`🔧 [LEGACY MIGRATION] Starting migration for index ${index}, generated ID: ${generatedId}`);
-          
-          // Auto-migrate: Update the store entry with the generated ID
-          const storeData = useRoomStore.getState();
-          
-          // CRITICAL: Use floor name mapping to find correct store key
-          const storeFloorNameMap: Record<string, string> = {
-            'Ground Floor': 'ground',
-            'First Floor': 'first',
-            'Second Floor': 'second',
-            'Third Floor': 'third'
-          };
-          
-          const storeFloorKey = storeFloorNameMap[floorData.name] || floorData.name;
-          const currentFloorData = storeData.floors[storeFloorKey];
-          
-          console.log(`🔧 [LEGACY MIGRATION] Floor name mapping:`, {
-            originalFloorName: floorData.name,
-            mappedStoreKey: storeFloorKey,
-            mappingFound: !!storeFloorNameMap[floorData.name]
-          });
-          
-          console.log(`🔧 [LEGACY MIGRATION] Store check:`, {
-            floorName: floorData.name,
-            floorExists: !!currentFloorData,
-            airEntriesExists: !!currentFloorData?.airEntries,
-            entryAtIndexExists: !!currentFloorData?.airEntries?.[index],
-            entryCountInFloor: currentFloorData?.airEntries?.length || 0
-          });
-          
-          if (currentFloorData?.airEntries?.[index]) {
-            // Update this specific entry with the generated ID
-            const updatedFloors = {
-              ...storeData.floors,
-              [storeFloorKey]: {  // Use mapped store key instead of original floor name
-                ...currentFloorData,
-                airEntries: currentFloorData.airEntries.map((airEntry, idx) => 
-                  idx === index ? { ...airEntry, id: generatedId } : airEntry
-                )
-              }
-            };
-            
-            storeData.setFloors(updatedFloors);
-            
-            console.log(`🔧 [LEGACY MIGRATION] SUCCESS: Auto-repaired AirEntry at index ${index} with ID: ${generatedId}`);
-            
-            // Verify the update worked
-            const verificationData = useRoomStore.getState();
-            const verifyEntry = verificationData.floors[storeFloorKey]?.airEntries?.[index];  // Use mapped key for verification
-            console.log(`🔧 [LEGACY MIGRATION] VERIFICATION:`, {
-              updatedEntryId: verifyEntry?.id,
-              migrationSuccessful: verifyEntry?.id === generatedId
-            });
-          } else {
-            console.log(`🔧 [LEGACY MIGRATION] FAILED: Could not find entry in store for migration`);
-          }
+          entry.id = generatedId; // Force local assignment for immediate use
         }
         
         console.log(`🔍 [CANVAS3D MESH CREATION] Creating mesh for ${entry.type} at index ${index}:`, {
