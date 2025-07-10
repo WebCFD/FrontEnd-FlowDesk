@@ -4901,6 +4901,18 @@ export default function Canvas3D({
           currentFloorDeckThickness = floorDeckThickness;
         }
         
+        // 🔍 [CANVAS3D DEBUG] Track what data createFloorObjects receives
+        console.log(`🔍 [CANVAS3D DATA DEBUG] createFloorObjects called for floor: ${floorName}`, {
+          floorData,
+          airEntriesData: floorData.airEntries?.map((entry, index) => ({
+            index,
+            entryId: entry.id,
+            entryType: entry.type,
+            hasId: !!entry.id
+          })) || [],
+          dataSource: Object.keys(reactiveStoreFloors).length > 0 ? 'reactive-store' : 'props'
+        });
+        
         const objects = createFloorObjects(
           floorData,
           baseHeight,
