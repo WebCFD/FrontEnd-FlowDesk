@@ -860,48 +860,17 @@ export default function WizardDesign() {
         `Wall normal: (${normal.x.toFixed(3)}, ${normal.y.toFixed(3)})`,
       );
 
-      // Generar ID único para el nuevo elemento con formato de piso
-      const floorPrefix = currentFloor === 'ground' ? '0F' : 
-                         currentFloor === 'first' ? '1F' :
-                         currentFloor === 'second' ? '2F' :
-                         currentFloor === 'third' ? '3F' :
-                         currentFloor === 'fourth' ? '4F' :
-                         currentFloor === 'fifth' ? '5F' : '0F';
-      
-      const existingEntries = airEntries || [];
-      const typeCounters = { window: 1, door: 1, vent: 1 };
-      
-      // Contar elementos existentes del mismo tipo en el piso actual
-      existingEntries.forEach(entry => {
-        const anyEntry = entry as any;
-        if (anyEntry.id) {
-          // Buscar formato nuevo: window_0F_1
-          let match = anyEntry.id.match(new RegExp(`^(window|door|vent)_${floorPrefix}_(\\d+)$`));
-          
-          // Si no encuentra, buscar formato antiguo: window_1 (para compatibilidad)
-          if (!match) {
-            match = anyEntry.id.match(/^(window|door|vent)_(\d+)$/);
-          }
-          
-          if (match) {
-            const type = match[1] as keyof typeof typeCounters;
-            const num = parseInt(match[2]);
-            if (typeCounters[type] <= num) {
-              typeCounters[type] = num + 1;
-            }
-          }
-        }
-      });
-      
-      const generatedId = `${currentAirEntry}_${floorPrefix}_${typeCounters[currentAirEntry]}`;
-      
-      const newAirEntry = {
+      // Create new AirEntry WITHOUT ID (store will generate it)
+      const newAirEntryWithoutId = {
         type: currentAirEntry,
         position: clickedPoint,
         dimensions,
         line: selectedLine,
-        id: generatedId
       } as any;
+
+      // Use store to add entry WITH generated ID
+      const generatedId = useRoomStore.getState().addAirEntryToFloor(currentFloor, newAirEntryWithoutId);
+      const newAirEntry = { ...newAirEntryWithoutId, id: generatedId };
 
       const newAirEntries = [...airEntries, newAirEntry];
       setAirEntries(newAirEntries);
