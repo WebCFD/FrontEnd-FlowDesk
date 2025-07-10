@@ -1,0 +1,32 @@
+Canvas2D.tsx:1761 🔍 [ID CREATION DEBUG] BEFORE addAirEntryToFloor: {currentFloor: 'first', entryType: 'window', entryWithoutId: {…}}
+room-store.ts:581 🆔 STORE: Generated unique ID: window_1F_1 for floor: first, type: window
+room-store.ts:589 🔍 [STORE DEBUG] BEFORE SAVING TO STATE: {generatedId: 'window_1F_1', entryWithId: {…}, floorName: 'first', hasId: true}
+room-store.ts:615 ✅ STORE: Added AirEntry with ID: window_1F_1 to floor: first
+room-store.ts:616 🔍 [STORE DEBUG] VERIFICATION - Entry saved correctly: {savedEntryId: 'window_1F_1', savedEntryType: 'window', totalEntries: 3, allEntriesWithIds: Array(3)}
+Canvas2D.tsx:1769 🔍 [ID CREATION DEBUG] AFTER addAirEntryToFloor: {generatedId: 'window_1F_1', currentFloor: 'first', storeFloorData: {…}}
+Canvas2D.tsx:1779 🔍 [ID CREATION DEBUG] Updated local airEntries: {newAirEntriesCount: 3, lastEntryId: 'window_1F_1', lastEntryType: 'window'}
+room-store.ts:411 🔧 [STORE DEBUG] updateAirEntryProperties called: {floorName: 'first', index: 2, properties: {…}, propertiesRef: {…}, entryId: 'window_1F_1'}
+room-store.ts:445 🔧 [STORE DEBUG] Before update: {entryId: 'window_1F_1', oldProperties: {…}, oldPropertiesRef: {…}}
+room-store.ts:458 🔧 [STORE DEBUG] After update: {entryId: 'window_1F_1', newProperties: {…}, newPropertiesRef: {…}, areReferencesSame: false}
+room-store.ts:481 🚨 [STORE DEBUG] SHARED REFERENCE DETECTED - WILL AFFECT: [{…}]
+Canvas2D.tsx:3409 🟢 [CANVAS2D EDIT] handleAirEntryEdit called with index: 2
+Canvas2D.tsx:3410 🟢 [CANVAS2D EDIT] Received data: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 67.27423233364806, …}
+Canvas2D.tsx:3411 🟢 [CANVAS2D EDIT] data.wallPosition: 67.27423233364806
+Canvas2D.tsx:3419 🟢 [CANVAS2D EDIT] Original entry: {type: 'window', position: {…}, dimensions: {…}, line: {…}, lineId: 'line_3', …}
+Canvas2D.tsx:3420 🟢 [CANVAS2D EDIT] Original wallPosition: undefined
+Canvas2D.tsx:3421 🟢 [CANVAS2D EDIT] Current store position: {x: 307.6144096112659, y: 359.0023010478067}
+Canvas2D.tsx:3436 🟢 [CANVAS2D EDIT] Final updated entry: {type: 'window', position: {…}, dimensions: {…}, line: {…}, lineId: 'line_3', …}
+Canvas2D.tsx:3437 🟢 [CANVAS2D EDIT] Final wallPosition: 67.27423233364806
+Canvas2D.tsx:3438 🟢 [CANVAS2D EDIT] Final properties ref: {state: 'closed', temperature: 20, flowIntensity: 'medium', airOrientation: 'inflow'}
+analytics.ts:62 📊 Analytics Event: {category: 'ui_interaction', action: 'change_tab', label: 'view_3d_preview', value: undefined, status: 'sent'}
+room-store.ts:546 🔗 STORE: Suscripción eliminada. Total listeners: 0
+room-store.ts:538 🔗 STORE: Nueva suscripción añadida. Total listeners: 1
+Canvas3D.tsx:4905 🔍 [CANVAS3D DATA DEBUG] createFloorObjects called for floor: ground {floorData: {…}, airEntriesData: Array(1), dataSource: 'reactive-store'}
+room-store.ts:581 🆔 STORE: Generated unique ID: window_0F_1 for floor: Ground Floor, type: window
+Canvas3D.tsx:2545 🔍 [CANVAS3D MESH CREATION] Creating mesh for window at index 0: {entryId: undefined, generatedId: 'window_0F_1', floorName: 'Ground Floor', entryType: 'window', entryIndex: 0, …}
+Canvas3D.tsx:4905 🔍 [CANVAS3D DATA DEBUG] createFloorObjects called for floor: first {floorData: {…}, airEntriesData: Array(3), dataSource: 'reactive-store'}
+room-store.ts:581 🆔 STORE: Generated unique ID: window_1F_1 for floor: first, type: window
+Canvas3D.tsx:2545 🔍 [CANVAS3D MESH CREATION] Creating mesh for window at index 0: {entryId: undefined, generatedId: 'window_1F_1', floorName: 'first', entryType: 'window', entryIndex: 0, …}entryId: undefinedentryIndex: 0entryType: "window"finalIdUsed: "window_1F_1"floorName: "first"generatedId: "window_1F_1"[[Prototype]]: Object
+Canvas3D.tsx:2545 🔍 [CANVAS3D MESH CREATION] Creating mesh for window at index 1: {entryId: 'window_1F_1', generatedId: 'window_1F_1', floorName: 'first', entryType: 'window', entryIndex: 1, …}entryId: "window_1F_1"entryIndex: 1entryType: "window"finalIdUsed: "window_1F_1"floorName: "first"generatedId: "window_1F_1"[[Prototype]]: Object
+Canvas3D.tsx:2545 🔍 [CANVAS3D MESH CREATION] Creating mesh for window at index 2: {entryId: 'window_1F_1', generatedId: 'window_1F_1', floorName: 'first', entryType: 'window', entryIndex: 2, …}entryId: "window_1F_1"entryIndex: 2entryType: "window"finalIdUsed: "window_1F_1"floorName: "first"generatedId: "window_1F_1"[[Prototype]]: Object
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 379ms
