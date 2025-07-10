@@ -4499,6 +4499,15 @@ export default function Canvas3D({
         // 🎯 CROSS-FLOOR BUG FIX: Use the floor from the detected mesh, but normalize it
         const meshFloorName = airEntryData.floorName;
         const normalizedMeshFloor = normalizeFloorName(meshFloorName);
+        
+        // 🐛 DEBUG: Log normalization issue
+        console.log("🐛 [NORMALIZATION DEBUG]:", {
+          original: meshFloorName,
+          normalized: normalizedMeshFloor,
+          availableKeys: Object.keys(finalFloors),
+          normalizationBroken: meshFloorName === "Ground Floor" && normalizedMeshFloor === "grou"
+        });
+        
         const floorData = finalFloors[normalizedMeshFloor];
 
         // 🎯 CROSS-FLOOR BUG FIX: Log correct floor lookup with normalization
