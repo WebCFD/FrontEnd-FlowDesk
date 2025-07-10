@@ -2561,7 +2561,23 @@ export default function Canvas3D({
           
           // Auto-migrate: Update the store entry with the generated ID
           const storeData = useRoomStore.getState();
-          const currentFloorData = storeData.floors[floorData.name];
+          
+          // CRITICAL: Use floor name mapping to find correct store key
+          const storeFloorNameMap: Record<string, string> = {
+            'Ground Floor': 'ground',
+            'First Floor': 'first',
+            'Second Floor': 'second',
+            'Third Floor': 'third'
+          };
+          
+          const storeFloorKey = storeFloorNameMap[floorData.name] || floorData.name;
+          const currentFloorData = storeData.floors[storeFloorKey];
+          
+          console.log(`🔧 [LEGACY MIGRATION] Floor name mapping:`, {
+            originalFloorName: floorData.name,
+            mappedStoreKey: storeFloorKey,
+            mappingFound: !!storeFloorNameMap[floorData.name]
+          });
           
           console.log(`🔧 [LEGACY MIGRATION] Store check:`, {
             floorName: floorData.name,
@@ -2575,7 +2591,7 @@ export default function Canvas3D({
             // Update this specific entry with the generated ID
             const updatedFloors = {
               ...storeData.floors,
-              [floorData.name]: {
+              [storeFloorKey]: {  // Use mapped store key instead of original floor name
                 ...currentFloorData,
                 airEntries: currentFloorData.airEntries.map((airEntry, idx) => 
                   idx === index ? { ...airEntry, id: generatedId } : airEntry
@@ -2589,7 +2605,7 @@ export default function Canvas3D({
             
             // Verify the update worked
             const verificationData = useRoomStore.getState();
-            const verifyEntry = verificationData.floors[floorData.name]?.airEntries?.[index];
+            const verifyEntry = verificationData.floors[storeFloorKey]?.airEntries?.[index];  // Use mapped key for verification
             console.log(`🔧 [LEGACY MIGRATION] VERIFICATION:`, {
               updatedEntryId: verifyEntry?.id,
               migrationSuccessful: verifyEntry?.id === generatedId
