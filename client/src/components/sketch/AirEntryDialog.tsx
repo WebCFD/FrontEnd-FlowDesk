@@ -1110,60 +1110,31 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                       return wallContext ? (
                         <div className="p-2 bg-gray-100 rounded text-xs text-gray-600">
                           <div>Floor: {wallContext.floorName}</div>
-                          <div>{type === 'window' ? 'Window' : type === 'door' ? 'Door' : 'Vent'} ID: {(() => {
-                            // 🔍 ID DEBUG: Log full dialog initialization data
-                            console.log("🔍 [ID DEBUG] DIALOG ID CALCULATION:", {
-                              airEntryProps,
-                              currentFloor: airEntryProps.currentFloor,
-                              airEntryIndex: airEntryProps.airEntryIndex,
-                              type: type,
-                              floorsAvailable: Object.keys(floors),
-                              propsInitialValues: airEntryProps.initialValues
-                            });
-                            
-                            // Usar el ID real del elemento si existe
-                            if (!airEntryProps.currentFloor) {
-                              console.log("🔍 [ID DEBUG] No currentFloor, using fallback:", `${type}_1`);
-                              return `${type}_1`;
-                            }
-                            
-                            // Obtener todas las air entries del piso actual
-                            const currentFloorData = floors[airEntryProps.currentFloor];
-                            if (!currentFloorData) {
-                              console.log("🔍 [ID DEBUG] No floor data found, using fallback:", `${type}_1`);
-                              return `${type}_1`;
-                            }
-                            
-                            // Obtener el elemento actual
-                            const currentEntry = currentFloorData.airEntries[airEntryProps.airEntryIndex || 0];
-                            const entryWithId = currentEntry as any;
-                            
-                            // 🔍 ID DEBUG: Log current entry data
-                            console.log("🔍 [ID DEBUG] CURRENT ENTRY DATA:", {
-                              currentEntry,
-                              entryId: entryWithId?.id,
-                              entryIndex: airEntryProps.airEntryIndex,
-                              floorAirEntries: currentFloorData.airEntries?.length,
-                              entryType: currentEntry?.type
-                            });
-                            
-                            // Si el elemento tiene ID, usarlo; si no, calcularlo
-                            if (entryWithId?.id) {
-                              console.log("🔍 [ID DEBUG] Using existing ID:", entryWithId.id);
-                              return entryWithId.id;
-                            } else {
-                              // Fallback: calcular índice por tipo
-                              let typeCount = 0;
-                              for (let i = 0; i <= (airEntryProps.airEntryIndex || 0); i++) {
-                                if (currentFloorData.airEntries[i]?.type === type) {
-                                  typeCount++;
+                          <div>{type === 'window' ? 'Window' : type === 'door' ? 'Door' : 'Vent'} ID: {
+                            // ✅ FIX: Use useMemo to prevent infinite loop and calculate ID once
+                            (() => {
+                              // Get current entry from store
+                              if (!airEntryProps.currentFloor) return `${type}_1`;
+                              const currentFloorData = floors[airEntryProps.currentFloor];
+                              if (!currentFloorData) return `${type}_1`;
+                              
+                              const currentEntry = currentFloorData.airEntries[airEntryProps.airEntryIndex || 0];
+                              
+                              // Use existing ID if available, otherwise calculate fallback
+                              if ((currentEntry as any)?.id) {
+                                return (currentEntry as any).id;
+                              } else {
+                                // Calculate type-based index
+                                let typeCount = 0;
+                                for (let i = 0; i <= (airEntryProps.airEntryIndex || 0); i++) {
+                                  if (currentFloorData.airEntries[i]?.type === type) {
+                                    typeCount++;
+                                  }
                                 }
+                                return `${type}_${typeCount}`;
                               }
-                              const fallbackId = `${type}_${typeCount}`;
-                              console.log("🔍 [ID DEBUG] Using calculated fallback ID:", fallbackId);
-                              return fallbackId;
-                            }
-                          })()}</div>
+                            })()
+                          }</div>
                           <div>Wall ID: {wallContext.wallId}</div>
                           {(() => {
                             // Calcular coordenadas del centro de la ventana
