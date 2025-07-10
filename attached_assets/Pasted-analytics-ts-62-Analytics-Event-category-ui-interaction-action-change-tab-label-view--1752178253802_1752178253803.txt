@@ -1,0 +1,28 @@
+analytics.ts:62 📊 Analytics Event: {category: 'ui_interaction', action: 'change_tab', label: 'view_2d_editor', value: undefined, status: 'sent'}
+room-store.ts:546 🔗 STORE: Suscripción eliminada. Total listeners: 0
+room-store.ts:538 🔗 STORE: Nueva suscripción añadida. Total listeners: 1
+wizard-design:1 [.WebGL-0x185411839500] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x185411839500] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x185411839500] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x185411839500] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x185411839500] GL_INVALID_OPERATION: Texture is immutable.
+analytics.ts:62 📊 Analytics Event: {category: 'ui_interaction', action: 'change_tab', label: 'view_3d_preview', value: undefined, status: 'sent'}
+room-store.ts:546 🔗 STORE: Suscripción eliminada. Total listeners: 0
+room-store.ts:538 🔗 STORE: Nueva suscripción añadida. Total listeners: 1
+Canvas3D.tsx:2550 🔍 [MIGRATION CHECK] Entry at index 0: {entryId: undefined, entryIdType: 'undefined', hasValidId: undefined, needsMigration: true}
+room-store.ts:581 🆔 STORE: Generated unique ID: window_0F_1 for floor: Ground Floor, type: window
+Canvas3D.tsx:2560 🔧 [LEGACY MIGRATION] Starting migration for index 0, generated ID: window_0F_1
+Canvas3D.tsx:2576 🔧 [LEGACY MIGRATION] Floor name mapping: {originalFloorName: 'Ground Floor', mappedStoreKey: 'ground', mappingFound: true}
+Canvas3D.tsx:2582 🔧 [LEGACY MIGRATION] Store check: {floorName: 'Ground Floor', floorExists: true, airEntriesExists: true, entryAtIndexExists: true, entryCountInFloor: 1}
+Canvas3D.tsx:2604 🔧 [LEGACY MIGRATION] SUCCESS: Auto-repaired AirEntry at index 0 with ID: window_0F_1
+Canvas3D.tsx:2609 🔧 [LEGACY MIGRATION] VERIFICATION: {updatedEntryId: 'window_0F_1', migrationSuccessful: true}
+Canvas3D.tsx:2618 🔍 [CANVAS3D MESH CREATION] Creating mesh for window at index 0: {entryId: undefined, generatedId: 'window_0F_1', floorName: 'Ground Floor', entryType: 'window', entryIndex: 0, …}
+Canvas3D.tsx:2550 🔍 [MIGRATION CHECK] Entry at index 0: {entryId: undefined, entryIdType: 'undefined', hasValidId: undefined, needsMigration: true}
+room-store.ts:581 🆔 STORE: Generated unique ID: window_1F_1 for floor: first, type: window
+Canvas3D.tsx:2560 🔧 [LEGACY MIGRATION] Starting migration for index 0, generated ID: window_1F_1
+Canvas3D.tsx:2576 🔧 [LEGACY MIGRATION] Floor name mapping: {originalFloorName: 'first', mappedStoreKey: 'first', mappingFound: false}
+Canvas3D.tsx:2582 🔧 [LEGACY MIGRATION] Store check: {floorName: 'first', floorExists: true, airEntriesExists: true, entryAtIndexExists: true, entryCountInFloor: 1}
+Canvas3D.tsx:2604 🔧 [LEGACY MIGRATION] SUCCESS: Auto-repaired AirEntry at index 0 with ID: window_1F_1
+Canvas3D.tsx:2609 🔧 [LEGACY MIGRATION] VERIFICATION: {updatedEntryId: 'window_1F_1', migrationSuccessful: true}
+Canvas3D.tsx:2618 🔍 [CANVAS3D MESH CREATION] Creating mesh for window at index 0: {entryId: undefined, generatedId: 'window_1F_1', floorName: 'first', entryType: 'window', entryIndex: 0, …}
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 224ms

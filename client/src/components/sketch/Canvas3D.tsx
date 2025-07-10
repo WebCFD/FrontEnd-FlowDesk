@@ -963,7 +963,13 @@ export default function Canvas3D({
   // PHASE 5: Pure props pattern - removed Zustand store dependencies
 
   // PHASE 1: Migrate floors data to ensure backward compatibility
-  const migratedFloors = useMemo(() => migrateFloorsData(floors), [floors]);
+  // Use reactive store data to ensure migration changes are reflected
+  const storeFloors = useRoomStore((state) => state.floors);
+  const migratedFloors = useMemo(() => {
+    // If store has data, prefer it over props (ensures migration changes are visible)
+    const floorsToUse = Object.keys(storeFloors).length > 0 ? storeFloors : floors;
+    return migrateFloorsData(floorsToUse);
+  }, [floors, storeFloors]);
 
   // Phase 2: Wall Association Helper Functions for AirEntry Dialog Unification
   const lineToUniqueId = (line: Line): string => {
