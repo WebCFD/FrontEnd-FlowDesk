@@ -43,6 +43,7 @@ interface AirEntry {
   };
   properties?: SimulationProperties;
   line: Line;
+  id?: string; // Optional for backward compatibility, required for new entries
 }
 
 interface Measurement {
@@ -116,6 +117,9 @@ interface RoomState {
   // Reactive AirEntry synchronization system
   updateAirEntry: (floorName: string, index: number, entry: AirEntry) => void;
   subscribeToAirEntryChanges: (listener: AirEntryChangeListener) => () => void;
+  // Centralized ID management system
+  generateAirEntryId: (floorName: string, type: 'window' | 'door' | 'vent') => string;
+  addAirEntryToFloor: (floorName: string, entry: Omit<AirEntry, 'id'>) => string;
   reset: () => void;
 }
 
@@ -542,6 +546,58 @@ export const useRoomStore = create<RoomState>()(
               console.log(`🔗 STORE: Suscripción eliminada. Total listeners: ${airEntryChangeListeners.length}`);
             }
           };
+        },
+
+        // Centralized ID Generation System - Single Source of Truth
+        generateAirEntryId: (floorName: string, type: 'window' | 'door' | 'vent') => {
+          const state = get();
+          const floorPrefix = floorName === 'ground' ? '0F' : 
+                             floorName === 'first' ? '1F' :
+                             floorName === 'second' ? '2F' :
+                             floorName === 'third' ? '3F' :
+                             floorName === 'fourth' ? '4F' :
+                             floorName === 'fifth' ? '5F' : '0F';
+          
+          // Count only existing entries for THIS floor - prevent cross-floor contamination
+          const floorData = state.floors[floorName];
+          const existingEntries = floorData?.airEntries || [];
+          
+          let maxCounter = 0;
+          existingEntries.forEach(entry => {
+            const anyEntry = entry as any;
+            if (anyEntry.id) {
+              // Only match IDs for this specific floor and type
+              const match = anyEntry.id.match(new RegExp(`^${type}_${floorPrefix}_(\\d+)$`));
+              if (match) {
+                const num = parseInt(match[2]);
+                if (num > maxCounter) {
+                  maxCounter = num;
+                }
+              }
+            }
+          });
+          
+          const generatedId = `${type}_${floorPrefix}_${maxCounter + 1}`;
+          console.log(`🆔 STORE: Generated unique ID: ${generatedId} for floor: ${floorName}, type: ${type}`);
+          return generatedId;
+        },
+
+        addAirEntryToFloor: (floorName: string, entryWithoutId: Omit<AirEntry, 'id'>) => {
+          const generatedId = get().generateAirEntryId(floorName, entryWithoutId.type);
+          const entryWithId = { ...entryWithoutId, id: generatedId } as any;
+          
+          set((state) => ({
+            floors: {
+              ...state.floors,
+              [floorName]: {
+                ...state.floors[floorName],
+                airEntries: [...(state.floors[floorName]?.airEntries || []), entryWithId]
+              }
+            }
+          }));
+          
+          console.log(`✅ STORE: Added AirEntry with ID: ${generatedId} to floor: ${floorName}`);
+          return generatedId;
         },
         
         reset: () => set({
