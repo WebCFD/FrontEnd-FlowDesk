@@ -4496,18 +4496,20 @@ export default function Canvas3D({
 
         // Find the index of this air entry in the floors data
         let foundIndex = -1;
-        // 🎯 CROSS-FLOOR BUG FIX: Use the floor from the detected mesh, not currentFloor
+        // 🎯 CROSS-FLOOR BUG FIX: Use the floor from the detected mesh, but normalize it
         const meshFloorName = airEntryData.floorName;
-        const floorData = finalFloors[meshFloorName];
+        const normalizedMeshFloor = normalizeFloorName(meshFloorName);
+        const floorData = finalFloors[normalizedMeshFloor];
 
-        // 🎯 CROSS-FLOOR BUG FIX: Log correct floor lookup
-        console.log("🎯 [CROSS-FLOOR FIX] Correct floor lookup:", {
+        // 🎯 CROSS-FLOOR BUG FIX: Log correct floor lookup with normalization
+        console.log("🎯 [CROSS-FLOOR FIX] Correct floor lookup with normalization:", {
           detectedMeshFloor: meshFloorName,
-          lookingInCorrectFloor: meshFloorName,
+          normalizedFloorKey: normalizedMeshFloor,
+          lookingInCorrectFloor: normalizedMeshFloor,
           availableAirEntries: floorData?.airEntries?.length || 0,
           willSearchForIndex: airEntryData.entryIndex,
           currentFloorIgnored: currentFloor,
-          fixApplied: true
+          normalizationApplied: true
         });
 
         if (floorData && floorData.airEntries) {
@@ -4569,8 +4571,7 @@ export default function Canvas3D({
             // Canvas3D now uses reactive store data like Canvas2D and wizard-design.tsx
             
             // Check if we have updated dimensions for this entry in our ref
-            const normalizedFloorName = normalizeFloorName(meshFloorName);
-            const updatedData = updatedAirEntryPositionsRef.current[normalizedFloorName]?.[foundIndex];
+            const updatedData = updatedAirEntryPositionsRef.current[normalizedMeshFloor]?.[foundIndex];
 
             
             // Create a merged entry with the latest dimensions
@@ -4583,27 +4584,30 @@ export default function Canvas3D({
             // Phase 3: Create wall context for unified dialog experience
             const wallContext = createWallContext(mergedEntry);
             
-            // ✅ CROSS-FLOOR BUG FIX: Log correct dialog opening
-            console.log("✅ [CROSS-FLOOR FIX] DIALOG OPENING WITH CORRECT DATA:", {
+            // ✅ CROSS-FLOOR BUG FIX: Log correct dialog opening with normalization
+            console.log("✅ [CROSS-FLOOR FIX] DIALOG OPENING WITH CORRECT NORMALIZED DATA:", {
               dialogWillShow: {
                 entryFromCorrectFloor: mergedEntry,
                 entryIndex: foundIndex,
-                correctFloorName: meshFloorName
+                normalizedFloorName: normalizedMeshFloor
               },
               userClickedOn: {
                 meshFloorName: airEntryData.floorName,
                 meshId: airEntryData.airEntryId,
                 meshPosition: airEntryData.position
               },
-              dataMatches: airEntryData.floorName === meshFloorName,
-              explanation: "Dialog shows data from " + meshFloorName + " and user clicked mesh from " + airEntryData.floorName + " - PERFECT MATCH!"
+              normalization: {
+                originalMeshFloor: meshFloorName,
+                normalizedForStore: normalizedMeshFloor
+              },
+              explanation: "Dialog shows data from normalized floor '" + normalizedMeshFloor + "' matching clicked mesh from '" + meshFloorName + "'"
             });
             
             setEditingAirEntry({
               index: foundIndex,
               entry: mergedEntry,
               wallContext,
-              floorName: meshFloorName  // 🎯 CROSS-FLOOR BUG FIX: Use mesh floor, not currentFloor
+              floorName: normalizedMeshFloor  // 🎯 CROSS-FLOOR BUG FIX: Use normalized mesh floor for callback compatibility
             });
             
 
