@@ -962,49 +962,13 @@ export default function Canvas3D({
 
   // PHASE 5: Pure props pattern - removed Zustand store dependencies
 
-  // PHASE 1: Migrate floors data to ensure backward compatibility
-  // Use reactive store data to ensure migration changes are reflected
+  // SIMPLIFIED: Use reactive store data directly - deep cloning handled by store
   const storeFloors = useRoomStore((state) => state.floors);
-  const migratedFloors = useMemo(() => {
-    // If store has data, prefer it over props (ensures migration changes are visible)
+  const finalFloors = useMemo(() => {
+    // Use store data if available, otherwise use props
     const floorsToUse = Object.keys(storeFloors).length > 0 ? storeFloors : floors;
     return migrateFloorsData(floorsToUse);
   }, [floors, storeFloors]);
-
-  // CRITICAL: Separate migration effect to avoid render-during-render issues
-  useEffect(() => {
-    const storeState = useRoomStore.getState();
-    let needsStoreUpdate = false;
-    const updatedFloors = { ...storeState.floors };
-    
-    Object.keys(storeState.floors).forEach(floorKey => {
-      const floorData = storeState.floors[floorKey];
-      if (floorData?.airEntries) {
-        const updatedAirEntries = floorData.airEntries.map((entry, index) => {
-          if (!entry.id || typeof entry.id !== 'string' || entry.id.trim().length === 0) {
-            const newId = storeState.generateAirEntryId(floorKey, entry.type);
-            needsStoreUpdate = true;
-            // CRITICAL: Deep clone to prevent shared references
-            return JSON.parse(JSON.stringify({ ...entry, id: newId }));
-          }
-          // CRITICAL: Deep clone all entries to prevent shared references
-          return JSON.parse(JSON.stringify(entry));
-        });
-        
-        if (needsStoreUpdate || JSON.stringify(updatedAirEntries) !== JSON.stringify(floorData.airEntries)) {
-          updatedFloors[floorKey] = {
-            ...floorData,
-            airEntries: updatedAirEntries
-          };
-        }
-      }
-    });
-    
-    // Update store if any IDs were missing or references need cloning
-    if (needsStoreUpdate || JSON.stringify(updatedFloors) !== JSON.stringify(storeState.floors)) {
-      storeState.setFloors(updatedFloors);
-    }
-  }, [storeFloors]); // Run when store floors change
 
   // Phase 2: Wall Association Helper Functions for AirEntry Dialog Unification
   const lineToUniqueId = (line: Line): string => {
@@ -1072,7 +1036,7 @@ export default function Canvas3D({
         camera,
         scene,
         currentFloor,
-        migratedFloors,
+        finalFloors,
         isMultifloor,
         floorParameters,
         furnitureType // Pass furniture type for surface restrictions
@@ -1089,7 +1053,7 @@ export default function Canvas3D({
       );
       
       // Get existing furniture from current floor for ID generation
-      const floorData = migratedFloors[surfaceDetection.floorName];
+      const floorData = finalFloors[surfaceDetection.floorName];
       const existingFurniture = floorData?.furnitureItems || [];
       
       // For custom objects, use the pre-assigned ID from the store; for others, generate new ID
@@ -1184,7 +1148,7 @@ export default function Canvas3D({
     } catch (error) {
       console.error("Error processing furniture drop:", error);
     }
-  }, [currentFloor, migratedFloors, isMultifloor, floorParameters, onFurnitureAdd]);
+  }, [currentFloor, finalFloors, isMultifloor, floorParameters, onFurnitureAdd]);
 
   // Reactive AirEntry synchronization system
   const { subscribeToAirEntryChanges } = useRoomStore();
@@ -4741,39 +4705,6 @@ export default function Canvas3D({
 
   // SOLUTION: Use reactive store subscription like Canvas2D and wizard-design.tsx
   const reactiveStoreFloors = useRoomStore((state) => state.floors);
-  
-  // PHASE 4: Refined memoization - only rebuild for STRUCTURAL changes, not property changes
-  const finalFloors = useMemo(() => {
-    const sourceFloors = Object.keys(reactiveStoreFloors).length > 0 ? reactiveStoreFloors : floors;
-    
-    // Return source floors directly - the key is in the dependency array to prevent unnecessary rebuilds
-    return sourceFloors;
-  }, [
-    // CRITICAL: Only track structural changes, NOT property changes
-    JSON.stringify({
-      // Track only counts and structural flags
-      floorCount: Object.keys(reactiveStoreFloors).length > 0 ? Object.keys(reactiveStoreFloors).length : Object.keys(floors).length,
-      currentFloor,
-      structuralHashes: Object.keys(reactiveStoreFloors).length > 0 ? 
-        Object.keys(reactiveStoreFloors).map(floorName => ({
-          name: floorName,
-          linesLength: reactiveStoreFloors[floorName]?.lines?.length || 0,
-          airEntriesLength: reactiveStoreFloors[floorName]?.airEntries?.length || 0,
-          furnitureItemsLength: reactiveStoreFloors[floorName]?.furnitureItems?.length || 0,
-          stairPolygonsLength: reactiveStoreFloors[floorName]?.stairPolygons?.length || 0,
-          hasClosedContour: reactiveStoreFloors[floorName]?.hasClosedContour || false
-          // EXCLUDE: airEntry positions, dimensions, properties - these should NOT trigger rebuilds
-        })) :
-        Object.keys(floors).map(floorName => ({
-          name: floorName,
-          linesLength: floors[floorName]?.lines?.length || 0,
-          airEntriesLength: floors[floorName]?.airEntries?.length || 0,
-          furnitureItemsLength: floors[floorName]?.furnitureItems?.length || 0,
-          stairPolygonsLength: floors[floorName]?.stairPolygons?.length || 0,
-          hasClosedContour: floors[floorName]?.hasClosedContour || false
-        }))
-    })
-  ]);
 
   // PHASE 2: Function to update AirEntry mesh directly (like furniture) - placed after finalFloors declaration
   const updateAirEntryMeshDirectly = useCallback((floorName: string, entryIndex: number, changes: AirEntryMeshChanges): boolean => {
