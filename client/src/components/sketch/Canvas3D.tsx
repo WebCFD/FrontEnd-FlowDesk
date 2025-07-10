@@ -2549,7 +2549,7 @@ export default function Canvas3D({
           index: objects.length,
           entryIndex: index,  // Add the actual index in the airEntries array
           floorName: floorData.name,
-          airEntryId: `${floorData.name}_${entry.type}_${index}`
+          airEntryId: entry.id || useRoomStore.getState().generateAirEntryId(floorData.name, entry.type)
         };
 
         const orientationData = calculateAirEntryCoordinateSystemComplete(entry);
