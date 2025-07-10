@@ -4465,6 +4465,18 @@ export default function Canvas3D({
         }
       });
 
+      // 🔍 CROSS-FLOOR BUG DETECTION: Log all AirEntry meshes available for raycast
+      console.log("🔍 [CROSS-FLOOR DEBUG] Available AirEntry meshes in scene:", 
+        airEntryMeshes.map(mesh => ({
+          type: mesh.userData.type,
+          floorName: mesh.userData.floorName,
+          entryIndex: mesh.userData.entryIndex,
+          airEntryId: mesh.userData.airEntryId,
+          position: mesh.userData.position
+        }))
+      );
+      console.log("🔍 [CROSS-FLOOR DEBUG] Current floor selection:", currentFloor);
+
       // Check for intersections with air entry meshes
       const intersects = raycaster.intersectObjects(airEntryMeshes, false);
 
@@ -4472,9 +4484,27 @@ export default function Canvas3D({
         const mesh = intersects[0].object as THREE.Mesh;
         const airEntryData = mesh.userData;
 
+        // 🔍 CROSS-FLOOR BUG DETECTION: Log the detected mesh data
+        console.log("🔍 [CROSS-FLOOR DEBUG] Detected mesh data:", {
+          detectedType: airEntryData.type,
+          detectedEntryIndex: airEntryData.entryIndex,
+          detectedFloorName: airEntryData.floorName,
+          detectedAirEntryId: airEntryData.airEntryId,
+          detectedPosition: airEntryData.position,
+          currentFloorInCanvas2D: currentFloor
+        });
+
         // Find the index of this air entry in the floors data
         let foundIndex = -1;
         const floorData = finalFloors[currentFloor];
+
+        // 🔍 CROSS-FLOOR BUG DETECTION: Log currentFloor lookup restriction
+        console.log("🔍 [CROSS-FLOOR DEBUG] Data lookup restriction:", {
+          lookingInFloor: currentFloor,
+          availableAirEntries: floorData?.airEntries?.length || 0,
+          willSearchForIndex: airEntryData.entryIndex,
+          floorMismatch: airEntryData.floorName !== currentFloor
+        });
 
         if (floorData && floorData.airEntries) {
           console.log("Double-click position search:", {
@@ -4487,6 +4517,23 @@ export default function Canvas3D({
           if (typeof airEntryData.entryIndex === 'number') {
             if (airEntryData.entryIndex >= 0 && airEntryData.entryIndex < floorData.airEntries.length) {
               foundIndex = airEntryData.entryIndex;
+              
+              // 🔥 CROSS-FLOOR BUG EVIDENCE: This is where the wrong match happens
+              const wrongEntry = floorData.airEntries[foundIndex];
+              console.log("🔥 [CROSS-FLOOR BUG] WRONG MATCH DETECTED:", {
+                detectedMeshFrom: airEntryData.floorName,
+                detectedMeshIndex: airEntryData.entryIndex,
+                detectedMeshId: airEntryData.airEntryId,
+                searchingInFloor: currentFloor,
+                foundWrongEntryAtIndex: foundIndex,
+                wrongEntryData: {
+                  type: wrongEntry.type,
+                  position: wrongEntry.position,
+                  line: wrongEntry.line
+                },
+                thisIsTheSourceOfCrossFloorBug: airEntryData.floorName !== currentFloor
+              });
+              
               console.log("Double-click found entry using stored entryIndex:", foundIndex);
             }
           }
@@ -4531,6 +4578,22 @@ export default function Canvas3D({
             
             // Phase 3: Create wall context for unified dialog experience
             const wallContext = createWallContext(mergedEntry);
+            
+            // 🎯 CROSS-FLOOR BUG FINAL EVIDENCE: Log exactly what dialog opens
+            console.log("🎯 [CROSS-FLOOR BUG] DIALOG OPENING WITH MIXED DATA:", {
+              dialogWillShow: {
+                entryFromStore: mergedEntry,
+                entryIndex: foundIndex,
+                floorName: currentFloor
+              },
+              butUserClickedOn: {
+                meshFloorName: airEntryData.floorName,
+                meshId: airEntryData.airEntryId,
+                meshPosition: airEntryData.position
+              },
+              crossFloorConfirmed: airEntryData.floorName !== currentFloor,
+              explanation: "Dialog shows data from " + currentFloor + " but user clicked mesh from " + airEntryData.floorName
+            });
             
             setEditingAirEntry({
               index: foundIndex,
