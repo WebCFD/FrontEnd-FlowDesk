@@ -2541,14 +2541,39 @@ export default function Canvas3D({
         mesh.renderOrder = 1;
 
         // Add userData for raycasting identification - include the actual entry index for easy mapping
-        const generatedId = entry.id || useRoomStore.getState().generateAirEntryId(floorData.name, entry.type);
+        let generatedId = entry.id;
+        
+        // MIGRATION SYSTEM: Auto-repair legacy AirEntries without IDs
+        if (!generatedId) {
+          generatedId = useRoomStore.getState().generateAirEntryId(floorData.name, entry.type);
+          
+          // Auto-migrate: Update the store entry with the generated ID
+          const storeData = useRoomStore.getState();
+          const currentFloorData = storeData.floors[floorData.name];
+          if (currentFloorData?.airEntries?.[index]) {
+            // Update this specific entry with the generated ID
+            storeData.setFloors({
+              ...storeData.floors,
+              [floorData.name]: {
+                ...currentFloorData,
+                airEntries: currentFloorData.airEntries.map((airEntry, idx) => 
+                  idx === index ? { ...airEntry, id: generatedId } : airEntry
+                )
+              }
+            });
+            
+            console.log(`🔧 [LEGACY MIGRATION] Auto-repaired AirEntry at index ${index} with ID: ${generatedId}`);
+          }
+        }
+        
         console.log(`🔍 [CANVAS3D MESH CREATION] Creating mesh for ${entry.type} at index ${index}:`, {
           entryId: entry.id,
           generatedId: generatedId,
           floorName: floorData.name,
           entryType: entry.type,
           entryIndex: index,
-          finalIdUsed: generatedId
+          finalIdUsed: generatedId,
+          wasMigrated: !entry.id
         });
         
         mesh.userData = {
@@ -4901,17 +4926,7 @@ export default function Canvas3D({
           currentFloorDeckThickness = floorDeckThickness;
         }
         
-        // 🔍 [CANVAS3D DEBUG] Track what data createFloorObjects receives
-        console.log(`🔍 [CANVAS3D DATA DEBUG] createFloorObjects called for floor: ${floorName}`, {
-          floorData,
-          airEntriesData: floorData.airEntries?.map((entry, index) => ({
-            index,
-            entryId: entry.id,
-            entryType: entry.type,
-            hasId: !!entry.id
-          })) || [],
-          dataSource: Object.keys(reactiveStoreFloors).length > 0 ? 'reactive-store' : 'props'
-        });
+
         
         const objects = createFloorObjects(
           floorData,
