@@ -2048,8 +2048,8 @@ export default function Canvas3D({
   ) => {
     if (!editingAirEntry || !onUpdateAirEntry) return;
 
-    // STEP 1: Try direct mesh update first (preserves textures)
-    const directUpdateSuccess = updateAirEntryMeshDirectly(currentFloor, index, {
+    // STEP 1: Try direct mesh update first (preserves textures) - Use correct floor from editingAirEntry
+    const directUpdateSuccess = updateAirEntryMeshDirectly(editingAirEntry.floorName, index, {
       dimensions: {
         width: data.width,
         height: data.height,
@@ -2060,9 +2060,9 @@ export default function Canvas3D({
       properties: data.properties
     });
 
-    // STEP 2: Get current position from store to preserve real-time updates (matching Canvas2D approach)
+    // STEP 2: Get current position from store to preserve real-time updates (matching Canvas2D approach) - Use correct floor
     const currentStoreFloors = useRoomStore.getState().floors;
-    const currentStoreEntry = currentStoreFloors[currentFloor]?.airEntries?.[index];
+    const currentStoreEntry = currentStoreFloors[editingAirEntry.floorName]?.airEntries?.[index];
     const currentStorePosition = currentStoreEntry?.position;
 
     // STEP 3: Update store for synchronization (matching Canvas2D pattern)
@@ -2079,8 +2079,8 @@ export default function Canvas3D({
       ...(data.properties && { properties: data.properties }),
     };
 
-    // Store the dimensions in our ref to preserve them during any potential scene rebuilds
-    const normalizedFloorName = normalizeFloorName(currentFloor);
+    // Store the dimensions in our ref to preserve them during any potential scene rebuilds - Use correct floor
+    const normalizedFloorName = normalizeFloorName(editingAirEntry.floorName);
     if (!updatedAirEntryPositionsRef.current[normalizedFloorName]) {
       updatedAirEntryPositionsRef.current[normalizedFloorName] = {};
     }
@@ -2094,8 +2094,8 @@ export default function Canvas3D({
       updatedAirEntryPositionsRef.current[normalizedFloorName][index].dimensions = updatedEntry.dimensions;
     }
 
-    // STEP 3: Update store with awareness that mesh was already updated
-    onUpdateAirEntry(currentFloor, index, updatedEntry);
+    // STEP 3: Update store with awareness that mesh was already updated - Use correct floor name
+    onUpdateAirEntry(editingAirEntry.floorName, index, updatedEntry);
     
     setEditingAirEntry(null);
   };
@@ -6114,6 +6114,9 @@ export default function Canvas3D({
               airDirection: data.properties?.airOrientation,
               flowIntensity: data.properties?.flowIntensity,
               index: editingAirEntry.index,
+              floorName: editingAirEntry.floorName,
+              willSaveToCorrectFloor: editingAirEntry.floorName,
+              NOT_currentFloor: currentFloor,
               timestamp: new Date().toISOString()
             });
 

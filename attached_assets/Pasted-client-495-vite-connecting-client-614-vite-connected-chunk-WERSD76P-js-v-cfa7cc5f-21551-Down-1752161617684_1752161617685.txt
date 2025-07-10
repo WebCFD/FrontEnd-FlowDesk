@@ -1,0 +1,200 @@
+client:495 [vite] connecting...
+client:614 [vite] connected.
+chunk-WERSD76P.js?v=cfa7cc5f:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+AnalyticsProvider.tsx:21 Analytics initialized: false
+room-store.ts:532 🔗 STORE: Nueva suscripción añadida. Total listeners: 1
+chunk-WERSD76P.js?v=cfa7cc5f:377 [Violation] 'message' handler took 271ms
+dashboard-sidebar.tsx:65 
+            
+            
+           GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+fetchUserData @ dashboard-sidebar.tsx:65
+(anonymous) @ dashboard-sidebar.tsx:80
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18868
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19432
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+finishConcurrentRender @ chunk-WERSD76P.js?v=cfa7cc5f:18805
+performConcurrentWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18718
+workLoop @ chunk-WERSD76P.js?v=cfa7cc5f:197
+flushWork @ chunk-WERSD76P.js?v=cfa7cc5f:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=cfa7cc5f:384
+analytics.ts:26 Google Analytics initialized with ID: G-XZYY9DVVHW
+useAnalytics.ts:59 Google Analytics initialized successfully
+js?id=G-XZYY9DVVHW:660 [Violation] 'setTimeout' handler took 69ms
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+AnalyticsProvider.tsx:21 Analytics initialized: true
+analytics.ts:62 📊 Analytics Event: {category: 'ui_interaction', action: 'change_tab', label: 'view_3d_preview', value: undefined, status: 'sent'}
+room-store.ts:540 🔗 STORE: Suscripción eliminada. Total listeners: 0
+room-store.ts:532 🔗 STORE: Nueva suscripción añadida. Total listeners: 1
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 245ms
+Canvas3D.tsx:4098 Hovering over axis mesh: z
+Canvas3D.tsx:4098 Hovering over axis mesh: z
+Canvas3D.tsx:4098 Hovering over axis mesh: z
+Canvas3D.tsx:4098 Hovering over axis mesh: z
+Canvas3D.tsx:4098 Hovering over axis mesh: z
+Canvas3D.tsx:4098 Hovering over axis mesh: z
+Canvas3D.tsx:4469 🔍 [CROSS-FLOOR DEBUG] Available AirEntry meshes in scene: (3) [{…}, {…}, {…}]
+Canvas3D.tsx:4478 🔍 [CROSS-FLOOR DEBUG] Current floor selection: second
+Canvas3D.tsx:4488 🔍 [CROSS-FLOOR DEBUG] Detected mesh data: {detectedType: 'window', detectedEntryIndex: 0, detectedFloorName: 'Ground Floor', detectedAirEntryId: 'Ground Floor_window_0', detectedPosition: {…}, …}
+Canvas3D.tsx:4513 🎯 [FLOOR KEY MAPPING] SUCCESS: {originalMeshFloor: 'Ground Floor', mappedToStoreKey: 'ground', foundInStore: true, availableAirEntries: 1, storeKeys: Array(3)}
+Canvas3D.tsx:4522 🎯 [CROSS-FLOOR FIX] Correct floor lookup with mapping: {detectedMeshFloor: 'Ground Floor', mappedFloorKey: 'ground', lookingInCorrectFloor: 'ground', availableAirEntries: 1, willSearchForIndex: 0, …}
+Canvas3D.tsx:4533 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4546 ✅ [CROSS-FLOOR FIX] CORRECT MATCH DETECTED: {detectedMeshFrom: 'Ground Floor', detectedMeshIndex: 0, detectedMeshId: 'Ground Floor_window_0', searchingInCorrectFloor: 'Ground Floor', foundCorrectEntryAtIndex: 0, …}
+Canvas3D.tsx:4560 Double-click found entry using stored entryIndex: 0
+Canvas3D.tsx:4605 ✅ [CROSS-FLOOR FIX] DIALOG OPENING WITH CORRECT MAPPED DATA: {dialogWillShow: {…}, userClickedOn: {…}, mapping: {…}, explanation: "Dialog shows data from mapped floor 'ground' matching clicked mesh from 'Ground Floor'"}
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
+room-store.ts:407 🔧 [STORE DEBUG] updateAirEntryProperties called: {floorName: 'second', index: 0, properties: {…}, propertiesRef: {…}, entryId: 'door_2F_1'}
+room-store.ts:441 🔧 [STORE DEBUG] Before update: {entryId: 'door_2F_1', oldProperties: {…}, oldPropertiesRef: {…}}
+room-store.ts:453 🔧 [STORE DEBUG] After update: {entryId: 'door_2F_1', newProperties: {…}, newPropertiesRef: {…}, areReferencesSame: false}
+room-store.ts:476 🚨 [STORE DEBUG] SHARED REFERENCE DETECTED - WILL AFFECT: [{…}]
+Canvas3D.tsx:6111 💾 [CANVAS3D SAVE] Save Changes clicked with values: {elementStatus: 'closed', temperature: 20, airDirection: 'inflow', flowIntensity: 'medium', index: 0, …}
+room-store.ts:503 ✅ STORE: AirEntry actualizado en el store, notificando a 1 listeners
+room-store.ts:507 📢 STORE: Notificando listener 1/1
+Canvas3D.tsx:4098 Hovering over axis mesh: z
+Canvas3D.tsx:4098 Hovering over axis mesh: z
+Canvas3D.tsx:4098 Hovering over axis mesh: z
+Canvas3D.tsx:4098 Hovering over axis mesh: z
+Canvas3D.tsx:4098 Hovering over axis mesh: z
+Canvas3D.tsx:4469 🔍 [CROSS-FLOOR DEBUG] Available AirEntry meshes in scene: (3) [{…}, {…}, {…}]
+Canvas3D.tsx:4478 🔍 [CROSS-FLOOR DEBUG] Current floor selection: second
+Canvas3D.tsx:4488 🔍 [CROSS-FLOOR DEBUG] Detected mesh data: {detectedType: 'vent', detectedEntryIndex: 0, detectedFloorName: 'first', detectedAirEntryId: 'first_vent_0', detectedPosition: {…}, …}
+Canvas3D.tsx:4513 🎯 [FLOOR KEY MAPPING] SUCCESS: {originalMeshFloor: 'first', mappedToStoreKey: 'first', foundInStore: true, availableAirEntries: 1, storeKeys: Array(3)}
+Canvas3D.tsx:4522 🎯 [CROSS-FLOOR FIX] Correct floor lookup with mapping: {detectedMeshFloor: 'first', mappedFloorKey: 'first', lookingInCorrectFloor: 'first', availableAirEntries: 1, willSearchForIndex: 0, …}
+Canvas3D.tsx:4533 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4546 ✅ [CROSS-FLOOR FIX] CORRECT MATCH DETECTED: {detectedMeshFrom: 'first', detectedMeshIndex: 0, detectedMeshId: 'first_vent_0', searchingInCorrectFloor: 'first', foundCorrectEntryAtIndex: 0, …}
+Canvas3D.tsx:4560 Double-click found entry using stored entryIndex: 0
+Canvas3D.tsx:4605 ✅ [CROSS-FLOOR FIX] DIALOG OPENING WITH CORRECT MAPPED DATA: {dialogWillShow: {…}, userClickedOn: {…}, mapping: {…}, explanation: "Dialog shows data from mapped floor 'first' matching clicked mesh from 'first'"}
+room-store.ts:407 🔧 [STORE DEBUG] updateAirEntryProperties called: {floorName: 'second', index: 0, properties: {…}, propertiesRef: {…}, entryId: undefined}
+room-store.ts:441 🔧 [STORE DEBUG] Before update: {entryId: undefined, oldProperties: {…}, oldPropertiesRef: {…}}
+room-store.ts:453 🔧 [STORE DEBUG] After update: {entryId: undefined, newProperties: {…}, newPropertiesRef: {…}, areReferencesSame: false}
+room-store.ts:476 🚨 [STORE DEBUG] SHARED REFERENCE DETECTED - WILL AFFECT: [{…}]
+Canvas3D.tsx:6111 💾 [CANVAS3D SAVE] Save Changes clicked with values: {elementStatus: 'closed', temperature: 20, airDirection: 'inflow', flowIntensity: 'medium', index: 0, …}
+room-store.ts:503 ✅ STORE: AirEntry actualizado en el store, notificando a 1 listeners
+room-store.ts:507 📢 STORE: Notificando listener 1/1
+Canvas3D.tsx:3249 RIGHT MOUSE DOWN - Checking measure mode: {isMeasureModeRef: false, isMeasureMode: false}
+Canvas3D.tsx:3263 Right mouse down detected
+Canvas3D.tsx:3289 Right mouse down detected
+Canvas3D.tsx:3291 Starting scene traversal for raycasting targets
+Canvas3D.tsx:3301 Found mesh: 84f6f7ba userData: {type: 'floor', floorName: 'Ground Floor'} type: floor
+Canvas3D.tsx:3301 Found mesh: 54221ea3 userData: {type: 'ceiling', floorName: 'Ground Floor'} type: ceiling
+Canvas3D.tsx:3301 Found mesh: 8abb25ff userData: {type: 'wall', floorName: 'Ground Floor'} type: wall
+Canvas3D.tsx:3301 Found mesh: 22f2d2b0 userData: {type: 'wall', floorName: 'Ground Floor'} type: wall
+Canvas3D.tsx:3301 Found mesh: 1427b28c userData: {type: 'wall', floorName: 'Ground Floor'} type: wall
+Canvas3D.tsx:3301 Found mesh: 74ee1754 userData: {type: 'wall', floorName: 'Ground Floor'} type: wall
+Canvas3D.tsx:3301 Found mesh: 0d9fcc20 userData: {type: 'window', position: {…}, dimensions: {…}, line: {…}, index: 6, …} type: window
+Canvas3D.tsx:3326 ✅ Adding to airEntryMeshes
+Canvas3D.tsx:3301 Found mesh: 6890bcf6 userData: {type: 'coordinate-marker', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'Ground Floor', entryIndex: 0} type: coordinate-marker
+Canvas3D.tsx:3301 Found mesh: cffd7b7a userData: {type: 'axis', direction: 'x', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'Ground Floor', …} type: axis
+Canvas3D.tsx:3339 ✅ Adding to axesHelpers
+Canvas3D.tsx:3301 Found mesh: 98217e61 userData: {type: 'axis', direction: 'y', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'Ground Floor', …} type: axis
+Canvas3D.tsx:3339 ✅ Adding to axesHelpers
+Canvas3D.tsx:3301 Found mesh: 73f713a0 userData: {type: 'axis', direction: 'z', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'Ground Floor', …} type: axis
+Canvas3D.tsx:3339 ✅ Adding to axesHelpers
+Canvas3D.tsx:3301 Found mesh: b46ba998 userData: {type: 'floor', floorName: 'first'} type: floor
+Canvas3D.tsx:3301 Found mesh: 784eee2c userData: {type: 'ceiling', floorName: 'first'} type: ceiling
+Canvas3D.tsx:3301 Found mesh: 688a8b0c userData: {type: 'wall', floorName: 'first'} type: wall
+Canvas3D.tsx:3301 Found mesh: f985645c userData: {type: 'wall', floorName: 'first'} type: wall
+Canvas3D.tsx:3301 Found mesh: d2ce0bb8 userData: {type: 'wall', floorName: 'first'} type: wall
+Canvas3D.tsx:3301 Found mesh: 189302a3 userData: {type: 'wall', floorName: 'first'} type: wall
+Canvas3D.tsx:3301 Found mesh: 1547ccdc userData: {type: 'vent', position: {…}, dimensions: {…}, line: {…}, index: 6, …} type: vent
+Canvas3D.tsx:3326 ✅ Adding to airEntryMeshes
+Canvas3D.tsx:3301 Found mesh: fc3f533e userData: {type: 'coordinate-marker', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'first', entryIndex: 0} type: coordinate-marker
+Canvas3D.tsx:3301 Found mesh: f1fc3710 userData: {type: 'axis', direction: 'x', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'first', …} type: axis
+Canvas3D.tsx:3339 ✅ Adding to axesHelpers
+Canvas3D.tsx:3301 Found mesh: 207ae6f9 userData: {type: 'axis', direction: 'y', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'first', …} type: axis
+Canvas3D.tsx:3339 ✅ Adding to axesHelpers
+Canvas3D.tsx:3301 Found mesh: f38cef79 userData: {type: 'axis', direction: 'z', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'first', …} type: axis
+Canvas3D.tsx:3339 ✅ Adding to axesHelpers
+Canvas3D.tsx:3301 Found mesh: 61822481 userData: {type: 'floor', floorName: 'second'} type: floor
+Canvas3D.tsx:3301 Found mesh: b05c5c2d userData: {type: 'ceiling', floorName: 'second'} type: ceiling
+Canvas3D.tsx:3301 Found mesh: 4a67d24c userData: {type: 'wall', floorName: 'second'} type: wall
+Canvas3D.tsx:3301 Found mesh: 408b0f07 userData: {type: 'wall', floorName: 'second'} type: wall
+Canvas3D.tsx:3301 Found mesh: 283bc759 userData: {type: 'wall', floorName: 'second'} type: wall
+Canvas3D.tsx:3301 Found mesh: c6e8513b userData: {type: 'wall', floorName: 'second'} type: wall
+Canvas3D.tsx:3301 Found mesh: aac1455f userData: {type: 'door', position: {…}, dimensions: {…}, line: {…}, index: 6, …} type: door
+Canvas3D.tsx:3326 ✅ Adding to airEntryMeshes
+Canvas3D.tsx:3301 Found mesh: 80f0c415 userData: {type: 'coordinate-marker', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'second', entryIndex: 0} type: coordinate-marker
+Canvas3D.tsx:3301 Found mesh: 18c2aff3 userData: {type: 'axis', direction: 'x', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'second', …} type: axis
+Canvas3D.tsx:3339 ✅ Adding to axesHelpers
+Canvas3D.tsx:3301 Found mesh: c4906e13 userData: {type: 'axis', direction: 'y', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'second', …} type: axis
+Canvas3D.tsx:3339 ✅ Adding to axesHelpers
+Canvas3D.tsx:3301 Found mesh: d8b162fb userData: {type: 'axis', direction: 'z', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'second', …} type: axis
+Canvas3D.tsx:3339 ✅ Adding to axesHelpers
+Canvas3D.tsx:3557 Testing intersection with 3 air entries
+Canvas3D.tsx:3568 Mesh intersections found: 0
+Canvas3D.tsx:3600 Mesh intersections: 0
+Canvas3D.tsx:3082 [Violation] 'requestAnimationFrame' handler took 137ms
+custom-furniture-store.ts:246 Custom Furniture Store: Memory cleanup completed. Cleaned 0 geometries, 0 remaining in cache
+chunk-WERSD76P.js?v=cfa7cc5f:377 [Violation] 'message' handler took 173ms
+chunk-WERSD76P.js?v=cfa7cc5f:377 [Violation] 'message' handler took 193ms
+chunk-WERSD76P.js?v=cfa7cc5f:377 [Violation] 'message' handler took 203ms
+chunk-WERSD76P.js?v=cfa7cc5f:377 [Violation] 'message' handler took 277ms
+custom-furniture-store.ts:246 Custom Furniture Store: Memory cleanup completed. Cleaned 0 geometries, 0 remaining in cache
+chunk-WERSD76P.js?v=cfa7cc5f:377 [Violation] 'message' handler took 243ms
+chunk-WERSD76P.js?v=cfa7cc5f:377 [Violation] 'message' handler took 276ms
+Canvas3D.tsx:3249 RIGHT MOUSE DOWN - Checking measure mode: {isMeasureModeRef: false, isMeasureMode: false}
+Canvas3D.tsx:3263 Right mouse down detected
+Canvas3D.tsx:3289 Right mouse down detected
+Canvas3D.tsx:3291 Starting scene traversal for raycasting targets
+Canvas3D.tsx:3301 Found mesh: 84f6f7ba userData: {type: 'floor', floorName: 'Ground Floor'} type: floor
+Canvas3D.tsx:3301 Found mesh: 54221ea3 userData: {type: 'ceiling', floorName: 'Ground Floor'} type: ceiling
+Canvas3D.tsx:3301 Found mesh: 8abb25ff userData: {type: 'wall', floorName: 'Ground Floor'} type: wall
+Canvas3D.tsx:3301 Found mesh: 22f2d2b0 userData: {type: 'wall', floorName: 'Ground Floor'} type: wall
+Canvas3D.tsx:3301 Found mesh: 1427b28c userData: {type: 'wall', floorName: 'Ground Floor'} type: wall
+Canvas3D.tsx:3301 Found mesh: 74ee1754 userData: {type: 'wall', floorName: 'Ground Floor'} type: wall
+Canvas3D.tsx:3301 Found mesh: 0d9fcc20 userData: {type: 'window', position: {…}, dimensions: {…}, line: {…}, index: 6, …} type: window
+Canvas3D.tsx:3326 ✅ Adding to airEntryMeshes
+Canvas3D.tsx:3301 Found mesh: 6890bcf6 userData: {type: 'coordinate-marker', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'Ground Floor', entryIndex: 0} type: coordinate-marker
+Canvas3D.tsx:3301 Found mesh: cffd7b7a userData: {type: 'axis', direction: 'x', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'Ground Floor', …} type: axis
+Canvas3D.tsx:3339 ✅ Adding to axesHelpers
+Canvas3D.tsx:3301 Found mesh: 98217e61 userData: {type: 'axis', direction: 'y', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'Ground Floor', …} type: axis
+Canvas3D.tsx:3339 ✅ Adding to axesHelpers
+Canvas3D.tsx:3301 Found mesh: 73f713a0 userData: {type: 'axis', direction: 'z', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'Ground Floor', …} type: axis
+Canvas3D.tsx:3339 ✅ Adding to axesHelpers
+Canvas3D.tsx:3301 Found mesh: b46ba998 userData: {type: 'floor', floorName: 'first'} type: floor
+Canvas3D.tsx:3301 Found mesh: 784eee2c userData: {type: 'ceiling', floorName: 'first'} type: ceiling
+Canvas3D.tsx:3301 Found mesh: 688a8b0c userData: {type: 'wall', floorName: 'first'} type: wall
+Canvas3D.tsx:3301 Found mesh: f985645c userData: {type: 'wall', floorName: 'first'} type: wall
+Canvas3D.tsx:3301 Found mesh: d2ce0bb8 userData: {type: 'wall', floorName: 'first'} type: wall
+Canvas3D.tsx:3301 Found mesh: 189302a3 userData: {type: 'wall', floorName: 'first'} type: wall
+Canvas3D.tsx:3301 Found mesh: 1547ccdc userData: {type: 'vent', position: {…}, dimensions: {…}, line: {…}, index: 6, …} type: vent
+Canvas3D.tsx:3326 ✅ Adding to airEntryMeshes
+Canvas3D.tsx:3301 Found mesh: fc3f533e userData: {type: 'coordinate-marker', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'first', entryIndex: 0} type: coordinate-marker
+Canvas3D.tsx:3301 Found mesh: f1fc3710 userData: {type: 'axis', direction: 'x', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'first', …} type: axis
+Canvas3D.tsx:3339 ✅ Adding to axesHelpers
+Canvas3D.tsx:3301 Found mesh: 207ae6f9 userData: {type: 'axis', direction: 'y', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'first', …} type: axis
+Canvas3D.tsx:3339 ✅ Adding to axesHelpers
+Canvas3D.tsx:3301 Found mesh: f38cef79 userData: {type: 'axis', direction: 'z', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'first', …} type: axis
+Canvas3D.tsx:3339 ✅ Adding to axesHelpers
+Canvas3D.tsx:3301 Found mesh: 61822481 userData: {type: 'floor', floorName: 'second'} type: floor
+Canvas3D.tsx:3301 Found mesh: b05c5c2d userData: {type: 'ceiling', floorName: 'second'} type: ceiling
+Canvas3D.tsx:3301 Found mesh: 4a67d24c userData: {type: 'wall', floorName: 'second'} type: wall
+Canvas3D.tsx:3301 Found mesh: 408b0f07 userData: {type: 'wall', floorName: 'second'} type: wall
+Canvas3D.tsx:3301 Found mesh: 283bc759 userData: {type: 'wall', floorName: 'second'} type: wall
+Canvas3D.tsx:3301 Found mesh: c6e8513b userData: {type: 'wall', floorName: 'second'} type: wall
+Canvas3D.tsx:3301 Found mesh: aac1455f userData: {type: 'door', position: {…}, dimensions: {…}, line: {…}, index: 6, …} type: door
+Canvas3D.tsx:3326 ✅ Adding to airEntryMeshes
+Canvas3D.tsx:3301 Found mesh: 80f0c415 userData: {type: 'coordinate-marker', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'second', entryIndex: 0} type: coordinate-marker
+Canvas3D.tsx:3301 Found mesh: 18c2aff3 userData: {type: 'axis', direction: 'x', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'second', …} type: axis
+Canvas3D.tsx:3339 ✅ Adding to axesHelpers
+Canvas3D.tsx:3301 Found mesh: c4906e13 userData: {type: 'axis', direction: 'y', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'second', …} type: axis
+Canvas3D.tsx:3339 ✅ Adding to axesHelpers
+Canvas3D.tsx:3301 Found mesh: d8b162fb userData: {type: 'axis', direction: 'z', parentEntryIndex: 6, actualEntryIndex: 0, floorName: 'second', …} type: axis
+Canvas3D.tsx:3339 ✅ Adding to axesHelpers
+Canvas3D.tsx:3557 Testing intersection with 3 air entries
+Canvas3D.tsx:3568 Mesh intersections found: 0
+Canvas3D.tsx:3600 Mesh intersections: 0
