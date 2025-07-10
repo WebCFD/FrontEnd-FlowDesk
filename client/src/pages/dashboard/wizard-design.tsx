@@ -2508,13 +2508,43 @@ export default function WizardDesign() {
                 const isCurrentFloor = floorName === currentFloor;
                 
                 return (
-                  <div key={floorName} className={cn(
-                    "p-3 rounded-lg border",
-                    isCurrentFloor ? "bg-blue-50 border-blue-200" : "bg-gray-50 border-gray-200"
-                  )}>
+                  <div 
+                    key={floorName} 
+                    className={cn(
+                      "p-3 rounded-lg border transition-all duration-200",
+                      isCurrentFloor 
+                        ? "bg-blue-50 border-blue-200 ring-2 ring-blue-200" 
+                        : "bg-gray-50 border-gray-200 hover:bg-gray-100 hover:border-gray-300",
+                      tab === "2d-editor" && !isCurrentFloor && "cursor-pointer",
+                      tab !== "2d-editor" && "cursor-not-allowed"
+                    )}
+                    onClick={
+                      tab === "2d-editor" && !isCurrentFloor
+                        ? () => handleFloorChange(floorName)
+                        : tab !== "2d-editor"
+                        ? () => {
+                            toast({
+                              title: "Feature Unavailable",
+                              description: "Floor navigation is available only in 2D Editor",
+                              variant: "destructive",
+                            });
+                          }
+                        : undefined
+                    }
+                    title={
+                      tab !== "2d-editor" 
+                        ? "Floor navigation available only in 2D Editor"
+                        : !isCurrentFloor 
+                        ? `Click to switch to ${formatFloorText(floorName)}`
+                        : `Currently viewing ${formatFloorText(floorName)}`
+                    }
+                  >
                     <h5 className="font-medium text-sm mb-3 flex items-center gap-2">
                       {formatFloorText(floorName)}
                       {isCurrentFloor && <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Current</span>}
+                      {tab === "2d-editor" && !isCurrentFloor && (
+                        <span className="text-xs text-gray-500 ml-auto">Click to switch</span>
+                      )}
                     </h5>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
