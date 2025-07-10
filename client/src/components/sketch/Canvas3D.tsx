@@ -2544,7 +2544,17 @@ export default function Canvas3D({
         let generatedId = entry.id;
         
         // MIGRATION SYSTEM: Auto-repair legacy AirEntries without IDs
-        if (!generatedId) {
+        // Check for undefined, null, empty string, or any falsy value
+        const hasValidId = generatedId && typeof generatedId === 'string' && generatedId.trim().length > 0;
+        
+        console.log(`🔍 [MIGRATION CHECK] Entry at index ${index}:`, {
+          entryId: entry.id,
+          entryIdType: typeof entry.id,
+          hasValidId,
+          needsMigration: !hasValidId
+        });
+        
+        if (!hasValidId) {
           generatedId = useRoomStore.getState().generateAirEntryId(floorData.name, entry.type);
           
           // Auto-migrate: Update the store entry with the generated ID
