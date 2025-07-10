@@ -1546,7 +1546,7 @@ export default function Canvas3D({
     // CRITICAL FIX: Read simulation properties directly from reactive store to fix persistence issue
     // This ensures Simulation Conditions show current values when dialog reopens
     const reactiveStoreFloors = useRoomStore.getState().floors;
-    const currentAirEntry = reactiveStoreFloors[currentFloor]?.airEntries?.[editingAirEntry.index];
+    const currentAirEntry = reactiveStoreFloors[editingAirEntry.floorName]?.airEntries?.[editingAirEntry.index];
     const reactiveProperties = currentAirEntry?.properties;
     
     // Use reactive properties if available, fallback to baseEntry properties
@@ -1561,7 +1561,7 @@ export default function Canvas3D({
       position: baseEntry.position,
       wallPosition: wallPosition
     };
-  }, [editingAirEntry, currentFloor]);
+  }, [editingAirEntry, editingAirEntry?.floorName]);
   
   // State for editing furniture
   const [editingFurniture, setEditingFurniture] = useState<{
@@ -1635,11 +1635,11 @@ export default function Canvas3D({
           if (!presentationMode && newDimensions.distanceToFloor !== undefined) {
             try {
               const position3D = transform2DTo3D(object.userData.position || editingAirEntry.entry.position);
-              const floorData = finalFloors[currentFloor];
+              const floorData = finalFloors[editingAirEntry.floorName];
               const airEntry = floorData?.airEntries?.[editingAirEntry.index];
               
               // Update coordinate system (non-invasive) - only for height changes
-              updateCoordinateSystemPosition(editingAirEntry.index, currentFloor, position3D, newDimensions.distanceToFloor, airEntry);
+              updateCoordinateSystemPosition(editingAirEntry.index, editingAirEntry.floorName, position3D, newDimensions.distanceToFloor, airEntry);
             } catch (error) {
               // Coordinate system update failure won't affect AirEntry operations
               console.warn('Coordinate system update failed during real-time dimension change:', error);
@@ -1651,9 +1651,9 @@ export default function Canvas3D({
     
     // Debounced callback to parent for store updates
     updateTimeoutRef.current = setTimeout(() => {
-      onDimensionsUpdate(currentFloor, editingAirEntry.index, newDimensions);
+      onDimensionsUpdate(editingAirEntry.floorName, editingAirEntry.index, newDimensions);
     }, 100);
-  }, [editingAirEntry, onDimensionsUpdate, currentFloor]);
+  }, [editingAirEntry, onDimensionsUpdate, editingAirEntry?.floorName]);
 
   const handleAirEntryPositionUpdate = useCallback((newPosition: any) => {
     if (!editingAirEntry || !onUpdateAirEntry) return;
@@ -1669,7 +1669,7 @@ export default function Canvas3D({
     };
     
     // Store the updated position in the reference for immediate visual update
-    const normalizedFloorName = normalizeFloorName(currentFloor);
+    const normalizedFloorName = normalizeFloorName(editingAirEntry.floorName);
     if (!updatedAirEntryPositionsRef.current[normalizedFloorName]) {
       updatedAirEntryPositionsRef.current[normalizedFloorName] = {};
     }
@@ -1706,11 +1706,11 @@ export default function Canvas3D({
           if (!presentationMode) {
             try {
               const zPos = object.position.z; // Use current Z position
-              const floorData = finalFloors[currentFloor];
+              const floorData = finalFloors[editingAirEntry.floorName];
               const airEntry = floorData?.airEntries?.[editingAirEntry.index];
               
               // Update coordinate system (non-invasive)
-              updateCoordinateSystemPosition(editingAirEntry.index, currentFloor, position3D, zPos, airEntry);
+              updateCoordinateSystemPosition(editingAirEntry.index, editingAirEntry.floorName, position3D, zPos, airEntry);
             } catch (error) {
               // Coordinate system update failure won't affect AirEntry operations
               console.warn('Coordinate system update failed during real-time position change:', error);
@@ -1723,12 +1723,12 @@ export default function Canvas3D({
     // Debounce parent callback to prevent excessive updates
     updateTimeoutRef.current = setTimeout(() => {
       if (onUpdateAirEntry && editingAirEntry) {
-        onUpdateAirEntry(currentFloor, editingAirEntry.index, updatedEntry);
+        onUpdateAirEntry(editingAirEntry.floorName, editingAirEntry.index, updatedEntry);
       }
       
       // OPTIMIZATION: No callback needed after position update - textures preserved automatically
     }, 150);
-  }, [editingAirEntry, onUpdateAirEntry, currentFloor]);
+  }, [editingAirEntry, onUpdateAirEntry, editingAirEntry?.floorName]);
 
 
 
@@ -6132,7 +6132,7 @@ export default function Canvas3D({
           }}
           initialValues={airEntryInitialValues as any}
           airEntryIndex={editingAirEntry.index}
-          currentFloor={currentFloor}
+          currentFloor={editingAirEntry.floorName}
           isEditing={true}
           wallContext={editingAirEntry.wallContext}
           onPositionUpdate={handleAirEntryPositionUpdate}
@@ -6146,7 +6146,7 @@ export default function Canvas3D({
               flowIntensity: properties.flowIntensity,
               index: editingAirEntry.index
             });
-            onPropertiesUpdate(currentFloor, editingAirEntry.index, properties);
+            onPropertiesUpdate(editingAirEntry.floorName, editingAirEntry.index, properties);
           } : undefined}
         />
       )}

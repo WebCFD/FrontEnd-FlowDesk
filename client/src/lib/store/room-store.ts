@@ -444,9 +444,10 @@ export const useRoomStore = create<RoomState>()(
               oldPropertiesRef: oldProperties
             });
             
+            // CRITICAL FIX: Create deep clone to prevent shared references
             updatedAirEntries[index] = {
               ...updatedAirEntries[index],
-              properties: { ...properties }
+              properties: JSON.parse(JSON.stringify(properties))
             };
             
             const newProperties = updatedAirEntries[index].properties;
@@ -493,7 +494,8 @@ export const useRoomStore = create<RoomState>()(
             
             if (updatedFloors[floorName]?.airEntries && updatedFloors[floorName].airEntries[index]) {
               const updatedAirEntries = [...updatedFloors[floorName].airEntries];
-              updatedAirEntries[index] = entry;
+              // CRITICAL FIX: Create deep clone to prevent shared references
+              updatedAirEntries[index] = JSON.parse(JSON.stringify(entry));
               
               updatedFloors[floorName] = {
                 ...updatedFloors[floorName],
