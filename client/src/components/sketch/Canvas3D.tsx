@@ -2541,6 +2541,16 @@ export default function Canvas3D({
         mesh.renderOrder = 1;
 
         // Add userData for raycasting identification - include the actual entry index for easy mapping
+        const generatedId = entry.id || useRoomStore.getState().generateAirEntryId(floorData.name, entry.type);
+        console.log(`🔍 [CANVAS3D MESH CREATION] Creating mesh for ${entry.type} at index ${index}:`, {
+          entryId: entry.id,
+          generatedId: generatedId,
+          floorName: floorData.name,
+          entryType: entry.type,
+          entryIndex: index,
+          finalIdUsed: generatedId
+        });
+        
         mesh.userData = {
           type: entry.type,
           position: finalPosition, // Use the store-updated position
@@ -2549,7 +2559,7 @@ export default function Canvas3D({
           index: objects.length,
           entryIndex: index,  // Add the actual index in the airEntries array
           floorName: floorData.name,
-          airEntryId: entry.id || useRoomStore.getState().generateAirEntryId(floorData.name, entry.type)
+          airEntryId: generatedId
         };
 
         const orientationData = calculateAirEntryCoordinateSystemComplete(entry);
@@ -4600,6 +4610,16 @@ export default function Canvas3D({
             
             // Phase 3: Create wall context for unified dialog experience
             const wallContext = createWallContext(mergedEntry);
+            
+            // 🔍 ID DEBUG: Log the ID that will be shown in the dialog
+            console.log("🔍 [ID DEBUG] DIALOG WILL SHOW THESE IDs:", {
+              mergedEntryId: mergedEntry.id,
+              baseEntryId: baseEntry.id,
+              meshAirEntryId: airEntryData.airEntryId,
+              expectedFormat: "Should be like 'window_0F_1'",
+              actualId: mergedEntry.id || baseEntry.id || airEntryData.airEntryId,
+              dialogDataSource: "Using mergedEntry data for dialog"
+            });
             
             // ✅ CROSS-FLOOR BUG FIX: Log correct dialog opening with mapping
             console.log("✅ [CROSS-FLOOR FIX] DIALOG OPENING WITH CORRECT MAPPED DATA:", {
