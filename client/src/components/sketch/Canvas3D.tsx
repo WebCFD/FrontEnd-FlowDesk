@@ -2557,12 +2557,23 @@ export default function Canvas3D({
         if (!hasValidId) {
           generatedId = useRoomStore.getState().generateAirEntryId(floorData.name, entry.type);
           
+          console.log(`🔧 [LEGACY MIGRATION] Starting migration for index ${index}, generated ID: ${generatedId}`);
+          
           // Auto-migrate: Update the store entry with the generated ID
           const storeData = useRoomStore.getState();
           const currentFloorData = storeData.floors[floorData.name];
+          
+          console.log(`🔧 [LEGACY MIGRATION] Store check:`, {
+            floorName: floorData.name,
+            floorExists: !!currentFloorData,
+            airEntriesExists: !!currentFloorData?.airEntries,
+            entryAtIndexExists: !!currentFloorData?.airEntries?.[index],
+            entryCountInFloor: currentFloorData?.airEntries?.length || 0
+          });
+          
           if (currentFloorData?.airEntries?.[index]) {
             // Update this specific entry with the generated ID
-            storeData.setFloors({
+            const updatedFloors = {
               ...storeData.floors,
               [floorData.name]: {
                 ...currentFloorData,
@@ -2570,9 +2581,21 @@ export default function Canvas3D({
                   idx === index ? { ...airEntry, id: generatedId } : airEntry
                 )
               }
-            });
+            };
             
-            console.log(`🔧 [LEGACY MIGRATION] Auto-repaired AirEntry at index ${index} with ID: ${generatedId}`);
+            storeData.setFloors(updatedFloors);
+            
+            console.log(`🔧 [LEGACY MIGRATION] SUCCESS: Auto-repaired AirEntry at index ${index} with ID: ${generatedId}`);
+            
+            // Verify the update worked
+            const verificationData = useRoomStore.getState();
+            const verifyEntry = verificationData.floors[floorData.name]?.airEntries?.[index];
+            console.log(`🔧 [LEGACY MIGRATION] VERIFICATION:`, {
+              updatedEntryId: verifyEntry?.id,
+              migrationSuccessful: verifyEntry?.id === generatedId
+            });
+          } else {
+            console.log(`🔧 [LEGACY MIGRATION] FAILED: Could not find entry in store for migration`);
           }
         }
         
