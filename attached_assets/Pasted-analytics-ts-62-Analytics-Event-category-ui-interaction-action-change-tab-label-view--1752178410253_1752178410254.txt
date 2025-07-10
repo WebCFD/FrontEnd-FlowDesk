@@ -1,0 +1,79 @@
+analytics.ts:62 📊 Analytics Event: {category: 'ui_interaction', action: 'change_tab', label: 'view_3d_preview', value: undefined, status: 'sent'}
+room-store.ts:546 🔗 STORE: Suscripción eliminada. Total listeners: 0
+room-store.ts:538 🔗 STORE: Nueva suscripción añadida. Total listeners: 1
+Canvas3D.tsx:2556 🔍 [MIGRATION CHECK] Entry at index 0: {entryId: 'window_0F_1', entryIdType: 'string', hasValidId: true, needsMigration: false}
+Canvas3D.tsx:2624 🔍 [CANVAS3D MESH CREATION] Creating mesh for window at index 0: {entryId: 'window_0F_1', generatedId: 'window_0F_1', floorName: 'Ground Floor', entryType: 'window', entryIndex: 0, …}
+Canvas3D.tsx:2556 🔍 [MIGRATION CHECK] Entry at index 0: {entryId: 'window_1F_1', entryIdType: 'string', hasValidId: true, needsMigration: false}
+Canvas3D.tsx:2624 🔍 [CANVAS3D MESH CREATION] Creating mesh for window at index 0: {entryId: 'window_1F_1', generatedId: 'window_1F_1', floorName: 'first', entryType: 'window', entryIndex: 0, …}
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 366ms
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
+Canvas3D.tsx:4188 Hovering over axis mesh: x
+Canvas3D.tsx:4188 Hovering over axis mesh: x
+Canvas3D.tsx:4188 Hovering over axis mesh: x
+Canvas3D.tsx:4188 Hovering over axis mesh: x
+Canvas3D.tsx:4188 Hovering over axis mesh: y
+Canvas3D.tsx:4188 Hovering over axis mesh: y
+Canvas3D.tsx:4188 Hovering over axis mesh: y
+Canvas3D.tsx:4188 Hovering over axis mesh: y
+Canvas3D.tsx:4188 Hovering over axis mesh: y
+Canvas3D.tsx:4188 Hovering over axis mesh: y
+Canvas3D.tsx:4559 🔍 [CROSS-FLOOR DEBUG] Available AirEntry meshes in scene: (2) [{…}, {…}]
+Canvas3D.tsx:4568 🔍 [CROSS-FLOOR DEBUG] Current floor selection: first
+Canvas3D.tsx:4578 🔍 [CROSS-FLOOR DEBUG] Detected mesh data: {detectedType: 'window', detectedEntryIndex: 0, detectedFloorName: 'Ground Floor', detectedAirEntryId: 'window_0F_1', detectedPosition: {…}, …}
+Canvas3D.tsx:4603 🎯 [FLOOR KEY MAPPING] SUCCESS: {originalMeshFloor: 'Ground Floor', mappedToStoreKey: 'ground', foundInStore: true, availableAirEntries: 1, storeKeys: Array(2)}
+Canvas3D.tsx:4612 🎯 [CROSS-FLOOR FIX] Correct floor lookup with mapping: {detectedMeshFloor: 'Ground Floor', mappedFloorKey: 'ground', lookingInCorrectFloor: 'ground', availableAirEntries: 1, willSearchForIndex: 0, …}
+Canvas3D.tsx:4623 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4636 ✅ [CROSS-FLOOR FIX] CORRECT MATCH DETECTED: {detectedMeshFrom: 'Ground Floor', detectedMeshIndex: 0, detectedMeshId: 'window_0F_1', searchingInCorrectFloor: 'Ground Floor', foundCorrectEntryAtIndex: 0, …}
+Canvas3D.tsx:4650 Double-click found entry using stored entryIndex: 0
+Canvas3D.tsx:4695 🔍 [ID DEBUG] DIALOG WILL SHOW THESE IDs: {mergedEntryId: 'window_0F_1', baseEntryId: 'window_0F_1', meshAirEntryId: 'window_0F_1', expectedFormat: "Should be like 'window_0F_1'", actualId: 'window_0F_1', …}
+Canvas3D.tsx:4705 ✅ [CROSS-FLOOR FIX] DIALOG OPENING WITH CORRECT MAPPED DATA: {dialogWillShow: {…}, userClickedOn: {…}, mapping: {…}, explanation: "Dialog shows data from mapped floor 'ground' matching clicked mesh from 'Ground Floor'"}
+Canvas3D.tsx:4188 Hovering over axis mesh: x
+room-store.ts:411 🔧 [STORE DEBUG] updateAirEntryProperties called: {floorName: 'ground', index: 0, properties: {…}, propertiesRef: {…}, entryId: 'window_0F_1'}
+room-store.ts:445 🔧 [STORE DEBUG] Before update: {entryId: 'window_0F_1', oldProperties: {…}, oldPropertiesRef: {…}}
+room-store.ts:458 🔧 [STORE DEBUG] After update: {entryId: 'window_0F_1', newProperties: {…}, newPropertiesRef: {…}, areReferencesSame: false}
+room-store.ts:481 🚨 [STORE DEBUG] SHARED REFERENCE DETECTED - WILL AFFECT: [{…}]
+Canvas3D.tsx:6213 💾 [CANVAS3D SAVE] Save Changes clicked with values: {elementStatus: 'closed', temperature: 20, airDirection: 'inflow', flowIntensity: 'medium', index: 0, …}
+wizard-design.tsx:1122 PARENT COMPONENT DEBUG - BEFORE UPDATE (NON-CURRENT FLOOR): {floor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1142 PARENT COMPONENT DEBUG - AFTER UPDATE (NON-CURRENT FLOOR): {floor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1169 Updating floor ground in the store
+Canvas3D.tsx:4559 🔍 [CROSS-FLOOR DEBUG] Available AirEntry meshes in scene: (2) [{…}, {…}]
+Canvas3D.tsx:4568 🔍 [CROSS-FLOOR DEBUG] Current floor selection: first
+Canvas3D.tsx:4578 🔍 [CROSS-FLOOR DEBUG] Detected mesh data: {detectedType: 'window', detectedEntryIndex: 0, detectedFloorName: 'Ground Floor', detectedAirEntryId: 'window_0F_1', detectedPosition: {…}, …}
+Canvas3D.tsx:4603 🎯 [FLOOR KEY MAPPING] SUCCESS: {originalMeshFloor: 'Ground Floor', mappedToStoreKey: 'ground', foundInStore: true, availableAirEntries: 1, storeKeys: Array(2)}
+Canvas3D.tsx:4612 🎯 [CROSS-FLOOR FIX] Correct floor lookup with mapping: {detectedMeshFloor: 'Ground Floor', mappedFloorKey: 'ground', lookingInCorrectFloor: 'ground', availableAirEntries: 1, willSearchForIndex: 0, …}
+Canvas3D.tsx:4623 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4636 ✅ [CROSS-FLOOR FIX] CORRECT MATCH DETECTED: {detectedMeshFrom: 'Ground Floor', detectedMeshIndex: 0, detectedMeshId: 'window_0F_1', searchingInCorrectFloor: 'Ground Floor', foundCorrectEntryAtIndex: 0, …}
+Canvas3D.tsx:4650 Double-click found entry using stored entryIndex: 0
+Canvas3D.tsx:4695 🔍 [ID DEBUG] DIALOG WILL SHOW THESE IDs: {mergedEntryId: 'window_0F_1', baseEntryId: 'window_0F_1', meshAirEntryId: 'window_0F_1', expectedFormat: "Should be like 'window_0F_1'", actualId: 'window_0F_1', …}
+Canvas3D.tsx:4705 ✅ [CROSS-FLOOR FIX] DIALOG OPENING WITH CORRECT MAPPED DATA: {dialogWillShow: {…}, userClickedOn: {…}, mapping: {…}, explanation: "Dialog shows data from mapped floor 'ground' matching clicked mesh from 'Ground Floor'"}
+Canvas3D.tsx:4188 Hovering over axis mesh: x
+Canvas3D.tsx:4188 Hovering over axis mesh: x
+room-store.ts:411 🔧 [STORE DEBUG] updateAirEntryProperties called: {floorName: 'ground', index: 0, properties: {…}, propertiesRef: {…}, entryId: 'window_0F_1'}
+room-store.ts:445 🔧 [STORE DEBUG] Before update: {entryId: 'window_0F_1', oldProperties: {…}, oldPropertiesRef: {…}}
+room-store.ts:458 🔧 [STORE DEBUG] After update: {entryId: 'window_0F_1', newProperties: {…}, newPropertiesRef: {…}, areReferencesSame: false}
+room-store.ts:481 🚨 [STORE DEBUG] SHARED REFERENCE DETECTED - WILL AFFECT: [{…}]
+Canvas3D.tsx:6213 💾 [CANVAS3D SAVE] Save Changes clicked with values: {elementStatus: 'closed', temperature: 20, airDirection: 'inflow', flowIntensity: 'medium', index: 0, …}
+wizard-design.tsx:1122 PARENT COMPONENT DEBUG - BEFORE UPDATE (NON-CURRENT FLOOR): {floor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1142 PARENT COMPONENT DEBUG - AFTER UPDATE (NON-CURRENT FLOOR): {floor: 'ground', allEntries: Array(1)}
+wizard-design.tsx:1169 Updating floor ground in the store
+Canvas3D.tsx:4559 🔍 [CROSS-FLOOR DEBUG] Available AirEntry meshes in scene: (2) [{…}, {…}]
+Canvas3D.tsx:4568 🔍 [CROSS-FLOOR DEBUG] Current floor selection: first
+Canvas3D.tsx:4578 🔍 [CROSS-FLOOR DEBUG] Detected mesh data: {detectedType: 'window', detectedEntryIndex: 0, detectedFloorName: 'first', detectedAirEntryId: 'window_1F_1', detectedPosition: {…}, …}
+Canvas3D.tsx:4603 🎯 [FLOOR KEY MAPPING] SUCCESS: {originalMeshFloor: 'first', mappedToStoreKey: 'first', foundInStore: true, availableAirEntries: 1, storeKeys: Array(2)}
+Canvas3D.tsx:4612 🎯 [CROSS-FLOOR FIX] Correct floor lookup with mapping: {detectedMeshFloor: 'first', mappedFloorKey: 'first', lookingInCorrectFloor: 'first', availableAirEntries: 1, willSearchForIndex: 0, …}
+Canvas3D.tsx:4623 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4636 ✅ [CROSS-FLOOR FIX] CORRECT MATCH DETECTED: {detectedMeshFrom: 'first', detectedMeshIndex: 0, detectedMeshId: 'window_1F_1', searchingInCorrectFloor: 'first', foundCorrectEntryAtIndex: 0, …}
+Canvas3D.tsx:4650 Double-click found entry using stored entryIndex: 0
+Canvas3D.tsx:4695 🔍 [ID DEBUG] DIALOG WILL SHOW THESE IDs: {mergedEntryId: 'window_1F_1', baseEntryId: 'window_1F_1', meshAirEntryId: 'window_1F_1', expectedFormat: "Should be like 'window_0F_1'", actualId: 'window_1F_1', …}
+Canvas3D.tsx:4705 ✅ [CROSS-FLOOR FIX] DIALOG OPENING WITH CORRECT MAPPED DATA: {dialogWillShow: {…}, userClickedOn: {…}, mapping: {…}, explanation: "Dialog shows data from mapped floor 'first' matching clicked mesh from 'first'"}
+room-store.ts:411 🔧 [STORE DEBUG] updateAirEntryProperties called: {floorName: 'first', index: 0, properties: {…}, propertiesRef: {…}, entryId: undefined}
+room-store.ts:445 🔧 [STORE DEBUG] Before update: {entryId: undefined, oldProperties: undefined, oldPropertiesRef: undefined}
+room-store.ts:458 🔧 [STORE DEBUG] After update: {entryId: undefined, newProperties: {…}, newPropertiesRef: {…}, areReferencesSame: false}
+Canvas3D.tsx:6213 💾 [CANVAS3D SAVE] Save Changes clicked with values: {elementStatus: 'closed', temperature: 20, airDirection: 'inflow', flowIntensity: 'medium', index: 0, …}
+room-store.ts:509 ✅ STORE: AirEntry actualizado en el store, notificando a 1 listeners
+room-store.ts:513 📢 STORE: Notificando listener 1/1
