@@ -968,26 +968,30 @@ export default function Canvas3D({
   const migratedFloors = useMemo(() => {
     // If store has data, prefer it over props (ensures migration changes are visible)
     const floorsToUse = Object.keys(storeFloors).length > 0 ? storeFloors : floors;
-    const migratedData = migrateFloorsData(floorsToUse);
-    
-    // CRITICAL: Force ID migration for ALL AirEntries during floor processing
+    return migrateFloorsData(floorsToUse);
+  }, [floors, storeFloors]);
+
+  // CRITICAL: Separate migration effect to avoid render-during-render issues
+  useEffect(() => {
     const storeState = useRoomStore.getState();
     let needsStoreUpdate = false;
-    const updatedFloors = { ...migratedData };
+    const updatedFloors = { ...storeState.floors };
     
-    Object.keys(migratedData).forEach(floorKey => {
-      const floorData = migratedData[floorKey];
+    Object.keys(storeState.floors).forEach(floorKey => {
+      const floorData = storeState.floors[floorKey];
       if (floorData?.airEntries) {
         const updatedAirEntries = floorData.airEntries.map((entry, index) => {
           if (!entry.id || typeof entry.id !== 'string' || entry.id.trim().length === 0) {
             const newId = storeState.generateAirEntryId(floorKey, entry.type);
             needsStoreUpdate = true;
-            return { ...entry, id: newId };
+            // CRITICAL: Deep clone to prevent shared references
+            return JSON.parse(JSON.stringify({ ...entry, id: newId }));
           }
-          return entry;
+          // CRITICAL: Deep clone all entries to prevent shared references
+          return JSON.parse(JSON.stringify(entry));
         });
         
-        if (needsStoreUpdate) {
+        if (needsStoreUpdate || JSON.stringify(updatedAirEntries) !== JSON.stringify(floorData.airEntries)) {
           updatedFloors[floorKey] = {
             ...floorData,
             airEntries: updatedAirEntries
@@ -996,13 +1000,11 @@ export default function Canvas3D({
       }
     });
     
-    // Update store if any IDs were missing
-    if (needsStoreUpdate) {
+    // Update store if any IDs were missing or references need cloning
+    if (needsStoreUpdate || JSON.stringify(updatedFloors) !== JSON.stringify(storeState.floors)) {
       storeState.setFloors(updatedFloors);
     }
-    
-    return updatedFloors;
-  }, [floors, storeFloors]);
+  }, [storeFloors]); // Run when store floors change
 
   // Phase 2: Wall Association Helper Functions for AirEntry Dialog Unification
   const lineToUniqueId = (line: Line): string => {
