@@ -439,80 +439,18 @@ export const useRoomStore = create<RoomState>()(
           };
         }),
 
-        // Function to update air entry properties
+        // Function to update air entry properties with hybrid mesh/store persistence
         updateAirEntryProperties: (floorName: string, index: number, properties: SimulationProperties) => set((state) => {
-          console.log("🔧 [STORE DEBUG] updateAirEntryProperties called:", {
-            floorName,
-            index,
-            properties,
-            propertiesRef: properties,
-            entryId: state.floors[floorName]?.airEntries?.[index]?.id
-          });
-          
-          // CRITICAL DEBUG: Check if incoming properties are already shared BEFORE processing
-          let incomingSharedCount = 0;
-          Object.keys(state.floors).forEach(otherFloorName => {
-            state.floors[otherFloorName]?.airEntries?.forEach((entry, entryIndex) => {
-              if (entry.properties === properties) {
-                incomingSharedCount++;
-                console.log("🚨 [STORE DEBUG] INCOMING PROPERTIES ALREADY SHARED:", {
-                  sharedWithFloor: otherFloorName,
-                  sharedWithIndex: entryIndex,
-                  sharedWithId: entry.id,
-                  incomingPropertiesRef: properties
-                });
-              }
-            });
-          });
-          
-          if (incomingSharedCount > 0) {
-            console.log("🚨 [STORE DEBUG] INCOMING SHARED REFERENCE COUNT:", incomingSharedCount);
-          }
-          
           const currentFloors = { ...state.floors };
           
           if (currentFloors[floorName]?.airEntries && currentFloors[floorName].airEntries[index]) {
             const updatedAirEntries = [...currentFloors[floorName].airEntries];
-            const oldProperties = updatedAirEntries[index].properties;
-            
-            console.log("🔧 [STORE DEBUG] Before update:", {
-              entryId: updatedAirEntries[index].id,
-              oldProperties,
-              oldPropertiesRef: oldProperties
-            });
             
             // CRITICAL FIX: Create deep clone to prevent shared references
             updatedAirEntries[index] = {
               ...updatedAirEntries[index],
               properties: JSON.parse(JSON.stringify(properties))
             };
-            
-            const newProperties = updatedAirEntries[index].properties;
-            console.log("🔧 [STORE DEBUG] After update:", {
-              entryId: updatedAirEntries[index].id,
-              newProperties,
-              newPropertiesRef: newProperties,
-              areReferencesSame: oldProperties === newProperties
-            });
-            
-            // Check if this change affects other floors - BEFORE making changes
-            const affectedEntries: any[] = [];
-            Object.keys(currentFloors).forEach(otherFloorName => {
-              currentFloors[otherFloorName]?.airEntries?.forEach((entry, entryIndex) => {
-                if (entry.properties === oldProperties && oldProperties !== undefined) {
-                  affectedEntries.push({
-                    floor: otherFloorName,
-                    index: entryIndex,
-                    id: entry.id,
-                    propertiesRef: entry.properties
-                  });
-                }
-              });
-            });
-            
-            if (affectedEntries.length > 0) {
-              console.log("🚨 [STORE DEBUG] SHARED REFERENCE DETECTED - WILL AFFECT:", affectedEntries);
-            }
             
             currentFloors[floorName] = {
               ...currentFloors[floorName],
@@ -525,7 +463,6 @@ export const useRoomStore = create<RoomState>()(
 
         // Reactive AirEntry synchronization system
         updateAirEntry: (floorName: string, index: number, entry: AirEntry) => {
-          
           set((state) => {
             const updatedFloors = { ...state.floors };
             
@@ -539,19 +476,14 @@ export const useRoomStore = create<RoomState>()(
                 airEntries: updatedAirEntries
               };
               
-              console.log(`✅ STORE: AirEntry actualizado en el store, notificando a ${airEntryChangeListeners.length} listeners`);
-              
               // Notify all listeners about the change
-              airEntryChangeListeners.forEach((listener, listenerIndex) => {
-                console.log(`📢 STORE: Notificando listener ${listenerIndex + 1}/${airEntryChangeListeners.length}`);
+              airEntryChangeListeners.forEach((listener) => {
                 try {
                   listener(floorName, index, entry);
                 } catch (error) {
-                  console.error(`❌ STORE: Error en listener ${listenerIndex + 1}:`, error);
+                  console.error('Error in AirEntry change listener:', error);
                 }
               });
-            } else {
-              console.warn(`⚠️ STORE: No se pudo actualizar AirEntry - piso o índice no válido`);
             }
             
             return { floors: updatedFloors };
@@ -568,7 +500,6 @@ export const useRoomStore = create<RoomState>()(
         },
 
         subscribeToAirEntryChanges: (listener: AirEntryChangeListener) => {
-          console.log(`🔗 STORE: Nueva suscripción añadida. Total listeners: ${airEntryChangeListeners.length + 1}`);
           airEntryChangeListeners.push(listener);
           
           // Return unsubscribe function
@@ -576,7 +507,6 @@ export const useRoomStore = create<RoomState>()(
             const index = airEntryChangeListeners.indexOf(listener);
             if (index > -1) {
               airEntryChangeListeners.splice(index, 1);
-              console.log(`🔗 STORE: Suscripción eliminada. Total listeners: ${airEntryChangeListeners.length}`);
             }
           };
         },
@@ -611,24 +541,12 @@ export const useRoomStore = create<RoomState>()(
           });
           
           const generatedId = `${type}_${floorPrefix}_${maxCounter + 1}`;
-          console.log(`🆔 STORE: Generated unique ID: ${generatedId} for floor: ${floorName}, type: ${type}`);
           return generatedId;
         },
 
         addAirEntryToFloor: (floorName: string, entryWithoutId: Omit<AirEntry, 'id'>) => {
           const generatedId = get().generateAirEntryId(floorName, entryWithoutId.type);
           const entryWithId = { ...entryWithoutId, id: generatedId } as any;
-          
-          console.log(`🔍 [STORE DEBUG] BEFORE SAVING TO STATE:`, {
-            generatedId,
-            entryWithId: {
-              ...entryWithId,
-              id: entryWithId.id,
-              type: entryWithId.type
-            },
-            floorName,
-            hasId: !!entryWithId.id
-          });
           
           set((state) => ({
             floors: {
@@ -640,21 +558,10 @@ export const useRoomStore = create<RoomState>()(
             }
           }));
           
-          // Verify the entry was saved correctly
-          const verifyState = get();
-          const savedEntries = verifyState.floors[floorName]?.airEntries || [];
-          const lastEntry = savedEntries[savedEntries.length - 1] as any;
-          
-          console.log(`✅ STORE: Added AirEntry with ID: ${generatedId} to floor: ${floorName}`);
-          console.log(`🔍 [STORE DEBUG] VERIFICATION - Entry saved correctly:`, {
-            savedEntryId: lastEntry?.id,
-            savedEntryType: lastEntry?.type,
-            totalEntries: savedEntries.length,
-            allEntriesWithIds: savedEntries.map((e: any) => ({ id: e.id, type: e.type }))
-          });
-          
           return generatedId;
         },
+
+
         
         reset: () => set({
           floors: {

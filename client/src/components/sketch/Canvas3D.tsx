@@ -1548,16 +1548,29 @@ export default function Canvas3D({
     const dimensions = baseEntry.dimensions;
     const wallPosition = (dimensions as any).wallPosition || (baseEntry as any).properties?.wallPosition;
     
-    // CRITICAL FIX: Read simulation properties directly from reactive store to fix persistence issue
-    // This ensures Simulation Conditions show current values when dialog reopens
-    const reactiveStoreFloors = useRoomStore.getState().floors;
-    const currentAirEntry = reactiveStoreFloors[editingAirEntry.floorName]?.airEntries?.[editingAirEntry.index];
-    const reactiveProperties = currentAirEntry?.properties;
+    // HYBRID APPROACH: Read from mesh userData first (real-time), then store, then baseEntry
+    // This ensures dialog always shows the most current values including real-time changes
+    let properties = (baseEntry as any).properties;
     
-    // Use reactive properties if available, fallback to baseEntry properties
-    const properties = reactiveProperties || (baseEntry as any).properties;
+    // 1. Try to get properties from mesh userData (most current for real-time changes)
+    const mesh = findAirEntryMesh(editingAirEntry.floorName, editingAirEntry.index);
+    if (mesh?.userData?.properties) {
+      properties = { ...properties, ...mesh.userData.properties };
+    }
     
-
+    // 2. Also check for simulationProperties in mesh userData (for FurnVent compatibility)
+    if (mesh?.userData?.simulationProperties) {
+      properties = { ...properties, ...mesh.userData.simulationProperties };
+    }
+    
+    // 3. Fallback to reactive store if mesh doesn't have current data
+    if (!mesh?.userData?.properties && !mesh?.userData?.simulationProperties) {
+      const reactiveStoreFloors = useRoomStore.getState().floors;
+      const currentAirEntry = reactiveStoreFloors[editingAirEntry.floorName]?.airEntries?.[editingAirEntry.index];
+      if (currentAirEntry?.properties) {
+        properties = { ...properties, ...currentAirEntry.properties };
+      }
+    }
     
     return {
       ...dimensions,
@@ -1566,7 +1579,7 @@ export default function Canvas3D({
       position: baseEntry.position,
       wallPosition: wallPosition
     };
-  }, [editingAirEntry, editingAirEntry?.floorName]);
+  }, [editingAirEntry, editingAirEntry?.floorName, findAirEntryMesh]);
   
   // State for editing furniture
   const [editingFurniture, setEditingFurniture] = useState<{
@@ -1735,7 +1748,51 @@ export default function Canvas3D({
     }, 150);
   }, [editingAirEntry, onUpdateAirEntry, editingAirEntry?.floorName]);
 
-
+  // CRITICAL FIX: Real-time properties update function to ensure dialog persistence
+  const handleAirEntryPropertiesUpdate = useCallback((newProperties: any) => {
+    if (!editingAirEntry) return;
+    
+    // Clear any pending updates
+    if (updateTimeoutRef.current) {
+      clearTimeout(updateTimeoutRef.current);
+    }
+    
+    // STEP 1: Update mesh userData immediately for dialog persistence
+    if (sceneRef.current) {
+      sceneRef.current.traverse((object) => {
+        if (object instanceof THREE.Mesh && 
+            object.userData?.type === editingAirEntry.entry.type &&
+            object.userData?.entryIndex === editingAirEntry.index) {
+          
+          // Update both properties and simulationProperties for maximum compatibility
+          object.userData.properties = { 
+            ...object.userData.properties, 
+            ...newProperties 
+          };
+          object.userData.simulationProperties = { 
+            ...object.userData.simulationProperties, 
+            ...newProperties 
+          };
+        }
+      });
+    }
+    
+    // STEP 2: Update local editing state for real-time visual feedback
+    setEditingAirEntry(prev => prev ? {
+      ...prev,
+      entry: {
+        ...prev.entry,
+        properties: { ...prev.entry.properties, ...newProperties }
+      }
+    } : null);
+    
+    // STEP 3: Debounced callback to parent for store updates
+    updateTimeoutRef.current = setTimeout(() => {
+      if (onPropertiesUpdate && editingAirEntry) {
+        onPropertiesUpdate(editingAirEntry.floorName, editingAirEntry.index, newProperties);
+      }
+    }, 100);
+  }, [editingAirEntry, onPropertiesUpdate, editingAirEntry?.floorName]);
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -6140,17 +6197,7 @@ export default function Canvas3D({
           wallContext={editingAirEntry.wallContext}
           onPositionUpdate={handleAirEntryPositionUpdate}
           onDimensionsUpdate={handleAirEntryDimensionsUpdate}
-          onPropertiesUpdate={onPropertiesUpdate ? (properties) => {
-            // Real-time properties synchronization
-            console.log("🔄 [CANVAS3D PROPERTIES] Real-time update:", {
-              elementStatus: properties.state,
-              temperature: properties.temperature,
-              airDirection: properties.airOrientation,
-              flowIntensity: properties.flowIntensity,
-              index: editingAirEntry.index
-            });
-            onPropertiesUpdate(editingAirEntry.floorName, editingAirEntry.index, properties);
-          } : undefined}
+          onPropertiesUpdate={handleAirEntryPropertiesUpdate}
         />
       )}
 
