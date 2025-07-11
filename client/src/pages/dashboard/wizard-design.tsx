@@ -1087,18 +1087,7 @@ export default function WizardDesign() {
       // Set the air entries with the deep copy
       setAirEntries(updatedAirEntries);
 
-      // Also update the floors data to keep everything in sync
-      const updatedFloors = { ...floors };
-      if (updatedFloors[floorName]) {
-        updatedFloors[floorName] = {
-          ...updatedFloors[floorName],
-          airEntries: [...updatedAirEntries],
-        };
-        // Update floor data in the store
-        useRoomStore.getState().setFloors(updatedFloors);
-      }
-
-      // Update store for synchronization
+      // Update store for synchronization with specific updateAirEntry (no cross-floor contamination)
       useRoomStore.getState().updateAirEntry(floorName, index, deepClonedEntry);
 
       // Entry updated successfully
@@ -1195,21 +1184,20 @@ export default function WizardDesign() {
   ) => {
     // Update only the properties in real-time without triggering scene rebuild
     const currentFloors = useRoomStore.getState().floors;
-    useRoomStore.getState().setFloors({
-      ...currentFloors,
-      [floorName]: {
-        ...currentFloors[floorName],
-        airEntries: currentFloors[floorName].airEntries.map((entry, i) => 
-          i === index ? {
-            ...entry,
-            properties: {
-              ...entry.properties,
-              ...properties
-            }
-          } : entry
-        )
-      }
-    });
+    const currentEntry = currentFloors[floorName]?.airEntries?.[index];
+    
+    if (currentEntry) {
+      const updatedEntry = {
+        ...currentEntry,
+        properties: {
+          ...currentEntry.properties,
+          ...properties
+        }
+      };
+      
+      // Use specific updateAirEntry to avoid cross-floor contamination
+      useRoomStore.getState().updateAirEntry(floorName, index, updatedEntry);
+    }
   };
 
   // Real-time dimensions synchronization handler (NEW - BASED ON POSITION ALONG WALL PATTERN)
@@ -1224,21 +1212,20 @@ export default function WizardDesign() {
   ) => {
     // Update dimensions in real-time following Position Along Wall successful architecture
     const currentFloors = useRoomStore.getState().floors;
-    useRoomStore.getState().setFloors({
-      ...currentFloors,
-      [floorName]: {
-        ...currentFloors[floorName],
-        airEntries: currentFloors[floorName].airEntries.map((entry, i) => 
-          i === index ? {
-            ...entry,
-            dimensions: {
-              ...entry.dimensions,
-              ...dimensions
-            }
-          } : entry
-        )
-      }
-    });
+    const currentEntry = currentFloors[floorName]?.airEntries?.[index];
+    
+    if (currentEntry) {
+      const updatedEntry = {
+        ...currentEntry,
+        dimensions: {
+          ...currentEntry.dimensions,
+          ...dimensions
+        }
+      };
+      
+      // Use specific updateAirEntry to avoid cross-floor contamination
+      useRoomStore.getState().updateAirEntry(floorName, index, updatedEntry);
+    }
   };
 
   // Phase 2: Furniture callback handlers
