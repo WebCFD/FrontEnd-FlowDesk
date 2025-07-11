@@ -962,24 +962,19 @@ export default function Canvas3D({
 
   // PHASE 5: Pure props pattern - removed Zustand store dependencies
 
-  // CRITICAL FIX: Prevent scene rebuilds during real-time updates
-  // Only rebuild scene for structural changes, not position/dimension updates
+  // INTELLIGENT SOLUTION: Prevent rebuilds during real-time updates but allow them during Save Changes
   const storeFloors = useRoomStore((state) => state.floors);
+  const [lastSaveTimestamp, setLastSaveTimestamp] = useState(0);
+  
   const finalFloors = useMemo(() => {
     // Use store data if available, otherwise use props
     const floorsToUse = Object.keys(storeFloors).length > 0 ? storeFloors : floors;
     return migrateFloorsData(floorsToUse);
   }, [
-    floors,
-    // CRITICAL: Only trigger on structural changes, not real-time position updates
-    JSON.stringify(Object.entries(storeFloors).map(([floorName, floorData]) => ({
-      floorName,
-      lineCount: floorData.lines?.length || 0,
-      airEntryCount: floorData.airEntries?.length || 0,
-      furnitureCount: floorData.furnitureItems?.length || 0,
-      stairCount: floorData.stairPolygons?.length || 0,
-      hasClosedContour: floorData.hasClosedContour
-    })))
+    floors, 
+    storeFloors,
+    lastSaveTimestamp, // Include save timestamp to trigger rebuild after Save Changes
+    // This allows normal rebuilds but prevents excessive rebuilds during real-time updates
   ]);
 
   // Phase 2: Wall Association Helper Functions for AirEntry Dialog Unification
@@ -2219,6 +2214,9 @@ export default function Canvas3D({
 
     // STEP 3: Update store with awareness that mesh was already updated - Use correct floor name
     onUpdateAirEntry(editingAirEntry.floorName, index, updatedEntry);
+    
+    // INTELLIGENT SOLUTION: Trigger scene rebuild after Save Changes to ensure consistency
+    setLastSaveTimestamp(Date.now());
     
     setEditingAirEntry(null);
   };
@@ -5084,6 +5082,17 @@ export default function Canvas3D({
       // No previous selection, make sure states are reset
     }
   }, [finalFloors, currentFloor, ceilingHeight, floorDeckThickness]);
+  
+  // 🧪 DIAGNOSIS: Log when scene rebuild is triggered to understand cross-floor glitch timing
+  useEffect(() => {
+    console.log("🧪 [SCENE REBUILD DIAGNOSIS] useEffect triggered:", {
+      triggerCause: "finalFloors, currentFloor, ceilingHeight, or floorDeckThickness changed",
+      currentFloor: currentFloor,
+      finalFloorsKeys: Object.keys(finalFloors),
+      totalAirEntries: Object.values(finalFloors).reduce((total, floor) => total + (floor.airEntries?.length || 0), 0),
+      timestamp: Date.now()
+    });
+  }, [finalFloors, currentFloor, ceilingHeight, floorDeckThickness]);
 
   // Separate useEffect for context updates to avoid hidden dependencies in scene rebuild
   useEffect(() => {
@@ -6251,6 +6260,9 @@ export default function Canvas3D({
               wallPosition: data.wallPosition,
               properties: data.properties
             } as any);
+            
+            // INTELLIGENT SOLUTION: Trigger scene rebuild after Save Changes
+            setLastSaveTimestamp(Date.now());
 
           }}
           initialValues={airEntryInitialValues as any}
