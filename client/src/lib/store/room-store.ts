@@ -526,34 +526,14 @@ export const useRoomStore = create<RoomState>()(
 
         // SILENT version for real-time updates (no notifications)
         updateAirEntrySilent: (floorName: string, index: number, entry: AirEntry) => {
-          console.log('🔍 [STORE DEBUG] updateAirEntrySilent called for:', floorName, index);
-          console.log('🔍 [STORE DEBUG] entry.position reference:', entry.position);
-          
           set((state) => {
             const updatedFloors = { ...state.floors };
-            
-            // LOG: Check if entry shares position reference with other floors BEFORE update
-            Object.entries(state.floors).forEach(([floor, floorData]) => {
-              if (floor !== floorName && floorData.airEntries) {
-                floorData.airEntries.forEach((storeEntry, idx) => {
-                  if (storeEntry.position === entry.position) {
-                    console.log('🚨 [STORE SHARED REFERENCE] CRITICAL! Entry shares position reference with store!');
-                    console.log('🚨 Store Floor:', floor, 'Index:', idx, 'shares position with incoming entry from Floor:', floorName, 'Index:', index);
-                    console.log('🚨 This explains why the other floor\'s window moves during real-time updates!');
-                  }
-                });
-              }
-            });
             
             if (updatedFloors[floorName]?.airEntries && updatedFloors[floorName].airEntries[index]) {
               const updatedAirEntries = [...updatedFloors[floorName].airEntries];
               
-              console.log('🔍 [STORE DEBUG] BEFORE JSON clone - entry.position === updatedAirEntries[index].position?', entry.position === updatedAirEntries[index].position);
-              
               // CRITICAL FIX: Create deep clone to prevent shared references
               updatedAirEntries[index] = JSON.parse(JSON.stringify(entry));
-              
-              console.log('🔍 [STORE DEBUG] AFTER JSON clone - new entry position reference:', updatedAirEntries[index].position);
               
               updatedFloors[floorName] = {
                 ...updatedFloors[floorName],
