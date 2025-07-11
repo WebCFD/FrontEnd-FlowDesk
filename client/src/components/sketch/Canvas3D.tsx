@@ -962,13 +962,25 @@ export default function Canvas3D({
 
   // PHASE 5: Pure props pattern - removed Zustand store dependencies
 
-  // SIMPLIFIED: Use reactive store data directly - deep cloning handled by store
+  // CRITICAL FIX: Prevent scene rebuilds during real-time updates
+  // Only rebuild scene for structural changes, not position/dimension updates
   const storeFloors = useRoomStore((state) => state.floors);
   const finalFloors = useMemo(() => {
     // Use store data if available, otherwise use props
     const floorsToUse = Object.keys(storeFloors).length > 0 ? storeFloors : floors;
     return migrateFloorsData(floorsToUse);
-  }, [floors, storeFloors]);
+  }, [
+    floors,
+    // CRITICAL: Only trigger on structural changes, not real-time position updates
+    JSON.stringify(Object.entries(storeFloors).map(([floorName, floorData]) => ({
+      floorName,
+      lineCount: floorData.lines?.length || 0,
+      airEntryCount: floorData.airEntries?.length || 0,
+      furnitureCount: floorData.furnitureItems?.length || 0,
+      stairCount: floorData.stairPolygons?.length || 0,
+      hasClosedContour: floorData.hasClosedContour
+    })))
+  ]);
 
   // Phase 2: Wall Association Helper Functions for AirEntry Dialog Unification
   const lineToUniqueId = (line: Line): string => {
@@ -2615,15 +2627,7 @@ export default function Canvas3D({
           entry.id = generatedId; // Force local assignment for immediate use
         }
         
-        console.log(`🔍 [CANVAS3D MESH CREATION] Creating mesh for ${entry.type} at index ${index}:`, {
-          entryId: entry.id,
-          generatedId: generatedId,
-          floorName: floorData.name,
-          entryType: entry.type,
-          entryIndex: index,
-          finalIdUsed: generatedId,
-          wasMigrated: !entry.id
-        });
+        // Mesh creation for AirEntry
         
         mesh.userData = {
           type: entry.type,
