@@ -1544,12 +1544,19 @@ export default function Canvas3D({
   const airEntryInitialValues = useMemo(() => {
     if (!editingAirEntry) return null;
     
-    const baseEntry = editingAirEntry.entry;
-    const dimensions = baseEntry.dimensions;
-    const wallPosition = (dimensions as any).wallPosition || (baseEntry as any).properties?.wallPosition;
+    // CRITICAL FIX: Always read from reactive store first to get current data
+    const reactiveStoreFloors = useRoomStore.getState().floors;
+    const currentAirEntry = reactiveStoreFloors[editingAirEntry.floorName]?.airEntries?.[editingAirEntry.index];
     
-    // HYBRID APPROACH: Read from mesh userData first (real-time), then store, then baseEntry
-    // This ensures dialog always shows the most current values including real-time changes
+    // Use current store data as primary source, fallback to baseEntry
+    const baseEntry = currentAirEntry || editingAirEntry.entry;
+    const dimensions = baseEntry.dimensions;
+    const position = baseEntry.position;
+    
+    // Calculate wallPosition from current data
+    let wallPosition = (dimensions as any).wallPosition || (baseEntry as any).properties?.wallPosition;
+    
+    // HYBRID APPROACH: Read properties from mesh userData first (real-time), then store, then baseEntry
     let properties = (baseEntry as any).properties;
     
     // 1. Try to get properties from mesh userData (most current for real-time changes)
@@ -1563,20 +1570,16 @@ export default function Canvas3D({
       properties = { ...properties, ...mesh.userData.simulationProperties };
     }
     
-    // 3. Fallback to reactive store if mesh doesn't have current data
-    if (!mesh?.userData?.properties && !mesh?.userData?.simulationProperties) {
-      const reactiveStoreFloors = useRoomStore.getState().floors;
-      const currentAirEntry = reactiveStoreFloors[editingAirEntry.floorName]?.airEntries?.[editingAirEntry.index];
-      if (currentAirEntry?.properties) {
-        properties = { ...properties, ...currentAirEntry.properties };
-      }
+    // 3. Update wallPosition from mesh if available (for real-time position updates)
+    if (mesh?.userData?.wallPosition !== undefined) {
+      wallPosition = mesh.userData.wallPosition;
     }
     
     return {
       ...dimensions,
       shape: (dimensions as any).shape,
       properties: properties,
-      position: baseEntry.position,
+      position: position,
       wallPosition: wallPosition
     };
   }, [editingAirEntry, editingAirEntry?.floorName, findAirEntryMesh]);
