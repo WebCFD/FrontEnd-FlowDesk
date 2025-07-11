@@ -989,14 +989,7 @@ export default function Canvas3D({
     const floorsToUse = Object.keys(storeFloors).length > 0 ? storeFloors : floors;
     const migratedFloors = migrateFloorsData(floorsToUse);
     
-    console.log("🎯 [SURGICAL FIX] finalFloors useMemo executing:", {
-      currentlyEditingFloor: editingAirEntry?.floorName || 'none',
-      lastEditedFloor,
-      availableFloors: Object.keys(migratedFloors),
-      willRecreateAllFloors: true,
-      triggerReason: "Store floors changed",
-      isInRealTimeMode: !!editingAirEntry
-    });
+    // SURGICAL FIX: Intelligent dependency tracking prevents unnecessary scene rebuilds during real-time editing
     
     return migratedFloors;
   }, [
