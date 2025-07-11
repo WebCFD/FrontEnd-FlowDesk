@@ -1682,6 +1682,20 @@ export default function Canvas3D({
       });
     }
     
+    // 🧪 DIAGNOSIS LOG: Check editingAirEntry values when callback executes
+    console.log("🧪 [DIAGNOSIS] onDimensionsUpdate callback executing:", {
+      callbackFloorName: editingAirEntry.floorName,
+      callbackIndex: editingAirEntry.index,
+      newDimensions: newDimensions,
+      editingAirEntryState: {
+        floorName: editingAirEntry.floorName,
+        index: editingAirEntry.index,
+        entryId: editingAirEntry.entry.id,
+        entryType: editingAirEntry.entry.type
+      },
+      timestamp: Date.now()
+    });
+    
     // Debounced callback to parent for store updates
     updateTimeoutRef.current = setTimeout(() => {
       onDimensionsUpdate(editingAirEntry.floorName, editingAirEntry.index, newDimensions);
@@ -1753,6 +1767,24 @@ export default function Canvas3D({
       });
     }
     
+    // 🧪 DIAGNOSIS LOG: Check editingAirEntry values when position callback executes
+    console.log("🧪 [DIAGNOSIS] onUpdateAirEntry callback executing:", {
+      callbackFloorName: editingAirEntry.floorName,
+      callbackIndex: editingAirEntry.index,
+      updatedEntry: {
+        id: updatedEntry.id,
+        type: updatedEntry.type,
+        position: updatedEntry.position
+      },
+      editingAirEntryState: {
+        floorName: editingAirEntry.floorName,
+        index: editingAirEntry.index,
+        entryId: editingAirEntry.entry.id,
+        entryType: editingAirEntry.entry.type
+      },
+      timestamp: Date.now()
+    });
+    
     // Debounce parent callback to prevent excessive updates
     updateTimeoutRef.current = setTimeout(() => {
       if (onUpdateAirEntry && editingAirEntry) {
@@ -1800,6 +1832,20 @@ export default function Canvas3D({
         properties: { ...prev.entry.properties, ...newProperties }
       }
     } : null);
+    
+    // 🧪 DIAGNOSIS LOG: Check editingAirEntry values when properties callback executes
+    console.log("🧪 [DIAGNOSIS] onPropertiesUpdate callback executing:", {
+      callbackFloorName: editingAirEntry.floorName,
+      callbackIndex: editingAirEntry.index,
+      newProperties: newProperties,
+      editingAirEntryState: {
+        floorName: editingAirEntry.floorName,
+        index: editingAirEntry.index,
+        entryId: editingAirEntry.entry.id,
+        entryType: editingAirEntry.entry.type
+      },
+      timestamp: Date.now()
+    });
     
     // STEP 3: Debounced callback to parent for store updates
     updateTimeoutRef.current = setTimeout(() => {
@@ -4716,6 +4762,16 @@ export default function Canvas3D({
                 mappedForStore: correctFloorKey
               },
               explanation: "Dialog shows data from mapped floor '" + correctFloorKey + "' matching clicked mesh from '" + meshFloorName + "'"
+            });
+            
+            // 🧪 DIAGNOSIS LOG: Confirm setEditingAirEntry is correct
+            console.log("🧪 [DIAGNOSIS] setEditingAirEntry called with:", {
+              index: foundIndex,
+              floorName: correctFloorKey,
+              entryId: mergedEntry.id,
+              entryType: mergedEntry.type,
+              entryPosition: mergedEntry.position,
+              timestamp: Date.now()
             });
             
             setEditingAirEntry({

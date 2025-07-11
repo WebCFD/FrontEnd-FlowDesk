@@ -1060,6 +1060,19 @@ export default function WizardDesign() {
     index: number,
     updatedEntry: AirEntry,
   ) => {
+    // 🧪 DIAGNOSIS LOG: Check if parameters arrive correctly from Canvas3D
+    console.log("🧪 [DIAGNOSIS WIZARD] handleUpdateAirEntryFrom3D called with:", {
+      receivedFloorName: floorName,
+      receivedIndex: index,
+      receivedEntryId: updatedEntry.id,
+      receivedEntryType: updatedEntry.type,
+      receivedEntryPosition: updatedEntry.position,
+      currentFloorInWizard: currentFloor,
+      airEntriesArrayLength: airEntries.length,
+      willAccessExistingEntry: airEntries[index] ? true : false,
+      timestamp: Date.now()
+    });
+    
     // CRITICAL FIX: Preserve wallPosition from existing store data
     const existingEntry = airEntries[index];
     
@@ -1181,6 +1194,17 @@ export default function WizardDesign() {
       horizontalAngle?: number;
     }
   ) => {
+    // 🧪 DIAGNOSIS LOG: Check if properties parameters arrive correctly from Canvas3D
+    console.log("🧪 [DIAGNOSIS WIZARD] handlePropertiesUpdateFrom3D called with:", {
+      receivedFloorName: floorName,
+      receivedIndex: index,
+      receivedProperties: properties,
+      currentFloorInWizard: currentFloor,
+      storeFloorExists: useRoomStore.getState().floors[floorName] ? true : false,
+      storeEntryExists: useRoomStore.getState().floors[floorName]?.airEntries?.[index] ? true : false,
+      timestamp: Date.now()
+    });
+    
     // Update only the properties in real-time without triggering scene rebuild
     const currentFloors = useRoomStore.getState().floors;
     const currentEntry = currentFloors[floorName]?.airEntries?.[index];
@@ -1209,6 +1233,17 @@ export default function WizardDesign() {
       height?: number;
     }
   ) => {
+    // 🧪 DIAGNOSIS LOG: Check if dimensions parameters arrive correctly from Canvas3D
+    console.log("🧪 [DIAGNOSIS WIZARD] handleDimensionsUpdateFrom3D called with:", {
+      receivedFloorName: floorName,
+      receivedIndex: index,
+      receivedDimensions: dimensions,
+      currentFloorInWizard: currentFloor,
+      storeFloorExists: useRoomStore.getState().floors[floorName] ? true : false,
+      storeEntryExists: useRoomStore.getState().floors[floorName]?.airEntries?.[index] ? true : false,
+      timestamp: Date.now()
+    });
+    
     // Update dimensions in real-time following Position Along Wall successful architecture
     const currentFloors = useRoomStore.getState().floors;
     const currentEntry = currentFloors[floorName]?.airEntries?.[index];
