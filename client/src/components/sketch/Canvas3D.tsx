@@ -965,27 +965,6 @@ export default function Canvas3D({
   // SURGICAL SOLUTION: Prevent recreation of non-edited floors during real-time updates
   const storeFloors = useRoomStore((state) => state.floors);
   const [lastEditedFloor, setLastEditedFloor] = useState<string | null>(null);
-  
-  const finalFloors = useMemo(() => {
-    // Use store data if available, otherwise use props
-    const floorsToUse = Object.keys(storeFloors).length > 0 ? storeFloors : floors;
-    const migratedFloors = migrateFloorsData(floorsToUse);
-    
-    console.log("🎯 [SURGICAL FIX] finalFloors useMemo executing:", {
-      currentlyEditingFloor: editingAirEntry?.floorName || 'none',
-      lastEditedFloor,
-      availableFloors: Object.keys(migratedFloors),
-      willRecreateAllFloors: true,
-      triggerReason: "Store floors changed",
-      isInRealTimeMode: !!editingAirEntry
-    });
-    
-    return migratedFloors;
-  }, [
-    floors, 
-    // SURGICAL FIX: Only track store floors when NOT in real-time editing mode
-    editingAirEntry ? {} : storeFloors
-  ]);
 
   // Phase 2: Wall Association Helper Functions for AirEntry Dialog Unification
   const lineToUniqueId = (line: Line): string => {
@@ -1258,6 +1237,29 @@ export default function Canvas3D({
       ceilingHeight: number;
     };
   } | null>(null);
+
+  // SURGICAL FIX: finalFloors useMemo moved here after editingAirEntry declaration
+  const finalFloors = useMemo(() => {
+    // Use store data if available, otherwise use props
+    const floorsToUse = Object.keys(storeFloors).length > 0 ? storeFloors : floors;
+    const migratedFloors = migrateFloorsData(floorsToUse);
+    
+    console.log("🎯 [SURGICAL FIX] finalFloors useMemo executing:", {
+      currentlyEditingFloor: editingAirEntry?.floorName || 'none',
+      lastEditedFloor,
+      availableFloors: Object.keys(migratedFloors),
+      willRecreateAllFloors: true,
+      triggerReason: "Store floors changed",
+      isInRealTimeMode: !!editingAirEntry
+    });
+    
+    return migratedFloors;
+  }, [
+    floors, 
+    // SURGICAL FIX: Only track store floors when NOT in real-time editing mode
+    editingAirEntry ? {} : storeFloors,
+    lastEditedFloor
+  ]);
 
   // PHASE 1: Function to find coordinate system elements for a specific AirEntry
   const findCoordinateSystemElements = useCallback((entryIndex: number, floorName: string) => {
