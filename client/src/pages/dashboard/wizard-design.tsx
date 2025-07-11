@@ -1060,9 +1060,24 @@ export default function WizardDesign() {
     index: number,
     updatedEntry: AirEntry,
   ) => {
+    console.log('🔍 [SHARED REFERENCE DEBUG] handleUpdateAirEntryFrom3D called for:', floorName, index);
+    console.log('🔍 [SHARED REFERENCE DEBUG] updatedEntry.position reference:', updatedEntry.position);
     
     // CRITICAL FIX: Preserve wallPosition from existing store data
     const existingEntry = airEntries[index];
+    
+    // LOG: Check if updated entry shares position reference with store
+    const storeFloors = useRoomStore.getState().floors;
+    Object.entries(storeFloors).forEach(([floor, floorData]) => {
+      if (floorData.airEntries) {
+        floorData.airEntries.forEach((entry, idx) => {
+          if (entry.position === updatedEntry.position) {
+            console.log('🚨 [SHARED REFERENCE PROBLEM] updatedEntry shares position reference!');
+            console.log('🚨 Store Floor:', floor, 'Index:', idx, 'shares position with updatedEntry from Floor:', floorName, 'Index:', index);
+          }
+        });
+      }
+    });
     
     // Create merged entry preserving wallPosition
     const preservedDimensions = {
@@ -1075,6 +1090,8 @@ export default function WizardDesign() {
       ...JSON.parse(JSON.stringify(updatedEntry)),
       dimensions: preservedDimensions
     };
+    
+    console.log('🔍 [SHARED REFERENCE DEBUG] After JSON deep clone - deepClonedEntry.position === updatedEntry.position?', deepClonedEntry.position === updatedEntry.position);
 
     // Use the store's setAirEntries function when updating the current floor
     if (floorName === currentFloor) {
@@ -1182,11 +1199,29 @@ export default function WizardDesign() {
       horizontalAngle?: number;
     }
   ) => {
+    console.log('🔍 [SHARED REFERENCE DEBUG] handlePropertiesUpdateFrom3D called for:', floorName, index);
+    
     // Update only the properties in real-time without triggering scene rebuild
     const currentFloors = useRoomStore.getState().floors;
     const currentEntry = currentFloors[floorName]?.airEntries?.[index];
     
     if (currentEntry) {
+      // LOG: Check if position object is shared between floors
+      console.log('🔍 [SHARED REFERENCE DEBUG] currentEntry.position reference:', currentEntry.position);
+      console.log('🔍 [SHARED REFERENCE DEBUG] currentEntry.position === floors[floor0].airEntries[0].position?');
+      
+      // Check all floors for shared position references
+      Object.entries(currentFloors).forEach(([floor, floorData]) => {
+        if (floor !== floorName && floorData.airEntries) {
+          floorData.airEntries.forEach((entry, idx) => {
+            if (entry.position === currentEntry.position) {
+              console.log('🚨 [SHARED REFERENCE PROBLEM] FOUND SHARED POSITION REFERENCE!');
+              console.log('🚨 Floor:', floor, 'Index:', idx, 'shares position with Floor:', floorName, 'Index:', index);
+            }
+          });
+        }
+      });
+      
       const updatedEntry = {
         ...currentEntry,
         properties: {
@@ -1194,6 +1229,9 @@ export default function WizardDesign() {
           ...properties
         }
       };
+      
+      // LOG: Check if spread operator preserved shared references
+      console.log('🔍 [SHARED REFERENCE DEBUG] After spread - updatedEntry.position === currentEntry.position?', updatedEntry.position === currentEntry.position);
       
       // Use SILENT updateAirEntry to avoid cross-floor contamination
       useRoomStore.getState().updateAirEntrySilent(floorName, index, updatedEntry);
@@ -1210,11 +1248,31 @@ export default function WizardDesign() {
       height?: number;
     }
   ) => {
+    console.log('🔍 [SHARED REFERENCE DEBUG] handleDimensionsUpdateFrom3D called for:', floorName, index);
+    console.log('🔍 [SHARED REFERENCE DEBUG] Updating dimensions:', dimensions);
+    
     // Update dimensions in real-time following Position Along Wall successful architecture
     const currentFloors = useRoomStore.getState().floors;
     const currentEntry = currentFloors[floorName]?.airEntries?.[index];
     
     if (currentEntry) {
+      // LOG: Check if position object is shared between floors BEFORE update
+      console.log('🔍 [SHARED REFERENCE DEBUG] BEFORE UPDATE - currentEntry.position reference:', currentEntry.position);
+      console.log('🔍 [SHARED REFERENCE DEBUG] BEFORE UPDATE - currentEntry.position values:', currentEntry.position.x, currentEntry.position.y);
+      
+      // Check all floors for shared position references
+      Object.entries(currentFloors).forEach(([floor, floorData]) => {
+        if (floor !== floorName && floorData.airEntries) {
+          floorData.airEntries.forEach((entry, idx) => {
+            if (entry.position === currentEntry.position) {
+              console.log('🚨 [SHARED REFERENCE PROBLEM] FOUND SHARED POSITION REFERENCE!');
+              console.log('🚨 Floor:', floor, 'Index:', idx, 'shares position with Floor:', floorName, 'Index:', index);
+              console.log('🚨 This means when we update position, BOTH windows will move!');
+            }
+          });
+        }
+      });
+      
       const updatedEntry = {
         ...currentEntry,
         dimensions: {
@@ -1222,6 +1280,13 @@ export default function WizardDesign() {
           ...dimensions
         }
       };
+      
+      // LOG: Check if spread operator preserved shared references
+      console.log('🔍 [SHARED REFERENCE DEBUG] AFTER SPREAD - updatedEntry.position === currentEntry.position?', updatedEntry.position === currentEntry.position);
+      if (updatedEntry.position === currentEntry.position) {
+        console.log('🚨 [SHARED REFERENCE CONFIRMED] Spread operator preserved shared reference!');
+        console.log('🚨 This is why the other floor\'s window moves during real-time updates!');
+      }
       
       // Use SILENT updateAirEntry to avoid cross-floor contamination
       useRoomStore.getState().updateAirEntrySilent(floorName, index, updatedEntry);
