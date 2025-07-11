@@ -1,0 +1,51 @@
+Show less
+Perfecto, voy a analizar todo el flujo de detección y mapping de AirEntry sin modificar código. Necesito entender exactamente cómo Canvas3D determina qué AirEntry está siendo modificado y cómo pasa esos parámetros a los callbacks.
+
+
+Opened client/src/components/sketch/Canvas3D.tsx
+
+Executed cd client/src/components/sketch && grep -n -A 10 -B 10 "onPositionUpdate\|onDimensionsUpdate\|onPropertiesUpdate" Canvas3D.tsx
+
+Executed cd client/src/components/sketch && grep -n -A 5 -B 5 "handleRealTimePositionUpdate\|handleRealTimeDimensionsUpdate\|handleRealTimePropertiesUpdate" Canvas3D.tsx
+¡Ahora puedo ver exactamente cómo funciona el flujo! Voy a analizar los pasos específicos donde se determina qué AirEntry modificar:
+
+
+Opened client/src/components/sketch/Canvas3D.tsx
+
+Opened client/src/components/sketch/Canvas3D.tsx
+
+Executed cd client/src/components/sketch && grep -n -A 3 -B 3 "editingAirEntry\.floorName.*editingAirEntry\.index" Canvas3D.tsx
+🎯 ANÁLISIS COMPLETO DEL FLUJO DE DETECCIÓN
+He analizado todo el flujo y ahora puedo ver EXACTAMENTE donde está el problema. Aquí está el análisis completo:
+
+FLUJO DE DETECCIÓN DE AIRENTRY:
+Double-click en Canvas3D → handleDoubleClick()
+Raycast detecta mesh → usa mesh.userData.floorName y mesh.userData.entryIndex
+Mapping de floor names → Ground Floor → ground, first → first
+Abre dialog → setEditingAirEntry({ floorName, index, entry })
+Usuario modifica en dialog → triggers callbacks con editingAirEntry.floorName y editingAirEntry.index
+🚨 PROBLEMA IDENTIFICADO:
+El problema NO está en el mapping inicial, sino en editingAirEntry que se establece durante el double-click.
+
+Mirando las líneas 1687, 1759, 1807:
+
+// Todas estas líneas usan editingAirEntry.floorName y editingAirEntry.index
+onDimensionsUpdate(editingAirEntry.floorName, editingAirEntry.index, newDimensions);
+onUpdateAirEntry(editingAirEntry.floorName, editingAirEntry.index, updatedEntry);
+onPropertiesUpdate(editingAirEntry.floorName, editingAirEntry.index, newProperties);
+🔍 TEORÍA DEL PROBLEMA:
+editingAirEntry se establece UNA vez durante el double-click, pero puede estar:
+
+Usando el floor name incorrecto (Ground Floor vs ground)
+Usando el index incorrecto (mesh.userData.entryIndex puede no coincidir con el índice real en store)
+Persistiendo valores obsoletos entre different AirEntry edits
+🎯 SOSPECHA PRINCIPAL:
+El problema está en la línea donde se establece editingAirEntry durante el double-click. Si esa línea tiene valores incorrectos, TODOS los callbacks posteriores van a usar esos valores incorrectos.
+
+CONCLUSIÓN:
+El problema está en el establecimiento inicial de editingAirEntry durante el double-click, no en los callbacks. Cuando el usuario hace double-click en una ventana del piso 1, editingAirEntry se está estableciendo con los parámetros del piso 0 (o viceversa).
+
+¿Quieres que busque específicamente dónde se establece editingAirEntry durante el double-click para ver si ahí está el mapping incorrecto?
+
+Optimized Agent memory
+si, investigalo, no modifiques codigo, y si necesitas añador logs, añadelos
