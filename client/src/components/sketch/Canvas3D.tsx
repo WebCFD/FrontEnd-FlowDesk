@@ -1650,7 +1650,6 @@ export default function Canvas3D({
           if (newDimensions.distanceToFloor !== undefined) {
             const newZ = newDimensions.distanceToFloor;
             object.position.setZ(newZ);
-            needsRenderRef.current = true; // Force re-render for real-time visual feedback
           }
 
           // Update mesh geometry for Width and Height (same approach as creation)
@@ -1663,7 +1662,6 @@ export default function Canvas3D({
             const newGeometry = new THREE.PlaneGeometry(newWidth, newHeight);
             object.geometry.dispose(); // Clean up old geometry
             object.geometry = newGeometry;
-            needsRenderRef.current = true; // Force re-render for real-time visual feedback
           }
           
           // Update userData for persistence
