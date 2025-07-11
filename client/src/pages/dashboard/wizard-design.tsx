@@ -1087,8 +1087,8 @@ export default function WizardDesign() {
       // Set the air entries with the deep copy
       setAirEntries(updatedAirEntries);
 
-      // Update store for synchronization with specific updateAirEntry (no cross-floor contamination)
-      useRoomStore.getState().updateAirEntry(floorName, index, deepClonedEntry);
+      // Update store for synchronization with SILENT updateAirEntry (no cross-floor contamination)
+      useRoomStore.getState().updateAirEntrySilent(floorName, index, deepClonedEntry);
 
       // Entry updated successfully
 
@@ -1195,8 +1195,8 @@ export default function WizardDesign() {
         }
       };
       
-      // Use specific updateAirEntry to avoid cross-floor contamination
-      useRoomStore.getState().updateAirEntry(floorName, index, updatedEntry);
+      // Use SILENT updateAirEntry to avoid cross-floor contamination
+      useRoomStore.getState().updateAirEntrySilent(floorName, index, updatedEntry);
     }
   };
 
@@ -1223,8 +1223,8 @@ export default function WizardDesign() {
         }
       };
       
-      // Use specific updateAirEntry to avoid cross-floor contamination
-      useRoomStore.getState().updateAirEntry(floorName, index, updatedEntry);
+      // Use SILENT updateAirEntry to avoid cross-floor contamination
+      useRoomStore.getState().updateAirEntrySilent(floorName, index, updatedEntry);
     }
   };
 
