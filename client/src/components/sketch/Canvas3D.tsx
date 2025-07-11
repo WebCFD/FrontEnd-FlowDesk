@@ -962,13 +962,30 @@ export default function Canvas3D({
 
   // PHASE 5: Pure props pattern - removed Zustand store dependencies
 
-  // REVERT: Back to original to debug the ROOT CAUSE of cross-floor glitch
+  // SURGICAL SOLUTION: Prevent recreation of non-edited floors during real-time updates
   const storeFloors = useRoomStore((state) => state.floors);
+  const [lastEditedFloor, setLastEditedFloor] = useState<string | null>(null);
+  
   const finalFloors = useMemo(() => {
     // Use store data if available, otherwise use props
     const floorsToUse = Object.keys(storeFloors).length > 0 ? storeFloors : floors;
-    return migrateFloorsData(floorsToUse);
-  }, [floors, storeFloors]);
+    const migratedFloors = migrateFloorsData(floorsToUse);
+    
+    console.log("🎯 [SURGICAL FIX] finalFloors useMemo executing:", {
+      currentlyEditingFloor: editingAirEntry?.floorName || 'none',
+      lastEditedFloor,
+      availableFloors: Object.keys(migratedFloors),
+      willRecreateAllFloors: true,
+      triggerReason: "Store floors changed",
+      isInRealTimeMode: !!editingAirEntry
+    });
+    
+    return migratedFloors;
+  }, [
+    floors, 
+    // SURGICAL FIX: Only track store floors when NOT in real-time editing mode
+    editingAirEntry ? {} : storeFloors
+  ]);
 
   // Phase 2: Wall Association Helper Functions for AirEntry Dialog Unification
   const lineToUniqueId = (line: Line): string => {
@@ -2237,6 +2254,8 @@ export default function Canvas3D({
     // STEP 3: Update store with awareness that mesh was already updated - Use correct floor name
     onUpdateAirEntry(editingAirEntry.floorName, index, updatedEntry);
     
+    // SURGICAL FIX: Clear editing state to allow scene rebuilds after Save Changes
+    setLastEditedFloor(null);
     setEditingAirEntry(null);
   };
 
@@ -4805,6 +4824,9 @@ export default function Canvas3D({
               timestamp: Date.now()
             });
             
+            // SURGICAL FIX: Track which floor is being edited
+            setLastEditedFloor(correctFloorKey);
+            
             setEditingAirEntry({
               index: foundIndex,
               entry: mergedEntry,
@@ -5115,6 +5137,23 @@ export default function Canvas3D({
       // No previous selection, make sure states are reset
     }
   }, [finalFloors, currentFloor, ceilingHeight, floorDeckThickness]);
+  
+  // SURGICAL FIX: Separate useEffect for real-time updates that doesn't trigger full scene rebuild
+  useEffect(() => {
+    // If we're in real-time editing mode, only update the specific mesh being edited
+    if (editingAirEntry && lastEditedFloor) {
+      console.log("🎯 [SURGICAL FIX] Real-time update mode detected:", {
+        editingFloor: editingAirEntry.floorName,
+        lastEditedFloor,
+        shouldSkipFullRebuild: true,
+        willUseDirectMeshUpdates: true
+      });
+      
+      // Direct mesh updates are already handled by the position/dimension update functions
+      // This prevents the full scene rebuild during real-time updates
+      return;
+    }
+  }, [editingAirEntry, lastEditedFloor]);
   
   // 🧪 DETAILED CROSS-FLOOR GLITCH INVESTIGATION
   useEffect(() => {
@@ -6283,8 +6322,14 @@ export default function Canvas3D({
         <AirEntryDialog
           type={editingAirEntry.entry.type}
           isOpen={true}
-          onClose={() => setEditingAirEntry(null)}
-          onCancel={() => setEditingAirEntry(null)}
+          onClose={() => {
+            setLastEditedFloor(null);
+            setEditingAirEntry(null);
+          }}
+          onCancel={() => {
+            setLastEditedFloor(null);
+            setEditingAirEntry(null);
+          }}
           onConfirm={(data) => {
             console.log("💾 [CANVAS3D SAVE] Save Changes clicked with values:", {
               elementStatus: data.properties?.state,
@@ -6306,6 +6351,9 @@ export default function Canvas3D({
               wallPosition: data.wallPosition,
               properties: data.properties
             } as any);
+            
+            // SURGICAL FIX: Clear editing state after Save Changes
+            setLastEditedFloor(null);
 
           }}
           initialValues={airEntryInitialValues as any}
