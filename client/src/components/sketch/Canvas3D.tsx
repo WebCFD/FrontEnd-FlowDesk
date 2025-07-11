@@ -965,6 +965,46 @@ export default function Canvas3D({
   // SURGICAL SOLUTION: Prevent recreation of non-edited floors during real-time updates
   const storeFloors = useRoomStore((state) => state.floors);
   const [lastEditedFloor, setLastEditedFloor] = useState<string | null>(null);
+  
+  // State for editing air entries - must be declared early for finalFloors dependency
+  const [editingAirEntry, setEditingAirEntry] = useState<{
+    index: number;
+    entry: AirEntry;
+    wallContext?: {
+      wallId: string;
+      floorName: string;
+      wallStart: { x: number; y: number };
+      wallEnd: { x: number; y: number };
+      clickPosition: { x: number; y: number };
+      ceilingHeight: number;
+    };
+    floorName: string;
+    entryId: string;
+    entryType: string;
+  } | null>(null);
+
+  // SURGICAL FIX: finalFloors useMemo moved here early to be available for all dependencies
+  const finalFloors = useMemo(() => {
+    // Use store data if available, otherwise use props
+    const floorsToUse = Object.keys(storeFloors).length > 0 ? storeFloors : floors;
+    const migratedFloors = migrateFloorsData(floorsToUse);
+    
+    console.log("🎯 [SURGICAL FIX] finalFloors useMemo executing:", {
+      currentlyEditingFloor: editingAirEntry?.floorName || 'none',
+      lastEditedFloor,
+      availableFloors: Object.keys(migratedFloors),
+      willRecreateAllFloors: true,
+      triggerReason: "Store floors changed",
+      isInRealTimeMode: !!editingAirEntry
+    });
+    
+    return migratedFloors;
+  }, [
+    floors, 
+    // SURGICAL FIX: Only track store floors when NOT in real-time editing mode
+    editingAirEntry ? {} : storeFloors,
+    lastEditedFloor
+  ]);
 
   // Phase 2: Wall Association Helper Functions for AirEntry Dialog Unification
   const lineToUniqueId = (line: Line): string => {
@@ -1224,42 +1264,7 @@ export default function Canvas3D({
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<TrackballControls | null>(null);
   const needsRenderRef = useRef<boolean>(true);
-  // State for editing air entries - Phase 2: Extended with wall context
-  const [editingAirEntry, setEditingAirEntry] = useState<{
-    index: number;
-    entry: AirEntry;
-    wallContext?: {
-      wallId: string;
-      floorName: string;
-      wallStart: { x: number; y: number };
-      wallEnd: { x: number; y: number };
-      clickPosition: { x: number; y: number };
-      ceilingHeight: number;
-    };
-  } | null>(null);
-
-  // SURGICAL FIX: finalFloors useMemo moved here after editingAirEntry declaration
-  const finalFloors = useMemo(() => {
-    // Use store data if available, otherwise use props
-    const floorsToUse = Object.keys(storeFloors).length > 0 ? storeFloors : floors;
-    const migratedFloors = migrateFloorsData(floorsToUse);
-    
-    console.log("🎯 [SURGICAL FIX] finalFloors useMemo executing:", {
-      currentlyEditingFloor: editingAirEntry?.floorName || 'none',
-      lastEditedFloor,
-      availableFloors: Object.keys(migratedFloors),
-      willRecreateAllFloors: true,
-      triggerReason: "Store floors changed",
-      isInRealTimeMode: !!editingAirEntry
-    });
-    
-    return migratedFloors;
-  }, [
-    floors, 
-    // SURGICAL FIX: Only track store floors when NOT in real-time editing mode
-    editingAirEntry ? {} : storeFloors,
-    lastEditedFloor
-  ]);
+  // State declarations moved up earlier for dependency availability
 
   // PHASE 1: Function to find coordinate system elements for a specific AirEntry
   const findCoordinateSystemElements = useCallback((entryIndex: number, floorName: string) => {
