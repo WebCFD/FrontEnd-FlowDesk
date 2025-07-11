@@ -117,6 +117,9 @@ interface RoomState {
   // Reactive AirEntry synchronization system
   updateAirEntry: (floorName: string, index: number, entry: AirEntry) => void;
   subscribeToAirEntryChanges: (listener: AirEntryChangeListener) => () => void;
+  // Silent update functions for real-time changes (no global notifications)
+  updateAirEntryPropertiesSilent: (floorName: string, index: number, properties: SimulationProperties) => void;
+  updateAirEntrySilent: (floorName: string, index: number, entry: AirEntry) => void;
   // Centralized ID management system
   generateAirEntryId: (floorName: string, type: 'window' | 'door' | 'vent') => string;
   addAirEntryToFloor: (floorName: string, entry: Omit<AirEntry, 'id'>) => string;
@@ -461,6 +464,28 @@ export const useRoomStore = create<RoomState>()(
           return { floors: currentFloors };
         }),
 
+        // SILENT version for real-time updates (no notifications)
+        updateAirEntryPropertiesSilent: (floorName: string, index: number, properties: SimulationProperties) => set((state) => {
+          const currentFloors = { ...state.floors };
+          
+          if (currentFloors[floorName]?.airEntries && currentFloors[floorName].airEntries[index]) {
+            const updatedAirEntries = [...currentFloors[floorName].airEntries];
+            
+            // CRITICAL FIX: Create deep clone to prevent shared references
+            updatedAirEntries[index] = {
+              ...updatedAirEntries[index],
+              properties: JSON.parse(JSON.stringify(properties))
+            };
+            
+            currentFloors[floorName] = {
+              ...currentFloors[floorName],
+              airEntries: updatedAirEntries
+            };
+          }
+          
+          return { floors: currentFloors };
+        }),
+
         // Reactive AirEntry synchronization system
         updateAirEntry: (floorName: string, index: number, entry: AirEntry) => {
           set((state) => {
@@ -497,6 +522,29 @@ export const useRoomStore = create<RoomState>()(
               console.error('Error in AirEntry change listener:', error);
             }
           });
+        },
+
+        // SILENT version for real-time updates (no notifications)
+        updateAirEntrySilent: (floorName: string, index: number, entry: AirEntry) => {
+          set((state) => {
+            const updatedFloors = { ...state.floors };
+            
+            if (updatedFloors[floorName]?.airEntries && updatedFloors[floorName].airEntries[index]) {
+              const updatedAirEntries = [...updatedFloors[floorName].airEntries];
+              // CRITICAL FIX: Create deep clone to prevent shared references
+              updatedAirEntries[index] = JSON.parse(JSON.stringify(entry));
+              
+              updatedFloors[floorName] = {
+                ...updatedFloors[floorName],
+                airEntries: updatedAirEntries
+              };
+              
+              // NO NOTIFICATIONS - This is the key difference for real-time updates
+            }
+            
+            return { floors: updatedFloors };
+          });
+          // NO LISTENER NOTIFICATIONS - Prevents cross-floor contamination
         },
 
         subscribeToAirEntryChanges: (listener: AirEntryChangeListener) => {
