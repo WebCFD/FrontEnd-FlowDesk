@@ -5196,19 +5196,18 @@ export default function Canvas3D({
   
   // 🚨 CRITICAL DIAGNOSTIC: Scene Rebuild Detection
   useEffect(() => {
+    // SOLUCIÓN QUIRÚRGICA: Bloquear durante edición
+    if (editingAirEntry) {
+      console.log("🛡️ SCENE REBUILD BLOCKED - Currently editing, skipping rebuild");
+      return;
+    }
+    
     console.log("🔥 SCENE REBUILD TRIGGERED:", {
       editingAirEntry: !!editingAirEntry,
-      shouldBeIsolated: !!editingAirEntry,
       finalFloorsId: JSON.stringify(Object.keys(finalFloors)),
       thisWillRecreateEverything: true,
       triggerCause: "finalFloors, currentFloor, ceilingHeight, or floorDeckThickness changed"
     });
-    
-    // 🚨 CRITICAL: If editing, isolation is BROKEN!
-    if (editingAirEntry) {
-      console.error("🚨 ISOLATION BROKEN! Scene rebuilding during editing!");
-      console.error("🚨 This will cause cross-window movement glitch!");
-    }
     
     // Original scene rebuild logging for comparison
     console.log("🔍 [GLITCH ROOT CAUSE] Scene rebuild details:", {
