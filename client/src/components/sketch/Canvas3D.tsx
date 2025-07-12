@@ -1002,8 +1002,8 @@ export default function Canvas3D({
     return migratedFloors;
   }, [
     floors, 
-    // SURGICAL CHANGE: Stable object instead of new {} during editing
-    editingAirEntry ? EDITING_ISOLATION_TOKEN : storeFloors,
+    // CRITICAL FIX: Remove storeFloors completely during editing to prevent store updates from breaking isolation
+    ...(editingAirEntry ? [EDITING_ISOLATION_TOKEN] : [storeFloors]),
     lastEditedFloor
   ]);
 
