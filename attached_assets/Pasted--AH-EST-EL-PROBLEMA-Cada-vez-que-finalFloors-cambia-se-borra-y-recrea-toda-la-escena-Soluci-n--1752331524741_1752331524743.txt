@@ -1,0 +1,63 @@
+¡AHÍ ESTÁ EL PROBLEMA! Cada vez que finalFloors cambia, se borra y recrea toda la escena.
+Solución: Debugging Paso a Paso
+Paso 1: Verificar si el aislamiento funciona
+Añade este log antes del useEffect problemático:
+javascriptuseEffect(() => {
+  console.log("🔥 SCENE REBUILD TRIGGERED:", {
+    editingAirEntry: !!editingAirEntry,
+    shouldBeIsolated: !!editingAirEntry,
+    finalFloorsId: JSON.stringify(Object.keys(finalFloors)),
+    thisWillRecreateEverything: true
+  });
+  
+  // Si estás editando, NO deberías ver este log
+  if (editingAirEntry) {
+    console.error("🚨 ISOLATION BROKEN! Scene rebuilding during editing!");
+  }
+  
+  // ... resto del useEffect
+}, [finalFloors, currentFloor, ceilingHeight, floorDeckThickness]);
+Paso 2: Verificar que el token funciona
+javascriptconsole.log("🔍 DEPENDENCY CHECK:", {
+  editingAirEntry: !!editingAirEntry,
+  usingToken: editingAirEntry ? 'EDITING_ISOLATION_TOKEN' : 'storeFloors',
+  tokenId: EDITING_ISOLATION_TOKEN,
+  storeFloorsId: Object.keys(storeFloors).join(',')
+});
+Paso 3: Si el aislamiento está roto, verificar estas causas
+A) lastEditedFloor cambia durante edición:
+javascriptuseEffect(() => {
+  console.log("🔍 lastEditedFloor changed:", lastEditedFloor);
+}, [lastEditedFloor]);
+B) floors prop cambia desde el padre:
+javascriptuseEffect(() => {
+  console.log("🔍 floors prop changed:", Object.keys(floors));
+}, [floors]);
+C) storeFloors cambia y rompe el token:
+javascriptuseEffect(() => {
+  console.log("🔍 storeFloors changed:", Object.keys(storeFloors));
+}, [storeFloors]);
+Mi Hipótesis Principal
+Creo que el problema está en una de estas líneas:
+javascript// Línea ~1410 - esto actualiza el store durante edición
+onUpdateAirEntry(editingAirEntry.floorName, editingAirEntry.index, updatedEntry);
+
+// O línea ~1360 - esto también
+onDimensionsUpdate(editingAirEntry.floorName, editingAirEntry.index, newDimensions);
+Estas llamadas cambian el store durante la edición, lo que puede romper el aislamiento.
+Solución Temporal para Probar
+Comenta temporalmente estas líneas para ver si para el movimiento global:
+javascript// Línea ~1410
+// onUpdateAirEntry(editingAirEntry.floorName, editingAirEntry.index, updatedEntry);
+
+// Línea ~1360  
+// onDimensionsUpdate(editingAirEntry.floorName, editingAirEntry.index, newDimensions);
+Si esto para el movimiento global, entonces el problema es que las callbacks están rompiendo el aislamiento.
+¿Qué logs ves?
+Añade los logs de diagnóstico y dime:
+
+¿Se dispara "SCENE REBUILD TRIGGERED" durante la edición?
+¿Ves "ISOLATION BROKEN!" en la consola?
+¿Qué valores tienen lastEditedFloor y storeFloors durante edición?
+
+Con esta información sabré exactamente dónde está el problema.

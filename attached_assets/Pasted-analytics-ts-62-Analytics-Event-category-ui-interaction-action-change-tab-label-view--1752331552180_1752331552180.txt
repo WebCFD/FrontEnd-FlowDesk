@@ -1,0 +1,108 @@
+analytics.ts:62 📊 Analytics Event: {category: 'ui_interaction', action: 'change_tab', label: 'view_2d_editor', value: undefined, status: 'sent'}
+wizard-design:1 [.WebGL-0x344c044ad400] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x344c044ad400] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x344c044ad400] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x344c044ad400] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x344c044ad400] GL_INVALID_OPERATION: Texture is immutable.
+analytics.ts:62 📊 Analytics Event: {category: 'ui_interaction', action: 'change_tab', label: 'view_3d_preview', value: undefined, status: 'sent'}
+Canvas3D.tsx:992 🔍 DEPENDENCY CHECK: {editingAirEntry: false, usingToken: 'storeFloors', tokenId: {…}, storeFloorsId: 'ground,first', lastEditedFloor: null}
+Canvas3D.tsx:1012 🔍 lastEditedFloor changed: null
+Canvas3D.tsx:1016 🔍 floors prop changed: (2) ['ground', 'first']
+Canvas3D.tsx:1020 🔍 storeFloors changed: (2) ['ground', 'first']
+Canvas3D.tsx:2514 🔍 [GLITCH INVESTIGATION] createFloorObjects called for floor: {floorName: 'Ground Floor', isCurrentFloor: false, airEntriesCount: 1, airEntriesData: Array(1), timestamp: 1752331503538}
+Canvas3D.tsx:2514 🔍 [GLITCH INVESTIGATION] createFloorObjects called for floor: {floorName: 'first', isCurrentFloor: true, airEntriesCount: 1, airEntriesData: Array(1), timestamp: 1752331503541}
+Canvas3D.tsx:5183 🔥 SCENE REBUILD TRIGGERED: {editingAirEntry: false, shouldBeIsolated: false, finalFloorsId: '["ground","first"]', thisWillRecreateEverything: true, triggerCause: 'finalFloors, currentFloor, ceilingHeight, or floorDeckThickness changed'}
+Canvas3D.tsx:5198 🔍 [GLITCH ROOT CAUSE] Scene rebuild details: {currentFloor: 'first', finalFloorsKeys: Array(2), totalAirEntries: 2, allAirEntryPositions: {…}, timestamp: 1752331503544}
+chunk-WERSD76P.js?v=cfa7cc5f:18625 [Violation] 'click' handler took 211ms
+Canvas3D.tsx:4674 🔍 [CROSS-FLOOR DEBUG] Available AirEntry meshes in scene: (2) [{…}, {…}]
+Canvas3D.tsx:4683 🔍 [CROSS-FLOOR DEBUG] Current floor selection: first
+Canvas3D.tsx:4693 🔍 [CROSS-FLOOR DEBUG] Detected mesh data: {detectedType: 'window', detectedEntryIndex: 0, detectedFloorName: 'first', detectedAirEntryId: 'window_1F_1', detectedPosition: {…}, …}
+Canvas3D.tsx:4718 🎯 [FLOOR KEY MAPPING] SUCCESS: {originalMeshFloor: 'first', mappedToStoreKey: 'first', foundInStore: true, availableAirEntries: 1, storeKeys: Array(2)}
+Canvas3D.tsx:4727 🎯 [CROSS-FLOOR FIX] Correct floor lookup with mapping: {detectedMeshFloor: 'first', mappedFloorKey: 'first', lookingInCorrectFloor: 'first', availableAirEntries: 1, willSearchForIndex: 0, …}
+Canvas3D.tsx:4738 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4751 ✅ [CROSS-FLOOR FIX] CORRECT MATCH DETECTED: {detectedMeshFrom: 'first', detectedMeshIndex: 0, detectedMeshId: 'window_1F_1', searchingInCorrectFloor: 'first', foundCorrectEntryAtIndex: 0, …}
+Canvas3D.tsx:4765 Double-click found entry using stored entryIndex: 0
+Canvas3D.tsx:4810 🔍 [ID DEBUG] DIALOG WILL SHOW THESE IDs: {mergedEntryId: 'window_1F_1', baseEntryId: 'window_1F_1', meshAirEntryId: 'window_1F_1', expectedFormat: "Should be like 'window_0F_1'", actualId: 'window_1F_1', …}
+Canvas3D.tsx:4820 ✅ [CROSS-FLOOR FIX] DIALOG OPENING WITH CORRECT MAPPED DATA: {dialogWillShow: {…}, userClickedOn: {…}, mapping: {…}, explanation: "Dialog shows data from mapped floor 'first' matching clicked mesh from 'first'"}
+Canvas3D.tsx:4839 🧪 [DIAGNOSIS] setEditingAirEntry called with: {index: 0, floorName: 'first', entryId: 'window_1F_1', entryType: 'window', entryPosition: {…}, …}
+Canvas3D.tsx:992 🔍 DEPENDENCY CHECK: {editingAirEntry: true, usingToken: 'EDITING_ISOLATION_TOKEN', tokenId: {…}, storeFloorsId: 'ground,first', lastEditedFloor: 'first'}
+Canvas3D.tsx:1012 🔍 lastEditedFloor changed: first
+Canvas3D.tsx:2514 🔍 [GLITCH INVESTIGATION] createFloorObjects called for floor: {floorName: 'Ground Floor', isCurrentFloor: false, airEntriesCount: 1, airEntriesData: Array(1), timestamp: 1752331505914}
+Canvas3D.tsx:2514 🔍 [GLITCH INVESTIGATION] createFloorObjects called for floor: {floorName: 'first', isCurrentFloor: true, airEntriesCount: 1, airEntriesData: Array(1), timestamp: 1752331505919}
+Canvas3D.tsx:5168 🎯 [SURGICAL FIX] Real-time update mode detected: {editingFloor: 'first', lastEditedFloor: 'first', shouldSkipFullRebuild: true, willUseDirectMeshUpdates: true}
+Canvas3D.tsx:5183 🔥 SCENE REBUILD TRIGGERED: {editingAirEntry: true, shouldBeIsolated: true, finalFloorsId: '["ground","first"]', thisWillRecreateEverything: true, triggerCause: 'finalFloors, currentFloor, ceilingHeight, or floorDeckThickness changed'}
+Canvas3D.tsx:5193 🚨 ISOLATION BROKEN! Scene rebuilding during editing!
+(anonymous) @ Canvas3D.tsx:5193
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19416
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+(anonymous) @ chunk-WERSD76P.js?v=cfa7cc5f:18627
+Canvas3D.tsx:5194 🚨 This will cause cross-window movement glitch!
+(anonymous) @ Canvas3D.tsx:5194
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19416
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+(anonymous) @ chunk-WERSD76P.js?v=cfa7cc5f:18627
+Canvas3D.tsx:5198 🔍 [GLITCH ROOT CAUSE] Scene rebuild details: {currentFloor: 'first', finalFloorsKeys: Array(2), totalAirEntries: 2, allAirEntryPositions: {…}, timestamp: 1752331505924}
+Canvas3D.tsx:1712 🧪 [DIAGNOSIS] onDimensionsUpdate callback executing: {callbackFloorName: 'first', callbackIndex: 0, newDimensions: {…}, editingAirEntryState: {…}, timestamp: 1752331507970}
+Canvas3D.tsx:5168 🎯 [SURGICAL FIX] Real-time update mode detected: {editingFloor: 'first', lastEditedFloor: 'first', shouldSkipFullRebuild: true, willUseDirectMeshUpdates: true}
+Canvas3D.tsx:5183 🔥 SCENE REBUILD TRIGGERED: {editingAirEntry: true, shouldBeIsolated: true, finalFloorsId: '["ground","first"]', thisWillRecreateEverything: true, triggerCause: 'finalFloors, currentFloor, ceilingHeight, or floorDeckThickness changed'}
+Canvas3D.tsx:5193 🚨 ISOLATION BROKEN! Scene rebuilding during editing!
+(anonymous) @ Canvas3D.tsx:5193
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19416
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+flushSync @ chunk-WERSD76P.js?v=cfa7cc5f:18959
+finishEventHandler @ chunk-WERSD76P.js?v=cfa7cc5f:3569
+batchedUpdates @ chunk-WERSD76P.js?v=cfa7cc5f:3582
+dispatchEventForPluginEventSystem @ chunk-WERSD76P.js?v=cfa7cc5f:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-WERSD76P.js?v=cfa7cc5f:5478
+dispatchEvent @ chunk-WERSD76P.js?v=cfa7cc5f:5472
+dispatchDiscreteEvent @ chunk-WERSD76P.js?v=cfa7cc5f:5449
+Canvas3D.tsx:5194 🚨 This will cause cross-window movement glitch!
+(anonymous) @ Canvas3D.tsx:5194
+commitHookEffectListMount @ chunk-WERSD76P.js?v=cfa7cc5f:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=cfa7cc5f:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=cfa7cc5f:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=cfa7cc5f:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=cfa7cc5f:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=cfa7cc5f:19447
+commitRootImpl @ chunk-WERSD76P.js?v=cfa7cc5f:19416
+commitRoot @ chunk-WERSD76P.js?v=cfa7cc5f:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=cfa7cc5f:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=cfa7cc5f:9119
+flushSync @ chunk-WERSD76P.js?v=cfa7cc5f:18959
+finishEventHandler @ chunk-WERSD76P.js?v=cfa7cc5f:3569
+batchedUpdates @ chunk-WERSD76P.js?v=cfa7cc5f:3582
+dispatchEventForPluginEventSystem @ chunk-WERSD76P.js?v=cfa7cc5f:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-WERSD76P.js?v=cfa7cc5f:5478
+dispatchEvent @ chunk-WERSD76P.js?v=cfa7cc5f:5472
+dispatchDiscreteEvent @ chunk-WERSD76P.js?v=cfa7cc5f:5449
+Canvas3D.tsx:5198 🔍 [GLITCH ROOT CAUSE] Scene rebuild details: {currentFloor: 'first', finalFloorsKeys: Array(2), totalAirEntries: 2, allAirEntryPositions: {…}, timestamp: 1752331507979}
+wizard-design.tsx:1237 🧪 [DIAGNOSIS WIZARD] handleDimensionsUpdateFrom3D called with: {receivedFloorName: 'first', receivedIndex: 0, receivedDimensions: {…}, currentFloorInWizard: 'first', storeFloorExists: true, …}
+Canvas3D.tsx:1020 🔍 storeFloors changed: (2) ['ground', 'first']
