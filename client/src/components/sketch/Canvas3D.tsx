@@ -984,9 +984,6 @@ export default function Canvas3D({
   } | null>(null);
 
   // SURGICAL FIX: finalFloors useMemo moved here early to be available for all dependencies
-  // Stable empty object to prevent infinite loop from dynamic object creation
-  const STABLE_EMPTY_FLOORS = useMemo(() => ({}), []);
-  
   const finalFloors = useMemo(() => {
     // Use store data if available, otherwise use props
     const floorsToUse = Object.keys(storeFloors).length > 0 ? storeFloors : floors;
@@ -998,8 +995,7 @@ export default function Canvas3D({
   }, [
     floors, 
     // SURGICAL FIX: Only track store floors when NOT in real-time editing mode
-    // Fixed infinite loop: use stable reference instead of dynamic {} object creation
-    editingAirEntry ? STABLE_EMPTY_FLOORS : storeFloors,
+    editingAirEntry ? {} : storeFloors,
     lastEditedFloor
   ]);
 
