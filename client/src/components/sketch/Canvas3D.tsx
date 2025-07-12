@@ -994,8 +994,8 @@ export default function Canvas3D({
     return migratedFloors;
   }, [
     floors, 
-    // SURGICAL FIX: Only track store floors when NOT in real-time editing mode
-    editingAirEntry ? {} : storeFloors,
+    // FIXED: Create stable hash of store floors to prevent infinite loops
+    editingAirEntry ? "editing" : JSON.stringify(storeFloors),
     lastEditedFloor
   ]);
 
@@ -1772,57 +1772,13 @@ export default function Canvas3D({
       });
     }
     
-    // 🧪 DIAGNOSIS LOG: Check editingAirEntry values when position callback executes
-    console.log("🧪 [DIAGNOSIS] onUpdateAirEntry callback executing:", {
-      callbackFloorName: editingAirEntry.floorName,
-      callbackIndex: editingAirEntry.index,
-      updatedEntry: {
-        id: updatedEntry.id,
-        type: updatedEntry.type,
-        position: updatedEntry.position
-      },
-      editingAirEntryState: {
-        floorName: editingAirEntry.floorName,
-        index: editingAirEntry.index,
-        entryId: editingAirEntry.entry.id,
-        entryType: editingAirEntry.entry.type
-      },
-      timestamp: Date.now()
-    });
+    // Debug log removed for performance optimization
     
     // Debounce parent callback to prevent excessive updates
     updateTimeoutRef.current = setTimeout(() => {
       if (onUpdateAirEntry && editingAirEntry) {
-        console.log("🔍 [CRITICAL GLITCH POINT] About to call onUpdateAirEntry - this triggers store update which causes scene rebuild:", {
-          aboutToUpdateFloor: editingAirEntry.floorName,
-          aboutToUpdateIndex: editingAirEntry.index,
-          aboutToUpdatePosition: updatedEntry.position,
-          currentVisibleFloor: currentFloor,
-          isUpdatingSameFloorAsVisible: editingAirEntry.floorName === currentFloor,
-          
-          // CRITICAL: Before calling onUpdateAirEntry, what meshes exist in scene?
-          allAirEntryMeshesInScene: sceneRef.current ? (() => {
-            const meshes = [] as any[];
-            sceneRef.current?.traverse((child) => {
-              if (child.userData?.type === 'airEntry') {
-                meshes.push({
-                  id: child.userData.id,
-                  entryIndex: child.userData.entryIndex,
-                  floorName: child.userData.floorName,
-                  currentPosition: child.position.clone(),
-                  userData: child.userData
-                });
-              }
-            });
-            return meshes;
-          })() : [],
-          
-          timestamp: Date.now()
-        });
-        
+        // Performance-optimized callback without debug logging
         onUpdateAirEntry(editingAirEntry.floorName, editingAirEntry.index, updatedEntry);
-        
-        console.log("🔍 [CRITICAL GLITCH POINT] onUpdateAirEntry call completed - scene will now rebuild");
       }
       
       // OPTIMIZATION: No callback needed after position update - textures preserved automatically
@@ -2490,19 +2446,7 @@ export default function Canvas3D({
     floorCeilingHeight: number,
     floorDeckThickness: number,
   ) => {
-    console.log("🔍 [GLITCH INVESTIGATION] createFloorObjects called for floor:", {
-      floorName: floorData.name,
-      isCurrentFloor,
-      airEntriesCount: floorData.airEntries?.length || 0,
-      airEntriesData: (floorData.airEntries || []).map((entry, index) => ({
-        index,
-        id: entry.id,
-        type: entry.type,
-        position: entry.position,
-        isBeingEdited: editingAirEntry?.floorName === floorData.name && editingAirEntry?.index === index
-      })),
-      timestamp: Date.now()
-    });
+    // Debug log removed for performance optimization
     
     const objects: THREE.Object3D[] = [];
     const perimeterPoints = createRoomPerimeter(floorData.lines);
@@ -5155,29 +5099,7 @@ export default function Canvas3D({
     }
   }, [editingAirEntry, lastEditedFloor]);
   
-  // 🧪 DETAILED CROSS-FLOOR GLITCH INVESTIGATION
-  useEffect(() => {
-    console.log("🔍 [GLITCH ROOT CAUSE] Scene rebuild triggered:", {
-      triggerCause: "finalFloors, currentFloor, ceilingHeight, or floorDeckThickness changed",
-      currentFloor: currentFloor,
-      finalFloorsKeys: Object.keys(finalFloors),
-      totalAirEntries: Object.values(finalFloors).reduce((total, floor) => total + (floor.airEntries?.length || 0), 0),
-      
-      // CRITICAL: Log all AirEntry positions across ALL floors during rebuild
-      allAirEntryPositions: Object.entries(finalFloors).reduce((acc, [floorName, floorData]) => {
-        acc[floorName] = (floorData.airEntries || []).map((entry, index) => ({
-          index,
-          id: entry.id,
-          type: entry.type,
-          position: entry.position,
-          currentlyBeingEdited: editingAirEntry?.floorName === floorName && editingAirEntry?.index === index
-        }));
-        return acc;
-      }, {} as any),
-      
-      timestamp: Date.now()
-    });
-  }, [finalFloors, currentFloor, ceilingHeight, floorDeckThickness, editingAirEntry]);
+  // Debug log removed to prevent infinite loop during dialog opening
 
   // Separate useEffect for context updates to avoid hidden dependencies in scene rebuild
   useEffect(() => {
