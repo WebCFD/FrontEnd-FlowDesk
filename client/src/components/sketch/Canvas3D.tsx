@@ -1706,7 +1706,7 @@ export default function Canvas3D({
         if (object instanceof THREE.Mesh && 
             object.userData?.type === editingAirEntry.entry.type &&
             object.userData?.entryIndex === editingAirEntry.index &&
-            object.userData?.floorName === editingAirEntry.floorName) { // ← AÑADIR FILTRO DE FLOOR
+            doFloorsMatch(object.userData?.floorName || '', editingAirEntry.floorName)) { // ← USAR doFloorsMatch
           
           console.log("🎯 EXACT MATCH FOUND - Only this mesh should be modified:", {
             type: object.userData.type,
@@ -1841,7 +1841,7 @@ export default function Canvas3D({
         if (object instanceof THREE.Mesh && 
             object.userData?.type === editingAirEntry.entry.type &&
             object.userData?.entryIndex === editingAirEntry.index &&
-            object.userData?.floorName === editingAirEntry.floorName) { // ← AÑADIR FILTRO DE FLOOR
+            doFloorsMatch(object.userData?.floorName || '', editingAirEntry.floorName)) { // ← USAR doFloorsMatch
           
           console.log("🎯 POSITION UPDATE - EXACT MATCH FOUND:", {
             type: object.userData.type,
