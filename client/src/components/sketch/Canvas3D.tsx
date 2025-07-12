@@ -988,6 +988,15 @@ export default function Canvas3D({
 
   // SURGICAL SOLUTION: Original logic maintained with stable isolation token
   const finalFloors = useMemo(() => {
+    // DIAGNOSTIC: Track dependency changes
+    console.log("🔍 DEPENDENCY CHECK:", {
+      editingAirEntry: !!editingAirEntry,
+      usingToken: editingAirEntry ? 'EDITING_ISOLATION_TOKEN' : 'storeFloors',
+      tokenId: EDITING_ISOLATION_TOKEN,
+      storeFloorsId: Object.keys(storeFloors).join(','),
+      lastEditedFloor
+    });
+    
     const floorsToUse = Object.keys(storeFloors).length > 0 ? storeFloors : floors;
     const migratedFloors = migrateFloorsData(floorsToUse);
     return migratedFloors;
@@ -997,6 +1006,19 @@ export default function Canvas3D({
     editingAirEntry ? EDITING_ISOLATION_TOKEN : storeFloors,
     lastEditedFloor
   ]);
+
+  // DIAGNOSTIC: Track variable changes that might break isolation
+  useEffect(() => {
+    console.log("🔍 lastEditedFloor changed:", lastEditedFloor);
+  }, [lastEditedFloor]);
+
+  useEffect(() => {
+    console.log("🔍 floors prop changed:", Object.keys(floors));
+  }, [floors]);
+
+  useEffect(() => {
+    console.log("🔍 storeFloors changed:", Object.keys(storeFloors));
+  }, [storeFloors]);
 
   // Phase 2: Wall Association Helper Functions for AirEntry Dialog Unification
   const lineToUniqueId = (line: Line): string => {
@@ -5156,15 +5178,27 @@ export default function Canvas3D({
     }
   }, [editingAirEntry, lastEditedFloor]);
   
-  // 🧪 DETAILED CROSS-FLOOR GLITCH INVESTIGATION
+  // 🚨 CRITICAL DIAGNOSTIC: Scene Rebuild Detection
   useEffect(() => {
-    console.log("🔍 [GLITCH ROOT CAUSE] Scene rebuild triggered:", {
-      triggerCause: "finalFloors, currentFloor, ceilingHeight, or floorDeckThickness changed",
+    console.log("🔥 SCENE REBUILD TRIGGERED:", {
+      editingAirEntry: !!editingAirEntry,
+      shouldBeIsolated: !!editingAirEntry,
+      finalFloorsId: JSON.stringify(Object.keys(finalFloors)),
+      thisWillRecreateEverything: true,
+      triggerCause: "finalFloors, currentFloor, ceilingHeight, or floorDeckThickness changed"
+    });
+    
+    // 🚨 CRITICAL: If editing, isolation is BROKEN!
+    if (editingAirEntry) {
+      console.error("🚨 ISOLATION BROKEN! Scene rebuilding during editing!");
+      console.error("🚨 This will cause cross-window movement glitch!");
+    }
+    
+    // Original scene rebuild logging for comparison
+    console.log("🔍 [GLITCH ROOT CAUSE] Scene rebuild details:", {
       currentFloor: currentFloor,
       finalFloorsKeys: Object.keys(finalFloors),
       totalAirEntries: Object.values(finalFloors).reduce((total, floor) => total + (floor.airEntries?.length || 0), 0),
-      
-      // CRITICAL: Log all AirEntry positions across ALL floors during rebuild
       allAirEntryPositions: Object.entries(finalFloors).reduce((acc, [floorName, floorData]) => {
         acc[floorName] = (floorData.airEntries || []).map((entry, index) => ({
           index,
@@ -5175,7 +5209,6 @@ export default function Canvas3D({
         }));
         return acc;
       }, {} as any),
-      
       timestamp: Date.now()
     });
   }, [finalFloors, currentFloor, ceilingHeight, floorDeckThickness, editingAirEntry]);
