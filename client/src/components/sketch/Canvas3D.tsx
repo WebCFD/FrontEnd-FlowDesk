@@ -185,9 +185,6 @@ const RAYCASTER_CONFIG = {
   }
 };
 
-// STABLE EMPTY OBJECT: Prevents infinite loop in finalFloors useMemo dependency
-const STABLE_EMPTY_OBJECT = {};
-
 // ========================================
 // CORE UTILITY FUNCTIONS (Independent of component state)
 // ========================================
@@ -997,8 +994,8 @@ export default function Canvas3D({
     return migratedFloors;
   }, [
     floors, 
-    // SURGICAL FIX: Only track store floors when NOT in real-time editing mode (using stable reference to prevent infinite loop)
-    editingAirEntry ? STABLE_EMPTY_OBJECT : storeFloors,
+    // SURGICAL FIX: Only track store floors when NOT in real-time editing mode
+    editingAirEntry ? {} : storeFloors,
     lastEditedFloor
   ]);
 
