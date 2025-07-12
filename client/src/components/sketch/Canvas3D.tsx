@@ -4846,7 +4846,7 @@ export default function Canvas3D({
             });
             
             // SURGICAL FIX: Track which floor is being edited
-            setLastEditedFloor(correctFloorKey);
+            // setLastEditedFloor(correctFloorKey); // ← TEMPORAL TEST: Comentado para probar si esto causa el problema de aislamiento
             
             // SURGICAL SOLUTION: Start editing (enter isolation mode)
             setEditingAirEntry({
