@@ -966,6 +966,10 @@ export default function Canvas3D({
   const storeFloors = useRoomStore((state) => state.floors);
   const [lastEditedFloor, setLastEditedFloor] = useState<string | null>(null);
   
+  // ISOLATION COUNTER PATTERN: Controlled rebuild timing with stable dependencies
+  const [isolationCounter, setIsolationCounter] = useState(0);
+  const finalFloorsRef = useRef(null);
+  
   // State for editing air entries - must be declared early for finalFloors dependency
   const [editingAirEntry, setEditingAirEntry] = useState<{
     index: number;
@@ -983,20 +987,22 @@ export default function Canvas3D({
     entryType: string;
   } | null>(null);
 
-  // SURGICAL FIX: finalFloors useMemo moved here early to be available for all dependencies
+  // ISOLATION COUNTER PATTERN: Controlled rebuild with stable dependencies
   const finalFloors = useMemo(() => {
-    // Use store data if available, otherwise use props
+    // During editing: use frozen state (previous stable floors)
+    if (editingAirEntry) {
+      return finalFloorsRef.current || migrateFloorsData(floors);
+    }
+    
+    // Not editing: use current store data and cache it
     const floorsToUse = Object.keys(storeFloors).length > 0 ? storeFloors : floors;
     const migratedFloors = migrateFloorsData(floorsToUse);
-    
-    // SURGICAL FIX: Intelligent dependency tracking prevents unnecessary scene rebuilds during real-time editing
-    
+    finalFloorsRef.current = migratedFloors; // Cache for isolation
     return migratedFloors;
   }, [
-    floors, 
-    // SURGICAL FIX: Only track store floors when NOT in real-time editing mode
-    editingAirEntry ? {} : storeFloors,
-    lastEditedFloor
+    floors,
+    editingAirEntry ? 'ISOLATED' : JSON.stringify(storeFloors), // Stable string during isolation
+    isolationCounter // Only changes when forcing rebuild
   ]);
 
   // Phase 2: Wall Association Helper Functions for AirEntry Dialog Unification
@@ -2254,9 +2260,10 @@ export default function Canvas3D({
     // STEP 3: Update store with awareness that mesh was already updated - Use correct floor name
     onUpdateAirEntry(editingAirEntry.floorName, index, updatedEntry);
     
-    // SURGICAL FIX: Clear editing state to allow scene rebuilds after Save Changes
+    // ISOLATION COUNTER PATTERN: Stop editing (exit isolation, force complete rebuild)
     setLastEditedFloor(null);
     setEditingAirEntry(null);
+    setIsolationCounter(prev => prev + 1); // Force complete scene rebuild
   };
 
   // New function to create stair mesh
@@ -4827,12 +4834,14 @@ export default function Canvas3D({
             // SURGICAL FIX: Track which floor is being edited
             setLastEditedFloor(correctFloorKey);
             
+            // ISOLATION COUNTER PATTERN: Start editing (enter isolation mode)
             setEditingAirEntry({
               index: foundIndex,
               entry: mergedEntry,
               wallContext,
               floorName: correctFloorKey  // 🎯 CROSS-FLOOR BUG FIX: Use correct mapped floor key for callback compatibility
             });
+            // Don't increment isolationCounter - scene stays frozen during editing
             
 
           }
@@ -6323,12 +6332,16 @@ export default function Canvas3D({
           type={editingAirEntry.entry.type}
           isOpen={true}
           onClose={() => {
+            // ISOLATION COUNTER PATTERN: Stop editing (exit isolation, force rebuild)
             setLastEditedFloor(null);
             setEditingAirEntry(null);
+            setIsolationCounter(prev => prev + 1); // Force complete scene rebuild
           }}
           onCancel={() => {
+            // ISOLATION COUNTER PATTERN: Stop editing (exit isolation, force rebuild)
             setLastEditedFloor(null);
             setEditingAirEntry(null);
+            setIsolationCounter(prev => prev + 1); // Force complete scene rebuild
           }}
           onConfirm={(data) => {
             console.log("💾 [CANVAS3D SAVE] Save Changes clicked with values:", {
