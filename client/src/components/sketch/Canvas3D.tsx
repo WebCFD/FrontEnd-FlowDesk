@@ -986,24 +986,40 @@ export default function Canvas3D({
     entryType: string;
   } | null>(null);
 
-  // SURGICAL SOLUTION: Original logic maintained with stable isolation token
+  // 🧊 SNAPSHOT ISOLATION SOLUTION: Capture state before editingAirEntry changes
+  const frozenFloorsRef = useRef(null);
+
   const finalFloors = useMemo(() => {
     // DIAGNOSTIC: Track dependency changes
     console.log("🔍 DEPENDENCY CHECK:", {
       editingAirEntry: !!editingAirEntry,
-      usingToken: editingAirEntry ? 'EDITING_ISOLATION_TOKEN' : 'storeFloors',
-      tokenId: EDITING_ISOLATION_TOKEN,
+      hasSnapshot: !!frozenFloorsRef.current,
+      willUseSnapshot: !!(editingAirEntry && frozenFloorsRef.current),
       storeFloorsId: Object.keys(storeFloors).join(','),
       lastEditedFloor
     });
     
+    // Si estamos editando, usar snapshot previo (si existe)
+    if (editingAirEntry && frozenFloorsRef.current) {
+      console.log("🧊 USANDO SNAPSHOT CONGELADO - NO REBUILD");
+      return frozenFloorsRef.current;
+    }
+    
+    // Si no estamos editando, procesar normalmente y guardar snapshot
     const floorsToUse = Object.keys(storeFloors).length > 0 ? storeFloors : floors;
     const migratedFloors = migrateFloorsData(floorsToUse);
+    
+    // Guardar snapshot para próxima edición
+    if (!editingAirEntry) {
+      frozenFloorsRef.current = migratedFloors;
+      console.log("💾 SNAPSHOT GUARDADO PARA PRÓXIMA EDICIÓN");
+    }
+    
     return migratedFloors;
   }, [
-    floors, 
-    // CRITICAL FIX: Remove storeFloors completely during editing to prevent store updates from breaking isolation
-    ...(editingAirEntry ? [EDITING_ISOLATION_TOKEN] : [storeFloors]),
+    floors,
+    Boolean(editingAirEntry), // true/false estable
+    editingAirEntry ? 'FROZEN' : storeFloors,
     lastEditedFloor
   ]);
 
@@ -1724,7 +1740,7 @@ export default function Canvas3D({
     
     // Debounced callback to parent for store updates
     updateTimeoutRef.current = setTimeout(() => {
-      // onDimensionsUpdate(editingAirEntry.floorName, editingAirEntry.index, newDimensions); // ← TEMPORAL TEST: Comentado para probar aislamiento
+      onDimensionsUpdate(editingAirEntry.floorName, editingAirEntry.index, newDimensions);
     }, 100);
   }, [editingAirEntry, onDimensionsUpdate, editingAirEntry?.floorName]);
 
@@ -1841,7 +1857,7 @@ export default function Canvas3D({
           timestamp: Date.now()
         });
         
-        // onUpdateAirEntry(editingAirEntry.floorName, editingAirEntry.index, updatedEntry); // ← TEMPORAL TEST: Comentado para probar aislamiento
+        onUpdateAirEntry(editingAirEntry.floorName, editingAirEntry.index, updatedEntry);
         
         console.log("🔍 [CRITICAL GLITCH POINT] onUpdateAirEntry call completed - scene will now rebuild");
       }
@@ -1905,7 +1921,7 @@ export default function Canvas3D({
     // STEP 3: Debounced callback to parent for store updates
     updateTimeoutRef.current = setTimeout(() => {
       if (onPropertiesUpdate && editingAirEntry) {
-        // onPropertiesUpdate(editingAirEntry.floorName, editingAirEntry.index, newProperties); // ← TEMPORAL TEST: Comentado para probar aislamiento
+        onPropertiesUpdate(editingAirEntry.floorName, editingAirEntry.index, newProperties);
       }
     }, 100);
   }, [editingAirEntry, onPropertiesUpdate, editingAirEntry?.floorName]);
@@ -2273,7 +2289,7 @@ export default function Canvas3D({
     }
 
     // STEP 3: Update store with awareness that mesh was already updated - Use correct floor name
-    // onUpdateAirEntry(editingAirEntry.floorName, index, updatedEntry); // ← TEMPORAL TEST: Comentado para probar aislamiento
+    onUpdateAirEntry(editingAirEntry.floorName, index, updatedEntry);
     
     // SURGICAL SOLUTION: Stop editing (exit isolation, trigger synchronization)
     setLastEditedFloor(null);
@@ -4846,7 +4862,7 @@ export default function Canvas3D({
             });
             
             // SURGICAL FIX: Track which floor is being edited
-            // setLastEditedFloor(correctFloorKey); // ← TEMPORAL TEST: Comentado para probar si esto causa el problema de aislamiento
+            setLastEditedFloor(correctFloorKey);
             
             // SURGICAL SOLUTION: Start editing (enter isolation mode)
             setEditingAirEntry({
