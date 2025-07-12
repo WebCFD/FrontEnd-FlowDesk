@@ -1724,7 +1724,7 @@ export default function Canvas3D({
     
     // Debounced callback to parent for store updates
     updateTimeoutRef.current = setTimeout(() => {
-      onDimensionsUpdate(editingAirEntry.floorName, editingAirEntry.index, newDimensions);
+      // onDimensionsUpdate(editingAirEntry.floorName, editingAirEntry.index, newDimensions); // ← TEMPORAL TEST: Comentado para probar aislamiento
     }, 100);
   }, [editingAirEntry, onDimensionsUpdate, editingAirEntry?.floorName]);
 
@@ -1841,7 +1841,7 @@ export default function Canvas3D({
           timestamp: Date.now()
         });
         
-        onUpdateAirEntry(editingAirEntry.floorName, editingAirEntry.index, updatedEntry);
+        // onUpdateAirEntry(editingAirEntry.floorName, editingAirEntry.index, updatedEntry); // ← TEMPORAL TEST: Comentado para probar aislamiento
         
         console.log("🔍 [CRITICAL GLITCH POINT] onUpdateAirEntry call completed - scene will now rebuild");
       }
@@ -1905,7 +1905,7 @@ export default function Canvas3D({
     // STEP 3: Debounced callback to parent for store updates
     updateTimeoutRef.current = setTimeout(() => {
       if (onPropertiesUpdate && editingAirEntry) {
-        onPropertiesUpdate(editingAirEntry.floorName, editingAirEntry.index, newProperties);
+        // onPropertiesUpdate(editingAirEntry.floorName, editingAirEntry.index, newProperties); // ← TEMPORAL TEST: Comentado para probar aislamiento
       }
     }, 100);
   }, [editingAirEntry, onPropertiesUpdate, editingAirEntry?.floorName]);
@@ -2273,7 +2273,7 @@ export default function Canvas3D({
     }
 
     // STEP 3: Update store with awareness that mesh was already updated - Use correct floor name
-    onUpdateAirEntry(editingAirEntry.floorName, index, updatedEntry);
+    // onUpdateAirEntry(editingAirEntry.floorName, index, updatedEntry); // ← TEMPORAL TEST: Comentado para probar aislamiento
     
     // SURGICAL SOLUTION: Stop editing (exit isolation, trigger synchronization)
     setLastEditedFloor(null);
