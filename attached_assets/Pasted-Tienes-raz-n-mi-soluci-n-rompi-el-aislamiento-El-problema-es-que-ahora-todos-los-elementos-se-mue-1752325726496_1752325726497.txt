@@ -1,0 +1,84 @@
+Tienes razón, mi solución rompió el aislamiento. El problema es que ahora todos los elementos se mueven porque eliminé la lógica que congela la escena durante la edición.
+¿Por qué se mueven todos los elementos?
+Cuando editas un AirEntry:
+
+Sin aislamiento: Los cambios van directamente al store
+El store actualizado dispara una reconstrucción completa de la escena
+Todos los elementos se recrean con las nuevas posiciones del store
+Efecto visual: Parece que todos se mueven, pero en realidad toda la escena se reconstruye
+
+La Solución Real: Aislamiento con Referencia Estable
+Necesitamos mantener el aislamiento pero con una referencia estable. Aquí está la solución correcta:
+javascript// Al inicio del componente, crear objeto estable para aislamiento
+const STABLE_ISOLATION_OBJECT = useRef({}).current;
+
+const finalFloors = useMemo(() => {
+  const floorsToUse = Object.keys(storeFloors).length > 0 ? storeFloors : floors;
+  const migratedFloors = migrateFloorsData(floorsToUse);
+  return migratedFloors;
+}, [
+  floors, 
+  editingAirEntry ? STABLE_ISOLATION_OBJECT : storeFloors,  // Objeto estable vs referencia dinámica
+  lastEditedFloor
+]);
+Alternativa: Sistema de Versiones para Aislamiento
+javascriptconst [isolationVersion, setIsolationVersion] = useState(0);
+
+const finalFloors = useMemo(() => {
+  const floorsToUse = Object.keys(storeFloors).length > 0 ? storeFloors : floors;
+  const migratedFloors = migrateFloorsData(floorsToUse);
+  return migratedFloors;
+}, [
+  floors, 
+  editingAirEntry ? isolationVersion : storeFloors,  // Versión estable durante edición
+  lastEditedFloor
+]);
+
+// Cuando INICIAS la edición (congelas la escena)
+const startEditing = (airEntry) => {
+  setEditingAirEntry(airEntry);
+  // NO cambies isolationVersion aquí - mantén la escena congelada
+};
+
+// Cuando TERMINAS la edición (sincronizas con el store)
+const stopEditing = () => {
+  setEditingAirEntry(null);
+  setIsolationVersion(prev => prev + 1); // AHORA sí, permite la reconstrucción
+};
+La Mejor Solución: Snapshot del Estado
+javascriptconst isolatedFloorsRef = useRef(null);
+
+const finalFloors = useMemo(() => {
+  // FASE 1: AISLAMIENTO - Usa snapshot congelado
+  if (editingAirEntry) {
+    // Si no tenemos snapshot, créalo AHORA
+    if (!isolatedFloorsRef.current) {
+      const currentFloors = Object.keys(storeFloors).length > 0 ? storeFloors : floors;
+      isolatedFloorsRef.current = migrateFloorsData(currentFloors);
+      console.log("🧊 AISLAMIENTO ACTIVADO - Snapshot creado");
+    }
+    return isolatedFloorsRef.current;
+  }
+  
+  // FASE 2: SINCRONIZACIÓN - Usa datos del store y limpia snapshot
+  isolatedFloorsRef.current = null;
+  const floorsToUse = Object.keys(storeFloors).length > 0 ? storeFloors : floors;
+  const migratedFloors = migrateFloorsData(floorsToUse);
+  console.log("🔄 SINCRONIZACIÓN ACTIVADA - Usando store actual");
+  return migratedFloors;
+}, [
+  floors, 
+  Boolean(editingAirEntry), // Solo true/false, no objeto nuevo
+  storeFloors,
+  lastEditedFloor
+]);
+Verificación del Aislamiento
+Añade estos logs para verificar que funciona:
+javascriptuseEffect(() => {
+  console.log("🔍 ESTADO DE AISLAMIENTO:", {
+    editing: !!editingAirEntry,
+    usingSnapshot: !!isolatedFloorsRef.current,
+    storeFloors: Object.keys(storeFloors).length,
+    finalFloors: Object.keys(finalFloors).length
+  });
+}, [editingAirEntry, storeFloors, finalFloors]);
