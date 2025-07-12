@@ -966,8 +966,8 @@ export default function Canvas3D({
   const storeFloors = useRoomStore((state) => state.floors);
   const [lastEditedFloor, setLastEditedFloor] = useState<string | null>(null);
   
-  // SNAPSHOT ISOLATION PATTERN: Freeze scene state during editing
-  const isolatedFloorsRef = useRef(null);
+  // SURGICAL SOLUTION: Stable reference for isolation token
+  const EDITING_ISOLATION_TOKEN = useMemo(() => ({}), []);
   
   // State for editing air entries - must be declared early for finalFloors dependency
   const [editingAirEntry, setEditingAirEntry] = useState<{
@@ -986,41 +986,17 @@ export default function Canvas3D({
     entryType: string;
   } | null>(null);
 
-  // SNAPSHOT ISOLATION PATTERN: Freeze scene state during editing
+  // SURGICAL SOLUTION: Original logic maintained with stable isolation token
   const finalFloors = useMemo(() => {
-    // PHASE 1: ISOLATION - Use frozen snapshot during editing
-    if (editingAirEntry) {
-      // Create snapshot if it doesn't exist
-      if (!isolatedFloorsRef.current) {
-        const currentFloors = Object.keys(storeFloors).length > 0 ? storeFloors : floors;
-        isolatedFloorsRef.current = migrateFloorsData(currentFloors);
-        console.log("🧊 ISOLATION ACTIVATED - Snapshot created");
-      }
-      return isolatedFloorsRef.current;
-    }
-    
-    // PHASE 2: SYNCHRONIZATION - Use current store data and clear snapshot
-    isolatedFloorsRef.current = null;
     const floorsToUse = Object.keys(storeFloors).length > 0 ? storeFloors : floors;
     const migratedFloors = migrateFloorsData(floorsToUse);
-    console.log("🔄 SYNCHRONIZATION ACTIVATED - Using current store");
     return migratedFloors;
   }, [
-    floors,
-    Boolean(editingAirEntry), // Only true/false, no object reference
-    storeFloors,
+    floors, 
+    // SURGICAL CHANGE: Stable object instead of new {} during editing
+    editingAirEntry ? EDITING_ISOLATION_TOKEN : storeFloors,
     lastEditedFloor
   ]);
-  
-  // VERIFICATION: Monitor isolation state for debugging
-  useEffect(() => {
-    console.log("🔍 ISOLATION STATE:", {
-      editing: !!editingAirEntry,
-      usingSnapshot: !!isolatedFloorsRef.current,
-      storeFloors: Object.keys(storeFloors).length,
-      finalFloors: Object.keys(finalFloors).length
-    });
-  }, [editingAirEntry, storeFloors, finalFloors]);
 
   // Phase 2: Wall Association Helper Functions for AirEntry Dialog Unification
   const lineToUniqueId = (line: Line): string => {
@@ -2277,10 +2253,9 @@ export default function Canvas3D({
     // STEP 3: Update store with awareness that mesh was already updated - Use correct floor name
     onUpdateAirEntry(editingAirEntry.floorName, index, updatedEntry);
     
-    // SNAPSHOT PATTERN: Stop editing (exit isolation, trigger synchronization)
+    // SURGICAL SOLUTION: Stop editing (exit isolation, trigger synchronization)
     setLastEditedFloor(null);
     setEditingAirEntry(null);
-    // Scene will automatically rebuild with current store data due to useMemo dependency change
   };
 
   // New function to create stair mesh
@@ -4851,14 +4826,14 @@ export default function Canvas3D({
             // SURGICAL FIX: Track which floor is being edited
             setLastEditedFloor(correctFloorKey);
             
-            // SNAPSHOT PATTERN: Start editing (enter isolation mode)
+            // SURGICAL SOLUTION: Start editing (enter isolation mode)
             setEditingAirEntry({
               index: foundIndex,
               entry: mergedEntry,
               wallContext,
               floorName: correctFloorKey  // 🎯 CROSS-FLOOR BUG FIX: Use correct mapped floor key for callback compatibility
             });
-            // Scene will automatically freeze using snapshot due to useMemo dependency change
+            // Scene will automatically use stable EDITING_ISOLATION_TOKEN due to useMemo dependency change
             
 
           }
@@ -6349,16 +6324,14 @@ export default function Canvas3D({
           type={editingAirEntry.entry.type}
           isOpen={true}
           onClose={() => {
-            // SNAPSHOT PATTERN: Stop editing (exit isolation, trigger synchronization)
+            // SURGICAL SOLUTION: Stop editing (exit isolation, trigger synchronization)
             setLastEditedFloor(null);
             setEditingAirEntry(null);
-            // Scene will automatically rebuild with current store data due to useMemo dependency change
           }}
           onCancel={() => {
-            // SNAPSHOT PATTERN: Stop editing (exit isolation, trigger synchronization)
+            // SURGICAL SOLUTION: Stop editing (exit isolation, trigger synchronization)
             setLastEditedFloor(null);
             setEditingAirEntry(null);
-            // Scene will automatically rebuild with current store data due to useMemo dependency change
           }}
           onConfirm={(data) => {
             console.log("💾 [CANVAS3D SAVE] Save Changes clicked with values:", {
