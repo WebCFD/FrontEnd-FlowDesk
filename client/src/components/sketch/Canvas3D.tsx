@@ -966,6 +966,9 @@ export default function Canvas3D({
   const storeFloors = useRoomStore((state) => state.floors);
   const [lastEditedFloor, setLastEditedFloor] = useState<string | null>(null);
   
+  // DEEP ANALYSIS FIX: Create stable object references for the conditional dependency pattern
+  const STABLE_EMPTY_OBJECT = useRef({}).current;
+  
   // State for editing air entries - must be declared early for finalFloors dependency
   const [editingAirEntry, setEditingAirEntry] = useState<{
     index: number;
@@ -983,24 +986,21 @@ export default function Canvas3D({
     entryType: string;
   } | null>(null);
 
-  // SURGICAL FIX: finalFloors useMemo moved here early to be available for all dependencies
-  // Create a stable empty object reference to prevent infinite loop
-  const EMPTY_DEPENDENCY = useRef({}).current;
-  const dependencyValue = editingAirEntry ? EMPTY_DEPENDENCY : storeFloors;
-  const isEditing = !!editingAirEntry;
-  
+  // DEEP ANALYSIS FIX: finalFloors useMemo with stable conditional dependency - preserves exact original isolation logic
   const finalFloors = useMemo(() => {
     // Use store data if available, otherwise use props
     const floorsToUse = Object.keys(storeFloors).length > 0 ? storeFloors : floors;
     const migratedFloors = migrateFloorsData(floorsToUse);
     
-    // SURGICAL FIX: Intelligent dependency tracking prevents unnecessary scene rebuilds during real-time editing
+    // ORIGINAL ISOLATION MECHANISM PRESERVED:
+    // During editing: dependency = STABLE_EMPTY_OBJECT (prevents scene rebuilds)
+    // After editing: dependency = storeFloors (triggers scene rebuild with updated data)
     
     return migratedFloors;
   }, [
     floors, 
-    // SURGICAL FIX: Only track store floors when NOT in real-time editing mode
-    dependencyValue,
+    // EXACT original conditional logic with stable reference instead of new {} object
+    editingAirEntry ? STABLE_EMPTY_OBJECT : storeFloors,
     lastEditedFloor
   ]);
 
