@@ -1,0 +1,69 @@
+La Razón Exacta del Problema
+El problema era una cascada de rebuilds no controlada causada por dependencias React mal gestionadas.
+Secuencia del Bug (Antes de la Fix)
+javascript// 1. Usuario abre dialog
+setEditingAirEntry({...}) 
+
+// 2. editingAirEntry cambia → dispara useMemo
+const finalFloors = useMemo(() => {
+  // Se ejecuta porque editingAirEntry cambió
+}, [floors, editingAirEntry ? {} : storeFloors, lastEditedFloor])
+
+// 3. finalFloors "cambia" (nueva referencia) → dispara useEffect
+useEffect(() => {
+  // 🔥 RECONSTRUYE TODA LA ESCENA durante edición
+  // Borra todos los meshes y los recrea desde store data
+}, [finalFloors, currentFloor, ceilingHeight, floorDeckThickness])
+
+// 4. Usuario mueve slider → dispara callbacks
+onDimensionsUpdate() // Actualiza store
+→ storeFloors cambia 
+→ useMemo se ejecuta otra vez
+→ useEffect se ejecuta otra vez
+→ Rebuild completo otra vez
+El Problema Central: React Dependency Hell
+Tres problemas simultáneos:
+
+editingAirEntry ? {} : storeFloors - Creaba nuevas referencias infinitamente
+useMemo se ejecutaba durante edición - Aunque tenía isolation token
+useEffect no respetaba el estado de edición - Rebuildeaba siempre
+
+Por Qué Se Movían TODOS los Elementos
+javascript// Durante rebuild completo:
+createFloorObjects() // Se ejecuta para TODOS los floors
+→ Recrea TODOS los meshes desde store data
+→ Todos los AirEntries se reposicionan según store
+→ Efecto visual: "todos se mueven"
+No era que se movieran realmente, sino que toda la escena se recreaba mientras editabas.
+La Solución: Triple Protección
+javascript// 1. SNAPSHOT ISOLATION - Congela finalFloors
+const finalFloors = useMemo(() => {
+  if (editingAirEntry && frozenFloorsRef.current) {
+    return frozenFloorsRef.current; // No rebuilds de useMemo
+  }
+  // ... resto
+}, [...])
+
+// 2. USEEFFECT BLOCKING - Previene scene rebuilds  
+useEffect(() => {
+  if (editingAirEntry) {
+    return; // No rebuilds de useEffect
+  }
+  // ... scene rebuild
+}, [...])
+
+// 3. DIRECT MESH UPDATES - Solo edita el mesh específico
+sceneRef.current.traverse((object) => {
+  if (matches_exactly_editing_element) {
+    // Solo actualiza este mesh, no toda la escena
+  }
+})
+Por Qué Funcionó
+La solución cortó la cascada en todos los puntos:
+
+❌ Antes: Edit → useMemo → useEffect → Rebuild completo
+✅ Después: Edit → Snapshot estático → useEffect bloqueado → Direct mesh update
+
+La Lección Principal
+El problema no era Three.js ni lógica de negocio, sino gestión de dependencias React. Un cambio de estado (editingAirEntry) disparaba una cascada no controlada de rebuilds.
+Tu sistema de aislamiento original era conceptualmente correcto, solo necesitaba protección en múltiples capas para ser robusto contra los ciclos de React.
