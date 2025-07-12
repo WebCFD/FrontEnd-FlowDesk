@@ -1678,10 +1678,42 @@ export default function Canvas3D({
     
     // Force immediate dimension update for visual feedback (Center Height, Width, Height)
     if (sceneRef.current && (newDimensions.distanceToFloor !== undefined || newDimensions.width !== undefined || newDimensions.height !== undefined)) {
+      // DEBUGGING COMPLETO: Inventario de meshes antes de modificar
+      console.log("🔍 SCENE MESH INVENTORY:", {
+        editingEntry: {
+          type: editingAirEntry.entry.type,
+          index: editingAirEntry.index,
+          floorName: editingAirEntry.floorName
+        },
+        allAirEntryMeshes: (() => {
+          const meshes = [];
+          sceneRef.current.traverse((obj) => {
+            if (obj instanceof THREE.Mesh && obj.userData?.type && 
+                ["window", "door", "vent"].includes(obj.userData.type)) {
+              meshes.push({
+                type: obj.userData.type,
+                entryIndex: obj.userData.entryIndex,
+                floorName: obj.userData.floorName,
+                position: obj.userData.position
+              });
+            }
+          });
+          return meshes;
+        })()
+      });
+
       sceneRef.current.traverse((object) => {
         if (object instanceof THREE.Mesh && 
             object.userData?.type === editingAirEntry.entry.type &&
-            object.userData?.entryIndex === editingAirEntry.index) {
+            object.userData?.entryIndex === editingAirEntry.index &&
+            object.userData?.floorName === editingAirEntry.floorName) { // ← AÑADIR FILTRO DE FLOOR
+          
+          console.log("🎯 EXACT MATCH FOUND - Only this mesh should be modified:", {
+            type: object.userData.type,
+            entryIndex: object.userData.entryIndex,
+            floorName: object.userData.floorName,
+            position: object.position
+          });
           
           // Update the mesh Z position for Center Height (distanceToFloor)
           if (newDimensions.distanceToFloor !== undefined) {
@@ -1781,10 +1813,42 @@ export default function Canvas3D({
     
     // Force immediate position update for visual feedback
     if (sceneRef.current) {
+      // DEBUGGING COMPLETO: Inventario de meshes antes de modificar
+      console.log("🔍 POSITION UPDATE - SCENE MESH INVENTORY:", {
+        editingEntry: {
+          type: editingAirEntry.entry.type,
+          index: editingAirEntry.index,
+          floorName: editingAirEntry.floorName
+        },
+        allAirEntryMeshes: (() => {
+          const meshes = [];
+          sceneRef.current.traverse((obj) => {
+            if (obj instanceof THREE.Mesh && obj.userData?.type && 
+                ["window", "door", "vent"].includes(obj.userData.type)) {
+              meshes.push({
+                type: obj.userData.type,
+                entryIndex: obj.userData.entryIndex,
+                floorName: obj.userData.floorName,
+                position: obj.userData.position
+              });
+            }
+          });
+          return meshes;
+        })()
+      });
+
       sceneRef.current.traverse((object) => {
         if (object instanceof THREE.Mesh && 
             object.userData?.type === editingAirEntry.entry.type &&
-            object.userData?.entryIndex === editingAirEntry.index) {
+            object.userData?.entryIndex === editingAirEntry.index &&
+            object.userData?.floorName === editingAirEntry.floorName) { // ← AÑADIR FILTRO DE FLOOR
+          
+          console.log("🎯 POSITION UPDATE - EXACT MATCH FOUND:", {
+            type: object.userData.type,
+            entryIndex: object.userData.entryIndex,
+            floorName: object.userData.floorName,
+            position: object.position
+          });
           
           // Update the mesh position
           const position3D = transform2DTo3D(newPosition);
