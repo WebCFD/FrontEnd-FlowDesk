@@ -1,0 +1,49 @@
+Canvas3D.tsx:4754 🔍 [CROSS-FLOOR DEBUG] Available AirEntry meshes in scene: (2) [{…}, {…}]
+Canvas3D.tsx:4763 🔍 [CROSS-FLOOR DEBUG] Current floor selection: ground
+Canvas3D.tsx:4773 🔍 [CROSS-FLOOR DEBUG] Detected mesh data: {detectedType: 'window', detectedEntryIndex: 0, detectedFloorName: 'Ground Floor', detectedAirEntryId: 'window_0F_1', detectedPosition: {…}, …}
+Canvas3D.tsx:4798 🎯 [FLOOR KEY MAPPING] SUCCESS: {originalMeshFloor: 'Ground Floor', mappedToStoreKey: 'ground', foundInStore: true, availableAirEntries: 1, storeKeys: Array(2)}
+Canvas3D.tsx:4807 🎯 [CROSS-FLOOR FIX] Correct floor lookup with mapping: {detectedMeshFloor: 'Ground Floor', mappedFloorKey: 'ground', lookingInCorrectFloor: 'ground', availableAirEntries: 1, willSearchForIndex: 0, …}
+Canvas3D.tsx:4818 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4831 ✅ [CROSS-FLOOR FIX] CORRECT MATCH DETECTED: {detectedMeshFrom: 'Ground Floor', detectedMeshIndex: 0, detectedMeshId: 'window_0F_1', searchingInCorrectFloor: 'Ground Floor', foundCorrectEntryAtIndex: 0, …}
+Canvas3D.tsx:4845 Double-click found entry using stored entryIndex: 0
+Canvas3D.tsx:4890 🔍 [ID DEBUG] DIALOG WILL SHOW THESE IDs: {mergedEntryId: 'window_0F_1', baseEntryId: 'window_0F_1', meshAirEntryId: 'window_0F_1', expectedFormat: "Should be like 'window_0F_1'", actualId: 'window_0F_1', …}
+Canvas3D.tsx:4900 ✅ [CROSS-FLOOR FIX] DIALOG OPENING WITH CORRECT MAPPED DATA: {dialogWillShow: {…}, userClickedOn: {…}, mapping: {…}, explanation: "Dialog shows data from mapped floor 'ground' matching clicked mesh from 'Ground Floor'"}
+Canvas3D.tsx:4919 🧪 [DIAGNOSIS] setEditingAirEntry called with: {index: 0, floorName: 'ground', entryId: 'window_0F_1', entryType: 'window', entryPosition: {…}, …}
+Canvas3D.tsx:994 🔍 DEPENDENCY CHECK: {editingAirEntry: true, hasSnapshot: true, willUseSnapshot: true, storeFloorsId: 'ground,first', lastEditedFloor: 'ground'}
+Canvas3D.tsx:1004 🧊 USANDO SNAPSHOT CONGELADO - NO REBUILD
+Canvas3D.tsx:1028 🔍 lastEditedFloor changed: ground
+Canvas3D.tsx:5248 🎯 [SURGICAL FIX] Real-time update mode detected: {editingFloor: 'ground', lastEditedFloor: 'ground', shouldSkipFullRebuild: true, willUseDirectMeshUpdates: true}
+Canvas3D.tsx:5265 🛡️ SCENE REBUILD BLOCKED - Currently editing, skipping rebuild
+Canvas3D.tsx:4383 Hovering over axis mesh: y
+Canvas3D.tsx:1817 🔍 POSITION UPDATE - SCENE MESH INVENTORY: {editingEntry: {…}, allAirEntryMeshes: Array(2)}
+Canvas3D.tsx:1877 🧪 [DIAGNOSIS] onUpdateAirEntry callback executing: {callbackFloorName: 'ground', callbackIndex: 0, updatedEntry: {…}, editingAirEntryState: {…}, timestamp: 1752352382809}
+Canvas3D.tsx:5248 🎯 [SURGICAL FIX] Real-time update mode detected: {editingFloor: 'ground', lastEditedFloor: 'ground', shouldSkipFullRebuild: true, willUseDirectMeshUpdates: true}
+Canvas3D.tsx:5265 🛡️ SCENE REBUILD BLOCKED - Currently editing, skipping rebuild
+Canvas3D.tsx:1817 🔍 POSITION UPDATE - SCENE MESH INVENTORY: {editingEntry: {…}, allAirEntryMeshes: Array(2)}
+Canvas3D.tsx:1877 🧪 [DIAGNOSIS] onUpdateAirEntry callback executing: {callbackFloorName: 'ground', callbackIndex: 0, updatedEntry: {…}, editingAirEntryState: {…}, timestamp: 1752352383009}
+Canvas3D.tsx:5248 🎯 [SURGICAL FIX] Real-time update mode detected: {editingFloor: 'ground', lastEditedFloor: 'ground', shouldSkipFullRebuild: true, willUseDirectMeshUpdates: true}
+Canvas3D.tsx:5265 🛡️ SCENE REBUILD BLOCKED - Currently editing, skipping rebuild
+Canvas3D.tsx:1817 🔍 POSITION UPDATE - SCENE MESH INVENTORY: {editingEntry: {…}, allAirEntryMeshes: Array(2)}
+Canvas3D.tsx:1877 🧪 [DIAGNOSIS] onUpdateAirEntry callback executing: {callbackFloorName: 'ground', callbackIndex: 0, updatedEntry: {…}, editingAirEntryState: {…}, timestamp: 1752352383181}
+Canvas3D.tsx:5248 🎯 [SURGICAL FIX] Real-time update mode detected: {editingFloor: 'ground', lastEditedFloor: 'ground', shouldSkipFullRebuild: true, willUseDirectMeshUpdates: true}
+Canvas3D.tsx:5265 🛡️ SCENE REBUILD BLOCKED - Currently editing, skipping rebuild
+Canvas3D.tsx:1817 🔍 POSITION UPDATE - SCENE MESH INVENTORY: {editingEntry: {…}, allAirEntryMeshes: Array(2)}
+Canvas3D.tsx:1877 🧪 [DIAGNOSIS] onUpdateAirEntry callback executing: {callbackFloorName: 'ground', callbackIndex: 0, updatedEntry: {…}, editingAirEntryState: {…}, timestamp: 1752352383380}
+Canvas3D.tsx:5248 🎯 [SURGICAL FIX] Real-time update mode detected: {editingFloor: 'ground', lastEditedFloor: 'ground', shouldSkipFullRebuild: true, willUseDirectMeshUpdates: true}
+Canvas3D.tsx:5265 🛡️ SCENE REBUILD BLOCKED - Currently editing, skipping rebuild
+Canvas3D.tsx:1817 🔍 POSITION UPDATE - SCENE MESH INVENTORY: {editingEntry: {…}, allAirEntryMeshes: Array(2)}
+Canvas3D.tsx:1877 🧪 [DIAGNOSIS] onUpdateAirEntry callback executing: {callbackFloorName: 'ground', callbackIndex: 0, updatedEntry: {…}, editingAirEntryState: {…}, timestamp: 1752352383573}
+Canvas3D.tsx:5248 🎯 [SURGICAL FIX] Real-time update mode detected: {editingFloor: 'ground', lastEditedFloor: 'ground', shouldSkipFullRebuild: true, willUseDirectMeshUpdates: true}
+Canvas3D.tsx:5265 🛡️ SCENE REBUILD BLOCKED - Currently editing, skipping rebuild
+Canvas3D.tsx:1817 🔍 POSITION UPDATE - SCENE MESH INVENTORY: {editingEntry: {…}, allAirEntryMeshes: Array(2)}
+Canvas3D.tsx:1877 🧪 [DIAGNOSIS] onUpdateAirEntry callback executing: {callbackFloorName: 'ground', callbackIndex: 0, updatedEntry: {…}, editingAirEntryState: {…}, timestamp: 1752352383742}
+Canvas3D.tsx:5248 🎯 [SURGICAL FIX] Real-time update mode detected: {editingFloor: 'ground', lastEditedFloor: 'ground', shouldSkipFullRebuild: true, willUseDirectMeshUpdates: true}
+Canvas3D.tsx:5265 🛡️ SCENE REBUILD BLOCKED - Currently editing, skipping rebuild
+Canvas3D.tsx:1817 🔍 POSITION UPDATE - SCENE MESH INVENTORY: {editingEntry: {…}, allAirEntryMeshes: Array(2)}
+Canvas3D.tsx:1877 🧪 [DIAGNOSIS] onUpdateAirEntry callback executing: {callbackFloorName: 'ground', callbackIndex: 0, updatedEntry: {…}, editingAirEntryState: {…}, timestamp: 1752352383936}
+Canvas3D.tsx:5248 🎯 [SURGICAL FIX] Real-time update mode detected: {editingFloor: 'ground', lastEditedFloor: 'ground', shouldSkipFullRebuild: true, willUseDirectMeshUpdates: true}
+Canvas3D.tsx:5265 🛡️ SCENE REBUILD BLOCKED - Currently editing, skipping rebuild
+Canvas3D.tsx:1897 🔍 [CRITICAL GLITCH POINT] About to call onUpdateAirEntry - this triggers store update which causes scene rebuild: {aboutToUpdateFloor: 'ground', aboutToUpdateIndex: 0, aboutToUpdatePosition: {…}, currentVisibleFloor: 'ground', isUpdatingSameFloorAsVisible: true, …}
+wizard-design.tsx:1064 🧪 [DIAGNOSIS WIZARD] handleUpdateAirEntryFrom3D called with: {receivedFloorName: 'ground', receivedIndex: 0, receivedEntryId: 'window_0F_1', receivedEntryType: 'window', receivedEntryPosition: {…}, …}
+Canvas3D.tsx:1926 🔍 [CRITICAL GLITCH POINT] onUpdateAirEntry call completed - scene will now rebuild
+Canvas3D.tsx:1036 🔍 storeFloors changed: (2) ['ground', 'first']
