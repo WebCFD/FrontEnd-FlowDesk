@@ -995,7 +995,7 @@ export default function Canvas3D({
   }, [
     floors, 
     // SURGICAL FIX: Only track store floors when NOT in real-time editing mode
-    editingAirEntry ? {} : storeFloors,
+    editingAirEntry ? null : storeFloors,
     lastEditedFloor
   ]);
 
