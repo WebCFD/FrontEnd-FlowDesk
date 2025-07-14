@@ -4963,9 +4963,7 @@ export default function Canvas3D({
     }
   }, [selectedAirEntry]);
 
-  useEffect(() => {
-    // Dialog open handling (drag references removed)
-  }, [editingAirEntry]);
+  // FASE 2: Removed obsolete editingAirEntry useEffect - now using editingAirEntryId
 
   // Update lighting intensity in real-time for presentation mode
   useEffect(() => {
