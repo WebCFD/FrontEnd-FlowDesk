@@ -1,0 +1,287 @@
+Voy a explicarte los requerimientos. 
+Los elementos AirEntry (Window, Door, Vent) se crean en Canvas2D (representación en 2D), pero se pueden modificar con sus correspondientes dialogbox en Canvas2D o Canvas3D. Canvas3D es la respresentación 3D, de la información, y Canvas2D es su representación en 2D. 
+cualquier modificación en el dialogbox en 2D afecta al 3D y viceversa. El dialogbox debe ser el mismo, da igual si se abre en el 2D o 3D. 
+Los ID asignados deben ser unicos y sigiendo la logica elemento_piso_ordenCreacion. Los valores deben persistir en el dialogbox, y cuando se modifica el dialogbox la modificación se debe de ver en real time en el 3D o en el 2D.
+Cuando se crea una copia de un piso (por ejemplo se crea una copia del piso 0 como piso 1), y se crean nuevos elementos, estos deben de ser totalmente independientes del piso de donde provienen.Como implementaráis todo esto??ModificaPerfecto, ahora entiendo los requerimientos completos. El problema es que necesitas sincronización bidireccional entre Canvas2D ↔ Canvas3D con estado compartido. Aquí está la arquitectura correcta:
+Arquitectura de Sincronización Bidireccional
+Single Source of Truth + Event System
+javascript┌─────────────────┐
+│   ROOM STORE    │ ← ÚNICA fuente de verdad
+│  (useRoomStore) │   Gestiona TODOS los datos
+└─────────────────┘
+         │
+    ┌────┴────┐
+    ▼         ▼
+┌─────────┐ ┌─────────┐
+│CANVAS2D │ │CANVAS3D │ ← Solo RENDERAN + EVENTOS
+│(render) │ │(render) │   No almacenan estado
+└─────────┘ └─────────┘
+    │         │
+    └────┬────┘
+         ▼
+┌─────────────────┐
+│ UNIFIED DIALOG  │ ← Mismo dialog para ambos
+│  (AirEntryDialog)│   Siempre lee/escribe store
+└─────────────────┘
+Implementación Step by Step
+1. ID Generation System Robusto
+javascript// En useRoomStore:
+const useRoomStore = create((set, get) => ({
+  floors: {},
+  
+  // ID único y atómico
+  generateAirEntryId: (floorName: string, entryType: string) => {
+    const state = get();
+    const floorPrefix = getFloorPrefix(floorName); // '0F', '1F', etc.
+    
+    // Contar elementos del mismo tipo en este piso
+    const floorData = state.floors[floorName];
+    const sameTypeCount = floorData?.airEntries?.filter(
+      entry => entry.type === entryType
+    ).length || 0;
+    
+    const newId = `${entryType}_${floorPrefix}_${sameTypeCount + 1}`;
+    
+    // Verificar unicidad global (por si hay inconsistencias)
+    const allIds = Object.values(state.floors).flatMap(
+      floor => floor.airEntries?.map(entry => entry.id) || []
+    );
+    
+    if (allIds.includes(newId)) {
+      // Fallback a timestamp si hay duplicado
+      return `${entryType}_${floorPrefix}_${Date.now()}`;
+    }
+    
+    return newId;
+  },
+  
+  // CRUD operations atómicas
+  addAirEntry: (floorName: string, entryData: Omit<AirEntry, 'id'>) => {
+    const id = get().generateAirEntryId(floorName, entryData.type);
+    const newEntry = { ...entryData, id };
+    
+    set(state => ({
+      floors: {
+        ...state.floors,
+        [floorName]: {
+          ...state.floors[floorName],
+          airEntries: [
+            ...(state.floors[floorName]?.airEntries || []),
+            newEntry
+          ]
+        }
+      }
+    }));
+    
+    return id; // Retornar para referencia
+  },
+  
+  updateAirEntry: (floorName: string, entryId: string, updates: Partial<AirEntry>) => {
+    set(state => ({
+      floors: {
+        ...state.floors,
+        [floorName]: {
+          ...state.floors[floorName],
+          airEntries: state.floors[floorName]?.airEntries?.map(entry =>
+            entry.id === entryId ? { ...entry, ...updates } : entry
+          ) || []
+        }
+      }
+    }));
+  },
+  
+  deleteAirEntry: (floorName: string, entryId: string) => {
+    set(state => ({
+      floors: {
+        ...state.floors,
+        [floorName]: {
+          ...state.floors[floorName],
+          airEntries: state.floors[floorName]?.airEntries?.filter(
+            entry => entry.id !== entryId
+          ) || []
+        }
+      }
+    }));
+  }
+}));
+2. Canvas3D Simplificado (Solo Rendering)
+javascriptconst Canvas3D = ({ currentFloor, onOpenDialog }) => {
+  const storeFloors = useRoomStore(state => state.floors);
+  const updateAirEntry = useRoomStore(state => state.updateAirEntry);
+  
+  // NO MORE: finalFloors, editingAirEntry, complex state
+  
+  useEffect(() => {
+    // Solo renderizar desde store
+    rebuildScene(storeFloors);
+  }, [storeFloors]);
+  
+  // Solo eventos, no gestión de estado
+  const handleDoubleClick = (airEntryId: string) => {
+    const entry = findAirEntryById(storeFloors, airEntryId);
+    if (entry) {
+      onOpenDialog({
+        entryId: airEntryId,
+        floorName: entry.floorName,
+        source: '3D'
+      });
+    }
+  };
+  
+  // Real-time preview (opcional, sin persistencia)
+  const handleRealTimePreview = (entryId: string, tempChanges: any) => {
+    // Solo visual feedback, no guarda en store
+    updateMeshVisually(entryId, tempChanges);
+  };
+  
+  return <div ref={containerRef} />;
+};
+3. Canvas2D Simplificado
+javascriptconst Canvas2D = ({ currentFloor, onOpenDialog }) => {
+  const storeFloors = useRoomStore(state => state.floors);
+  const addAirEntry = useRoomStore(state => state.addAirEntry);
+  
+  // Solo eventos, no gestión de estado
+  const handleCreateAirEntry = (position: Point, type: string) => {
+    const newEntryId = addAirEntry(currentFloor, {
+      type,
+      position,
+      dimensions: getDefaultDimensions(type),
+      line: nearestLine
+    });
+    
+    // Auto-abrir dialog para nuevo elemento
+    onOpenDialog({
+      entryId: newEntryId,
+      floorName: currentFloor,
+      source: '2D'
+    });
+  };
+  
+  const handleDoubleClick = (airEntryId: string) => {
+    onOpenDialog({
+      entryId: airEntryId,
+      floorName: currentFloor,
+      source: '2D'
+    });
+  };
+  
+  return <canvas ref={canvasRef} />;
+};
+4. Unified Dialog System
+javascriptconst UnifiedAirEntryDialog = ({ 
+  entryId, 
+  floorName, 
+  source, // '2D' | '3D'
+  isOpen, 
+  onClose 
+}) => {
+  const entry = useRoomStore(state => 
+    state.floors[floorName]?.airEntries?.find(e => e.id === entryId)
+  );
+  const updateAirEntry = useRoomStore(state => state.updateAirEntry);
+  
+  // Real-time updates
+  const handleRealTimeChange = (field: string, value: any) => {
+    // Update store inmediatamente
+    updateAirEntry(floorName, entryId, { [field]: value });
+    
+    // Opcional: preview visual sin commit
+    if (source === '3D') {
+      // Trigger real-time preview en Canvas3D
+      triggerVisualPreview(entryId, { [field]: value });
+    }
+  };
+  
+  const handleSave = (finalValues: any) => {
+    updateAirEntry(floorName, entryId, finalValues);
+    onClose();
+  };
+  
+  return (
+    <AirEntryDialog
+      initialValues={entry}
+      onRealTimeChange={handleRealTimeChange}
+      onSave={handleSave}
+      onCancel={onClose}
+    />
+  );
+};
+5. Floor Copy Independence
+javascript// En useRoomStore:
+copyFloor: (sourceFloorName: string, targetFloorName: string) => {
+  const state = get();
+  const sourceFloor = state.floors[sourceFloorName];
+  
+  if (!sourceFloor) return;
+  
+  // Copiar estructura pero regenerar IDs únicos
+  const newAirEntries = sourceFloor.airEntries?.map(entry => ({
+    ...entry,
+    id: get().generateAirEntryId(targetFloorName, entry.type), // NUEVO ID
+    floorName: targetFloorName // NUEVO piso
+  })) || [];
+  
+  set(state => ({
+    floors: {
+      ...state.floors,
+      [targetFloorName]: {
+        ...sourceFloor,
+        name: targetFloorName,
+        airEntries: newAirEntries
+      }
+    }
+  }));
+}
+6. Parent Component Orchestration
+javascriptconst FloorPlanEditor = () => {
+  const [dialogState, setDialogState] = useState(null);
+  const [activeTab, setActiveTab] = useState('2D'); // '2D' | '3D'
+  
+  const handleOpenDialog = (params) => {
+    setDialogState(params);
+  };
+  
+  const handleCloseDialog = () => {
+    setDialogState(null);
+  };
+  
+  return (
+    <>
+      <Tabs value={activeTab} onChange={setActiveTab}>
+        <Tab value="2D">
+          <Canvas2D 
+            currentFloor={currentFloor}
+            onOpenDialog={handleOpenDialog}
+          />
+        </Tab>
+        <Tab value="3D">
+          <Canvas3D 
+            currentFloor={currentFloor}
+            onOpenDialog={handleOpenDialog}
+          />
+        </Tab>
+      </Tabs>
+      
+      {dialogState && (
+        <UnifiedAirEntryDialog
+          {...dialogState}
+          isOpen={true}
+          onClose={handleCloseDialog}
+        />
+      )}
+    </>
+  );
+};
+Beneficios de Esta Arquitectura
+
+✅ Single Source of Truth: Solo useRoomStore
+✅ IDs Únicos: Sistema centralizado y atómico
+✅ Bidirectional Sync: Canvas2D ↔ Canvas3D automático
+✅ Same Dialog: Unified component para ambos
+✅ Real-time Updates: Store changes → immediate renders
+✅ Floor Independence: Copy con nuevos IDs
+✅ Persistence: Todo en store, no se pierde
+✅ Simplicity: Cada componente tiene una responsabilidad
+
+¿Te parece bien esta arquitectura? ¿Empezamos implementándola paso a paso?
