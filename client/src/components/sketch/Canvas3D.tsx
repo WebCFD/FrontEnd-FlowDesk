@@ -6060,7 +6060,7 @@ export default function Canvas3D({
             airEntryIndex={index}
             currentFloor={floorName}
             isEditing={true}
-            wallContext={findAssociatedWall(entry)}
+            wallContext={createWallContext(entry)}
             onPositionUpdate={handleAirEntryPositionUpdate}
             onDimensionsUpdate={handleAirEntryDimensionsUpdate}
             onPropertiesUpdate={handleAirEntryPropertiesUpdate}
