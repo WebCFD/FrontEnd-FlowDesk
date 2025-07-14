@@ -1538,23 +1538,40 @@ export default function Canvas3D({
     return useRoomStore.getState().findAirEntryById(id);
   }, []);
   
-  // FASE 2: Simplified initial values for dialog
+  // FASE 2: Simplified initial values for dialog - reads from reactive store
   const airEntryInitialValues = useMemo(() => {
     if (!editingAirEntryId) return null;
     
-    const result = getAirEntryById(editingAirEntryId);
-    if (!result) return null;
+    // CRITICAL FIX: Read from reactive store to get current data
+    const currentStoreFloors = useRoomStore.getState().floors;
     
-    const { entry, floorName, index } = result;
+    // Find the entry using the current store state
+    for (const [floorName, floorData] of Object.entries(currentStoreFloors)) {
+      if (!floorData?.airEntries) continue;
+      
+      const entryIndex = floorData.airEntries.findIndex(entry => (entry as any).id === editingAirEntryId);
+      if (entryIndex !== -1) {
+        const entry = floorData.airEntries[entryIndex];
+        
+        console.log("🔍 [INITIAL VALUES] Found entry with ID:", editingAirEntryId, "Entry data:", entry);
+        
+        return {
+          ...entry.dimensions,
+          shape: (entry.dimensions as any).shape,
+          properties: (entry as any).properties || {},
+          position: entry.position,
+          wallPosition: (entry as any).wallPosition,
+          // Add the ID for debugging
+          _airEntryId: editingAirEntryId,
+          _floorName: floorName,
+          _index: entryIndex
+        };
+      }
+    }
     
-    return {
-      ...entry.dimensions,
-      shape: (entry.dimensions as any).shape,
-      properties: (entry as any).properties || {},
-      position: entry.position,
-      wallPosition: (entry as any).wallPosition
-    };
-  }, [editingAirEntryId, getAirEntryById]);
+    console.warn("🔍 [INITIAL VALUES] Could not find entry with ID:", editingAirEntryId);
+    return null;
+  }, [editingAirEntryId]);
   
   // State for editing furniture
   const [editingFurniture, setEditingFurniture] = useState<{
