@@ -596,7 +596,7 @@ export const useRoomStore = create<RoomState>()(
               // Only match IDs for this specific floor and type
               const match = anyEntry.id.match(new RegExp(`^${type}_${floorPrefix}_(\\d+)$`));
               if (match) {
-                const num = parseInt(match[2]);
+                const num = parseInt(match[1]); // FIX: Use match[1] not match[2]
                 if (num > maxCounter) {
                   maxCounter = num;
                 }
