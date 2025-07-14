@@ -960,81 +960,17 @@ export default function Canvas3D({
   // Access the SceneContext to share data with RoomSketchPro
   const { updateGeometryData, updateSceneData, updateFloorData, setCurrentFloor: setContextCurrentFloor } = useSceneContext();
 
-  // PHASE 5: Pure props pattern - removed Zustand store dependencies
-
-  // SURGICAL SOLUTION: Prevent recreation of non-edited floors during real-time updates
+  // FASE 2: Simplified Canvas3D - Store-Centric Architecture
+  
+  // Direct store access for all floor data - no complex isolation
   const storeFloors = useRoomStore((state) => state.floors);
-  const [lastEditedFloor, setLastEditedFloor] = useState<string | null>(null);
   
-  // SURGICAL SOLUTION: Stable reference for isolation token
-  const EDITING_ISOLATION_TOKEN = useMemo(() => ({}), []);
-  
-  // State for editing air entries - must be declared early for finalFloors dependency
-  const [editingAirEntry, setEditingAirEntry] = useState<{
-    index: number;
-    entry: AirEntry;
-    wallContext?: {
-      wallId: string;
-      floorName: string;
-      wallStart: { x: number; y: number };
-      wallEnd: { x: number; y: number };
-      clickPosition: { x: number; y: number };
-      ceilingHeight: number;
-    };
-    floorName: string;
-    entryId: string;
-    entryType: string;
-  } | null>(null);
-
-  // 🧊 SNAPSHOT ISOLATION SOLUTION: Capture state before editingAirEntry changes
-  const frozenFloorsRef = useRef(null);
-
+  // FASE 2: Simple floors computation - direct store access
   const finalFloors = useMemo(() => {
-    // DIAGNOSTIC: Track dependency changes
-    console.log("🔍 DEPENDENCY CHECK:", {
-      editingAirEntry: !!editingAirEntry,
-      hasSnapshot: !!frozenFloorsRef.current,
-      willUseSnapshot: !!(editingAirEntry && frozenFloorsRef.current),
-      storeFloorsId: Object.keys(storeFloors).join(','),
-      lastEditedFloor
-    });
-    
-    // Si estamos editando, usar snapshot previo (si existe)
-    if (editingAirEntry && frozenFloorsRef.current) {
-      console.log("🧊 USANDO SNAPSHOT CONGELADO - NO REBUILD");
-      return frozenFloorsRef.current;
-    }
-    
-    // Si no estamos editando, procesar normalmente y guardar snapshot
+    // Always use store first, fallback to props
     const floorsToUse = Object.keys(storeFloors).length > 0 ? storeFloors : floors;
-    const migratedFloors = migrateFloorsData(floorsToUse);
-    
-    // Guardar snapshot para próxima edición
-    if (!editingAirEntry) {
-      frozenFloorsRef.current = migratedFloors;
-      console.log("💾 SNAPSHOT GUARDADO PARA PRÓXIMA EDICIÓN");
-    }
-    
-    return migratedFloors;
-  }, [
-    floors,
-    Boolean(editingAirEntry), // true/false estable
-    editingAirEntry ? 'FROZEN' : storeFloors,
-    lastEditedFloor
-  ]);
-
-  // DIAGNOSTIC: Track variable changes that might break isolation
-  useEffect(() => {
-    console.log("🔍 lastEditedFloor changed:", lastEditedFloor);
-  }, [lastEditedFloor]);
-
-  useEffect(() => {
-    console.log("🔍 floors prop changed:", Object.keys(floors));
-  }, [floors]);
-
-  useEffect(() => {
-    console.log("🔍 storeFloors changed:", Object.keys(storeFloors));
-  }, [storeFloors]);
+    return migrateFloorsData(floorsToUse);
+  }, [storeFloors, floors]);
 
   // Phase 2: Wall Association Helper Functions for AirEntry Dialog Unification
   const lineToUniqueId = (line: Line): string => {
@@ -1594,49 +1530,31 @@ export default function Canvas3D({
     };
   }
 
-  // Calculate initialValues for AirEntry dialog at component level to avoid React hooks violations
+  // FASE 2: Simplified dialog state - ID-based instead of complex object
+  const [editingAirEntryId, setEditingAirEntryId] = useState<string | null>(null);
+  
+  // FASE 2: Simple function to get AirEntry by ID using store central functions
+  const getAirEntryById = useCallback((id: string) => {
+    return useRoomStore.getState().findAirEntryById(id);
+  }, []);
+  
+  // FASE 2: Simplified initial values for dialog
   const airEntryInitialValues = useMemo(() => {
-    if (!editingAirEntry) return null;
+    if (!editingAirEntryId) return null;
     
-    // CRITICAL FIX: Always read from reactive store first to get current data
-    const reactiveStoreFloors = useRoomStore.getState().floors;
-    const currentAirEntry = reactiveStoreFloors[editingAirEntry.floorName]?.airEntries?.[editingAirEntry.index];
+    const result = getAirEntryById(editingAirEntryId);
+    if (!result) return null;
     
-    // Use current store data as primary source, fallback to baseEntry
-    const baseEntry = currentAirEntry || editingAirEntry.entry;
-    const dimensions = baseEntry.dimensions;
-    const position = baseEntry.position;
-    
-    // Calculate wallPosition from current data
-    let wallPosition = (dimensions as any).wallPosition || (baseEntry as any).properties?.wallPosition;
-    
-    // HYBRID APPROACH: Read properties from mesh userData first (real-time), then store, then baseEntry
-    let properties = (baseEntry as any).properties;
-    
-    // 1. Try to get properties from mesh userData (most current for real-time changes)
-    const mesh = findAirEntryMesh(editingAirEntry.floorName, editingAirEntry.index);
-    if (mesh?.userData?.properties) {
-      properties = { ...properties, ...mesh.userData.properties };
-    }
-    
-    // 2. Also check for simulationProperties in mesh userData (for FurnVent compatibility)
-    if (mesh?.userData?.simulationProperties) {
-      properties = { ...properties, ...mesh.userData.simulationProperties };
-    }
-    
-    // 3. Update wallPosition from mesh if available (for real-time position updates)
-    if (mesh?.userData?.wallPosition !== undefined) {
-      wallPosition = mesh.userData.wallPosition;
-    }
+    const { entry, floorName, index } = result;
     
     return {
-      ...dimensions,
-      shape: (dimensions as any).shape,
-      properties: properties,
-      position: position,
-      wallPosition: wallPosition
+      ...entry.dimensions,
+      shape: (entry.dimensions as any).shape,
+      properties: (entry as any).properties || {},
+      position: entry.position,
+      wallPosition: (entry as any).wallPosition
     };
-  }, [editingAirEntry, editingAirEntry?.floorName, findAirEntryMesh]);
+  }, [editingAirEntryId, getAirEntryById]);
   
   // State for editing furniture
   const [editingFurniture, setEditingFurniture] = useState<{
@@ -1645,359 +1563,56 @@ export default function Canvas3D({
     mode: 'creation' | 'edit'; // Phase 2: Add mode tracking
   } | null>(null);
 
-  // Track editingAirEntry state changes
-  useEffect(() => {
-    // State change monitoring for air entry dialogs
-  }, [editingAirEntry]);
-
-  // Debounce mechanism to prevent excessive parent updates
-  const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Stable callbacks for AirEntry dialog real-time updates
+  // FASE 2: Simplified callbacks for preview system
   const handleAirEntryDimensionsUpdate = useCallback((newDimensions: any) => {
-    if (!editingAirEntry || !onDimensionsUpdate) return;
+    if (!editingAirEntryId) return;
     
-    // Clear any pending updates
-    if (updateTimeoutRef.current) {
-      clearTimeout(updateTimeoutRef.current);
+    const result = getAirEntryById(editingAirEntryId);
+    if (!result) return;
+    
+    const { entry, floorName, index } = result;
+    
+    // FASE 2: Direct store updates - no preview system needed
+    
+    // Update parent for store changes
+    if (onDimensionsUpdate) {
+      onDimensionsUpdate(floorName, index, newDimensions);
     }
-    
-    const updatedEntry = {
-      ...editingAirEntry.entry,
-      dimensions: {
-        ...editingAirEntry.entry.dimensions,
-        ...newDimensions
-      }
-    };
-    
-    // Update local state immediately for responsiveness
-    setEditingAirEntry(prev => prev ? {
-      ...prev,
-      entry: updatedEntry
-    } : null);
-    
-    // Force immediate dimension update for visual feedback (Center Height, Width, Height)
-    if (sceneRef.current && (newDimensions.distanceToFloor !== undefined || newDimensions.width !== undefined || newDimensions.height !== undefined)) {
-      // DEBUGGING COMPLETO: Inventario de meshes antes de modificar
-      console.log("🔍 SCENE MESH INVENTORY:", {
-        editingEntry: {
-          type: editingAirEntry.entry.type,
-          index: editingAirEntry.index,
-          floorName: editingAirEntry.floorName
-        },
-        allAirEntryMeshes: (() => {
-          const meshes = [];
-          sceneRef.current.traverse((obj) => {
-            if (obj instanceof THREE.Mesh && obj.userData?.type && 
-                ["window", "door", "vent"].includes(obj.userData.type)) {
-              meshes.push({
-                type: obj.userData.type,
-                entryIndex: obj.userData.entryIndex,
-                floorName: obj.userData.floorName,
-                position: obj.userData.position
-              });
-            }
-          });
-          return meshes;
-        })()
-      });
-
-      sceneRef.current.traverse((object) => {
-        if (object instanceof THREE.Mesh && 
-            object.userData?.type === editingAirEntry.entry.type &&
-            object.userData?.entryIndex === editingAirEntry.index &&
-            doFloorsMatch(object.userData?.floorName || '', editingAirEntry.floorName)) { // ← USAR doFloorsMatch
-          
-          console.log("🎯 EXACT MATCH FOUND - Only this mesh should be modified:", {
-            type: object.userData.type,
-            entryIndex: object.userData.entryIndex,
-            floorName: object.userData.floorName,
-            position: object.position
-          });
-          
-          // Update the mesh Z position for Center Height (distanceToFloor)
-          if (newDimensions.distanceToFloor !== undefined) {
-            const newZ = newDimensions.distanceToFloor;
-            object.position.setZ(newZ);
-          }
-
-          // Update mesh geometry for Width and Height (same approach as creation)
-          if (newDimensions.width !== undefined || newDimensions.height !== undefined) {
-            const currentDimensions = object.userData.dimensions || editingAirEntry.entry.dimensions;
-            const newWidth = newDimensions.width !== undefined ? newDimensions.width : currentDimensions.width;
-            const newHeight = newDimensions.height !== undefined ? newDimensions.height : currentDimensions.height;
-            
-            // Update geometry directly (same as creation) - no scale conversion
-            const newGeometry = new THREE.PlaneGeometry(newWidth, newHeight);
-            object.geometry.dispose(); // Clean up old geometry
-            object.geometry = newGeometry;
-          }
-          
-          // Update userData for persistence
-          if (object.userData.dimensions) {
-            object.userData.dimensions = { ...object.userData.dimensions, ...newDimensions };
-          }
-
-          // PHASE 5: Update coordinate system during real-time dimension changes
-          if (!presentationMode && newDimensions.distanceToFloor !== undefined) {
-            try {
-              const position3D = transform2DTo3D(object.userData.position || editingAirEntry.entry.position);
-              const floorData = finalFloors[editingAirEntry.floorName];
-              const airEntry = floorData?.airEntries?.[editingAirEntry.index];
-              
-              // Update coordinate system (non-invasive) - only for height changes
-              updateCoordinateSystemPosition(editingAirEntry.index, editingAirEntry.floorName, position3D, newDimensions.distanceToFloor, airEntry);
-            } catch (error) {
-              // Coordinate system update failure won't affect AirEntry operations
-              console.warn('Coordinate system update failed during real-time dimension change:', error);
-            }
-          }
-        }
-      });
-    }
-    
-    // 🧪 DIAGNOSIS LOG: Check editingAirEntry values when callback executes
-    console.log("🧪 [DIAGNOSIS] onDimensionsUpdate callback executing:", {
-      callbackFloorName: editingAirEntry.floorName,
-      callbackIndex: editingAirEntry.index,
-      newDimensions: newDimensions,
-      editingAirEntryState: {
-        floorName: editingAirEntry.floorName,
-        index: editingAirEntry.index,
-        entryId: editingAirEntry.entry.id,
-        entryType: editingAirEntry.entry.type
-      },
-      timestamp: Date.now()
-    });
-    
-    // Debounced callback to parent for store updates
-    updateTimeoutRef.current = setTimeout(() => {
-      onDimensionsUpdate(editingAirEntry.floorName, editingAirEntry.index, newDimensions);
-    }, 100);
-  }, [editingAirEntry, onDimensionsUpdate, editingAirEntry?.floorName]);
+  }, [editingAirEntryId, getAirEntryById, onDimensionsUpdate]);
 
   const handleAirEntryPositionUpdate = useCallback((newPosition: any) => {
-    if (!editingAirEntry || !onUpdateAirEntry) return;
+    if (!editingAirEntryId) return;
     
-    // Clear any pending updates
-    if (updateTimeoutRef.current) {
-      clearTimeout(updateTimeoutRef.current);
+    const result = getAirEntryById(editingAirEntryId);
+    if (!result) return;
+    
+    const { entry, floorName, index } = result;
+    
+    // FASE 2: Direct store updates - no preview system needed
+    
+    // Update parent for store changes
+    if (onUpdateAirEntry) {
+      const updatedEntry = { ...entry, position: newPosition };
+      onUpdateAirEntry(floorName, index, updatedEntry);
     }
-    
-    const updatedEntry = {
-      ...editingAirEntry.entry,
-      position: newPosition
-    };
-    
-    // Store the updated position in the reference for immediate visual update
-    const normalizedFloorName = normalizeFloorName(editingAirEntry.floorName);
-    if (!updatedAirEntryPositionsRef.current[normalizedFloorName]) {
-      updatedAirEntryPositionsRef.current[normalizedFloorName] = {};
-    }
-    
-    // Update or create entry with new position
-    if (!updatedAirEntryPositionsRef.current[normalizedFloorName][editingAirEntry.index]) {
-      updatedAirEntryPositionsRef.current[normalizedFloorName][editingAirEntry.index] = {
-        position: newPosition,
-        dimensions: editingAirEntry.entry.dimensions
-      };
-    } else {
-      updatedAirEntryPositionsRef.current[normalizedFloorName][editingAirEntry.index].position = newPosition;
-    }
-    
-    // Update local state immediately for responsiveness
-    setEditingAirEntry(prev => prev ? {
-      ...prev,
-      entry: updatedEntry
-    } : null);
-    
-    // Force immediate position update for visual feedback
-    if (sceneRef.current) {
-      // DEBUGGING COMPLETO: Inventario de meshes antes de modificar
-      console.log("🔍 POSITION UPDATE - SCENE MESH INVENTORY:", {
-        editingEntry: {
-          type: editingAirEntry.entry.type,
-          index: editingAirEntry.index,
-          floorName: editingAirEntry.floorName
-        },
-        allAirEntryMeshes: (() => {
-          const meshes = [];
-          sceneRef.current.traverse((obj) => {
-            if (obj instanceof THREE.Mesh && obj.userData?.type && 
-                ["window", "door", "vent"].includes(obj.userData.type)) {
-              meshes.push({
-                type: obj.userData.type,
-                entryIndex: obj.userData.entryIndex,
-                floorName: obj.userData.floorName,
-                position: obj.userData.position
-              });
-            }
-          });
-          return meshes;
-        })()
-      });
+  }, [editingAirEntryId, getAirEntryById, onUpdateAirEntry]);
 
-      sceneRef.current.traverse((object) => {
-        if (object instanceof THREE.Mesh && 
-            object.userData?.type === editingAirEntry.entry.type &&
-            object.userData?.entryIndex === editingAirEntry.index &&
-            doFloorsMatch(object.userData?.floorName || '', editingAirEntry.floorName)) { // ← USAR doFloorsMatch
-          
-          console.log("🎯 POSITION UPDATE - EXACT MATCH FOUND:", {
-            type: object.userData.type,
-            entryIndex: object.userData.entryIndex,
-            floorName: object.userData.floorName,
-            position: object.position
-          });
-          
-          // Update the mesh position
-          const position3D = transform2DTo3D(newPosition);
-          object.position.set(position3D.x, position3D.y, object.position.z);
-          object.userData.position = newPosition;
-
-          // PHASE 5: Update coordinate system during real-time position changes
-          if (!presentationMode) {
-            try {
-              const zPos = object.position.z; // Use current Z position
-              const floorData = finalFloors[editingAirEntry.floorName];
-              const airEntry = floorData?.airEntries?.[editingAirEntry.index];
-              
-              // Update coordinate system (non-invasive)
-              updateCoordinateSystemPosition(editingAirEntry.index, editingAirEntry.floorName, position3D, zPos, airEntry);
-            } catch (error) {
-              // Coordinate system update failure won't affect AirEntry operations
-              console.warn('Coordinate system update failed during real-time position change:', error);
-            }
-          }
-        }
-      });
-    }
-    
-    // 🧪 DIAGNOSIS LOG: Check editingAirEntry values when position callback executes
-    console.log("🧪 [DIAGNOSIS] onUpdateAirEntry callback executing:", {
-      callbackFloorName: editingAirEntry.floorName,
-      callbackIndex: editingAirEntry.index,
-      updatedEntry: {
-        id: updatedEntry.id,
-        type: updatedEntry.type,
-        position: updatedEntry.position
-      },
-      editingAirEntryState: {
-        floorName: editingAirEntry.floorName,
-        index: editingAirEntry.index,
-        entryId: editingAirEntry.entry.id,
-        entryType: editingAirEntry.entry.type
-      },
-      timestamp: Date.now()
-    });
-    
-    // Debounce parent callback to prevent excessive updates
-    updateTimeoutRef.current = setTimeout(() => {
-      if (onUpdateAirEntry && editingAirEntry) {
-        console.log("🔍 [CRITICAL GLITCH POINT] About to call onUpdateAirEntry - this triggers store update which causes scene rebuild:", {
-          aboutToUpdateFloor: editingAirEntry.floorName,
-          aboutToUpdateIndex: editingAirEntry.index,
-          aboutToUpdatePosition: updatedEntry.position,
-          currentVisibleFloor: currentFloor,
-          isUpdatingSameFloorAsVisible: editingAirEntry.floorName === currentFloor,
-          
-          // CRITICAL: Before calling onUpdateAirEntry, what meshes exist in scene?
-          allAirEntryMeshesInScene: sceneRef.current ? (() => {
-            const meshes = [] as any[];
-            sceneRef.current?.traverse((child) => {
-              if (child.userData?.type === 'airEntry') {
-                meshes.push({
-                  id: child.userData.id,
-                  entryIndex: child.userData.entryIndex,
-                  floorName: child.userData.floorName,
-                  currentPosition: child.position.clone(),
-                  userData: child.userData
-                });
-              }
-            });
-            return meshes;
-          })() : [],
-          
-          timestamp: Date.now()
-        });
-        
-        onUpdateAirEntry(editingAirEntry.floorName, editingAirEntry.index, updatedEntry);
-        
-        console.log("🔍 [CRITICAL GLITCH POINT] onUpdateAirEntry call completed - scene will now rebuild");
-      }
-      
-      // OPTIMIZATION: No callback needed after position update - textures preserved automatically
-    }, 150);
-  }, [editingAirEntry, onUpdateAirEntry, editingAirEntry?.floorName]);
-
-  // CRITICAL FIX: Real-time properties update function to ensure dialog persistence
+  // FASE 2: Simplified properties update callback
   const handleAirEntryPropertiesUpdate = useCallback((newProperties: any) => {
-    if (!editingAirEntry) return;
+    if (!editingAirEntryId) return;
     
-    // Clear any pending updates
-    if (updateTimeoutRef.current) {
-      clearTimeout(updateTimeoutRef.current);
+    const result = getAirEntryById(editingAirEntryId);
+    if (!result) return;
+    
+    const { entry, floorName, index } = result;
+    
+    // FASE 2: Direct store updates - no preview system needed
+    
+    // Update parent for store changes
+    if (onPropertiesUpdate) {
+      onPropertiesUpdate(floorName, index, newProperties);
     }
-    
-    // STEP 1: Update mesh userData immediately for dialog persistence
-    if (sceneRef.current) {
-      sceneRef.current.traverse((object) => {
-        if (object instanceof THREE.Mesh && 
-            object.userData?.type === editingAirEntry.entry.type &&
-            object.userData?.entryIndex === editingAirEntry.index) {
-          
-          // Update both properties and simulationProperties for maximum compatibility
-          object.userData.properties = { 
-            ...object.userData.properties, 
-            ...newProperties 
-          };
-          object.userData.simulationProperties = { 
-            ...object.userData.simulationProperties, 
-            ...newProperties 
-          };
-        }
-      });
-    }
-    
-    // STEP 2: Update local editing state for real-time visual feedback
-    setEditingAirEntry(prev => prev ? {
-      ...prev,
-      entry: {
-        ...prev.entry,
-        properties: { ...prev.entry.properties, ...newProperties }
-      }
-    } : null);
-    
-    // 🧪 DIAGNOSIS LOG: Check editingAirEntry values when properties callback executes
-    console.log("🧪 [DIAGNOSIS] onPropertiesUpdate callback executing:", {
-      callbackFloorName: editingAirEntry.floorName,
-      callbackIndex: editingAirEntry.index,
-      newProperties: newProperties,
-      editingAirEntryState: {
-        floorName: editingAirEntry.floorName,
-        index: editingAirEntry.index,
-        entryId: editingAirEntry.entry.id,
-        entryType: editingAirEntry.entry.type
-      },
-      timestamp: Date.now()
-    });
-    
-    // STEP 3: Debounced callback to parent for store updates
-    updateTimeoutRef.current = setTimeout(() => {
-      if (onPropertiesUpdate && editingAirEntry) {
-        onPropertiesUpdate(editingAirEntry.floorName, editingAirEntry.index, newProperties);
-      }
-    }, 100);
-  }, [editingAirEntry, onPropertiesUpdate, editingAirEntry?.floorName]);
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (updateTimeoutRef.current) {
-        clearTimeout(updateTimeoutRef.current);
-      }
-    };
-  }, []);
+  }, [editingAirEntryId, getAirEntryById, onPropertiesUpdate]);
   
   // Reference to store newly created furniture for auto-opening dialog
   const newFurnitureForDialog = useRef<FurnitureItem | null>(null);
@@ -2284,7 +1899,7 @@ export default function Canvas3D({
     return baseHeight;
   };
 
-  // PHASE 3: Hybrid AirEntry update handler - combines direct mesh update with store sync
+  // FASE 2: Simplified AirEntry update handler using ID-based system
   const handleAirEntryEdit = (
     index: number,
     data: {
@@ -2304,10 +1919,16 @@ export default function Canvas3D({
       };
     },
   ) => {
-    if (!editingAirEntry || !onUpdateAirEntry) return;
+    if (!editingAirEntryId || !onUpdateAirEntry) return;
 
-    // STEP 1: Try direct mesh update first (preserves textures) - Use correct floor from editingAirEntry
-    const directUpdateSuccess = updateAirEntryMeshDirectly(editingAirEntry.floorName, index, {
+    // Get current AirEntry from store using ID
+    const result = getAirEntryById(editingAirEntryId);
+    if (!result) return;
+
+    const { entry, floorName } = result;
+
+    // STEP 1: Try direct mesh update first (preserves textures)
+    const directUpdateSuccess = updateAirEntryMeshDirectly(floorName, index, {
       dimensions: {
         width: data.width,
         height: data.height,
@@ -2318,15 +1939,15 @@ export default function Canvas3D({
       properties: data.properties
     });
 
-    // STEP 2: Get current position from store to preserve real-time updates (matching Canvas2D approach) - Use correct floor
+    // STEP 2: Get current position from store to preserve real-time updates
     const currentStoreFloors = useRoomStore.getState().floors;
-    const currentStoreEntry = currentStoreFloors[editingAirEntry.floorName]?.airEntries?.[index];
+    const currentStoreEntry = currentStoreFloors[floorName]?.airEntries?.[index];
     const currentStorePosition = currentStoreEntry?.position;
 
-    // STEP 3: Update store for synchronization (matching Canvas2D pattern)
+    // STEP 3: Update store for synchronization
     const updatedEntry = {
-      ...editingAirEntry.entry,
-      position: currentStorePosition || editingAirEntry.entry.position, // Preserve store position like Canvas2D
+      ...entry,
+      position: currentStorePosition || entry.position,
       dimensions: {
         width: data.width,
         height: data.height,
@@ -2337,27 +1958,26 @@ export default function Canvas3D({
       ...(data.properties && { properties: data.properties }),
     };
 
-    // Store the dimensions in our ref to preserve them during any potential scene rebuilds - Use correct floor
-    const normalizedFloorName = normalizeFloorName(editingAirEntry.floorName);
+    // Store the dimensions in our ref to preserve them during any potential scene rebuilds
+    const normalizedFloorName = normalizeFloorName(floorName);
     if (!updatedAirEntryPositionsRef.current[normalizedFloorName]) {
       updatedAirEntryPositionsRef.current[normalizedFloorName] = {};
     }
 
     if (!updatedAirEntryPositionsRef.current[normalizedFloorName][index]) {
       updatedAirEntryPositionsRef.current[normalizedFloorName][index] = {
-        position: { ...editingAirEntry.entry.position },
+        position: { ...entry.position },
         dimensions: updatedEntry.dimensions
       };
     } else {
       updatedAirEntryPositionsRef.current[normalizedFloorName][index].dimensions = updatedEntry.dimensions;
     }
 
-    // STEP 3: Update store with awareness that mesh was already updated - Use correct floor name
-    onUpdateAirEntry(editingAirEntry.floorName, index, updatedEntry);
+    // STEP 4: Update store
+    onUpdateAirEntry(floorName, index, updatedEntry);
     
-    // SURGICAL SOLUTION: Stop editing (exit isolation, trigger synchronization)
-    setLastEditedFloor(null);
-    setEditingAirEntry(null);
+    // FASE 2: Stop editing
+    setEditingAirEntryId(null);
   };
 
   // New function to create stair mesh
@@ -2600,7 +2220,7 @@ export default function Canvas3D({
         id: entry.id,
         type: entry.type,
         position: entry.position,
-        isBeingEdited: editingAirEntry?.floorName === floorData.name && editingAirEntry?.index === index
+        isBeingEdited: false // FASE 2: Simplified - no longer track editing state per entry
       })),
       timestamp: Date.now()
     });
@@ -4916,7 +4536,7 @@ export default function Canvas3D({
             });
             
             // 🧪 DIAGNOSIS LOG: Confirm setEditingAirEntry is correct
-            console.log("🧪 [DIAGNOSIS] setEditingAirEntry called with:", {
+            console.log("🧪 [DIAGNOSIS] Opening AirEntry dialog with ID:", {
               index: foundIndex,
               floorName: correctFloorKey,
               entryId: mergedEntry.id,
@@ -4925,17 +4545,12 @@ export default function Canvas3D({
               timestamp: Date.now()
             });
             
-            // SURGICAL FIX: Track which floor is being edited
-            setLastEditedFloor(correctFloorKey);
-            
-            // SURGICAL SOLUTION: Start editing (enter isolation mode)
-            setEditingAirEntry({
-              index: foundIndex,
-              entry: mergedEntry,
-              wallContext,
-              floorName: correctFloorKey  // 🎯 CROSS-FLOOR BUG FIX: Use correct mapped floor key for callback compatibility
-            });
-            // Scene will automatically use stable EDITING_ISOLATION_TOKEN due to useMemo dependency change
+            // FASE 2: Start editing using ID-based system
+            if (mergedEntry.id) {
+              setEditingAirEntryId(mergedEntry.id);
+            } else {
+              console.error("Cannot open dialog: AirEntry has no ID");
+            }
             
 
           }
@@ -5241,40 +4856,17 @@ export default function Canvas3D({
     }
   }, [finalFloors, currentFloor, ceilingHeight, floorDeckThickness]);
   
-  // SURGICAL FIX: Separate useEffect for real-time updates that doesn't trigger full scene rebuild
-  useEffect(() => {
-    // If we're in real-time editing mode, only update the specific mesh being edited
-    if (editingAirEntry && lastEditedFloor) {
-      console.log("🎯 [SURGICAL FIX] Real-time update mode detected:", {
-        editingFloor: editingAirEntry.floorName,
-        lastEditedFloor,
-        shouldSkipFullRebuild: true,
-        willUseDirectMeshUpdates: true
-      });
-      
-      // Direct mesh updates are already handled by the position/dimension update functions
-      // This prevents the full scene rebuild during real-time updates
-      return;
-    }
-  }, [editingAirEntry, lastEditedFloor]);
+  // FASE 2: Simplified - no longer needed with ID-based system
+  // Real-time updates are handled directly by update functions
   
-  // 🚨 CRITICAL DIAGNOSTIC: Scene Rebuild Detection
+  // FASE 2: Scene creation with simplified logging
   useEffect(() => {
-    // SOLUCIÓN QUIRÚRGICA: Bloquear durante edición
-    if (editingAirEntry) {
-      console.log("🛡️ SCENE REBUILD BLOCKED - Currently editing, skipping rebuild");
-      return;
-    }
-    
     console.log("🔥 SCENE REBUILD TRIGGERED:", {
-      editingAirEntry: !!editingAirEntry,
       finalFloorsId: JSON.stringify(Object.keys(finalFloors)),
-      thisWillRecreateEverything: true,
       triggerCause: "finalFloors, currentFloor, ceilingHeight, or floorDeckThickness changed"
     });
     
-    // Original scene rebuild logging for comparison
-    console.log("🔍 [GLITCH ROOT CAUSE] Scene rebuild details:", {
+    console.log("🔍 Scene rebuild details:", {
       currentFloor: currentFloor,
       finalFloorsKeys: Object.keys(finalFloors),
       totalAirEntries: Object.values(finalFloors).reduce((total, floor) => total + (floor.airEntries?.length || 0), 0),
@@ -5283,14 +4875,13 @@ export default function Canvas3D({
           index,
           id: entry.id,
           type: entry.type,
-          position: entry.position,
-          currentlyBeingEdited: editingAirEntry?.floorName === floorName && editingAirEntry?.index === index
+          position: entry.position
         }));
         return acc;
       }, {} as any),
       timestamp: Date.now()
     });
-  }, [finalFloors, currentFloor, ceilingHeight, floorDeckThickness, editingAirEntry]);
+  }, [finalFloors, currentFloor, ceilingHeight, floorDeckThickness]);
 
   // Separate useEffect for context updates to avoid hidden dependencies in scene rebuild
   useEffect(() => {
@@ -6430,57 +6021,54 @@ export default function Canvas3D({
         </div>
       </div>
 
-      {/* Dialog for editing air entries - Phase 4: Unified with Canvas2D */}
-      {editingAirEntry && (
-        <AirEntryDialog
-          type={editingAirEntry.entry.type}
-          isOpen={true}
-          onClose={() => {
-            // SURGICAL SOLUTION: Stop editing (exit isolation, trigger synchronization)
-            setLastEditedFloor(null);
-            setEditingAirEntry(null);
-          }}
-          onCancel={() => {
-            // SURGICAL SOLUTION: Stop editing (exit isolation, trigger synchronization)
-            setLastEditedFloor(null);
-            setEditingAirEntry(null);
-          }}
-          onConfirm={(data) => {
-            console.log("💾 [CANVAS3D SAVE] Save Changes clicked with values:", {
-              elementStatus: data.properties?.state,
-              temperature: data.properties?.temperature,
-              airDirection: data.properties?.airOrientation,
-              flowIntensity: data.properties?.flowIntensity,
-              index: editingAirEntry.index,
-              floorName: editingAirEntry.floorName,
-              willSaveToCorrectFloor: editingAirEntry.floorName,
-              NOT_currentFloor: currentFloor,
-              timestamp: new Date().toISOString()
-            });
+      {/* FASE 2: Simplified AirEntry dialog using ID-based system */}
+      {editingAirEntryId && (() => {
+        const result = getAirEntryById(editingAirEntryId);
+        if (!result) return null;
+        
+        const { entry, floorName, index } = result;
+        
+        return (
+          <AirEntryDialog
+            type={entry.type}
+            isOpen={true}
+            onClose={() => {
+              setEditingAirEntryId(null);
+            }}
+            onCancel={() => {
+              setEditingAirEntryId(null);
+            }}
+            onConfirm={(data) => {
+              console.log("💾 [CANVAS3D SAVE] Save Changes clicked with values:", {
+                elementStatus: data.properties?.state,
+                temperature: data.properties?.temperature,
+                airDirection: data.properties?.airOrientation,
+                flowIntensity: data.properties?.flowIntensity,
+                index: index,
+                floorName: floorName,
+                timestamp: new Date().toISOString()
+              });
 
-            handleAirEntryEdit(editingAirEntry.index, {
-              width: data.width,
-              height: data.height,
-              distanceToFloor: data.distanceToFloor,
-              shape: data.shape,
-              wallPosition: data.wallPosition,
-              properties: data.properties
-            } as any);
-            
-            // SURGICAL FIX: Clear editing state after Save Changes
-            setLastEditedFloor(null);
-
-          }}
-          initialValues={airEntryInitialValues as any}
-          airEntryIndex={editingAirEntry.index}
-          currentFloor={editingAirEntry.floorName}
-          isEditing={true}
-          wallContext={editingAirEntry.wallContext}
-          onPositionUpdate={handleAirEntryPositionUpdate}
-          onDimensionsUpdate={handleAirEntryDimensionsUpdate}
-          onPropertiesUpdate={handleAirEntryPropertiesUpdate}
-        />
-      )}
+              handleAirEntryEdit(index, {
+                width: data.width,
+                height: data.height,
+                distanceToFloor: data.distanceToFloor,
+                shape: data.shape,
+                wallPosition: data.wallPosition,
+                properties: data.properties
+              } as any);
+            }}
+            initialValues={airEntryInitialValues as any}
+            airEntryIndex={index}
+            currentFloor={floorName}
+            isEditing={true}
+            wallContext={findAssociatedWall(entry)}
+            onPositionUpdate={handleAirEntryPositionUpdate}
+            onDimensionsUpdate={handleAirEntryDimensionsUpdate}
+            onPropertiesUpdate={handleAirEntryPropertiesUpdate}
+          />
+        );
+      })()}
 
       {/* Dialog for editing furniture */}
       {editingFurniture && editingFurniture.item.type === 'vent' ? (
