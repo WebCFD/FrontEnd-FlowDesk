@@ -3,8 +3,14 @@ import * as THREE from "three";
 import { TrackballControls } from "three/addons/controls/TrackballControls.js";
 import { makeTextSprite } from "@/lib/three-utils";
 import AirEntryDialog from "./AirEntryDialog";
+import FurnitureDialog from "./FurnitureDialog";
+import UnifiedVentDialog from "./UnifiedVentDialog";
 import { useRoomStore } from "@/lib/store/room-store";
 import type { Point, Line, AirEntry } from "@/types";
+import { FurnitureItem } from "@shared/furniture-types";
+import { createTableModel, createPersonModel, createArmchairModel, createCarModel, createBlockModel } from "./furniture-models";
+import { STLProcessor } from "./STLProcessor";
+import { customFurnitureStore } from "@/lib/custom-furniture-store";
 
 interface FloorData {
   lines: Line[];
@@ -19,6 +25,17 @@ interface Canvas3DProps {
   ceilingHeight?: number;
   floorDeckThickness?: number;
   wallTransparency: number;
+  isEraserMode?: boolean;
+  isFurnitureEraserMode?: boolean;
+  simulationName?: string;
+  simulationType?: string;
+  isMultifloor?: boolean;
+  presentationMode?: boolean;
+  allowAirEntryEditing?: boolean;
+  lightingIntensity?: number;
+  floorParameters?: Record<string, { ceilingHeight: number; floorDeck: number }>;
+  
+  // AirEntry callbacks
   onUpdateAirEntry?: (floorName: string, index: number, entry: AirEntry) => void;
   onDeleteAirEntry?: (floorName: string, index: number) => void;
   onPropertiesUpdate?: (
@@ -49,6 +66,13 @@ interface Canvas3DProps {
     index: number,
     position: Point
   ) => void;
+  
+  // Furniture callbacks
+  onFurnitureAdd?: (floorName: string, item: FurnitureItem) => void;
+  onUpdateFurniture?: (floorName: string, itemId: string, item: FurnitureItem) => void;
+  onDeleteFurniture?: (floorName: string, itemId: string) => void;
+  onFurnitureAdded?: () => void;
+  onFurnitureDeleted?: () => void;
 }
 
 // Utility functions
@@ -97,15 +121,36 @@ export default function Canvas3D({
   ceilingHeight = 250,
   floorDeckThickness = 15,
   wallTransparency,
+  isEraserMode = false,
+  isFurnitureEraserMode = false,
+  simulationName,
+  simulationType,
+  isMultifloor = false,
+  presentationMode = false,
+  allowAirEntryEditing = true,
+  lightingIntensity = 0.8,
+  floorParameters,
   onUpdateAirEntry,
   onDeleteAirEntry,
   onPropertiesUpdate,
   onDimensionsUpdate,
-  onPositionUpdate
+  onPositionUpdate,
+  onFurnitureAdd,
+  onUpdateFurniture,
+  onDeleteFurniture,
+  onFurnitureAdded,
+  onFurnitureDeleted
 }: Canvas3DProps) {
   // Store integration
   const storeFloors = useRoomStore((state) => state.floors);
-  const { updateAirEntry, findAirEntryById, generateAirEntryId } = useRoomStore();
+  const { 
+    updateAirEntry, 
+    findAirEntryById, 
+    generateAirEntryId,
+    addFurnitureToFloor,
+    updateFurnitureInFloor,
+    deleteFurnitureFromFloor
+  } = useRoomStore();
   
   // Use store data if available, fallback to props
   const finalFloors = Object.keys(storeFloors).length > 0 ? storeFloors : floors;
@@ -120,6 +165,11 @@ export default function Canvas3D({
   
   // Dialog state
   const [editingAirEntryId, setEditingAirEntryId] = useState<string | null>(null);
+  const [editingFurniture, setEditingFurniture] = useState<{
+    item: FurnitureItem;
+    index: number;
+    mode?: 'creation' | 'edit';
+  } | null>(null);
   
   // Find air entry by ID
   const findAirEntryByIdLocal = useCallback((id: string) => {
@@ -193,6 +243,263 @@ export default function Canvas3D({
       onPropertiesUpdate(floorName, index, newProperties);
     }
   }, [editingAirEntryId, findAirEntryByIdLocal, updateAirEntry, onPropertiesUpdate]);
+
+  // Furniture generation and utilities
+  const generateFurnitureId = useCallback((type: string, floorName: string): string => {
+    const currentFloorData = finalFloors[floorName];
+    const existingFurniture = currentFloorData?.furnitureItems || [];
+    
+    const floorPrefix = floorName === 'ground' ? '0F' : 
+                       floorName === 'first' ? '1F' :
+                       floorName === 'second' ? '2F' :
+                       floorName === 'third' ? '3F' :
+                       floorName === 'fourth' ? '4F' :
+                       floorName === 'fifth' ? '5F' : '0F';
+    
+    const typeDisplayNames: Record<string, string> = {
+      'table': 'Table',
+      'armchair': 'Chair', 
+      'person': 'Person',
+      'car': 'Car',
+      'block': 'Block',
+      'vent': 'Vent',
+      'custom': 'Obj'
+    };
+    
+    const sameTypeCount = existingFurniture.filter(item => 
+      item.type === type && item.floorName === floorName
+    ).length + 1;
+    
+    const displayName = typeDisplayNames[type] || 'Item';
+    return `${displayName} ${floorPrefix}-${sameTypeCount}`;
+  }, [finalFloors]);
+
+  // Create furniture models
+  const createFurnitureModel = useCallback((furnitureItem: FurnitureItem): THREE.Object3D | null => {
+    let model: THREE.Object3D | null = null;
+    
+    switch (furnitureItem.type) {
+      case 'table':
+        model = createTableModel();
+        break;
+      case 'person':
+        model = createPersonModel();
+        break;
+      case 'armchair':
+        model = createArmchairModel();
+        break;
+      case 'car':
+        model = createCarModel();
+        break;
+      case 'block':
+        model = createBlockModel();
+        break;
+      case 'custom':
+        const processor = STLProcessor.getInstance();
+        const customMesh = processor.createMeshFromStored(furnitureItem.id);
+        if (customMesh) {
+          model = new THREE.Group();
+          model.add(customMesh);
+        }
+        break;
+      case 'vent':
+        model = new THREE.Group();
+        const ventGeometry = new THREE.PlaneGeometry(0.8, 0.8);
+        const ventMaterial = new THREE.MeshPhongMaterial({ 
+          color: 0xffa500, 
+          transparent: true, 
+          opacity: 0.8 
+        });
+        const ventMesh = new THREE.Mesh(ventGeometry, ventMaterial);
+        model.add(ventMesh);
+        break;
+    }
+    
+    if (model) {
+      // Apply transformations
+      model.position.set(
+        furnitureItem.position.x / 100,
+        furnitureItem.position.z / 100,
+        furnitureItem.position.y / 100
+      );
+      
+      if (furnitureItem.rotation) {
+        model.rotation.set(
+          furnitureItem.rotation.x,
+          furnitureItem.rotation.y,
+          furnitureItem.rotation.z
+        );
+      }
+      
+      if (furnitureItem.dimensions) {
+        const scale = {
+          x: furnitureItem.dimensions.width / 100,
+          y: furnitureItem.dimensions.depth / 100,
+          z: furnitureItem.dimensions.height / 100
+        };
+        model.scale.set(scale.x, scale.y, scale.z);
+      }
+      
+      // Store metadata
+      model.userData = {
+        type: 'furniture',
+        furnitureType: furnitureItem.type,
+        id: furnitureItem.id,
+        floorName: furnitureItem.floorName,
+        simulationProperties: furnitureItem.simulationProperties || {},
+        properties: furnitureItem.properties || {}
+      };
+    }
+    
+    return model;
+  }, []);
+
+  // Furniture drag & drop handler
+  const handleFurnitureDrop = useCallback((event: DragEvent) => {
+    if (!sceneRef.current || !cameraRef.current || !rendererRef.current) return;
+    
+    event.preventDefault();
+    
+    try {
+      const itemData = event.dataTransfer?.getData("application/json");
+      if (!itemData) return;
+      
+      const furnitureData = JSON.parse(itemData);
+      if (!furnitureData.type) return;
+      
+      // Calculate drop position
+      const rect = rendererRef.current.domElement.getBoundingClientRect();
+      const mouse = new THREE.Vector2(
+        ((event.clientX - rect.left) / rect.width) * 2 - 1,
+        -((event.clientY - rect.top) / rect.height) * 2 + 1
+      );
+      
+      const raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera(mouse, cameraRef.current);
+      
+      // Check for floor intersection
+      const floorObjects = sceneRef.current.children.filter(child => 
+        child.userData?.type === 'floor'
+      );
+      
+      const intersects = raycaster.intersectObjects(floorObjects);
+      if (intersects.length === 0) return;
+      
+      const intersection = intersects[0];
+      const dropPosition = intersection.point;
+      
+      // Create furniture item
+      const furnitureId = generateFurnitureId(furnitureData.type, currentFloor);
+      const furnitureItem: FurnitureItem = {
+        id: furnitureId,
+        type: furnitureData.type,
+        name: furnitureData.name || furnitureId,
+        floorName: currentFloor,
+        position: {
+          x: dropPosition.x * 100,
+          y: dropPosition.z * 100,
+          z: dropPosition.y * 100
+        },
+        rotation: { x: 0, y: 0, z: 0 },
+        dimensions: furnitureData.dimensions || { width: 80, height: 80, depth: 80 },
+        information: furnitureData.information || '',
+        simulationProperties: furnitureData.simulationProperties || {},
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+      };
+      
+      // Add to store
+      addFurnitureToFloor(currentFloor, furnitureItem);
+      
+      // Create and add to scene
+      const model = createFurnitureModel(furnitureItem);
+      if (model) {
+        sceneRef.current.add(model);
+        needsRenderRef.current = true;
+        
+        // Open edit dialog immediately
+        setEditingFurniture({
+          item: furnitureItem,
+          index: (finalFloors[currentFloor]?.furnitureItems?.length || 0) - 1,
+          mode: 'creation'
+        });
+      }
+      
+      // Notify parent
+      if (onFurnitureAdd) {
+        onFurnitureAdd(currentFloor, furnitureItem);
+      }
+      if (onFurnitureAdded) {
+        onFurnitureAdded();
+      }
+      
+    } catch (error) {
+      console.error("Error processing furniture drop:", error);
+    }
+  }, [currentFloor, generateFurnitureId, addFurnitureToFloor, createFurnitureModel, finalFloors, onFurnitureAdd, onFurnitureAdded]);
+
+  // Furniture editing handlers
+  const handleFurnitureEdit = useCallback((index: number, data: any) => {
+    if (!editingFurniture) return;
+    
+    const updatedItem = {
+      ...editingFurniture.item,
+      ...data,
+      updatedAt: Date.now()
+    };
+    
+    updateFurnitureInFloor(currentFloor, editingFurniture.item.id, updatedItem);
+    
+    // Update 3D scene
+    const furnitureObject = sceneRef.current?.children.find(child => 
+      child.userData?.type === 'furniture' && child.userData?.id === editingFurniture.item.id
+    );
+    
+    if (furnitureObject) {
+      // Update position
+      if (data.position) {
+        furnitureObject.position.set(
+          data.position.x / 100,
+          data.position.z / 100,
+          data.position.y / 100
+        );
+      }
+      
+      // Update rotation
+      if (data.rotation) {
+        furnitureObject.rotation.set(
+          data.rotation.x,
+          data.rotation.y,
+          data.rotation.z
+        );
+      }
+      
+      // Update scale
+      if (data.dimensions) {
+        furnitureObject.scale.set(
+          data.dimensions.width / 100,
+          data.dimensions.depth / 100,
+          data.dimensions.height / 100
+        );
+      }
+      
+      // Update userData
+      furnitureObject.userData = {
+        ...furnitureObject.userData,
+        simulationProperties: data.simulationProperties || furnitureObject.userData.simulationProperties,
+        properties: data.properties || furnitureObject.userData.properties
+      };
+      
+      needsRenderRef.current = true;
+    }
+    
+    // Notify parent
+    if (onUpdateFurniture) {
+      onUpdateFurniture(currentFloor, editingFurniture.item.id, updatedItem);
+    }
+    
+    setEditingFurniture(null);
+  }, [editingFurniture, currentFloor, updateFurnitureInFloor, onUpdateFurniture]);
 
   // Create floor objects (walls, floors, air entries)
   const createFloorObjects = useCallback((floorName: string, floorData: FloorData, baseHeight: number): THREE.Object3D[] => {
@@ -317,6 +624,19 @@ export default function Canvas3D({
       objects.push(entryMesh);
     });
 
+    // Create Furniture items for this floor
+    const furnitureItems = (floorData as any).furnitureItems || [];
+    furnitureItems.forEach((item: FurnitureItem) => {
+      if (item.floorName === floorName) {
+        const furnitureModel = createFurnitureModel(item);
+        if (furnitureModel) {
+          // Position relative to floor height
+          furnitureModel.position.y += baseHeight / 100;
+          objects.push(furnitureModel);
+        }
+      }
+    });
+
     return objects;
   }, [wallTransparency, ceilingHeight, generateAirEntryId]);
 
@@ -388,9 +708,12 @@ export default function Canvas3D({
 
     window.addEventListener('resize', handleResize);
 
-    // Double-click handler for AirEntry editing
+    // Double-click handler for AirEntry and Furniture editing
     const handleDoubleClick = (event: MouseEvent) => {
       if (!camera || !scene) return;
+      
+      // Skip in presentation mode unless explicitly allowed
+      if (presentationMode && !allowAirEntryEditing) return;
       
       const rect = renderer.domElement.getBoundingClientRect();
       const mouse = new THREE.Vector2(
@@ -405,20 +728,91 @@ export default function Canvas3D({
       
       for (const intersect of intersects) {
         const object = intersect.object;
+        
+        // Check for AirEntry editing
         if (object.userData?.type && 
             ["door", "window", "vent"].includes(object.userData.type) &&
             object.userData.airEntryId) {
           setEditingAirEntryId(object.userData.airEntryId);
           break;
         }
+        
+        // Check for Furniture editing
+        if (object.userData?.type === 'furniture' && object.userData?.id) {
+          const furnitureItems = finalFloors[currentFloor]?.furnitureItems || [];
+          const itemIndex = furnitureItems.findIndex(item => item.id === object.userData.id);
+          
+          if (itemIndex !== -1) {
+            setEditingFurniture({
+              item: furnitureItems[itemIndex],
+              index: itemIndex,
+              mode: 'edit'
+            });
+            break;
+          }
+        }
+      }
+    };
+
+    // Furniture drag & drop handlers
+    const handleDragOver = (event: DragEvent) => {
+      event.preventDefault();
+    };
+
+    const handleDrop = (event: DragEvent) => {
+      if (presentationMode) return; // No furniture dropping in presentation mode
+      handleFurnitureDrop(event);
+    };
+
+    // Furniture deletion handler (eraser mode)
+    const handleFurnitureClick = (event: MouseEvent) => {
+      if (!isFurnitureEraserMode || !camera || !scene) return;
+      
+      const rect = renderer.domElement.getBoundingClientRect();
+      const mouse = new THREE.Vector2(
+        ((event.clientX - rect.left) / rect.width) * 2 - 1,
+        -((event.clientY - rect.top) / rect.height) * 2 + 1
+      );
+      
+      const raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera(mouse, camera);
+      
+      const intersects = raycaster.intersectObjects(scene.children, true);
+      
+      for (const intersect of intersects) {
+        const object = intersect.object;
+        if (object.userData?.type === 'furniture' && object.userData?.id) {
+          // Remove from scene
+          scene.remove(object);
+          
+          // Remove from store
+          deleteFurnitureFromFloor(currentFloor, object.userData.id);
+          
+          // Notify parent
+          if (onDeleteFurniture) {
+            onDeleteFurniture(currentFloor, object.userData.id);
+          }
+          if (onFurnitureDeleted) {
+            onFurnitureDeleted();
+          }
+          
+          needsRenderRef.current = true;
+          break;
+        }
       }
     };
 
     renderer.domElement.addEventListener('dblclick', handleDoubleClick);
+    renderer.domElement.addEventListener('dragover', handleDragOver);
+    renderer.domElement.addEventListener('drop', handleDrop);
+    renderer.domElement.addEventListener('click', handleFurnitureClick);
 
     return () => {
       window.removeEventListener('resize', handleResize);
       renderer.domElement.removeEventListener('dblclick', handleDoubleClick);
+      renderer.domElement.removeEventListener('dragover', handleDragOver);
+      renderer.domElement.removeEventListener('drop', handleDrop);
+      renderer.domElement.removeEventListener('click', handleFurnitureClick);
       
       if (containerRef.current && renderer.domElement) {
         containerRef.current.removeChild(renderer.domElement);
@@ -551,6 +945,84 @@ export default function Canvas3D({
           onPropertiesUpdate={handleAirEntryPropertiesUpdate}
         />
       )}
+
+      {/* Furniture editing dialogs */}
+      {editingFurniture && editingFurniture.item.type === 'vent' ? (
+        <UnifiedVentDialog
+          key={`vent-dialog-${editingFurniture.item.id}-${editingFurniture.mode || 'edit'}`}
+          isOpen={true}
+          onClose={() => setEditingFurniture(null)}
+          onConfirm={(data) => handleFurnitureEdit(editingFurniture.index, data)}
+          isCreationMode={editingFurniture.mode === 'creation'}
+          onCancel={() => {
+            if (!editingFurniture) return;
+            
+            if (editingFurniture.mode === 'creation') {
+              const furnitureId = editingFurniture.item.id;
+              
+              // Remove from scene
+              const furnitureObject = sceneRef.current?.children.find(child => 
+                child.userData?.type === 'furniture' && child.userData?.id === furnitureId
+              );
+              if (furnitureObject && sceneRef.current) {
+                sceneRef.current.remove(furnitureObject);
+              }
+              
+              // Remove from store
+              deleteFurnitureFromFloor(currentFloor, furnitureId);
+            }
+            
+            setEditingFurniture(null);
+          }}
+          initialValues={{
+            id: editingFurniture.item.id,
+            name: editingFurniture.item.name,
+            position: editingFurniture.item.position,
+            rotation: editingFurniture.item.rotation,
+            dimensions: editingFurniture.item.dimensions,
+            simulationProperties: editingFurniture.item.simulationProperties || {},
+            properties: editingFurniture.item.properties || {}
+          }}
+        />
+      ) : editingFurniture ? (
+        <FurnitureDialog
+          type={editingFurniture.item.type}
+          isOpen={true}
+          onClose={() => setEditingFurniture(null)}
+          onConfirm={(data) => handleFurnitureEdit(editingFurniture.index, data)}
+          isCreationMode={editingFurniture.mode === 'creation'}
+          onCancel={() => {
+            if (!editingFurniture) return;
+            
+            if (editingFurniture.mode === 'creation') {
+              const furnitureId = editingFurniture.item.id;
+              
+              // Remove from scene
+              const furnitureObject = sceneRef.current?.children.find(child => 
+                child.userData?.type === 'furniture' && child.userData?.id === furnitureId
+              );
+              if (furnitureObject && sceneRef.current) {
+                sceneRef.current.remove(furnitureObject);
+              }
+              
+              // Remove from store
+              deleteFurnitureFromFloor(currentFloor, furnitureId);
+            }
+            
+            setEditingFurniture(null);
+          }}
+          initialValues={{
+            id: editingFurniture.item.id,
+            name: editingFurniture.item.name,
+            position: editingFurniture.item.position,
+            rotation: editingFurniture.item.rotation,
+            dimensions: editingFurniture.item.dimensions,
+            information: editingFurniture.item.information || '',
+            simulationProperties: editingFurniture.item.simulationProperties || {},
+            properties: editingFurniture.item.properties || {}
+          }}
+        />
+      ) : null}
     </div>
   );
 }
