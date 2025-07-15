@@ -4833,9 +4833,15 @@ export default function Canvas3D({
           }
 
           if (foundIndex !== -1) {
-            // Get the base entry from floor data
-            const baseEntry = floorData.airEntries[foundIndex];
-            // Canvas3D now uses reactive store data like Canvas2D and wizard-design.tsx
+            // CRITICAL FIX: Get the base entry from reactive store like Canvas2D
+            // Never use floorData.airEntries (memoized/stale) - always use current store data
+            const currentStoreFloors = useRoomStore.getState().floors;
+            const baseEntry = currentStoreFloors[correctFloorKey]?.airEntries?.[foundIndex];
+            
+            if (!baseEntry) {
+              console.warn("Could not find air entry in store", { correctFloorKey, foundIndex });
+              return;
+            }
             
             // Check if we have updated dimensions for this entry in our ref
             const updatedData = updatedAirEntryPositionsRef.current[correctFloorKey]?.[foundIndex];
@@ -4850,45 +4856,6 @@ export default function Canvas3D({
             
             // Phase 3: Create wall context for unified dialog experience
             const wallContext = createWallContext(mergedEntry);
-            
-            // 🔍 ID DEBUG: Log the ID that will be shown in the dialog
-            console.log("🔍 [ID DEBUG] DIALOG WILL SHOW THESE IDs:", {
-              mergedEntryId: mergedEntry.id,
-              baseEntryId: baseEntry.id,
-              meshAirEntryId: airEntryData.airEntryId,
-              expectedFormat: "Should be like 'window_0F_1'",
-              actualId: mergedEntry.id || baseEntry.id || airEntryData.airEntryId,
-              dialogDataSource: "Using mergedEntry data for dialog"
-            });
-            
-            // ✅ CROSS-FLOOR BUG FIX: Log correct dialog opening with mapping
-            console.log("✅ [CROSS-FLOOR FIX] DIALOG OPENING WITH CORRECT MAPPED DATA:", {
-              dialogWillShow: {
-                entryFromCorrectFloor: mergedEntry,
-                entryIndex: foundIndex,
-                mappedFloorName: correctFloorKey
-              },
-              userClickedOn: {
-                meshFloorName: airEntryData.floorName,
-                meshId: airEntryData.airEntryId,
-                meshPosition: airEntryData.position
-              },
-              mapping: {
-                originalMeshFloor: meshFloorName,
-                mappedForStore: correctFloorKey
-              },
-              explanation: "Dialog shows data from mapped floor '" + correctFloorKey + "' matching clicked mesh from '" + meshFloorName + "'"
-            });
-            
-            // 🧪 DIAGNOSIS LOG: Confirm setEditingAirEntry is correct
-            console.log("🧪 [DIAGNOSIS] setEditingAirEntry called with:", {
-              index: foundIndex,
-              floorName: correctFloorKey,
-              entryId: mergedEntry.id,
-              entryType: mergedEntry.type,
-              entryPosition: mergedEntry.position,
-              timestamp: Date.now()
-            });
             
             // SURGICAL FIX: Track which floor is being edited
             setLastEditedFloor(correctFloorKey);
