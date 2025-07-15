@@ -185,6 +185,9 @@ export class StoreAdapter {
    * Sets up store -> controller synchronization
    */
   private setupStoreToControllerSync(): void {
+    // TEMPORARY DISABLE: Store → Controller sync to isolate the problem
+    console.log('StoreAdapter: TEMPORARILY DISABLED Store → Controller sync to test Controller-only mode');
+    
     // Subscribe to store changes
     useRoomStore.subscribe((state, prevState) => {
       if (this.isSyncing) return; // Prevent sync loops
@@ -201,6 +204,8 @@ export class StoreAdapter {
       console.log(`StoreAdapter setupStoreToControllerSync: Current ground airEntries:`, currentFloors.ground?.airEntries?.length || 0);
       console.log(`StoreAdapter setupStoreToControllerSync: Current ground airEntries FULL:`, currentFloors.ground?.airEntries);
 
+      // TEMPORARILY DISABLED: Don't sync from store to controller to test
+      /*
       // Check for changes in AirEntries
       Object.keys({ ...currentFloors, ...previousFloors }).forEach(floorName => {
         const currentEntries = currentFloors[floorName]?.airEntries || [];
@@ -213,6 +218,7 @@ export class StoreAdapter {
           this.syncFloorFromStore(floorName, currentEntries);
         }
       });
+      */
     });
   }
 
