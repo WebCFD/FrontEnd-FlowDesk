@@ -188,6 +188,21 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   // Estado para la distancia al suelo
   const [distanceToFloor, setDistanceToFloor] = useState(0);
 
+  // 🔍 DIAGNOSTIC: Check third window pattern in dialog initialization
+  useEffect(() => {
+    if (props.initialValues && 'airEntryIndex' in props && props.airEntryIndex !== undefined) {
+      console.log(`🔍 [THIRD WINDOW DIALOG DEBUG] Dialog initialization:`, {
+        airEntryIndex: props.airEntryIndex,
+        hasInitialValues: !!props.initialValues,
+        initialId: props.initialValues?.id,
+        initialType: props.initialValues?.type,
+        initialProperties: props.initialValues?.properties,
+        isThirdEntry: props.airEntryIndex === 2,
+        currentFloor: 'currentFloor' in props ? props.currentFloor : 'unknown'
+      });
+    }
+  }, [props.initialValues, props]);
+
   // Effect to ensure callback connections are re-established when props change
   useEffect(() => {
     // Callback monitoring removed to prevent infinite loop
