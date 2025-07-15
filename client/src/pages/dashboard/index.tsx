@@ -53,7 +53,7 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="space-y-6">
         {/* Welcome Section */}
         <Card>
           <CardHeader>
@@ -85,7 +85,7 @@ export default function Dashboard() {
             <CardTitle>Ask Expert Advice</CardTitle>
             <CardDescription>Want personal assistance by one of our experts?</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <Button 
                 onClick={handleContactSupport}
@@ -108,7 +108,7 @@ export default function Dashboard() {
             <CardDescription>Create your HVAC simulation design</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-center py-6">
+            <div className="text-center py-8">
               <p className="text-muted-foreground mb-4">
                 Design rooms, configure air flow, and run thermal simulations
               </p>

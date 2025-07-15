@@ -9,7 +9,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     <div className="flex h-screen">
       <DashboardSidebar />
       <main className="flex-1 overflow-y-auto bg-background">
-        <div className="p-6">
+        <div className="container mx-auto px-6 py-8">
           {children}
         </div>
       </main>
