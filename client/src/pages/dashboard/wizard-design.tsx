@@ -61,6 +61,8 @@ import { Toolbar3D, ViewDirection } from "@/components/sketch/Toolbar3D";
 import { useRoomStore } from "@/lib/store/room-store";
 import { FurnitureItem } from "@shared/furniture-types";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useAirEntryController } from "@/hooks/useAirEntryController";
+import { storeAdapter } from "@/lib/controllers/StoreAdapter";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -353,6 +355,19 @@ export default function WizardDesign() {
     deleteFurnitureFromFloor,
     reset: storeReset, // Import store reset function with alias
   } = useRoomStore();
+
+  // NEW ARCHITECTURE: Initialize AirEntry Controller System
+  const airEntryController = useAirEntryController({
+    viewName: 'wizard-design',
+    floorName: currentFloor,
+    autoInitialize: true
+  });
+
+  // Initialize store adapter for seamless migration
+  useEffect(() => {
+    storeAdapter.initialize();
+    console.log('🚀 [MIGRATION] AirEntry Controller system initialized');
+  }, []);
 
   // Reactive store subscription ensures real-time updates across components
 
@@ -996,191 +1011,83 @@ export default function WizardDesign() {
     }
   };
 
-  const handleDeleteAirEntryFrom3D = (floorName: string, index: number) => {
-    // Create a copy of the floors data
-    console.log(`Deleting air entry in floor ${floorName}, index ${index}`);
+  // NEW ARCHITECTURE: AirEntry deletion using controller
+  const handleDeleteAirEntryFrom3D = async (floorName: string, index: number) => {
+    console.log(`🚀 [MIGRATION] Deleting air entry using new controller: floor ${floorName}, index ${index}`);
 
-    // Use the store's setAirEntries function when updating the current floor
-    if (floorName === currentFloor) {
-      // Create a deep copy of the air entries array
-      const updatedAirEntries = airEntries.filter((_, i) => i !== index);
-
-      // Set the air entries with the filtered array
-      setAirEntries(updatedAirEntries);
-
-      // Also update the floors data to keep everything in sync
-      const updatedFloors = { ...floors };
-      if (updatedFloors[floorName]) {
-        updatedFloors[floorName] = {
-          ...updatedFloors[floorName],
-          airEntries: [...updatedAirEntries],
-        };
-        // Update floor data in the store
-        useRoomStore.getState().setFloors(updatedFloors);
+    // Get current entries for this floor from the controller
+    const currentEntries = airEntryController.state.entries.filter(e => e.floorName === floorName);
+    
+    if (index >= 0 && index < currentEntries.length) {
+      const entryToDelete = currentEntries[index];
+      const success = await airEntryController.actions.deleteEntry(entryToDelete.id);
+      
+      if (success) {
+        toast({
+          title: "Air Entry Deleted",
+          description: `Deleted air entry from ${formatFloorText(floorName)}`,
+        });
+      } else {
+        toast({
+          title: "Deletion Failed",
+          description: "Could not delete the air entry",
+          variant: "destructive",
+        });
       }
-
-      toast({
-        title: "Air Entry Deleted",
-        description: `Deleted air entry from ${formatFloorText(floorName)}`,
-      });
-      return;
-    }
-
-    // For other floors, create a deep copy of the floors object
-    const updatedFloors = { ...floors };
-
-    // Check if the floor and its air entries exist
-    if (updatedFloors[floorName]?.airEntries) {
-      // Create a filtered copy of the air entries array
-      const floorAirEntries = updatedFloors[floorName].airEntries.filter(
-        (_, i) => i !== index,
-      );
-
-      // Create a copy of the floor data with the updated air entries
-      updatedFloors[floorName] = {
-        ...updatedFloors[floorName],
-        airEntries: floorAirEntries,
-      };
-
-      // Update the room store with the updated floors data
-      useRoomStore.getState().setFloors(updatedFloors);
-
-      // Update the specific floor in the store
-      useRoomStore.getState().updateFloor(floorName, updatedFloors[floorName]);
-
-      toast({
-        title: "Air Entry Deleted",
-        description: `Deleted air entry from ${formatFloorText(floorName)}`,
-      });
+    } else {
+      console.error(`❌ [MIGRATION] Invalid index ${index} for floor ${floorName}`);
     }
   };
 
-  const handleUpdateAirEntryFrom3D = (
+  // NEW ARCHITECTURE: AirEntry update using controller
+  const handleUpdateAirEntryFrom3D = async (
     floorName: string,
     index: number,
     updatedEntry: AirEntry,
   ) => {
-    // 🧪 DIAGNOSIS LOG: Check if parameters arrive correctly from Canvas3D
-    console.log("🧪 [DIAGNOSIS WIZARD] handleUpdateAirEntryFrom3D called with:", {
-      receivedFloorName: floorName,
-      receivedIndex: index,
-      receivedEntryId: updatedEntry.id,
-      receivedEntryType: updatedEntry.type,
-      receivedEntryPosition: updatedEntry.position,
-      currentFloorInWizard: currentFloor,
-      airEntriesArrayLength: airEntries.length,
-      willAccessExistingEntry: airEntries[index] ? true : false,
+    console.log(`🚀 [MIGRATION] Updating air entry using new controller:`, {
+      floorName,
+      index,
+      entryId: updatedEntry.id,
+      entryType: updatedEntry.type,
       timestamp: Date.now()
     });
     
-    // CRITICAL FIX: Preserve wallPosition from existing store data
-    const existingEntry = airEntries[index];
+    // Get current entries for this floor from the controller
+    const currentEntries = airEntryController.state.entries.filter(e => e.floorName === floorName);
     
-    // Create merged entry preserving wallPosition
-    const preservedDimensions = {
-      ...updatedEntry.dimensions,
-      // Preserve wallPosition from existing entry if Canvas3D didn't provide it
-      wallPosition: updatedEntry.dimensions?.wallPosition ?? existingEntry?.dimensions?.wallPosition
-    };
-    
-    const deepClonedEntry = {
-      ...JSON.parse(JSON.stringify(updatedEntry)),
-      dimensions: preservedDimensions
-    };
-
-    // Use the store's setAirEntries function when updating the current floor
-    if (floorName === currentFloor) {
+    if (index >= 0 && index < currentEntries.length) {
+      const entryToUpdate = currentEntries[index];
       
-      // Create a deep copy of the air entries array with structuredClone
-      const updatedAirEntries = airEntries.map((entry, i) =>
-        i === index ? deepClonedEntry : { ...entry },
-      );
-
-      // Set the air entries with the deep copy
-      setAirEntries(updatedAirEntries);
-
-      // Update store for synchronization with SILENT updateAirEntry (no cross-floor contamination)
-      useRoomStore.getState().updateAirEntrySilent(floorName, index, deepClonedEntry);
-
-      // Entry updated successfully
-
-      toast({
-        title: "Air Entry Updated",
-        description: `Updated ${updatedEntry.type} in ${formatFloorText(floorName)}`,
-      });
-      return;
-    }
-
-    // For other floors, create a deep copy of the floors object
-    const updatedFloors = { ...floors };
-
-    // Check if the floor and its air entries exist
-    if (updatedFloors[floorName]?.airEntries) {
-      // Create a copy of the air entries array
-      const floorAirEntries = [...updatedFloors[floorName].airEntries];
-
-      // Log the floor air entries before updating
-      console.log(
-        "PARENT COMPONENT DEBUG - BEFORE UPDATE (NON-CURRENT FLOOR):",
-        {
-          floor: floorName,
-          allEntries: floorAirEntries.map((entry, i) => ({
-            index: i,
-            type: entry.type,
-            position: entry.position,
-            isTargeted: i === index,
-          })),
-        },
-      );
-
-      // Create a deep clone of the updated entry to prevent reference issues
-      const deepClonedEntry = JSON.parse(JSON.stringify(updatedEntry));
-
-      // Update the specific air entry with deep cloned data
-      floorAirEntries[index] = deepClonedEntry;
-
-      // Log the floor air entries after updating
-      console.log(
-        "PARENT COMPONENT DEBUG - AFTER UPDATE (NON-CURRENT FLOOR):",
-        {
-          floor: floorName,
-          allEntries: floorAirEntries.map((entry, i) => ({
-            index: i,
-            type: entry.type,
-            position: entry.position,
-            isUpdated: i === index,
-          })),
-        },
-      );
-
-      // Create a copy of the floor data with the updated air entries
-      updatedFloors[floorName] = {
-        ...updatedFloors[floorName],
-        airEntries: floorAirEntries,
+      // Convert legacy AirEntry to controller update format
+      const updateData = {
+        position: updatedEntry.position,
+        dimensions: updatedEntry.dimensions,
+        line: updatedEntry.line,
+        properties: (updatedEntry as any).properties || {}
       };
-
-      // Make sure we also update the "floors" state variable completely
-      // to ensure it's consistent across the component
-      useRoomStore.getState().setFloors(updatedFloors);
-
-      // Update the room store with each floor's updated data
-      Object.entries(updatedFloors).forEach(([floor, data]) => {
-        if (floor !== currentFloor) {
-          // For non-current floors, use store methods to update
-          console.log(`Updating floor ${floor} in the store`);
-          useRoomStore.getState().updateFloor(floor, data);
-        }
-      });
-
-      toast({
-        title: "Air Entry Updated",
-        description: `Updated ${updatedEntry.type} in ${formatFloorText(floorName)}`,
-      });
+      
+      const result = await airEntryController.actions.updateEntry(entryToUpdate.id, updateData);
+      
+      if (result) {
+        toast({
+          title: "Air Entry Updated",
+          description: `Updated ${updatedEntry.type} in ${formatFloorText(floorName)}`,
+        });
+      } else {
+        toast({
+          title: "Update Failed",
+          description: "Could not update the air entry",
+          variant: "destructive",
+        });
+      }
+    } else {
+      console.error(`❌ [MIGRATION] Invalid index ${index} for floor ${floorName}`);
     }
   };
 
-  // Real-time properties synchronization handler
-  const handlePropertiesUpdateFrom3D = (
+  // NEW ARCHITECTURE: Real-time properties synchronization using controller
+  const handlePropertiesUpdateFrom3D = async (
     floorName: string,
     index: number,
     properties: {
@@ -1194,37 +1101,36 @@ export default function WizardDesign() {
       horizontalAngle?: number;
     }
   ) => {
-    // 🧪 DIAGNOSIS LOG: Check if properties parameters arrive correctly from Canvas3D
-    console.log("🧪 [DIAGNOSIS WIZARD] handlePropertiesUpdateFrom3D called with:", {
-      receivedFloorName: floorName,
-      receivedIndex: index,
-      receivedProperties: properties,
-      currentFloorInWizard: currentFloor,
-      storeFloorExists: useRoomStore.getState().floors[floorName] ? true : false,
-      storeEntryExists: useRoomStore.getState().floors[floorName]?.airEntries?.[index] ? true : false,
+    console.log(`🚀 [MIGRATION] Updating air entry properties using new controller:`, {
+      floorName,
+      index,
+      properties,
       timestamp: Date.now()
     });
     
-    // Update only the properties in real-time without triggering scene rebuild
-    const currentFloors = useRoomStore.getState().floors;
-    const currentEntry = currentFloors[floorName]?.airEntries?.[index];
+    // Get current entries for this floor from the controller
+    const currentEntries = airEntryController.state.entries.filter(e => e.floorName === floorName);
     
-    if (currentEntry) {
-      const updatedEntry = {
-        ...currentEntry,
-        properties: {
-          ...currentEntry.properties,
-          ...properties
-        }
+    if (index >= 0 && index < currentEntries.length) {
+      const entryToUpdate = currentEntries[index];
+      
+      // Convert properties to controller update format
+      const updateData = {
+        properties: properties
       };
       
-      // Use SILENT updateAirEntry to avoid cross-floor contamination
-      useRoomStore.getState().updateAirEntrySilent(floorName, index, updatedEntry);
+      const result = await airEntryController.actions.updateEntry(entryToUpdate.id, updateData);
+      
+      if (!result) {
+        console.error(`❌ [MIGRATION] Failed to update properties for entry ${entryToUpdate.id}`);
+      }
+    } else {
+      console.error(`❌ [MIGRATION] Invalid index ${index} for floor ${floorName}`);
     }
   };
 
-  // Real-time dimensions synchronization handler (NEW - BASED ON POSITION ALONG WALL PATTERN)
-  const handleDimensionsUpdateFrom3D = (
+  // NEW ARCHITECTURE: Real-time dimensions synchronization using controller
+  const handleDimensionsUpdateFrom3D = async (
     floorName: string,
     index: number,
     dimensions: {
@@ -1233,32 +1139,31 @@ export default function WizardDesign() {
       height?: number;
     }
   ) => {
-    // 🧪 DIAGNOSIS LOG: Check if dimensions parameters arrive correctly from Canvas3D
-    console.log("🧪 [DIAGNOSIS WIZARD] handleDimensionsUpdateFrom3D called with:", {
-      receivedFloorName: floorName,
-      receivedIndex: index,
-      receivedDimensions: dimensions,
-      currentFloorInWizard: currentFloor,
-      storeFloorExists: useRoomStore.getState().floors[floorName] ? true : false,
-      storeEntryExists: useRoomStore.getState().floors[floorName]?.airEntries?.[index] ? true : false,
+    console.log(`🚀 [MIGRATION] Updating air entry dimensions using new controller:`, {
+      floorName,
+      index,
+      dimensions,
       timestamp: Date.now()
     });
     
-    // Update dimensions in real-time following Position Along Wall successful architecture
-    const currentFloors = useRoomStore.getState().floors;
-    const currentEntry = currentFloors[floorName]?.airEntries?.[index];
+    // Get current entries for this floor from the controller
+    const currentEntries = airEntryController.state.entries.filter(e => e.floorName === floorName);
     
-    if (currentEntry) {
-      const updatedEntry = {
-        ...currentEntry,
-        dimensions: {
-          ...currentEntry.dimensions,
-          ...dimensions
-        }
+    if (index >= 0 && index < currentEntries.length) {
+      const entryToUpdate = currentEntries[index];
+      
+      // Convert dimensions to controller update format
+      const updateData = {
+        dimensions: dimensions
       };
       
-      // Use SILENT updateAirEntry to avoid cross-floor contamination
-      useRoomStore.getState().updateAirEntrySilent(floorName, index, updatedEntry);
+      const result = await airEntryController.actions.updateEntry(entryToUpdate.id, updateData);
+      
+      if (!result) {
+        console.error(`❌ [MIGRATION] Failed to update dimensions for entry ${entryToUpdate.id}`);
+      }
+    } else {
+      console.error(`❌ [MIGRATION] Invalid index ${index} for floor ${floorName}`);
     }
   };
 
