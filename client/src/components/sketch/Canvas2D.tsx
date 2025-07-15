@@ -1009,6 +1009,8 @@ export default function Canvas2D({
       .filter(entry => entry.floorName === currentFloor)
       .map(entry => entry.legacyData);
     
+    console.log(`🔍 [RENDER] getCurrentAirEntries - Controller entries: ${controllerEntries.length} for floor: ${currentFloor}`);
+    
     // Apply visual updates from editing state for real-time feedback
     const result = [...controllerEntries];
     editingAirEntries.forEach(editingItem => {
@@ -1020,6 +1022,7 @@ export default function Canvas2D({
       }
     });
     
+    console.log(`🔍 [RENDER] Final entries for rendering: ${result.length}`);
     return result;
   };
 
@@ -1806,7 +1809,14 @@ export default function Canvas2D({
           const currentEntries = airEntryController.state.entries
             .filter(entry => entry.floorName === currentFloor)
             .map(entry => entry.legacyData);
+          
+          console.log("🟡 [CREATION] Created entry, controller now has entries:", currentEntries.length);
+          console.log("🟡 [CREATION] First entry position:", currentEntries[0]?.position);
+          
           onAirEntriesUpdate?.(currentEntries);
+          
+          // Force canvas redraw
+          setForceRedraw(prev => prev + 1);
 
           // Open dialog in "edit mode" for the just-created element
           setEditingAirEntries(prev => [...prev, {
@@ -3427,21 +3437,20 @@ export default function Canvas2D({
   ) => {
     console.log("🟢 [CANVAS2D EDIT] handleAirEntryEdit called with index:", index);
     console.log("🟢 [CANVAS2D EDIT] Received data:", data);
-    console.log("🟢 [CANVAS2D EDIT] data.wallPosition:", data.wallPosition);
     
-    const updatedAirEntries = [...airEntries];
+    // NEW ARCHITECTURE: Get entries from controller
+    const controllerEntries = airEntryController.state.entries.filter(entry => entry.floorName === currentFloor);
+    const entryToUpdate = controllerEntries[index];
     
-    // CRITICAL: Never use data.position from dialog - it may contain stale data
-    // Keep the current store position that was updated in real-time
-    const currentStorePosition = updatedAirEntries[index]?.position;
-    const originalEntry = updatedAirEntries[index];
-    console.log("🟢 [CANVAS2D EDIT] Original entry:", originalEntry);
-    console.log("🟢 [CANVAS2D EDIT] Original wallPosition:", originalEntry?.dimensions?.wallPosition);
-    console.log("🟢 [CANVAS2D EDIT] Current store position:", currentStorePosition);
+    if (!entryToUpdate) {
+      console.error("Entry not found in controller at index:", index);
+      return;
+    }
     
-    updatedAirEntries[index] = {
-      ...updatedAirEntries[index],
-      position: currentStorePosition, // Explicitly preserve current store position
+    console.log("🟢 [CANVAS2D EDIT] Found entry in controller:", entryToUpdate.id);
+    
+    // Update via controller
+    const updateData = {
       dimensions: {
         width: data.width,
         height: data.height,
@@ -3452,14 +3461,22 @@ export default function Canvas2D({
       ...(data.properties && { properties: data.properties }),
     };
     
-    console.log("🟢 [CANVAS2D EDIT] Final updated entry:", updatedAirEntries[index]);
-    console.log("🟢 [CANVAS2D EDIT] Final wallPosition:", updatedAirEntries[index].dimensions?.wallPosition);
-    console.log("🟢 [CANVAS2D EDIT] Final properties ref:", updatedAirEntries[index].properties);
-
+    const updatedEntry = airEntryController.actions.updateEntry(entryToUpdate.id, updateData);
     
-    onAirEntriesUpdate?.(updatedAirEntries);
+    if (updatedEntry) {
+      console.log("🟢 [CANVAS2D EDIT] Entry updated successfully");
+      
+      // Notify parent component with updated entries from controller
+      const updatedEntries = airEntryController.state.entries
+        .filter(entry => entry.floorName === currentFloor)
+        .map(entry => entry.legacyData);
+      onAirEntriesUpdate?.(updatedEntries);
+    } else {
+      console.error("Failed to update entry via controller");
+    }
+    
+    // Close dialog
     setEditingAirEntries(prev => prev.filter(entry => entry.index !== index));
-
   };
 
   // Phase 2: Dialog Management Functions
