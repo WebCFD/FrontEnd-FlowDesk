@@ -964,6 +964,12 @@ export default function Canvas3D({
     floorName: currentFloor,
     autoInitialize: true
   });
+
+  // DEBUG: Add logging to see what Canvas3D receives from Controller
+  useEffect(() => {
+    console.log(`Canvas3D DEBUG: Controller state updated - entries count: ${airEntryController.state.entries.length}`);
+    console.log(`Canvas3D DEBUG: Entries for floor ${currentFloor}:`, airEntryController.state.entries.filter(e => e.floorName === currentFloor));
+  }, [airEntryController.state.entries, currentFloor]);
   // Access the SceneContext to share data with RoomSketchPro
   const { updateGeometryData, updateSceneData, updateFloorData, setCurrentFloor: setContextCurrentFloor } = useSceneContext();
 
