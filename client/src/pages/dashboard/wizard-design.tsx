@@ -397,7 +397,7 @@ export default function WizardDesign() {
         structuralFloors[floorName] = {
           lines: normalizeObject(floorData.lines),
           airEntries: floorData.airEntries?.map(entry => normalizeObject({
-            // CRITICAL FIX: Include ID and lineId for Canvas3D compatibility
+            // CRITICAL FIX: Include ALL properties for Canvas3D compatibility
             id: entry.id,
             lineId: (entry as any).lineId,
             type: entry.type,
@@ -410,8 +410,9 @@ export default function WizardDesign() {
               shape: entry.dimensions.shape,
               // Include wallPosition to preserve Save Changes data
               wallPosition: (entry.dimensions as any).wallPosition
-            }
-            // Exclude properties to prevent metadata changes from triggering rebuilds
+            },
+            // CRITICAL FIX: Include properties (temperature, state, angles, etc.)
+            properties: entry.properties
           })),
           walls: normalizeObject(floorData.walls),
           measurements: normalizeObject(floorData.measurements),
@@ -433,6 +434,13 @@ export default function WizardDesign() {
           name: floorName,
           linesLength: rawFloors[floorName]?.lines?.length || 0,
           airEntriesLength: rawFloors[floorName]?.airEntries?.length || 0,
+          // Include airEntries structural data to detect position/dimension changes  
+          airEntriesPositions: rawFloors[floorName]?.airEntries?.map(e => ({
+            x: Math.round(e.position.x * 100) / 100,
+            y: Math.round(e.position.y * 100) / 100,
+            w: e.dimensions.width,
+            h: e.dimensions.height
+          })) || [],
           furnitureItemsLength: rawFloors[floorName]?.furnitureItems?.length || 0,
           stairPolygonsLength: rawFloors[floorName]?.stairPolygons?.length || 0,
           stairPolygonsHash: JSON.stringify(rawFloors[floorName]?.stairPolygons || []),
