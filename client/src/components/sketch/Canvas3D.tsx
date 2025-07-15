@@ -2785,9 +2785,20 @@ export default function Canvas3D({
         // Set render order to ensure AirEntry elements appear on top of walls
         mesh.renderOrder = 1;
 
-        // CRITICAL FIX: Never rewrite IDs - Canvas2D creates them, Canvas3D only reads them
-        // IDs are created once in Canvas2D and must remain immutable
-        const entryId = entry.id || 'missing_id';
+        // CRITICAL FIX: Read ID from current store data - Canvas2D creates them, Canvas3D reads them
+        // IDs are created once in Canvas2D and stored in reactive store (reuse existing currentStoreFloors)
+        const normalizedFloorName = normalizeFloorName(floorData.name);
+        const storeEntryForId = currentStoreFloors[normalizedFloorName]?.airEntries?.[index];
+        const entryId = storeEntryForId?.id || entry.id || `missing_id_${index}`;
+        
+        console.log("🔧 MESH CREATION ID CHECK:", {
+          index,
+          originalFloorName: floorData.name,
+          normalizedFloorName,
+          entryIdFromEntry: entry.id,
+          entryIdFromStore: storeEntryForId?.id,
+          finalEntryId: entryId
+        });
         
         // Mesh creation for AirEntry
         
