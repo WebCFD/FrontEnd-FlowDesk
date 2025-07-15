@@ -4822,6 +4822,17 @@ export default function Canvas3D({
             const currentStoreFloors = useRoomStore.getState().floors;
             const baseEntry = currentStoreFloors[correctFloorKey]?.airEntries?.[foundIndex];
             
+            // 🔍 DIAGNOSTIC: Check third window pattern
+            console.log(`🔍 [THIRD WINDOW DEBUG] Entry access pattern:`, {
+              foundIndex,
+              totalAirEntries: currentStoreFloors[correctFloorKey]?.airEntries?.length || 0,
+              baseEntryExists: !!baseEntry,
+              baseEntryId: baseEntry?.id,
+              baseEntryType: baseEntry?.type,
+              baseEntryProperties: baseEntry?.properties,
+              isThirdEntry: foundIndex === 2
+            });
+            
 
             
             if (!baseEntry) {
