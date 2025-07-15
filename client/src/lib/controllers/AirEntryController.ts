@@ -158,12 +158,14 @@ export class AirEntryController {
 
     // Store entry
     this.entries.set(id, entry);
+    console.log(`Controller: Entry ${id} stored, total entries now: ${this.entries.size}`);
     
     // Update floor index
     if (!this.floorEntries.has(floorName)) {
       this.floorEntries.set(floorName, new Set());
     }
     this.floorEntries.get(floorName)!.add(id);
+    console.log(`Controller: Entry ${id} added to floor ${floorName}, floor now has ${this.floorEntries.get(floorName)!.size} entries`);
 
     // Notify observers
     this.notifyObservers({
@@ -314,14 +316,21 @@ export class AirEntryController {
    */
   getEntriesForFloor(floorName: string): ControlledAirEntry[] {
     const entryIds = this.floorEntries.get(floorName);
+    console.log(`Controller getEntriesForFloor(${floorName}): entryIds=`, entryIds);
+    console.log(`Controller total entries in storage:`, this.entries.size);
+    console.log(`Controller all entry IDs:`, Array.from(this.entries.keys()));
+    
     if (!entryIds) {
       return [];
     }
 
-    return Array.from(entryIds)
+    const result = Array.from(entryIds)
       .map(id => this.entries.get(id))
       .filter(entry => entry !== undefined)
       .map(entry => this.copyEntryWithLegacyData(entry!));
+    
+    console.log(`Controller getEntriesForFloor(${floorName}): returning ${result.length} entries`);
+    return result;
   }
 
   /**
