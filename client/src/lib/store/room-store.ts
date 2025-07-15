@@ -574,53 +574,22 @@ export const useRoomStore = create<RoomState>()(
           const floorData = state.floors[floorName];
           const existingEntries = floorData?.airEntries || [];
           
-          console.log(`🔍 [ID GEN DEBUG] Starting ID generation:`, {
-            floorName,
-            type,
-            floorPrefix,
-            existingEntriesCount: existingEntries.length,
-            existingIds: existingEntries.map(e => (e as any).id)
-          });
-          
           let maxCounter = 0;
-          existingEntries.forEach((entry, index) => {
+          existingEntries.forEach(entry => {
             const anyEntry = entry as any;
             if (anyEntry.id) {
               // Only match IDs for this specific floor and type
-              const regexPattern = `^${type}_${floorPrefix}_(\\d+)$`;
-              const match = anyEntry.id.match(new RegExp(regexPattern));
-              
-              console.log(`🔍 [ID GEN DEBUG] Processing entry ${index}:`, {
-                entryId: anyEntry.id,
-                regexPattern,
-                matchResult: match,
-                matchIndex1: match ? match[1] : 'NO_MATCH',
-                matchIndex2: match ? match[2] : 'NO_MATCH'
-              });
-              
+              const match = anyEntry.id.match(new RegExp(`^${type}_${floorPrefix}_(\\d+)$`));
               if (match) {
                 const num = parseInt(match[1]);
-                console.log(`🔍 [ID GEN DEBUG] parseInt result:`, {
-                  rawMatch1: match[1],
-                  parsedNum: num,
-                  isNaN: isNaN(num),
-                  currentMaxCounter: maxCounter
-                });
-                
                 if (num > maxCounter) {
                   maxCounter = num;
-                  console.log(`🔍 [ID GEN DEBUG] Updated maxCounter to:`, maxCounter);
                 }
               }
             }
           });
           
           const generatedId = `${type}_${floorPrefix}_${maxCounter + 1}`;
-          console.log(`🔍 [ID GEN DEBUG] Final result:`, {
-            finalMaxCounter: maxCounter,
-            generatedId
-          });
-          
           return generatedId;
         },
 

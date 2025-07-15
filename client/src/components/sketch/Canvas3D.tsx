@@ -1598,16 +1598,21 @@ export default function Canvas3D({
   const airEntryInitialValues = useMemo(() => {
     if (!editingAirEntry) return null;
     
-    // STRATEGIC LOG: Track dialog initialization for cross-contamination diagnosis
-    console.log(`🔍 [AIRENTRY INIT] Starting dialog init for ${editingAirEntry.entry.type} #${editingAirEntry.index} on floor ${editingAirEntry.floorName}`);
-    
     // CRITICAL FIX: Always read from reactive store first to get current data
     const reactiveStoreFloors = useRoomStore.getState().floors;
     const currentAirEntry = reactiveStoreFloors[editingAirEntry.floorName]?.airEntries?.[editingAirEntry.index];
     
-    // STRATEGIC LOG: Track data sources
-    console.log(`📊 [DATA SOURCES] Store entry:`, currentAirEntry?.properties || 'NULL');
-    console.log(`📊 [DATA SOURCES] Base entry:`, editingAirEntry.entry.properties || 'NULL');
+    console.log(`🔍 [PERSISTENCE DEBUG] Dialog initialization data sources:`, {
+      entryId: editingAirEntry.entry.id,
+      storeEntry: currentAirEntry ? {
+        id: currentAirEntry.id,
+        properties: currentAirEntry.properties
+      } : 'NOT_FOUND',
+      baseEntry: {
+        id: editingAirEntry.entry.id,
+        properties: editingAirEntry.entry.properties
+      }
+    });
     
     // Use current store data as primary source, fallback to baseEntry
     const baseEntry = currentAirEntry || editingAirEntry.entry;
@@ -1624,13 +1629,11 @@ export default function Canvas3D({
     const mesh = findAirEntryMesh(editingAirEntry.floorName, editingAirEntry.index);
     if (mesh?.userData?.properties) {
       properties = { ...properties, ...mesh.userData.properties };
-      console.log(`🎯 [MESH DATA] Found mesh userData properties:`, mesh.userData.properties);
     }
     
     // 2. Also check for simulationProperties in mesh userData (for FurnVent compatibility)
     if (mesh?.userData?.simulationProperties) {
       properties = { ...properties, ...mesh.userData.simulationProperties };
-      console.log(`🎯 [MESH DATA] Found mesh userData simulationProperties:`, mesh.userData.simulationProperties);
     }
     
     // 3. Update wallPosition from mesh if available (for real-time position updates)
@@ -1638,7 +1641,7 @@ export default function Canvas3D({
       wallPosition = mesh.userData.wallPosition;
     }
     
-    const finalInitialValues = {
+    const finalValues = {
       ...dimensions,
       shape: (dimensions as any).shape,
       properties: properties,
@@ -1646,16 +1649,13 @@ export default function Canvas3D({
       wallPosition: wallPosition
     };
     
-    // STRATEGIC LOG: Track final computed values
-    console.log(`✅ [FINAL VALUES] Dialog will initialize with:`, {
-      type: editingAirEntry.entry.type,
-      index: editingAirEntry.index,
-      floor: editingAirEntry.floorName,
-      properties: finalInitialValues.properties,
-      wallPosition: finalInitialValues.wallPosition
+    console.log(`🔍 [PERSISTENCE DEBUG] Final dialog values:`, {
+      entryId: editingAirEntry.entry.id,
+      finalProperties: finalValues.properties,
+      wallPosition: finalValues.wallPosition
     });
     
-    return finalInitialValues;
+    return finalValues;
   }, [editingAirEntry, editingAirEntry?.floorName, findAirEntryMesh]);
   
   // State for editing furniture
@@ -1668,14 +1668,12 @@ export default function Canvas3D({
   // Track editingAirEntry state changes
   useEffect(() => {
     if (editingAirEntry) {
-      console.log(`🚀 [DIALOG OPEN] editingAirEntry set to:`, {
+      console.log(`🔍 [PERSISTENCE DEBUG] Dialog opened for:`, {
         type: editingAirEntry.entry.type,
         index: editingAirEntry.index,
         floor: editingAirEntry.floorName,
-        entryProperties: editingAirEntry.entry.properties
+        entryId: editingAirEntry.entry.id
       });
-    } else {
-      console.log(`🚪 [DIALOG CLOSED] editingAirEntry cleared`);
     }
   }, [editingAirEntry]);
 
@@ -2351,6 +2349,14 @@ export default function Canvas3D({
     }
 
     // STEP 3: Update store with awareness that mesh was already updated - Use correct floor name
+    console.log("🔄 [PERSISTENCE DEBUG] About to update store:", {
+      entryId: updatedEntry.id,
+      floorName: editingAirEntry.floorName,
+      index: index,
+      newProperties: updatedEntry.properties,
+      newWallPosition: updatedEntry.dimensions?.wallPosition
+    });
+    
     onUpdateAirEntry(editingAirEntry.floorName, index, updatedEntry);
     
     // SURGICAL SOLUTION: Stop editing (exit isolation, trigger synchronization)
@@ -6444,16 +6450,12 @@ export default function Canvas3D({
             setEditingAirEntry(null);
           }}
           onConfirm={(data) => {
-            console.log("💾 [CANVAS3D SAVE] Save Changes clicked with values:", {
-              elementStatus: data.properties?.state,
-              temperature: data.properties?.temperature,
-              airDirection: data.properties?.airOrientation,
-              flowIntensity: data.properties?.flowIntensity,
+            console.log("💾 [PERSISTENCE DEBUG] Save Changes clicked:", {
+              entryId: editingAirEntry.entry.id,
               index: editingAirEntry.index,
               floorName: editingAirEntry.floorName,
-              willSaveToCorrectFloor: editingAirEntry.floorName,
-              NOT_currentFloor: currentFloor,
-              timestamp: new Date().toISOString()
+              newProperties: data.properties,
+              newWallPosition: data.wallPosition
             });
 
             handleAirEntryEdit(editingAirEntry.index, {

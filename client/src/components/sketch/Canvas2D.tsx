@@ -1758,29 +1758,11 @@ export default function Canvas2D({
           };
 
           // Use store to add entry WITH generated ID
-          console.log("🔍 [ID CREATION DEBUG] BEFORE addAirEntryToFloor:", {
-            currentFloor,
-            entryType: newAirEntryWithoutId.type,
-            entryWithoutId: newAirEntryWithoutId
-          });
-          
           const generatedId = useRoomStore.getState().addAirEntryToFloor(currentFloor, newAirEntryWithoutId);
-          
-          console.log("🔍 [ID CREATION DEBUG] AFTER addAirEntryToFloor:", {
-            generatedId,
-            currentFloor,
-            storeFloorData: useRoomStore.getState().floors[currentFloor]
-          });
-          
           const newAirEntry = { ...newAirEntryWithoutId, id: generatedId } as any;
 
           // Update local state
           const newAirEntries = [...airEntries, newAirEntry];
-          console.log("🔍 [ID CREATION DEBUG] Updated local airEntries:", {
-            newAirEntriesCount: newAirEntries.length,
-            lastEntryId: newAirEntries[newAirEntries.length - 1]?.id,
-            lastEntryType: newAirEntries[newAirEntries.length - 1]?.type
-          });
           
           onAirEntriesUpdate?.(newAirEntries);
 
@@ -3406,19 +3388,11 @@ export default function Canvas2D({
       };
     },
   ) => {
-    console.log("🟢 [CANVAS2D EDIT] handleAirEntryEdit called with index:", index);
-    console.log("🟢 [CANVAS2D EDIT] Received data:", data);
-    console.log("🟢 [CANVAS2D EDIT] data.wallPosition:", data.wallPosition);
-    
     const updatedAirEntries = [...airEntries];
     
     // CRITICAL: Never use data.position from dialog - it may contain stale data
     // Keep the current store position that was updated in real-time
     const currentStorePosition = updatedAirEntries[index]?.position;
-    const originalEntry = updatedAirEntries[index];
-    console.log("🟢 [CANVAS2D EDIT] Original entry:", originalEntry);
-    console.log("🟢 [CANVAS2D EDIT] Original wallPosition:", originalEntry?.dimensions?.wallPosition);
-    console.log("🟢 [CANVAS2D EDIT] Current store position:", currentStorePosition);
     
     updatedAirEntries[index] = {
       ...updatedAirEntries[index],
@@ -3432,10 +3406,6 @@ export default function Canvas2D({
       },
       ...(data.properties && { properties: data.properties }),
     };
-    
-    console.log("🟢 [CANVAS2D EDIT] Final updated entry:", updatedAirEntries[index]);
-    console.log("🟢 [CANVAS2D EDIT] Final wallPosition:", updatedAirEntries[index].dimensions?.wallPosition);
-    console.log("🟢 [CANVAS2D EDIT] Final properties ref:", updatedAirEntries[index].properties);
 
     
     onAirEntriesUpdate?.(updatedAirEntries);
