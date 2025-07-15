@@ -117,11 +117,9 @@ export default function DashboardSidebar() {
         <Link href="/dashboard" className="text-2xl font-bold text-sidebar-primary">
           FlowDesk
         </Link>
-        {userData && (
-          <div className="mt-2 text-sm text-muted-foreground">
-            Hi, {userData.username}
-          </div>
-        )}
+        <div className="mt-2 text-sm text-muted-foreground">
+          {userData ? `Hi, ${userData.username}` : "No login yet"}
+        </div>
       </div>
       <nav className="px-4 py-2">
         <div className="space-y-1">
