@@ -223,17 +223,21 @@ export class StoreAdapter {
    * Syncs a controller event to the store
    */
   private syncEventToStore(event: AirEntryChangeEvent): void {
+    console.log(`StoreAdapter syncEventToStore: Received event type ${event.type} for floor ${event.floorName}`);
+    
     const store = useRoomStore.getState();
 
     switch (event.type) {
       case 'create':
       case 'update':
         if (event.entry) {
+          console.log(`StoreAdapter syncEventToStore: Processing ${event.type} for entry ${event.entry.id}`);
           this.updateStoreEntry(event.floorName, event.entry);
         }
         break;
         
       case 'delete':
+        console.log(`StoreAdapter syncEventToStore: Processing delete for entry ${event.entryId}`);
         this.deleteStoreEntry(event.floorName, event.entryId);
         break;
     }
@@ -243,9 +247,14 @@ export class StoreAdapter {
    * Updates a specific entry in the store
    */
   private updateStoreEntry(floorName: string, entry: ControlledAirEntry): void {
+    console.log(`StoreAdapter updateStoreEntry(${floorName}): Updating entry ${entry.id}`);
+    
     const legacyEntry = this.controllerToLegacy(entry);
     const store = useRoomStore.getState();
     const floors = { ...store.floors };
+
+    console.log(`StoreAdapter updateStoreEntry(${floorName}): Current store floors:`, Object.keys(floors));
+    console.log(`StoreAdapter updateStoreEntry(${floorName}): Current airEntries for floor:`, floors[floorName]?.airEntries?.length || 0);
 
     if (!floors[floorName]) {
       floors[floorName] = { airEntries: [] };
@@ -256,9 +265,11 @@ export class StoreAdapter {
 
     if (existingIndex >= 0) {
       // Update existing entry
+      console.log(`StoreAdapter updateStoreEntry(${floorName}): Updating existing entry at index ${existingIndex}`);
       airEntries[existingIndex] = legacyEntry;
     } else {
       // Add new entry
+      console.log(`StoreAdapter updateStoreEntry(${floorName}): Adding new entry`);
       airEntries.push(legacyEntry);
     }
 
@@ -267,8 +278,12 @@ export class StoreAdapter {
       airEntries
     };
 
+    console.log(`StoreAdapter updateStoreEntry(${floorName}): About to update store with ${airEntries.length} entries`);
+    
     // Update store
     store.setFloors(floors);
+    
+    console.log(`StoreAdapter updateStoreEntry(${floorName}): Store updated successfully`);
   }
 
   /**
