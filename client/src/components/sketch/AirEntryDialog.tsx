@@ -752,6 +752,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
       
       const canvasData = {
+        // CRITICAL FIX: Always preserve the original entry ID and essential properties
+        id: props.initialValues?.id,
+        type: props.type, // Also preserve the type
+        line: props.initialValues?.line, // Preserve the line reference
         width: shapeType === 'rectangular' ? (values as any).width : (values as any).width, // For circular, width = diameter
         height: shapeType === 'rectangular' ? (values as any).height : (values as any).width, // For circular, height = diameter
         distanceToFloor: distanceToFloor,

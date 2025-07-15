@@ -3415,13 +3415,6 @@ export default function Canvas2D({
 
   // Phase 2: Dialog Management Functions
   const openAirEntryDialog = (airEntry: { index: number; entry: AirEntry }) => {
-
-    console.log("🔍 ID DIAGNOSIS - Canvas2D Dialog Opening:", {
-      index: airEntry.index,
-      entryFromProps: { id: airEntry.entry.id, type: airEntry.entry.type },
-      allAirEntriesFromProps: airEntries.map((e, i) => ({ index: i, id: e.id, type: e.type }))
-    });
-    
     const isAlreadyOpen = editingAirEntries.some(entry => entry.index === airEntry.index);
 
     
