@@ -3306,22 +3306,13 @@ export default function Canvas2D({
   // The workflow treats both cases identically - just updating an existing element in the array
   // Real-time position update handler - updates store immediately during dialog interactions
   const handleAirEntryPositionUpdate = (index: number, newPosition: { x: number; y: number }) => {
-    console.log("🟢 [CANVAS2D DEBUG] handleAirEntryPositionUpdate called with index:", index, "position:", newPosition);
-    
     // Update the store immediately to maintain visual consistency
     const updatedAirEntries = [...airEntries];
     if (updatedAirEntries[index]) {
-      const originalEntry = updatedAirEntries[index];
-      console.log("🟢 [CANVAS2D DEBUG] Original entry before update:", originalEntry);
-      console.log("🟢 [CANVAS2D DEBUG] Original wallPosition:", originalEntry.dimensions?.wallPosition);
-      
       updatedAirEntries[index] = {
         ...updatedAirEntries[index],
         position: newPosition
       };
-      
-      console.log("🟢 [CANVAS2D DEBUG] Updated entry after position change:", updatedAirEntries[index]);
-      console.log("🟢 [CANVAS2D DEBUG] wallPosition preserved?:", updatedAirEntries[index].dimensions?.wallPosition);
 
       onAirEntriesUpdate?.(updatedAirEntries);
       
