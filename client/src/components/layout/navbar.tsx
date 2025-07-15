@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -17,6 +17,7 @@ import { trackEvent } from "@/lib/analytics";
 export default function Navbar() {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [, setLocation] = useLocation();
 
   const scrollToSection = (sectionId: string) => {
     // Rastrear el clic en enlaces de navegación
@@ -35,7 +36,17 @@ export default function Navbar() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b shadow-sm">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+        <div 
+          className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={() => {
+            trackEvent(
+              AnalyticsCategories.NAVIGATION,
+              'logo_click',
+              'redirect_to_home'
+            );
+            setLocation('/');
+          }}
+        >
           <img 
             src="/assets/logo.png" 
             alt="FlowDesk Logo" 
