@@ -1060,18 +1060,7 @@ export default function WizardDesign() {
     index: number,
     updatedEntry: AirEntry,
   ) => {
-    // 🧪 DIAGNOSIS LOG: Check if parameters arrive correctly from Canvas3D
-    console.log("🧪 [DIAGNOSIS WIZARD] handleUpdateAirEntryFrom3D called with:", {
-      receivedFloorName: floorName,
-      receivedIndex: index,
-      receivedEntryId: updatedEntry.id,
-      receivedEntryType: updatedEntry.type,
-      receivedEntryPosition: updatedEntry.position,
-      currentFloorInWizard: currentFloor,
-      airEntriesArrayLength: airEntries.length,
-      willAccessExistingEntry: airEntries[index] ? true : false,
-      timestamp: Date.now()
-    });
+
     
     // CRITICAL FIX: Preserve wallPosition from existing store data
     const existingEntry = airEntries[index];
@@ -1083,8 +1072,12 @@ export default function WizardDesign() {
       wallPosition: updatedEntry.dimensions?.wallPosition ?? existingEntry?.dimensions?.wallPosition
     };
     
+    // CRITICAL FIX: Preserve ID from existing entry if updatedEntry doesn't have one
+    const preservedId = updatedEntry.id || existingEntry?.id;
+    
     const deepClonedEntry = {
       ...JSON.parse(JSON.stringify(updatedEntry)),
+      id: preservedId, // CRITICAL: Always ensure ID is preserved
       dimensions: preservedDimensions
     };
 

@@ -493,8 +493,15 @@ export const useRoomStore = create<RoomState>()(
             
             if (updatedFloors[floorName]?.airEntries && updatedFloors[floorName].airEntries[index]) {
               const updatedAirEntries = [...updatedFloors[floorName].airEntries];
-              // CRITICAL FIX: Create deep clone to prevent shared references
-              updatedAirEntries[index] = JSON.parse(JSON.stringify(entry));
+              const existingEntry = updatedAirEntries[index];
+              
+              // CRITICAL FIX: Always preserve ID from existing entry
+              const preservedEntry = {
+                ...JSON.parse(JSON.stringify(entry)),
+                id: entry.id || existingEntry?.id // Never lose the ID
+              };
+              
+              updatedAirEntries[index] = preservedEntry;
               
               updatedFloors[floorName] = {
                 ...updatedFloors[floorName],
@@ -504,7 +511,7 @@ export const useRoomStore = create<RoomState>()(
               // Notify all listeners about the change
               airEntryChangeListeners.forEach((listener) => {
                 try {
-                  listener(floorName, index, entry);
+                  listener(floorName, index, preservedEntry);
                 } catch (error) {
                   console.error('Error in AirEntry change listener:', error);
                 }

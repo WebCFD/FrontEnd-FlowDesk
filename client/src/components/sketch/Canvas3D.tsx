@@ -992,18 +992,8 @@ export default function Canvas3D({
   const frozenFloorsRef = useRef(null);
 
   const finalFloors = useMemo(() => {
-    // DIAGNOSTIC: Track dependency changes
-    console.log("🔍 DEPENDENCY CHECK:", {
-      editingAirEntry: !!editingAirEntry,
-      hasSnapshot: !!frozenFloorsRef.current,
-      willUseSnapshot: !!(editingAirEntry && frozenFloorsRef.current),
-      storeFloorsId: Object.keys(storeFloors).join(','),
-      lastEditedFloor
-    });
-    
     // Si estamos editando, usar snapshot previo (si existe)
     if (editingAirEntry && frozenFloorsRef.current) {
-      console.log("🧊 USANDO SNAPSHOT CONGELADO - NO REBUILD");
       return frozenFloorsRef.current;
     }
     
@@ -1014,7 +1004,6 @@ export default function Canvas3D({
     // Guardar snapshot para próxima edición
     if (!editingAirEntry) {
       frozenFloorsRef.current = migratedFloors;
-      console.log("💾 SNAPSHOT GUARDADO PARA PRÓXIMA EDICIÓN");
     }
     
     return migratedFloors;
@@ -1025,18 +1014,7 @@ export default function Canvas3D({
     lastEditedFloor
   ]);
 
-  // DIAGNOSTIC: Track variable changes that might break isolation
-  useEffect(() => {
-    console.log("🔍 lastEditedFloor changed:", lastEditedFloor);
-  }, [lastEditedFloor]);
 
-  useEffect(() => {
-    console.log("🔍 floors prop changed:", Object.keys(floors));
-  }, [floors]);
-
-  useEffect(() => {
-    console.log("🔍 storeFloors changed:", Object.keys(storeFloors));
-  }, [storeFloors]);
 
   // Phase 2: Wall Association Helper Functions for AirEntry Dialog Unification
   const lineToUniqueId = (line: Line): string => {
@@ -2793,14 +2771,7 @@ export default function Canvas3D({
         const storeEntryForId = currentStoreFloors[normalizedFloorName]?.airEntries?.[index];
         const entryId = storeEntryForId?.id || entry.id || `missing_id_${index}`;
         
-        console.log("🔧 MESH CREATION ID CHECK:", {
-          index,
-          originalFloorName: floorData.name,
-          normalizedFloorName,
-          entryIdFromEntry: entry.id,
-          entryIdFromStore: storeEntryForId?.id,
-          finalEntryId: entryId
-        });
+
         
         // Mesh creation for AirEntry
         
@@ -4851,13 +4822,7 @@ export default function Canvas3D({
             const currentStoreFloors = useRoomStore.getState().floors;
             const baseEntry = currentStoreFloors[correctFloorKey]?.airEntries?.[foundIndex];
             
-            console.log("🔍 ID DIAGNOSIS - Canvas3D Dialog Opening:", {
-              foundIndex,
-              correctFloorKey,
-              baseEntryFromStore: baseEntry ? { id: baseEntry.id, type: baseEntry.type } : 'NOT_FOUND',
-              meshDataClicked: { id: airEntryData.airEntryId, type: airEntryData.type },
-              allStoreAirEntries: currentStoreFloors[correctFloorKey]?.airEntries?.map((e, i) => ({ index: i, id: e.id, type: e.type }))
-            });
+
             
             if (!baseEntry) {
               console.warn("Could not find air entry in store", { correctFloorKey, foundIndex });
