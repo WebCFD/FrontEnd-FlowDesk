@@ -296,13 +296,20 @@ export class StoreAdapter {
   private syncFloorFromStore(floorName: string, storeEntries: LegacyAirEntry[]): void {
     const controllerEntries = this.controller.getEntriesForFloor(floorName);
     
+    console.log(`StoreAdapter syncFloorFromStore(${floorName}): Store has ${storeEntries.length} entries`);
+    console.log(`StoreAdapter syncFloorFromStore(${floorName}): Controller has ${controllerEntries.length} entries`);
+    
     // Find entries to add, update, or remove
     const storeIds = new Set(storeEntries.map(e => e.id).filter(Boolean));
     const controllerIds = new Set(controllerEntries.map(e => e.id));
 
+    console.log(`StoreAdapter syncFloorFromStore(${floorName}): Store IDs:`, Array.from(storeIds));
+    console.log(`StoreAdapter syncFloorFromStore(${floorName}): Controller IDs:`, Array.from(controllerIds));
+
     // Remove entries that exist in controller but not in store
     controllerIds.forEach(id => {
       if (!storeIds.has(id)) {
+        console.log(`StoreAdapter syncFloorFromStore(${floorName}): ⚠️ DELETING entry ${id} from controller (not found in store)`);
         this.controller.deleteEntry(id);
       }
     });
@@ -430,6 +437,7 @@ export class StoreAdapter {
    */
   async forceResync(): Promise<void> {
     console.log('StoreAdapter: Forcing complete resync...');
+    console.log('StoreAdapter: ⚠️  WARNING - This will clear all controller entries!');
     
     // Clear controller
     this.controller.clear();
