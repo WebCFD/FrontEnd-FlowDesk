@@ -59,7 +59,13 @@ function App() {
         <div className="min-h-screen flex flex-col">
           <Switch>
             <Route path="/dashboard*">
-              <Router />
+              <>
+                <Navbar />
+                <main className="flex-1 pt-16">
+                  <Router />
+                </main>
+                <Footer />
+              </>
             </Route>
             <Route path="*">
               <>
