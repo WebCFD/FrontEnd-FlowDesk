@@ -57,18 +57,20 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AnalyticsProvider debug={process.env.NODE_ENV === 'development'}>
         <div className="min-h-screen flex flex-col">
-          <Route path="/dashboard*">
-            <Router />
-          </Route>
-          <Route path="*">
-            <>
-              <Navbar />
-              <main className="flex-1 pt-16">
-                <Router />
-              </main>
-              <Footer />
-            </>
-          </Route>
+          <Switch>
+            <Route path="/dashboard*">
+              <Router />
+            </Route>
+            <Route path="*">
+              <>
+                <Navbar />
+                <main className="flex-1 pt-16">
+                  <Router />
+                </main>
+                <Footer />
+              </>
+            </Route>
+          </Switch>
         </div>
         <Toaster />
       </AnalyticsProvider>
