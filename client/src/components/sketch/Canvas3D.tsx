@@ -1598,9 +1598,16 @@ export default function Canvas3D({
   const airEntryInitialValues = useMemo(() => {
     if (!editingAirEntry) return null;
     
+    // STRATEGIC LOG: Track dialog initialization for cross-contamination diagnosis
+    console.log(`🔍 [AIRENTRY INIT] Starting dialog init for ${editingAirEntry.entry.type} #${editingAirEntry.index} on floor ${editingAirEntry.floorName}`);
+    
     // CRITICAL FIX: Always read from reactive store first to get current data
     const reactiveStoreFloors = useRoomStore.getState().floors;
     const currentAirEntry = reactiveStoreFloors[editingAirEntry.floorName]?.airEntries?.[editingAirEntry.index];
+    
+    // STRATEGIC LOG: Track data sources
+    console.log(`📊 [DATA SOURCES] Store entry:`, currentAirEntry?.properties || 'NULL');
+    console.log(`📊 [DATA SOURCES] Base entry:`, editingAirEntry.entry.properties || 'NULL');
     
     // Use current store data as primary source, fallback to baseEntry
     const baseEntry = currentAirEntry || editingAirEntry.entry;
@@ -1617,11 +1624,13 @@ export default function Canvas3D({
     const mesh = findAirEntryMesh(editingAirEntry.floorName, editingAirEntry.index);
     if (mesh?.userData?.properties) {
       properties = { ...properties, ...mesh.userData.properties };
+      console.log(`🎯 [MESH DATA] Found mesh userData properties:`, mesh.userData.properties);
     }
     
     // 2. Also check for simulationProperties in mesh userData (for FurnVent compatibility)
     if (mesh?.userData?.simulationProperties) {
       properties = { ...properties, ...mesh.userData.simulationProperties };
+      console.log(`🎯 [MESH DATA] Found mesh userData simulationProperties:`, mesh.userData.simulationProperties);
     }
     
     // 3. Update wallPosition from mesh if available (for real-time position updates)
@@ -1629,13 +1638,24 @@ export default function Canvas3D({
       wallPosition = mesh.userData.wallPosition;
     }
     
-    return {
+    const finalInitialValues = {
       ...dimensions,
       shape: (dimensions as any).shape,
       properties: properties,
       position: position,
       wallPosition: wallPosition
     };
+    
+    // STRATEGIC LOG: Track final computed values
+    console.log(`✅ [FINAL VALUES] Dialog will initialize with:`, {
+      type: editingAirEntry.entry.type,
+      index: editingAirEntry.index,
+      floor: editingAirEntry.floorName,
+      properties: finalInitialValues.properties,
+      wallPosition: finalInitialValues.wallPosition
+    });
+    
+    return finalInitialValues;
   }, [editingAirEntry, editingAirEntry?.floorName, findAirEntryMesh]);
   
   // State for editing furniture
@@ -1647,7 +1667,16 @@ export default function Canvas3D({
 
   // Track editingAirEntry state changes
   useEffect(() => {
-    // State change monitoring for air entry dialogs
+    if (editingAirEntry) {
+      console.log(`🚀 [DIALOG OPEN] editingAirEntry set to:`, {
+        type: editingAirEntry.entry.type,
+        index: editingAirEntry.index,
+        floor: editingAirEntry.floorName,
+        entryProperties: editingAirEntry.entry.properties
+      });
+    } else {
+      console.log(`🚪 [DIALOG CLOSED] editingAirEntry cleared`);
+    }
   }, [editingAirEntry]);
 
   // Debounce mechanism to prevent excessive parent updates
@@ -1678,42 +1707,11 @@ export default function Canvas3D({
     
     // Force immediate dimension update for visual feedback (Center Height, Width, Height)
     if (sceneRef.current && (newDimensions.distanceToFloor !== undefined || newDimensions.width !== undefined || newDimensions.height !== undefined)) {
-      // DEBUGGING COMPLETO: Inventario de meshes antes de modificar
-      console.log("🔍 SCENE MESH INVENTORY:", {
-        editingEntry: {
-          type: editingAirEntry.entry.type,
-          index: editingAirEntry.index,
-          floorName: editingAirEntry.floorName
-        },
-        allAirEntryMeshes: (() => {
-          const meshes = [];
-          sceneRef.current.traverse((obj) => {
-            if (obj instanceof THREE.Mesh && obj.userData?.type && 
-                ["window", "door", "vent"].includes(obj.userData.type)) {
-              meshes.push({
-                type: obj.userData.type,
-                entryIndex: obj.userData.entryIndex,
-                floorName: obj.userData.floorName,
-                position: obj.userData.position
-              });
-            }
-          });
-          return meshes;
-        })()
-      });
-
       sceneRef.current.traverse((object) => {
         if (object instanceof THREE.Mesh && 
             object.userData?.type === editingAirEntry.entry.type &&
             object.userData?.entryIndex === editingAirEntry.index &&
-            doFloorsMatch(object.userData?.floorName || '', editingAirEntry.floorName)) { // ← USAR doFloorsMatch
-          
-          console.log("🎯 EXACT MATCH FOUND - Only this mesh should be modified:", {
-            type: object.userData.type,
-            entryIndex: object.userData.entryIndex,
-            floorName: object.userData.floorName,
-            position: object.position
-          });
+            doFloorsMatch(object.userData?.floorName || '', editingAirEntry.floorName)) {
           
           // Update the mesh Z position for Center Height (distanceToFloor)
           if (newDimensions.distanceToFloor !== undefined) {
