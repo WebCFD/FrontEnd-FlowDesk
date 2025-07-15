@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Play, Mail, FileEdit } from "lucide-react";
+import { PlusCircle, Play, Mail } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useRoomStore } from "@/lib/store/room-store";
 import {
@@ -19,9 +19,6 @@ import {
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
-  const [simulations] = useState([
-    { id: 1, name: 'tutorial', status: 'Draft' }
-  ]);
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   const [showNewSimulationDialog, setShowNewSimulationDialog] = useState(false);
   const { lines, reset } = useRoomStore();
@@ -61,16 +58,9 @@ export default function Dashboard() {
         <Card>
           <CardHeader>
             <CardTitle>Welcome to FlowDesk</CardTitle>
-            <CardDescription>Ready to shape your latest design?</CardDescription>
+            <CardDescription>Professional HVAC simulation and thermal analysis platform</CardDescription>
           </CardHeader>
           <CardContent className="flex gap-4">
-            <Button 
-              onClick={handleStartSimulation}
-              className="flex items-center gap-2"
-            >
-              <PlusCircle className="h-4 w-4" />
-              Start New Simulation
-            </Button>
             <Button 
               variant="outline" 
               onClick={handleHowItWorks}
@@ -104,36 +94,26 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Latest Simulations */}
+        {/* Quick Start */}
         <Card>
           <CardHeader>
-            <CardTitle>Latest Simulations</CardTitle>
+            <CardTitle>Quick Start</CardTitle>
+            <CardDescription>Create your HVAC simulation design</CardDescription>
           </CardHeader>
           <CardContent>
-            {simulations.length > 0 ? (
-              <div className="space-y-4">
-                {simulations.map((simulation) => (
-                  <div 
-                    key={simulation.id}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent cursor-pointer"
-                    onClick={() => console.log(`Opening simulation ${simulation.id}`)}
-                  >
-                    <div className="flex items-center gap-3">
-                      <FileEdit className="h-5 w-5 text-muted-foreground" />
-                      <div>
-                        <div className="font-medium">{simulation.name}</div>
-                        <div className="text-sm text-muted-foreground">{simulation.status}</div>
-                      </div>
-                    </div>
-                    <Button variant="ghost" size="sm">Open</Button>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center text-muted-foreground py-8">
-                No simulations yet. Start your first simulation!
-              </div>
-            )}
+            <div className="text-center py-8">
+              <p className="text-muted-foreground mb-4">
+                Design rooms, configure air flow, and run thermal simulations
+              </p>
+              <Button 
+                onClick={handleStartSimulation}
+                size="lg"
+                className="flex items-center gap-2"
+              >
+                <PlusCircle className="h-5 w-5" />
+                Create New Design
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
