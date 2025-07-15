@@ -126,6 +126,7 @@ export function useAirEntryController(options: UseAirEntryControllerOptions): {
         ? airEntryController.getEntriesForFloor(floorName)
         : airEntryController.getAllEntries();
       
+      console.log(`Hook loadEntries: Loading ${allEntries.length} entries for floor ${floorName}`);
       setEntries(allEntries);
     } catch (err) {
       console.error('Failed to load entries:', err);
@@ -176,6 +177,9 @@ export function useAirEntryController(options: UseAirEntryControllerOptions): {
           line,
           properties
         );
+        
+        console.log("Hook: Entry created successfully:", entry?.id);
+        loadEntries(); // Reload entries immediately after creation
         
         return entry;
       } catch (err) {
