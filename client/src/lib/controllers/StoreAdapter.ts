@@ -276,13 +276,15 @@ export class StoreAdapter {
     const airEntries = [...(floors[floorName].airEntries || [])];
     const existingIndex = airEntries.findIndex(e => e.id === entry.id);
 
+    console.log(`StoreAdapter updateStoreEntry(${floorName}): Searching for entry ${entry.id} in existing airEntries:`, airEntries.map(e => e.id));
+
     if (existingIndex >= 0) {
       // Update existing entry
       console.log(`StoreAdapter updateStoreEntry(${floorName}): Updating existing entry at index ${existingIndex}`);
       airEntries[existingIndex] = legacyEntry;
     } else {
       // Add new entry
-      console.log(`StoreAdapter updateStoreEntry(${floorName}): Adding new entry`);
+      console.log(`StoreAdapter updateStoreEntry(${floorName}): Adding new entry ${entry.id} to ${airEntries.length} existing entries`);
       airEntries.push(legacyEntry);
     }
 
