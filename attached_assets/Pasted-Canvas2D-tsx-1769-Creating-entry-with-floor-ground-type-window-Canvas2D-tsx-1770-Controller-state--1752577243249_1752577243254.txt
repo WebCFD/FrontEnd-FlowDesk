@@ -1,0 +1,1542 @@
+Canvas2D.tsx:1769 Creating entry with floor: ground type: window
+Canvas2D.tsx:1770 Controller state before creation: 0
+AirEntryController.ts:161 Controller: Entry window_0F_38_07cedafe stored, total entries now: 1
+AirEntryController.ts:168 Controller: Entry window_0F_38_07cedafe added to floor ground, floor now has 1 entries
+StoreAdapter.ts:239 StoreAdapter syncEventToStore: Received event type create for floor ground
+StoreAdapter.ts:247 StoreAdapter syncEventToStore: Processing create for entry window_0F_38_07cedafe
+StoreAdapter.ts:263 StoreAdapter updateStoreEntry(ground): Updating entry window_0F_38_07cedafe
+StoreAdapter.ts:269 StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+StoreAdapter.ts:270 StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 0
+StoreAdapter.ts:279 StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_38_07cedafe in existing airEntries: []
+StoreAdapter.ts:287 StoreAdapter updateStoreEntry(ground): Adding new entry window_0F_38_07cedafe to 0 existing entries
+StoreAdapter.ts:296 StoreAdapter updateStoreEntry(ground): About to update store with 1 entries
+StoreAdapter.ts:306 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 1 entries
+StoreAdapter.ts:307 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: [{…}]
+StoreAdapter.ts:314 StoreAdapter updateStoreEntry(ground): Store updated successfully
+StoreAdapter.ts:239 StoreAdapter syncEventToStore: Received event type create for floor ground
+StoreAdapter.ts:247 StoreAdapter syncEventToStore: Processing create for entry window_0F_38_07cedafe
+StoreAdapter.ts:263 StoreAdapter updateStoreEntry(ground): Updating entry window_0F_38_07cedafe
+StoreAdapter.ts:269 StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+StoreAdapter.ts:270 StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 1
+StoreAdapter.ts:279 StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_38_07cedafe in existing airEntries: ['window_0F_38_07cedafe']
+StoreAdapter.ts:283 StoreAdapter updateStoreEntry(ground): Updating existing entry at index 0
+StoreAdapter.ts:296 StoreAdapter updateStoreEntry(ground): About to update store with 1 entries
+StoreAdapter.ts:306 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 1 entries
+StoreAdapter.ts:307 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: [{…}]
+StoreAdapter.ts:314 StoreAdapter updateStoreEntry(ground): Store updated successfully
+StoreAdapter.ts:239 StoreAdapter syncEventToStore: Received event type create for floor ground
+StoreAdapter.ts:247 StoreAdapter syncEventToStore: Processing create for entry window_0F_38_07cedafe
+StoreAdapter.ts:263 StoreAdapter updateStoreEntry(ground): Updating entry window_0F_38_07cedafe
+StoreAdapter.ts:269 StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+StoreAdapter.ts:270 StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 1
+StoreAdapter.ts:279 StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_38_07cedafe in existing airEntries: ['window_0F_38_07cedafe']
+StoreAdapter.ts:283 StoreAdapter updateStoreEntry(ground): Updating existing entry at index 0
+StoreAdapter.ts:296 StoreAdapter updateStoreEntry(ground): About to update store with 1 entries
+StoreAdapter.ts:306 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 1 entries
+StoreAdapter.ts:307 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: [{…}]
+StoreAdapter.ts:314 StoreAdapter updateStoreEntry(ground): Store updated successfully
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(1) {'window_0F_38_07cedafe'}
+AirEntryController.ts:320 Controller total entries in storage: 1
+AirEntryController.ts:321 Controller all entry IDs: ['window_0F_38_07cedafe']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 1 entries
+useAirEntryController.ts:129 Hook loadEntries: Loading 1 entries for floor ground
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(1) {'window_0F_38_07cedafe'}
+AirEntryController.ts:320 Controller total entries in storage: 1
+AirEntryController.ts:321 Controller all entry IDs: ['window_0F_38_07cedafe']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 1 entries
+useAirEntryController.ts:129 Hook loadEntries: Loading 1 entries for floor ground
+useAirEntryController.ts:181 Hook: Entry created successfully: window_0F_38_07cedafe
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(1) {'window_0F_38_07cedafe'}
+AirEntryController.ts:320 Controller total entries in storage: 1
+AirEntryController.ts:321 Controller all entry IDs: ['window_0F_38_07cedafe']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 1 entries
+useAirEntryController.ts:129 Hook loadEntries: Loading 1 entries for floor ground
+Canvas2D.tsx:1801 Controller state after creation: 0
+Canvas2D.tsx:1802 Created entry result: {id: 'window_0F_38_07cedafe', floorName: 'ground', createdAt: 1752577231188, type: 'window', position: {…}, …}
+Canvas2D.tsx:1816 AirEntry created, controller now has entries: 0
+StoreAdapter.ts:193 StoreAdapter setupStoreToControllerSync: RAW state: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:194 StoreAdapter setupStoreToControllerSync: RAW prevState: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:200 StoreAdapter setupStoreToControllerSync: Current store state floors: ['ground']
+StoreAdapter.ts:201 StoreAdapter setupStoreToControllerSync: Current ground airEntries: 0
+StoreAdapter.ts:202 StoreAdapter setupStoreToControllerSync: Current ground airEntries FULL: []
+StoreAdapter.ts:209 StoreAdapter setupStoreToControllerSync: Checking floor ground - current: 0, previous: 1
+StoreAdapter.ts:212 StoreAdapter setupStoreToControllerSync: Changes detected in floor ground, calling syncFloorFromStore
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(1) {'window_0F_38_07cedafe'}
+AirEntryController.ts:320 Controller total entries in storage: 1
+AirEntryController.ts:321 Controller all entry IDs: ['window_0F_38_07cedafe']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 1 entries
+StoreAdapter.ts:343 StoreAdapter syncFloorFromStore(ground): Store has 0 entries
+StoreAdapter.ts:344 StoreAdapter syncFloorFromStore(ground): storeEntries data: []
+StoreAdapter.ts:345 StoreAdapter syncFloorFromStore(ground): Controller has 1 entries
+StoreAdapter.ts:351 StoreAdapter syncFloorFromStore(ground): Store IDs: []
+StoreAdapter.ts:352 StoreAdapter syncFloorFromStore(ground): Controller IDs: ['window_0F_38_07cedafe']
+StoreAdapter.ts:359 StoreAdapter syncFloorFromStore(ground): ⚠️ SKIPPING deletion of entry window_0F_38_07cedafe (recently added, race condition guard)
+StoreAdapter.ts:193 StoreAdapter setupStoreToControllerSync: RAW state: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:194 StoreAdapter setupStoreToControllerSync: RAW prevState: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:200 StoreAdapter setupStoreToControllerSync: Current store state floors: ['ground']
+StoreAdapter.ts:201 StoreAdapter setupStoreToControllerSync: Current ground airEntries: 0
+StoreAdapter.ts:202 StoreAdapter setupStoreToControllerSync: Current ground airEntries FULL: []
+StoreAdapter.ts:209 StoreAdapter setupStoreToControllerSync: Checking floor ground - current: 0, previous: 1
+StoreAdapter.ts:212 StoreAdapter setupStoreToControllerSync: Changes detected in floor ground, calling syncFloorFromStore
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(1) {'window_0F_38_07cedafe'}
+AirEntryController.ts:320 Controller total entries in storage: 1
+AirEntryController.ts:321 Controller all entry IDs: ['window_0F_38_07cedafe']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 1 entries
+StoreAdapter.ts:343 StoreAdapter syncFloorFromStore(ground): Store has 0 entries
+StoreAdapter.ts:344 StoreAdapter syncFloorFromStore(ground): storeEntries data: []
+StoreAdapter.ts:345 StoreAdapter syncFloorFromStore(ground): Controller has 1 entries
+StoreAdapter.ts:351 StoreAdapter syncFloorFromStore(ground): Store IDs: []
+StoreAdapter.ts:352 StoreAdapter syncFloorFromStore(ground): Controller IDs: ['window_0F_38_07cedafe']
+StoreAdapter.ts:359 StoreAdapter syncFloorFromStore(ground): ⚠️ SKIPPING deletion of entry window_0F_38_07cedafe (recently added, race condition guard)
+StoreAdapter.ts:193 StoreAdapter setupStoreToControllerSync: RAW state: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:194 StoreAdapter setupStoreToControllerSync: RAW prevState: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:200 StoreAdapter setupStoreToControllerSync: Current store state floors: ['ground']
+StoreAdapter.ts:201 StoreAdapter setupStoreToControllerSync: Current ground airEntries: 0
+StoreAdapter.ts:202 StoreAdapter setupStoreToControllerSync: Current ground airEntries FULL: []
+StoreAdapter.ts:209 StoreAdapter setupStoreToControllerSync: Checking floor ground - current: 0, previous: 1
+StoreAdapter.ts:212 StoreAdapter setupStoreToControllerSync: Changes detected in floor ground, calling syncFloorFromStore
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(1) {'window_0F_38_07cedafe'}
+AirEntryController.ts:320 Controller total entries in storage: 1
+AirEntryController.ts:321 Controller all entry IDs: ['window_0F_38_07cedafe']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 1 entries
+StoreAdapter.ts:343 StoreAdapter syncFloorFromStore(ground): Store has 0 entries
+StoreAdapter.ts:344 StoreAdapter syncFloorFromStore(ground): storeEntries data: []
+StoreAdapter.ts:345 StoreAdapter syncFloorFromStore(ground): Controller has 1 entries
+StoreAdapter.ts:351 StoreAdapter syncFloorFromStore(ground): Store IDs: []
+StoreAdapter.ts:352 StoreAdapter syncFloorFromStore(ground): Controller IDs: ['window_0F_38_07cedafe']
+StoreAdapter.ts:359 StoreAdapter syncFloorFromStore(ground): ⚠️ SKIPPING deletion of entry window_0F_38_07cedafe (recently added, race condition guard)
+StoreAdapter.ts:193 StoreAdapter setupStoreToControllerSync: RAW state: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:194 StoreAdapter setupStoreToControllerSync: RAW prevState: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:200 StoreAdapter setupStoreToControllerSync: Current store state floors: ['ground']
+StoreAdapter.ts:201 StoreAdapter setupStoreToControllerSync: Current ground airEntries: 0
+StoreAdapter.ts:202 StoreAdapter setupStoreToControllerSync: Current ground airEntries FULL: []
+StoreAdapter.ts:209 StoreAdapter setupStoreToControllerSync: Checking floor ground - current: 0, previous: 0
+StoreAdapter.ts:193 StoreAdapter setupStoreToControllerSync: RAW state: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:194 StoreAdapter setupStoreToControllerSync: RAW prevState: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:200 StoreAdapter setupStoreToControllerSync: Current store state floors: ['ground']
+StoreAdapter.ts:201 StoreAdapter setupStoreToControllerSync: Current ground airEntries: 0
+StoreAdapter.ts:202 StoreAdapter setupStoreToControllerSync: Current ground airEntries FULL: []
+StoreAdapter.ts:209 StoreAdapter setupStoreToControllerSync: Checking floor ground - current: 0, previous: 0
+StoreAdapter.ts:193 StoreAdapter setupStoreToControllerSync: RAW state: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:194 StoreAdapter setupStoreToControllerSync: RAW prevState: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:200 StoreAdapter setupStoreToControllerSync: Current store state floors: ['ground']
+StoreAdapter.ts:201 StoreAdapter setupStoreToControllerSync: Current ground airEntries: 0
+StoreAdapter.ts:202 StoreAdapter setupStoreToControllerSync: Current ground airEntries FULL: []
+StoreAdapter.ts:209 StoreAdapter setupStoreToControllerSync: Checking floor ground - current: 0, previous: 0
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+StoreAdapter.ts:193 StoreAdapter setupStoreToControllerSync: RAW state: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:194 StoreAdapter setupStoreToControllerSync: RAW prevState: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:200 StoreAdapter setupStoreToControllerSync: Current store state floors: ['ground']
+StoreAdapter.ts:201 StoreAdapter setupStoreToControllerSync: Current ground airEntries: 0
+StoreAdapter.ts:202 StoreAdapter setupStoreToControllerSync: Current ground airEntries FULL: []
+StoreAdapter.ts:209 StoreAdapter setupStoreToControllerSync: Checking floor ground - current: 0, previous: 0
+StoreAdapter.ts:193 StoreAdapter setupStoreToControllerSync: RAW state: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:194 StoreAdapter setupStoreToControllerSync: RAW prevState: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:200 StoreAdapter setupStoreToControllerSync: Current store state floors: ['ground']
+StoreAdapter.ts:201 StoreAdapter setupStoreToControllerSync: Current ground airEntries: 0
+StoreAdapter.ts:202 StoreAdapter setupStoreToControllerSync: Current ground airEntries FULL: []
+StoreAdapter.ts:209 StoreAdapter setupStoreToControllerSync: Checking floor ground - current: 0, previous: 0
+StoreAdapter.ts:193 StoreAdapter setupStoreToControllerSync: RAW state: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:194 StoreAdapter setupStoreToControllerSync: RAW prevState: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:200 StoreAdapter setupStoreToControllerSync: Current store state floors: ['ground']
+StoreAdapter.ts:201 StoreAdapter setupStoreToControllerSync: Current ground airEntries: 0
+StoreAdapter.ts:202 StoreAdapter setupStoreToControllerSync: Current ground airEntries FULL: []
+StoreAdapter.ts:209 StoreAdapter setupStoreToControllerSync: Checking floor ground - current: 0, previous: 0
+Canvas2D.tsx:3440 Canvas2D: handleAirEntryEdit called with index: -1
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 1 - renderizando 1 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:1769 Creating entry with floor: ground type: window
+Canvas2D.tsx:1770 Controller state before creation: 1
+AirEntryController.ts:161 Controller: Entry window_0F_39_72615330 stored, total entries now: 2
+AirEntryController.ts:168 Controller: Entry window_0F_39_72615330 added to floor ground, floor now has 2 entries
+StoreAdapter.ts:239 StoreAdapter syncEventToStore: Received event type create for floor ground
+StoreAdapter.ts:247 StoreAdapter syncEventToStore: Processing create for entry window_0F_39_72615330
+StoreAdapter.ts:263 StoreAdapter updateStoreEntry(ground): Updating entry window_0F_39_72615330
+StoreAdapter.ts:269 StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+StoreAdapter.ts:270 StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 0
+StoreAdapter.ts:279 StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_39_72615330 in existing airEntries: []
+StoreAdapter.ts:287 StoreAdapter updateStoreEntry(ground): Adding new entry window_0F_39_72615330 to 0 existing entries
+StoreAdapter.ts:296 StoreAdapter updateStoreEntry(ground): About to update store with 1 entries
+StoreAdapter.ts:306 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 1 entries
+StoreAdapter.ts:307 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: [{…}]
+StoreAdapter.ts:314 StoreAdapter updateStoreEntry(ground): Store updated successfully
+StoreAdapter.ts:239 StoreAdapter syncEventToStore: Received event type create for floor ground
+StoreAdapter.ts:247 StoreAdapter syncEventToStore: Processing create for entry window_0F_39_72615330
+StoreAdapter.ts:263 StoreAdapter updateStoreEntry(ground): Updating entry window_0F_39_72615330
+StoreAdapter.ts:269 StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+StoreAdapter.ts:270 StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 1
+StoreAdapter.ts:279 StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_39_72615330 in existing airEntries: ['window_0F_39_72615330']
+StoreAdapter.ts:283 StoreAdapter updateStoreEntry(ground): Updating existing entry at index 0
+StoreAdapter.ts:296 StoreAdapter updateStoreEntry(ground): About to update store with 1 entries
+StoreAdapter.ts:306 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 1 entries
+StoreAdapter.ts:307 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: [{…}]
+StoreAdapter.ts:314 StoreAdapter updateStoreEntry(ground): Store updated successfully
+StoreAdapter.ts:239 StoreAdapter syncEventToStore: Received event type create for floor ground
+StoreAdapter.ts:247 StoreAdapter syncEventToStore: Processing create for entry window_0F_39_72615330
+StoreAdapter.ts:263 StoreAdapter updateStoreEntry(ground): Updating entry window_0F_39_72615330
+StoreAdapter.ts:269 StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+StoreAdapter.ts:270 StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 1
+StoreAdapter.ts:279 StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_39_72615330 in existing airEntries: ['window_0F_39_72615330']
+StoreAdapter.ts:283 StoreAdapter updateStoreEntry(ground): Updating existing entry at index 0
+StoreAdapter.ts:296 StoreAdapter updateStoreEntry(ground): About to update store with 1 entries
+StoreAdapter.ts:306 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 1 entries
+StoreAdapter.ts:307 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: [{…}]
+StoreAdapter.ts:314 StoreAdapter updateStoreEntry(ground): Store updated successfully
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(2) {'window_0F_38_07cedafe', 'window_0F_39_72615330'}
+AirEntryController.ts:320 Controller total entries in storage: 2
+AirEntryController.ts:321 Controller all entry IDs: (2) ['window_0F_38_07cedafe', 'window_0F_39_72615330']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 2 entries
+useAirEntryController.ts:129 Hook loadEntries: Loading 2 entries for floor ground
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(2) {'window_0F_38_07cedafe', 'window_0F_39_72615330'}
+AirEntryController.ts:320 Controller total entries in storage: 2
+AirEntryController.ts:321 Controller all entry IDs: (2) ['window_0F_38_07cedafe', 'window_0F_39_72615330']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 2 entries
+useAirEntryController.ts:129 Hook loadEntries: Loading 2 entries for floor ground
+useAirEntryController.ts:181 Hook: Entry created successfully: window_0F_39_72615330
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(2) {'window_0F_38_07cedafe', 'window_0F_39_72615330'}
+AirEntryController.ts:320 Controller total entries in storage: 2
+AirEntryController.ts:321 Controller all entry IDs: (2) ['window_0F_38_07cedafe', 'window_0F_39_72615330']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 2 entries
+useAirEntryController.ts:129 Hook loadEntries: Loading 2 entries for floor ground
+Canvas2D.tsx:1801 Controller state after creation: 1
+Canvas2D.tsx:1802 Created entry result: {id: 'window_0F_39_72615330', floorName: 'ground', createdAt: 1752577235764, type: 'window', position: {…}, …}
+Canvas2D.tsx:1816 AirEntry created, controller now has entries: 1
+StoreAdapter.ts:193 StoreAdapter setupStoreToControllerSync: RAW state: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:194 StoreAdapter setupStoreToControllerSync: RAW prevState: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:200 StoreAdapter setupStoreToControllerSync: Current store state floors: ['ground']
+StoreAdapter.ts:201 StoreAdapter setupStoreToControllerSync: Current ground airEntries: 1
+StoreAdapter.ts:202 StoreAdapter setupStoreToControllerSync: Current ground airEntries FULL: [{…}]
+StoreAdapter.ts:209 StoreAdapter setupStoreToControllerSync: Checking floor ground - current: 1, previous: 1
+StoreAdapter.ts:212 StoreAdapter setupStoreToControllerSync: Changes detected in floor ground, calling syncFloorFromStore
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(2) {'window_0F_38_07cedafe', 'window_0F_39_72615330'}
+AirEntryController.ts:320 Controller total entries in storage: 2
+AirEntryController.ts:321 Controller all entry IDs: (2) ['window_0F_38_07cedafe', 'window_0F_39_72615330']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 2 entries
+StoreAdapter.ts:343 StoreAdapter syncFloorFromStore(ground): Store has 1 entries
+StoreAdapter.ts:344 StoreAdapter syncFloorFromStore(ground): storeEntries data: [{…}]
+StoreAdapter.ts:345 StoreAdapter syncFloorFromStore(ground): Controller has 2 entries
+StoreAdapter.ts:351 StoreAdapter syncFloorFromStore(ground): Store IDs: ['window_0F_38_07cedafe']
+StoreAdapter.ts:352 StoreAdapter syncFloorFromStore(ground): Controller IDs: (2) ['window_0F_38_07cedafe', 'window_0F_39_72615330']
+StoreAdapter.ts:359 StoreAdapter syncFloorFromStore(ground): ⚠️ SKIPPING deletion of entry window_0F_39_72615330 (recently added, race condition guard)
+StoreAdapter.ts:193 StoreAdapter setupStoreToControllerSync: RAW state: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:194 StoreAdapter setupStoreToControllerSync: RAW prevState: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:200 StoreAdapter setupStoreToControllerSync: Current store state floors: ['ground']
+StoreAdapter.ts:201 StoreAdapter setupStoreToControllerSync: Current ground airEntries: 1
+StoreAdapter.ts:202 StoreAdapter setupStoreToControllerSync: Current ground airEntries FULL: [{…}]
+StoreAdapter.ts:209 StoreAdapter setupStoreToControllerSync: Checking floor ground - current: 1, previous: 1
+StoreAdapter.ts:212 StoreAdapter setupStoreToControllerSync: Changes detected in floor ground, calling syncFloorFromStore
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(2) {'window_0F_38_07cedafe', 'window_0F_39_72615330'}
+AirEntryController.ts:320 Controller total entries in storage: 2
+AirEntryController.ts:321 Controller all entry IDs: (2) ['window_0F_38_07cedafe', 'window_0F_39_72615330']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 2 entries
+StoreAdapter.ts:343 StoreAdapter syncFloorFromStore(ground): Store has 1 entries
+StoreAdapter.ts:344 StoreAdapter syncFloorFromStore(ground): storeEntries data: [{…}]
+StoreAdapter.ts:345 StoreAdapter syncFloorFromStore(ground): Controller has 2 entries
+StoreAdapter.ts:351 StoreAdapter syncFloorFromStore(ground): Store IDs: ['window_0F_38_07cedafe']
+StoreAdapter.ts:352 StoreAdapter syncFloorFromStore(ground): Controller IDs: (2) ['window_0F_38_07cedafe', 'window_0F_39_72615330']
+StoreAdapter.ts:359 StoreAdapter syncFloorFromStore(ground): ⚠️ SKIPPING deletion of entry window_0F_39_72615330 (recently added, race condition guard)
+StoreAdapter.ts:193 StoreAdapter setupStoreToControllerSync: RAW state: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:194 StoreAdapter setupStoreToControllerSync: RAW prevState: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:200 StoreAdapter setupStoreToControllerSync: Current store state floors: ['ground']
+StoreAdapter.ts:201 StoreAdapter setupStoreToControllerSync: Current ground airEntries: 1
+StoreAdapter.ts:202 StoreAdapter setupStoreToControllerSync: Current ground airEntries FULL: [{…}]
+StoreAdapter.ts:209 StoreAdapter setupStoreToControllerSync: Checking floor ground - current: 1, previous: 1
+StoreAdapter.ts:212 StoreAdapter setupStoreToControllerSync: Changes detected in floor ground, calling syncFloorFromStore
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(2) {'window_0F_38_07cedafe', 'window_0F_39_72615330'}
+AirEntryController.ts:320 Controller total entries in storage: 2
+AirEntryController.ts:321 Controller all entry IDs: (2) ['window_0F_38_07cedafe', 'window_0F_39_72615330']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 2 entries
+StoreAdapter.ts:343 StoreAdapter syncFloorFromStore(ground): Store has 1 entries
+StoreAdapter.ts:344 StoreAdapter syncFloorFromStore(ground): storeEntries data: [{…}]
+StoreAdapter.ts:345 StoreAdapter syncFloorFromStore(ground): Controller has 2 entries
+StoreAdapter.ts:351 StoreAdapter syncFloorFromStore(ground): Store IDs: ['window_0F_38_07cedafe']
+StoreAdapter.ts:352 StoreAdapter syncFloorFromStore(ground): Controller IDs: (2) ['window_0F_38_07cedafe', 'window_0F_39_72615330']
+StoreAdapter.ts:359 StoreAdapter syncFloorFromStore(ground): ⚠️ SKIPPING deletion of entry window_0F_39_72615330 (recently added, race condition guard)
+StoreAdapter.ts:193 StoreAdapter setupStoreToControllerSync: RAW state: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:194 StoreAdapter setupStoreToControllerSync: RAW prevState: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:200 StoreAdapter setupStoreToControllerSync: Current store state floors: ['ground']
+StoreAdapter.ts:201 StoreAdapter setupStoreToControllerSync: Current ground airEntries: 1
+StoreAdapter.ts:202 StoreAdapter setupStoreToControllerSync: Current ground airEntries FULL: [{…}]
+StoreAdapter.ts:209 StoreAdapter setupStoreToControllerSync: Checking floor ground - current: 1, previous: 1
+StoreAdapter.ts:193 StoreAdapter setupStoreToControllerSync: RAW state: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:194 StoreAdapter setupStoreToControllerSync: RAW prevState: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:200 StoreAdapter setupStoreToControllerSync: Current store state floors: ['ground']
+StoreAdapter.ts:201 StoreAdapter setupStoreToControllerSync: Current ground airEntries: 1
+StoreAdapter.ts:202 StoreAdapter setupStoreToControllerSync: Current ground airEntries FULL: [{…}]
+StoreAdapter.ts:209 StoreAdapter setupStoreToControllerSync: Checking floor ground - current: 1, previous: 1
+StoreAdapter.ts:193 StoreAdapter setupStoreToControllerSync: RAW state: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:194 StoreAdapter setupStoreToControllerSync: RAW prevState: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:200 StoreAdapter setupStoreToControllerSync: Current store state floors: ['ground']
+StoreAdapter.ts:201 StoreAdapter setupStoreToControllerSync: Current ground airEntries: 1
+StoreAdapter.ts:202 StoreAdapter setupStoreToControllerSync: Current ground airEntries FULL: [{…}]
+StoreAdapter.ts:209 StoreAdapter setupStoreToControllerSync: Checking floor ground - current: 1, previous: 1
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 2 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (240.79640796583527, 267.1409877668107)
+ StoreAdapter setupStoreToControllerSync: RAW state: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+ StoreAdapter setupStoreToControllerSync: RAW prevState: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+ StoreAdapter setupStoreToControllerSync: Current store state floors: ['ground']
+ StoreAdapter setupStoreToControllerSync: Current ground airEntries: 1
+ StoreAdapter setupStoreToControllerSync: Current ground airEntries FULL: [{…}]
+ StoreAdapter setupStoreToControllerSync: Checking floor ground - current: 1, previous: 1
+ StoreAdapter setupStoreToControllerSync: Changes detected in floor ground, calling syncFloorFromStore
+ Controller getEntriesForFloor(ground): entryIds= Set(2) {'window_0F_38_07cedafe', 'window_0F_39_72615330'}
+ Controller total entries in storage: 2
+ Controller all entry IDs: (2) ['window_0F_38_07cedafe', 'window_0F_39_72615330']
+ Controller getEntriesForFloor(ground): returning 2 entries
+ StoreAdapter syncFloorFromStore(ground): Store has 1 entries
+ StoreAdapter syncFloorFromStore(ground): storeEntries data: [{…}]
+ StoreAdapter syncFloorFromStore(ground): Controller has 2 entries
+ StoreAdapter syncFloorFromStore(ground): Store IDs: ['window_0F_38_07cedafe']
+ StoreAdapter syncFloorFromStore(ground): Controller IDs: (2) ['window_0F_38_07cedafe', 'window_0F_39_72615330']
+ StoreAdapter syncFloorFromStore(ground): ⚠️ DELETING entry window_0F_39_72615330 from controller (not found in store)
+ StoreAdapter syncEventToStore: Received event type delete for floor ground
+ StoreAdapter syncEventToStore: Processing delete for entry window_0F_39_72615330
+ StoreAdapter syncEventToStore: Received event type delete for floor ground
+ StoreAdapter syncEventToStore: Processing delete for entry window_0F_39_72615330
+ StoreAdapter syncEventToStore: Received event type delete for floor ground
+ StoreAdapter syncEventToStore: Processing delete for entry window_0F_39_72615330
+ Controller getEntriesForFloor(ground): entryIds= Set(1) {'window_0F_38_07cedafe'}
+ Controller total entries in storage: 1
+ Controller all entry IDs: ['window_0F_38_07cedafe']
+ Controller getEntriesForFloor(ground): returning 1 entries
+ Hook loadEntries: Loading 1 entries for floor ground
+ Controller getEntriesForFloor(ground): entryIds= Set(1) {'window_0F_38_07cedafe'}
+ Controller total entries in storage: 1
+ Controller all entry IDs: ['window_0F_38_07cedafe']
+ Controller getEntriesForFloor(ground): returning 1 entries
+ Hook loadEntries: Loading 1 entries for floor ground
+ Controller getEntriesForFloor(ground): entryIds= Set(1) {'window_0F_38_07cedafe'}
+ Controller total entries in storage: 1
+ Controller all entry IDs: ['window_0F_38_07cedafe']
+ Controller getEntriesForFloor(ground): returning 1 entries
+ Hook loadEntries: Loading 1 entries for floor ground
+ Controller getEntriesForFloor(ground): entryIds= Set(1) {'window_0F_38_07cedafe'}
+ Controller total entries in storage: 1
+ Controller all entry IDs: ['window_0F_38_07cedafe']
+ Controller getEntriesForFloor(ground): returning 1 entries
+ Hook loadEntries: Loading 1 entries for floor ground
+ StoreAdapter syncEventToStore: Received event type update for floor ground
+ StoreAdapter syncEventToStore: Processing update for entry window_0F_38_07cedafe
+ StoreAdapter updateStoreEntry(ground): Updating entry window_0F_38_07cedafe
+ StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+ StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 1
+ StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_38_07cedafe in existing airEntries: ['window_0F_38_07cedafe']
+ StoreAdapter updateStoreEntry(ground): Updating existing entry at index 0
+ StoreAdapter updateStoreEntry(ground): About to update store with 1 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 1 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: [{…}]
+ StoreAdapter updateStoreEntry(ground): Store updated successfully
+ StoreAdapter syncEventToStore: Received event type update for floor ground
+ StoreAdapter syncEventToStore: Processing update for entry window_0F_38_07cedafe
+ StoreAdapter updateStoreEntry(ground): Updating entry window_0F_38_07cedafe
+ StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+ StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 1
+ StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_38_07cedafe in existing airEntries: ['window_0F_38_07cedafe']
+ StoreAdapter updateStoreEntry(ground): Updating existing entry at index 0
+ StoreAdapter updateStoreEntry(ground): About to update store with 1 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 1 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: [{…}]
+ StoreAdapter updateStoreEntry(ground): Store updated successfully
+ StoreAdapter syncEventToStore: Received event type update for floor ground
+ StoreAdapter syncEventToStore: Processing update for entry window_0F_38_07cedafe
+ StoreAdapter updateStoreEntry(ground): Updating entry window_0F_38_07cedafe
+ StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+ StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 1
+ StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_38_07cedafe in existing airEntries: ['window_0F_38_07cedafe']
+ StoreAdapter updateStoreEntry(ground): Updating existing entry at index 0
+ StoreAdapter updateStoreEntry(ground): About to update store with 1 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 1 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: [{…}]
+ StoreAdapter updateStoreEntry(ground): Store updated successfully
+ Controller getEntriesForFloor(ground): entryIds= Set(1) {'window_0F_38_07cedafe'}
+ Controller total entries in storage: 1
+ Controller all entry IDs: ['window_0F_38_07cedafe']
+ Controller getEntriesForFloor(ground): returning 1 entries
+ Hook loadEntries: Loading 1 entries for floor ground
+ Controller getEntriesForFloor(ground): entryIds= Set(1) {'window_0F_38_07cedafe'}
+ Controller total entries in storage: 1
+ Controller all entry IDs: ['window_0F_38_07cedafe']
+ Controller getEntriesForFloor(ground): returning 1 entries
+ Hook loadEntries: Loading 1 entries for floor ground
+ StoreAdapter setupStoreToControllerSync: RAW state: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+ StoreAdapter setupStoreToControllerSync: RAW prevState: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+ StoreAdapter setupStoreToControllerSync: Current store state floors: ['ground']
+ StoreAdapter setupStoreToControllerSync: Current ground airEntries: 1
+ StoreAdapter setupStoreToControllerSync: Current ground airEntries FULL: [{…}]
+ StoreAdapter setupStoreToControllerSync: Checking floor ground - current: 1, previous: 1
+ StoreAdapter setupStoreToControllerSync: Changes detected in floor ground, calling syncFloorFromStore
+ Controller getEntriesForFloor(ground): entryIds= Set(1) {'window_0F_38_07cedafe'}
+ Controller total entries in storage: 1
+ Controller all entry IDs: ['window_0F_38_07cedafe']
+ Controller getEntriesForFloor(ground): returning 1 entries
+ StoreAdapter syncFloorFromStore(ground): Store has 1 entries
+ StoreAdapter syncFloorFromStore(ground): storeEntries data: [{…}]
+ StoreAdapter syncFloorFromStore(ground): Controller has 1 entries
+ StoreAdapter syncFloorFromStore(ground): Store IDs: ['window_0F_38_07cedafe']
+ StoreAdapter syncFloorFromStore(ground): Controller IDs: ['window_0F_38_07cedafe']
+ StoreAdapter setupStoreToControllerSync: RAW state: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+ StoreAdapter setupStoreToControllerSync: RAW prevState: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+ StoreAdapter setupStoreToControllerSync: Current store state floors: ['ground']
+ StoreAdapter setupStoreToControllerSync: Current ground airEntries: 1
+ StoreAdapter setupStoreToControllerSync: Current ground airEntries FULL: [{…}]
+ StoreAdapter setupStoreToControllerSync: Checking floor ground - current: 1, previous: 1
+ StoreAdapter setupStoreToControllerSync: Changes detected in floor ground, calling syncFloorFromStore
+ Controller getEntriesForFloor(ground): entryIds= Set(1) {'window_0F_38_07cedafe'}
+ Controller total entries in storage: 1
+ Controller all entry IDs: ['window_0F_38_07cedafe']
+ Controller getEntriesForFloor(ground): returning 1 entries
+ StoreAdapter syncFloorFromStore(ground): Store has 1 entries
+ StoreAdapter syncFloorFromStore(ground): storeEntries data: [{…}]
+ StoreAdapter syncFloorFromStore(ground): Controller has 1 entries
+ StoreAdapter syncFloorFromStore(ground): Store IDs: ['window_0F_38_07cedafe']
+ StoreAdapter syncFloorFromStore(ground): Controller IDs: ['window_0F_38_07cedafe']
+ Canvas2D: handleAirEntryEdit called with index: 0
+ 🟢 [CANVAS2D EDIT] Found entry in controller: window_0F_38_07cedafe
+ Controller getEntriesForFloor(ground): entryIds= Set(1) {'window_0F_38_07cedafe'}
+ Controller total entries in storage: 1
+ Controller all entry IDs: ['window_0F_38_07cedafe']
+ Controller getEntriesForFloor(ground): returning 1 entries
+ Hook loadEntries: Loading 1 entries for floor ground
+ Controller getEntriesForFloor(ground): entryIds= Set(1) {'window_0F_38_07cedafe'}
+ Controller total entries in storage: 1
+ Controller all entry IDs: ['window_0F_38_07cedafe']
+ Controller getEntriesForFloor(ground): returning 1 entries
+ Hook loadEntries: Loading 1 entries for floor ground
+ StoreAdapter syncEventToStore: Received event type update for floor ground
+ StoreAdapter syncEventToStore: Processing update for entry window_0F_38_07cedafe
+ StoreAdapter updateStoreEntry(ground): Updating entry window_0F_38_07cedafe
+ StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+ StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 1
+ StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_38_07cedafe in existing airEntries: ['window_0F_38_07cedafe']
+ StoreAdapter updateStoreEntry(ground): Updating existing entry at index 0
+StoreAdapter.ts:296 StoreAdapter updateStoreEntry(ground): About to update store with 1 entries
+StoreAdapter.ts:306 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 1 entries
+StoreAdapter.ts:307 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: [{…}]
+StoreAdapter.ts:314 StoreAdapter updateStoreEntry(ground): Store updated successfully
+StoreAdapter.ts:239 StoreAdapter syncEventToStore: Received event type update for floor ground
+StoreAdapter.ts:247 StoreAdapter syncEventToStore: Processing update for entry window_0F_38_07cedafe
+StoreAdapter.ts:263 StoreAdapter updateStoreEntry(ground): Updating entry window_0F_38_07cedafe
+StoreAdapter.ts:269 StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+StoreAdapter.ts:270 StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 1
+StoreAdapter.ts:279 StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_38_07cedafe in existing airEntries: ['window_0F_38_07cedafe']
+StoreAdapter.ts:283 StoreAdapter updateStoreEntry(ground): Updating existing entry at index 0
+StoreAdapter.ts:296 StoreAdapter updateStoreEntry(ground): About to update store with 1 entries
+StoreAdapter.ts:306 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 1 entries
+StoreAdapter.ts:307 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: [{…}]
+StoreAdapter.ts:314 StoreAdapter updateStoreEntry(ground): Store updated successfully
+StoreAdapter.ts:239 StoreAdapter syncEventToStore: Received event type update for floor ground
+StoreAdapter.ts:247 StoreAdapter syncEventToStore: Processing update for entry window_0F_38_07cedafe
+StoreAdapter.ts:263 StoreAdapter updateStoreEntry(ground): Updating entry window_0F_38_07cedafe
+StoreAdapter.ts:269 StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+StoreAdapter.ts:270 StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 1
+StoreAdapter.ts:279 StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_38_07cedafe in existing airEntries: ['window_0F_38_07cedafe']
+StoreAdapter.ts:283 StoreAdapter updateStoreEntry(ground): Updating existing entry at index 0
+StoreAdapter.ts:296 StoreAdapter updateStoreEntry(ground): About to update store with 1 entries
+StoreAdapter.ts:306 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 1 entries
+StoreAdapter.ts:307 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: [{…}]
+StoreAdapter.ts:314 StoreAdapter updateStoreEntry(ground): Store updated successfully
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(1) {'window_0F_38_07cedafe'}
+AirEntryController.ts:320 Controller total entries in storage: 1
+AirEntryController.ts:321 Controller all entry IDs: ['window_0F_38_07cedafe']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 1 entries
+useAirEntryController.ts:129 Hook loadEntries: Loading 1 entries for floor ground
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(1) {'window_0F_38_07cedafe'}
+AirEntryController.ts:320 Controller total entries in storage: 1
+AirEntryController.ts:321 Controller all entry IDs: ['window_0F_38_07cedafe']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 1 entries
+useAirEntryController.ts:129 Hook loadEntries: Loading 1 entries for floor ground
+Canvas2D.tsx:3468 🟢 [CANVAS2D EDIT] Entry updated successfully
+StoreAdapter.ts:193 StoreAdapter setupStoreToControllerSync: RAW state: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:194 StoreAdapter setupStoreToControllerSync: RAW prevState: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:200 StoreAdapter setupStoreToControllerSync: Current store state floors: ['ground']
+StoreAdapter.ts:201 StoreAdapter setupStoreToControllerSync: Current ground airEntries: 2
+StoreAdapter.ts:202 StoreAdapter setupStoreToControllerSync: Current ground airEntries FULL: (2) [{…}, {…}]
+StoreAdapter.ts:209 StoreAdapter setupStoreToControllerSync: Checking floor ground - current: 2, previous: 1
+StoreAdapter.ts:212 StoreAdapter setupStoreToControllerSync: Changes detected in floor ground, calling syncFloorFromStore
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(1) {'window_0F_38_07cedafe'}
+AirEntryController.ts:320 Controller total entries in storage: 1
+AirEntryController.ts:321 Controller all entry IDs: ['window_0F_38_07cedafe']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 1 entries
+StoreAdapter.ts:343 StoreAdapter syncFloorFromStore(ground): Store has 2 entries
+StoreAdapter.ts:344 StoreAdapter syncFloorFromStore(ground): storeEntries data: (2) [{…}, {…}]
+StoreAdapter.ts:345 StoreAdapter syncFloorFromStore(ground): Controller has 1 entries
+StoreAdapter.ts:351 StoreAdapter syncFloorFromStore(ground): Store IDs: (2) ['window_0F_38_07cedafe', 'window_0F_39_72615330']
+StoreAdapter.ts:352 StoreAdapter syncFloorFromStore(ground): Controller IDs: ['window_0F_38_07cedafe']
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(1) {'window_0F_38_07cedafe'}
+AirEntryController.ts:320 Controller total entries in storage: 1
+AirEntryController.ts:321 Controller all entry IDs: ['window_0F_38_07cedafe']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 1 entries
+useAirEntryController.ts:129 Hook loadEntries: Loading 1 entries for floor ground
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(1) {'window_0F_38_07cedafe'}
+AirEntryController.ts:320 Controller total entries in storage: 1
+AirEntryController.ts:321 Controller all entry IDs: ['window_0F_38_07cedafe']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 1 entries
+useAirEntryController.ts:129 Hook loadEntries: Loading 1 entries for floor ground
+StoreAdapter.ts:239 StoreAdapter syncEventToStore: Received event type update for floor ground
+StoreAdapter.ts:247 StoreAdapter syncEventToStore: Processing update for entry window_0F_38_07cedafe
+StoreAdapter.ts:263 StoreAdapter updateStoreEntry(ground): Updating entry window_0F_38_07cedafe
+StoreAdapter.ts:269 StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+StoreAdapter.ts:270 StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 2
+StoreAdapter.ts:279 StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_38_07cedafe in existing airEntries: (2) ['window_0F_38_07cedafe', 'window_0F_39_72615330']
+StoreAdapter.ts:283 StoreAdapter updateStoreEntry(ground): Updating existing entry at index 0
+StoreAdapter.ts:296 StoreAdapter updateStoreEntry(ground): About to update store with 2 entries
+StoreAdapter.ts:306 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 2 entries
+StoreAdapter.ts:307 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: (2) [{…}, {…}]
+StoreAdapter.ts:314 StoreAdapter updateStoreEntry(ground): Store updated successfully
+StoreAdapter.ts:239 StoreAdapter syncEventToStore: Received event type update for floor ground
+StoreAdapter.ts:247 StoreAdapter syncEventToStore: Processing update for entry window_0F_38_07cedafe
+StoreAdapter.ts:263 StoreAdapter updateStoreEntry(ground): Updating entry window_0F_38_07cedafe
+StoreAdapter.ts:269 StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+StoreAdapter.ts:270 StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 2
+StoreAdapter.ts:279 StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_38_07cedafe in existing airEntries: (2) ['window_0F_38_07cedafe', 'window_0F_39_72615330']
+StoreAdapter.ts:283 StoreAdapter updateStoreEntry(ground): Updating existing entry at index 0
+StoreAdapter.ts:296 StoreAdapter updateStoreEntry(ground): About to update store with 2 entries
+StoreAdapter.ts:306 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 2 entries
+StoreAdapter.ts:307 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: (2) [{…}, {…}]
+StoreAdapter.ts:314 StoreAdapter updateStoreEntry(ground): Store updated successfully
+StoreAdapter.ts:239 StoreAdapter syncEventToStore: Received event type update for floor ground
+StoreAdapter.ts:247 StoreAdapter syncEventToStore: Processing update for entry window_0F_38_07cedafe
+StoreAdapter.ts:263 StoreAdapter updateStoreEntry(ground): Updating entry window_0F_38_07cedafe
+StoreAdapter.ts:269 StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+StoreAdapter.ts:270 StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 2
+StoreAdapter.ts:279 StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_38_07cedafe in existing airEntries: (2) ['window_0F_38_07cedafe', 'window_0F_39_72615330']
+StoreAdapter.ts:283 StoreAdapter updateStoreEntry(ground): Updating existing entry at index 0
+StoreAdapter.ts:296 StoreAdapter updateStoreEntry(ground): About to update store with 2 entries
+StoreAdapter.ts:306 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 2 entries
+StoreAdapter.ts:307 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: (2) [{…}, {…}]
+StoreAdapter.ts:314 StoreAdapter updateStoreEntry(ground): Store updated successfully
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(1) {'window_0F_38_07cedafe'}
+AirEntryController.ts:320 Controller total entries in storage: 1
+AirEntryController.ts:321 Controller all entry IDs: ['window_0F_38_07cedafe']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 1 entries
+useAirEntryController.ts:129 Hook loadEntries: Loading 1 entries for floor ground
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(1) {'window_0F_38_07cedafe'}
+AirEntryController.ts:320 Controller total entries in storage: 1
+AirEntryController.ts:321 Controller all entry IDs: ['window_0F_38_07cedafe']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 1 entries
+useAirEntryController.ts:129 Hook loadEntries: Loading 1 entries for floor ground
+AirEntryController.ts:161 Controller: Entry window_0F_40_6a23365e stored, total entries now: 2
+AirEntryController.ts:168 Controller: Entry window_0F_40_6a23365e added to floor ground, floor now has 2 entries
+StoreAdapter.ts:239 StoreAdapter syncEventToStore: Received event type create for floor ground
+StoreAdapter.ts:247 StoreAdapter syncEventToStore: Processing create for entry window_0F_40_6a23365e
+StoreAdapter.ts:263 StoreAdapter updateStoreEntry(ground): Updating entry window_0F_40_6a23365e
+StoreAdapter.ts:269 StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+StoreAdapter.ts:270 StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 2
+StoreAdapter.ts:279 StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_40_6a23365e in existing airEntries: (2) ['window_0F_38_07cedafe', 'window_0F_39_72615330']
+StoreAdapter.ts:287 StoreAdapter updateStoreEntry(ground): Adding new entry window_0F_40_6a23365e to 2 existing entries
+StoreAdapter.ts:296 StoreAdapter updateStoreEntry(ground): About to update store with 3 entries
+StoreAdapter.ts:306 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 3 entries
+StoreAdapter.ts:307 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: (3) [{…}, {…}, {…}]
+StoreAdapter.ts:314 StoreAdapter updateStoreEntry(ground): Store updated successfully
+StoreAdapter.ts:239 StoreAdapter syncEventToStore: Received event type create for floor ground
+StoreAdapter.ts:247 StoreAdapter syncEventToStore: Processing create for entry window_0F_40_6a23365e
+StoreAdapter.ts:263 StoreAdapter updateStoreEntry(ground): Updating entry window_0F_40_6a23365e
+StoreAdapter.ts:269 StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+StoreAdapter.ts:270 StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 3
+StoreAdapter.ts:279 StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_40_6a23365e in existing airEntries: (3) ['window_0F_38_07cedafe', 'window_0F_39_72615330', 'window_0F_40_6a23365e']
+StoreAdapter.ts:283 StoreAdapter updateStoreEntry(ground): Updating existing entry at index 2
+StoreAdapter.ts:296 StoreAdapter updateStoreEntry(ground): About to update store with 3 entries
+StoreAdapter.ts:306 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 3 entries
+StoreAdapter.ts:307 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: (3) [{…}, {…}, {…}]
+StoreAdapter.ts:314 StoreAdapter updateStoreEntry(ground): Store updated successfully
+StoreAdapter.ts:239 StoreAdapter syncEventToStore: Received event type create for floor ground
+StoreAdapter.ts:247 StoreAdapter syncEventToStore: Processing create for entry window_0F_40_6a23365e
+StoreAdapter.ts:263 StoreAdapter updateStoreEntry(ground): Updating entry window_0F_40_6a23365e
+StoreAdapter.ts:269 StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+StoreAdapter.ts:270 StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 3
+StoreAdapter.ts:279 StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_40_6a23365e in existing airEntries: (3) ['window_0F_38_07cedafe', 'window_0F_39_72615330', 'window_0F_40_6a23365e']
+StoreAdapter.ts:283 StoreAdapter updateStoreEntry(ground): Updating existing entry at index 2
+StoreAdapter.ts:296 StoreAdapter updateStoreEntry(ground): About to update store with 3 entries
+StoreAdapter.ts:306 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 3 entries
+StoreAdapter.ts:307 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: (3) [{…}, {…}, {…}]
+StoreAdapter.ts:314 StoreAdapter updateStoreEntry(ground): Store updated successfully
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(2) {'window_0F_38_07cedafe', 'window_0F_40_6a23365e'}
+AirEntryController.ts:320 Controller total entries in storage: 2
+AirEntryController.ts:321 Controller all entry IDs: (2) ['window_0F_38_07cedafe', 'window_0F_40_6a23365e']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 2 entries
+useAirEntryController.ts:129 Hook loadEntries: Loading 2 entries for floor ground
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(2) {'window_0F_38_07cedafe', 'window_0F_40_6a23365e'}
+AirEntryController.ts:320 Controller total entries in storage: 2
+AirEntryController.ts:321 Controller all entry IDs: (2) ['window_0F_38_07cedafe', 'window_0F_40_6a23365e']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 2 entries
+useAirEntryController.ts:129 Hook loadEntries: Loading 2 entries for floor ground
+StoreAdapter.ts:193 StoreAdapter setupStoreToControllerSync: RAW state: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:194 StoreAdapter setupStoreToControllerSync: RAW prevState: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:200 StoreAdapter setupStoreToControllerSync: Current store state floors: ['ground']
+StoreAdapter.ts:201 StoreAdapter setupStoreToControllerSync: Current ground airEntries: 3
+StoreAdapter.ts:202 StoreAdapter setupStoreToControllerSync: Current ground airEntries FULL: (3) [{…}, {…}, {…}]
+StoreAdapter.ts:209 StoreAdapter setupStoreToControllerSync: Checking floor ground - current: 3, previous: 1
+StoreAdapter.ts:212 StoreAdapter setupStoreToControllerSync: Changes detected in floor ground, calling syncFloorFromStore
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(2) {'window_0F_38_07cedafe', 'window_0F_40_6a23365e'}
+AirEntryController.ts:320 Controller total entries in storage: 2
+AirEntryController.ts:321 Controller all entry IDs: (2) ['window_0F_38_07cedafe', 'window_0F_40_6a23365e']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 2 entries
+StoreAdapter.ts:343 StoreAdapter syncFloorFromStore(ground): Store has 3 entries
+StoreAdapter.ts:344 StoreAdapter syncFloorFromStore(ground): storeEntries data: (3) [{…}, {…}, {…}]
+StoreAdapter.ts:345 StoreAdapter syncFloorFromStore(ground): Controller has 2 entries
+StoreAdapter.ts:351 StoreAdapter syncFloorFromStore(ground): Store IDs: (3) ['window_0F_38_07cedafe', 'window_0F_39_72615330', 'window_0F_40_6a23365e']
+StoreAdapter.ts:352 StoreAdapter syncFloorFromStore(ground): Controller IDs: (2) ['window_0F_38_07cedafe', 'window_0F_40_6a23365e']
+AirEntryController.ts:161 Controller: Entry window_0F_41_bed6b19f stored, total entries now: 3
+AirEntryController.ts:168 Controller: Entry window_0F_41_bed6b19f added to floor ground, floor now has 3 entries
+StoreAdapter.ts:239 StoreAdapter syncEventToStore: Received event type create for floor ground
+StoreAdapter.ts:247 StoreAdapter syncEventToStore: Processing create for entry window_0F_41_bed6b19f
+StoreAdapter.ts:263 StoreAdapter updateStoreEntry(ground): Updating entry window_0F_41_bed6b19f
+StoreAdapter.ts:269 StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+StoreAdapter.ts:270 StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 3
+StoreAdapter.ts:279 StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_41_bed6b19f in existing airEntries: (3) ['window_0F_38_07cedafe', 'window_0F_39_72615330', 'window_0F_40_6a23365e']
+StoreAdapter.ts:287 StoreAdapter updateStoreEntry(ground): Adding new entry window_0F_41_bed6b19f to 3 existing entries
+StoreAdapter.ts:296 StoreAdapter updateStoreEntry(ground): About to update store with 4 entries
+StoreAdapter.ts:306 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 4 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: (4) [{…}, {…}, {…}, {…}]
+ StoreAdapter updateStoreEntry(ground): Store updated successfully
+ StoreAdapter syncEventToStore: Received event type create for floor ground
+ StoreAdapter syncEventToStore: Processing create for entry window_0F_41_bed6b19f
+ StoreAdapter updateStoreEntry(ground): Updating entry window_0F_41_bed6b19f
+ StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+ StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 4
+ StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_41_bed6b19f in existing airEntries: (4) ['window_0F_38_07cedafe', 'window_0F_39_72615330', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f']
+ StoreAdapter updateStoreEntry(ground): Updating existing entry at index 3
+ StoreAdapter updateStoreEntry(ground): About to update store with 4 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 4 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: (4) [{…}, {…}, {…}, {…}]
+ StoreAdapter updateStoreEntry(ground): Store updated successfully
+ StoreAdapter syncEventToStore: Received event type create for floor ground
+ StoreAdapter syncEventToStore: Processing create for entry window_0F_41_bed6b19f
+ StoreAdapter updateStoreEntry(ground): Updating entry window_0F_41_bed6b19f
+ StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+ StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 4
+ StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_41_bed6b19f in existing airEntries: (4) ['window_0F_38_07cedafe', 'window_0F_39_72615330', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f']
+ StoreAdapter updateStoreEntry(ground): Updating existing entry at index 3
+ StoreAdapter updateStoreEntry(ground): About to update store with 4 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 4 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: (4) [{…}, {…}, {…}, {…}]
+ StoreAdapter updateStoreEntry(ground): Store updated successfully
+ Controller getEntriesForFloor(ground): entryIds= Set(3) {'window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f'}
+ Controller total entries in storage: 3
+ Controller all entry IDs: (3) ['window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f']
+ Controller getEntriesForFloor(ground): returning 3 entries
+ Hook loadEntries: Loading 3 entries for floor ground
+ Controller getEntriesForFloor(ground): entryIds= Set(3) {'window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f'}
+ Controller total entries in storage: 3
+ Controller all entry IDs: (3) ['window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f']
+ Controller getEntriesForFloor(ground): returning 3 entries
+ Hook loadEntries: Loading 3 entries for floor ground
+ StoreAdapter setupStoreToControllerSync: RAW state: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+ StoreAdapter setupStoreToControllerSync: RAW prevState: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+ StoreAdapter setupStoreToControllerSync: Current store state floors: ['ground']
+ StoreAdapter setupStoreToControllerSync: Current ground airEntries: 4
+ StoreAdapter setupStoreToControllerSync: Current ground airEntries FULL: (4) [{…}, {…}, {…}, {…}]
+ StoreAdapter setupStoreToControllerSync: Checking floor ground - current: 4, previous: 1
+ StoreAdapter setupStoreToControllerSync: Changes detected in floor ground, calling syncFloorFromStore
+ Controller getEntriesForFloor(ground): entryIds= Set(3) {'window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f'}
+ Controller total entries in storage: 3
+ Controller all entry IDs: (3) ['window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f']
+ Controller getEntriesForFloor(ground): returning 3 entries
+ StoreAdapter syncFloorFromStore(ground): Store has 4 entries
+ StoreAdapter syncFloorFromStore(ground): storeEntries data: (4) [{…}, {…}, {…}, {…}]
+ StoreAdapter syncFloorFromStore(ground): Controller has 3 entries
+ StoreAdapter syncFloorFromStore(ground): Store IDs: (4) ['window_0F_38_07cedafe', 'window_0F_39_72615330', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f']
+ StoreAdapter syncFloorFromStore(ground): Controller IDs: (3) ['window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f']
+ Controller: Entry window_0F_42_69c1a3b2 stored, total entries now: 4
+ Controller: Entry window_0F_42_69c1a3b2 added to floor ground, floor now has 4 entries
+ StoreAdapter syncEventToStore: Received event type create for floor ground
+ StoreAdapter syncEventToStore: Processing create for entry window_0F_42_69c1a3b2
+ StoreAdapter updateStoreEntry(ground): Updating entry window_0F_42_69c1a3b2
+ StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+ StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 4
+ StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_42_69c1a3b2 in existing airEntries: (4) ['window_0F_38_07cedafe', 'window_0F_39_72615330', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f']
+ StoreAdapter updateStoreEntry(ground): Adding new entry window_0F_42_69c1a3b2 to 4 existing entries
+ StoreAdapter updateStoreEntry(ground): About to update store with 5 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 5 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: (5) [{…}, {…}, {…}, {…}, {…}]
+ StoreAdapter updateStoreEntry(ground): Store updated successfully
+ StoreAdapter syncEventToStore: Received event type create for floor ground
+ StoreAdapter syncEventToStore: Processing create for entry window_0F_42_69c1a3b2
+ StoreAdapter updateStoreEntry(ground): Updating entry window_0F_42_69c1a3b2
+ StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+ StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 5
+ StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_42_69c1a3b2 in existing airEntries: (5) ['window_0F_38_07cedafe', 'window_0F_39_72615330', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2']
+ StoreAdapter updateStoreEntry(ground): Updating existing entry at index 4
+ StoreAdapter updateStoreEntry(ground): About to update store with 5 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 5 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: (5) [{…}, {…}, {…}, {…}, {…}]
+ StoreAdapter updateStoreEntry(ground): Store updated successfully
+ StoreAdapter syncEventToStore: Received event type create for floor ground
+ StoreAdapter syncEventToStore: Processing create for entry window_0F_42_69c1a3b2
+ StoreAdapter updateStoreEntry(ground): Updating entry window_0F_42_69c1a3b2
+ StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+ StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 5
+ StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_42_69c1a3b2 in existing airEntries: (5) ['window_0F_38_07cedafe', 'window_0F_39_72615330', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2']
+ StoreAdapter updateStoreEntry(ground): Updating existing entry at index 4
+ StoreAdapter updateStoreEntry(ground): About to update store with 5 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 5 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: (5) [{…}, {…}, {…}, {…}, {…}]
+ StoreAdapter updateStoreEntry(ground): Store updated successfully
+ Controller getEntriesForFloor(ground): entryIds= Set(4) {'window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2'}
+ Controller total entries in storage: 4
+ Controller all entry IDs: (4) ['window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2']
+ Controller getEntriesForFloor(ground): returning 4 entries
+ Hook loadEntries: Loading 4 entries for floor ground
+ Controller getEntriesForFloor(ground): entryIds= Set(4) {'window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2'}
+ Controller total entries in storage: 4
+ Controller all entry IDs: (4) ['window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2']
+ Controller getEntriesForFloor(ground): returning 4 entries
+ Hook loadEntries: Loading 4 entries for floor ground
+ StoreAdapter setupStoreToControllerSync: RAW state: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+ StoreAdapter setupStoreToControllerSync: RAW prevState: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+ StoreAdapter setupStoreToControllerSync: Current store state floors: ['ground']
+ StoreAdapter setupStoreToControllerSync: Current ground airEntries: 2
+ StoreAdapter setupStoreToControllerSync: Current ground airEntries FULL: (2) [{…}, {…}]
+ StoreAdapter setupStoreToControllerSync: Checking floor ground - current: 2, previous: 5
+ StoreAdapter setupStoreToControllerSync: Changes detected in floor ground, calling syncFloorFromStore
+ Controller getEntriesForFloor(ground): entryIds= Set(4) {'window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2'}
+ Controller total entries in storage: 4
+ Controller all entry IDs: (4) ['window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2']
+ Controller getEntriesForFloor(ground): returning 4 entries
+ StoreAdapter syncFloorFromStore(ground): Store has 2 entries
+ StoreAdapter syncFloorFromStore(ground): storeEntries data: (2) [{…}, {…}]
+ StoreAdapter syncFloorFromStore(ground): Controller has 4 entries
+ StoreAdapter syncFloorFromStore(ground): Store IDs: (2) ['window_0F_38_07cedafe', 'window_0F_39_72615330']
+ StoreAdapter syncFloorFromStore(ground): Controller IDs: (4) ['window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2']
+ StoreAdapter syncFloorFromStore(ground): ⚠️ SKIPPING deletion of entry window_0F_40_6a23365e (recently added, race condition guard)
+ StoreAdapter syncFloorFromStore(ground): ⚠️ SKIPPING deletion of entry window_0F_41_bed6b19f (recently added, race condition guard)
+ StoreAdapter syncFloorFromStore(ground): ⚠️ SKIPPING deletion of entry window_0F_42_69c1a3b2 (recently added, race condition guard)
+ Controller getEntriesForFloor(ground): entryIds= Set(4) {'window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2'}
+ Controller total entries in storage: 4
+ Controller all entry IDs: (4) ['window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2']
+ Controller getEntriesForFloor(ground): returning 4 entries
+ Hook loadEntries: Loading 4 entries for floor ground
+ Controller getEntriesForFloor(ground): entryIds= Set(4) {'window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2'}
+ Controller total entries in storage: 4
+ Controller all entry IDs: (4) ['window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2']
+ Controller getEntriesForFloor(ground): returning 4 entries
+ Hook loadEntries: Loading 4 entries for floor ground
+ StoreAdapter syncEventToStore: Received event type update for floor ground
+ StoreAdapter syncEventToStore: Processing update for entry window_0F_38_07cedafe
+ StoreAdapter updateStoreEntry(ground): Updating entry window_0F_38_07cedafe
+ StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+ StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 2
+ StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_38_07cedafe in existing airEntries: (2) ['window_0F_38_07cedafe', 'window_0F_39_72615330']
+ StoreAdapter updateStoreEntry(ground): Updating existing entry at index 0
+ StoreAdapter updateStoreEntry(ground): About to update store with 2 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 2 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: (2) [{…}, {…}]
+ StoreAdapter updateStoreEntry(ground): Store updated successfully
+ StoreAdapter syncEventToStore: Received event type update for floor ground
+ StoreAdapter syncEventToStore: Processing update for entry window_0F_38_07cedafe
+ StoreAdapter updateStoreEntry(ground): Updating entry window_0F_38_07cedafe
+ StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+ StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 2
+ StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_38_07cedafe in existing airEntries: (2) ['window_0F_38_07cedafe', 'window_0F_39_72615330']
+ StoreAdapter updateStoreEntry(ground): Updating existing entry at index 0
+ StoreAdapter updateStoreEntry(ground): About to update store with 2 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 2 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: (2) [{…}, {…}]
+ StoreAdapter updateStoreEntry(ground): Store updated successfully
+ StoreAdapter syncEventToStore: Received event type update for floor ground
+ StoreAdapter syncEventToStore: Processing update for entry window_0F_38_07cedafe
+ StoreAdapter updateStoreEntry(ground): Updating entry window_0F_38_07cedafe
+ StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+ StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 2
+ StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_38_07cedafe in existing airEntries: (2) ['window_0F_38_07cedafe', 'window_0F_39_72615330']
+ StoreAdapter updateStoreEntry(ground): Updating existing entry at index 0
+ StoreAdapter updateStoreEntry(ground): About to update store with 2 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 2 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: (2) [{…}, {…}]
+ StoreAdapter updateStoreEntry(ground): Store updated successfully
+ Controller getEntriesForFloor(ground): entryIds= Set(4) {'window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2'}
+ Controller total entries in storage: 4
+ Controller all entry IDs: (4) ['window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2']
+ Controller getEntriesForFloor(ground): returning 4 entries
+ Hook loadEntries: Loading 4 entries for floor ground
+ Controller getEntriesForFloor(ground): entryIds= Set(4) {'window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2'}
+ Controller total entries in storage: 4
+ Controller all entry IDs: (4) ['window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2']
+ Controller getEntriesForFloor(ground): returning 4 entries
+ Hook loadEntries: Loading 4 entries for floor ground
+ Controller: Entry window_0F_43_779bf2fc stored, total entries now: 5
+ Controller: Entry window_0F_43_779bf2fc added to floor ground, floor now has 5 entries
+ StoreAdapter syncEventToStore: Received event type create for floor ground
+ StoreAdapter syncEventToStore: Processing create for entry window_0F_43_779bf2fc
+ StoreAdapter updateStoreEntry(ground): Updating entry window_0F_43_779bf2fc
+ StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+ StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 2
+ StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_43_779bf2fc in existing airEntries: (2) ['window_0F_38_07cedafe', 'window_0F_39_72615330']
+ StoreAdapter updateStoreEntry(ground): Adding new entry window_0F_43_779bf2fc to 2 existing entries
+ StoreAdapter updateStoreEntry(ground): About to update store with 3 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 3 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: (3) [{…}, {…}, {…}]
+ StoreAdapter updateStoreEntry(ground): Store updated successfully
+ StoreAdapter syncEventToStore: Received event type create for floor ground
+ StoreAdapter syncEventToStore: Processing create for entry window_0F_43_779bf2fc
+ StoreAdapter updateStoreEntry(ground): Updating entry window_0F_43_779bf2fc
+ StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+ StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 3
+ StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_43_779bf2fc in existing airEntries: (3) ['window_0F_38_07cedafe', 'window_0F_39_72615330', 'window_0F_43_779bf2fc']
+ StoreAdapter updateStoreEntry(ground): Updating existing entry at index 2
+ StoreAdapter updateStoreEntry(ground): About to update store with 3 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 3 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: (3) [{…}, {…}, {…}]
+ StoreAdapter updateStoreEntry(ground): Store updated successfully
+ StoreAdapter syncEventToStore: Received event type create for floor ground
+ StoreAdapter syncEventToStore: Processing create for entry window_0F_43_779bf2fc
+ StoreAdapter updateStoreEntry(ground): Updating entry window_0F_43_779bf2fc
+ StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+ StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 3
+ StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_43_779bf2fc in existing airEntries: (3) ['window_0F_38_07cedafe', 'window_0F_39_72615330', 'window_0F_43_779bf2fc']
+ StoreAdapter updateStoreEntry(ground): Updating existing entry at index 2
+ StoreAdapter updateStoreEntry(ground): About to update store with 3 entries
+ StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 3 entries
+StoreAdapter.ts:307 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: (3) [{…}, {…}, {…}]
+StoreAdapter.ts:314 StoreAdapter updateStoreEntry(ground): Store updated successfully
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(5) {'window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2', 'window_0F_43_779bf2fc'}
+AirEntryController.ts:320 Controller total entries in storage: 5
+AirEntryController.ts:321 Controller all entry IDs: (5) ['window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2', 'window_0F_43_779bf2fc']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 5 entries
+useAirEntryController.ts:129 Hook loadEntries: Loading 5 entries for floor ground
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(5) {'window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2', 'window_0F_43_779bf2fc'}
+AirEntryController.ts:320 Controller total entries in storage: 5
+AirEntryController.ts:321 Controller all entry IDs: (5) ['window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2', 'window_0F_43_779bf2fc']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 5 entries
+useAirEntryController.ts:129 Hook loadEntries: Loading 5 entries for floor ground
+StoreAdapter.ts:193 StoreAdapter setupStoreToControllerSync: RAW state: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:194 StoreAdapter setupStoreToControllerSync: RAW prevState: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:200 StoreAdapter setupStoreToControllerSync: Current store state floors: ['ground']
+StoreAdapter.ts:201 StoreAdapter setupStoreToControllerSync: Current ground airEntries: 3
+StoreAdapter.ts:202 StoreAdapter setupStoreToControllerSync: Current ground airEntries FULL: (3) [{…}, {…}, {…}]
+StoreAdapter.ts:209 StoreAdapter setupStoreToControllerSync: Checking floor ground - current: 3, previous: 5
+StoreAdapter.ts:212 StoreAdapter setupStoreToControllerSync: Changes detected in floor ground, calling syncFloorFromStore
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(5) {'window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2', 'window_0F_43_779bf2fc'}
+AirEntryController.ts:320 Controller total entries in storage: 5
+AirEntryController.ts:321 Controller all entry IDs: (5) ['window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2', 'window_0F_43_779bf2fc']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 5 entries
+StoreAdapter.ts:343 StoreAdapter syncFloorFromStore(ground): Store has 3 entries
+StoreAdapter.ts:344 StoreAdapter syncFloorFromStore(ground): storeEntries data: (3) [{…}, {…}, {…}]
+StoreAdapter.ts:345 StoreAdapter syncFloorFromStore(ground): Controller has 5 entries
+StoreAdapter.ts:351 StoreAdapter syncFloorFromStore(ground): Store IDs: (3) ['window_0F_38_07cedafe', 'window_0F_39_72615330', 'window_0F_43_779bf2fc']
+StoreAdapter.ts:352 StoreAdapter syncFloorFromStore(ground): Controller IDs: (5) ['window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2', 'window_0F_43_779bf2fc']
+StoreAdapter.ts:359 StoreAdapter syncFloorFromStore(ground): ⚠️ SKIPPING deletion of entry window_0F_40_6a23365e (recently added, race condition guard)
+StoreAdapter.ts:359 StoreAdapter syncFloorFromStore(ground): ⚠️ SKIPPING deletion of entry window_0F_41_bed6b19f (recently added, race condition guard)
+StoreAdapter.ts:359 StoreAdapter syncFloorFromStore(ground): ⚠️ SKIPPING deletion of entry window_0F_42_69c1a3b2 (recently added, race condition guard)
+AirEntryController.ts:161 Controller: Entry window_0F_44_9c03cfe4 stored, total entries now: 6
+AirEntryController.ts:168 Controller: Entry window_0F_44_9c03cfe4 added to floor ground, floor now has 6 entries
+StoreAdapter.ts:239 StoreAdapter syncEventToStore: Received event type create for floor ground
+StoreAdapter.ts:247 StoreAdapter syncEventToStore: Processing create for entry window_0F_44_9c03cfe4
+StoreAdapter.ts:263 StoreAdapter updateStoreEntry(ground): Updating entry window_0F_44_9c03cfe4
+StoreAdapter.ts:269 StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+StoreAdapter.ts:270 StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 3
+StoreAdapter.ts:279 StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_44_9c03cfe4 in existing airEntries: (3) ['window_0F_38_07cedafe', 'window_0F_39_72615330', 'window_0F_43_779bf2fc']
+StoreAdapter.ts:287 StoreAdapter updateStoreEntry(ground): Adding new entry window_0F_44_9c03cfe4 to 3 existing entries
+StoreAdapter.ts:296 StoreAdapter updateStoreEntry(ground): About to update store with 4 entries
+StoreAdapter.ts:306 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 4 entries
+StoreAdapter.ts:307 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: (4) [{…}, {…}, {…}, {…}]
+StoreAdapter.ts:314 StoreAdapter updateStoreEntry(ground): Store updated successfully
+StoreAdapter.ts:239 StoreAdapter syncEventToStore: Received event type create for floor ground
+StoreAdapter.ts:247 StoreAdapter syncEventToStore: Processing create for entry window_0F_44_9c03cfe4
+StoreAdapter.ts:263 StoreAdapter updateStoreEntry(ground): Updating entry window_0F_44_9c03cfe4
+StoreAdapter.ts:269 StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+StoreAdapter.ts:270 StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 4
+StoreAdapter.ts:279 StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_44_9c03cfe4 in existing airEntries: (4) ['window_0F_38_07cedafe', 'window_0F_39_72615330', 'window_0F_43_779bf2fc', 'window_0F_44_9c03cfe4']
+StoreAdapter.ts:283 StoreAdapter updateStoreEntry(ground): Updating existing entry at index 3
+StoreAdapter.ts:296 StoreAdapter updateStoreEntry(ground): About to update store with 4 entries
+StoreAdapter.ts:306 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 4 entries
+StoreAdapter.ts:307 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: (4) [{…}, {…}, {…}, {…}]
+StoreAdapter.ts:314 StoreAdapter updateStoreEntry(ground): Store updated successfully
+StoreAdapter.ts:239 StoreAdapter syncEventToStore: Received event type create for floor ground
+StoreAdapter.ts:247 StoreAdapter syncEventToStore: Processing create for entry window_0F_44_9c03cfe4
+StoreAdapter.ts:263 StoreAdapter updateStoreEntry(ground): Updating entry window_0F_44_9c03cfe4
+StoreAdapter.ts:269 StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+StoreAdapter.ts:270 StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 4
+StoreAdapter.ts:279 StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_44_9c03cfe4 in existing airEntries: (4) ['window_0F_38_07cedafe', 'window_0F_39_72615330', 'window_0F_43_779bf2fc', 'window_0F_44_9c03cfe4']
+StoreAdapter.ts:283 StoreAdapter updateStoreEntry(ground): Updating existing entry at index 3
+StoreAdapter.ts:296 StoreAdapter updateStoreEntry(ground): About to update store with 4 entries
+StoreAdapter.ts:306 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 4 entries
+StoreAdapter.ts:307 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: (4) [{…}, {…}, {…}, {…}]
+StoreAdapter.ts:314 StoreAdapter updateStoreEntry(ground): Store updated successfully
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(6) {'window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2', 'window_0F_43_779bf2fc', …}
+AirEntryController.ts:320 Controller total entries in storage: 6
+AirEntryController.ts:321 Controller all entry IDs: (6) ['window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2', 'window_0F_43_779bf2fc', 'window_0F_44_9c03cfe4']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 6 entries
+useAirEntryController.ts:129 Hook loadEntries: Loading 6 entries for floor ground
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(6) {'window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2', 'window_0F_43_779bf2fc', …}
+AirEntryController.ts:320 Controller total entries in storage: 6
+AirEntryController.ts:321 Controller all entry IDs: (6) ['window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2', 'window_0F_43_779bf2fc', 'window_0F_44_9c03cfe4']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 6 entries
+useAirEntryController.ts:129 Hook loadEntries: Loading 6 entries for floor ground
+StoreAdapter.ts:193 StoreAdapter setupStoreToControllerSync: RAW state: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:194 StoreAdapter setupStoreToControllerSync: RAW prevState: {floors: {…}, currentFloor: 'ground', setFloors: ƒ, setCurrentFloor: ƒ, setLines: ƒ, …}
+StoreAdapter.ts:200 StoreAdapter setupStoreToControllerSync: Current store state floors: ['ground']
+StoreAdapter.ts:201 StoreAdapter setupStoreToControllerSync: Current ground airEntries: 4
+StoreAdapter.ts:202 StoreAdapter setupStoreToControllerSync: Current ground airEntries FULL: (4) [{…}, {…}, {…}, {…}]
+StoreAdapter.ts:209 StoreAdapter setupStoreToControllerSync: Checking floor ground - current: 4, previous: 5
+StoreAdapter.ts:212 StoreAdapter setupStoreToControllerSync: Changes detected in floor ground, calling syncFloorFromStore
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(6) {'window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2', 'window_0F_43_779bf2fc', …}
+AirEntryController.ts:320 Controller total entries in storage: 6
+AirEntryController.ts:321 Controller all entry IDs: (6) ['window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2', 'window_0F_43_779bf2fc', 'window_0F_44_9c03cfe4']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 6 entries
+StoreAdapter.ts:343 StoreAdapter syncFloorFromStore(ground): Store has 4 entries
+StoreAdapter.ts:344 StoreAdapter syncFloorFromStore(ground): storeEntries data: (4) [{…}, {…}, {…}, {…}]
+StoreAdapter.ts:345 StoreAdapter syncFloorFromStore(ground): Controller has 6 entries
+StoreAdapter.ts:351 StoreAdapter syncFloorFromStore(ground): Store IDs: (4) ['window_0F_38_07cedafe', 'window_0F_39_72615330', 'window_0F_43_779bf2fc', 'window_0F_44_9c03cfe4']
+StoreAdapter.ts:352 StoreAdapter syncFloorFromStore(ground): Controller IDs: (6) ['window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2', 'window_0F_43_779bf2fc', 'window_0F_44_9c03cfe4']
+StoreAdapter.ts:359 StoreAdapter syncFloorFromStore(ground): ⚠️ SKIPPING deletion of entry window_0F_40_6a23365e (recently added, race condition guard)
+StoreAdapter.ts:359 StoreAdapter syncFloorFromStore(ground): ⚠️ SKIPPING deletion of entry window_0F_41_bed6b19f (recently added, race condition guard)
+StoreAdapter.ts:359 StoreAdapter syncFloorFromStore(ground): ⚠️ SKIPPING deletion of entry window_0F_42_69c1a3b2 (recently added, race condition guard)
+AirEntryController.ts:161 Controller: Entry window_0F_45_916b01b0 stored, total entries now: 7
+AirEntryController.ts:168 Controller: Entry window_0F_45_916b01b0 added to floor ground, floor now has 7 entries
+StoreAdapter.ts:239 StoreAdapter syncEventToStore: Received event type create for floor ground
+StoreAdapter.ts:247 StoreAdapter syncEventToStore: Processing create for entry window_0F_45_916b01b0
+StoreAdapter.ts:263 StoreAdapter updateStoreEntry(ground): Updating entry window_0F_45_916b01b0
+StoreAdapter.ts:269 StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+StoreAdapter.ts:270 StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 4
+StoreAdapter.ts:279 StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_45_916b01b0 in existing airEntries: (4) ['window_0F_38_07cedafe', 'window_0F_39_72615330', 'window_0F_43_779bf2fc', 'window_0F_44_9c03cfe4']
+StoreAdapter.ts:287 StoreAdapter updateStoreEntry(ground): Adding new entry window_0F_45_916b01b0 to 4 existing entries
+StoreAdapter.ts:296 StoreAdapter updateStoreEntry(ground): About to update store with 5 entries
+StoreAdapter.ts:306 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 5 entries
+StoreAdapter.ts:307 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: (5) [{…}, {…}, {…}, {…}, {…}]
+StoreAdapter.ts:314 StoreAdapter updateStoreEntry(ground): Store updated successfully
+StoreAdapter.ts:239 StoreAdapter syncEventToStore: Received event type create for floor ground
+StoreAdapter.ts:247 StoreAdapter syncEventToStore: Processing create for entry window_0F_45_916b01b0
+StoreAdapter.ts:263 StoreAdapter updateStoreEntry(ground): Updating entry window_0F_45_916b01b0
+StoreAdapter.ts:269 StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+StoreAdapter.ts:270 StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 5
+StoreAdapter.ts:279 StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_45_916b01b0 in existing airEntries: (5) ['window_0F_38_07cedafe', 'window_0F_39_72615330', 'window_0F_43_779bf2fc', 'window_0F_44_9c03cfe4', 'window_0F_45_916b01b0']
+StoreAdapter.ts:283 StoreAdapter updateStoreEntry(ground): Updating existing entry at index 4
+StoreAdapter.ts:296 StoreAdapter updateStoreEntry(ground): About to update store with 5 entries
+StoreAdapter.ts:306 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 5 entries
+StoreAdapter.ts:307 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: (5) [{…}, {…}, {…}, {…}, {…}]
+StoreAdapter.ts:314 StoreAdapter updateStoreEntry(ground): Store updated successfully
+StoreAdapter.ts:239 StoreAdapter syncEventToStore: Received event type create for floor ground
+StoreAdapter.ts:247 StoreAdapter syncEventToStore: Processing create for entry window_0F_45_916b01b0
+StoreAdapter.ts:263 StoreAdapter updateStoreEntry(ground): Updating entry window_0F_45_916b01b0
+StoreAdapter.ts:269 StoreAdapter updateStoreEntry(ground): Current store floors: ['ground']
+StoreAdapter.ts:270 StoreAdapter updateStoreEntry(ground): Current airEntries for floor: 5
+StoreAdapter.ts:279 StoreAdapter updateStoreEntry(ground): Searching for entry window_0F_45_916b01b0 in existing airEntries: (5) ['window_0F_38_07cedafe', 'window_0F_39_72615330', 'window_0F_43_779bf2fc', 'window_0F_44_9c03cfe4', 'window_0F_45_916b01b0']
+StoreAdapter.ts:283 StoreAdapter updateStoreEntry(ground): Updating existing entry at index 4
+StoreAdapter.ts:296 StoreAdapter updateStoreEntry(ground): About to update store with 5 entries
+StoreAdapter.ts:306 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store after update has 5 entries
+StoreAdapter.ts:307 StoreAdapter updateStoreEntry(ground): VERIFICATION - Store airEntries: (5) [{…}, {…}, {…}, {…}, {…}]
+StoreAdapter.ts:314 StoreAdapter updateStoreEntry(ground): Store updated successfully
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(7) {'window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2', 'window_0F_43_779bf2fc', …}
+AirEntryController.ts:320 Controller total entries in storage: 7
+AirEntryController.ts:321 Controller all entry IDs: (7) ['window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2', 'window_0F_43_779bf2fc', 'window_0F_44_9c03cfe4', 'window_0F_45_916b01b0']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 7 entries
+useAirEntryController.ts:129 Hook loadEntries: Loading 7 entries for floor ground
+AirEntryController.ts:319 Controller getEntriesForFloor(ground): entryIds= Set(7) {'window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2', 'window_0F_43_779bf2fc', …}
+AirEntryController.ts:320 Controller total entries in storage: 7
+AirEntryController.ts:321 Controller all entry IDs: (7) ['window_0F_38_07cedafe', 'window_0F_40_6a23365e', 'window_0F_41_bed6b19f', 'window_0F_42_69c1a3b2', 'window_0F_43_779bf2fc', 'window_0F_44_9c03cfe4', 'window_0F_45_916b01b0']
+AirEntryController.ts:332 Controller getEntriesForFloor(ground): returning 7 entries
+useAirEntryController.ts:129 Hook loadEntries: Loading 7 entries for floor ground
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+Canvas2D.tsx:2620 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+Canvas2D.tsx:2618 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
+ 🎨 Canvas2D: FORCE REDRAW 2 - renderizando 7 airEntries
+ 🎨 Canvas2D: Primer airEntry - posición: (484.7016401599058, 151.86730254836192)
