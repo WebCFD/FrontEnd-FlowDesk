@@ -1999,8 +1999,12 @@ export default function Canvas2D({
   const findAirEntryAtLocation = (
     clickPoint: Point,
   ): { index: number; entry: AirEntry } | null => {
-    for (let i = 0; i < airEntries.length; i++) {
-      const entry = airEntries[i];
+    // NEW ARCHITECTURE: Get entries from controller instead of props
+    const controllerEntries = airEntryController.getEntriesForFloor(currentFloor);
+    
+    for (let i = 0; i < controllerEntries.length; i++) {
+      const controllerEntry = controllerEntries[i];
+      const entry = controllerEntry.legacyData; // Convert to legacy format
       const normal = calculateNormal(entry.line);
       const widthInPixels = cmToPixels(entry.dimensions.width);
       const halfWidth = widthInPixels / 2;
@@ -3638,7 +3642,7 @@ export default function Canvas2D({
           </div>
         )}
       </div>
-      {editingAirEntries.map((editingAirEntry, dialogIndex) => (
+      {editingAirEntries.filter(editingAirEntry => editingAirEntry.entry).map((editingAirEntry, dialogIndex) => (
         <AirEntryDialog
           key={`dialog-${editingAirEntry.index}`}
           type={editingAirEntry.entry.type}
