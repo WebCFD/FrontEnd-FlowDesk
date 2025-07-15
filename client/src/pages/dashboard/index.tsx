@@ -54,65 +54,48 @@ export default function Dashboard() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        {/* Welcome Section */}
+        {/* Welcome and Quick Start */}
         <Card>
           <CardHeader>
             <CardTitle>Welcome to FlowDesk</CardTitle>
             <CardDescription>Professional HVAC simulation and thermal analysis platform</CardDescription>
           </CardHeader>
-          <CardContent className="flex gap-4">
-            <Button 
-              variant="outline" 
-              onClick={handleHowItWorks}
-              className="flex items-center gap-2"
-            >
-              <Play className="h-4 w-4" />
-              How it Works
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Expert Advice Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Ask Expert Advice</CardTitle>
-            <CardDescription>Want personal assistance by one of our experts?</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Button 
-                onClick={handleContactSupport}
-                className="flex items-center gap-2"
-              >
-                <Mail className="h-4 w-4" />
-                Get in Touch
-              </Button>
-              <div className="text-sm text-muted-foreground">
-                Available Credits: €500
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Quick Start */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Start</CardTitle>
-            <CardDescription>Create your HVAC simulation design</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-8">
-              <p className="text-muted-foreground mb-4">
+          <CardContent className="space-y-6">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-6">
                 Design rooms, configure air flow, and run thermal simulations
               </p>
               <Button 
                 onClick={handleStartSimulation}
                 size="lg"
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 mb-4"
               >
                 <PlusCircle className="h-5 w-5" />
                 Create New Design
               </Button>
+            </div>
+            
+            <div className="flex gap-4 justify-center">
+              <Button 
+                variant="outline" 
+                onClick={handleHowItWorks}
+                className="flex items-center gap-2"
+              >
+                <Play className="h-4 w-4" />
+                How it Works
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={handleContactSupport}
+                className="flex items-center gap-2"
+              >
+                <Mail className="h-4 w-4" />
+                Expert Support
+              </Button>
+            </div>
+            
+            <div className="text-center text-sm text-muted-foreground">
+              Available Credits: €500
             </div>
           </CardContent>
         </Card>
