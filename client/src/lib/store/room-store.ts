@@ -599,9 +599,9 @@ export const useRoomStore = create<RoomState>()(
               });
               
               if (match) {
-                const num = parseInt(match[2]);
+                const num = parseInt(match[1]);
                 console.log(`🔍 [ID GEN DEBUG] parseInt result:`, {
-                  rawMatch2: match[2],
+                  rawMatch1: match[1],
                   parsedNum: num,
                   isNaN: isNaN(num),
                   currentMaxCounter: maxCounter
