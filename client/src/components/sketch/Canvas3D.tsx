@@ -1602,17 +1602,7 @@ export default function Canvas3D({
     const reactiveStoreFloors = useRoomStore.getState().floors;
     const currentAirEntry = reactiveStoreFloors[editingAirEntry.floorName]?.airEntries?.[editingAirEntry.index];
     
-    console.log(`🔍 [PERSISTENCE DEBUG] Dialog initialization data sources:`, {
-      entryId: editingAirEntry.entry.id,
-      storeEntry: currentAirEntry ? {
-        id: currentAirEntry.id,
-        properties: currentAirEntry.properties
-      } : 'NOT_FOUND',
-      baseEntry: {
-        id: editingAirEntry.entry.id,
-        properties: editingAirEntry.entry.properties
-      }
-    });
+
     
     // Use current store data as primary source, fallback to baseEntry
     const baseEntry = currentAirEntry || editingAirEntry.entry;
@@ -1641,21 +1631,13 @@ export default function Canvas3D({
       wallPosition = mesh.userData.wallPosition;
     }
     
-    const finalValues = {
+    return {
       ...dimensions,
       shape: (dimensions as any).shape,
       properties: properties,
       position: position,
       wallPosition: wallPosition
     };
-    
-    console.log(`🔍 [PERSISTENCE DEBUG] Final dialog values:`, {
-      entryId: editingAirEntry.entry.id,
-      finalProperties: finalValues.properties,
-      wallPosition: finalValues.wallPosition
-    });
-    
-    return finalValues;
   }, [editingAirEntry, editingAirEntry?.floorName, findAirEntryMesh]);
   
   // State for editing furniture
@@ -1667,14 +1649,7 @@ export default function Canvas3D({
 
   // Track editingAirEntry state changes
   useEffect(() => {
-    if (editingAirEntry) {
-      console.log(`🔍 [PERSISTENCE DEBUG] Dialog opened for:`, {
-        type: editingAirEntry.entry.type,
-        index: editingAirEntry.index,
-        floor: editingAirEntry.floorName,
-        entryId: editingAirEntry.entry.id
-      });
-    }
+    // State change monitoring for air entry dialogs
   }, [editingAirEntry]);
 
   // Debounce mechanism to prevent excessive parent updates
@@ -2349,14 +2324,6 @@ export default function Canvas3D({
     }
 
     // STEP 3: Update store with awareness that mesh was already updated - Use correct floor name
-    console.log("🔄 [PERSISTENCE DEBUG] About to update store:", {
-      entryId: updatedEntry.id,
-      floorName: editingAirEntry.floorName,
-      index: index,
-      newProperties: updatedEntry.properties,
-      newWallPosition: updatedEntry.dimensions?.wallPosition
-    });
-    
     onUpdateAirEntry(editingAirEntry.floorName, index, updatedEntry);
     
     // SURGICAL SOLUTION: Stop editing (exit isolation, trigger synchronization)
@@ -2818,15 +2785,9 @@ export default function Canvas3D({
         // Set render order to ensure AirEntry elements appear on top of walls
         mesh.renderOrder = 1;
 
-        // Add userData for raycasting identification - include the actual entry index for easy mapping
-        let generatedId = entry.id;
-        
-        // At this point, IDs should already be migrated by the global migration above
-        // Just ensure we have a valid ID for mesh creation
-        if (!generatedId || typeof generatedId !== 'string' || generatedId.trim().length === 0) {
-          generatedId = useRoomStore.getState().generateAirEntryId(floorData.name, entry.type);
-          entry.id = generatedId; // Force local assignment for immediate use
-        }
+        // CRITICAL FIX: Never rewrite IDs - Canvas2D creates them, Canvas3D only reads them
+        // IDs are created once in Canvas2D and must remain immutable
+        const entryId = entry.id || 'missing_id';
         
         // Mesh creation for AirEntry
         
@@ -2838,7 +2799,7 @@ export default function Canvas3D({
           index: objects.length,
           entryIndex: index,  // Add the actual index in the airEntries array
           floorName: floorData.name,
-          airEntryId: generatedId
+          airEntryId: entryId // FIXED: Use immutable ID from Canvas2D
         };
 
         const orientationData = calculateAirEntryCoordinateSystemComplete(entry);
@@ -6450,14 +6411,6 @@ export default function Canvas3D({
             setEditingAirEntry(null);
           }}
           onConfirm={(data) => {
-            console.log("💾 [PERSISTENCE DEBUG] Save Changes clicked:", {
-              entryId: editingAirEntry.entry.id,
-              index: editingAirEntry.index,
-              floorName: editingAirEntry.floorName,
-              newProperties: data.properties,
-              newWallPosition: data.wallPosition
-            });
-
             handleAirEntryEdit(editingAirEntry.index, {
               width: data.width,
               height: data.height,
