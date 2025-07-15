@@ -50,6 +50,7 @@ export class StoreAdapter {
   private synchronizer: ViewSynchronizer;
   private isInitialized = false;
   private isSyncing = false;
+  private recentlyAddedEntries = new Set<string>(); // Guard against race conditions
 
   constructor(controller: AirEntryController, synchronizer: ViewSynchronizer) {
     this.controller = controller;
@@ -280,8 +281,16 @@ export class StoreAdapter {
 
     console.log(`StoreAdapter updateStoreEntry(${floorName}): About to update store with ${airEntries.length} entries`);
     
+    // Add to recently added entries guard (prevent race condition deletions)
+    this.recentlyAddedEntries.add(entry.id);
+    
     // Update store
     store.setFloors(floors);
+    
+    // Remove from guard after a short delay to allow React state to propagate
+    setTimeout(() => {
+      this.recentlyAddedEntries.delete(entry.id);
+    }, 100);
     
     console.log(`StoreAdapter updateStoreEntry(${floorName}): Store updated successfully`);
   }
@@ -324,6 +333,12 @@ export class StoreAdapter {
     // Remove entries that exist in controller but not in store
     controllerIds.forEach(id => {
       if (!storeIds.has(id)) {
+        // Race condition guard: Don't delete entries that were just added
+        if (this.recentlyAddedEntries.has(id)) {
+          console.log(`StoreAdapter syncFloorFromStore(${floorName}): ⚠️ SKIPPING deletion of entry ${id} (recently added, race condition guard)`);
+          return;
+        }
+        
         console.log(`StoreAdapter syncFloorFromStore(${floorName}): ⚠️ DELETING entry ${id} from controller (not found in store)`);
         this.controller.deleteEntry(id);
       }
