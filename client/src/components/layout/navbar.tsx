@@ -17,7 +17,7 @@ import { trackEvent } from "@/lib/analytics";
 export default function Navbar() {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
 
   const scrollToSection = (sectionId: string) => {
     // Rastrear el clic en enlaces de navegación
@@ -33,19 +33,28 @@ export default function Navbar() {
     }
   };
 
+  const handleLogoClick = () => {
+    trackEvent(
+      AnalyticsCategories.NAVIGATION,
+      'logo_click',
+      location === '/' ? 'scroll_to_top' : 'redirect_to_home'
+    );
+
+    if (location === '/') {
+      // Si ya estamos en la landing page, hacer scroll al top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      // Si estamos en otra página, navegar a la landing page
+      setLocation('/');
+    }
+  };
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b shadow-sm">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div 
           className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
-          onClick={() => {
-            trackEvent(
-              AnalyticsCategories.NAVIGATION,
-              'logo_click',
-              'redirect_to_home'
-            );
-            setLocation('/');
-          }}
+          onClick={handleLogoClick}
         >
           <img 
             src="/assets/logo.png" 
