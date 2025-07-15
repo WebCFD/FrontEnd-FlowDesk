@@ -4838,6 +4838,14 @@ export default function Canvas3D({
             const currentStoreFloors = useRoomStore.getState().floors;
             const baseEntry = currentStoreFloors[correctFloorKey]?.airEntries?.[foundIndex];
             
+            console.log("🔍 ID DIAGNOSIS - Canvas3D Dialog Opening:", {
+              foundIndex,
+              correctFloorKey,
+              baseEntryFromStore: baseEntry ? { id: baseEntry.id, type: baseEntry.type } : 'NOT_FOUND',
+              meshDataClicked: { id: airEntryData.airEntryId, type: airEntryData.type },
+              allStoreAirEntries: currentStoreFloors[correctFloorKey]?.airEntries?.map((e, i) => ({ index: i, id: e.id, type: e.type }))
+            });
+            
             if (!baseEntry) {
               console.warn("Could not find air entry in store", { correctFloorKey, foundIndex });
               return;
