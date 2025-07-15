@@ -1009,8 +1009,6 @@ export default function Canvas2D({
       .filter(entry => entry.floorName === currentFloor)
       .map(entry => entry.legacyData);
     
-    console.log(`🔍 [RENDER] getCurrentAirEntries - Controller entries: ${controllerEntries.length} for floor: ${currentFloor}`);
-    
     // Apply visual updates from editing state for real-time feedback
     const result = [...controllerEntries];
     editingAirEntries.forEach(editingItem => {
@@ -1022,7 +1020,6 @@ export default function Canvas2D({
       }
     });
     
-    console.log(`🔍 [RENDER] Final entries for rendering: ${result.length}`);
     return result;
   };
 
@@ -1769,6 +1766,9 @@ export default function Canvas2D({
           };
 
           // NEW ARCHITECTURE: Use controller to add entry
+          console.log("Creating entry with floor:", currentFloor, "type:", currentAirEntry);
+          console.log("Controller state before creation:", airEntryController.state.entries.length);
+          
           const createdEntry = await airEntryController.actions.createEntry(
             currentFloor,
             currentAirEntry,
@@ -1798,6 +1798,9 @@ export default function Canvas2D({
             }
           );
           
+          console.log("Controller state after creation:", airEntryController.state.entries.length);
+          console.log("Created entry result:", createdEntry);
+          
           if (!createdEntry) {
             console.error("Failed to create AirEntry");
             return;
@@ -1810,8 +1813,7 @@ export default function Canvas2D({
             .filter(entry => entry.floorName === currentFloor)
             .map(entry => entry.legacyData);
           
-          console.log("🟡 [CREATION] Created entry, controller now has entries:", currentEntries.length);
-          console.log("🟡 [CREATION] First entry position:", currentEntries[0]?.position);
+          console.log("AirEntry created, controller now has entries:", currentEntries.length);
           
           onAirEntriesUpdate?.(currentEntries);
           
@@ -3435,8 +3437,7 @@ export default function Canvas2D({
       };
     },
   ) => {
-    console.log("🟢 [CANVAS2D EDIT] handleAirEntryEdit called with index:", index);
-    console.log("🟢 [CANVAS2D EDIT] Received data:", data);
+    console.log("Canvas2D: handleAirEntryEdit called with index:", index);
     
     // NEW ARCHITECTURE: Get entries from controller
     const controllerEntries = airEntryController.state.entries.filter(entry => entry.floorName === currentFloor);
