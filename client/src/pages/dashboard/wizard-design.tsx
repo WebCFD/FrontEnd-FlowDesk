@@ -875,20 +875,42 @@ export default function WizardDesign() {
         `Wall normal: (${normal.x.toFixed(3)}, ${normal.y.toFixed(3)})`,
       );
 
-      // Create new AirEntry WITHOUT ID (store will generate it)
-      const newAirEntryWithoutId = {
+      // NEW ARCHITECTURE: Use controller to create AirEntry
+      const createdEntry = airEntryController.actions.createEntry({
         type: currentAirEntry,
+        floorName: currentFloor,
         position: clickedPoint,
-        dimensions,
+        dimensions: {
+          width: dimensions.width,
+          height: dimensions.height,
+          distanceToFloor: dimensions.distanceToFloor || 0,
+          shape: 'rectangular',
+        },
         line: selectedLine,
-      } as any;
+        lineId: selectedLine.id || '',
+        properties: {
+          state: 'closed',
+          temperature: 20,
+          flowType: 'Air Mass Flow',
+          flowValue: 0.5,
+          flowIntensity: 'medium',
+          airOrientation: 'inflow',
+        },
+        wallContext: {
+          wallId: '',
+          floorName: currentFloor,
+          wallStart: { x: selectedLine.start.x, y: selectedLine.start.y },
+          wallEnd: { x: selectedLine.end.x, y: selectedLine.end.y },
+          clickPosition: { x: clickedPoint.x, y: clickedPoint.y },
+          ceilingHeight: 240
+        }
+      });
 
-      // Use store to add entry WITH generated ID
-      const generatedId = useRoomStore.getState().addAirEntryToFloor(currentFloor, newAirEntryWithoutId);
-      const newAirEntry = { ...newAirEntryWithoutId, id: generatedId };
-
-      const newAirEntries = [...airEntries, newAirEntry];
-      setAirEntries(newAirEntries);
+      // Update local state with all entries for the current floor
+      const allEntries = airEntryController.state.entries
+        .filter(entry => entry.floorName === currentFloor)
+        .map(entry => entry.legacyData);
+      setAirEntries(allEntries);
       setSelectedLine(null);
       setClickedPoint(null);
       setCurrentAirEntry(null);

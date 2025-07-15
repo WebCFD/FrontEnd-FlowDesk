@@ -3,6 +3,7 @@ import Canvas3D from "./Canvas3D";
 import * as THREE from "three";
 import { TextureGenerator } from "./textureGenerator";
 import { useRoomStore } from "@/lib/store/room-store";
+import { useAirEntryController } from "@/hooks/useAirEntryController";
 
 interface Point {
   x: number;
@@ -123,6 +124,9 @@ export function RoomSketchPro({
   const sceneRef = useRef<THREE.Scene | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const cameraRef = useRef<THREE.Camera | null>(null);
+  
+  // NEW ARCHITECTURE: Initialize AirEntry Controller for RSP
+  const airEntryController = useAirEntryController();
   const texturesRef = useRef<{
     brick?: THREE.Texture;
     wood?: THREE.Texture;
