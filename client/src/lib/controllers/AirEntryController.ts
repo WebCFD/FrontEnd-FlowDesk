@@ -60,6 +60,22 @@ export interface ControlledAirEntry {
   // Metadata
   wallPosition?: number; // Position along wall as percentage
   lastModified: number;
+  
+  // Legacy data mapping for backward compatibility
+  readonly legacyData: {
+    id: string;
+    type: 'window' | 'door' | 'vent';
+    position: { x: number; y: number; z?: number };
+    dimensions: {
+      width: number;
+      height: number;
+      distanceToFloor?: number;
+      shape?: 'rectangular' | 'circular';
+    };
+    line: { start: { x: number; y: number }; end: { x: number; y: number } };
+    properties?: any;
+    wallPosition?: number;
+  };
 }
 
 export interface AirEntryUpdate {
@@ -118,7 +134,26 @@ export class AirEntryController {
       dimensions: { ...dimensions },
       line: { ...line },
       properties: { ...properties },
-      lastModified: now
+      lastModified: now,
+      get legacyData() {
+        return {
+          id: this.id,
+          type: this.type,
+          position: { x: this.position.x, y: this.position.y, z: this.position.z },
+          dimensions: {
+            width: this.dimensions.width,
+            height: this.dimensions.height,
+            distanceToFloor: this.dimensions.distanceToFloor,
+            shape: this.dimensions.shape
+          },
+          line: {
+            start: { x: this.line.start.x, y: this.line.start.y },
+            end: { x: this.line.end.x, y: this.line.end.y }
+          },
+          properties: { ...this.properties },
+          wallPosition: this.wallPosition
+        };
+      }
     };
 
     // Store entry
@@ -138,7 +173,7 @@ export class AirEntryController {
       entry: { ...entry }
     });
 
-    return { ...entry };
+    return this.copyEntryWithLegacyData(entry);
   }
 
   /**
@@ -161,7 +196,26 @@ export class AirEntryController {
       dimensions: updates.dimensions ? { ...entry.dimensions, ...updates.dimensions } : { ...entry.dimensions },
       properties: updates.properties ? { ...entry.properties, ...updates.properties } : { ...entry.properties },
       wallPosition: updates.wallPosition !== undefined ? updates.wallPosition : entry.wallPosition,
-      lastModified: now
+      lastModified: now,
+      get legacyData() {
+        return {
+          id: this.id,
+          type: this.type,
+          position: { x: this.position.x, y: this.position.y, z: this.position.z },
+          dimensions: {
+            width: this.dimensions.width,
+            height: this.dimensions.height,
+            distanceToFloor: this.dimensions.distanceToFloor,
+            shape: this.dimensions.shape
+          },
+          line: {
+            start: { x: this.line.start.x, y: this.line.start.y },
+            end: { x: this.line.end.x, y: this.line.end.y }
+          },
+          properties: { ...this.properties },
+          wallPosition: this.wallPosition
+        };
+      }
     };
 
     // Validate update
@@ -182,7 +236,7 @@ export class AirEntryController {
       oldEntry
     });
 
-    return { ...updatedEntry };
+    return this.copyEntryWithLegacyData(updatedEntry);
   }
 
   /**
@@ -220,11 +274,39 @@ export class AirEntryController {
   // ==================== QUERY OPERATIONS ====================
 
   /**
+   * Helper method to create a proper copy with legacyData getter
+   */
+  private copyEntryWithLegacyData(entry: ControlledAirEntry): ControlledAirEntry {
+    return {
+      ...entry,
+      get legacyData() {
+        return {
+          id: this.id,
+          type: this.type,
+          position: { x: this.position.x, y: this.position.y, z: this.position.z },
+          dimensions: {
+            width: this.dimensions.width,
+            height: this.dimensions.height,
+            distanceToFloor: this.dimensions.distanceToFloor,
+            shape: this.dimensions.shape
+          },
+          line: {
+            start: { x: this.line.start.x, y: this.line.start.y },
+            end: { x: this.line.end.x, y: this.line.end.y }
+          },
+          properties: { ...this.properties },
+          wallPosition: this.wallPosition
+        };
+      }
+    };
+  }
+
+  /**
    * Gets a specific AirEntry by ID
    */
   getEntry(entryId: string): ControlledAirEntry | null {
     const entry = this.entries.get(entryId);
-    return entry ? { ...entry } : null;
+    return entry ? this.copyEntryWithLegacyData(entry) : null;
   }
 
   /**
@@ -239,14 +321,14 @@ export class AirEntryController {
     return Array.from(entryIds)
       .map(id => this.entries.get(id))
       .filter(entry => entry !== undefined)
-      .map(entry => ({ ...entry! }));
+      .map(entry => this.copyEntryWithLegacyData(entry!));
   }
 
   /**
    * Gets all AirEntries across all floors
    */
   getAllEntries(): ControlledAirEntry[] {
-    return Array.from(this.entries.values()).map(entry => ({ ...entry }));
+    return Array.from(this.entries.values()).map(entry => this.copyEntryWithLegacyData(entry));
   }
 
   /**
