@@ -2821,11 +2821,19 @@ export default function Canvas3D({
         // Add userData for raycasting identification - include the actual entry index for easy mapping
         let generatedId = entry.id;
         
+        console.log(`🆔 [ID DEBUG] Mesh creation for entry ${index}:`, {
+          entryId: entry.id,
+          entryType: entry.type,
+          floorName: floorData.name,
+          arrayIndex: index
+        });
+        
         // At this point, IDs should already be migrated by the global migration above
         // Just ensure we have a valid ID for mesh creation
         if (!generatedId || typeof generatedId !== 'string' || generatedId.trim().length === 0) {
           generatedId = useRoomStore.getState().generateAirEntryId(floorData.name, entry.type);
           entry.id = generatedId; // Force local assignment for immediate use
+          console.log(`🆔 [ID DEBUG] Generated new ID for entry ${index}: ${generatedId}`);
         }
         
         // Mesh creation for AirEntry
