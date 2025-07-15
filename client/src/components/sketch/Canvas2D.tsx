@@ -1999,8 +1999,8 @@ export default function Canvas2D({
   const findAirEntryAtLocation = (
     clickPoint: Point,
   ): { index: number; entry: AirEntry } | null => {
-    // NEW ARCHITECTURE: Get entries from controller instead of props
-    const controllerEntries = airEntryController.getEntriesForFloor(currentFloor);
+    // NEW ARCHITECTURE: Get entries from controller state instead of props
+    const controllerEntries = airEntryController.state.entries.filter(entry => entry.floorName === currentFloor);
     
     for (let i = 0; i < controllerEntries.length; i++) {
       const controllerEntry = controllerEntries[i];
