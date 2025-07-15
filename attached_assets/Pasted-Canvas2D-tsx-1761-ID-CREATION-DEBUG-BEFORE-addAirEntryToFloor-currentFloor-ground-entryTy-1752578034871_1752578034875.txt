@@ -1,0 +1,206 @@
+Canvas2D.tsx:1761 🔍 [ID CREATION DEBUG] BEFORE addAirEntryToFloor: {currentFloor: 'ground', entryType: 'window', entryWithoutId: {…}}
+Canvas2D.tsx:1769 🔍 [ID CREATION DEBUG] AFTER addAirEntryToFloor: {generatedId: 'window_0F_1', currentFloor: 'ground', storeFloorData: {…}}
+Canvas2D.tsx:1779 🔍 [ID CREATION DEBUG] Updated local airEntries: {newAirEntriesCount: 1, lastEntryId: 'window_0F_1', lastEntryType: 'window'}
+Canvas2D.tsx:3409 🟢 [CANVAS2D EDIT] handleAirEntryEdit called with index: 0
+Canvas2D.tsx:3410 🟢 [CANVAS2D EDIT] Received data: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 62.29230707851043, …}
+Canvas2D.tsx:3411 🟢 [CANVAS2D EDIT] data.wallPosition: 62.29230707851043
+Canvas2D.tsx:3419 🟢 [CANVAS2D EDIT] Original entry: {type: 'window', position: {…}, dimensions: {…}, line: {…}, lineId: '1752577981286_5zr3zfo6b', …}
+Canvas2D.tsx:3420 🟢 [CANVAS2D EDIT] Original wallPosition: undefined
+Canvas2D.tsx:3421 🟢 [CANVAS2D EDIT] Current store position: {x: 456.32434817621817, y: 80.48313969389156}
+Canvas2D.tsx:3436 🟢 [CANVAS2D EDIT] Final updated entry: {type: 'window', position: {…}, dimensions: {…}, line: {…}, lineId: '1752577981286_5zr3zfo6b', …}
+Canvas2D.tsx:3437 🟢 [CANVAS2D EDIT] Final wallPosition: 62.29230707851043
+Canvas2D.tsx:3438 🟢 [CANVAS2D EDIT] Final properties ref: {state: 'closed', temperature: 20, flowIntensity: 'medium', airOrientation: 'inflow'}
+Canvas2D.tsx:1761 🔍 [ID CREATION DEBUG] BEFORE addAirEntryToFloor: {currentFloor: 'ground', entryType: 'window', entryWithoutId: {…}}
+Canvas2D.tsx:1769 🔍 [ID CREATION DEBUG] AFTER addAirEntryToFloor: {generatedId: 'window_0F_1', currentFloor: 'ground', storeFloorData: {…}}
+Canvas2D.tsx:1779 🔍 [ID CREATION DEBUG] Updated local airEntries: {newAirEntriesCount: 2, lastEntryId: 'window_0F_1', lastEntryType: 'window'}
+Canvas2D.tsx:3409 🟢 [CANVAS2D EDIT] handleAirEntryEdit called with index: 1
+Canvas2D.tsx:3410 🟢 [CANVAS2D EDIT] Received data: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 48.79687813345005, …}
+Canvas2D.tsx:3411 🟢 [CANVAS2D EDIT] data.wallPosition: 48.79687813345005
+Canvas2D.tsx:3419 🟢 [CANVAS2D EDIT] Original entry: {type: 'window', position: {…}, dimensions: {…}, line: {…}, lineId: '1752577982640_7rhx7jkyr', …}
+Canvas2D.tsx:3420 🟢 [CANVAS2D EDIT] Original wallPosition: undefined
+Canvas2D.tsx:3421 🟢 [CANVAS2D EDIT] Current store position: {x: 201.71235181369678, y: 265.67631167041566}
+Canvas2D.tsx:3436 🟢 [CANVAS2D EDIT] Final updated entry: {type: 'window', position: {…}, dimensions: {…}, line: {…}, lineId: '1752577982640_7rhx7jkyr', …}
+Canvas2D.tsx:3437 🟢 [CANVAS2D EDIT] Final wallPosition: 48.79687813345005
+Canvas2D.tsx:3438 🟢 [CANVAS2D EDIT] Final properties ref: {state: 'closed', temperature: 20, flowIntensity: 'medium', airOrientation: 'inflow'}
+Canvas3D.tsx:994 🔍 DEPENDENCY CHECK: {editingAirEntry: false, hasSnapshot: false, willUseSnapshot: false, storeFloorsId: 'ground', lastEditedFloor: null}
+Canvas3D.tsx:1015 💾 SNAPSHOT GUARDADO PARA PRÓXIMA EDICIÓN
+Canvas3D.tsx:1028 🔍 lastEditedFloor changed: null
+Canvas3D.tsx:1032 🔍 floors prop changed: ['ground']
+Canvas3D.tsx:1036 🔍 storeFloors changed: ['ground']
+Canvas3D.tsx:1678 🚪 [DIALOG CLOSED] editingAirEntry cleared
+Canvas3D.tsx:2592 🔍 [GLITCH INVESTIGATION] createFloorObjects called for floor: {floorName: 'Ground Floor', isCurrentFloor: true, airEntriesCount: 2, airEntriesData: Array(2), timestamp: 1752578002778}
+Canvas3D.tsx:5267 🔥 SCENE REBUILD TRIGGERED: {editingAirEntry: false, finalFloorsId: '["ground"]', thisWillRecreateEverything: true, triggerCause: 'finalFloors, currentFloor, ceilingHeight, or floorDeckThickness changed'}
+Canvas3D.tsx:5275 🔍 [GLITCH ROOT CAUSE] Scene rebuild details: {currentFloor: 'ground', finalFloorsKeys: Array(1), totalAirEntries: 2, allAirEntryPositions: {…}, timestamp: 1752578002788}
+Canvas3D.tsx:4752 🔍 [CROSS-FLOOR DEBUG] Available AirEntry meshes in scene: (2) [{…}, {…}]
+Canvas3D.tsx:4761 🔍 [CROSS-FLOOR DEBUG] Current floor selection: ground
+Canvas3D.tsx:4771 🔍 [CROSS-FLOOR DEBUG] Detected mesh data: {detectedType: 'window', detectedEntryIndex: 1, detectedFloorName: 'Ground Floor', detectedAirEntryId: 'window_0F_1', detectedPosition: {…}, …}
+Canvas3D.tsx:4796 🎯 [FLOOR KEY MAPPING] SUCCESS: {originalMeshFloor: 'Ground Floor', mappedToStoreKey: 'ground', foundInStore: true, availableAirEntries: 2, storeKeys: Array(1)}
+Canvas3D.tsx:4805 🎯 [CROSS-FLOOR FIX] Correct floor lookup with mapping: {detectedMeshFloor: 'Ground Floor', mappedFloorKey: 'ground', lookingInCorrectFloor: 'ground', availableAirEntries: 2, willSearchForIndex: 1, …}
+Canvas3D.tsx:4816 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 1}
+Canvas3D.tsx:4829 ✅ [CROSS-FLOOR FIX] CORRECT MATCH DETECTED: {detectedMeshFrom: 'Ground Floor', detectedMeshIndex: 1, detectedMeshId: 'window_0F_1', searchingInCorrectFloor: 'Ground Floor', foundCorrectEntryAtIndex: 1, …}
+Canvas3D.tsx:4843 Double-click found entry using stored entryIndex: 1
+Canvas3D.tsx:4888 🔍 [ID DEBUG] DIALOG WILL SHOW THESE IDs: {mergedEntryId: 'window_0F_1', baseEntryId: 'window_0F_1', meshAirEntryId: 'window_0F_1', expectedFormat: "Should be like 'window_0F_1'", actualId: 'window_0F_1', …}
+Canvas3D.tsx:4898 ✅ [CROSS-FLOOR FIX] DIALOG OPENING WITH CORRECT MAPPED DATA: {dialogWillShow: {…}, userClickedOn: {…}, mapping: {…}, explanation: "Dialog shows data from mapped floor 'ground' matching clicked mesh from 'Ground Floor'"}
+Canvas3D.tsx:4917 🧪 [DIAGNOSIS] setEditingAirEntry called with: {index: 1, floorName: 'ground', entryId: 'window_0F_1', entryType: 'window', entryPosition: {…}, …}
+Canvas3D.tsx:994 🔍 DEPENDENCY CHECK: {editingAirEntry: true, hasSnapshot: true, willUseSnapshot: true, storeFloorsId: 'ground', lastEditedFloor: 'ground'}
+Canvas3D.tsx:1004 🧊 USANDO SNAPSHOT CONGELADO - NO REBUILD
+Canvas3D.tsx:1602 🔍 [AIRENTRY INIT] Starting dialog init for window #1 on floor ground
+Canvas3D.tsx:1609 📊 [DATA SOURCES] Store entry: {state: 'closed', temperature: 20, flowIntensity: 'medium', airOrientation: 'inflow'}
+Canvas3D.tsx:1610 📊 [DATA SOURCES] Base entry: {state: 'closed', temperature: 20, flowIntensity: 'medium', airOrientation: 'inflow'}
+Canvas3D.tsx:1650 ✅ [FINAL VALUES] Dialog will initialize with: {type: 'window', index: 1, floor: 'ground', properties: {…}, wallPosition: 48.79687813345005}
+Canvas3D.tsx:1028 🔍 lastEditedFloor changed: ground
+Canvas3D.tsx:1671 🚀 [DIALOG OPEN] editingAirEntry set to: {type: 'window', index: 1, floor: 'ground', entryProperties: {…}}
+Canvas3D.tsx:5246 🎯 [SURGICAL FIX] Real-time update mode detected: {editingFloor: 'ground', lastEditedFloor: 'ground', shouldSkipFullRebuild: true, willUseDirectMeshUpdates: true}
+Canvas3D.tsx:5263 🛡️ SCENE REBUILD BLOCKED - Currently editing, skipping rebuild
+Canvas3D.tsx:1815 🔍 POSITION UPDATE - SCENE MESH INVENTORY: {editingEntry: {…}, allAirEntryMeshes: Array(2)}
+Canvas3D.tsx:1844 🎯 POSITION UPDATE - EXACT MATCH FOUND: {type: 'window', entryIndex: 1, floorName: 'Ground Floor', position: _Vector3}
+Canvas3D.tsx:1875 🧪 [DIAGNOSIS] onUpdateAirEntry callback executing: {callbackFloorName: 'ground', callbackIndex: 1, updatedEntry: {…}, editingAirEntryState: {…}, timestamp: 1752578013166}
+Canvas3D.tsx:1602 🔍 [AIRENTRY INIT] Starting dialog init for window #1 on floor ground
+Canvas3D.tsx:1609 📊 [DATA SOURCES] Store entry: {state: 'closed', temperature: 20, flowIntensity: 'medium', airOrientation: 'inflow'}
+Canvas3D.tsx:1610 📊 [DATA SOURCES] Base entry: {state: 'closed', temperature: 20, flowIntensity: 'medium', airOrientation: 'inflow'}
+Canvas3D.tsx:1650 ✅ [FINAL VALUES] Dialog will initialize with: {type: 'window', index: 1, floor: 'ground', properties: {…}, wallPosition: 48.79687813345005}
+Canvas3D.tsx:1671 🚀 [DIALOG OPEN] editingAirEntry set to: {type: 'window', index: 1, floor: 'ground', entryProperties: {…}}
+Canvas3D.tsx:5246 🎯 [SURGICAL FIX] Real-time update mode detected: {editingFloor: 'ground', lastEditedFloor: 'ground', shouldSkipFullRebuild: true, willUseDirectMeshUpdates: true}
+Canvas3D.tsx:5263 🛡️ SCENE REBUILD BLOCKED - Currently editing, skipping rebuild
+Canvas3D.tsx:1815 🔍 POSITION UPDATE - SCENE MESH INVENTORY: {editingEntry: {…}, allAirEntryMeshes: Array(2)}
+Canvas3D.tsx:1844 🎯 POSITION UPDATE - EXACT MATCH FOUND: {type: 'window', entryIndex: 1, floorName: 'Ground Floor', position: _Vector3}
+Canvas3D.tsx:1875 🧪 [DIAGNOSIS] onUpdateAirEntry callback executing: {callbackFloorName: 'ground', callbackIndex: 1, updatedEntry: {…}, editingAirEntryState: {…}, timestamp: 1752578013313}
+Canvas3D.tsx:1602 🔍 [AIRENTRY INIT] Starting dialog init for window #1 on floor ground
+Canvas3D.tsx:1609 📊 [DATA SOURCES] Store entry: {state: 'closed', temperature: 20, flowIntensity: 'medium', airOrientation: 'inflow'}
+Canvas3D.tsx:1610 📊 [DATA SOURCES] Base entry: {state: 'closed', temperature: 20, flowIntensity: 'medium', airOrientation: 'inflow'}
+Canvas3D.tsx:1650 ✅ [FINAL VALUES] Dialog will initialize with: {type: 'window', index: 1, floor: 'ground', properties: {…}, wallPosition: 48.79687813345005}
+Canvas3D.tsx:1671 🚀 [DIALOG OPEN] editingAirEntry set to: {type: 'window', index: 1, floor: 'ground', entryProperties: {…}}
+Canvas3D.tsx:5246 🎯 [SURGICAL FIX] Real-time update mode detected: {editingFloor: 'ground', lastEditedFloor: 'ground', shouldSkipFullRebuild: true, willUseDirectMeshUpdates: true}
+Canvas3D.tsx:5263 🛡️ SCENE REBUILD BLOCKED - Currently editing, skipping rebuild
+Canvas3D.tsx:1895 🔍 [CRITICAL GLITCH POINT] About to call onUpdateAirEntry - this triggers store update which causes scene rebuild: {aboutToUpdateFloor: 'ground', aboutToUpdateIndex: 1, aboutToUpdatePosition: {…}, currentVisibleFloor: 'ground', isUpdatingSameFloorAsVisible: true, …}
+wizard-design.tsx:1064 🧪 [DIAGNOSIS WIZARD] handleUpdateAirEntryFrom3D called with: {receivedFloorName: 'ground', receivedIndex: 1, receivedEntryId: 'window_0F_1', receivedEntryType: 'window', receivedEntryPosition: {…}, …}
+Canvas3D.tsx:1924 🔍 [CRITICAL GLITCH POINT] onUpdateAirEntry call completed - scene will now rebuild
+Canvas3D.tsx:1036 🔍 storeFloors changed: ['ground']
+Canvas3D.tsx:6447 💾 [CANVAS3D SAVE] Save Changes clicked with values: {elementStatus: 'closed', temperature: 20, airDirection: 'inflow', flowIntensity: 'medium', index: 1, …}
+wizard-design.tsx:1064 🧪 [DIAGNOSIS WIZARD] handleUpdateAirEntryFrom3D called with: {receivedFloorName: 'ground', receivedIndex: 1, receivedEntryId: 'window_0F_1', receivedEntryType: 'window', receivedEntryPosition: {…}, …}
+Canvas3D.tsx:994 🔍 DEPENDENCY CHECK: {editingAirEntry: false, hasSnapshot: true, willUseSnapshot: false, storeFloorsId: 'ground', lastEditedFloor: null}
+Canvas3D.tsx:1015 💾 SNAPSHOT GUARDADO PARA PRÓXIMA EDICIÓN
+Canvas3D.tsx:1028 🔍 lastEditedFloor changed: null
+Canvas3D.tsx:1036 🔍 storeFloors changed: ['ground']
+Canvas3D.tsx:1678 🚪 [DIALOG CLOSED] editingAirEntry cleared
+Canvas3D.tsx:2592 🔍 [GLITCH INVESTIGATION] createFloorObjects called for floor: {floorName: 'Ground Floor', isCurrentFloor: true, airEntriesCount: 2, airEntriesData: Array(2), timestamp: 1752578014318}
+Canvas3D.tsx:5267 🔥 SCENE REBUILD TRIGGERED: {editingAirEntry: false, finalFloorsId: '["ground"]', thisWillRecreateEverything: true, triggerCause: 'finalFloors, currentFloor, ceilingHeight, or floorDeckThickness changed'}
+Canvas3D.tsx:5275 🔍 [GLITCH ROOT CAUSE] Scene rebuild details: {currentFloor: 'ground', finalFloorsKeys: Array(1), totalAirEntries: 2, allAirEntryPositions: {…}, timestamp: 1752578014321}
+Canvas3D.tsx:4752 🔍 [CROSS-FLOOR DEBUG] Available AirEntry meshes in scene: (2) [{…}, {…}]
+Canvas3D.tsx:4761 🔍 [CROSS-FLOOR DEBUG] Current floor selection: ground
+Canvas3D.tsx:4771 🔍 [CROSS-FLOOR DEBUG] Detected mesh data: {detectedType: 'window', detectedEntryIndex: 0, detectedFloorName: 'Ground Floor', detectedAirEntryId: 'window_0F_1', detectedPosition: {…}, …}
+Canvas3D.tsx:4796 🎯 [FLOOR KEY MAPPING] SUCCESS: {originalMeshFloor: 'Ground Floor', mappedToStoreKey: 'ground', foundInStore: true, availableAirEntries: 2, storeKeys: Array(1)}
+Canvas3D.tsx:4805 🎯 [CROSS-FLOOR FIX] Correct floor lookup with mapping: {detectedMeshFloor: 'Ground Floor', mappedFloorKey: 'ground', lookingInCorrectFloor: 'ground', availableAirEntries: 2, willSearchForIndex: 0, …}
+Canvas3D.tsx:4816 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 0}
+Canvas3D.tsx:4829 ✅ [CROSS-FLOOR FIX] CORRECT MATCH DETECTED: {detectedMeshFrom: 'Ground Floor', detectedMeshIndex: 0, detectedMeshId: 'window_0F_1', searchingInCorrectFloor: 'Ground Floor', foundCorrectEntryAtIndex: 0, …}
+Canvas3D.tsx:4843 Double-click found entry using stored entryIndex: 0
+Canvas3D.tsx:4888 🔍 [ID DEBUG] DIALOG WILL SHOW THESE IDs: {mergedEntryId: 'window_0F_1', baseEntryId: 'window_0F_1', meshAirEntryId: 'window_0F_1', expectedFormat: "Should be like 'window_0F_1'", actualId: 'window_0F_1', …}
+Canvas3D.tsx:4898 ✅ [CROSS-FLOOR FIX] DIALOG OPENING WITH CORRECT MAPPED DATA: {dialogWillShow: {…}, userClickedOn: {…}, mapping: {…}, explanation: "Dialog shows data from mapped floor 'ground' matching clicked mesh from 'Ground Floor'"}
+Canvas3D.tsx:4917 🧪 [DIAGNOSIS] setEditingAirEntry called with: {index: 0, floorName: 'ground', entryId: 'window_0F_1', entryType: 'window', entryPosition: {…}, …}
+Canvas3D.tsx:994 🔍 DEPENDENCY CHECK: {editingAirEntry: true, hasSnapshot: true, willUseSnapshot: true, storeFloorsId: 'ground', lastEditedFloor: 'ground'}
+Canvas3D.tsx:1004 🧊 USANDO SNAPSHOT CONGELADO - NO REBUILD
+Canvas3D.tsx:1602 🔍 [AIRENTRY INIT] Starting dialog init for window #0 on floor ground
+Canvas3D.tsx:1609 📊 [DATA SOURCES] Store entry: NULL
+Canvas3D.tsx:1610 📊 [DATA SOURCES] Base entry: {state: 'closed', temperature: 20, flowIntensity: 'medium', airOrientation: 'inflow'}
+Canvas3D.tsx:1650 ✅ [FINAL VALUES] Dialog will initialize with: {type: 'window', index: 0, floor: 'ground', properties: undefined, wallPosition: 62.29}
+Canvas3D.tsx:1028 🔍 lastEditedFloor changed: ground
+Canvas3D.tsx:1671 🚀 [DIALOG OPEN] editingAirEntry set to: {type: 'window', index: 0, floor: 'ground', entryProperties: {…}}
+Canvas3D.tsx:5246 🎯 [SURGICAL FIX] Real-time update mode detected: {editingFloor: 'ground', lastEditedFloor: 'ground', shouldSkipFullRebuild: true, willUseDirectMeshUpdates: true}
+Canvas3D.tsx:5263 🛡️ SCENE REBUILD BLOCKED - Currently editing, skipping rebuild
+Canvas3D.tsx:1815 🔍 POSITION UPDATE - SCENE MESH INVENTORY: {editingEntry: {…}, allAirEntryMeshes: Array(2)}
+Canvas3D.tsx:1844 🎯 POSITION UPDATE - EXACT MATCH FOUND: {type: 'window', entryIndex: 0, floorName: 'Ground Floor', position: _Vector3}
+Canvas3D.tsx:1875 🧪 [DIAGNOSIS] onUpdateAirEntry callback executing: {callbackFloorName: 'ground', callbackIndex: 0, updatedEntry: {…}, editingAirEntryState: {…}, timestamp: 1752578017926}
+Canvas3D.tsx:1602 🔍 [AIRENTRY INIT] Starting dialog init for window #0 on floor ground
+Canvas3D.tsx:1609 📊 [DATA SOURCES] Store entry: NULL
+Canvas3D.tsx:1610 📊 [DATA SOURCES] Base entry: {state: 'closed', temperature: 20, flowIntensity: 'medium', airOrientation: 'inflow'}
+Canvas3D.tsx:1650 ✅ [FINAL VALUES] Dialog will initialize with: {type: 'window', index: 0, floor: 'ground', properties: undefined, wallPosition: 62.29}
+Canvas3D.tsx:1671 🚀 [DIALOG OPEN] editingAirEntry set to: {type: 'window', index: 0, floor: 'ground', entryProperties: {…}}
+Canvas3D.tsx:5246 🎯 [SURGICAL FIX] Real-time update mode detected: {editingFloor: 'ground', lastEditedFloor: 'ground', shouldSkipFullRebuild: true, willUseDirectMeshUpdates: true}
+Canvas3D.tsx:5263 🛡️ SCENE REBUILD BLOCKED - Currently editing, skipping rebuild
+Canvas3D.tsx:1895 🔍 [CRITICAL GLITCH POINT] About to call onUpdateAirEntry - this triggers store update which causes scene rebuild: {aboutToUpdateFloor: 'ground', aboutToUpdateIndex: 0, aboutToUpdatePosition: {…}, currentVisibleFloor: 'ground', isUpdatingSameFloorAsVisible: true, …}
+wizard-design.tsx:1064 🧪 [DIAGNOSIS WIZARD] handleUpdateAirEntryFrom3D called with: {receivedFloorName: 'ground', receivedIndex: 0, receivedEntryId: 'window_0F_1', receivedEntryType: 'window', receivedEntryPosition: {…}, …}
+Canvas3D.tsx:1924 🔍 [CRITICAL GLITCH POINT] onUpdateAirEntry call completed - scene will now rebuild
+Canvas3D.tsx:1036 🔍 storeFloors changed: ['ground']
+Canvas3D.tsx:1815 🔍 POSITION UPDATE - SCENE MESH INVENTORY: {editingEntry: {…}, allAirEntryMeshes: Array(2)}
+Canvas3D.tsx:1844 🎯 POSITION UPDATE - EXACT MATCH FOUND: {type: 'window', entryIndex: 0, floorName: 'Ground Floor', position: _Vector3}
+Canvas3D.tsx:1875 🧪 [DIAGNOSIS] onUpdateAirEntry callback executing: {callbackFloorName: 'ground', callbackIndex: 0, updatedEntry: {…}, editingAirEntryState: {…}, timestamp: 1752578018130}
+Canvas3D.tsx:1602 🔍 [AIRENTRY INIT] Starting dialog init for window #0 on floor ground
+Canvas3D.tsx:1609 📊 [DATA SOURCES] Store entry: {state: 'closed', temperature: 20, flowIntensity: 'medium', airOrientation: 'inflow'}
+Canvas3D.tsx:1610 📊 [DATA SOURCES] Base entry: {state: 'closed', temperature: 20, flowIntensity: 'medium', airOrientation: 'inflow'}
+Canvas3D.tsx:1650 ✅ [FINAL VALUES] Dialog will initialize with: {type: 'window', index: 0, floor: 'ground', properties: {…}, wallPosition: 62.29230707851043}
+Canvas3D.tsx:1671 🚀 [DIALOG OPEN] editingAirEntry set to: {type: 'window', index: 0, floor: 'ground', entryProperties: {…}}
+Canvas3D.tsx:5246 🎯 [SURGICAL FIX] Real-time update mode detected: {editingFloor: 'ground', lastEditedFloor: 'ground', shouldSkipFullRebuild: true, willUseDirectMeshUpdates: true}
+Canvas3D.tsx:5263 🛡️ SCENE REBUILD BLOCKED - Currently editing, skipping rebuild
+Canvas3D.tsx:1895 🔍 [CRITICAL GLITCH POINT] About to call onUpdateAirEntry - this triggers store update which causes scene rebuild: {aboutToUpdateFloor: 'ground', aboutToUpdateIndex: 0, aboutToUpdatePosition: {…}, currentVisibleFloor: 'ground', isUpdatingSameFloorAsVisible: true, …}
+wizard-design.tsx:1064 🧪 [DIAGNOSIS WIZARD] handleUpdateAirEntryFrom3D called with: {receivedFloorName: 'ground', receivedIndex: 0, receivedEntryId: 'window_0F_1', receivedEntryType: 'window', receivedEntryPosition: {…}, …}
+Canvas3D.tsx:1924 🔍 [CRITICAL GLITCH POINT] onUpdateAirEntry call completed - scene will now rebuild
+Canvas3D.tsx:1036 🔍 storeFloors changed: ['ground']
+Canvas3D.tsx:1815 🔍 POSITION UPDATE - SCENE MESH INVENTORY: {editingEntry: {…}, allAirEntryMeshes: Array(2)}
+Canvas3D.tsx:1844 🎯 POSITION UPDATE - EXACT MATCH FOUND: {type: 'window', entryIndex: 0, floorName: 'Ground Floor', position: _Vector3}
+Canvas3D.tsx:1875 🧪 [DIAGNOSIS] onUpdateAirEntry callback executing: {callbackFloorName: 'ground', callbackIndex: 0, updatedEntry: {…}, editingAirEntryState: {…}, timestamp: 1752578021203}
+Canvas3D.tsx:1602 🔍 [AIRENTRY INIT] Starting dialog init for window #0 on floor ground
+Canvas3D.tsx:1609 📊 [DATA SOURCES] Store entry: {state: 'closed', temperature: 20, flowIntensity: 'medium', airOrientation: 'inflow'}
+Canvas3D.tsx:1610 📊 [DATA SOURCES] Base entry: {state: 'closed', temperature: 20, flowIntensity: 'medium', airOrientation: 'inflow'}
+Canvas3D.tsx:1650 ✅ [FINAL VALUES] Dialog will initialize with: {type: 'window', index: 0, floor: 'ground', properties: {…}, wallPosition: 62.29230707851043}
+Canvas3D.tsx:1671 🚀 [DIALOG OPEN] editingAirEntry set to: {type: 'window', index: 0, floor: 'ground', entryProperties: {…}}
+Canvas3D.tsx:5246 🎯 [SURGICAL FIX] Real-time update mode detected: {editingFloor: 'ground', lastEditedFloor: 'ground', shouldSkipFullRebuild: true, willUseDirectMeshUpdates: true}
+Canvas3D.tsx:5263 🛡️ SCENE REBUILD BLOCKED - Currently editing, skipping rebuild
+Canvas3D.tsx:1815 🔍 POSITION UPDATE - SCENE MESH INVENTORY: {editingEntry: {…}, allAirEntryMeshes: Array(2)}
+Canvas3D.tsx:1844 🎯 POSITION UPDATE - EXACT MATCH FOUND: {type: 'window', entryIndex: 0, floorName: 'Ground Floor', position: _Vector3}
+Canvas3D.tsx:1875 🧪 [DIAGNOSIS] onUpdateAirEntry callback executing: {callbackFloorName: 'ground', callbackIndex: 0, updatedEntry: {…}, editingAirEntryState: {…}, timestamp: 1752578021356}
+Canvas3D.tsx:1602 🔍 [AIRENTRY INIT] Starting dialog init for window #0 on floor ground
+Canvas3D.tsx:1609 📊 [DATA SOURCES] Store entry: {state: 'closed', temperature: 20, flowIntensity: 'medium', airOrientation: 'inflow'}
+Canvas3D.tsx:1610 📊 [DATA SOURCES] Base entry: {state: 'closed', temperature: 20, flowIntensity: 'medium', airOrientation: 'inflow'}
+Canvas3D.tsx:1650 ✅ [FINAL VALUES] Dialog will initialize with: {type: 'window', index: 0, floor: 'ground', properties: {…}, wallPosition: 62.29230707851043}
+Canvas3D.tsx:1671 🚀 [DIALOG OPEN] editingAirEntry set to: {type: 'window', index: 0, floor: 'ground', entryProperties: {…}}
+Canvas3D.tsx:5246 🎯 [SURGICAL FIX] Real-time update mode detected: {editingFloor: 'ground', lastEditedFloor: 'ground', shouldSkipFullRebuild: true, willUseDirectMeshUpdates: true}
+Canvas3D.tsx:5263 🛡️ SCENE REBUILD BLOCKED - Currently editing, skipping rebuild
+Canvas3D.tsx:1895 🔍 [CRITICAL GLITCH POINT] About to call onUpdateAirEntry - this triggers store update which causes scene rebuild: {aboutToUpdateFloor: 'ground', aboutToUpdateIndex: 0, aboutToUpdatePosition: {…}, currentVisibleFloor: 'ground', isUpdatingSameFloorAsVisible: true, …}
+wizard-design.tsx:1064 🧪 [DIAGNOSIS WIZARD] handleUpdateAirEntryFrom3D called with: {receivedFloorName: 'ground', receivedIndex: 0, receivedEntryId: 'window_0F_1', receivedEntryType: 'window', receivedEntryPosition: {…}, …}
+Canvas3D.tsx:1924 🔍 [CRITICAL GLITCH POINT] onUpdateAirEntry call completed - scene will now rebuild
+Canvas3D.tsx:1036 🔍 storeFloors changed: ['ground']
+Canvas3D.tsx:6447 💾 [CANVAS3D SAVE] Save Changes clicked with values: {elementStatus: 'closed', temperature: 20, airDirection: 'inflow', flowIntensity: 'medium', index: 0, …}
+wizard-design.tsx:1064 🧪 [DIAGNOSIS WIZARD] handleUpdateAirEntryFrom3D called with: {receivedFloorName: 'ground', receivedIndex: 0, receivedEntryId: 'window_0F_1', receivedEntryType: 'window', receivedEntryPosition: {…}, …}
+Canvas3D.tsx:994 🔍 DEPENDENCY CHECK: {editingAirEntry: false, hasSnapshot: true, willUseSnapshot: false, storeFloorsId: 'ground', lastEditedFloor: null}
+Canvas3D.tsx:1015 💾 SNAPSHOT GUARDADO PARA PRÓXIMA EDICIÓN
+Canvas3D.tsx:1028 🔍 lastEditedFloor changed: null
+Canvas3D.tsx:1036 🔍 storeFloors changed: ['ground']
+Canvas3D.tsx:1678 🚪 [DIALOG CLOSED] editingAirEntry cleared
+Canvas3D.tsx:2592 🔍 [GLITCH INVESTIGATION] createFloorObjects called for floor: {floorName: 'Ground Floor', isCurrentFloor: true, airEntriesCount: 2, airEntriesData: Array(2), timestamp: 1752578022801}
+Canvas3D.tsx:5267 🔥 SCENE REBUILD TRIGGERED: {editingAirEntry: false, finalFloorsId: '["ground"]', thisWillRecreateEverything: true, triggerCause: 'finalFloors, currentFloor, ceilingHeight, or floorDeckThickness changed'}
+Canvas3D.tsx:5275 🔍 [GLITCH ROOT CAUSE] Scene rebuild details: {currentFloor: 'ground', finalFloorsKeys: Array(1), totalAirEntries: 2, allAirEntryPositions: {…}, timestamp: 1752578022804}
+Canvas3D.tsx:4381 Hovering over axis mesh: x
+Canvas3D.tsx:4381 Hovering over axis mesh: x
+Canvas3D.tsx:4381 Hovering over axis mesh: x
+Canvas3D.tsx:4752 🔍 [CROSS-FLOOR DEBUG] Available AirEntry meshes in scene: (2) [{…}, {…}]
+Canvas3D.tsx:4761 🔍 [CROSS-FLOOR DEBUG] Current floor selection: ground
+Canvas3D.tsx:4771 🔍 [CROSS-FLOOR DEBUG] Detected mesh data: {detectedType: 'window', detectedEntryIndex: 1, detectedFloorName: 'Ground Floor', detectedAirEntryId: 'window_0F_1', detectedPosition: {…}, …}
+Canvas3D.tsx:4796 🎯 [FLOOR KEY MAPPING] SUCCESS: {originalMeshFloor: 'Ground Floor', mappedToStoreKey: 'ground', foundInStore: true, availableAirEntries: 2, storeKeys: Array(1)}
+Canvas3D.tsx:4805 🎯 [CROSS-FLOOR FIX] Correct floor lookup with mapping: {detectedMeshFloor: 'Ground Floor', mappedFloorKey: 'ground', lookingInCorrectFloor: 'ground', availableAirEntries: 2, willSearchForIndex: 1, …}
+Canvas3D.tsx:4816 Double-click position search: {airEntryData: {…}, entryPosition: {…}, storedEntryIndex: 1}
+Canvas3D.tsx:4829 ✅ [CROSS-FLOOR FIX] CORRECT MATCH DETECTED: {detectedMeshFrom: 'Ground Floor', detectedMeshIndex: 1, detectedMeshId: 'window_0F_1', searchingInCorrectFloor: 'Ground Floor', foundCorrectEntryAtIndex: 1, …}
+Canvas3D.tsx:4843 Double-click found entry using stored entryIndex: 1
+Canvas3D.tsx:4888 🔍 [ID DEBUG] DIALOG WILL SHOW THESE IDs: {mergedEntryId: 'window_0F_1', baseEntryId: 'window_0F_1', meshAirEntryId: 'window_0F_1', expectedFormat: "Should be like 'window_0F_1'", actualId: 'window_0F_1', …}
+Canvas3D.tsx:4898 ✅ [CROSS-FLOOR FIX] DIALOG OPENING WITH CORRECT MAPPED DATA: {dialogWillShow: {…}, userClickedOn: {…}, mapping: {…}, explanation: "Dialog shows data from mapped floor 'ground' matching clicked mesh from 'Ground Floor'"}
+Canvas3D.tsx:4917 🧪 [DIAGNOSIS] setEditingAirEntry called with: {index: 1, floorName: 'ground', entryId: 'window_0F_1', entryType: 'window', entryPosition: {…}, …}
+Canvas3D.tsx:994 🔍 DEPENDENCY CHECK: {editingAirEntry: true, hasSnapshot: true, willUseSnapshot: true, storeFloorsId: 'ground', lastEditedFloor: 'ground'}
+Canvas3D.tsx:1004 🧊 USANDO SNAPSHOT CONGELADO - NO REBUILD
+Canvas3D.tsx:1602 🔍 [AIRENTRY INIT] Starting dialog init for window #1 on floor ground
+Canvas3D.tsx:1609 📊 [DATA SOURCES] Store entry: NULL
+Canvas3D.tsx:1610 📊 [DATA SOURCES] Base entry: {state: 'closed', temperature: 20, flowIntensity: 'medium', airOrientation: 'inflow'}
+Canvas3D.tsx:1650 ✅ [FINAL VALUES] Dialog will initialize with: {type: 'window', index: 1, floor: 'ground', properties: undefined, wallPosition: undefined}
+Canvas3D.tsx:1028 🔍 lastEditedFloor changed: ground
+Canvas3D.tsx:1671 🚀 [DIALOG OPEN] editingAirEntry set to: {type: 'window', index: 1, floor: 'ground', entryProperties: {…}}
+Canvas3D.tsx:5246 🎯 [SURGICAL FIX] Real-time update mode detected: {editingFloor: 'ground', lastEditedFloor: 'ground', shouldSkipFullRebuild: true, willUseDirectMeshUpdates: true}
+Canvas3D.tsx:5263 🛡️ SCENE REBUILD BLOCKED - Currently editing, skipping rebuild
+Canvas3D.tsx:4381 Hovering over axis mesh: x
+Canvas3D.tsx:6447 💾 [CANVAS3D SAVE] Save Changes clicked with values: {elementStatus: 'closed', temperature: 20, airDirection: 'inflow', flowIntensity: 'medium', index: 1, …}
+wizard-design.tsx:1064 🧪 [DIAGNOSIS WIZARD] handleUpdateAirEntryFrom3D called with: {receivedFloorName: 'ground', receivedIndex: 1, receivedEntryId: 'window_0F_1', receivedEntryType: 'window', receivedEntryPosition: {…}, …}
+Canvas3D.tsx:994 🔍 DEPENDENCY CHECK: {editingAirEntry: false, hasSnapshot: true, willUseSnapshot: false, storeFloorsId: 'ground', lastEditedFloor: null}
+Canvas3D.tsx:1015 💾 SNAPSHOT GUARDADO PARA PRÓXIMA EDICIÓN
+Canvas3D.tsx:1028 🔍 lastEditedFloor changed: null
+Canvas3D.tsx:1036 🔍 storeFloors changed: ['ground']
+Canvas3D.tsx:1678 🚪 [DIALOG CLOSED] editingAirEntry cleared
+Canvas3D.tsx:2592 🔍 [GLITCH INVESTIGATION] createFloorObjects called for floor: {floorName: 'Ground Floor', isCurrentFloor: true, airEntriesCount: 2, airEntriesData: Array(2), timestamp: 1752578026291}
+Canvas3D.tsx:5267 🔥 SCENE REBUILD TRIGGERED: {editingAirEntry: false, finalFloorsId: '["ground"]', thisWillRecreateEverything: true, triggerCause: 'finalFloors, currentFloor, ceilingHeight, or floorDeckThickness changed'}
+Canvas3D.tsx:5275 🔍 [GLITCH ROOT CAUSE] Scene rebuild details: {currentFloor: 'ground', finalFloorsKeys: Array(1), totalAirEntries: 2, allAirEntryPositions: {…}, timestamp: 1752578026294}
