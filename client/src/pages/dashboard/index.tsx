@@ -53,6 +53,8 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout>
+      <h1 className="text-3xl font-bold mb-8">Overview</h1>
+      
       <div className="space-y-6">
         {/* Welcome Section */}
         <Card>
