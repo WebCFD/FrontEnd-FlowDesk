@@ -25,6 +25,7 @@ import {
   normalizeCoordinates
 } from "@/lib/simulationDataConverter";
 import { useRoomStore } from "@/lib/store/room-store";
+import { useAirEntryController } from "@/hooks/useAirEntryController";
 
 interface HighlightState {
   lines: Line[];
@@ -336,6 +337,12 @@ export default function Canvas2D({
   onPropertiesUpdate,
   onDimensionsUpdate,
 }: Canvas2DProps) {
+  // NEW ARCHITECTURE: Initialize AirEntry Controller for Canvas2D
+  const airEntryController = useAirEntryController({
+    viewName: 'canvas2d',
+    floorName: currentFloor,
+    autoInitialize: true
+  });
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -996,13 +1003,14 @@ export default function Canvas2D({
     ctx.restore();
   };
 
-  // Helper function to get the most current air entry data for drawing
-  // RESTORED: Visual updates for real-time feedback while maintaining store persistence
+  // NEW ARCHITECTURE: Get AirEntries from controller instead of props
   const getCurrentAirEntries = (): AirEntry[] => {
-    const result = [...airEntries];
+    const controllerEntries = airEntryController.state.entries
+      .filter(entry => entry.floorName === currentFloor)
+      .map(entry => entry.legacyData);
     
     // Apply visual updates from editing state for real-time feedback
-    // This only affects visual rendering, not persistence (handled by immediate store updates)
+    const result = [...controllerEntries];
     editingAirEntries.forEach(editingItem => {
       if (editingItem.index < result.length && editingItem.entry) {
         result[editingItem.index] = {
@@ -1757,39 +1765,48 @@ export default function Canvas2D({
             }
           };
 
-          // Use store to add entry WITH generated ID
-          console.log("🔍 [ID CREATION DEBUG] BEFORE addAirEntryToFloor:", {
-            currentFloor,
-            entryType: newAirEntryWithoutId.type,
-            entryWithoutId: newAirEntryWithoutId
+          // NEW ARCHITECTURE: Use controller to add entry
+          const createdEntry = airEntryController.actions.createEntry({
+            type: currentAirEntry,
+            floorName: currentFloor,
+            position: calculatePositionAlongWall(selectedLine, exactPoint),
+            dimensions: {
+              width: currentAirEntry === 'door' ? 80 : 60,
+              height: currentAirEntry === 'door' ? 200 : 40,
+              distanceToFloor: currentAirEntry === 'door' ? 0 : 110,
+              shape: 'rectangular',
+            },
+            line: selectedLine,
+            lineId: selectedLine.id,
+            properties: {
+              state: 'closed',
+              temperature: 20,
+              flowType: 'Air Mass Flow',
+              flowValue: 0.5,
+              flowIntensity: 'medium',
+              airOrientation: 'inflow',
+            },
+            wallContext: {
+              wallId: wallId,
+              floorName: floorText,
+              wallStart: { x: selectedLine.start.x, y: selectedLine.start.y },
+              wallEnd: { x: selectedLine.end.x, y: selectedLine.end.y },
+              clickPosition: { x: point.x, y: point.y },
+              ceilingHeight: currentCeilingHeight * 100
+            }
           });
           
-          const generatedId = useRoomStore.getState().addAirEntryToFloor(currentFloor, newAirEntryWithoutId);
-          
-          console.log("🔍 [ID CREATION DEBUG] AFTER addAirEntryToFloor:", {
-            generatedId,
-            currentFloor,
-            storeFloorData: useRoomStore.getState().floors[currentFloor]
-          });
-          
-          const newAirEntry = { ...newAirEntryWithoutId, id: generatedId } as any;
+          const newAirEntry = createdEntry.legacyData;
 
-          // Update local state
-          const newAirEntries = [...airEntries, newAirEntry];
-          console.log("🔍 [ID CREATION DEBUG] Updated local airEntries:", {
-            newAirEntriesCount: newAirEntries.length,
-            lastEntryId: newAirEntries[newAirEntries.length - 1]?.id,
-            lastEntryType: newAirEntries[newAirEntries.length - 1]?.type
-          });
-          
-          onAirEntriesUpdate?.(newAirEntries);
+          // NEW ARCHITECTURE: Entry is already added to controller, notify parent component
+          const currentEntries = airEntryController.state.entries
+            .filter(entry => entry.floorName === currentFloor)
+            .map(entry => entry.legacyData);
+          onAirEntriesUpdate?.(currentEntries);
 
           // Open dialog in "edit mode" for the just-created element
-          // This makes the dialog function as parameter adjustment rather than creation
-          // User perceives this as "configuring" the element they just placed
-          // Open dialog in "create mode" for the just-created element
           setEditingAirEntries(prev => [...prev, {
-            index: airEntries.length, // Index of the newly added element
+            index: currentEntries.length - 1, // Index of the newly added element
             entry: newAirEntry,
             position: calculateDialogPosition(prev.length),
             isCreating: true // Mark as creation mode
@@ -3322,28 +3339,16 @@ export default function Canvas2D({
   // SAVE CHANGES LOGIC: Updates existing element properties
   // This is called for BOTH newly created elements (from wall click) and existing elements (from double-click)
   // The workflow treats both cases identically - just updating an existing element in the array
-  // Real-time position update handler - updates store immediately during dialog interactions
+  // NEW ARCHITECTURE: Real-time position update using controller
   const handleAirEntryPositionUpdate = (index: number, newPosition: { x: number; y: number }) => {
-    console.log("🟢 [CANVAS2D DEBUG] handleAirEntryPositionUpdate called with index:", index, "position:", newPosition);
+    const entries = airEntryController.state.entries.filter(entry => entry.floorName === currentFloor);
+    const entryToUpdate = entries[index];
     
-    // Update the store immediately to maintain visual consistency
-    const updatedAirEntries = [...airEntries];
-    if (updatedAirEntries[index]) {
-      const originalEntry = updatedAirEntries[index];
-      console.log("🟢 [CANVAS2D DEBUG] Original entry before update:", originalEntry);
-      console.log("🟢 [CANVAS2D DEBUG] Original wallPosition:", originalEntry.dimensions?.wallPosition);
+    if (entryToUpdate) {
+      // Update via controller
+      airEntryController.actions.updateEntry(entryToUpdate.id, { position: newPosition });
       
-      updatedAirEntries[index] = {
-        ...updatedAirEntries[index],
-        position: newPosition
-      };
-      
-      console.log("🟢 [CANVAS2D DEBUG] Updated entry after position change:", updatedAirEntries[index]);
-      console.log("🟢 [CANVAS2D DEBUG] wallPosition preserved?:", updatedAirEntries[index].dimensions?.wallPosition);
-
-      onAirEntriesUpdate?.(updatedAirEntries);
-      
-      // Also update the editing state for immediate visual feedback
+      // Update editing state for immediate visual feedback
       setEditingAirEntries(prev => prev.map(item => 
         item.index === index ? {
           ...item,
@@ -3353,25 +3358,25 @@ export default function Canvas2D({
           }
         } : item
       ));
+      
+      // Notify parent component of changes
+      const updatedEntries = airEntryController.state.entries
+        .filter(entry => entry.floorName === currentFloor)
+        .map(entry => entry.legacyData);
+      onAirEntriesUpdate?.(updatedEntries);
     }
   };
 
-  // Real-time dimensions update handler - updates store immediately during dialog interactions
+  // NEW ARCHITECTURE: Real-time dimensions update using controller
   const handleAirEntryDimensionsUpdate = (index: number, newDimensions: { width?: number; height?: number; distanceToFloor?: number }) => {
-    // Update the store immediately to maintain visual consistency for Width changes
-    const updatedAirEntries = [...airEntries];
-    if (updatedAirEntries[index]) {
-      updatedAirEntries[index] = {
-        ...updatedAirEntries[index],
-        dimensions: {
-          ...updatedAirEntries[index].dimensions,
-          ...newDimensions
-        }
-      };
+    const entries = airEntryController.state.entries.filter(entry => entry.floorName === currentFloor);
+    const entryToUpdate = entries[index];
+    
+    if (entryToUpdate) {
+      // Update via controller
+      airEntryController.actions.updateEntry(entryToUpdate.id, { dimensions: newDimensions });
       
-      onAirEntriesUpdate?.(updatedAirEntries);
-      
-      // Also update the editing state for immediate visual feedback
+      // Update editing state for immediate visual feedback
       setEditingAirEntries(prev => prev.map(item => 
         item.index === index ? {
           ...item,
@@ -3384,6 +3389,12 @@ export default function Canvas2D({
           }
         } : item
       ));
+      
+      // Notify parent component of changes
+      const updatedEntries = airEntryController.state.entries
+        .filter(entry => entry.floorName === currentFloor)
+        .map(entry => entry.legacyData);
+      onAirEntriesUpdate?.(updatedEntries);
     }
   };
 
