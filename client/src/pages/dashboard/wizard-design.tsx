@@ -397,6 +397,9 @@ export default function WizardDesign() {
         structuralFloors[floorName] = {
           lines: normalizeObject(floorData.lines),
           airEntries: floorData.airEntries?.map(entry => normalizeObject({
+            // CRITICAL FIX: Include ID and lineId for Canvas3D compatibility
+            id: entry.id,
+            lineId: (entry as any).lineId,
             type: entry.type,
             position: entry.position,
             line: entry.line,
