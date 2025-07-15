@@ -192,12 +192,19 @@ export class StoreAdapter {
       const currentFloors = state.floors || {};
       const previousFloors = prevState.floors || {};
 
+      // DEBUG: Log what we're getting from the store
+      console.log(`StoreAdapter setupStoreToControllerSync: Current store state floors:`, Object.keys(currentFloors));
+      console.log(`StoreAdapter setupStoreToControllerSync: Current ground airEntries:`, currentFloors.ground?.airEntries?.length || 0);
+
       // Check for changes in AirEntries
       Object.keys({ ...currentFloors, ...previousFloors }).forEach(floorName => {
         const currentEntries = currentFloors[floorName]?.airEntries || [];
         const previousEntries = previousFloors[floorName]?.airEntries || [];
 
+        console.log(`StoreAdapter setupStoreToControllerSync: Checking floor ${floorName} - current: ${currentEntries.length}, previous: ${previousEntries.length}`);
+
         if (this.hasAirEntriesChanged(currentEntries, previousEntries)) {
+          console.log(`StoreAdapter setupStoreToControllerSync: Changes detected in floor ${floorName}, calling syncFloorFromStore`);
           this.syncFloorFromStore(floorName, currentEntries);
         }
       });
@@ -320,7 +327,9 @@ export class StoreAdapter {
   private syncFloorFromStore(floorName: string, storeEntries: LegacyAirEntry[]): void {
     const controllerEntries = this.controller.getEntriesForFloor(floorName);
     
+    // DEBUG: Let's check what we're actually receiving from the store
     console.log(`StoreAdapter syncFloorFromStore(${floorName}): Store has ${storeEntries.length} entries`);
+    console.log(`StoreAdapter syncFloorFromStore(${floorName}): storeEntries data:`, storeEntries);
     console.log(`StoreAdapter syncFloorFromStore(${floorName}): Controller has ${controllerEntries.length} entries`);
     
     // Find entries to add, update, or remove
