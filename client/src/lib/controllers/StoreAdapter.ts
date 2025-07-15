@@ -189,12 +189,17 @@ export class StoreAdapter {
     useRoomStore.subscribe((state, prevState) => {
       if (this.isSyncing) return; // Prevent sync loops
 
+      // DEBUG: Let's see what we're actually getting
+      console.log(`StoreAdapter setupStoreToControllerSync: RAW state:`, state);
+      console.log(`StoreAdapter setupStoreToControllerSync: RAW prevState:`, prevState);
+
       const currentFloors = state.floors || {};
-      const previousFloors = prevState.floors || {};
+      const previousFloors = prevState?.floors || {};
 
       // DEBUG: Log what we're getting from the store
       console.log(`StoreAdapter setupStoreToControllerSync: Current store state floors:`, Object.keys(currentFloors));
       console.log(`StoreAdapter setupStoreToControllerSync: Current ground airEntries:`, currentFloors.ground?.airEntries?.length || 0);
+      console.log(`StoreAdapter setupStoreToControllerSync: Current ground airEntries FULL:`, currentFloors.ground?.airEntries);
 
       // Check for changes in AirEntries
       Object.keys({ ...currentFloors, ...previousFloors }).forEach(floorName => {
@@ -293,6 +298,11 @@ export class StoreAdapter {
     
     // Update store
     store.setFloors(floors);
+    
+    // DEBUG: Let's verify what the store actually contains after the update
+    const verificationState = useRoomStore.getState();
+    console.log(`StoreAdapter updateStoreEntry(${floorName}): VERIFICATION - Store after update has ${verificationState.floors?.[floorName]?.airEntries?.length || 0} entries`);
+    console.log(`StoreAdapter updateStoreEntry(${floorName}): VERIFICATION - Store airEntries:`, verificationState.floors?.[floorName]?.airEntries);
     
     // Remove from guard after a short delay to allow React state to propagate
     setTimeout(() => {
