@@ -1517,7 +1517,7 @@ export default function Canvas2D({
     throttleMouseMove(e);
   };
 
-  const handleMouseDown = (
+  const handleMouseDown = async (
     e: ReactMouseEvent<HTMLCanvasElement, MouseEvent>,
   ) => {
     // Check if we should ignore this click (set by double-click handler)
@@ -1766,35 +1766,39 @@ export default function Canvas2D({
           };
 
           // NEW ARCHITECTURE: Use controller to add entry
-          const createdEntry = airEntryController.actions.createEntry({
-            type: currentAirEntry,
-            floorName: currentFloor,
-            position: calculatePositionAlongWall(selectedLine, exactPoint),
-            dimensions: {
+          const createdEntry = await airEntryController.actions.createEntry(
+            currentFloor,
+            currentAirEntry,
+            calculatePositionAlongWall(selectedLine, exactPoint),
+            {
               width: currentAirEntry === 'door' ? 80 : 60,
               height: currentAirEntry === 'door' ? 200 : 40,
               distanceToFloor: currentAirEntry === 'door' ? 0 : 110,
               shape: 'rectangular',
             },
-            line: selectedLine,
-            lineId: selectedLine.id,
-            properties: {
+            selectedLine,
+            {
               state: 'closed',
               temperature: 20,
               flowType: 'Air Mass Flow',
               flowValue: 0.5,
               flowIntensity: 'medium',
               airOrientation: 'inflow',
-            },
-            wallContext: {
-              wallId: wallId,
-              floorName: floorText,
-              wallStart: { x: selectedLine.start.x, y: selectedLine.start.y },
-              wallEnd: { x: selectedLine.end.x, y: selectedLine.end.y },
-              clickPosition: { x: point.x, y: point.y },
-              ceilingHeight: currentCeilingHeight * 100
+              wallContext: {
+                wallId: wallId,
+                floorName: floorText,
+                wallStart: { x: selectedLine.start.x, y: selectedLine.start.y },
+                wallEnd: { x: selectedLine.end.x, y: selectedLine.end.y },
+                clickPosition: { x: point.x, y: point.y },
+                ceilingHeight: currentCeilingHeight * 100
+              }
             }
-          });
+          );
+          
+          if (!createdEntry) {
+            console.error("Failed to create AirEntry");
+            return;
+          }
           
           const newAirEntry = createdEntry.legacyData;
 
