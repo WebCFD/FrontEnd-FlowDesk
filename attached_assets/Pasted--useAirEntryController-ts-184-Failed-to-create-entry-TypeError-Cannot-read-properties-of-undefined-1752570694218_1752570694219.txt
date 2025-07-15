@@ -1,0 +1,57 @@
+
+useAirEntryController.ts:184 Failed to create entry: TypeError: Cannot read properties of undefined (reading 'x')
+    at Object.createEntry (useAirEntryController.ts:174:25)
+    at handleMouseDown (Canvas2D.tsx:1769:59)
+    at HTMLUnknownElement.callCallback2 (chunk-WERSD76P.js?v=1878c1c3:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-WERSD76P.js?v=1878c1c3:3699:24)
+    at invokeGuardedCallback (chunk-WERSD76P.js?v=1878c1c3:3733:39)
+    at invokeGuardedCallbackAndCatchFirstError (chunk-WERSD76P.js?v=1878c1c3:3736:33)
+    at executeDispatch (chunk-WERSD76P.js?v=1878c1c3:7014:11)
+    at processDispatchQueueItemsInOrder (chunk-WERSD76P.js?v=1878c1c3:7034:15)
+    at processDispatchQueue (chunk-WERSD76P.js?v=1878c1c3:7043:13)
+    at dispatchEventsForPlugins (chunk-WERSD76P.js?v=1878c1c3:7051:11)
+createEntry @ useAirEntryController.ts:184
+handleMouseDown @ Canvas2D.tsx:1769
+callCallback2 @ chunk-WERSD76P.js?v=1878c1c3:3674
+invokeGuardedCallbackDev @ chunk-WERSD76P.js?v=1878c1c3:3699
+invokeGuardedCallback @ chunk-WERSD76P.js?v=1878c1c3:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-WERSD76P.js?v=1878c1c3:3736
+executeDispatch @ chunk-WERSD76P.js?v=1878c1c3:7014
+processDispatchQueueItemsInOrder @ chunk-WERSD76P.js?v=1878c1c3:7034
+processDispatchQueue @ chunk-WERSD76P.js?v=1878c1c3:7043
+dispatchEventsForPlugins @ chunk-WERSD76P.js?v=1878c1c3:7051
+(anonymous) @ chunk-WERSD76P.js?v=1878c1c3:7174
+batchedUpdates$1 @ chunk-WERSD76P.js?v=1878c1c3:18913
+batchedUpdates @ chunk-WERSD76P.js?v=1878c1c3:3579
+dispatchEventForPluginEventSystem @ chunk-WERSD76P.js?v=1878c1c3:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-WERSD76P.js?v=1878c1c3:5478
+dispatchEvent @ chunk-WERSD76P.js?v=1878c1c3:5472
+dispatchDiscreteEvent @ chunk-WERSD76P.js?v=1878c1c3:5449Understand this errorAI
+useAirEntryController.ts:184 Failed to create entry: TypeError: Cannot read properties of undefined (reading 'x')
+    at Object.createEntry (useAirEntryController.ts:174:25)
+    at handleMouseDown (Canvas2D.tsx:1769:59)
+    at HTMLUnknownElement.callCallback2 (chunk-WERSD76P.js?v=1878c1c3:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-WERSD76P.js?v=1878c1c3:3699:24)
+    at invokeGuardedCallback (chunk-WERSD76P.js?v=1878c1c3:3733:39)
+    at invokeGuardedCallbackAndCatchFirstError (chunk-WERSD76P.js?v=1878c1c3:3736:33)
+    at executeDispatch (chunk-WERSD76P.js?v=1878c1c3:7014:11)
+    at processDispatchQueueItemsInOrder (chunk-WERSD76P.js?v=1878c1c3:7034:15)
+    at processDispatchQueue (chunk-WERSD76P.js?v=1878c1c3:7043:13)
+    at dispatchEventsForPlugins (chunk-WERSD76P.js?v=1878c1c3:7051:11)
+createEntry @ useAirEntryController.ts:184
+handleMouseDown @ Canvas2D.tsx:1769
+callCallback2 @ chunk-WERSD76P.js?v=1878c1c3:3674
+invokeGuardedCallbackDev @ chunk-WERSD76P.js?v=1878c1c3:3699
+invokeGuardedCallback @ chunk-WERSD76P.js?v=1878c1c3:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-WERSD76P.js?v=1878c1c3:3736
+executeDispatch @ chunk-WERSD76P.js?v=1878c1c3:7014
+processDispatchQueueItemsInOrder @ chunk-WERSD76P.js?v=1878c1c3:7034
+processDispatchQueue @ chunk-WERSD76P.js?v=1878c1c3:7043
+dispatchEventsForPlugins @ chunk-WERSD76P.js?v=1878c1c3:7051
+(anonymous) @ chunk-WERSD76P.js?v=1878c1c3:7174
+batchedUpdates$1 @ chunk-WERSD76P.js?v=1878c1c3:18913
+batchedUpdates @ chunk-WERSD76P.js?v=1878c1c3:3579
+dispatchEventForPluginEventSystem @ chunk-WERSD76P.js?v=1878c1c3:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-WERSD76P.js?v=1878c1c3:5478
+dispatchEvent @ chunk-WERSD76P.js?v=1878c1c3:5472
+dispatchDiscreteEvent @ chunk-WERSD76P.js?v=1878c1c3:5449Understand this errorAI
