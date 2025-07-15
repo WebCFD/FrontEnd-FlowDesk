@@ -195,15 +195,17 @@ const RAYCASTER_CONFIG = {
  * Used by: Canvas3D, RoomSketchPro, storage operations
  */
 const normalizeFloorName = (floorName: string): string => {
-  // Convert to lowercase and remove spaces - ensure consistent keys for storage/retrieval
-  return floorName.toLowerCase()
-                 .replace(/\s+/g, '')      // "Ground Floor" → "groundfloor"
-                 .replace('floor', '')     // "groundfloor" → "ground"  
-                 .replace('st', '')        // "1st" → "1"
-                 .replace('nd', '')        // "2nd" → "2"
-                 .replace('rd', '')        // "3rd" → "3"
-                 .replace('th', '')        // "4th" → "4"
-                 .trim();
+  // Convert display names to store keys
+  const lower = floorName.toLowerCase().trim();
+  
+  // Handle common floor mappings
+  if (lower === 'ground floor') return 'ground';
+  if (lower === 'first floor') return 'first';
+  if (lower === 'second floor') return 'second';
+  if (lower === 'third floor') return 'third';
+  
+  // For other cases, remove spaces and "floor" suffix
+  return lower.replace(/\s+/g, '').replace(/floor$/, '');
 };
 
 /**
