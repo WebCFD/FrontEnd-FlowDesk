@@ -47,6 +47,7 @@ import {
   ZoomIn,
   Share2,
   ChevronDown,
+  ChevronUp,
   FileText,
   Info,
 } from "lucide-react";
@@ -61,11 +62,6 @@ import { Toolbar3D, ViewDirection } from "@/components/sketch/Toolbar3D";
 import { useRoomStore } from "@/lib/store/room-store";
 import { FurnitureItem } from "@shared/furniture-types";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -272,9 +268,9 @@ export default function WizardDesign() {
   const [loadFromFloor, setLoadFromFloor] = useState("ground");
   const [floorDeckThickness, setFloorDeckThickness] = useState(35); // Default 35cm - deprecated, usar floorParameters
   const [defaultWallTemperature, setDefaultWallTemperature] = useState(20); // Default wall temperature in °C
+  const [isFloorManagementExpanded, setIsFloorManagementExpanded] = useState(true); // Floor Management collapse state
   const [defaultStairTemperature, setDefaultStairTemperature] = useState(20); // Default stair temperature in °C
   const [canvas3DKey, setCanvas3DKey] = useState(0); // Force re-render of Canvas3D
-  const [isFloorManagementOpen, setIsFloorManagementOpen] = useState(true); // Estado para menú colapsable Floor Management
   
   // Nuevos estados para parámetros por planta
   const [floorParameters, setFloorParameters] = useState<Record<string, { ceilingHeight: number; floorDeck: number; ceilingTemperature?: number; floorTemperature?: number }>>({
@@ -1363,28 +1359,29 @@ export default function WizardDesign() {
     </div>
   );
 
-  const renderStep1 = () => (
-    <>
-      <Card className="mt-4">
-        <CardContent className="p-4">
-          <ToolbarToggle
-            mode={tab}
-            onModeChange={(value: "2d-editor" | "3d-preview") => {
-              if (value === "3d-preview" && !hasClosedContour) {
-                toast({
-                  title: "Invalid Room Layout",
-                  description:
-                    "Please create a closed room contour before viewing in 3D",
-                  variant: "destructive",
-                });
-                return;
-              }
-              setTab(value);
-            }}
-            hasClosedContour={hasClosedContour}
-          />
+  const renderStep1 = () => {
+    return (
+      <>
+        <Card className="mt-4">
+          <CardContent className="p-4">
+            <ToolbarToggle
+              mode={tab}
+              onModeChange={(value: "2d-editor" | "3d-preview") => {
+                if (value === "3d-preview" && !hasClosedContour) {
+                  toast({
+                    title: "Invalid Room Layout",
+                    description:
+                      "Please create a closed room contour before viewing in 3D",
+                    variant: "destructive",
+                  });
+                  return;
+                }
+                setTab(value);
+              }}
+              hasClosedContour={hasClosedContour}
+            />
 
-          <div className="flex gap-4" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
+            <div className="flex gap-4" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
             {/* Left side menus */}
             <div className="w-72 space-y-6 overflow-y-auto" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
               {/* 2D Configuration - only show when in 2D mode */}
@@ -1573,25 +1570,30 @@ export default function WizardDesign() {
 
                 {/* Floor Management - Parameters content moved here */}
                 <div className="space-y-4 mt-4 pt-4 border-t">
-                  <Collapsible open={isFloorManagementOpen} onOpenChange={setIsFloorManagementOpen}>
-                    <CollapsibleTrigger asChild>
-                      <Button variant="ghost" className="w-full justify-between p-0 h-auto">
-                        <h3 className="font-semibold">Floor Management</h3>
-                        <ChevronDown className={cn(
-                          "h-4 w-4 transition-transform duration-200",
-                          isFloorManagementOpen ? "rotate-180" : ""
-                        )} />
-                      </Button>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="space-y-4 pt-2">
-                      <div className="space-y-4">
-                        {isMultifloor && (
-                          <div className={cn(
-                            "space-y-4 pt-2",
-                            tab !== "2d-editor" && "opacity-50 pointer-events-none"
-                          )}>
-                            <div className="space-y-2">
-                              <Label>Current Floor</Label>
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold">Floor Management</h3>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setIsFloorManagementExpanded(!isFloorManagementExpanded)}
+                      className="h-8 w-8 p-0 hover:bg-gray-100"
+                    >
+                      {isFloorManagementExpanded ? (
+                        <ChevronUp className="h-4 w-4" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                  {isFloorManagementExpanded && (
+                    <div className="space-y-4">
+                      {isMultifloor && (
+                        <div className={cn(
+                          "space-y-4 pt-2",
+                          tab !== "2d-editor" && "opacity-50 pointer-events-none"
+                        )}>
+                        <div className="space-y-2">
+                          <Label>Current Floor</Label>
                           <Select 
                             value={currentFloor} 
                             onValueChange={tab === "2d-editor" ? handleFloorChange : undefined}
@@ -1879,12 +1881,10 @@ export default function WizardDesign() {
                               </div>
                             );
                           })}
-                            </div>
-                          )}
                         </div>
-                      </div>
-                    </CollapsibleContent>
-                  </Collapsible>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -1982,27 +1982,32 @@ export default function WizardDesign() {
               {renderFilesMenu()}
             </div>
 
+            {/* Right side - Canvas */}
             {renderCanvasSection("tabs")}
           </div>
         </CardContent>
-      </Card>
-      <AirEntryDialog
-        type={currentAirEntry || "window"}
-        isOpen={isAirEntryDialogOpen}
-        onClose={() => {
-          setIsAirEntryDialogOpen(false);
-          setSelectedLine(null);
-        }}
-        onConfirm={handleAirEntryDimensionsConfirm}
-      />
-    </>
-  );
+        </Card>
+        
+        <AirEntryDialog
+          type={currentAirEntry || "window"}
+          isOpen={isAirEntryDialogOpen}
+          onClose={() => {
+            setIsAirEntryDialogOpen(false);
+            setSelectedLine(null);
+          }}
+          onConfirm={handleAirEntryDimensionsConfirm}
+        />
+      </>
+    );
+  };
 
   const renderStep2 = () => {
     return (
       <>
         <Card className="mt-4">
           <CardContent className="p-4">
+
+
             <div className="flex gap-4" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
               {/* Left side menus - copy style from Step 1 */}
               <div className="w-72 space-y-6 overflow-y-auto" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
@@ -2023,34 +2028,67 @@ export default function WizardDesign() {
                           );
                           setWallTransparency(values[0]);
                         }}
+                        min={0}
                         max={1}
                         step={0.01}
+                        className="flex-1"
                       />
                       <div className="text-sm text-right mt-1">
                         {Math.round(wallTransparency * 100)}%
                       </div>
                     </div>
                   </div>
+
+                  {/* Air Entry Transparency */}
+                  <div className="space-y-4 mt-4">
+                    <h3 className="font-semibold">Doors/Windows/Vents Transparency</h3>
+                    <div className="px-2">
+                      <Slider
+                        value={[airEntryTransparency]}
+                        onValueChange={(values: number[]) => {
+                          console.log(
+                            "Wizard: Air entry transparency changing to:",
+                            values[0],
+                          );
+                          setAirEntryTransparency(values[0]);
+                        }}
+                        min={0}
+                        max={1}
+                        step={0.01}
+                        className="flex-1"
+                      />
+                      <div className="text-sm text-right mt-1">
+                        {Math.round(airEntryTransparency * 100)}%
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Furniture - Using FurnitureMenu component */}
+                  <FurnitureMenu 
+                    onDragStart={(item) => {
+                      // Handle drag start if needed
+                      console.log("Dragging furniture:", item);
+                    }}
+                    wallTransparency={wallTransparency}
+                    onWallTransparencyChange={setWallTransparency}
+                    floorContext={{
+                      currentFloor: currentFloor,
+                      floors: floors
+                    }}
+                  />
                 </div>
 
-              {renderFilesMenu()}
-            </div>
+                {/* Files section - unified */}
+                {renderFilesMenu()}
+                </div>
 
-            {renderCanvasSection("tabs")}
+            {/* Main content area - using the same renderCanvasSection as 3D preview for consistency */}
+            {renderCanvasSection("step2")}
           </div>
-        </CardContent>
-      </Card>
-      <AirEntryDialog
-        type={currentAirEntry || "window"}
-        isOpen={isAirEntryDialogOpen}
-        onClose={() => {
-          setIsAirEntryDialogOpen(false);
-          setSelectedLine(null);
-        }}
-        onConfirm={handleAirEntryDimensionsConfirm}
-      />
-    </>
-  );
+          </CardContent>
+        </Card>
+      </>
+    );
   };
 
   const renderStep3 = () => (
