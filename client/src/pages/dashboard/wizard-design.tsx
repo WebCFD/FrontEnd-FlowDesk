@@ -1381,7 +1381,7 @@ export default function WizardDesign() {
               hasClosedContour={hasClosedContour}
             />
 
-          <div className="flex gap-4" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
+            <div className="flex gap-4" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
             {/* Left side menus */}
             <div className="w-72 space-y-6 overflow-y-auto" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
               {/* 2D Configuration - only show when in 2D mode */}
@@ -1986,17 +1986,17 @@ export default function WizardDesign() {
             {renderCanvasSection("tabs")}
           </div>
         </CardContent>
-      </Card>
+        </Card>
         
-      <AirEntryDialog
-        type={currentAirEntry || "window"}
-        isOpen={isAirEntryDialogOpen}
-        onClose={() => {
-          setIsAirEntryDialogOpen(false);
-          setSelectedLine(null);
-        }}
-        onConfirm={handleAirEntryDimensionsConfirm}
-      />
+        <AirEntryDialog
+          type={currentAirEntry || "window"}
+          isOpen={isAirEntryDialogOpen}
+          onClose={() => {
+            setIsAirEntryDialogOpen(false);
+            setSelectedLine(null);
+          }}
+          onConfirm={handleAirEntryDimensionsConfirm}
+        />
       </>
     );
   };
