@@ -1381,55 +1381,56 @@ export default function WizardDesign() {
               >
                 <h3 className="font-semibold text-lg mb-4">2D Menu</h3>
                 <div className="space-y-4">
-                  <div className="flex justify-center">
+                  <div className="flex items-start gap-4">
+                    {/* Wall Line Button */}
                     <Button
                       variant={currentTool === "wall" ? "default" : "outline"}
-                      className="w-full max-w-32 h-16 flex flex-col items-center justify-center gap-1"
+                      className="w-32 h-16 flex flex-col items-center justify-center gap-1"
                       onClick={() => handleToolSelect("wall")}
                     >
                       <div className="w-6 h-6 bg-primary/20 rounded-sm" />
                       <span className="text-xs">Wall Line</span>
                     </Button>
-                  </div>
-                  
-                  {/* Wall Temperature */}
-                  <div className="space-y-2 mt-4">
-                    <TooltipProvider>
-                      <div className="flex items-center gap-1">
-                        <Label htmlFor="default-wall-temp" className="text-sm font-medium">
-                          Wall Temperature
-                        </Label>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <Info className="w-3 h-3 text-gray-400" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="max-w-64">
-                              Default temperature assigned to new walls when created. 
-                              You can change individual wall temperatures by double-clicking on any wall.
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
+                    
+                    {/* Wall Temperature */}
+                    <div className="space-y-2 flex-1">
+                      <TooltipProvider>
+                        <div className="flex items-center gap-1">
+                          <Label htmlFor="default-wall-temp" className="text-sm font-medium">
+                            Wall Temperature
+                          </Label>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <Info className="w-3 h-3 text-gray-400" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="max-w-64">
+                                Default temperature assigned to new walls when created. 
+                                You can change individual wall temperatures by double-clicking on any wall.
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </div>
+                      </TooltipProvider>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          id="default-wall-temp"
+                          type="number"
+                          value={defaultWallTemperature}
+                          onChange={(e) => {
+                            const value = parseFloat(e.target.value);
+                            if (!isNaN(value) && value >= -50 && value <= 100) {
+                              setDefaultWallTemperature(value);
+                            }
+                          }}
+                          className="w-20 h-8"
+                          min={-50}
+                          max={100}
+                          step={0.5}
+                          placeholder="20"
+                        />
+                        <span className="text-sm text-gray-500">°C</span>
                       </div>
-                    </TooltipProvider>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        id="default-wall-temp"
-                        type="number"
-                        value={defaultWallTemperature}
-                        onChange={(e) => {
-                          const value = parseFloat(e.target.value);
-                          if (!isNaN(value) && value >= -50 && value <= 100) {
-                            setDefaultWallTemperature(value);
-                          }
-                        }}
-                        className="w-20 h-8"
-                        min={-50}
-                        max={100}
-                        step={0.5}
-                        placeholder="20"
-                      />
-                      <span className="text-sm text-gray-500">°C</span>
                     </div>
                   </div>
                 </div>
