@@ -513,7 +513,6 @@ export default function WizardDesign() {
   };
 
   const [isFloorLoadDialogOpen, setIsFloorLoadDialogOpen] = useState(false);
-  const [isFloorManagementExpanded, setIsFloorManagementExpanded] = useState(true);
 
   // Helper functions for ID regeneration
 
@@ -1358,31 +1357,30 @@ export default function WizardDesign() {
     </div>
   );
 
-  const renderStep1 = () => {
-    return (
-      <>
-        <Card className="mt-4">
-          <CardContent className="p-4">
-            <ToolbarToggle
-              mode={tab}
-              onModeChange={(value: "2d-editor" | "3d-preview") => {
-                if (value === "3d-preview" && !hasClosedContour) {
-                  toast({
-                    title: "Invalid Room Layout",
-                    description:
-                      "Please create a closed room contour before viewing in 3D",
-                    variant: "destructive",
-                  });
-                  return;
-                }
-                setTab(value);
-              }}
-              hasClosedContour={hasClosedContour}
-            />
+  const renderStep1 = () => (
+    <>
+      <Card className="mt-4">
+        <CardContent className="p-4">
+          <ToolbarToggle
+            mode={tab}
+            onModeChange={(value: "2d-editor" | "3d-preview") => {
+              if (value === "3d-preview" && !hasClosedContour) {
+                toast({
+                  title: "Invalid Room Layout",
+                  description:
+                    "Please create a closed room contour before viewing in 3D",
+                  variant: "destructive",
+                });
+                return;
+              }
+              setTab(value);
+            }}
+            hasClosedContour={hasClosedContour}
+          />
 
-            <div className="flex gap-4" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
-              {/* Left side menus */}
-              <div className="w-72 space-y-6 overflow-y-auto" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
+          <div className="flex gap-4" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
+            {/* Left side menus */}
+            <div className="w-72 space-y-6 overflow-y-auto" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
               {/* 2D Configuration - only show when in 2D mode */}
               {tab === "2d-editor" && (
                 <div className="border rounded-lg p-4">
@@ -1569,20 +1567,8 @@ export default function WizardDesign() {
 
                 {/* Floor Management - Parameters content moved here */}
                 <div className="space-y-4 mt-4 pt-4 border-t">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-semibold">Floor Management</h3>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setIsFloorManagementExpanded(!isFloorManagementExpanded)}
-                      className="h-8 w-8 p-0"
-                    >
-                      <ChevronDown className={cn("h-4 w-4 transition-transform", 
-                        !isFloorManagementExpanded && "rotate-180")} />
-                    </Button>
-                  </div>
-                  {isFloorManagementExpanded && (
-                    <div className="space-y-4">
+                  <h3 className="font-semibold">Floor Management</h3>
+                  <div className="space-y-4">
                     {isMultifloor && (
                       <div className={cn(
                         "space-y-4 pt-2",
@@ -1880,7 +1866,8 @@ export default function WizardDesign() {
                         </div>
                       )}
                     </div>
-                  )}
+                  </div>
+                </div>
                 </div>
               )}
 
@@ -1983,7 +1970,6 @@ export default function WizardDesign() {
           </div>
         </CardContent>
       </Card>
-      
       <AirEntryDialog
         type={currentAirEntry || "window"}
         isOpen={isAirEntryDialogOpen}
@@ -1993,9 +1979,8 @@ export default function WizardDesign() {
         }}
         onConfirm={handleAirEntryDimensionsConfirm}
       />
-      </>
-    );
-  };
+    </>
+  );
 
   const renderStep2 = () => {
     return (
