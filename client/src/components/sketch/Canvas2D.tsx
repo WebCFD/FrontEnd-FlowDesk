@@ -3534,7 +3534,7 @@ export default function Canvas2D({
         onDoubleClick={handleDoubleClickNew}
         onContextMenu={(e) => e.preventDefault()}
       />
-      <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-white/80 p-2 rounded-lg shadow-sm">
+      <div className="absolute top-4 right-4 flex items-center gap-2 bg-white/80 p-2 rounded-lg shadow-sm">
         {isMultifloor && (
           <Input
             value={floorText}
