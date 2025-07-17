@@ -47,6 +47,7 @@ import {
   ZoomIn,
   Share2,
   ChevronDown,
+  ChevronUp,
   FileText,
   Info,
 } from "lucide-react";
@@ -267,6 +268,7 @@ export default function WizardDesign() {
   const [loadFromFloor, setLoadFromFloor] = useState("ground");
   const [floorDeckThickness, setFloorDeckThickness] = useState(35); // Default 35cm - deprecated, usar floorParameters
   const [defaultWallTemperature, setDefaultWallTemperature] = useState(20); // Default wall temperature in °C
+  const [isFloorManagementExpanded, setIsFloorManagementExpanded] = useState(true); // Floor Management collapse state
   const [defaultStairTemperature, setDefaultStairTemperature] = useState(20); // Default stair temperature in °C
   const [canvas3DKey, setCanvas3DKey] = useState(0); // Force re-render of Canvas3D
   
@@ -1567,13 +1569,28 @@ export default function WizardDesign() {
 
                 {/* Floor Management - Parameters content moved here */}
                 <div className="space-y-4 mt-4 pt-4 border-t">
-                  <h3 className="font-semibold">Floor Management</h3>
-                  <div className="space-y-4">
-                    {isMultifloor && (
-                      <div className={cn(
-                        "space-y-4 pt-2",
-                        tab !== "2d-editor" && "opacity-50 pointer-events-none"
-                      )}>
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold">Floor Management</h3>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setIsFloorManagementExpanded(!isFloorManagementExpanded)}
+                      className="h-8 w-8 p-0 hover:bg-gray-100"
+                    >
+                      {isFloorManagementExpanded ? (
+                        <ChevronUp className="h-4 w-4" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                  {isFloorManagementExpanded && (
+                    <div className="space-y-4">
+                      {isMultifloor && (
+                        <div className={cn(
+                          "space-y-4 pt-2",
+                          tab !== "2d-editor" && "opacity-50 pointer-events-none"
+                        )}>
                         <div className="space-y-2">
                           <Label>Current Floor</Label>
                           <Select 
@@ -1866,8 +1883,7 @@ export default function WizardDesign() {
                         </div>
                       )}
                     </div>
-                  </div>
-                </div>
+                  )}
                 </div>
               )}
 
