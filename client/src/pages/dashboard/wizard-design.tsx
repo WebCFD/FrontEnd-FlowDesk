@@ -870,10 +870,18 @@ export default function WizardDesign() {
     const baseStyles =
       "w-20 h-16 p-2 flex flex-col items-center justify-center transition-all duration-200 shadow-sm";
     const activeStyles = "scale-95 shadow-inner";
-    
+    const colorStyles = "hover:bg-gray-100 text-gray-700";
+    const activeColorStyles = "bg-gray-100";
+    const borderStyles = "border-gray-500";
+
     return cn(
       baseStyles,
+      colorStyles,
       currentTool === "wall" ? activeStyles : "",
+      currentTool === "wall" ? activeColorStyles : "",
+      currentTool === "wall" ? borderStyles : "",
+      "border-2",
+      borderStyles,
     );
   };
 
@@ -1392,11 +1400,11 @@ export default function WizardDesign() {
                   <div className="flex items-start gap-4">
                     {/* Wall Line Button */}
                     <Button
-                      variant={currentTool === "wall" ? "default" : "outline"}
+                      variant="outline"
                       className={getWallStyles()}
                       onClick={() => handleToolSelect("wall")}
                     >
-                      <div className="w-6 h-6 bg-primary/20 rounded-sm" />
+                      <div className="w-6 h-6 border-2 border-gray-500" />
                       <span className="text-xs mt-1">Wall Line</span>
                     </Button>
                     
