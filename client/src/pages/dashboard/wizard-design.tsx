@@ -847,6 +847,25 @@ export default function WizardDesign() {
     );
   };
 
+  const getStairStyles = () => {
+    const baseStyles =
+      "h-16 p-2 flex flex-col items-center justify-center transition-all duration-200 shadow-sm";
+    const activeStyles = "scale-95 shadow-inner";
+    const colorStyles = "hover:bg-violet-100 text-violet-700";
+    const activeColorStyles = "bg-violet-100";
+    const borderStyles = "border-violet-500";
+
+    return cn(
+      baseStyles,
+      colorStyles,
+      currentTool === "stairs" ? activeStyles : "",
+      currentTool === "stairs" ? activeColorStyles : "",
+      currentTool === "stairs" ? borderStyles : "",
+      "border-2",
+      borderStyles,
+    );
+  };
+
   const handleNext = () => {
     if (step < 3) setStep(step + 1);
   };
@@ -1468,12 +1487,8 @@ export default function WizardDesign() {
                   <div className="space-y-4 mt-4">
                     <h3 className="font-semibold">Stair Design</h3>
                     <Button
-                      variant={currentTool === "stairs" ? "default" : "outline"}
-                      className={cn(
-                        "w-full",
-                        currentTool === "stairs" &&
-                          "bg-violet-500 hover:bg-violet-600 text-white border-violet-600",
-                      )}
+                      variant="outline"
+                      className={getStairStyles()}
                       onClick={() => {
                         handleToolSelect("stairs");
                         if (currentTool !== "stairs") {
@@ -1486,8 +1501,10 @@ export default function WizardDesign() {
                         }
                       }}
                     >
-                      <FileEdit className="mr-2 h-4 w-4" />
-                      Stair Design
+                      <div className="w-6 h-6 border-2 border-violet-500">
+                        <FileEdit className="w-full h-full" />
+                      </div>
+                      <span className="text-xs mt-1">Stair Design</span>
                     </Button>
                     
                     {/* Stair Temperature */}
