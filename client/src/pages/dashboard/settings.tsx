@@ -24,7 +24,7 @@ export default function Settings() {
     radius: 0.5
   });
 
-  const { snapDistance, setSnapDistance, showCursorCoordinates, setShowCursorCoordinates, fontScale, setFontScale, viewportOffset, setViewportOffset } = useSketchStore();
+  const { snapDistance, setSnapDistance, showCursorCoordinates, setShowCursorCoordinates, fontScale, setFontScale, viewportOffset, setViewportOffset, gridSize, setGridSize } = useSketchStore();
 
   const variants = [
     { value: 'professional', label: 'Professional' },
@@ -77,6 +77,14 @@ export default function Settings() {
     toast({
       title: "Viewport Offset updated",
       description: `Canvas viewport offset set to ${clampedValue}px successfully.`
+    });
+  };
+
+  const handleGridSizeChange = (value: number[]) => {
+    setGridSize(value[0]);
+    toast({
+      title: "Grid Size updated",
+      description: `Grid size set to ${(value[0] * (25 / 20)).toFixed(1)}cm/cell successfully.`
     });
   };
 
@@ -188,6 +196,28 @@ export default function Settings() {
                   <span className="text-sm text-muted-foreground w-12 text-right">
                     {snapDistance.toFixed(1)}
                   </span>
+                </div>
+              </div>
+              
+              <div>
+                <Label>Grid Size</Label>
+                <div className="flex items-center gap-4 mt-2">
+                  <div className="flex-1">
+                    <Slider
+                      value={[gridSize]}
+                      onValueChange={handleGridSizeChange}
+                      min={10}
+                      max={50}
+                      step={1}
+                      className="w-full"
+                    />
+                  </div>
+                  <span className="text-sm text-muted-foreground w-20 text-right">
+                    {(gridSize * (25 / 20)).toFixed(1)}cm/cell
+                  </span>
+                </div>
+                <div className="text-sm text-muted-foreground mt-1">
+                  Control the spacing of grid cells in the 2D editor
                 </div>
               </div>
               

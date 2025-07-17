@@ -241,11 +241,10 @@ const getConnectedFloorName = (
 export default function WizardDesign() {
   const [, setLocation] = useLocation();
   const { user, setReturnTo } = useAuth();
-  const { viewportOffset } = useSketchStore();
+  const { viewportOffset, gridSize } = useSketchStore();
   const [step, setStep] = useState(1);
   const [simulationName, setSimulationName] = useState("");
   const [simulationType, setSimulationType] = useState("comfort");
-  const [gridSize, setGridSize] = useState(20);
   const [currentTool, setCurrentTool] = useState<
     "wall" | "eraser" | "measure" | "stairs" | null
   >("wall");
@@ -768,14 +767,6 @@ export default function WizardDesign() {
     { id: 2, name: "Setup" },
     { id: 3, name: "Order" },
   ];
-
-  const handleGridSizeChange = (value: number[]) => {
-    setGridSize(value[0]);
-  };
-
-  const gridSizeToCm = (pixels: number): number => {
-    return pixels * (25 / 20);
-  };
 
   const handleToolSelect = (tool: "wall" | "eraser" | "measure" | "stairs") => {
     // Rastrear cambio de herramienta
@@ -1433,22 +1424,6 @@ export default function WizardDesign() {
                         placeholder="20"
                       />
                       <span className="text-sm text-gray-500">°C</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-4 mt-4">
-                  <h3 className="font-semibold">Grid Size</h3>
-                  <div className="px-2">
-                    <Slider
-                      defaultValue={[gridSize]}
-                      max={50}
-                      min={10}
-                      step={1}
-                      onValueChange={handleGridSizeChange}
-                    />
-                    <div className="text-sm text-right mt-1">
-                      {gridSizeToCm(gridSize).toFixed(1)}cm/cell
                     </div>
                   </div>
                 </div>
