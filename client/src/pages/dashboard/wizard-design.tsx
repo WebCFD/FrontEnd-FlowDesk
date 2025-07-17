@@ -1712,25 +1712,36 @@ export default function WizardDesign() {
                         <div className="space-y-2">
                           <Label>Add New Floor</Label>
                           <div className="flex gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={handleAddFloor}
-                              disabled={tab !== "2d-editor" || availableFloors.length === 0}
-                              className={cn(
-                                "flex-1",
-                                (tab !== "2d-editor" || availableFloors.length === 0) && "cursor-not-allowed"
-                              )}
-                              title={
-                                tab !== "2d-editor" 
-                                  ? "Floor management available only in 2D Editor"
-                                  : availableFloors.length === 0
-                                  ? "Complete current floor first"
-                                  : undefined
-                              }
-                            >
-                              Add Floor
-                            </Button>
+                            {(() => {
+                              // Calculate available floors based on current floor completion
+                              const floorOrder = ["ground", "first", "second", "third", "fourth", "fifth"];
+                              const availableFloors = floorOrder.filter(floorName => {
+                                const floor = floors[floorName];
+                                return !floor || !floor.hasClosedContour;
+                              });
+                              
+                              return (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={handleAddFloor}
+                                  disabled={tab !== "2d-editor" || availableFloors.length === 0}
+                                  className={cn(
+                                    "flex-1",
+                                    (tab !== "2d-editor" || availableFloors.length === 0) && "cursor-not-allowed"
+                                  )}
+                                  title={
+                                    tab !== "2d-editor" 
+                                      ? "Floor management available only in 2D Editor"
+                                      : availableFloors.length === 0
+                                      ? "Complete current floor first"
+                                      : undefined
+                                  }
+                                >
+                                  Add Floor
+                                </Button>
+                              );
+                            })()}
                             <Button
                               variant="outline"
                               size="sm"
