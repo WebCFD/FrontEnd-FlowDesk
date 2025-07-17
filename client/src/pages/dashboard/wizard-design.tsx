@@ -1569,15 +1569,6 @@ export default function WizardDesign() {
                 <div className="space-y-4 mt-4 pt-4 border-t">
                   <h3 className="font-semibold">Floor Management</h3>
                   <div className="space-y-4">
-                    <div className="flex items-center space-x-2 opacity-50">
-                      <Checkbox
-                        id="multifloor"
-                        checked={isMultifloor}
-                        disabled={true}
-                      />
-                      <Label htmlFor="multifloor" className="text-gray-500">Multifloor (Always enabled)</Label>
-                    </div>
-
                     {isMultifloor && (
                       <div className={cn(
                         "space-y-4 pt-2",
