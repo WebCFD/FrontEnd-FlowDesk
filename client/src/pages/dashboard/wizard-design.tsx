@@ -47,7 +47,6 @@ import {
   ZoomIn,
   Share2,
   ChevronDown,
-  ChevronUp,
   FileText,
   Info,
 } from "lucide-react";
@@ -268,7 +267,6 @@ export default function WizardDesign() {
   const [loadFromFloor, setLoadFromFloor] = useState("ground");
   const [floorDeckThickness, setFloorDeckThickness] = useState(35); // Default 35cm - deprecated, usar floorParameters
   const [defaultWallTemperature, setDefaultWallTemperature] = useState(20); // Default wall temperature in °C
-  const [isFloorManagementExpanded, setIsFloorManagementExpanded] = useState(true); // Floor Management collapse state
   const [defaultStairTemperature, setDefaultStairTemperature] = useState(20); // Default stair temperature in °C
   const [canvas3DKey, setCanvas3DKey] = useState(0); // Force re-render of Canvas3D
   
@@ -1359,29 +1357,28 @@ export default function WizardDesign() {
     </div>
   );
 
-  const renderStep1 = () => {
-    return (
-      <>
-        <Card className="mt-4">
-          <CardContent className="p-4">
-            <ToolbarToggle
-              mode={tab}
-              onModeChange={(value: "2d-editor" | "3d-preview") => {
-                if (value === "3d-preview" && !hasClosedContour) {
-                  toast({
-                    title: "Invalid Room Layout",
-                    description:
-                      "Please create a closed room contour before viewing in 3D",
-                    variant: "destructive",
-                  });
-                  return;
-                }
-                setTab(value);
-              }}
-              hasClosedContour={hasClosedContour}
-            />
+  const renderStep1 = () => (
+    <>
+      <Card className="mt-4">
+        <CardContent className="p-4">
+          <ToolbarToggle
+            mode={tab}
+            onModeChange={(value: "2d-editor" | "3d-preview") => {
+              if (value === "3d-preview" && !hasClosedContour) {
+                toast({
+                  title: "Invalid Room Layout",
+                  description:
+                    "Please create a closed room contour before viewing in 3D",
+                  variant: "destructive",
+                });
+                return;
+              }
+              setTab(value);
+            }}
+            hasClosedContour={hasClosedContour}
+          />
 
-            <div className="flex gap-4" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
+          <div className="flex gap-4" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
             {/* Left side menus */}
             <div className="w-72 space-y-6 overflow-y-auto" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
               {/* 2D Configuration - only show when in 2D mode */}
@@ -1570,28 +1567,13 @@ export default function WizardDesign() {
 
                 {/* Floor Management - Parameters content moved here */}
                 <div className="space-y-4 mt-4 pt-4 border-t">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-semibold">Floor Management</h3>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setIsFloorManagementExpanded(!isFloorManagementExpanded)}
-                      className="h-8 w-8 p-0 hover:bg-gray-100"
-                    >
-                      {isFloorManagementExpanded ? (
-                        <ChevronUp className="h-4 w-4" />
-                      ) : (
-                        <ChevronDown className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
-                  {isFloorManagementExpanded && (
-                    <div className="space-y-4">
-                      {isMultifloor && (
-                        <div className={cn(
-                          "space-y-4 pt-2",
-                          tab !== "2d-editor" && "opacity-50 pointer-events-none"
-                        )}>
+                  <h3 className="font-semibold">Floor Management</h3>
+                  <div className="space-y-4">
+                    {isMultifloor && (
+                      <div className={cn(
+                        "space-y-4 pt-2",
+                        tab !== "2d-editor" && "opacity-50 pointer-events-none"
+                      )}>
                         <div className="space-y-2">
                           <Label>Current Floor</Label>
                           <Select 
@@ -1884,7 +1866,8 @@ export default function WizardDesign() {
                         </div>
                       )}
                     </div>
-                  )}
+                  </div>
+                </div>
                 </div>
               )}
 
@@ -1986,20 +1969,18 @@ export default function WizardDesign() {
             {renderCanvasSection("tabs")}
           </div>
         </CardContent>
-        </Card>
-        
-        <AirEntryDialog
-          type={currentAirEntry || "window"}
-          isOpen={isAirEntryDialogOpen}
-          onClose={() => {
-            setIsAirEntryDialogOpen(false);
-            setSelectedLine(null);
-          }}
-          onConfirm={handleAirEntryDimensionsConfirm}
-        />
-      </>
-    );
-  };
+      </Card>
+      <AirEntryDialog
+        type={currentAirEntry || "window"}
+        isOpen={isAirEntryDialogOpen}
+        onClose={() => {
+          setIsAirEntryDialogOpen(false);
+          setSelectedLine(null);
+        }}
+        onConfirm={handleAirEntryDimensionsConfirm}
+      />
+    </>
+  );
 
   const renderStep2 = () => {
     return (
