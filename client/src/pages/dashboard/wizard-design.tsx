@@ -2034,8 +2034,6 @@ export default function WizardDesign() {
                 </div>
 
               {renderFilesMenu()}
-
-              {renderFilesMenu()}
             </div>
 
             {renderCanvasSection("tabs")}
@@ -2053,95 +2051,6 @@ export default function WizardDesign() {
       />
     </>
   );
-
-  const renderStep2 = () => {
-    return (
-      <>
-        <Card className="mt-4">
-          <CardContent className="p-4">
-
-
-            <div className="flex gap-4" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
-              {/* Left side menus - copy style from Step 1 */}
-              <div className="w-72 space-y-6 overflow-y-auto" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
-                {/* Main options */}
-                <div className="border rounded-lg p-4">
-                  <h3 className="font-semibold text-lg mb-4">3D Menu</h3>
-
-                  {/* Wall Transparency */}
-                  <div className="space-y-4 mt-4">
-                    <h3 className="font-semibold">Wall Transparency</h3>
-                    <div className="px-2">
-                      <Slider
-                        value={[wallTransparency]}
-                        onValueChange={(values: number[]) => {
-                          console.log(
-                            "Wizard: Wall transparency changing to:",
-                            values[0],
-                          );
-                          setWallTransparency(values[0]);
-                        }}
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        className="flex-1"
-                      />
-                      <div className="text-sm text-right mt-1">
-                        {Math.round(wallTransparency * 100)}%
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Air Entry Transparency */}
-                  <div className="space-y-4 mt-4">
-                    <h3 className="font-semibold">Doors/Windows/Vents Transparency</h3>
-                    <div className="px-2">
-                      <Slider
-                        value={[airEntryTransparency]}
-                        onValueChange={(values: number[]) => {
-                          console.log(
-                            "Wizard: Air entry transparency changing to:",
-                            values[0],
-                          );
-                          setAirEntryTransparency(values[0]);
-                        }}
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        className="flex-1"
-                      />
-                      <div className="text-sm text-right mt-1">
-                        {Math.round(airEntryTransparency * 100)}%
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Furniture - Using FurnitureMenu component */}
-                  <FurnitureMenu 
-                    onDragStart={(item) => {
-                      // Handle drag start if needed
-                      console.log("Dragging furniture:", item);
-                    }}
-                    wallTransparency={wallTransparency}
-                    onWallTransparencyChange={setWallTransparency}
-                    floorContext={{
-                      currentFloor: currentFloor,
-                      floors: floors
-                    }}
-                  />
-                </div>
-
-                {/* Files section - unified */}
-                {renderFilesMenu()}
-                </div>
-
-            {/* Main content area - using the same renderCanvasSection as 3D preview for consistency */}
-            {renderCanvasSection("step2")}
-          </div>
-          </CardContent>
-        </Card>
-      </>
-    );
   };
 
   const renderStep3 = () => (
