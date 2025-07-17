@@ -22,6 +22,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
+import { useRoomStore } from "@/lib/store/room-store";
+import { customFurnitureStore } from "@/lib/custom-furniture-store";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -38,6 +40,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [, setLocation] = useLocation();
   const [isLoading, setIsLoading] = useState(false);
   const { setReturnTo, returnTo } = useAuth();
+  const { reset } = useRoomStore();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -50,6 +53,21 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     try {
       setIsLoading(true);
+      
+      // Check if there's already a user logged in
+      let previousUserId = null;
+      try {
+        const currentUserResponse = await fetch("/api/auth/user", {
+          credentials: "include",
+        });
+        if (currentUserResponse.ok) {
+          const currentUser = await currentUserResponse.json();
+          previousUserId = currentUser.id;
+        }
+      } catch (error) {
+        // Ignore errors - user might not be logged in
+      }
+      
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
@@ -65,10 +83,22 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         throw new Error(data.message || "Failed to log in");
       }
 
-      toast({
-        title: "Success!",
-        description: "You have been logged in.",
-      });
+      // Check if we're switching to a different user (but not from no-login to login)
+      if (previousUserId !== null && previousUserId !== data.id) {
+        // User switched - clear room data
+        reset();
+        customFurnitureStore.reset();
+        
+        toast({
+          title: "User switched",
+          description: "Room design cleared due to user change.",
+        });
+      } else {
+        toast({
+          title: "Success!",
+          description: "You have been logged in.",
+        });
+      }
 
       onClose();
       // Redirect to stored path or dashboard
