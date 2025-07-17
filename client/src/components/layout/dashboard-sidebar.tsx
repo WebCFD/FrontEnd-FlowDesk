@@ -55,7 +55,8 @@ export default function DashboardSidebar() {
   const [location] = useLocation();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
-  const [userData, setUserData] = useState<{ username: string } | null>(null);
+  const [userData, setUserData] = useState<{ username: string; id: number } | null>(null);
+  const [previousUserId, setPreviousUserId] = useState<number | null>(null);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const { reset } = useRoomStore();
 
@@ -67,7 +68,24 @@ export default function DashboardSidebar() {
         });
         if (response.ok) {
           const data = await response.json();
+          
+          // Check if user changed (but not from no-login to login)
+          if (previousUserId !== null && previousUserId !== data.id) {
+            // User switched to different user - clear room data
+            reset();
+            customFurnitureStore.reset();
+            
+            toast({
+              title: "User switched",
+              description: "Room design cleared due to user change.",
+            });
+          }
+          
           setUserData(data);
+          setPreviousUserId(data.id);
+        } else {
+          // No authenticated user - clear previous user ID but keep data for no-login mode
+          setPreviousUserId(null);
         }
         // Don't log 401 errors as they're expected when not authenticated
       } catch (error) {
@@ -78,7 +96,7 @@ export default function DashboardSidebar() {
       }
     }
     fetchUserData();
-  }, []);
+  }, [previousUserId, reset, toast]);
 
   const handleLogout = async () => {
     try {
