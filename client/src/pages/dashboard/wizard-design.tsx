@@ -815,7 +815,7 @@ export default function WizardDesign() {
 
   const getAirEntryStyles = (type: "vent" | "door" | "window") => {
     const baseStyles =
-      "h-16 p-2 flex flex-col items-center justify-center transition-all duration-200 shadow-sm";
+      "w-20 h-16 p-2 flex flex-col items-center justify-center transition-all duration-200 shadow-sm";
     const activeStyles = "scale-95 shadow-inner";
 
     const colorStyles = {
@@ -849,7 +849,7 @@ export default function WizardDesign() {
 
   const getStairStyles = () => {
     const baseStyles =
-      "h-16 p-2 flex flex-col items-center justify-center transition-all duration-200 shadow-sm";
+      "w-20 h-16 p-2 flex flex-col items-center justify-center transition-all duration-200 shadow-sm";
     const activeStyles = "scale-95 shadow-inner";
     const colorStyles = "hover:bg-violet-100 text-violet-700";
     const activeColorStyles = "bg-violet-100";
@@ -868,7 +868,7 @@ export default function WizardDesign() {
 
   const getWallStyles = () => {
     const baseStyles =
-      "h-16 p-2 flex flex-col items-center justify-center transition-all duration-200 shadow-sm";
+      "w-20 h-16 p-2 flex flex-col items-center justify-center transition-all duration-200 shadow-sm";
     const activeStyles = "scale-95 shadow-inner";
     
     return cn(
@@ -1551,7 +1551,7 @@ export default function WizardDesign() {
                   <div className="flex gap-4 justify-center">
                     <Button
                       variant={currentTool === "eraser" ? "default" : "outline"}
-                      className="w-full max-w-32 h-16 flex flex-col items-center justify-center gap-1"
+                      className="w-20 h-16 flex flex-col items-center justify-center gap-1"
                       onClick={() => handleToolSelect("eraser")}
                     >
                       <Eraser className="w-6 h-6" />
@@ -1559,7 +1559,7 @@ export default function WizardDesign() {
                     </Button>
                     <Button
                       variant={currentTool === "measure" ? "default" : "outline"}
-                      className="w-full max-w-32 h-16 flex flex-col items-center justify-center gap-1"
+                      className="w-20 h-16 flex flex-col items-center justify-center gap-1"
                       onClick={() => handleToolSelect("measure")}
                     >
                       <Ruler className="w-6 h-6" />
