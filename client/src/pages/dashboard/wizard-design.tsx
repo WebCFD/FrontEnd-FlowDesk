@@ -1381,32 +1381,14 @@ export default function WizardDesign() {
               >
                 <h3 className="font-semibold text-lg mb-4">2D Menu</h3>
                 <div className="space-y-4">
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="flex justify-center">
                     <Button
                       variant={currentTool === "wall" ? "default" : "outline"}
-                      className="w-full h-16 flex flex-col items-center justify-center gap-1"
+                      className="w-full max-w-32 h-16 flex flex-col items-center justify-center gap-1"
                       onClick={() => handleToolSelect("wall")}
                     >
                       <div className="w-6 h-6 bg-primary/20 rounded-sm" />
                       <span className="text-xs">Wall Line</span>
-                    </Button>
-                    <Button
-                      variant={currentTool === "eraser" ? "default" : "outline"}
-                      className="w-full h-16 flex flex-col items-center justify-center gap-1"
-                      onClick={() => handleToolSelect("eraser")}
-                    >
-                      <Eraser className="w-6 h-6" />
-                      <span className="text-xs">Eraser</span>
-                    </Button>
-                    <Button
-                      variant={
-                        currentTool === "measure" ? "default" : "outline"
-                      }
-                      className="w-full h-16 flex flex-col items-center justify-center gap-1"
-                      onClick={() => handleToolSelect("measure")}
-                    >
-                      <Ruler className="w-6 h-6" />
-                      <span className="text-xs">Measure</span>
                     </Button>
                   </div>
                   
@@ -1550,6 +1532,29 @@ export default function WizardDesign() {
                     </div>
                   </div>
                 )}
+
+                {/* 2D Tools Section */}
+                <div className="space-y-4 mt-4">
+                  <h3 className="font-semibold">2D Tools</h3>
+                  <div className="flex gap-4 justify-center">
+                    <Button
+                      variant={currentTool === "eraser" ? "default" : "outline"}
+                      className="w-full max-w-32 h-16 flex flex-col items-center justify-center gap-1"
+                      onClick={() => handleToolSelect("eraser")}
+                    >
+                      <Eraser className="w-6 h-6" />
+                      <span className="text-xs">Eraser</span>
+                    </Button>
+                    <Button
+                      variant={currentTool === "measure" ? "default" : "outline"}
+                      className="w-full max-w-32 h-16 flex flex-col items-center justify-center gap-1"
+                      onClick={() => handleToolSelect("measure")}
+                    >
+                      <Ruler className="w-6 h-6" />
+                      <span className="text-xs">Measure</span>
+                    </Button>
+                  </div>
+                </div>
               </div>
 
               {/* 3D Tools - grayed out in 2D view */}
