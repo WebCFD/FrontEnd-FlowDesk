@@ -269,6 +269,7 @@ export default function WizardDesign() {
   const [defaultWallTemperature, setDefaultWallTemperature] = useState(20); // Default wall temperature in °C
   const [defaultStairTemperature, setDefaultStairTemperature] = useState(20); // Default stair temperature in °C
   const [canvas3DKey, setCanvas3DKey] = useState(0); // Force re-render of Canvas3D
+  const [showFloorManagement, setShowFloorManagement] = useState(true); // Control Floor Management visibility
   
   // Nuevos estados para parámetros por planta
   const [floorParameters, setFloorParameters] = useState<Record<string, { ceilingHeight: number; floorDeck: number; ceilingTemperature?: number; floorTemperature?: number }>>({
@@ -1575,10 +1576,18 @@ export default function WizardDesign() {
 
                 {/* Floor Management - Parameters content moved here */}
                 <div className="space-y-4 mt-4 pt-4 border-t">
-                  <h3 className="font-semibold">Floor Management</h3>
-                  <div className="space-y-4">
-                    {isMultifloor && (
-                      <div className={cn(
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="show-floor-management"
+                      checked={showFloorManagement}
+                      onCheckedChange={setShowFloorManagement}
+                    />
+                    <h3 className="font-semibold">Floor Management</h3>
+                  </div>
+                  {showFloorManagement && (
+                    <div className="space-y-4">
+                      {isMultifloor && (
+                        <div className={cn(
                         "space-y-4 pt-2",
                         tab !== "2d-editor" && "opacity-50 pointer-events-none"
                       )}>
@@ -1874,8 +1883,7 @@ export default function WizardDesign() {
                         </div>
                       )}
                     </div>
-                  </div>
-                </div>
+                  )}
                 </div>
               )}
 
