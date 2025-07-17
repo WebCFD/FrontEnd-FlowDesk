@@ -784,8 +784,13 @@ export default function WizardDesign() {
       `select_${tool}_tool`,
     );
 
-    setCurrentTool(tool);
-    setCurrentAirEntry(null);
+    // Toggle behavior: if same tool clicked, deselect it
+    if (currentTool === tool) {
+      setCurrentTool(null);
+    } else {
+      setCurrentTool(tool);
+      setCurrentAirEntry(null); // Clear air entries when selecting tool
+    }
   };
 
   const handleAirEntrySelect = (entry: "vent" | "door" | "window") => {
@@ -1470,14 +1475,15 @@ export default function WizardDesign() {
                           "bg-violet-500 hover:bg-violet-600 text-white border-violet-600",
                       )}
                       onClick={() => {
-                        setCurrentTool("stairs");
-                        setCurrentAirEntry(null);
-                        setTab("2d-editor");
-                        toast({
-                          title: "Stair Design Tool Activated",
-                          description:
-                            "Click on the canvas to place points and create a stair polygon. Close the shape by clicking near the first point.",
-                        });
+                        handleToolSelect("stairs");
+                        if (currentTool !== "stairs") {
+                          setTab("2d-editor");
+                          toast({
+                            title: "Stair Design Tool Activated",
+                            description:
+                              "Click on the canvas to place points and create a stair polygon. Close the shape by clicking near the first point.",
+                          });
+                        }
                       }}
                     >
                       <FileEdit className="mr-2 h-4 w-4" />
