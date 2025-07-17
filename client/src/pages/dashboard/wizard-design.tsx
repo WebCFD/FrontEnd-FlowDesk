@@ -1501,9 +1501,7 @@ export default function WizardDesign() {
                         }
                       }}
                     >
-                      <div className="w-6 h-6 border-2 border-violet-500">
-                        <FileEdit className="w-full h-full" />
-                      </div>
+                      <FileEdit className="w-6 h-6" />
                       <span className="text-xs mt-1">Stair Design</span>
                     </Button>
                     
