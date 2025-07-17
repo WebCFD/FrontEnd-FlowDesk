@@ -1678,23 +1678,14 @@ export default function WizardDesign() {
                     </div>
 
                     {isMultifloor && (
-                      <div className={cn(
-                        "space-y-4 pt-2",
-                        tab !== "2d-editor" && "opacity-50 pointer-events-none"
-                      )}>
+                      <div className="space-y-4 pt-2">
                         <div className="space-y-2">
                           <Label>Current Floor</Label>
                           <Select 
                             value={currentFloor} 
-                            onValueChange={tab === "2d-editor" ? handleFloorChange : undefined}
-                            disabled={tab !== "2d-editor"}
+                            onValueChange={handleFloorChange}
                           >
-                            <SelectTrigger 
-                              className={cn(
-                                tab !== "2d-editor" && "cursor-not-allowed"
-                              )}
-                              title={tab !== "2d-editor" ? "Floor management available only in 2D Editor" : undefined}
-                            >
+                            <SelectTrigger>
                               <SelectValue placeholder="Select floor" />
                             </SelectTrigger>
                             <SelectContent>
@@ -1730,11 +1721,6 @@ export default function WizardDesign() {
                               )}
                             </SelectContent>
                           </Select>
-                          {tab !== "2d-editor" && (
-                            <p className="text-xs text-muted-foreground">
-                              Switch to 2D Editor to manage floors
-                            </p>
-                          )}
                         </div>
 
                         <div className="space-y-2">
@@ -1742,16 +1728,9 @@ export default function WizardDesign() {
                           <div className="flex gap-2">
                             <Select 
                               value={loadFromFloor} 
-                              onValueChange={tab === "2d-editor" ? setLoadFromFloor : undefined}
-                              disabled={tab !== "2d-editor"}
+                              onValueChange={setLoadFromFloor}
                             >
-                              <SelectTrigger 
-                                className={cn(
-                                  "flex-1",
-                                  tab !== "2d-editor" && "cursor-not-allowed"
-                                )}
-                                title={tab !== "2d-editor" ? "Floor management available only in 2D Editor" : undefined}
-                              >
+                              <SelectTrigger className="flex-1">
                                 <SelectValue placeholder="Select source floor" />
                               </SelectTrigger>
                               <SelectContent>
@@ -1791,8 +1770,7 @@ export default function WizardDesign() {
                               variant="outline" 
                               onClick={() => setShowLoadDesignDialog(true)}
                               className="px-3"
-                              disabled={tab !== "2d-editor"}
-                              title={tab !== "2d-editor" ? "Floor management available only in 2D Editor" : "Load design from another floor"}
+                              title="Load design from another floor"
                             >
                               Load
                             </Button>
