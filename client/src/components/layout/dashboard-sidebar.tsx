@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { LucideIcon, LayoutDashboard, Wind, Settings, User, LogOut, Wand2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRoomStore } from "@/lib/store/room-store";
 import { customFurnitureStore } from "@/lib/custom-furniture-store";
 import {
@@ -56,8 +56,8 @@ export default function DashboardSidebar() {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const [userData, setUserData] = useState<{ username: string; id: number } | null>(null);
-  const [previousUserId, setPreviousUserId] = useState<number | null>(null);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const previousUserIdRef = useRef<number | null>(null);
   const { reset } = useRoomStore();
 
   useEffect(() => {
@@ -70,22 +70,24 @@ export default function DashboardSidebar() {
           const data = await response.json();
           
           // Check if user changed (but not from no-login to login)
-          if (previousUserId !== null && previousUserId !== data.id) {
+          if (previousUserIdRef.current !== null && previousUserIdRef.current !== data.id) {
             // User switched to different user - clear room data
             reset();
             customFurnitureStore.reset();
             
             toast({
-              title: "User switched",
+              title: "User switched", 
               description: "Room design cleared due to user change.",
             });
+            
+            console.log(`User switched from ${previousUserIdRef.current} to ${data.id}`);
           }
           
           setUserData(data);
-          setPreviousUserId(data.id);
+          previousUserIdRef.current = data.id;
         } else {
-          // No authenticated user - clear previous user ID but keep data for no-login mode
-          setPreviousUserId(null);
+          setUserData(null);
+          // Keep previousUserIdRef to preserve no-login → login transition
         }
         // Don't log 401 errors as they're expected when not authenticated
       } catch (error) {
@@ -93,10 +95,15 @@ export default function DashboardSidebar() {
         if (error instanceof Error && !error.message.includes('401')) {
           console.error("Failed to fetch user data:", error);
         }
+        setUserData(null);
       }
     }
     fetchUserData();
-  }, [previousUserId, reset, toast]);
+    
+    // Set up periodic checking for user changes
+    const interval = setInterval(fetchUserData, 3000);
+    return () => clearInterval(interval);
+  }, []); // No dependencies to avoid infinite loops
 
   const handleLogout = async () => {
     try {
