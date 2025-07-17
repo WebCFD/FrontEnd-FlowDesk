@@ -1359,26 +1359,27 @@ export default function WizardDesign() {
     </div>
   );
 
-  const renderStep1 = () => (
-    <>
-      <Card className="mt-4">
-        <CardContent className="p-4">
-          <ToolbarToggle
-            mode={tab}
-            onModeChange={(value: "2d-editor" | "3d-preview") => {
-              if (value === "3d-preview" && !hasClosedContour) {
-                toast({
-                  title: "Invalid Room Layout",
-                  description:
-                    "Please create a closed room contour before viewing in 3D",
-                  variant: "destructive",
-                });
-                return;
-              }
-              setTab(value);
-            }}
-            hasClosedContour={hasClosedContour}
-          />
+  const renderStep1 = () => {
+    return (
+      <>
+        <Card className="mt-4">
+          <CardContent className="p-4">
+            <ToolbarToggle
+              mode={tab}
+              onModeChange={(value: "2d-editor" | "3d-preview") => {
+                if (value === "3d-preview" && !hasClosedContour) {
+                  toast({
+                    title: "Invalid Room Layout",
+                    description:
+                      "Please create a closed room contour before viewing in 3D",
+                    variant: "destructive",
+                  });
+                  return;
+                }
+                setTab(value);
+              }}
+              hasClosedContour={hasClosedContour}
+            />
 
           <div className="flex gap-4" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
             {/* Left side menus */}
@@ -1986,6 +1987,7 @@ export default function WizardDesign() {
           </div>
         </CardContent>
       </Card>
+        
       <AirEntryDialog
         type={currentAirEntry || "window"}
         isOpen={isAirEntryDialogOpen}
@@ -1995,8 +1997,9 @@ export default function WizardDesign() {
         }}
         onConfirm={handleAirEntryDimensionsConfirm}
       />
-    </>
-  );
+      </>
+    );
+  };
 
   const renderStep2 = () => {
     return (
