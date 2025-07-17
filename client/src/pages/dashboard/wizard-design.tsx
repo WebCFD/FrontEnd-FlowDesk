@@ -1570,6 +1570,319 @@ export default function WizardDesign() {
                     </Button>
                   </div>
                 </div>
+
+                {/* Floor Management - Parameters content moved here */}
+                <div className="space-y-4 mt-4 pt-4 border-t">
+                  <h3 className="font-semibold">Floor Management</h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-2 opacity-50">
+                      <Checkbox
+                        id="multifloor"
+                        checked={isMultifloor}
+                        disabled={true}
+                      />
+                      <Label htmlFor="multifloor" className="text-gray-500">Multifloor (Always enabled)</Label>
+                    </div>
+
+                    {isMultifloor && (
+                      <div className={cn(
+                        "space-y-4 pt-2",
+                        tab !== "2d-editor" && "opacity-50 pointer-events-none"
+                      )}>
+                        <div className="space-y-2">
+                          <Label>Current Floor</Label>
+                          <Select 
+                            value={currentFloor} 
+                            onValueChange={tab === "2d-editor" ? handleFloorChange : undefined}
+                            disabled={tab !== "2d-editor"}
+                          >
+                            <SelectTrigger 
+                              className={cn(
+                                tab !== "2d-editor" && "cursor-not-allowed"
+                              )}
+                              title={tab !== "2d-editor" ? "Floor management available only in 2D Editor" : undefined}
+                            >
+                              <SelectValue placeholder="Select floor" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="ground">
+                                {formatFloorText("ground")}
+                              </SelectItem>
+                              {floors.ground.hasClosedContour && (
+                                <>
+                                  <SelectItem value="first">
+                                    {formatFloorText("first")}
+                                  </SelectItem>
+                                  {floors.first?.hasClosedContour && (
+                                    <SelectItem value="second">
+                                      {formatFloorText("second")}
+                                    </SelectItem>
+                                  )}
+                                  {floors.second?.hasClosedContour && (
+                                    <SelectItem value="third">
+                                      {formatFloorText("third")}
+                                    </SelectItem>
+                                  )}
+                                  {floors.third?.hasClosedContour && (
+                                    <SelectItem value="fourth">
+                                      {formatFloorText("fourth")}
+                                    </SelectItem>
+                                  )}
+                                  {floors.fourth?.hasClosedContour && (
+                                    <SelectItem value="fifth">
+                                      {formatFloorText("fifth")}
+                                    </SelectItem>
+                                  )}
+                                </>
+                              )}
+                            </SelectContent>
+                          </Select>
+                          {tab !== "2d-editor" && (
+                            <p className="text-xs text-muted-foreground">
+                              Switch to 2D Editor to manage floors
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Load from Floor</Label>
+                          <div className="flex gap-2">
+                            <Select 
+                              value={loadFromFloor} 
+                              onValueChange={tab === "2d-editor" ? setLoadFromFloor : undefined}
+                              disabled={tab !== "2d-editor"}
+                            >
+                              <SelectTrigger 
+                                className={cn(
+                                  "flex-1",
+                                  tab !== "2d-editor" && "cursor-not-allowed"
+                                )}
+                                title={tab !== "2d-editor" ? "Floor management available only in 2D Editor" : undefined}
+                              >
+                                <SelectValue placeholder="Select floor to load from" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {(() => {
+                                  // Define floor hierarchy order
+                                  const floorOrder = ["ground", "first", "second", "third", "fourth", "fifth"];
+                                  const currentFloorIndex = floorOrder.indexOf(currentFloor);
+                                  
+                                  // Filter to only show floors that are "below" current floor
+                                  return Object.entries(floors)
+                                    .filter(([floorName]) => {
+                                      const floorIndex = floorOrder.indexOf(floorName);
+                                      // Only include floors that are lower in hierarchy and exist
+                                      return floorIndex !== -1 && floorIndex < currentFloorIndex;
+                                    })
+                                    .map(([floorName, floor]) => (
+                                      <SelectItem key={floorName} value={floorName}>
+                                        {formatFloorText(floorName)}
+                                      </SelectItem>
+                                    ));
+                                })()}
+                              </SelectContent>
+                            </Select>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={tab === "2d-editor" ? handleLoadTemplate : () => {
+                                toast({
+                                  title: "Feature Unavailable",
+                                  description: "Floor management is available only in 2D Editor",
+                                  variant: "destructive",
+                                });
+                              }}
+                              disabled={tab !== "2d-editor"}
+                              className={cn(
+                                tab !== "2d-editor" && "cursor-not-allowed"
+                              )}
+                              title={tab !== "2d-editor" ? "Floor management available only in 2D Editor" : undefined}
+                            >
+                              Load
+                            </Button>
+                          </div>
+                          {tab !== "2d-editor" && (
+                            <p className="text-xs text-muted-foreground">
+                              Switch to 2D Editor to load floor templates
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Ceiling Height y Floor Deck Parameters */}
+                    <div className={cn(
+                      "space-y-4 pt-4 border-t",
+                      tab !== "2d-editor" && "opacity-50 pointer-events-none"
+                    )}>
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-medium text-sm text-gray-700">Building Parameters</h4>
+                        {tab !== "2d-editor" && (
+                          <span className="text-xs text-muted-foreground">(Available in 2D Editor)</span>
+                        )}
+                      </div>
+                      
+                      {!isMultifloor ? (
+                        // Modo single floor: solo control de ceiling height
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="ceiling-height">Ceiling Height</Label>
+                            <div className="flex items-center gap-2">
+                              <Input
+                                id="ceiling-height"
+                                type="number"
+                                value={ceilingHeight}
+                                min={200}
+                                max={500}
+                                step={10}
+                                onChange={(e) => {
+                                  const value = parseInt(e.target.value);
+                                  if (!isNaN(value) && value >= 200 && value <= 500) {
+                                    setCeilingHeight(value);
+                                  }
+                                }}
+                                className="w-24"
+                              />
+                              <span className="text-sm text-gray-500">cm</span>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        // Modo multifloor: controles por planta
+                        <div className="space-y-4">
+                          {Object.keys(floors).filter(floorName => floors[floorName]?.hasClosedContour).map((floorName) => {
+                            const floorParams = floorParameters[floorName] || { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20 };
+                            const isCurrentFloor = floorName === currentFloor;
+                            
+                            return (
+                              <div 
+                                key={floorName} 
+                                className={cn(
+                                  "p-3 rounded-lg border transition-all duration-200",
+                                  isCurrentFloor 
+                                    ? "bg-blue-50 border-blue-200 ring-2 ring-blue-200" 
+                                    : "bg-gray-50 border-gray-200 hover:bg-gray-100 hover:border-gray-300",
+                                  tab === "2d-editor" && !isCurrentFloor && "cursor-pointer",
+                                  tab !== "2d-editor" && "cursor-not-allowed"
+                                )}
+                                onClick={
+                                  tab === "2d-editor" && !isCurrentFloor
+                                    ? () => handleFloorChange(floorName)
+                                    : tab !== "2d-editor"
+                                    ? () => {
+                                        toast({
+                                          title: "Feature Unavailable",
+                                          description: "Floor navigation is available only in 2D Editor",
+                                          variant: "destructive",
+                                        });
+                                      }
+                                    : undefined
+                                }
+                                title={
+                                  tab !== "2d-editor" 
+                                    ? "Floor navigation available only in 2D Editor"
+                                    : !isCurrentFloor 
+                                    ? `Click to switch to ${formatFloorText(floorName)}`
+                                    : `Currently viewing ${formatFloorText(floorName)}`
+                                }
+                              >
+                                <h5 className="font-medium text-sm mb-3 flex items-center gap-2">
+                                  {formatFloorText(floorName)}
+                                  {isCurrentFloor && <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Current</span>}
+                                  {tab === "2d-editor" && !isCurrentFloor && (
+                                    <span className="text-xs text-gray-500 ml-auto">Click to switch</span>
+                                  )}
+                                </h5>
+                                <div className="grid grid-cols-2 gap-3">
+                                  <div className="space-y-1">
+                                    <Label className="text-xs">Ceiling Height</Label>
+                                    <div className="flex items-center gap-1">
+                                      <Input
+                                        type="number"
+                                        value={floorParams.ceilingHeight}
+                                        min={200}
+                                        max={500}
+                                        step={10}
+                                        onChange={(e) => {
+                                          const value = parseInt(e.target.value);
+                                          if (!isNaN(value) && value >= 200 && value <= 500) {
+                                            updateFloorParameter(floorName, 'ceilingHeight', value);
+                                          }
+                                        }}
+                                        className="w-16 h-8 text-xs"
+                                      />
+                                      <span className="text-xs text-gray-500">cm</span>
+                                    </div>
+                                  </div>
+                                  <div className="space-y-1">
+                                    <Label className="text-xs">Floor Deck</Label>
+                                    <div className="flex items-center gap-1">
+                                      <Input
+                                        type="number"
+                                        value={floorParams.floorDeck}
+                                        min={5}
+                                        max={150}
+                                        step={5}
+                                        onChange={(e) => {
+                                          const value = parseInt(e.target.value);
+                                          if (!isNaN(value) && value >= 5 && value <= 150) {
+                                            updateFloorParameter(floorName, 'floorDeck', value);
+                                          }
+                                        }}
+                                        className="w-16 h-8 text-xs"
+                                      />
+                                      <span className="text-xs text-gray-500">cm</span>
+                                    </div>
+                                  </div>
+                                  <div className="space-y-1">
+                                    <Label className="text-xs">Ceiling Temperature</Label>
+                                    <div className="flex items-center gap-1">
+                                      <Input
+                                        type="number"
+                                        value={floorParams.ceilingTemperature || 20}
+                                        min={-50}
+                                        max={100}
+                                        step={0.1}
+                                        onChange={(e) => {
+                                          const value = parseFloat(e.target.value);
+                                          if (!isNaN(value) && value >= -50 && value <= 100) {
+                                            updateFloorParameter(floorName, 'ceilingTemperature', value);
+                                          }
+                                        }}
+                                        className="w-16 h-8 text-xs"
+                                      />
+                                      <span className="text-xs text-gray-500">°C</span>
+                                    </div>
+                                  </div>
+                                  <div className="space-y-1">
+                                    <Label className="text-xs">Floor Temperature</Label>
+                                    <div className="flex items-center gap-1">
+                                      <Input
+                                        type="number"
+                                        value={floorParams.floorTemperature || 20}
+                                        min={-50}
+                                        max={100}
+                                        step={0.1}
+                                        onChange={(e) => {
+                                          const value = parseFloat(e.target.value);
+                                          if (!isNaN(value) && value >= -50 && value <= 100) {
+                                            updateFloorParameter(floorName, 'floorTemperature', value);
+                                          }
+                                        }}
+                                        className="w-16 h-8 text-xs"
+                                      />
+                                      <span className="text-xs text-gray-500">°C</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* 3D Tools - grayed out in 2D view */}
@@ -1671,8 +1984,7 @@ export default function WizardDesign() {
                 </div>
               </div>
 
-              {/* Parameters Menu - Add before Files menu */}
-              {renderParametersMenu()}
+
 
               {/* Files - always active */}
               {renderFilesMenu()}
@@ -1772,8 +2084,7 @@ export default function WizardDesign() {
                   />
                 </div>
 
-                {/* Parameters Menu - Same as Step 1 */}
-                {renderParametersMenu()}
+
 
                 {/* Files section - unified */}
                 {renderFilesMenu()}
@@ -2335,321 +2646,7 @@ export default function WizardDesign() {
     </div>
   );
 
-  const renderParametersMenu = () => (
-    <div className="border rounded-lg p-4">
-      <h3 className="font-semibold text-lg mb-4">Parameters</h3>
-      <div className="space-y-4">
-        <div className="flex items-center space-x-2 opacity-50">
-          <Checkbox
-            id="multifloor"
-            checked={isMultifloor}
-            disabled={true}
-          />
-          <Label htmlFor="multifloor" className="text-gray-500">Multifloor (Always enabled)</Label>
-        </div>
 
-        {isMultifloor && (
-          <div className={cn(
-            "space-y-4 pt-2",
-            tab !== "2d-editor" && "opacity-50 pointer-events-none"
-          )}>
-            <div className="space-y-2">
-              <Label>Current Floor</Label>
-              <Select 
-                value={currentFloor} 
-                onValueChange={tab === "2d-editor" ? handleFloorChange : undefined}
-                disabled={tab !== "2d-editor"}
-              >
-                <SelectTrigger 
-                  className={cn(
-                    tab !== "2d-editor" && "cursor-not-allowed"
-                  )}
-                  title={tab !== "2d-editor" ? "Floor management available only in 2D Editor" : undefined}
-                >
-                  <SelectValue placeholder="Select floor" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ground">
-                    {formatFloorText("ground")}
-                  </SelectItem>
-                  {floors.ground.hasClosedContour && (
-                    <>
-                      <SelectItem value="first">
-                        {formatFloorText("first")}
-                      </SelectItem>
-                      {floors.first?.hasClosedContour && (
-                        <SelectItem value="second">
-                          {formatFloorText("second")}
-                        </SelectItem>
-                      )}
-                      {floors.second?.hasClosedContour && (
-                        <SelectItem value="third">
-                          {formatFloorText("third")}
-                        </SelectItem>
-                      )}
-                      {floors.third?.hasClosedContour && (
-                        <SelectItem value="fourth">
-                          {formatFloorText("fourth")}
-                        </SelectItem>
-                      )}
-                      {floors.fourth?.hasClosedContour && (
-                        <SelectItem value="fifth">
-                          {formatFloorText("fifth")}
-                        </SelectItem>
-                      )}
-                    </>
-                  )}
-                </SelectContent>
-              </Select>
-              {tab !== "2d-editor" && (
-                <p className="text-xs text-muted-foreground">
-                  Switch to 2D Editor to manage floors
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label>Load from Floor</Label>
-              <div className="flex gap-2">
-                <Select 
-                  value={loadFromFloor} 
-                  onValueChange={tab === "2d-editor" ? setLoadFromFloor : undefined}
-                  disabled={tab !== "2d-editor"}
-                >
-                  <SelectTrigger 
-                    className={cn(
-                      "flex-1",
-                      tab !== "2d-editor" && "cursor-not-allowed"
-                    )}
-                    title={tab !== "2d-editor" ? "Floor management available only in 2D Editor" : undefined}
-                  >
-                    <SelectValue placeholder="Select floor to load from" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(() => {
-                      // Define floor hierarchy order
-                      const floorOrder = ["ground", "first", "second", "third", "fourth", "fifth"];
-                      const currentFloorIndex = floorOrder.indexOf(currentFloor);
-                      
-                      // Filter to only show floors that are "below" current floor
-                      return Object.entries(floors)
-                        .filter(([floorName]) => {
-                          const floorIndex = floorOrder.indexOf(floorName);
-                          // Only include floors that are lower in hierarchy and exist
-                          return floorIndex !== -1 && floorIndex < currentFloorIndex;
-                        })
-                        .map(([floorName, floor]) => (
-                          <SelectItem key={floorName} value={floorName}>
-                            {formatFloorText(floorName)}
-                          </SelectItem>
-                        ));
-                    })()}
-                  </SelectContent>
-                </Select>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={tab === "2d-editor" ? handleLoadTemplate : () => {
-                    toast({
-                      title: "Feature Unavailable",
-                      description: "Floor management is available only in 2D Editor",
-                      variant: "destructive",
-                    });
-                  }}
-                  disabled={tab !== "2d-editor"}
-                  className={cn(
-                    tab !== "2d-editor" && "cursor-not-allowed"
-                  )}
-                  title={tab !== "2d-editor" ? "Floor management available only in 2D Editor" : undefined}
-                >
-                  Load
-                </Button>
-              </div>
-              {tab !== "2d-editor" && (
-                <p className="text-xs text-muted-foreground">
-                  Switch to 2D Editor to load floor templates
-                </p>
-              )}
-            </div>
-
-
-          </div>
-        )}
-
-        {/* Ceiling Height y Floor Deck Parameters */}
-        <div className={cn(
-          "space-y-4 pt-4 border-t",
-          tab !== "2d-editor" && "opacity-50 pointer-events-none"
-        )}>
-          <div className="flex items-center gap-2">
-            <h4 className="font-medium text-sm text-gray-700">Building Parameters</h4>
-            {tab !== "2d-editor" && (
-              <span className="text-xs text-muted-foreground">(Available in 2D Editor)</span>
-            )}
-          </div>
-          
-          {!isMultifloor ? (
-            // Modo single floor: solo control de ceiling height
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="ceiling-height">Ceiling Height</Label>
-                <div className="flex items-center gap-2">
-                  <Input
-                    id="ceiling-height"
-                    type="number"
-                    value={ceilingHeight}
-                    min={200}
-                    max={500}
-                    step={10}
-                    onChange={(e) => {
-                      const value = parseInt(e.target.value);
-                      if (!isNaN(value) && value >= 200 && value <= 500) {
-                        setCeilingHeight(value);
-                      }
-                    }}
-                    className="w-24"
-                  />
-                  <span className="text-sm text-gray-500">cm</span>
-                </div>
-              </div>
-            </div>
-          ) : (
-            // Modo multifloor: controles por planta
-            <div className="space-y-4">
-              {Object.keys(floors).filter(floorName => floors[floorName]?.hasClosedContour).map((floorName) => {
-                const floorParams = floorParameters[floorName] || { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20 };
-                const isCurrentFloor = floorName === currentFloor;
-                
-                return (
-                  <div 
-                    key={floorName} 
-                    className={cn(
-                      "p-3 rounded-lg border transition-all duration-200",
-                      isCurrentFloor 
-                        ? "bg-blue-50 border-blue-200 ring-2 ring-blue-200" 
-                        : "bg-gray-50 border-gray-200 hover:bg-gray-100 hover:border-gray-300",
-                      tab === "2d-editor" && !isCurrentFloor && "cursor-pointer",
-                      tab !== "2d-editor" && "cursor-not-allowed"
-                    )}
-                    onClick={
-                      tab === "2d-editor" && !isCurrentFloor
-                        ? () => handleFloorChange(floorName)
-                        : tab !== "2d-editor"
-                        ? () => {
-                            toast({
-                              title: "Feature Unavailable",
-                              description: "Floor navigation is available only in 2D Editor",
-                              variant: "destructive",
-                            });
-                          }
-                        : undefined
-                    }
-                    title={
-                      tab !== "2d-editor" 
-                        ? "Floor navigation available only in 2D Editor"
-                        : !isCurrentFloor 
-                        ? `Click to switch to ${formatFloorText(floorName)}`
-                        : `Currently viewing ${formatFloorText(floorName)}`
-                    }
-                  >
-                    <h5 className="font-medium text-sm mb-3 flex items-center gap-2">
-                      {formatFloorText(floorName)}
-                      {isCurrentFloor && <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Current</span>}
-                      {tab === "2d-editor" && !isCurrentFloor && (
-                        <span className="text-xs text-gray-500 ml-auto">Click to switch</span>
-                      )}
-                    </h5>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1">
-                        <Label className="text-xs">Ceiling Height</Label>
-                        <div className="flex items-center gap-1">
-                          <Input
-                            type="number"
-                            value={floorParams.ceilingHeight}
-                            min={200}
-                            max={500}
-                            step={10}
-                            onChange={(e) => {
-                              const value = parseInt(e.target.value);
-                              if (!isNaN(value) && value >= 200 && value <= 500) {
-                                updateFloorParameter(floorName, 'ceilingHeight', value);
-                              }
-                            }}
-                            className="w-16 h-8 text-xs"
-                          />
-                          <span className="text-xs text-gray-500">cm</span>
-                        </div>
-                      </div>
-                      <div className="space-y-1">
-                        <Label className="text-xs">Floor Deck</Label>
-                        <div className="flex items-center gap-1">
-                          <Input
-                            type="number"
-                            value={floorParams.floorDeck}
-                            min={5}
-                            max={150}
-                            step={5}
-                            onChange={(e) => {
-                              const value = parseInt(e.target.value);
-                              if (!isNaN(value) && value >= 5 && value <= 150) {
-                                updateFloorParameter(floorName, 'floorDeck', value);
-                              }
-                            }}
-                            className="w-16 h-8 text-xs"
-                          />
-                          <span className="text-xs text-gray-500">cm</span>
-                        </div>
-                      </div>
-                      <div className="space-y-1">
-                        <Label className="text-xs">Ceiling Temperature</Label>
-                        <div className="flex items-center gap-1">
-                          <Input
-                            type="number"
-                            value={floorParams.ceilingTemperature || 20}
-                            min={-50}
-                            max={100}
-                            step={0.1}
-                            onChange={(e) => {
-                              const value = parseFloat(e.target.value);
-                              if (!isNaN(value) && value >= -50 && value <= 100) {
-                                updateFloorParameter(floorName, 'ceilingTemperature', value);
-                              }
-                            }}
-                            className="w-16 h-8 text-xs"
-                          />
-                          <span className="text-xs text-gray-500">°C</span>
-                        </div>
-                      </div>
-                      <div className="space-y-1">
-                        <Label className="text-xs">Floor Temperature</Label>
-                        <div className="flex items-center gap-1">
-                          <Input
-                            type="number"
-                            value={floorParams.floorTemperature || 20}
-                            min={-50}
-                            max={100}
-                            step={0.1}
-                            onChange={(e) => {
-                              const value = parseFloat(e.target.value);
-                              if (!isNaN(value) && value >= -50 && value <= 100) {
-                                updateFloorParameter(floorName, 'floorTemperature', value);
-                              }
-                            }}
-                            className="w-16 h-8 text-xs"
-                          />
-                          <span className="text-xs text-gray-500">°C</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
 
   const renderCanvasSection = (mode = "tabs") => {
     return (
