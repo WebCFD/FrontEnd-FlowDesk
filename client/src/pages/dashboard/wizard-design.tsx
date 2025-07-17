@@ -864,6 +864,17 @@ export default function WizardDesign() {
       "border-2",
       borderStyles,
     );
+  }
+
+  const getWallStyles = () => {
+    const baseStyles =
+      "h-16 p-2 flex flex-col items-center justify-center transition-all duration-200 shadow-sm";
+    const activeStyles = "scale-95 shadow-inner";
+    
+    return cn(
+      baseStyles,
+      currentTool === "wall" ? activeStyles : "",
+    );
   };
 
   const handleNext = () => {
@@ -1385,11 +1396,11 @@ export default function WizardDesign() {
                     {/* Wall Line Button */}
                     <Button
                       variant={currentTool === "wall" ? "default" : "outline"}
-                      className="w-32 h-16 flex flex-col items-center justify-center gap-1"
+                      className={getWallStyles()}
                       onClick={() => handleToolSelect("wall")}
                     >
                       <div className="w-6 h-6 bg-primary/20 rounded-sm" />
-                      <span className="text-xs">Wall Line</span>
+                      <span className="text-xs mt-1">Wall Line</span>
                     </Button>
                     
                     {/* Wall Temperature */}
