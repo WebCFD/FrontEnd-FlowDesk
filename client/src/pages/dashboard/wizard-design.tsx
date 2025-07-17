@@ -62,6 +62,11 @@ import { useRoomStore } from "@/lib/store/room-store";
 import { FurnitureItem } from "@shared/furniture-types";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -269,6 +274,7 @@ export default function WizardDesign() {
   const [defaultWallTemperature, setDefaultWallTemperature] = useState(20); // Default wall temperature in °C
   const [defaultStairTemperature, setDefaultStairTemperature] = useState(20); // Default stair temperature in °C
   const [canvas3DKey, setCanvas3DKey] = useState(0); // Force re-render of Canvas3D
+  const [isFloorManagementOpen, setIsFloorManagementOpen] = useState(true); // Estado para menú colapsable Floor Management
   
   // Nuevos estados para parámetros por planta
   const [floorParameters, setFloorParameters] = useState<Record<string, { ceilingHeight: number; floorDeck: number; ceilingTemperature?: number; floorTemperature?: number }>>({
@@ -1567,15 +1573,25 @@ export default function WizardDesign() {
 
                 {/* Floor Management - Parameters content moved here */}
                 <div className="space-y-4 mt-4 pt-4 border-t">
-                  <h3 className="font-semibold">Floor Management</h3>
-                  <div className="space-y-4">
-                    {isMultifloor && (
-                      <div className={cn(
-                        "space-y-4 pt-2",
-                        tab !== "2d-editor" && "opacity-50 pointer-events-none"
-                      )}>
-                        <div className="space-y-2">
-                          <Label>Current Floor</Label>
+                  <Collapsible open={isFloorManagementOpen} onOpenChange={setIsFloorManagementOpen}>
+                    <CollapsibleTrigger asChild>
+                      <Button variant="ghost" className="w-full justify-between p-0 h-auto">
+                        <h3 className="font-semibold">Floor Management</h3>
+                        <ChevronDown className={cn(
+                          "h-4 w-4 transition-transform duration-200",
+                          isFloorManagementOpen ? "rotate-180" : ""
+                        )} />
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="space-y-4 pt-2">
+                      <div className="space-y-4">
+                        {isMultifloor && (
+                          <div className={cn(
+                            "space-y-4 pt-2",
+                            tab !== "2d-editor" && "opacity-50 pointer-events-none"
+                          )}>
+                            <div className="space-y-2">
+                              <Label>Current Floor</Label>
                           <Select 
                             value={currentFloor} 
                             onValueChange={tab === "2d-editor" ? handleFloorChange : undefined}
@@ -1863,11 +1879,12 @@ export default function WizardDesign() {
                               </div>
                             );
                           })}
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
                 </div>
               )}
 
@@ -1965,7 +1982,62 @@ export default function WizardDesign() {
               {renderFilesMenu()}
             </div>
 
-            {/* Right side - Canvas */}
+            {renderCanvasSection("tabs")}
+          </div>
+        </CardContent>
+      </Card>
+      <AirEntryDialog
+        type={currentAirEntry || "window"}
+        isOpen={isAirEntryDialogOpen}
+        onClose={() => {
+          setIsAirEntryDialogOpen(false);
+          setSelectedLine(null);
+        }}
+        onConfirm={handleAirEntryDimensionsConfirm}
+      />
+    </>
+  );
+
+  const renderStep2 = () => {
+    return (
+      <>
+        <Card className="mt-4">
+          <CardContent className="p-4">
+            <div className="flex gap-4" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
+              {/* Left side menus - copy style from Step 1 */}
+              <div className="w-72 space-y-6 overflow-y-auto" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
+                {/* Main options */}
+                <div className="border rounded-lg p-4">
+                  <h3 className="font-semibold text-lg mb-4">3D Menu</h3>
+
+                  {/* Wall Transparency */}
+                  <div className="space-y-4 mt-4">
+                    <h3 className="font-semibold">Wall Transparency</h3>
+                    <div className="px-2">
+                      <Slider
+                        value={[wallTransparency]}
+                        onValueChange={(values: number[]) => {
+                          console.log(
+                            "Wizard: Wall transparency changing to:",
+                            values[0],
+                          );
+                          setWallTransparency(values[0]);
+                        }}
+                        max={1}
+                        step={0.01}
+                      />
+                      <div className="text-sm text-right mt-1">
+                        {Math.round(wallTransparency * 100)}%
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              {renderFilesMenu()}
+
+              {renderFilesMenu()}
+            </div>
+
             {renderCanvasSection("tabs")}
           </div>
         </CardContent>
