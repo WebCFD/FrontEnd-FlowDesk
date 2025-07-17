@@ -1969,6 +1969,7 @@ export default function WizardDesign() {
                   {/* Height parameters moved to Parameters section */}
                 </div>
               </div>
+              )}
 
               {renderFilesMenu()}
             </div>
@@ -2070,11 +2071,6 @@ export default function WizardDesign() {
                 {/* Files section - unified */}
                 {renderFilesMenu()}
                 </div>
-              )}
-
-              {/* Files - always active */}
-              {renderFilesMenu()}
-            </div>
 
             {/* Main content area - using the same renderCanvasSection as 3D preview for consistency */}
             {renderCanvasSection("step2")}
