@@ -1532,6 +1532,12 @@ export default function Canvas2D({
     if (e.button === 0) {
       // Left-click handling
 
+      // Handle pan mode FIRST - highest priority
+      if (panMode) {
+        handlePanStart(nativeEvent);
+        return;
+      }
+
       // Handle the wall tool
       if (currentTool === "wall") {
         // If we already have a cursorPoint with snap info, use that
@@ -1638,11 +1644,6 @@ export default function Canvas2D({
           setPreviewMeasurement(null);
         }
 
-        return;
-      }
-      // If pan mode is active, use left-click for panning
-      if (panMode) {
-        handlePanStart(nativeEvent);
         return;
       }
 
