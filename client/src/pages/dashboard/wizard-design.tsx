@@ -1980,18 +1980,18 @@ export default function WizardDesign() {
 
             {/* Right side - Canvas */}
             {renderCanvasSection("tabs")}
-            </div>
-          </CardContent>
-        </Card>
-        <AirEntryDialog
-          type={currentAirEntry || "window"}
-          isOpen={isAirEntryDialogOpen}
-          onClose={() => {
-            setIsAirEntryDialogOpen(false);
-            setSelectedLine(null);
-          }}
-          onConfirm={handleAirEntryDimensionsConfirm}
-        />
+          </div>
+        </CardContent>
+      </Card>
+      <AirEntryDialog
+        type={currentAirEntry || "window"}
+        isOpen={isAirEntryDialogOpen}
+        onClose={() => {
+          setIsAirEntryDialogOpen(false);
+          setSelectedLine(null);
+        }}
+        onConfirm={handleAirEntryDimensionsConfirm}
+      />
       </>
     );
   };
