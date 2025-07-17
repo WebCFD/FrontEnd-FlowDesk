@@ -1391,7 +1391,10 @@ export default function WizardDesign() {
                 )}
               >
                 <h3 className="font-semibold text-xl mb-4 text-center">2D Configuration</h3>
+                
+                {/* Wall Design */}
                 <div className="space-y-4">
+                  <h3 className="font-semibold">Wall Design</h3>
                   <div className="flex items-start gap-4">
                     {/* Wall Line Button */}
                     <Button
