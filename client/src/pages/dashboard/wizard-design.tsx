@@ -1390,7 +1390,7 @@ export default function WizardDesign() {
                     : "opacity-100",
                 )}
               >
-                <h3 className="font-semibold text-lg mb-4">2D Menu</h3>
+                <h3 className="font-semibold text-xl mb-4 text-center">2D Configuration</h3>
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
                     {/* Wall Line Button */}
@@ -1579,7 +1579,7 @@ export default function WizardDesign() {
                     : "opacity-100",
                 )}
               >
-                <h3 className="font-semibold text-lg mb-4">3D Tools</h3>
+                <h3 className="font-semibold text-xl mb-4 text-center">3D Configuration</h3>
                 <div className="space-y-4">
                   <div className="grid grid-cols-3 gap-2">
                     <DropdownMenu>
