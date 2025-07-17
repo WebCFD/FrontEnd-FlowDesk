@@ -1486,63 +1486,66 @@ export default function WizardDesign() {
                 {isMultifloor && (
                   <div className="space-y-4 mt-4">
                     <h3 className="font-semibold">Stair Design</h3>
-                    <Button
-                      variant="outline"
-                      className={getStairStyles()}
-                      onClick={() => {
-                        handleToolSelect("stairs");
-                        if (currentTool !== "stairs") {
-                          setTab("2d-editor");
-                          toast({
-                            title: "Stair Design Tool Activated",
-                            description:
-                              "Click on the canvas to place points and create a stair polygon. Close the shape by clicking near the first point.",
-                          });
-                        }
-                      }}
-                    >
-                      <FileEdit className="w-6 h-6" />
-                      <span className="text-xs mt-1">Stair Design</span>
-                    </Button>
-                    
-                    {/* Stair Temperature */}
-                    <div className="space-y-2 mt-4">
-                      <TooltipProvider>
-                        <div className="flex items-center gap-1">
-                          <Label htmlFor="default-stair-temp" className="text-sm font-medium">
-                            Stair Temperature
-                          </Label>
-                          <Tooltip>
-                            <TooltipTrigger>
-                              <Info className="w-3 h-3 text-gray-400" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="max-w-64">
-                                Default temperature assigned to new stairs when created. 
-                                You can change individual stair temperatures by double-clicking on any stair.
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
+                    <div className="flex items-start gap-4">
+                      {/* Stair Design Button */}
+                      <Button
+                        variant="outline"
+                        className={getStairStyles()}
+                        onClick={() => {
+                          handleToolSelect("stairs");
+                          if (currentTool !== "stairs") {
+                            setTab("2d-editor");
+                            toast({
+                              title: "Stair Design Tool Activated",
+                              description:
+                                "Click on the canvas to place points and create a stair polygon. Close the shape by clicking near the first point.",
+                            });
+                          }
+                        }}
+                      >
+                        <FileEdit className="w-6 h-6" />
+                        <span className="text-xs mt-1">Stair Design</span>
+                      </Button>
+                      
+                      {/* Stair Temperature */}
+                      <div className="space-y-2 flex-1">
+                        <TooltipProvider>
+                          <div className="flex items-center gap-1">
+                            <Label htmlFor="default-stair-temp" className="text-sm font-medium">
+                              Stair Temperature
+                            </Label>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <Info className="w-3 h-3 text-gray-400" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="max-w-64">
+                                  Default temperature assigned to new stairs when created. 
+                                  You can change individual stair temperatures by double-clicking on any stair.
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
+                        </TooltipProvider>
+                        <div className="flex items-center gap-2">
+                          <Input
+                            id="default-stair-temp"
+                            type="number"
+                            value={defaultStairTemperature}
+                            onChange={(e) => {
+                              const value = parseFloat(e.target.value);
+                              if (!isNaN(value) && value >= -50 && value <= 100) {
+                                setDefaultStairTemperature(value);
+                              }
+                            }}
+                            className="w-20 h-8"
+                            min={-50}
+                            max={100}
+                            step={0.5}
+                            placeholder="20"
+                          />
+                          <span className="text-sm text-gray-500">°C</span>
                         </div>
-                      </TooltipProvider>
-                      <div className="flex items-center gap-2">
-                        <Input
-                          id="default-stair-temp"
-                          type="number"
-                          value={defaultStairTemperature}
-                          onChange={(e) => {
-                            const value = parseFloat(e.target.value);
-                            if (!isNaN(value) && value >= -50 && value <= 100) {
-                              setDefaultStairTemperature(value);
-                            }
-                          }}
-                          className="w-20 h-8"
-                          min={-50}
-                          max={100}
-                          step={0.5}
-                          placeholder="20"
-                        />
-                        <span className="text-sm text-gray-500">°C</span>
                       </div>
                     </div>
                   </div>
