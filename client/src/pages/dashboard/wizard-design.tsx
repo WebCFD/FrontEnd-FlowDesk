@@ -1381,15 +1381,9 @@ export default function WizardDesign() {
           <div className="flex gap-4" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
             {/* Left side menus */}
             <div className="w-72 space-y-6 overflow-y-auto" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
-              {/* 2D Menu - grayed out in 3D view */}
-              <div
-                className={cn(
-                  "border rounded-lg p-4",
-                  tab === "3d-preview"
-                    ? "opacity-50 pointer-events-none"
-                    : "opacity-100",
-                )}
-              >
+              {/* 2D Configuration - only show when in 2D mode */}
+              {tab === "2d-editor" && (
+                <div className="border rounded-lg p-4">
                 <h3 className="font-semibold text-xl mb-4 text-center">2D Configuration</h3>
                 
                 {/* Wall Design */}
@@ -1883,18 +1877,12 @@ export default function WizardDesign() {
                     </div>
                   </div>
                 </div>
-              </div>
+                </div>
+              )}
 
-              {/* 3D Tools - grayed out in 2D view */}
-
-              <div
-                className={cn(
-                  "border rounded-lg p-4",
-                  tab === "2d-editor"
-                    ? "opacity-50 pointer-events-none"
-                    : "opacity-100",
-                )}
-              >
+              {/* 3D Configuration - only show when in 3D mode */}
+              {tab === "3d-preview" && (
+                <div className="border rounded-lg p-4">
                 <h3 className="font-semibold text-xl mb-4 text-center">3D Configuration</h3>
                 <div className="space-y-4">
                   <div className="grid grid-cols-3 gap-2">
@@ -1978,15 +1966,10 @@ export default function WizardDesign() {
                     </div>
                   </div>
 
-
-
                   {/* Height parameters moved to Parameters section */}
                 </div>
               </div>
 
-
-
-              {/* Files - always active */}
               {renderFilesMenu()}
             </div>
 
@@ -2084,15 +2067,18 @@ export default function WizardDesign() {
                   />
                 </div>
 
-
-
                 {/* Files section - unified */}
                 {renderFilesMenu()}
-              </div>
+                </div>
+              )}
 
-              {/* Main content area - using the same renderCanvasSection as 3D preview for consistency */}
-              {renderCanvasSection("step2")}
+              {/* Files - always active */}
+              {renderFilesMenu()}
             </div>
+
+            {/* Main content area - using the same renderCanvasSection as 3D preview for consistency */}
+            {renderCanvasSection("step2")}
+          </div>
           </CardContent>
         </Card>
       </>
