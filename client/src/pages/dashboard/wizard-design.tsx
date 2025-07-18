@@ -2321,6 +2321,9 @@ export default function WizardDesign() {
       
       const exportData = generateSimulationDataForExport();
 
+      // Log para debug del status
+      console.log("DEBUG: Sending simulation with status:", simulationStatus);
+      
       // Llamar al nuevo endpoint para crear la simulación
       const response = await fetch("/api/simulations/create", {
         method: "POST",
