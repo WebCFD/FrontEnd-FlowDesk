@@ -3098,7 +3098,7 @@ export default function Canvas3D({
         console.error("Error connecting view change handler:", err);
       }
     }
-  }, [onViewChange, handleViewChange]);
+  }, [onViewChange]);
 
   useEffect(() => {
     if (!containerRef.current) {
