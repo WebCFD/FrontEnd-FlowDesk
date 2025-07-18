@@ -2318,9 +2318,11 @@ export default function WizardDesign() {
 
   // Función para crear la simulación real
   const handleConfirmCreateSimulation = async () => {
+    console.log("🔄 Confirm Create Simulation clicked");
+    console.log("🔄 Setting isCreatingSimulation to true");
+    setIsCreatingSimulation(true);
+    
     try {
-      console.log("🔄 Confirm Create Simulation clicked");
-      setIsCreatingSimulation(true);
       
       const exportData = generateSimulationDataForExport();
 
@@ -2887,6 +2889,9 @@ export default function WizardDesign() {
     </div>
   );
 
+  // Debug log for state
+  console.log("🔄 Current isCreatingSimulation state:", isCreatingSimulation);
+
   return (
     <DashboardLayout>
       <div className="container mx-auto py-4 px-3 space-y-4">
@@ -3039,10 +3044,14 @@ export default function WizardDesign() {
               onClick={handleConfirmCreateSimulation}
               disabled={isCreatingSimulation}
             >
-              {isCreatingSimulation && (
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent mr-2"></div>
+              {isCreatingSimulation ? (
+                <>
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent mr-2"></div>
+                  Creating...
+                </>
+              ) : (
+                "Create Simulation"
               )}
-              {isCreatingSimulation ? "Creating..." : "Create Simulation"}
             </Button>
           </div>
         </DialogContent>
@@ -3050,7 +3059,10 @@ export default function WizardDesign() {
 
       {/* Full-screen loading overlay during simulation creation */}
       {isCreatingSimulation && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          style={{ zIndex: 9999 }}
+        >
           <div className="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-4">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
             <div className="text-lg font-medium">Creating simulation...</div>
