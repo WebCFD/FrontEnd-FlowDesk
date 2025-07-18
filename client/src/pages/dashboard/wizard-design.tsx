@@ -2312,9 +2312,6 @@ export default function WizardDesign() {
       return;
     }
 
-    console.log("🔄 Setting loading state to true");
-    setIsCreatingSimulation(true);
-    
     console.log("🔄 Showing dialog");
     setShowStartSimulationDialog(true);
   };
@@ -2323,6 +2320,7 @@ export default function WizardDesign() {
   const handleConfirmCreateSimulation = async () => {
     try {
       console.log("🔄 Confirm Create Simulation clicked");
+      setIsCreatingSimulation(true);
       
       const exportData = generateSimulationDataForExport();
 
@@ -2986,10 +2984,8 @@ export default function WizardDesign() {
 
       {/* Diálogo de confirmación para crear simulación */}
       <Dialog open={showStartSimulationDialog} onOpenChange={(open) => {
-        setShowStartSimulationDialog(open);
-        if (!open && !isCreatingSimulation) {
-          // Only reset loading state if we're not actually creating a simulation
-          setIsCreatingSimulation(false);
+        if (!isCreatingSimulation) {
+          setShowStartSimulationDialog(open);
         }
       }}>
         <DialogContent className="sm:max-w-md">
@@ -3032,7 +3028,6 @@ export default function WizardDesign() {
               variant="outline"
               onClick={() => {
                 setShowStartSimulationDialog(false);
-                // Don't reset loading state if we're actually creating
               }}
               disabled={isCreatingSimulation}
             >
