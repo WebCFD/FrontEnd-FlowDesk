@@ -108,9 +108,12 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       }
 
       onClose();
-      // Redirect to stored path or dashboard
-      setLocation(returnTo || "/dashboard");
-      setReturnTo(null); // Clear the stored path
+      // Only redirect if there's a specific returnTo path stored
+      if (returnTo) {
+        setLocation(returnTo);
+        setReturnTo(null); // Clear the stored path
+      }
+      // If no returnTo path, stay on current page
     } catch (error) {
       toast({
         variant: "destructive",
