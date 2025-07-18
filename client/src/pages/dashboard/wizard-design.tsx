@@ -516,13 +516,13 @@ export default function WizardDesign() {
   // Auto-inicializar parámetros cuando se activa multifloor
   useEffect(() => {
     if (isMultifloor) {
-      Object.keys(floors).forEach(floorName => {
-        if (floors[floorName]?.hasClosedContour) {
+      Object.keys(rawFloors).forEach(floorName => {
+        if (rawFloors[floorName]?.hasClosedContour) {
           ensureFloorParametersExist(floorName);
         }
       });
     }
-  }, [isMultifloor, floors]);
+  }, [isMultifloor, rawFloors]);
 
   // Handle loading floor template
 
