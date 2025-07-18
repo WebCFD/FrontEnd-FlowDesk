@@ -131,7 +131,21 @@ export function FurnitureMenu({ onDragStart, floorContext }: FurnitureMenuProps)
   const allFurnitureItems = [...furnitureItems_category, ...customItems];
 
   // Tools category - placeholder for future tools
-  const toolsItems: FurnitureItem[] = [];
+  const toolsItems: FurnitureItem[] = [
+    {
+      id: 'eraser',
+      name: 'Eraser',
+      icon: `
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="20" width="24" height="12" rx="2" fill="#ff6b6b" stroke="#dc2626" stroke-width="2"/>
+          <rect x="6" y="8" width="28" height="16" rx="3" fill="#fca5a5" stroke="#dc2626" stroke-width="1" opacity="0.7"/>
+          <line x1="12" y1="24" x2="28" y2="24" stroke="#dc2626" stroke-width="1"/>
+          <line x1="12" y1="28" x2="28" y2="28" stroke="#dc2626" stroke-width="1"/>
+        </svg>
+      `,
+      defaultDimensions: { width: 40, height: 20, depth: 15 }
+    }
+  ];
 
   const renderCategory = (title: string, items: FurnitureItem[]) => (
     <div className="space-y-4">
