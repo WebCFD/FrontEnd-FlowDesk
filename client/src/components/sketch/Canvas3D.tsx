@@ -6322,30 +6322,7 @@ export default function Canvas3D({
     <>
       {/* 3D Canvas container - simplified layout with just the canvas */}
       <div ref={containerRef} className="w-full h-full relative">
-        {/* Debug overlay */}
-        <div 
-          style={{
-            position: 'absolute',
-            top: 10,
-            left: 10,
-            background: 'rgba(0,0,0,0.5)',
-            color: 'white',
-            padding: 10,
-            borderRadius: 5,
-            fontSize: 14,
-            zIndex: 1000,
-            pointerEvents: 'none', // Don't interfere with mouse events
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 4
-          }}
-        >
-          <div><strong>DEBUG INFO</strong></div>
-          <div>Mouse: {debugInfo.mousePosition}</div>
-          <div>Eraser Mode: {debugInfo.eraserMode ? 'Active' : 'Inactive'}</div>
-          <div>Hovering: {debugInfo.hovering ? 'YES' : 'no'}</div>
-          <div>Last Intersection: {debugInfo.lastIntersection}</div>
-        </div>
+
       </div>
 
       {/* Dialog for editing air entries - Phase 4: Unified with Canvas2D */}
