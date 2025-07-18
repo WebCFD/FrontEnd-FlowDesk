@@ -64,6 +64,13 @@ export default function Dashboard() {
     enabled: !!user && !user.isAnonymous,
   });
 
+  // Debug logging
+  console.log('Dashboard - User:', user);
+  console.log('Dashboard - Query enabled:', !!user && !user.isAnonymous);
+  console.log('Dashboard - Simulations data:', simulations);
+  console.log('Dashboard - Loading:', isLoading);
+  console.log('Dashboard - Error:', error);
+
   const handleStartSimulation = () => {
     if (lines.length > 0) {
       setShowNewSimulationDialog(true);

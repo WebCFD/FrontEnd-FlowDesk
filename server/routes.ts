@@ -50,9 +50,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Not authenticated" });
       }
 
+      console.log(`[DEBUG] Fetching simulations for user ID: ${req.user.id}`);
       const simulations = await storage.getSimulationsByUserId(req.user.id);
+      console.log(`[DEBUG] Found ${simulations.length} simulations:`, simulations);
       res.json(simulations);
     } catch (error) {
+      console.error("[ERROR] Error fetching simulations:", error);
       res.status(500).json({ message: "Error fetching simulations" });
     }
   });
