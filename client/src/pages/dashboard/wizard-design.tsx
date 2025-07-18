@@ -1387,9 +1387,9 @@ export default function WizardDesign() {
             hasClosedContour={hasClosedContour}
           />
 
-          <div className="flex gap-4" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
+          <div className="flex gap-4">
             {/* Left side menus */}
-            <div className="w-72 space-y-6 overflow-y-auto" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
+            <div className="w-72 space-y-6">
               {/* 2D Configuration - only show when in 2D mode */}
               {tab === "2d-editor" && (
                 <div className="border rounded-lg p-4">
@@ -1983,9 +1983,9 @@ export default function WizardDesign() {
           <CardContent className="p-4">
 
 
-            <div className="flex gap-4" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
+            <div className="flex gap-4">
               {/* Left side menus - copy style from Step 1 */}
-              <div className="w-72 space-y-6 overflow-y-auto" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
+              <div className="w-72 space-y-6">
                 {/* Main options */}
                 <div className="border rounded-lg p-4">
                   <h3 className="font-semibold text-xl mb-4 text-center">Add 3D Elements</h3>
@@ -2573,7 +2573,7 @@ export default function WizardDesign() {
 
   const renderCanvasSection = (mode = "tabs") => {
     return (
-      <div className="border rounded-lg overflow-hidden bg-white min-w-[600px]" style={{ height: `calc(100vh - ${viewportOffset}px)`, flex: 1 }}>
+      <div className="border rounded-lg overflow-hidden bg-white min-w-[600px] min-h-[600px]" style={{ flex: 1 }}>
         <SceneProvider>
           {mode === "step2" ? (
             <RoomSketchPro
