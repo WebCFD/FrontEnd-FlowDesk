@@ -148,15 +148,9 @@ export default function Dashboard() {
 
         {/* Recent Simulations */}
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-            <div>
-              <CardTitle>Recent Simulations</CardTitle>
-              <CardDescription>Your latest thermal analysis projects</CardDescription>
-            </div>
-            <Button onClick={handleStartSimulation} className="flex items-center gap-2">
-              <PlusCircle className="h-4 w-4" />
-              New Simulation
-            </Button>
+          <CardHeader className="pb-4">
+            <CardTitle>Recent Simulations</CardTitle>
+            <CardDescription>Your latest thermal analysis projects</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="rounded-md border">
