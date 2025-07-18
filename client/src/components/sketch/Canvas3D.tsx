@@ -6334,14 +6334,7 @@ export default function Canvas3D({
       <div ref={containerRef} className="w-full h-full relative">
 
         {/* Settings Dropdown - Show when onWallTransparencyChange callback is available (indicating wizard mode) */}
-        {(() => {
-          console.log('🔍 Canvas3D Settings Debug:', {
-            hasCallback: typeof onWallTransparencyChange === 'function',
-            onWallTransparencyChange,
-            wallTransparency
-          });
-          return typeof onWallTransparencyChange === 'function';
-        })() ? (
+        {typeof onWallTransparencyChange === 'function' ? (
           <div className="absolute top-2 right-2 z-10">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -6356,7 +6349,7 @@ export default function Canvas3D({
                   <Label className="text-sm font-medium">Wall Transparency</Label>
                   <Slider
                     value={[wallTransparency]}
-                    onValueChange={(values) => onWallTransparencyChange(values[0])}
+                    onValueChange={(values) => onWallTransparencyChange?.(values[0])}
                     min={0}
                     max={1}
                     step={0.1}
