@@ -24,7 +24,7 @@ export default function Settings() {
     radius: 0.5
   });
 
-  const { snapDistance, setSnapDistance, showCursorCoordinates, setShowCursorCoordinates, fontScale, setFontScale, viewportOffset, setViewportOffset, gridSize, setGridSize } = useSketchStore();
+  const { snapDistance, setSnapDistance, showCursorCoordinates, setShowCursorCoordinates, fontScale, setFontScale, viewportOffset, setViewportOffset, gridSize, setGridSize, canvasHeightPercentage, setCanvasHeightPercentage } = useSketchStore();
 
   const variants = [
     { value: 'professional', label: 'Professional' },
@@ -85,6 +85,14 @@ export default function Settings() {
     toast({
       title: "Grid Size updated",
       description: `Grid size set to ${(value[0] * (25 / 20)).toFixed(1)}cm/cell successfully.`
+    });
+  };
+
+  const handleCanvasHeightPercentageChange = (value: number[]) => {
+    setCanvasHeightPercentage(value[0]);
+    toast({
+      title: "Canvas Height updated",
+      description: `Canvas height set to ${value[0]}% of viewport successfully.`
     });
   };
 
@@ -289,6 +297,28 @@ export default function Settings() {
                 </div>
                 <div className="text-sm text-muted-foreground mt-1">
                   Height offset for UI elements (header, navigation, etc.)
+                </div>
+              </div>
+              
+              <div>
+                <Label>Canvas Height</Label>
+                <div className="flex items-center gap-4 mt-2">
+                  <div className="flex-1">
+                    <Slider
+                      value={[canvasHeightPercentage]}
+                      onValueChange={handleCanvasHeightPercentageChange}
+                      min={20}
+                      max={80}
+                      step={5}
+                      className="w-full"
+                    />
+                  </div>
+                  <span className="text-sm text-muted-foreground w-16 text-right">
+                    {canvasHeightPercentage}%
+                  </span>
+                </div>
+                <div className="text-sm text-muted-foreground mt-1">
+                  Canvas height as percentage of viewport height
                 </div>
               </div>
             </div>

@@ -242,7 +242,7 @@ const getConnectedFloorName = (
 export default function WizardDesign() {
   const [, setLocation] = useLocation();
   const { user, setReturnTo } = useAuth();
-  const { viewportOffset, gridSize } = useSketchStore();
+  const { viewportOffset, gridSize, canvasHeightPercentage } = useSketchStore();
   const [step, setStep] = useState(1);
   const [simulationName, setSimulationName] = useState("");
   const [simulationType, setSimulationType] = useState("comfort");
@@ -333,11 +333,11 @@ export default function WizardDesign() {
   // Estado para el diálogo de carga de diseño
   const [showLoadDesignDialog, setShowLoadDesignDialog] = useState(false);
 
-  // Calculate canvas height as 45% of viewport height
+  // Calculate canvas height as configurable percentage of viewport height
   useEffect(() => {
     const calculateCanvasHeight = () => {
       const viewportHeight = window.innerHeight;
-      const calculatedHeight = Math.round(viewportHeight * 0.45);
+      const calculatedHeight = Math.round(viewportHeight * (canvasHeightPercentage / 100));
       // Ensure minimum height of 400px and maximum of 800px
       const clampedHeight = Math.max(400, Math.min(800, calculatedHeight));
       setCanvasHeight(clampedHeight);
@@ -351,7 +351,7 @@ export default function WizardDesign() {
 
     // Cleanup listener
     return () => window.removeEventListener('resize', calculateCanvasHeight);
-  }, []);
+  }, [canvasHeightPercentage]);
 
   // Use the global room store with updated selectors
   const {
