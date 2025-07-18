@@ -243,7 +243,7 @@ const getConnectedFloorName = (
 export default function WizardDesign() {
   const [, setLocation] = useLocation();
   const { user, setReturnTo } = useAuth();
-  const { viewportOffset, gridSize, canvasHeightPercentage, menuWidthPercentage } = useSketchStore();
+  const { viewportOffset, gridSize, canvasHeightPercentage, menuWidthPercentage, setGridSize } = useSketchStore();
   const [step, setStep] = useState(1);
   const [simulationName, setSimulationName] = useState("");
   const [simulationType, setSimulationType] = useState("comfort");
