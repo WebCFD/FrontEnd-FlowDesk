@@ -24,7 +24,7 @@ export default function Settings() {
     radius: 0.5
   });
 
-  const { snapDistance, setSnapDistance, showCursorCoordinates, setShowCursorCoordinates, fontScale, setFontScale, viewportOffset, setViewportOffset, gridSize, setGridSize, canvasHeightPercentage, setCanvasHeightPercentage } = useSketchStore();
+  const { snapDistance, setSnapDistance, showCursorCoordinates, setShowCursorCoordinates, fontScale, setFontScale, viewportOffset, setViewportOffset, gridSize, setGridSize, canvasHeightPercentage, setCanvasHeightPercentage, menuWidthPercentage, setMenuWidthPercentage } = useSketchStore();
 
   const variants = [
     { value: 'professional', label: 'Professional' },
@@ -93,6 +93,14 @@ export default function Settings() {
     toast({
       title: "Canvas Height updated",
       description: `Canvas height set to ${value[0]}% of viewport successfully.`
+    });
+  };
+
+  const handleMenuWidthPercentageChange = (value: number[]) => {
+    setMenuWidthPercentage(value[0]);
+    toast({
+      title: "Menu Width updated",
+      description: `Menu width set to ${value[0]}% of canvas successfully.`
     });
   };
 
@@ -319,6 +327,28 @@ export default function Settings() {
                 </div>
                 <div className="text-sm text-muted-foreground mt-1">
                   Canvas height as percentage of viewport height
+                </div>
+              </div>
+              
+              <div>
+                <Label>Menu Width</Label>
+                <div className="flex items-center gap-4 mt-2">
+                  <div className="flex-1">
+                    <Slider
+                      value={[menuWidthPercentage]}
+                      onValueChange={handleMenuWidthPercentageChange}
+                      min={15}
+                      max={40}
+                      step={2.5}
+                      className="w-full"
+                    />
+                  </div>
+                  <span className="text-sm text-muted-foreground w-16 text-right">
+                    {menuWidthPercentage}%
+                  </span>
+                </div>
+                <div className="text-sm text-muted-foreground mt-1">
+                  Menu width as percentage of canvas width
                 </div>
               </div>
             </div>

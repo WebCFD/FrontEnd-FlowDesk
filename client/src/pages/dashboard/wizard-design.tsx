@@ -242,7 +242,7 @@ const getConnectedFloorName = (
 export default function WizardDesign() {
   const [, setLocation] = useLocation();
   const { user, setReturnTo } = useAuth();
-  const { viewportOffset, gridSize, canvasHeightPercentage } = useSketchStore();
+  const { viewportOffset, gridSize, canvasHeightPercentage, menuWidthPercentage } = useSketchStore();
   const [step, setStep] = useState(1);
   const [simulationName, setSimulationName] = useState("");
   const [simulationType, setSimulationType] = useState("comfort");
@@ -270,7 +270,8 @@ export default function WizardDesign() {
   const [defaultWallTemperature, setDefaultWallTemperature] = useState(20); // Default wall temperature in °C
   const [defaultStairTemperature, setDefaultStairTemperature] = useState(20); // Default stair temperature in °C
   const [canvas3DKey, setCanvas3DKey] = useState(0); // Force re-render of Canvas3D
-  const [canvasHeight, setCanvasHeight] = useState(700); // Dynamic canvas height (45% of viewport)
+  const [canvasHeight, setCanvasHeight] = useState(700); // Dynamic canvas height (configurable % of viewport)
+  const [menuWidth, setMenuWidth] = useState(300); // Dynamic menu width (configurable % of canvas width)
   
   // Nuevos estados para parámetros por planta
   const [floorParameters, setFloorParameters] = useState<Record<string, { ceilingHeight: number; floorDeck: number; ceilingTemperature?: number; floorTemperature?: number }>>({
@@ -352,6 +353,27 @@ export default function WizardDesign() {
     // Cleanup listener
     return () => window.removeEventListener('resize', calculateCanvasHeight);
   }, [canvasHeightPercentage]);
+
+  // Calculate menu width as configurable percentage of canvas width
+  useEffect(() => {
+    const calculateMenuWidth = () => {
+      const viewportWidth = window.innerWidth;
+      const canvasWidth = viewportWidth - viewportOffset; // Available width for canvas
+      const calculatedWidth = Math.round(canvasWidth * (menuWidthPercentage / 100));
+      // Ensure minimum width of 200px and maximum of 500px for usability
+      const clampedWidth = Math.max(200, Math.min(500, calculatedWidth));
+      setMenuWidth(clampedWidth);
+    };
+
+    // Calculate initial width
+    calculateMenuWidth();
+
+    // Recalculate on window resize
+    window.addEventListener('resize', calculateMenuWidth);
+
+    // Cleanup listener
+    return () => window.removeEventListener('resize', calculateMenuWidth);
+  }, [menuWidthPercentage, viewportOffset]);
 
   // Use the global room store with updated selectors
   const {
@@ -1410,7 +1432,7 @@ export default function WizardDesign() {
 
           <div className="flex gap-4">
             {/* Left side menus */}
-            <div className="w-72 space-y-6 overflow-y-auto" style={{ maxHeight: `${canvasHeight}px` }}>
+            <div className="space-y-6 overflow-y-auto" style={{ maxHeight: `${canvasHeight}px`, width: `${menuWidth}px` }}>
               {/* 2D Configuration - only show when in 2D mode */}
               {tab === "2d-editor" && (
                 <div className="border rounded-lg p-4">
@@ -2006,7 +2028,7 @@ export default function WizardDesign() {
 
             <div className="flex gap-4">
               {/* Left side menus - adaptable with scroll */}
-              <div className="w-72 space-y-6 overflow-y-auto" style={{ maxHeight: `${canvasHeight}px` }}>
+              <div className="space-y-6 overflow-y-auto" style={{ maxHeight: `${canvasHeight}px`, width: `${menuWidth}px` }}>
                 {/* Main options */}
                 <div className="border rounded-lg p-4">
                   <h3 className="font-semibold text-xl mb-4 text-center">Add 3D Elements</h3>
