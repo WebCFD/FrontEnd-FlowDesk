@@ -1061,19 +1061,7 @@ export function RoomSketchPro({
               </Select>
             </div>
 
-            {/* Delete Furniture Button */}
-            {onToggleFurnitureEraserMode && (
-              <div className="pt-2 border-t">
-                <Button
-                  onClick={onToggleFurnitureEraserMode}
-                  variant={isFurnitureEraserMode ? "destructive" : "outline"}
-                  size="sm"
-                  className="w-full"
-                >
-                  {isFurnitureEraserMode ? "Exit Delete Mode" : "Delete Furniture"}
-                </Button>
-              </div>
-            )}
+
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

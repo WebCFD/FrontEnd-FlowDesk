@@ -2019,6 +2019,8 @@ export default function WizardDesign() {
                       currentFloor: currentFloor,
                       floors: floors
                     }}
+                    onToggleFurnitureEraserMode={handleToggleFurnitureEraserMode}
+                    isFurnitureEraserMode={isFurnitureEraserMode}
                   />
                 </div>
 
