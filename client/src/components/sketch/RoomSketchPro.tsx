@@ -954,8 +954,8 @@ export function RoomSketchPro({
   return (
     <div 
       ref={containerRef}
-      className={`relative w-full ${getThemeBackground()}`}
-      style={{ width: '100%', minHeight: '600px' }}
+      className={`relative w-full h-full ${getThemeBackground()}`}
+      style={{ width: '100%', height: '100%', minHeight: 'unset' }}
     >
       <Canvas3D
         floors={canvas3DFloors}

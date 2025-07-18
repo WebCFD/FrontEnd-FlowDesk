@@ -2573,7 +2573,7 @@ export default function WizardDesign() {
 
   const renderCanvasSection = (mode = "tabs") => {
     return (
-      <div className="border rounded-lg overflow-hidden bg-white min-w-[600px]" style={{ flex: 1, minHeight: '600px' }}>
+      <div className="border rounded-lg overflow-hidden bg-white min-w-[600px] min-h-[600px]" style={{ flex: 1 }}>
         <SceneProvider>
           {mode === "step2" ? (
             <RoomSketchPro
@@ -2763,7 +2763,7 @@ export default function WizardDesign() {
         {renderStepIndicator()}
         {/* Display simulation info at the top for all steps */}
         {renderSimulationInfo()}
-        <div>
+        <div className="min-h-[690px]">
           {step === 1 && renderStep1()}
           {step === 2 && renderStep2()}
           {step === 3 && renderStep3()}
