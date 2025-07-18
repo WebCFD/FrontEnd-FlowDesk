@@ -2067,6 +2067,9 @@ export default function WizardDesign() {
 
   const renderStep3 = () => (
     <div className="space-y-6">
+      {/* Simulation Information */}
+      {renderSimulationInfo()}
+      
       <Card>
         <CardHeader>
           <CardTitle>Choose Your Simulation Package</CardTitle>
@@ -2808,8 +2811,6 @@ export default function WizardDesign() {
     <DashboardLayout>
       <div className="container mx-auto py-4 px-3 space-y-4">
         {renderStepIndicator()}
-        {/* Display simulation info at the top for all steps */}
-        {renderSimulationInfo()}
         <div className="min-h-[690px]">
           {step === 1 && renderStep1()}
           {step === 2 && renderStep2()}
