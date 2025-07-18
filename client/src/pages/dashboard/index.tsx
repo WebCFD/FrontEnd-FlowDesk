@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Play, Mail, MoreHorizontal, ExternalLink } from "lucide-react";
+import { PlusCircle, Play, Mail, MoreHorizontal, ExternalLink, Trash2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useRoomStore } from "@/lib/store/room-store";
 import { useAuth } from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 import type { Simulation } from "@shared/schema";
 import {
   AlertDialog,
@@ -55,8 +57,11 @@ export default function Dashboard() {
   const [, setLocation] = useLocation();
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   const [showNewSimulationDialog, setShowNewSimulationDialog] = useState(false);
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; simulationId?: number; simulationName?: string }>({ open: false });
   const { lines, reset } = useRoomStore();
   const { user } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   // Fetch user simulations
   const { data: simulations = [], isLoading, error } = useQuery<Simulation[]>({
@@ -70,7 +75,41 @@ export default function Dashboard() {
     enabled: !!user && !user.isAnonymous,
   });
 
+  // Delete simulation mutation
+  const deleteSimulationMutation = useMutation({
+    mutationFn: async (simulationId: number) => {
+      return apiRequest("DELETE", `/api/simulations/${simulationId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/simulations'] });
+      toast({
+        title: "Simulation Deleted",
+        description: "The simulation has been successfully deleted.",
+      });
+      setDeleteDialog({ open: false });
+    },
+    onError: () => {
+      toast({
+        title: "Delete Failed",
+        description: "Failed to delete the simulation. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
 
+  const handleDeleteSimulation = (simulationId: number, simulationName: string) => {
+    setDeleteDialog({ 
+      open: true, 
+      simulationId, 
+      simulationName 
+    });
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteDialog.simulationId) {
+      deleteSimulationMutation.mutate(deleteDialog.simulationId);
+    }
+  };
 
   const handleStartSimulation = () => {
     if (lines.length > 0) {
@@ -242,10 +281,11 @@ export default function Dashboard() {
                                 <ExternalLink className="h-4 w-4 mr-2" />
                                 View Details
                               </DropdownMenuItem>
-                              <DropdownMenuItem>
-                                Edit
-                              </DropdownMenuItem>
-                              <DropdownMenuItem className="text-red-600">
+                              <DropdownMenuItem 
+                                className="text-red-600"
+                                onClick={() => handleDeleteSimulation(simulation.id, simulation.name)}
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
                                 Delete
                               </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -311,6 +351,29 @@ export default function Dashboard() {
             <AlertDialogCancel onClick={handleReturnToWizard}>Return to WizardDesign</AlertDialogCancel>
             <AlertDialogAction onClick={handleConfirmNewSimulation}>
               New Design
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Simulation Confirmation Dialog */}
+      <AlertDialog open={deleteDialog.open} onOpenChange={(open) => setDeleteDialog({ open })}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Simulation</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{deleteDialog.simulationName}"? This action cannot be undone. 
+              All simulation data and files will be permanently removed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleConfirmDelete}
+              className="bg-red-600 hover:bg-red-700"
+              disabled={deleteSimulationMutation.isPending}
+            >
+              {deleteSimulationMutation.isPending ? "Deleting..." : "Delete"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
