@@ -1949,22 +1949,7 @@ export default function WizardDesign() {
                     </Button>
                   </div>
 
-                  <div className="space-y-4">
-                    <h3 className="font-semibold">Wall Transparency</h3>
-                    <div className="px-2">
-                      <Slider
-                        defaultValue={[20]}
-                        max={100}
-                        step={1}
-                        onValueChange={(value: number[]) =>
-                          setWallTransparency(value[0] / 100)
-                        }
-                      />
-                      <div className="text-sm text-right mt-1">
-                        {Math.round(wallTransparency * 100)}%
-                      </div>
-                    </div>
-                  </div>
+
 
                   {/* Height parameters moved to Parameters section */}
                 </div>
@@ -2711,6 +2696,7 @@ export default function WizardDesign() {
               isMultifloor={isMultifloor}
               floorParameters={floorParameters}
               wallTransparency={wallTransparency}
+              onWallTransparencyChange={setWallTransparency}
               isMeasureMode={isMeasureMode}
               isEraserMode={isEraserMode}
               walls={walls} // Phase 1: Pass walls for AirEntry dialog unification
