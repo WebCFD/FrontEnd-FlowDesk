@@ -14,6 +14,8 @@ import { customFurnitureStore } from "@/lib/custom-furniture-store";
 import { useRoomStore } from "@/lib/store/room-store";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Slider } from "@/components/ui/slider";
+import { Label } from "@/components/ui/label";
 import { Settings } from "lucide-react";
 
 interface Point {
@@ -148,6 +150,7 @@ interface Canvas3DProps {
   onFurnitureAdd?: (floorName: string, item: FurnitureItem) => void;
   onUpdateFurniture?: (floorName: string, itemId: string, item: FurnitureItem) => void;
   onDeleteFurniture?: (floorName: string, itemId: string) => void;
+  onWallTransparencyChange?: (value: number) => void;
 }
 
 
@@ -960,6 +963,7 @@ export default function Canvas3D({
   onFurnitureAdd,
   onUpdateFurniture,
   onDeleteFurniture,
+  onWallTransparencyChange,
   // REMOVED: onAirEntryUpdated - no longer needed for texture preservation
 }: Canvas3DProps) {
   // Access the SceneContext to share data with RoomSketchPro
@@ -6335,9 +6339,20 @@ export default function Canvas3D({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-80 p-4 space-y-4">
-              {/* Placeholder content - will be populated later */}
-              <div className="text-sm text-gray-500">
-                Settings will be added here
+              {/* Wall Transparency */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Wall Transparency</Label>
+                <Slider
+                  value={[wallTransparency]}
+                  onValueChange={(values) => onWallTransparencyChange && onWallTransparencyChange(values[0])}
+                  min={0}
+                  max={1}
+                  step={0.1}
+                  className="w-full"
+                />
+                <div className="text-xs text-gray-500 text-right">
+                  {Math.round(wallTransparency * 100)}%
+                </div>
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
