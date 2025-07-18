@@ -55,6 +55,7 @@ export const insertSimulationSchema = createInsertSchema(simulations)
   .pick({
     name: true,
     filePath: true,
+    status: true,
     simulationType: true,
     packageType: true,
     cost: true,
@@ -62,6 +63,7 @@ export const insertSimulationSchema = createInsertSchema(simulations)
     jsonConfig: true,
   })
   .extend({
+    status: z.enum(['processing', 'completed', 'failed']),
     simulationType: z.enum(['comfort', 'renovation']),
     packageType: z.enum(['basic', 'professional', 'enterprise']),
     cost: z.string().transform(val => parseFloat(val)),

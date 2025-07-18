@@ -65,9 +65,15 @@ export class DatabaseStorage implements IStorage {
     const [newSimulation] = await db
       .insert(simulations)
       .values({
-        ...simulation,
+        name: simulation.name,
+        filePath: simulation.filePath,
+        status: simulation.status,
+        simulationType: simulation.simulationType,
+        packageType: simulation.packageType,
         cost: simulation.cost.toString(),
-        status: 'processing',
+        isPublic: simulation.isPublic,
+        jsonConfig: simulation.jsonConfig,
+        userId: simulation.userId,
       })
       .returning();
     return newSimulation;
