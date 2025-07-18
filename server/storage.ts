@@ -1,6 +1,6 @@
-import { users, simulations, type User, type InsertUser, type Simulation, type InsertSimulation } from "@shared/schema";
+import { users, simulations, type User, type InsertUser, type Simulation, type InsertSimulation, type UpdateSimulationStatus } from "@shared/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 
@@ -11,11 +11,14 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUserCredits(userId: number, credits: string): Promise<void>;
 
   // Simulation methods
   createSimulation(simulation: InsertSimulation & { userId: number }): Promise<Simulation>;
   getSimulationsByUserId(userId: number): Promise<Simulation[]>;
   getSimulation(id: number): Promise<Simulation | undefined>;
+  updateSimulationStatus(id: number, status: UpdateSimulationStatus): Promise<Simulation>;
+  getCompletedSimulationsByUserId(userId: number): Promise<Simulation[]>;
 
   // Session store
   sessionStore: session.Store;
@@ -61,10 +64,35 @@ export class DatabaseStorage implements IStorage {
       .insert(simulations)
       .values({
         ...simulation,
-        status: 'draft',
+        cost: simulation.cost.toString(),
+        status: 'processing',
       })
       .returning();
     return newSimulation;
+  }
+
+  async updateUserCredits(userId: number, credits: string): Promise<void> {
+    await db
+      .update(users)
+      .set({ credits })
+      .where(eq(users.id, userId));
+  }
+
+  async updateSimulationStatus(id: number, statusUpdate: UpdateSimulationStatus): Promise<Simulation> {
+    const [simulation] = await db
+      .update(simulations)
+      .set(statusUpdate)
+      .where(eq(simulations.id, id))
+      .returning();
+    return simulation;
+  }
+
+  async getCompletedSimulationsByUserId(userId: number): Promise<Simulation[]> {
+    return db
+      .select()
+      .from(simulations)
+      .where(and(eq(simulations.userId, userId), eq(simulations.status, 'completed')))
+      .orderBy(desc(simulations.createdAt));
   }
 
   async getSimulationsByUserId(userId: number): Promise<Simulation[]> {

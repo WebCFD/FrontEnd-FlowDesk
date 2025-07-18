@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, decimal, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -8,15 +8,25 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
   email: text("email").notNull(),
   fullName: text("full_name"),
+  credits: decimal("credits", { precision: 10, scale: 2 }).default("500.00").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 export const simulations = pgTable("simulations", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
   name: text("name").notNull(),
-  status: text("status").notNull(), // 'draft', 'running', 'completed'
+  filePath: text("file_path").notNull(),
+  status: text("status").notNull(), // 'processing', 'completed', 'failed'
+  simulationType: text("simulation_type").notNull(), // 'comfort', 'renovation'
+  packageType: text("package_type").notNull(), // 'basic', 'professional', 'enterprise'
+  cost: decimal("cost", { precision: 10, scale: 2 }).notNull(),
+  isPublic: boolean("is_public").default(false).notNull(),
+  jsonConfig: jsonb("json_config"), // Complete simulation configuration
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  completedAt: timestamp("completed_at"),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 // @deprecated - kept for backwards compatibility
@@ -41,10 +51,27 @@ export const insertUserSchema = createInsertSchema(users)
   });
 
 // Schema for creating simulations
-export const simulationSchema = createInsertSchema(simulations)
+export const insertSimulationSchema = createInsertSchema(simulations)
   .pick({
     name: true,
+    filePath: true,
+    simulationType: true,
+    packageType: true,
+    cost: true,
+    isPublic: true,
+    jsonConfig: true,
+  })
+  .extend({
+    simulationType: z.enum(['comfort', 'renovation']),
+    packageType: z.enum(['basic', 'professional', 'enterprise']),
+    cost: z.string().transform(val => parseFloat(val)),
   });
+
+// Schema for updating simulation status
+export const updateSimulationStatusSchema = z.object({
+  status: z.enum(['processing', 'completed', 'failed']),
+  completedAt: z.date().optional(),
+});
 
 // Schema for contact messages (deprecated)
 export const contactMessageSchema = createInsertSchema(contactMessages)
@@ -114,7 +141,8 @@ export const simulationDataSchema = z.object({
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type Simulation = typeof simulations.$inferSelect;
-export type InsertSimulation = z.infer<typeof simulationSchema>;
+export type InsertSimulation = z.infer<typeof insertSimulationSchema>;
+export type UpdateSimulationStatus = z.infer<typeof updateSimulationStatusSchema>;
 export type ContactMessage = typeof contactMessages.$inferSelect;
 export type InsertContactMessage = z.infer<typeof contactMessageSchema>;
 
