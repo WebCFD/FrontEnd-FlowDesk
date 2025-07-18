@@ -39,7 +39,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const [isLoading, setIsLoading] = useState(false);
-  const { setReturnTo, returnTo } = useAuth();
+  const { setReturnTo, returnTo, setUser } = useAuth();
   const { reset } = useRoomStore();
 
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -82,6 +82,13 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       if (!response.ok) {
         throw new Error(data.message || "Failed to log in");
       }
+
+      // Update client-side auth state
+      setUser({
+        username: data.username,
+        email: data.email,
+        isAnonymous: false
+      });
 
       // Check if we're switching to a different user (but not from no-login to login)
       if (previousUserId !== null && previousUserId !== data.id) {
