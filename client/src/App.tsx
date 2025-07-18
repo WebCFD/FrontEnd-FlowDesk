@@ -5,7 +5,6 @@ import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Dashboard from "@/pages/dashboard";
-import Simulations from "@/pages/dashboard/simulations";
 import Settings from "@/pages/dashboard/settings";
 import Profile from "@/pages/dashboard/profile";
 import NewSimulation from "@/pages/dashboard/new-simulation";
@@ -25,11 +24,7 @@ function Router() {
           <Dashboard />
         </ProtectedRoute>
       </Route>
-      <Route path="/dashboard/simulations">
-        <ProtectedRoute>
-          <Simulations />
-        </ProtectedRoute>
-      </Route>
+
       <Route path="/dashboard/new-simulation">
         <ProtectedRoute>
           <NewSimulation />
