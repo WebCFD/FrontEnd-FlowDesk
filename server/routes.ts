@@ -54,8 +54,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const { name, simulationType, status, jsonConfig } = req.body;
-      
-      console.log("DEBUG BACKEND: Received status:", status);
 
       // Validation 1: Check simulation name
       if (!name || name.trim().length === 0) {
