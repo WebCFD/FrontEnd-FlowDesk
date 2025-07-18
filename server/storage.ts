@@ -12,6 +12,7 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUserCredits(userId: number, credits: string): Promise<void>;
+  debitUserCredits(userId: number, amount: number): Promise<boolean>;
 
   // Simulation methods
   createSimulation(simulation: InsertSimulation & { userId: number }): Promise<Simulation>;
@@ -76,6 +77,18 @@ export class DatabaseStorage implements IStorage {
       .update(users)
       .set({ credits })
       .where(eq(users.id, userId));
+  }
+
+  async debitUserCredits(userId: number, amount: number): Promise<boolean> {
+    const user = await this.getUser(userId);
+    if (!user) return false;
+    
+    const currentCredits = parseFloat(user.credits);
+    if (currentCredits < amount) return false;
+    
+    const newCredits = (currentCredits - amount).toFixed(2);
+    await this.updateUserCredits(userId, newCredits);
+    return true;
   }
 
   async updateSimulationStatus(id: number, statusUpdate: UpdateSimulationStatus): Promise<Simulation> {

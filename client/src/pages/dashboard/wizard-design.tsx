@@ -2283,23 +2283,91 @@ export default function WizardDesign() {
     );
   };
 
-  // Función para mostrar el diálogo con los datos de simulación
+  // Estado para el diálogo de confirmación de simulación
+  const [showStartSimulationDialog, setShowStartSimulationDialog] = useState(false);
+  const [simulationStatus, setSimulationStatus] = useState("completed");
+  const [isCreatingSimulation, setIsCreatingSimulation] = useState(false);
+
+  // Función para mostrar el diálogo de confirmación antes de crear la simulación
   const handleStartSimulation = () => {
-    const exportData = generateSimulationDataForExport();
+    // Validaciones previas
+    if (!simulationName || simulationName.trim().length === 0) {
+      toast({
+        title: "Simulation Name Required",
+        description: "Please enter a simulation name before starting.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    // Rastrear evento de inicio de simulación
-    trackEvent(
-      AnalyticsCategories.SIMULATION,
-      AnalyticsActions.START_SIMULATION,
-      "wizard_button",
-      Object.keys(exportData).length,
-    );
+    if (simulationName.trim().length < 3 || simulationName.trim().length > 100) {
+      toast({
+        title: "Invalid Simulation Name",
+        description: "Simulation name must be between 3 and 100 characters.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    // Guardar los datos para mostrarlos en el diálogo
-    setSimulationData(exportData);
+    // Mostrar diálogo de confirmación con dropdown de status
+    setShowStartSimulationDialog(true);
+  };
 
-    // Mostrar el diálogo con los datos para copiar/exportar
-    setShowSimulationDataDialog(true);
+  // Función para crear la simulación real
+  const handleConfirmCreateSimulation = async () => {
+    try {
+      setIsCreatingSimulation(true);
+      
+      const exportData = generateSimulationDataForExport();
+
+      // Llamar al nuevo endpoint para crear la simulación
+      const response = await fetch("/api/simulations/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          name: simulationName,
+          simulationType,
+          status: simulationStatus,
+          jsonConfig: exportData,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Error creating simulation");
+      }
+
+      // Rastrear evento de inicio de simulación
+      trackEvent(
+        AnalyticsCategories.SIMULATION,
+        AnalyticsActions.START_SIMULATION,
+        "wizard_created",
+        1,
+      );
+
+      toast({
+        title: "Simulation Created Successfully",
+        description: result.message,
+      });
+
+      // Cerrar diálogo y redireccionar al dashboard
+      setShowStartSimulationDialog(false);
+      setLocation("/dashboard");
+
+    } catch (error) {
+      console.error("Error creating simulation:", error);
+      toast({
+        title: "Error Creating Simulation",
+        description: error instanceof Error ? error.message : "An unexpected error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCreatingSimulation(false);
+    }
   };
 
   // Función para guardar el diseño localmente como archivo JSON
@@ -2894,6 +2962,61 @@ export default function WizardDesign() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Diálogo de confirmación para crear simulación */}
+      <Dialog open={showStartSimulationDialog} onOpenChange={setShowStartSimulationDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Create Simulation</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <p className="text-sm text-gray-600 mb-2">
+                You are about to create simulation: <strong>"{simulationName}"</strong>
+              </p>
+              <p className="text-sm text-gray-600">
+                Type: <strong>{simulationType === "comfort" ? "Thermal Comfort" : "Comfort + Renovation"}</strong>
+              </p>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="simulation-status">Simulation Status</Label>
+              <Select value={simulationStatus} onValueChange={setSimulationStatus}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="processing">Processing</SelectItem>
+                  <SelectItem value="failed">Failed</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="bg-blue-50 p-3 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <strong>Cost:</strong> €10.00 will be deducted from your credits
+              </p>
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-2 mt-6">
+            <Button
+              variant="outline"
+              onClick={() => setShowStartSimulationDialog(false)}
+              disabled={isCreatingSimulation}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirmCreateSimulation}
+              disabled={isCreatingSimulation}
+            >
+              {isCreatingSimulation ? "Creating..." : "Create Simulation"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 }
