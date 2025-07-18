@@ -256,7 +256,7 @@ export default function WizardDesign() {
   const [isAirEntryDialogOpen, setIsAirEntryDialogOpen] = useState(false);
   const [selectedLine, setSelectedLine] = useState<Line | null>(null);
   const [clickedPoint, setClickedPoint] = useState<Point | null>(null);
-  const [tab, setTab] = useState<"2d-editor" | "3d-preview">("2d-editor");
+  const [tab, setTab] = useState<"2d-editor" | "3d-preview">("3d-preview");
   const [showStartSimulationPrompt, setShowStartSimulationPrompt] =
     useState(false);
   const [showEraseDesignDialog, setShowEraseDesignDialog] = useState(false);
@@ -2573,7 +2573,7 @@ export default function WizardDesign() {
 
   const renderCanvasSection = (mode = "tabs") => {
     return (
-      <div className="border rounded-lg overflow-hidden bg-white min-w-[600px] min-h-[600px]" style={{ flex: 1 }}>
+      <div className="border rounded-lg overflow-hidden bg-white min-w-[600px]" style={{ flex: 1, minHeight: '600px' }}>
         <SceneProvider>
           {mode === "step2" ? (
             <RoomSketchPro
