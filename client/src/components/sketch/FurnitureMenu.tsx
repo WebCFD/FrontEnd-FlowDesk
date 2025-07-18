@@ -121,43 +121,61 @@ export function FurnitureMenu({ onDragStart, floorContext }: FurnitureMenuProps)
     // This prevents the double-add issue
   };
 
-  // Combine built-in and custom furniture items
-  const allFurnitureItems = [...furnitureItems, ...customItems];
+  // Separate items by categories
+  const furnitureItems_category = furnitureItems.filter(item => ['table', 'armchair'].includes(item.id));
+  const charactersItems = furnitureItems.filter(item => item.id === 'person');
+  const objectsItems = furnitureItems.filter(item => ['car', 'block'].includes(item.id));
+  const airEntriesItems = furnitureItems.filter(item => item.id === 'vent');
+  
+  // Custom furniture goes with furniture category
+  const allFurnitureItems = [...furnitureItems_category, ...customItems];
+
+  const renderCategory = (title: string, items: FurnitureItem[]) => (
+    <div className="space-y-4">
+      <h3 className="font-semibold">{title}</h3>
+      <div className="grid grid-cols-3 gap-2">
+        {items.map((item) => (
+          <div
+            key={item.id}
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.setData('application/json', JSON.stringify(item));
+              onDragStart(item);
+            }}
+            className={cn(
+              "h-16 p-2 flex flex-col items-center justify-center",
+              "border-2 border-gray-300 rounded-md",
+              "hover:bg-gray-100 cursor-move transition-all duration-200",
+              "bg-white shadow-sm",
+              // Highlight custom objects with subtle green border
+              item.id.startsWith('custom_') ? "border-green-300 bg-green-50" : ""
+            )}
+            title={`${item.name} - Drag to canvas to place`}
+          >
+            <div 
+              className="w-10 h-10"
+              dangerouslySetInnerHTML={{ __html: item.icon }}
+            />
+            <span className="text-xs mt-1">{item.name}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     <div className="w-full space-y-6">
-
-
-      <div className="space-y-4">
-        <h3 className="font-semibold">Furniture</h3>
-        <div className="grid grid-cols-3 gap-2">
-          {allFurnitureItems.map((item) => (
-            <div
-              key={item.id}
-              draggable
-              onDragStart={(e) => {
-                e.dataTransfer.setData('application/json', JSON.stringify(item));
-                onDragStart(item);
-              }}
-              className={cn(
-                "h-16 p-2 flex flex-col items-center justify-center",
-                "border-2 border-gray-300 rounded-md",
-                "hover:bg-gray-100 cursor-move transition-all duration-200",
-                "bg-white shadow-sm",
-                // Highlight custom objects with subtle green border
-                item.id.startsWith('custom_') ? "border-green-300 bg-green-50" : ""
-              )}
-              title={`${item.name} - Drag to canvas to place`}
-            >
-              <div 
-                className="w-10 h-10"
-                dangerouslySetInnerHTML={{ __html: item.icon }}
-              />
-              <span className="text-xs mt-1">{item.name}</span>
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* Furniture Category */}
+      {renderCategory("Furniture", allFurnitureItems)}
+      
+      {/* Characters Category */}
+      {renderCategory("Characters", charactersItems)}
+      
+      {/* Objects Category */}
+      {renderCategory("Objects", objectsItems)}
+      
+      {/* Floor/Ceiling Air Entries Category */}
+      {renderCategory("Floor/Ceiling Air Entries", airEntriesItems)}
 
       <div className="space-y-4">
         <h3 className="font-semibold">Load Custom Object</h3>
