@@ -34,7 +34,7 @@ export const useSketchStore = create<SketchState>()(
       setViewportOffset: (value: number) => set({ viewportOffset: Math.max(150, Math.min(700, value)) }),
       setGridSize: (value: number) => set({ gridSize: Math.max(10, Math.min(50, value)) }),
       setCanvasHeightPercentage: (value: number) => set({ canvasHeightPercentage: Math.max(20, Math.min(80, value)) }),
-      setMenuWidthPercentage: (value: number) => set({ menuWidthPercentage: Math.max(15, Math.min(40, value)) }),
+      setMenuWidthPercentage: (value: number) => set({ menuWidthPercentage: Math.max(5, Math.min(50, value)) }),
     }),
     {
       name: 'sketch-store',

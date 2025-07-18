@@ -337,8 +337,8 @@ export default function Settings() {
                     <Slider
                       value={[menuWidthPercentage]}
                       onValueChange={handleMenuWidthPercentageChange}
-                      min={15}
-                      max={40}
+                      min={5}
+                      max={50}
                       step={2.5}
                       className="w-full"
                     />
