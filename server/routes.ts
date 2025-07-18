@@ -4,6 +4,8 @@ import { storage } from "./storage";
 import { insertUserSchema, insertSimulationSchema, updateSimulationStatusSchema } from "@shared/schema";
 import { z } from "zod";
 import { setupAuth } from "./auth";
+import { promises as fs } from "fs";
+import path from "path";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication routes and middleware
@@ -41,6 +43,93 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(201).json(simulation);
     } catch (error) {
       res.status(400).json({ message: "Invalid simulation data" });
+    }
+  });
+
+  // New endpoint for creating simulations from wizard
+  app.post("/api/simulations/create", async (req, res) => {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const { name, simulationType, status, jsonConfig } = req.body;
+
+      // Validation 1: Check simulation name
+      if (!name || name.trim().length === 0) {
+        return res.status(400).json({ message: "Simulation name is required" });
+      }
+
+      if (name.trim().length < 3 || name.trim().length > 100) {
+        return res.status(400).json({ message: "Simulation name must be between 3 and 100 characters" });
+      }
+
+      // Validation 2: Check simulation type
+      const validTypes = ['comfort', 'renovation'];
+      if (!validTypes.includes(simulationType)) {
+        return res.status(400).json({ message: "Invalid simulation type" });
+      }
+
+      // Validation 3: Check status
+      const validStatuses = ['completed', 'processing', 'failed'];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({ message: "Invalid simulation status" });
+      }
+
+      // Validation 4: Check if user has enough credits (10 euros)
+      const simulationCost = 10;
+      const hasEnoughCredits = await storage.debitUserCredits(req.user.id, simulationCost);
+      
+      if (!hasEnoughCredits) {
+        return res.status(400).json({ message: "Insufficient credits. You need at least €10 to run a simulation." });
+      }
+
+      // Create user folder if it doesn't exist
+      const userFolderPath = path.join(process.cwd(), 'simulations', `user_${req.user.id}`);
+      try {
+        await fs.mkdir(userFolderPath, { recursive: true });
+      } catch (error) {
+        console.error('Error creating user folder:', error);
+      }
+
+      // Generate filename with timestamp
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const sanitizedName = name.replace(/[^a-zA-Z0-9_-]/g, '_');
+      const filename = `${sanitizedName}_${timestamp}.json`;
+      const filePath = path.join(userFolderPath, filename);
+
+      // Save JSON file
+      try {
+        await fs.writeFile(filePath, JSON.stringify(jsonConfig, null, 2));
+      } catch (error) {
+        console.error('Error saving simulation file:', error);
+        return res.status(500).json({ message: "Error saving simulation file" });
+      }
+
+      // Create simulation record in database
+      const relativePath = `/simulations/user_${req.user.id}/${filename}`;
+      const simulation = await storage.createSimulation({
+        name: name.trim(),
+        filePath: relativePath,
+        status,
+        simulationType,
+        packageType: 'basic',
+        cost: simulationCost,
+        isPublic: false,
+        jsonConfig,
+        userId: req.user.id,
+      });
+
+      // Return success with simulation data
+      res.status(201).json({
+        success: true,
+        simulation,
+        message: `Simulation "${name}" created successfully. €${simulationCost} debited from your account.`
+      });
+
+    } catch (error) {
+      console.error('Error creating simulation:', error);
+      res.status(500).json({ message: "Error creating simulation" });
     }
   });
 
