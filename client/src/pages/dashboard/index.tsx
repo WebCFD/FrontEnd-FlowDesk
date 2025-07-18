@@ -64,6 +64,12 @@ export default function Dashboard() {
     enabled: !!user && !user.isAnonymous,
   });
 
+  // Fetch user data including credits
+  const { data: userData } = useQuery({
+    queryKey: ['/api/auth/user'],
+    enabled: !!user && !user.isAnonymous,
+  });
+
 
 
   const handleStartSimulation = () => {
@@ -130,27 +136,31 @@ export default function Dashboard() {
             <CardTitle>Ask Expert Advice</CardTitle>
             <CardDescription>Want personal assistance by one of our experts?</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Button 
-                onClick={handleContactSupport}
-                className="flex items-center gap-2"
-              >
-                <Mail className="h-4 w-4" />
-                Get in Touch
-              </Button>
-              <div className="text-sm text-muted-foreground">
-                Available Credits: €500
-              </div>
-            </div>
+          <CardContent>
+            <Button 
+              onClick={handleContactSupport}
+              className="flex items-center gap-2"
+            >
+              <Mail className="h-4 w-4" />
+              Get in Touch
+            </Button>
           </CardContent>
         </Card>
 
         {/* Recent Simulations */}
         <Card>
           <CardHeader className="pb-4">
-            <CardTitle>Recent Simulations</CardTitle>
-            <CardDescription>Your latest thermal analysis projects</CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Recent Simulations</CardTitle>
+                <CardDescription>Your latest thermal analysis projects</CardDescription>
+              </div>
+              {userData && (
+                <div className="text-sm text-muted-foreground">
+                  Available Credits: €{userData.credits}
+                </div>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             <div className="rounded-md border">
