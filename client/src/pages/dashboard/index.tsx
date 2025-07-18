@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Play, Mail, MoreHorizontal, ExternalLink } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useRoomStore } from "@/lib/store/room-store";
+import { useAuth } from "@/hooks/use-auth";
+import type { Simulation } from "@shared/schema";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,39 +35,34 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-// Mock simulation data for the table
-const mockSimulations = [
-  {
-    id: 1,
-    name: "sphere_JRM",
-    file: "/simulations/sphere_JRM/config.json",
-    status: "Processing",
-    createdAt: "10 minutes ago",
-    isPublic: true
-  },
-  {
-    id: 2,
-    name: "office_thermal_v2",
-    file: "/simulations/office_thermal_v2/simulation.json",
-    status: "Completed",
-    createdAt: "2 hours ago",
-    isPublic: false
-  },
-  {
-    id: 3,
-    name: "hvac_system_test",
-    file: "/simulations/hvac_system_test/data.json",
-    status: "Failed",
-    createdAt: "1 day ago",
-    isPublic: true
-  }
-];
+// Utility function to format dates
+const formatDate = (date: string) => {
+  const now = new Date();
+  const simulationDate = new Date(date);
+  const diffInMilliseconds = now.getTime() - simulationDate.getTime();
+  const diffInMinutes = Math.floor(diffInMilliseconds / (1000 * 60));
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  const diffInDays = Math.floor(diffInHours / 24);
+
+  if (diffInMinutes < 1) return "Just now";
+  if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`;
+  if (diffInHours < 24) return `${diffInHours} hours ago`;
+  if (diffInDays < 7) return `${diffInDays} days ago`;
+  return simulationDate.toLocaleDateString();
+};
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   const [showNewSimulationDialog, setShowNewSimulationDialog] = useState(false);
   const { lines, reset } = useRoomStore();
+  const { user } = useAuth();
+
+  // Fetch user simulations
+  const { data: simulations = [], isLoading, error } = useQuery<Simulation[]>({
+    queryKey: ['/api/simulations'],
+    enabled: !!user && !user.isAnonymous,
+  });
 
   const handleStartSimulation = () => {
     if (lines.length > 0) {
@@ -165,70 +163,90 @@ export default function Dashboard() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {mockSimulations.map((simulation) => (
-                    <TableRow key={simulation.id}>
-                      <TableCell className="font-medium">
-                        <div className="flex items-center gap-2">
-                          {simulation.name}
-                          {simulation.isPublic && (
-                            <Badge variant="secondary" className="text-xs">
-                              Public
-                            </Badge>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <code className="text-sm bg-muted px-2 py-1 rounded font-mono">
-                          {simulation.file}
-                        </code>
-                      </TableCell>
-                      <TableCell>
-                        <Badge 
-                          variant={
-                            simulation.status === "Processing" ? "default" :
-                            simulation.status === "Completed" ? "secondary" :
-                            "destructive"
-                          }
-                          className={
-                            simulation.status === "Processing" ? "bg-blue-100 text-blue-800 border-blue-200" :
-                            simulation.status === "Completed" ? "bg-green-100 text-green-800 border-green-200" :
-                            "bg-red-100 text-red-800 border-red-200"
-                          }
-                        >
-                          {simulation.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {simulation.createdAt}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
-                              <ExternalLink className="h-4 w-4 mr-2" />
-                              View Details
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="text-red-600">
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                  {isLoading ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-8">
+                        Loading simulations...
                       </TableCell>
                     </TableRow>
-                  ))}
+                  ) : error ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-8 text-red-600">
+                        Error loading simulations
+                      </TableCell>
+                    </TableRow>
+                  ) : simulations.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                        No simulations found. Create your first simulation to get started!
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    simulations.map((simulation) => (
+                      <TableRow key={simulation.id}>
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-2">
+                            {simulation.name}
+                            {simulation.isPublic && (
+                              <Badge variant="secondary" className="text-xs">
+                                Public
+                              </Badge>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <code className="text-sm bg-muted px-2 py-1 rounded font-mono">
+                            {simulation.filePath}
+                          </code>
+                        </TableCell>
+                        <TableCell>
+                          <Badge 
+                            variant={
+                              simulation.status === "processing" ? "default" :
+                              simulation.status === "completed" ? "secondary" :
+                              "destructive"
+                            }
+                            className={
+                              simulation.status === "processing" ? "bg-blue-100 text-blue-800 border-blue-200" :
+                              simulation.status === "completed" ? "bg-green-100 text-green-800 border-green-200" :
+                              "bg-red-100 text-red-800 border-red-200"
+                            }
+                          >
+                            {simulation.status.charAt(0).toUpperCase() + simulation.status.slice(1)}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {formatDate(simulation.createdAt)}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem>
+                                <ExternalLink className="h-4 w-4 mr-2" />
+                                View Details
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem className="text-red-600">
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </div>
             <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
-              <div>Displaying {mockSimulations.length} items</div>
+              <div>Displaying {simulations.length} items</div>
               <div className="flex items-center gap-2">
                 <Button variant="outline" size="sm" disabled>
                   Previous
