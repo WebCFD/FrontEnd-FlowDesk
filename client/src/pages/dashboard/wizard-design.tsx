@@ -2763,7 +2763,7 @@ export default function WizardDesign() {
         {renderStepIndicator()}
         {/* Display simulation info at the top for all steps */}
         {renderSimulationInfo()}
-        <div className="min-h-[690px]">
+        <div>
           {step === 1 && renderStep1()}
           {step === 2 && renderStep2()}
           {step === 3 && renderStep3()}
