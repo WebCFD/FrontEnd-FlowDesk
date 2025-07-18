@@ -2291,8 +2291,6 @@ export default function WizardDesign() {
 
   // Función para mostrar el diálogo de confirmación antes de crear la simulación
   const handleStartSimulation = () => {
-    console.log("🔄 Start Simulation clicked");
-    
     // Validaciones previas
     if (!simulationName || simulationName.trim().length === 0) {
       toast({
@@ -2312,14 +2310,11 @@ export default function WizardDesign() {
       return;
     }
 
-    console.log("🔄 Showing dialog");
     setShowStartSimulationDialog(true);
   };
 
   // Función para crear la simulación real
   const handleConfirmCreateSimulation = async () => {
-    console.log("🔄 Confirm Create Simulation clicked");
-    console.log("🔄 Setting isCreatingSimulation to true");
     setIsCreatingSimulation(true);
     
     try {
@@ -2888,9 +2883,6 @@ export default function WizardDesign() {
       </div>
     </div>
   );
-
-  // Debug log for state
-  console.log("🔄 Current isCreatingSimulation state:", isCreatingSimulation);
 
   return (
     <DashboardLayout>
