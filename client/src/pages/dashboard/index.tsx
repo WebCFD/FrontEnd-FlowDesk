@@ -37,7 +37,7 @@ const mockSimulations = [
   {
     id: 1,
     name: "sphere_JRM",
-    accuracy: "Basic",
+    file: "/simulations/sphere_JRM/config.json",
     status: "Processing",
     createdAt: "10 minutes ago",
     isPublic: true
@@ -45,7 +45,7 @@ const mockSimulations = [
   {
     id: 2,
     name: "office_thermal_v2",
-    accuracy: "Advanced",
+    file: "/simulations/office_thermal_v2/simulation.json",
     status: "Completed",
     createdAt: "2 hours ago",
     isPublic: false
@@ -53,7 +53,7 @@ const mockSimulations = [
   {
     id: 3,
     name: "hvac_system_test",
-    accuracy: "Premium",
+    file: "/simulations/hvac_system_test/data.json",
     status: "Failed",
     createdAt: "1 day ago",
     isPublic: true
@@ -158,7 +158,7 @@ export default function Dashboard() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Name</TableHead>
-                    <TableHead>Accuracy</TableHead>
+                    <TableHead>File</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Created at</TableHead>
                     <TableHead className="text-right">Action</TableHead>
@@ -177,7 +177,11 @@ export default function Dashboard() {
                           )}
                         </div>
                       </TableCell>
-                      <TableCell>{simulation.accuracy}</TableCell>
+                      <TableCell>
+                        <code className="text-sm bg-muted px-2 py-1 rounded font-mono">
+                          {simulation.file}
+                        </code>
+                      </TableCell>
                       <TableCell>
                         <Badge 
                           variant={
