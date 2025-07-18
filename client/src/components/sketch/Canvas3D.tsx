@@ -12,6 +12,9 @@ import { createTableModel, createPersonModel, createArmchairModel, createCarMode
 import { STLProcessor } from "./STLProcessor";
 import { customFurnitureStore } from "@/lib/custom-furniture-store";
 import { useRoomStore } from "@/lib/store/room-store";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Settings } from "lucide-react";
 
 interface Point {
   x: number;
@@ -6322,7 +6325,23 @@ export default function Canvas3D({
     <>
       {/* 3D Canvas container - simplified layout with just the canvas */}
       <div ref={containerRef} className="w-full h-full relative">
-
+        {/* View Setup Dropdown */}
+        <div className="absolute top-2 right-2 z-10">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="bg-white shadow-md">
+                <Settings className="h-4 w-4 mr-2" />
+                View Setup
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-80 p-4 space-y-4">
+              {/* Placeholder content - will be populated later */}
+              <div className="text-sm text-gray-500">
+                Settings will be added here
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       {/* Dialog for editing air entries - Phase 4: Unified with Canvas2D */}
