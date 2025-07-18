@@ -2578,7 +2578,7 @@ export default function WizardDesign() {
       : "border rounded-lg overflow-hidden bg-white min-w-[600px] min-h-[600px]";
     
     const canvasStyle = mode === "step2" 
-      ? {} 
+      ? { flex: 1 } // Maintain horizontal expansion for RSP
       : { flex: 1 };
 
     return (
