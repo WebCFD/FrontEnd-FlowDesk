@@ -15,6 +15,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
         if (!response.ok) {
           // Store current path before setting anonymous user
+          console.log("ProtectedRoute: Setting returnTo to", location);
           setReturnTo(location);
           // Instead of redirecting, set as anonymous user
           setAnonymousUser();

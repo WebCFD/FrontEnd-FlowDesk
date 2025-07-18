@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -41,6 +41,14 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { setReturnTo, returnTo, setUser } = useAuth();
   const { reset } = useRoomStore();
+
+  // Clear returnTo when modal opens manually (not due to auth failure)
+  useEffect(() => {
+    if (isOpen) {
+      console.log("LoginModal: Clearing returnTo path for manual login");
+      setReturnTo(null);
+    }
+  }, [isOpen, setReturnTo]);
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
