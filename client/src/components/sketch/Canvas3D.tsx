@@ -2200,7 +2200,7 @@ export default function Canvas3D({
 
 
   // Calculate base height for each floor
-  const getFloorBaseHeight = (floorName: string): number => {
+  const getFloorBaseHeight = useCallback((floorName: string): number => {
     const floorOrder = [
       "ground",
       "first",
@@ -2229,7 +2229,7 @@ export default function Canvas3D({
       }
     }
     return baseHeight;
-  };
+  }, [floors, isMultifloor, floorParameters, ceilingHeight, floorDeckThickness]);
 
   // PHASE 3: Hybrid AirEntry update handler - combines direct mesh update with store sync
   const handleAirEntryEdit = (
