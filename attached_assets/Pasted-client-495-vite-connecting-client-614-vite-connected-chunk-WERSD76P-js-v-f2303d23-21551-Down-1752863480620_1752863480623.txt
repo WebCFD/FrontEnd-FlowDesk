@@ -1,0 +1,156 @@
+client:495 [vite] connecting...
+client:614 [vite] connected.
+chunk-WERSD76P.js?v=f2303d23:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+AnalyticsProvider.tsx:21 Analytics initialized: false
+dashboard-sidebar.tsx:65 
+            
+            
+           GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+fetchUserData @ dashboard-sidebar.tsx:65
+(anonymous) @ dashboard-sidebar.tsx:83
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=f2303d23:18868
+flushSyncCallbacks @ chunk-WERSD76P.js?v=f2303d23:9119
+commitRootImpl @ chunk-WERSD76P.js?v=f2303d23:19432
+commitRoot @ chunk-WERSD76P.js?v=f2303d23:19277
+finishConcurrentRender @ chunk-WERSD76P.js?v=f2303d23:18805
+performConcurrentWorkOnRoot @ chunk-WERSD76P.js?v=f2303d23:18718
+workLoop @ chunk-WERSD76P.js?v=f2303d23:197
+flushWork @ chunk-WERSD76P.js?v=f2303d23:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=f2303d23:384
+analytics.ts:26 Google Analytics initialized with ID: G-XZYY9DVVHW
+useAnalytics.ts:59 Google Analytics initialized successfully
+js?id=G-XZYY9DVVHW:666 [Violation] 'setTimeout' handler took 79ms
+protected-route.tsx:12 
+            
+            
+           GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+checkAuth @ protected-route.tsx:12
+(anonymous) @ protected-route.tsx:30
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=f2303d23:18868
+flushSyncCallbacks @ chunk-WERSD76P.js?v=f2303d23:9119
+commitRootImpl @ chunk-WERSD76P.js?v=f2303d23:19432
+commitRoot @ chunk-WERSD76P.js?v=f2303d23:19277
+finishConcurrentRender @ chunk-WERSD76P.js?v=f2303d23:18805
+performConcurrentWorkOnRoot @ chunk-WERSD76P.js?v=f2303d23:18718
+workLoop @ chunk-WERSD76P.js?v=f2303d23:197
+flushWork @ chunk-WERSD76P.js?v=f2303d23:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=f2303d23:384
+AnalyticsProvider.tsx:21 Analytics initialized: false
+useAnalytics.ts:59 Google Analytics initialized successfully
+App.tsx:65 
+            
+            
+           GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+checkAuthStatus @ App.tsx:65
+(anonymous) @ App.tsx:82
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=f2303d23:18868
+flushSyncCallbacks @ chunk-WERSD76P.js?v=f2303d23:9119
+commitRootImpl @ chunk-WERSD76P.js?v=f2303d23:19432
+commitRoot @ chunk-WERSD76P.js?v=f2303d23:19277
+finishConcurrentRender @ chunk-WERSD76P.js?v=f2303d23:18805
+performConcurrentWorkOnRoot @ chunk-WERSD76P.js?v=f2303d23:18718
+workLoop @ chunk-WERSD76P.js?v=f2303d23:197
+flushWork @ chunk-WERSD76P.js?v=f2303d23:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=f2303d23:384
+useAnalytics.ts:59 Google Analytics initialized successfully
+AnalyticsProvider.tsx:21 Analytics initialized: true
+analytics.ts:62 📊 Analytics Event: {category: 'account', action: 'login', label: undefined, value: undefined, status: 'sent'}
+dashboard:1 [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) <input data-replit-metadata=​"client/​src/​components/​auth/​login-modal.tsx:​157:​20" data-component-name=​"Input" type=​"password" class=​"flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:​border-0 file:​bg-transparent file:​text-sm file:​font-medium file:​text-foreground placeholder:​text-muted-foreground focus-visible:​outline-none focus-visible:​ring-2 focus-visible:​ring-ring focus-visible:​ring-offset-2 disabled:​cursor-not-allowed disabled:​opacity-50" placeholder=​"Enter your password" name=​"password" id=​":​rm:​-form-item" aria-describedby=​":​rm:​-form-item-description" aria-invalid=​"false" value>​flex
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
+login-modal.tsx:60 
+            
+            
+           GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+onSubmit @ login-modal.tsx:60
+(anonymous) @ chunk-RBMNEPGM.js?v=f2303d23:1675
+await in (anonymous)
+callCallback2 @ chunk-WERSD76P.js?v=f2303d23:3674
+invokeGuardedCallbackDev @ chunk-WERSD76P.js?v=f2303d23:3699
+invokeGuardedCallback @ chunk-WERSD76P.js?v=f2303d23:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-WERSD76P.js?v=f2303d23:3736
+executeDispatch @ chunk-WERSD76P.js?v=f2303d23:7014
+processDispatchQueueItemsInOrder @ chunk-WERSD76P.js?v=f2303d23:7034
+processDispatchQueue @ chunk-WERSD76P.js?v=f2303d23:7043
+dispatchEventsForPlugins @ chunk-WERSD76P.js?v=f2303d23:7051
+(anonymous) @ chunk-WERSD76P.js?v=f2303d23:7174
+batchedUpdates$1 @ chunk-WERSD76P.js?v=f2303d23:18913
+batchedUpdates @ chunk-WERSD76P.js?v=f2303d23:3579
+dispatchEventForPluginEventSystem @ chunk-WERSD76P.js?v=f2303d23:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-WERSD76P.js?v=f2303d23:5478
+dispatchEvent @ chunk-WERSD76P.js?v=f2303d23:5472
+dispatchDiscreteEvent @ chunk-WERSD76P.js?v=f2303d23:5449
+AnalyticsProvider.tsx:21 Analytics initialized: true
+chunk-WERSD76P.js?v=f2303d23:18625 [Violation] 'setTimeout' handler took 51ms
+chunk-WERSD76P.js?v=f2303d23:18625 [Violation] 'setTimeout' handler took 83ms
+wizard-design.tsx:2893 🔄 Current isCreatingSimulation state: false
+wizard-design.tsx:2893 🔄 Current isCreatingSimulation state: false
+wizard-design.tsx:2893 🔄 Current isCreatingSimulation state: false
+wizard-design.tsx:2294 🔄 Start Simulation clicked
+wizard-design.tsx:2893 🔄 Current isCreatingSimulation state: false
+wizard-design.tsx:2893 🔄 Current isCreatingSimulation state: false
+wizard-design.tsx:2893 🔄 Current isCreatingSimulation state: false
+wizard-design.tsx:2893 🔄 Current isCreatingSimulation state: false
+wizard-design.tsx:2893 🔄 Current isCreatingSimulation state: false
+wizard-design.tsx:2893 🔄 Current isCreatingSimulation state: false
+wizard-design.tsx:2294 🔄 Start Simulation clicked
+wizard-design.tsx:2315 🔄 Showing dialog
+wizard-design.tsx:2893 🔄 Current isCreatingSimulation state: false
+chunk-UYPAY2CU.js?v=f2303d23:336 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-UYPAY2CU.js?v=f2303d23:336
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+commitRootImpl @ chunk-WERSD76P.js?v=f2303d23:19416
+commitRoot @ chunk-WERSD76P.js?v=f2303d23:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=f2303d23:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=f2303d23:9119
+(anonymous) @ chunk-WERSD76P.js?v=f2303d23:18627
+wizard-design.tsx:2893 🔄 Current isCreatingSimulation state: false
+wizard-design.tsx:2321 🔄 Confirm Create Simulation clicked
+wizard-design.tsx:2322 🔄 Setting isCreatingSimulation to true
+simulationDataConverter.ts:945 🔧 [WALL SYNC] syncWallsWithLines called for floor: Ground Floor
+simulationDataConverter.ts:946 🔧 [WALL SYNC] Lines: 4, Existing walls: 4, Default temp: 20
+simulationDataConverter.ts:950 🔧 [WALL SYNC] After removing orphans: 4 valid walls
+simulationDataConverter.ts:980 🔧 [WALL SYNC] addMissingWalls called for floor: Ground Floor
+simulationDataConverter.ts:981 🔧 [WALL SYNC] Input: 4 lines, 4 existing walls
+simulationDataConverter.ts:982 🔧 [WALL SYNC] Existing walls: (4) [{…}, {…}, {…}, {…}]
+simulationDataConverter.ts:1005 🔧 [WALL SYNC] Line 0 has existing wall: {id: 'wall_0F_1', temp: 20}
+simulationDataConverter.ts:1005 🔧 [WALL SYNC] Line 1 has existing wall: {id: 'wall_0F_2', temp: 20}
+simulationDataConverter.ts:1005 🔧 [WALL SYNC] Line 2 has existing wall: {id: 'wall_0F_3', temp: 20}
+simulationDataConverter.ts:1005 🔧 [WALL SYNC] Line 3 has existing wall: {id: 'wall_0F_4', temp: 20}
+simulationDataConverter.ts:1009 🔧 [WALL SYNC] Result: 0 walls added, 4 total walls
+simulationDataConverter.ts:954 🔧 [WALL SYNC] Final result: 4 total walls
+wizard-design.tsx:2893 🔄 Current isCreatingSimulation state: true
+analytics.ts:62 📊 Analytics Event: {category: 'simulation', action: 'start_simulation', label: 'wizard_created', value: 1, status: 'sent'}
+wizard-design.tsx:2893 🔄 Current isCreatingSimulation state: false
+chunk-WERSD76P.js?v=f2303d23:18625 [Violation] 'setTimeout' handler took 90ms
