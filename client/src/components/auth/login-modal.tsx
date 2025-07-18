@@ -109,9 +109,13 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
       onClose();
       // Only redirect if there's a specific returnTo path stored
+      console.log("Login successful, returnTo:", returnTo);
       if (returnTo) {
+        console.log("Redirecting to:", returnTo);
         setLocation(returnTo);
         setReturnTo(null); // Clear the stored path
+      } else {
+        console.log("No returnTo path - staying on current page");
       }
       // If no returnTo path, stay on current page
     } catch (error) {
