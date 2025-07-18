@@ -2365,8 +2365,10 @@ export default function WizardDesign() {
       // Cerrar diálogo
       setShowStartSimulationDialog(false);
       
-      // Force redirect to dashboard with window.location for reliability
-      window.location.href = "/dashboard";
+      // Add a small delay before redirect to ensure state updates complete
+      setTimeout(() => {
+        setLocation("/dashboard");
+      }, 100);
 
     } catch (error) {
       console.error("Error creating simulation:", error);
