@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
+import { queryClient } from "@/lib/queryClient";
 import { customFurnitureStore } from "@/lib/custom-furniture-store";
 import SimulationDataDialog from "@/components/sketch/SimulationDataDialog";
 import LoadDesignDialog from "@/components/sketch/LoadDesignDialog";
@@ -2349,6 +2350,10 @@ export default function WizardDesign() {
         1,
       );
 
+      // Invalidate the simulations cache to refresh dashboard data
+      await queryClient.invalidateQueries({ queryKey: ["/api/simulations"] });
+      await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] }); // Update user credits
+
       toast({
         title: "Simulation Created Successfully",
         description: result.message,
@@ -2356,7 +2361,11 @@ export default function WizardDesign() {
 
       // Cerrar diálogo y redireccionar al dashboard
       setShowStartSimulationDialog(false);
-      setLocation("/dashboard");
+      
+      // Small delay to ensure cache invalidation completes before redirect
+      setTimeout(() => {
+        setLocation("/dashboard");
+      }, 100);
 
     } catch (error) {
       console.error("Error creating simulation:", error);
