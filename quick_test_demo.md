@@ -6,8 +6,8 @@
 2. Go to Dashboard page
 3. Click "Sign In / Register" button
 4. Try logging in with:
-   - Username: `testuser`
-   - Password: `hashedpassword123`
+   - **Email**: `test@example.com`
+   - **Password**: `password123`
 5. Check if dashboard shows 3 simulations from database
 
 **Expected**: Should see real simulations instead of mock data
