@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import RegisterModal from "@/components/auth/register-modal";
+import LoginModal from "@/components/auth/login-modal";
 
 // Animated streamline component
 const StreamLine = ({ d, delay }: { d: string; delay: number }) => (
@@ -27,6 +28,7 @@ const StreamLine = ({ d, delay }: { d: string; delay: number }) => (
 
 export default function Hero() {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [, setLocation] = useLocation();
 
   return (
@@ -82,6 +84,7 @@ export default function Hero() {
             transition={{ duration: 0.6, delay: 0.4 }}
           >
             <Button size="lg" onClick={() => setLocation("/dashboard/wizard-design")}>Get Started</Button>
+            <Button size="lg" variant="outline" onClick={() => setIsLoginOpen(true)}>Log In</Button>
             <Button size="lg" variant="outline" onClick={() => setIsRegisterOpen(true)}>Sign Up</Button>
           </motion.div>
         </div>
@@ -90,6 +93,10 @@ export default function Hero() {
       <RegisterModal 
         isOpen={isRegisterOpen}
         onClose={() => setIsRegisterOpen(false)}
+      />
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
       />
     </div>
   );
