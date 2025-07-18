@@ -807,9 +807,9 @@ export default function WizardDesign() {
   };
 
   const steps = [
-    { id: 1, name: "Upload" },
-    { id: 2, name: "Setup" },
-    { id: 3, name: "Order" },
+    { id: 1, name: "Room Design" },
+    { id: 2, name: "Add Elements" },
+    { id: 3, name: "Run Case" },
   ];
 
   const handleToolSelect = (tool: "wall" | "eraser" | "measure" | "stairs") => {
