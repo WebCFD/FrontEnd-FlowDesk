@@ -2007,29 +2007,7 @@ export default function WizardDesign() {
 
 
 
-                  {/* Air Entry Transparency */}
-                  <div className="space-y-4 mt-4">
-                    <h3 className="font-semibold">Doors/Windows/Vents Transparency</h3>
-                    <div className="px-2">
-                      <Slider
-                        value={[airEntryTransparency]}
-                        onValueChange={(values: number[]) => {
-                          console.log(
-                            "Wizard: Air entry transparency changing to:",
-                            values[0],
-                          );
-                          setAirEntryTransparency(values[0]);
-                        }}
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        className="flex-1"
-                      />
-                      <div className="text-sm text-right mt-1">
-                        {Math.round(airEntryTransparency * 100)}%
-                      </div>
-                    </div>
-                  </div>
+
 
                   {/* Furniture - Using FurnitureMenu component */}
                   <FurnitureMenu 
@@ -2037,8 +2015,6 @@ export default function WizardDesign() {
                       // Handle drag start if needed
                       console.log("Dragging furniture:", item);
                     }}
-                    wallTransparency={wallTransparency}
-                    onWallTransparencyChange={setWallTransparency}
                     floorContext={{
                       currentFloor: currentFloor,
                       floors: floors

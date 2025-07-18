@@ -11,8 +11,6 @@ type FurnitureItem = FurnitureMenuItemData;
 
 interface FurnitureMenuProps {
   onDragStart: (item: FurnitureItem) => void;
-  wallTransparency: number;
-  onWallTransparencyChange: (value: number) => void;
   floorContext?: {
     currentFloor: string;
     floors: Record<string, any>;
@@ -93,7 +91,7 @@ const furnitureItems: FurnitureItem[] = [
   }
 ];
 
-export function FurnitureMenu({ onDragStart, wallTransparency = 0.8, onWallTransparencyChange, floorContext }: FurnitureMenuProps) {
+export function FurnitureMenu({ onDragStart, floorContext }: FurnitureMenuProps) {
   const [customItems, setCustomItems] = useState<FurnitureItem[]>([]);
 
   // Subscribe to custom furniture store updates
@@ -112,12 +110,7 @@ export function FurnitureMenu({ onDragStart, wallTransparency = 0.8, onWallTrans
     };
   }, []);
 
-  const handleTransparencyChange = (values: number[]) => {
-    const newValue = values[0];
-    if (onWallTransparencyChange) {
-      onWallTransparencyChange(newValue);
-    }
-  };
+
 
   const handleSTLLoaded = (modelData: {
     name: string;
@@ -131,28 +124,9 @@ export function FurnitureMenu({ onDragStart, wallTransparency = 0.8, onWallTrans
   // Combine built-in and custom furniture items
   const allFurnitureItems = [...furnitureItems, ...customItems];
 
-  // Ensure wallTransparency has a valid value before using toFixed
-  const displayValue = typeof wallTransparency === 'number' ? wallTransparency.toFixed(1) : '0.8';
-
   return (
     <div className="w-full space-y-6">
-      <div className="space-y-4">
-        <h3 className="font-semibold">View Controls</h3>
-        <div className="space-y-2">
-          <label className="text-sm text-gray-600">Wall Transparency</label>
-          <Slider
-            value={[typeof wallTransparency === 'number' ? wallTransparency : 0.8]}
-            onValueChange={handleTransparencyChange}
-            min={0}
-            max={1}
-            step={0.1}
-            className="w-full"
-          />
-          <div className="text-xs text-gray-500">
-            Current: {displayValue}
-          </div>
-        </div>
-      </div>
+
 
       <div className="space-y-4">
         <h3 className="font-semibold">Furniture</h3>
