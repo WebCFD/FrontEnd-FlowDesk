@@ -1,0 +1,984 @@
+client:495 [vite] connecting...
+client:614 [vite] connected.
+chunk-WERSD76P.js?v=f2303d23:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+AnalyticsProvider.tsx:21 Analytics initialized: false
+chunk-WERSD76P.js?v=f2303d23:377 [Violation] 'message' handler took 210ms
+dashboard-sidebar.tsx:65 
+            
+            
+           GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+fetchUserData @ dashboard-sidebar.tsx:65
+(anonymous) @ dashboard-sidebar.tsx:83
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=f2303d23:18868
+flushSyncCallbacks @ chunk-WERSD76P.js?v=f2303d23:9119
+commitRootImpl @ chunk-WERSD76P.js?v=f2303d23:19432
+commitRoot @ chunk-WERSD76P.js?v=f2303d23:19277
+finishConcurrentRender @ chunk-WERSD76P.js?v=f2303d23:18805
+performConcurrentWorkOnRoot @ chunk-WERSD76P.js?v=f2303d23:18718
+workLoop @ chunk-WERSD76P.js?v=f2303d23:197
+flushWork @ chunk-WERSD76P.js?v=f2303d23:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=f2303d23:384
+App.tsx:65 
+            
+            
+           GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+checkAuthStatus @ App.tsx:65
+(anonymous) @ App.tsx:82
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=f2303d23:18868
+flushSyncCallbacks @ chunk-WERSD76P.js?v=f2303d23:9119
+commitRootImpl @ chunk-WERSD76P.js?v=f2303d23:19432
+commitRoot @ chunk-WERSD76P.js?v=f2303d23:19277
+finishConcurrentRender @ chunk-WERSD76P.js?v=f2303d23:18805
+performConcurrentWorkOnRoot @ chunk-WERSD76P.js?v=f2303d23:18718
+workLoop @ chunk-WERSD76P.js?v=f2303d23:197
+flushWork @ chunk-WERSD76P.js?v=f2303d23:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=f2303d23:384
+analytics.ts:26 Google Analytics initialized with ID: G-XZYY9DVVHW
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+AnalyticsProvider.tsx:21 Analytics initialized: true
+analytics.ts:62 📊 Analytics Event: {category: 'ui_interaction', action: 'change_tab', label: 'view_3d_preview', value: undefined, status: 'sent'}
+Canvas3D.tsx:2541 🔍 [GLITCH INVESTIGATION] createFloorObjects called for floor: {floorName: 'Ground Floor', isCurrentFloor: true, airEntriesCount: 1, airEntriesData: Array(1), timestamp: 1752866485752}
+Canvas3D.tsx:2541 🔍 [GLITCH INVESTIGATION] createFloorObjects called for floor: {floorName: 'first', isCurrentFloor: false, airEntriesCount: 1, airEntriesData: Array(1), timestamp: 1752866485778}
+Canvas3D.tsx:5157 🔥 SCENE REBUILD TRIGGERED: {editingAirEntry: false, finalFloorsId: '["ground","first"]', thisWillRecreateEverything: true, triggerCause: 'finalFloors, currentFloor, ceilingHeight, or floorDeckThickness changed'}
+Canvas3D.tsx:5165 🔍 [GLITCH ROOT CAUSE] Scene rebuild details: {currentFloor: 'ground', finalFloorsKeys: Array(2), totalAirEntries: 2, allAirEntryPositions: {…}, timestamp: 1752866485781}
+chunk-WERSD76P.js?v=f2303d23:18625 [Violation] 'click' handler took 190ms
+chunk-WERSD76P.js?v=f2303d23:521 Warning: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1980:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:141:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:939:13
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1915:15)
+    at Popper (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1972:11)
+    at Menu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:95:11)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at DropdownMenu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:905:5)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at _c9 (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at main
+    at div
+    at DashboardLayout (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/layout/dashboard-layout.tsx:18:43)
+    at WizardDesign (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/pages/dashboard/wizard-design.tsx:219:27)
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at Router
+    at main
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at div
+    at AnalyticsProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/common/AnalyticsProvider.tsx:21:37)
+    at QueryClientProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=f2303d23:2805:3)
+    at App (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/App.tsx?v=OaRERWloMHunqB9EB39Gj:127:23)
+printWarning @ chunk-WERSD76P.js?v=f2303d23:521
+error @ chunk-WERSD76P.js?v=f2303d23:505
+checkForNestedUpdates @ chunk-WERSD76P.js?v=f2303d23:19665
+scheduleUpdateOnFiber @ chunk-WERSD76P.js?v=f2303d23:18533
+dispatchSetState @ chunk-WERSD76P.js?v=f2303d23:12403
+(anonymous) @ chunk-EJYGTXEJ.js?v=f2303d23:1985
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+(anonymous) @ chunk-WERSD76P.js?v=f2303d23:19328
+workLoop @ chunk-WERSD76P.js?v=f2303d23:197
+flushWork @ chunk-WERSD76P.js?v=f2303d23:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=f2303d23:384
+chunk-WERSD76P.js?v=f2303d23:521 Warning: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1980:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:141:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:939:13
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1915:15)
+    at Popper (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1972:11)
+    at Menu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:95:11)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at DropdownMenu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:905:5)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at _c9 (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at main
+    at div
+    at DashboardLayout (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/layout/dashboard-layout.tsx:18:43)
+    at WizardDesign (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/pages/dashboard/wizard-design.tsx:219:27)
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at Router
+    at main
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at div
+    at AnalyticsProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/common/AnalyticsProvider.tsx:21:37)
+    at QueryClientProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=f2303d23:2805:3)
+    at App (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/App.tsx?v=OaRERWloMHunqB9EB39Gj:127:23)
+printWarning @ chunk-WERSD76P.js?v=f2303d23:521
+error @ chunk-WERSD76P.js?v=f2303d23:505
+checkForNestedUpdates @ chunk-WERSD76P.js?v=f2303d23:19665
+scheduleUpdateOnFiber @ chunk-WERSD76P.js?v=f2303d23:18533
+dispatchSetState @ chunk-WERSD76P.js?v=f2303d23:12403
+(anonymous) @ chunk-EJYGTXEJ.js?v=f2303d23:1985
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+(anonymous) @ chunk-WERSD76P.js?v=f2303d23:19328
+workLoop @ chunk-WERSD76P.js?v=f2303d23:197
+flushWork @ chunk-WERSD76P.js?v=f2303d23:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=f2303d23:384
+chunk-WERSD76P.js?v=f2303d23:521 Warning: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1980:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:141:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:939:13
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1915:15)
+    at Popper (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1972:11)
+    at Menu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:95:11)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at DropdownMenu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:905:5)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at _c9 (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at main
+    at div
+    at DashboardLayout (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/layout/dashboard-layout.tsx:18:43)
+    at WizardDesign (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/pages/dashboard/wizard-design.tsx:219:27)
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at Router
+    at main
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at div
+    at AnalyticsProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/common/AnalyticsProvider.tsx:21:37)
+    at QueryClientProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=f2303d23:2805:3)
+    at App (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/App.tsx?v=OaRERWloMHunqB9EB39Gj:127:23)
+printWarning @ chunk-WERSD76P.js?v=f2303d23:521
+error @ chunk-WERSD76P.js?v=f2303d23:505
+checkForNestedUpdates @ chunk-WERSD76P.js?v=f2303d23:19665
+scheduleUpdateOnFiber @ chunk-WERSD76P.js?v=f2303d23:18533
+dispatchSetState @ chunk-WERSD76P.js?v=f2303d23:12403
+(anonymous) @ chunk-EJYGTXEJ.js?v=f2303d23:1985
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+(anonymous) @ chunk-WERSD76P.js?v=f2303d23:19328
+workLoop @ chunk-WERSD76P.js?v=f2303d23:197
+flushWork @ chunk-WERSD76P.js?v=f2303d23:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=f2303d23:384
+chunk-WERSD76P.js?v=f2303d23:521 Warning: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1980:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:141:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:939:13
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1915:15)
+    at Popper (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1972:11)
+    at Menu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:95:11)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at DropdownMenu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:905:5)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at _c9 (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at main
+    at div
+    at DashboardLayout (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/layout/dashboard-layout.tsx:18:43)
+    at WizardDesign (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/pages/dashboard/wizard-design.tsx:219:27)
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at Router
+    at main
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at div
+    at AnalyticsProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/common/AnalyticsProvider.tsx:21:37)
+    at QueryClientProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=f2303d23:2805:3)
+    at App (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/App.tsx?v=OaRERWloMHunqB9EB39Gj:127:23)
+printWarning @ chunk-WERSD76P.js?v=f2303d23:521
+error @ chunk-WERSD76P.js?v=f2303d23:505
+checkForNestedUpdates @ chunk-WERSD76P.js?v=f2303d23:19665
+scheduleUpdateOnFiber @ chunk-WERSD76P.js?v=f2303d23:18533
+dispatchSetState @ chunk-WERSD76P.js?v=f2303d23:12403
+(anonymous) @ chunk-EJYGTXEJ.js?v=f2303d23:1985
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+(anonymous) @ chunk-WERSD76P.js?v=f2303d23:19328
+workLoop @ chunk-WERSD76P.js?v=f2303d23:197
+flushWork @ chunk-WERSD76P.js?v=f2303d23:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=f2303d23:384
+chunk-WERSD76P.js?v=f2303d23:521 Warning: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1980:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:141:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:939:13
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1915:15)
+    at Popper (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1972:11)
+    at Menu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:95:11)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at DropdownMenu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:905:5)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at _c9 (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at main
+    at div
+    at DashboardLayout (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/layout/dashboard-layout.tsx:18:43)
+    at WizardDesign (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/pages/dashboard/wizard-design.tsx:219:27)
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at Router
+    at main
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at div
+    at AnalyticsProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/common/AnalyticsProvider.tsx:21:37)
+    at QueryClientProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=f2303d23:2805:3)
+    at App (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/App.tsx?v=OaRERWloMHunqB9EB39Gj:127:23)
+printWarning @ chunk-WERSD76P.js?v=f2303d23:521
+error @ chunk-WERSD76P.js?v=f2303d23:505
+checkForNestedUpdates @ chunk-WERSD76P.js?v=f2303d23:19665
+scheduleUpdateOnFiber @ chunk-WERSD76P.js?v=f2303d23:18533
+dispatchSetState @ chunk-WERSD76P.js?v=f2303d23:12403
+(anonymous) @ chunk-EJYGTXEJ.js?v=f2303d23:1985
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+(anonymous) @ chunk-WERSD76P.js?v=f2303d23:19328
+workLoop @ chunk-WERSD76P.js?v=f2303d23:197
+flushWork @ chunk-WERSD76P.js?v=f2303d23:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=f2303d23:384
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
+chunk-WERSD76P.js?v=f2303d23:521 Warning: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1980:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:141:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:939:13
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1915:15)
+    at Popper (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1972:11)
+    at Menu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:95:11)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at DropdownMenu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:905:5)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at _c9 (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at main
+    at div
+    at DashboardLayout (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/layout/dashboard-layout.tsx:18:43)
+    at WizardDesign (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/pages/dashboard/wizard-design.tsx:219:27)
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at Router
+    at main
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at div
+    at AnalyticsProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/common/AnalyticsProvider.tsx:21:37)
+    at QueryClientProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=f2303d23:2805:3)
+    at App (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/App.tsx?v=OaRERWloMHunqB9EB39Gj:127:23)
+printWarning @ chunk-WERSD76P.js?v=f2303d23:521
+error @ chunk-WERSD76P.js?v=f2303d23:505
+checkForNestedUpdates @ chunk-WERSD76P.js?v=f2303d23:19665
+scheduleUpdateOnFiber @ chunk-WERSD76P.js?v=f2303d23:18533
+dispatchSetState @ chunk-WERSD76P.js?v=f2303d23:12403
+(anonymous) @ chunk-EJYGTXEJ.js?v=f2303d23:1985
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+(anonymous) @ chunk-WERSD76P.js?v=f2303d23:19328
+workLoop @ chunk-WERSD76P.js?v=f2303d23:197
+flushWork @ chunk-WERSD76P.js?v=f2303d23:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=f2303d23:384
+chunk-WERSD76P.js?v=f2303d23:521 Warning: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1980:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:141:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:939:13
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1915:15)
+    at Popper (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1972:11)
+    at Menu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:95:11)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at DropdownMenu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:905:5)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at _c9 (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at main
+    at div
+    at DashboardLayout (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/layout/dashboard-layout.tsx:18:43)
+    at WizardDesign (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/pages/dashboard/wizard-design.tsx:219:27)
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at Router
+    at main
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at div
+    at AnalyticsProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/common/AnalyticsProvider.tsx:21:37)
+    at QueryClientProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=f2303d23:2805:3)
+    at App (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/App.tsx?v=OaRERWloMHunqB9EB39Gj:127:23)
+printWarning @ chunk-WERSD76P.js?v=f2303d23:521
+error @ chunk-WERSD76P.js?v=f2303d23:505
+checkForNestedUpdates @ chunk-WERSD76P.js?v=f2303d23:19665
+scheduleUpdateOnFiber @ chunk-WERSD76P.js?v=f2303d23:18533
+dispatchSetState @ chunk-WERSD76P.js?v=f2303d23:12403
+(anonymous) @ chunk-EJYGTXEJ.js?v=f2303d23:1985
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+(anonymous) @ chunk-WERSD76P.js?v=f2303d23:19328
+workLoop @ chunk-WERSD76P.js?v=f2303d23:197
+flushWork @ chunk-WERSD76P.js?v=f2303d23:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=f2303d23:384
+chunk-WERSD76P.js?v=f2303d23:521 Warning: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1980:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:141:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:939:13
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1915:15)
+    at Popper (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1972:11)
+    at Menu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:95:11)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at DropdownMenu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:905:5)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at _c9 (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at main
+    at div
+    at DashboardLayout (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/layout/dashboard-layout.tsx:18:43)
+    at WizardDesign (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/pages/dashboard/wizard-design.tsx:219:27)
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at Router
+    at main
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at div
+    at AnalyticsProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/common/AnalyticsProvider.tsx:21:37)
+    at QueryClientProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=f2303d23:2805:3)
+    at App (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/App.tsx?v=OaRERWloMHunqB9EB39Gj:127:23)
+printWarning @ chunk-WERSD76P.js?v=f2303d23:521
+error @ chunk-WERSD76P.js?v=f2303d23:505
+checkForNestedUpdates @ chunk-WERSD76P.js?v=f2303d23:19665
+scheduleUpdateOnFiber @ chunk-WERSD76P.js?v=f2303d23:18533
+dispatchSetState @ chunk-WERSD76P.js?v=f2303d23:12403
+(anonymous) @ chunk-EJYGTXEJ.js?v=f2303d23:1985
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+(anonymous) @ chunk-WERSD76P.js?v=f2303d23:19328
+workLoop @ chunk-WERSD76P.js?v=f2303d23:197
+flushWork @ chunk-WERSD76P.js?v=f2303d23:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=f2303d23:384
+chunk-WERSD76P.js?v=f2303d23:521 Warning: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1980:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:141:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:939:13
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1915:15)
+    at Popper (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1972:11)
+    at Menu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:95:11)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at DropdownMenu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:905:5)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at _c9 (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at main
+    at div
+    at DashboardLayout (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/layout/dashboard-layout.tsx:18:43)
+    at WizardDesign (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/pages/dashboard/wizard-design.tsx:219:27)
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at Router
+    at main
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at div
+    at AnalyticsProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/common/AnalyticsProvider.tsx:21:37)
+    at QueryClientProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=f2303d23:2805:3)
+    at App (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/App.tsx?v=OaRERWloMHunqB9EB39Gj:127:23)
+printWarning @ chunk-WERSD76P.js?v=f2303d23:521
+error @ chunk-WERSD76P.js?v=f2303d23:505
+checkForNestedUpdates @ chunk-WERSD76P.js?v=f2303d23:19665
+scheduleUpdateOnFiber @ chunk-WERSD76P.js?v=f2303d23:18533
+dispatchSetState @ chunk-WERSD76P.js?v=f2303d23:12403
+(anonymous) @ chunk-EJYGTXEJ.js?v=f2303d23:1985
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+(anonymous) @ chunk-WERSD76P.js?v=f2303d23:19328
+workLoop @ chunk-WERSD76P.js?v=f2303d23:197
+flushWork @ chunk-WERSD76P.js?v=f2303d23:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=f2303d23:384
+chunk-WERSD76P.js?v=f2303d23:521 Warning: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1980:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:141:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:939:13
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1915:15)
+    at Popper (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1972:11)
+    at Menu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:95:11)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at DropdownMenu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:905:5)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at _c9 (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at main
+    at div
+    at DashboardLayout (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/layout/dashboard-layout.tsx:18:43)
+    at WizardDesign (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/pages/dashboard/wizard-design.tsx:219:27)
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at Router
+    at main
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at div
+    at AnalyticsProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/common/AnalyticsProvider.tsx:21:37)
+    at QueryClientProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=f2303d23:2805:3)
+    at App (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/App.tsx?v=OaRERWloMHunqB9EB39Gj:127:23)
+printWarning @ chunk-WERSD76P.js?v=f2303d23:521
+error @ chunk-WERSD76P.js?v=f2303d23:505
+checkForNestedUpdates @ chunk-WERSD76P.js?v=f2303d23:19665
+scheduleUpdateOnFiber @ chunk-WERSD76P.js?v=f2303d23:18533
+dispatchSetState @ chunk-WERSD76P.js?v=f2303d23:12403
+(anonymous) @ chunk-EJYGTXEJ.js?v=f2303d23:1985
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+(anonymous) @ chunk-WERSD76P.js?v=f2303d23:19328
+workLoop @ chunk-WERSD76P.js?v=f2303d23:197
+flushWork @ chunk-WERSD76P.js?v=f2303d23:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=f2303d23:384
+chunk-WERSD76P.js?v=f2303d23:521 Warning: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1980:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:141:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:939:13
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1915:15)
+    at Popper (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1972:11)
+    at Menu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:95:11)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at DropdownMenu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:905:5)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at _c9 (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at main
+    at div
+    at DashboardLayout (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/layout/dashboard-layout.tsx:18:43)
+    at WizardDesign (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/pages/dashboard/wizard-design.tsx:219:27)
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at Router
+    at main
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at div
+    at AnalyticsProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/common/AnalyticsProvider.tsx:21:37)
+    at QueryClientProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=f2303d23:2805:3)
+    at App (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/App.tsx?v=OaRERWloMHunqB9EB39Gj:127:23)
+printWarning @ chunk-WERSD76P.js?v=f2303d23:521
+error @ chunk-WERSD76P.js?v=f2303d23:505
+checkForNestedUpdates @ chunk-WERSD76P.js?v=f2303d23:19665
+scheduleUpdateOnFiber @ chunk-WERSD76P.js?v=f2303d23:18533
+dispatchSetState @ chunk-WERSD76P.js?v=f2303d23:12403
+(anonymous) @ chunk-EJYGTXEJ.js?v=f2303d23:1985
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+(anonymous) @ chunk-WERSD76P.js?v=f2303d23:19328
+workLoop @ chunk-WERSD76P.js?v=f2303d23:197
+flushWork @ chunk-WERSD76P.js?v=f2303d23:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=f2303d23:384
+chunk-WERSD76P.js?v=f2303d23:521 Warning: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1980:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:141:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:939:13
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1915:15)
+    at Popper (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1972:11)
+    at Menu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:95:11)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at DropdownMenu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:905:5)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at _c9 (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at main
+    at div
+    at DashboardLayout (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/layout/dashboard-layout.tsx:18:43)
+    at WizardDesign (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/pages/dashboard/wizard-design.tsx:219:27)
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at Router
+    at main
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at div
+    at AnalyticsProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/common/AnalyticsProvider.tsx:21:37)
+    at QueryClientProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=f2303d23:2805:3)
+    at App (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/App.tsx?v=OaRERWloMHunqB9EB39Gj:127:23)
+printWarning @ chunk-WERSD76P.js?v=f2303d23:521
+error @ chunk-WERSD76P.js?v=f2303d23:505
+checkForNestedUpdates @ chunk-WERSD76P.js?v=f2303d23:19665
+scheduleUpdateOnFiber @ chunk-WERSD76P.js?v=f2303d23:18533
+dispatchSetState @ chunk-WERSD76P.js?v=f2303d23:12403
+(anonymous) @ chunk-EJYGTXEJ.js?v=f2303d23:1985
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+(anonymous) @ chunk-WERSD76P.js?v=f2303d23:19328
+workLoop @ chunk-WERSD76P.js?v=f2303d23:197
+flushWork @ chunk-WERSD76P.js?v=f2303d23:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=f2303d23:384
+chunk-WERSD76P.js?v=f2303d23:521 Warning: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1980:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:141:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:939:13
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1915:15)
+    at Popper (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1972:11)
+    at Menu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:95:11)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at DropdownMenu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:905:5)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at _c9 (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at main
+    at div
+    at DashboardLayout (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/layout/dashboard-layout.tsx:18:43)
+    at WizardDesign (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/pages/dashboard/wizard-design.tsx:219:27)
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at Router
+    at main
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at div
+    at AnalyticsProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/common/AnalyticsProvider.tsx:21:37)
+    at QueryClientProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=f2303d23:2805:3)
+    at App (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/App.tsx?v=OaRERWloMHunqB9EB39Gj:127:23)
+printWarning @ chunk-WERSD76P.js?v=f2303d23:521
+error @ chunk-WERSD76P.js?v=f2303d23:505
+checkForNestedUpdates @ chunk-WERSD76P.js?v=f2303d23:19665
+scheduleUpdateOnFiber @ chunk-WERSD76P.js?v=f2303d23:18533
+dispatchSetState @ chunk-WERSD76P.js?v=f2303d23:12403
+(anonymous) @ chunk-EJYGTXEJ.js?v=f2303d23:1985
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+(anonymous) @ chunk-WERSD76P.js?v=f2303d23:19328
+workLoop @ chunk-WERSD76P.js?v=f2303d23:197
+flushWork @ chunk-WERSD76P.js?v=f2303d23:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=f2303d23:384
+chunk-WERSD76P.js?v=f2303d23:521 Warning: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1980:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:141:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:939:13
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1915:15)
+    at Popper (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1972:11)
+    at Menu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:95:11)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at DropdownMenu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:905:5)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at _c9 (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at main
+    at div
+    at DashboardLayout (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/layout/dashboard-layout.tsx:18:43)
+    at WizardDesign (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/pages/dashboard/wizard-design.tsx:219:27)
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at Router
+    at main
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at div
+    at AnalyticsProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/common/AnalyticsProvider.tsx:21:37)
+    at QueryClientProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=f2303d23:2805:3)
+    at App (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/App.tsx?v=OaRERWloMHunqB9EB39Gj:127:23)
+printWarning @ chunk-WERSD76P.js?v=f2303d23:521
+error @ chunk-WERSD76P.js?v=f2303d23:505
+checkForNestedUpdates @ chunk-WERSD76P.js?v=f2303d23:19665
+scheduleUpdateOnFiber @ chunk-WERSD76P.js?v=f2303d23:18533
+dispatchSetState @ chunk-WERSD76P.js?v=f2303d23:12403
+(anonymous) @ chunk-EJYGTXEJ.js?v=f2303d23:1985
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+(anonymous) @ chunk-WERSD76P.js?v=f2303d23:19328
+workLoop @ chunk-WERSD76P.js?v=f2303d23:197
+flushWork @ chunk-WERSD76P.js?v=f2303d23:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=f2303d23:384
+chunk-WERSD76P.js?v=f2303d23:521 Warning: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1980:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:141:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:939:13
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1915:15)
+    at Popper (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1972:11)
+    at Menu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:95:11)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at DropdownMenu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:905:5)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at _c9 (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at main
+    at div
+    at DashboardLayout (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/layout/dashboard-layout.tsx:18:43)
+    at WizardDesign (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/pages/dashboard/wizard-design.tsx:219:27)
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at Router
+    at main
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at div
+    at AnalyticsProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/common/AnalyticsProvider.tsx:21:37)
+    at QueryClientProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=f2303d23:2805:3)
+    at App (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/App.tsx?v=OaRERWloMHunqB9EB39Gj:127:23)
+printWarning @ chunk-WERSD76P.js?v=f2303d23:521
+error @ chunk-WERSD76P.js?v=f2303d23:505
+checkForNestedUpdates @ chunk-WERSD76P.js?v=f2303d23:19665
+scheduleUpdateOnFiber @ chunk-WERSD76P.js?v=f2303d23:18533
+dispatchSetState @ chunk-WERSD76P.js?v=f2303d23:12403
+(anonymous) @ chunk-EJYGTXEJ.js?v=f2303d23:1985
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+(anonymous) @ chunk-WERSD76P.js?v=f2303d23:19328
+workLoop @ chunk-WERSD76P.js?v=f2303d23:197
+flushWork @ chunk-WERSD76P.js?v=f2303d23:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=f2303d23:384
+chunk-WERSD76P.js?v=f2303d23:521 Warning: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1980:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:141:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:939:13
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1915:15)
+    at Popper (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1972:11)
+    at Menu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:95:11)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at DropdownMenu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:905:5)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at _c9 (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at main
+    at div
+    at DashboardLayout (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/layout/dashboard-layout.tsx:18:43)
+    at WizardDesign (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/pages/dashboard/wizard-design.tsx:219:27)
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at Router
+    at main
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at div
+    at AnalyticsProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/common/AnalyticsProvider.tsx:21:37)
+    at QueryClientProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=f2303d23:2805:3)
+    at App (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/App.tsx?v=OaRERWloMHunqB9EB39Gj:127:23)
+printWarning @ chunk-WERSD76P.js?v=f2303d23:521
+error @ chunk-WERSD76P.js?v=f2303d23:505
+checkForNestedUpdates @ chunk-WERSD76P.js?v=f2303d23:19665
+scheduleUpdateOnFiber @ chunk-WERSD76P.js?v=f2303d23:18533
+dispatchSetState @ chunk-WERSD76P.js?v=f2303d23:12403
+(anonymous) @ chunk-EJYGTXEJ.js?v=f2303d23:1985
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+(anonymous) @ chunk-WERSD76P.js?v=f2303d23:19328
+workLoop @ chunk-WERSD76P.js?v=f2303d23:197
+flushWork @ chunk-WERSD76P.js?v=f2303d23:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=f2303d23:384
+chunk-WERSD76P.js?v=f2303d23:521 Warning: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1980:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:141:13
+    at https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:939:13
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1915:15)
+    at Popper (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-EJYGTXEJ.js?v=f2303d23:1972:11)
+    at Menu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:95:11)
+    at Provider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4RVVHOT3.js?v=f2303d23:48:15)
+    at DropdownMenu (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dropdown-menu.js?v=f2303d23:905:5)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at _c9 (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at main
+    at div
+    at DashboardLayout (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/layout/dashboard-layout.tsx:18:43)
+    at WizardDesign (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/pages/dashboard/wizard-design.tsx:219:27)
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at Router
+    at main
+    at Route (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:323:16)
+    at Switch (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=f2303d23:379:17)
+    at div
+    at AnalyticsProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/components/common/AnalyticsProvider.tsx:21:37)
+    at QueryClientProvider (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=f2303d23:2805:3)
+    at App (https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/src/App.tsx?v=OaRERWloMHunqB9EB39Gj:127:23)
+printWarning @ chunk-WERSD76P.js?v=f2303d23:521
+error @ chunk-WERSD76P.js?v=f2303d23:505
+checkForNestedUpdates @ chunk-WERSD76P.js?v=f2303d23:19665
+scheduleUpdateOnFiber @ chunk-WERSD76P.js?v=f2303d23:18533
+dispatchSetState @ chunk-WERSD76P.js?v=f2303d23:12403
+(anonymous) @ chunk-EJYGTXEJ.js?v=f2303d23:1985
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+(anonymous) @ chunk-WERSD76P.js?v=f2303d23:19328
+workLoop @ chunk-WERSD76P.js?v=f2303d23:197
+flushWork @ chunk-WERSD76P.js?v=f2303d23:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=f2303d23:384
