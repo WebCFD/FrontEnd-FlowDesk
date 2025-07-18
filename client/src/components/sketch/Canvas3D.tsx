@@ -6334,7 +6334,7 @@ export default function Canvas3D({
       <div ref={containerRef} className="w-full h-full relative">
 
         {/* Settings Dropdown - Show when onWallTransparencyChange callback is available (indicating wizard mode) */}
-        {onWallTransparencyChange ? (
+        {typeof onWallTransparencyChange === 'function' ? (
           <div className="absolute top-2 right-2 z-10">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
