@@ -1389,7 +1389,7 @@ export default function WizardDesign() {
 
           <div className="flex gap-4">
             {/* Left side menus */}
-            <div className="w-72 space-y-6">
+            <div className="w-72 space-y-6 overflow-y-auto max-h-[700px]">
               {/* 2D Configuration - only show when in 2D mode */}
               {tab === "2d-editor" && (
                 <div className="border rounded-lg p-4">
@@ -2572,14 +2572,9 @@ export default function WizardDesign() {
 
 
   const renderCanvasSection = (mode = "tabs") => {
-    // Fixed height for RSP, flexible for other modes
-    const canvasClasses = mode === "step2" 
-      ? "border rounded-lg overflow-hidden bg-white min-w-[600px] h-[700px]"
-      : "border rounded-lg overflow-hidden bg-white min-w-[600px] min-h-[600px]";
-    
-    const canvasStyle = mode === "step2" 
-      ? { flex: 1 } // Maintain horizontal expansion for RSP
-      : { flex: 1 };
+    // Fixed height for all canvas modes
+    const canvasClasses = "border rounded-lg overflow-hidden bg-white min-w-[600px] h-[700px]";
+    const canvasStyle = { flex: 1 }; // Maintain horizontal expansion for all modes
 
     return (
       <div className={canvasClasses} style={canvasStyle}>
