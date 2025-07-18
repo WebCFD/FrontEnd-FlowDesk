@@ -9,6 +9,7 @@ import Settings from "@/pages/dashboard/settings";
 import Profile from "@/pages/dashboard/profile";
 import NewSimulation from "@/pages/dashboard/new-simulation";
 import WizardDesign from "@/pages/dashboard/wizard-design";
+import PostAnalysis from "@/pages/dashboard/post-analysis";
 
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
@@ -32,6 +33,11 @@ function Router() {
       </Route>
       {/* Remove ProtectedRoute wrapper to allow direct access */}
       <Route path="/dashboard/wizard-design" component={WizardDesign} />
+      <Route path="/dashboard/post-analysis">
+        <ProtectedRoute>
+          <PostAnalysis />
+        </ProtectedRoute>
+      </Route>
       <Route path="/dashboard/settings">
         <ProtectedRoute>
           <Settings />
