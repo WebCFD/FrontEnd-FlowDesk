@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -38,7 +38,14 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const [isLoading, setIsLoading] = useState(false);
-  const { setReturnTo, returnTo } = useAuth();
+  const { setReturnTo, returnTo, setUser } = useAuth();
+
+  // Clear returnTo when modal opens manually (not due to auth failure)
+  useEffect(() => {
+    if (isOpen) {
+      setReturnTo(null);
+    }
+  }, [isOpen, setReturnTo]);
 
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -66,6 +73,13 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
       if (!response.ok) {
         throw new Error(data.message || "Failed to create account");
       }
+
+      // Update client-side auth state
+      setUser({
+        username: data.username,
+        email: data.email,
+        isAnonymous: false
+      });
 
       toast({
         title: "Success!",

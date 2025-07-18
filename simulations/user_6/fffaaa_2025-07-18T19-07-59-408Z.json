@@ -1,0 +1,112 @@
+{
+  "version": "1.0",
+  "floors": {
+    "0": {
+      "height": 2.2,
+      "floorDeck": 0.35,
+      "ceiling": {
+        "temp": 20,
+        "airEntries": []
+      },
+      "floor_surf": {
+        "temp": 20,
+        "airEntries": []
+      },
+      "walls": [
+        {
+          "id": "wall_0F_1",
+          "start": {
+            "x": -3.45,
+            "y": -2.05
+          },
+          "end": {
+            "x": -2.5,
+            "y": 1.45
+          },
+          "temp": 20,
+          "airEntries": [
+            {
+              "id": "window_0F_1",
+              "type": "window",
+              "position": {
+                "x": -2.80571,
+                "y": 0.32371,
+                "z": 1.1,
+                "normal": {
+                  "x": 0.96508,
+                  "y": 0.26195,
+                  "z": 0
+                }
+              },
+              "dimensions": {
+                "width": 0.6,
+                "height": 0.4,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "closed",
+                "temperature": 20,
+                "airDirection": "inflow",
+                "flowIntensity": "medium"
+              }
+            }
+          ]
+        },
+        {
+          "id": "wall_0F_2",
+          "start": {
+            "x": -2.5,
+            "y": 1.45
+          },
+          "end": {
+            "x": 2.95,
+            "y": 1.05
+          },
+          "temp": 20,
+          "airEntries": []
+        },
+        {
+          "id": "wall_0F_3",
+          "start": {
+            "x": 2.95,
+            "y": 1.05
+          },
+          "end": {
+            "x": 3.1,
+            "y": -1.85
+          },
+          "temp": 20,
+          "airEntries": []
+        },
+        {
+          "id": "wall_0F_4",
+          "start": {
+            "x": 3.1,
+            "y": -1.85
+          },
+          "end": {
+            "x": -0.4,
+            "y": -2.3
+          },
+          "temp": 20,
+          "airEntries": []
+        },
+        {
+          "id": "wall_0F_5",
+          "start": {
+            "x": -0.4,
+            "y": -2.3
+          },
+          "end": {
+            "x": -3.45,
+            "y": -2.05
+          },
+          "temp": 20,
+          "airEntries": []
+        }
+      ],
+      "stairs": [],
+      "furniture": []
+    }
+  }
+}
