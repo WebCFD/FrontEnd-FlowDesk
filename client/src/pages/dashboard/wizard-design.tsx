@@ -2359,13 +2359,11 @@ export default function WizardDesign() {
         description: result.message,
       });
 
-      // Cerrar diálogo y redireccionar al dashboard
+      // Cerrar diálogo
       setShowStartSimulationDialog(false);
       
-      // Small delay to ensure cache invalidation completes before redirect
-      setTimeout(() => {
-        setLocation("/dashboard");
-      }, 100);
+      // Force redirect to dashboard with window.location for reliability
+      window.location.href = "/dashboard";
 
     } catch (error) {
       console.error("Error creating simulation:", error);
