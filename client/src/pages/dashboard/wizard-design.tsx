@@ -2573,7 +2573,7 @@ export default function WizardDesign() {
 
   const renderCanvasSection = (mode = "tabs") => {
     return (
-      <div className="border rounded-lg overflow-hidden bg-white min-w-[600px]" style={{ flex: 1, height: '600px' }}>
+      <div className="border rounded-lg overflow-hidden bg-white min-w-[600px]" style={{ flex: 1, minHeight: '600px' }}>
         <SceneProvider>
           {mode === "step2" ? (
             <RoomSketchPro
