@@ -2904,7 +2904,16 @@ export default function WizardDesign() {
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           ) : (
-            <Button onClick={handleStartSimulation}>Start Simulation</Button>
+            <Button onClick={handleStartSimulation} disabled={isCreatingSimulation}>
+              {isCreatingSimulation ? (
+                <>
+                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                  Creating...
+                </>
+              ) : (
+                "Start Simulation"
+              )}
+            </Button>
           )}
         </div>
       </div>
@@ -3024,6 +3033,16 @@ export default function WizardDesign() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Full-screen loading overlay during simulation creation */}
+      {isCreatingSimulation && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-4">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
+            <div className="text-lg font-medium">Creating simulation...</div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 }
