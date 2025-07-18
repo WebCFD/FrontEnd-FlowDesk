@@ -1275,6 +1275,10 @@ export default function Canvas3D({
     hovering: false,
     lastIntersection: "None",
   });
+  
+  // Throttle debug info updates to prevent infinite loops
+  const lastDebugUpdateRef = useRef<number>(0);
+  const DEBUG_UPDATE_THROTTLE = 100; // milliseconds
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
@@ -3868,20 +3872,22 @@ export default function Canvas3D({
       // Update the last position
       lastMousePositionRef.current = { x: event.clientX, y: event.clientY };
       
-      // Update debug info for UI display
+      // Update debug info for UI display with throttling
       const mouseCoords = getMouseCoordinates(event);
       
       // Use the ref to get the current eraser mode value, which is always up-to-date
       const currentEraserMode = isEraserModeRef.current;
       
-      // Add more detailed debug logging
-
-      
-      setDebugInfo(prev => ({
-        ...prev,
-        mousePosition: `${event.clientX}, ${event.clientY} | Normalized: ${mouseCoords.x.toFixed(2)}, ${mouseCoords.y.toFixed(2)}`,
-        eraserMode: currentEraserMode || false // Ensure it's always a boolean value to fix type error
-      }));
+      // Throttle debug info updates to prevent infinite loops
+      const now = Date.now();
+      if (now - lastDebugUpdateRef.current > DEBUG_UPDATE_THROTTLE) {
+        lastDebugUpdateRef.current = now;
+        setDebugInfo(prev => ({
+          ...prev,
+          mousePosition: `${event.clientX}, ${event.clientY} | Normalized: ${mouseCoords.x.toFixed(2)}, ${mouseCoords.y.toFixed(2)}`,
+          eraserMode: currentEraserMode || false // Ensure it's always a boolean value to fix type error
+        }));
+      }
       
       // Handle measurement preview if in measuring mode and we have a start point
       if (isMeasuring && measureStartPoint) {
@@ -4088,13 +4094,18 @@ export default function Canvas3D({
 
             }
             
-            setDebugInfo(prev => ({
-              ...prev,
-              hovering: hasIntersections,
-              lastIntersection: hasIntersections
-                ? `${meshIntersects[0].object.userData.type} (entry ${meshIntersects[0].object.userData.entryIndex}) at ${Math.round(meshIntersects[0].distance)}` 
-                : 'None'
-            }));
+            // Throttle debug info updates to prevent infinite loops
+            const now = Date.now();
+            if (now - lastDebugUpdateRef.current > DEBUG_UPDATE_THROTTLE) {
+              lastDebugUpdateRef.current = now;
+              setDebugInfo(prev => ({
+                ...prev,
+                hovering: hasIntersections,
+                lastIntersection: hasIntersections
+                  ? `${meshIntersects[0].object.userData.type} (entry ${meshIntersects[0].object.userData.entryIndex}) at ${Math.round(meshIntersects[0].distance)}` 
+                  : 'None'
+              }));
+            }
             
             // If there are no intersections and we have a previously hovered target, reset it
             if (!hasIntersections && hoveredEraseTarget) {
@@ -4451,10 +4462,15 @@ export default function Canvas3D({
       }
       
       console.log("🔴 Eraser click detected in Canvas3D");
-      setDebugInfo(prev => ({
-        ...prev,
-        lastIntersection: "Processing eraser click..."
-      }));
+      // Throttle debug info updates to prevent infinite loops
+      const now = Date.now();
+      if (now - lastDebugUpdateRef.current > DEBUG_UPDATE_THROTTLE) {
+        lastDebugUpdateRef.current = now;
+        setDebugInfo(prev => ({
+          ...prev,
+          lastIntersection: "Processing eraser click..."
+        }));
+      }
       
       // Check if controls are disabled - this is an indicator that we're hovering over an element
       const areControlsDisabled = controlsRef.current && !controlsRef.current.enabled;
@@ -4505,10 +4521,15 @@ export default function Canvas3D({
         }
         
         console.log("✅ Using highlighted air entry for deletion:", airEntryData);
-        setDebugInfo(prev => ({
-          ...prev,
-          lastIntersection: `Deleting ${airEntryData.type} at entry index ${airEntryData.entryIndex}`
-        }));
+        // Throttle debug info updates to prevent infinite loops
+        const now = Date.now();
+        if (now - lastDebugUpdateRef.current > DEBUG_UPDATE_THROTTLE) {
+          lastDebugUpdateRef.current = now;
+          setDebugInfo(prev => ({
+            ...prev,
+            lastIntersection: `Deleting ${airEntryData.type} at entry index ${airEntryData.entryIndex}`
+          }));
+        }
         
         console.log("Air entry selected for deletion:", airEntryData);
         
@@ -5504,11 +5525,15 @@ export default function Canvas3D({
     const eraserModeValue = isEraserMode === true; // Force a boolean value
 
     
-    // Update debug info to reflect current eraser mode state
-    setDebugInfo(prev => ({
-      ...prev,
-      eraserMode: eraserModeValue
-    }));
+    // Update debug info to reflect current eraser mode state with throttling
+    const now = Date.now();
+    if (now - lastDebugUpdateRef.current > DEBUG_UPDATE_THROTTLE) {
+      lastDebugUpdateRef.current = now;
+      setDebugInfo(prev => ({
+        ...prev,
+        eraserMode: eraserModeValue
+      }));
+    }
     
     // Log how many air entry elements exist in the scene
     if (sceneRef.current) {
