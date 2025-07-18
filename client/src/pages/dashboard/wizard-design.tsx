@@ -1984,8 +1984,8 @@ export default function WizardDesign() {
 
 
             <div className="flex gap-4">
-              {/* Left side menus - copy style from Step 1 */}
-              <div className="w-72 space-y-6">
+              {/* Left side menus - adaptable with scroll */}
+              <div className="w-72 space-y-6 overflow-y-auto max-h-[700px]">
                 {/* Main options */}
                 <div className="border rounded-lg p-4">
                   <h3 className="font-semibold text-xl mb-4 text-center">Add 3D Elements</h3>
@@ -2572,8 +2572,17 @@ export default function WizardDesign() {
 
 
   const renderCanvasSection = (mode = "tabs") => {
+    // Fixed height for RSP, flexible for other modes
+    const canvasClasses = mode === "step2" 
+      ? "border rounded-lg overflow-hidden bg-white min-w-[600px] h-[700px]"
+      : "border rounded-lg overflow-hidden bg-white min-w-[600px] min-h-[600px]";
+    
+    const canvasStyle = mode === "step2" 
+      ? {} 
+      : { flex: 1 };
+
     return (
-      <div className="border rounded-lg overflow-hidden bg-white min-w-[600px] min-h-[600px]" style={{ flex: 1 }}>
+      <div className={canvasClasses} style={canvasStyle}>
         <SceneProvider>
           {mode === "step2" ? (
             <RoomSketchPro
