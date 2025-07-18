@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
-import { LucideIcon, LayoutDashboard, Wind, Settings, User, LogOut, Wand2 } from "lucide-react";
+import { LucideIcon, LayoutDashboard, Settings, User, LogOut, Wand2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
@@ -33,11 +33,6 @@ const sidebarItems: SidebarItem[] = [
     icon: Wand2,
     label: "Run Case Wizard",
     href: "/dashboard/wizard-design",
-  },
-  {
-    icon: Wind,
-    label: "Simulations",
-    href: "/dashboard/simulations",
   },
   {
     icon: Settings,
