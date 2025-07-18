@@ -6333,38 +6333,38 @@ export default function Canvas3D({
       {/* 3D Canvas container - simplified layout with just the canvas */}
       <div ref={containerRef} className="w-full h-full relative">
 
-      </div>
-
-      {/* Settings Dropdown - Only show in 3D Preview mode (not presentation mode) */}
-      {!presentationMode && (
-        <div className="absolute top-2 right-2 z-10">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="bg-white shadow-md">
-                <Settings className="h-4 w-4 mr-2" />
-                Settings
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80 p-4 space-y-4">
-              {/* Wall Transparency */}
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Wall Transparency</Label>
-                <Slider
-                  value={[wallTransparency]}
-                  onValueChange={(values) => onWallTransparencyChange?.(values[0])}
-                  min={0}
-                  max={1}
-                  step={0.1}
-                  className="w-full"
-                />
-                <div className="text-sm text-right text-muted-foreground">
-                  {Math.round(wallTransparency * 100)}%
+        {/* Settings Dropdown - Show when onWallTransparencyChange callback is available (indicating wizard mode) */}
+        {onWallTransparencyChange && (
+          <div className="absolute top-2 right-2 z-10">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="bg-white shadow-md">
+                  <Settings className="h-4 w-4 mr-2" />
+                  Settings
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-80 p-4 space-y-4">
+                {/* Wall Transparency */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Wall Transparency</Label>
+                  <Slider
+                    value={[wallTransparency]}
+                    onValueChange={(values) => onWallTransparencyChange(values[0])}
+                    min={0}
+                    max={1}
+                    step={0.1}
+                    className="w-full"
+                  />
+                  <div className="text-sm text-right text-muted-foreground">
+                    {Math.round(wallTransparency * 100)}%
+                  </div>
                 </div>
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )}
+
+      </div>
 
       {/* Dialog for editing air entries - Phase 4: Unified with Canvas2D */}
       {editingAirEntry && (
