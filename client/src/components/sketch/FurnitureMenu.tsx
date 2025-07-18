@@ -15,6 +15,8 @@ interface FurnitureMenuProps {
     currentFloor: string;
     floors: Record<string, any>;
   };
+  onToggleFurnitureEraserMode?: () => void;
+  isFurnitureEraserMode?: boolean;
 }
 
 const furnitureItems: FurnitureItem[] = [
@@ -91,7 +93,7 @@ const furnitureItems: FurnitureItem[] = [
   }
 ];
 
-export function FurnitureMenu({ onDragStart, floorContext }: FurnitureMenuProps) {
+export function FurnitureMenu({ onDragStart, floorContext, onToggleFurnitureEraserMode, isFurnitureEraserMode }: FurnitureMenuProps) {
   const [customItems, setCustomItems] = useState<FurnitureItem[]>([]);
 
   // Subscribe to custom furniture store updates
@@ -151,31 +153,60 @@ export function FurnitureMenu({ onDragStart, floorContext }: FurnitureMenuProps)
     <div className="space-y-4">
       <h3 className="font-semibold">{title}</h3>
       <div className="grid grid-cols-3 gap-2">
-        {items.map((item) => (
-          <div
-            key={item.id}
-            draggable
-            onDragStart={(e) => {
-              e.dataTransfer.setData('application/json', JSON.stringify(item));
-              onDragStart(item);
-            }}
-            className={cn(
-              "h-16 p-2 flex flex-col items-center justify-center",
-              "border-2 border-gray-300 rounded-md",
-              "hover:bg-gray-100 cursor-move transition-all duration-200",
-              "bg-white shadow-sm",
-              // Highlight custom objects with subtle green border
-              item.id.startsWith('custom_') ? "border-green-300 bg-green-50" : ""
-            )}
-            title={`${item.name} - Drag to canvas to place`}
-          >
-            <div 
-              className="w-10 h-10"
-              dangerouslySetInnerHTML={{ __html: item.icon }}
-            />
-            <span className="text-xs mt-1">{item.name}</span>
-          </div>
-        ))}
+        {items.map((item) => {
+          // Special handling for Eraser tool
+          if (item.id === 'eraser') {
+            return (
+              <div
+                key={item.id}
+                onClick={onToggleFurnitureEraserMode}
+                className={cn(
+                  "h-16 p-2 flex flex-col items-center justify-center",
+                  "border-2 rounded-md transition-all duration-200",
+                  "cursor-pointer shadow-sm",
+                  // Active state styling when eraser mode is enabled
+                  isFurnitureEraserMode
+                    ? "border-orange-500 bg-orange-500 text-white hover:bg-orange-600"
+                    : "border-gray-300 bg-white hover:bg-gray-100"
+                )}
+                title={isFurnitureEraserMode ? "Exit furniture eraser mode" : "Click to enable furniture eraser mode"}
+              >
+                <div 
+                  className="w-10 h-10"
+                  dangerouslySetInnerHTML={{ __html: item.icon }}
+                />
+                <span className="text-xs mt-1">{item.name}</span>
+              </div>
+            );
+          }
+          
+          // Normal drag behavior for other items
+          return (
+            <div
+              key={item.id}
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData('application/json', JSON.stringify(item));
+                onDragStart(item);
+              }}
+              className={cn(
+                "h-16 p-2 flex flex-col items-center justify-center",
+                "border-2 border-gray-300 rounded-md",
+                "hover:bg-gray-100 cursor-move transition-all duration-200",
+                "bg-white shadow-sm",
+                // Highlight custom objects with subtle green border
+                item.id.startsWith('custom_') ? "border-green-300 bg-green-50" : ""
+              )}
+              title={`${item.name} - Drag to canvas to place`}
+            >
+              <div 
+                className="w-10 h-10"
+                dangerouslySetInnerHTML={{ __html: item.icon }}
+              />
+              <span className="text-xs mt-1">{item.name}</span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
