@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Play, Mail } from "lucide-react";
+import { PlusCircle, Play, Mail, MoreHorizontal, ExternalLink } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useRoomStore } from "@/lib/store/room-store";
 import {
@@ -16,6 +16,49 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+// Mock simulation data for the table
+const mockSimulations = [
+  {
+    id: 1,
+    name: "sphere_JRM",
+    accuracy: "Basic",
+    status: "Processing",
+    createdAt: "10 minutes ago",
+    isPublic: true
+  },
+  {
+    id: 2,
+    name: "office_thermal_v2",
+    accuracy: "Advanced",
+    status: "Completed",
+    createdAt: "2 hours ago",
+    isPublic: false
+  },
+  {
+    id: 3,
+    name: "hvac_system_test",
+    accuracy: "Premium",
+    status: "Failed",
+    createdAt: "1 day ago",
+    isPublic: true
+  }
+];
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
@@ -103,25 +146,104 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Quick Start */}
+        {/* Recent Simulations */}
         <Card>
-          <CardHeader>
-            <CardTitle>Quick Start</CardTitle>
-            <CardDescription>Create your HVAC simulation design</CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+            <div>
+              <CardTitle>Recent Simulations</CardTitle>
+              <CardDescription>Your latest thermal analysis projects</CardDescription>
+            </div>
+            <Button onClick={handleStartSimulation} className="flex items-center gap-2">
+              <PlusCircle className="h-4 w-4" />
+              New Simulation
+            </Button>
           </CardHeader>
           <CardContent>
-            <div className="text-center py-8">
-              <p className="text-muted-foreground mb-4">
-                Design rooms, configure air flow, and run thermal simulations
-              </p>
-              <Button 
-                onClick={handleStartSimulation}
-                size="lg"
-                className="flex items-center gap-2"
-              >
-                <PlusCircle className="h-5 w-5" />
-                Create New Design
-              </Button>
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Accuracy</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Created at</TableHead>
+                    <TableHead className="text-right">Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {mockSimulations.map((simulation) => (
+                    <TableRow key={simulation.id}>
+                      <TableCell className="font-medium">
+                        <div className="flex items-center gap-2">
+                          {simulation.name}
+                          {simulation.isPublic && (
+                            <Badge variant="secondary" className="text-xs">
+                              Public
+                            </Badge>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>{simulation.accuracy}</TableCell>
+                      <TableCell>
+                        <Badge 
+                          variant={
+                            simulation.status === "Processing" ? "default" :
+                            simulation.status === "Completed" ? "secondary" :
+                            "destructive"
+                          }
+                          className={
+                            simulation.status === "Processing" ? "bg-blue-100 text-blue-800 border-blue-200" :
+                            simulation.status === "Completed" ? "bg-green-100 text-green-800 border-green-200" :
+                            "bg-red-100 text-red-800 border-red-200"
+                          }
+                        >
+                          {simulation.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {simulation.createdAt}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem>
+                              <ExternalLink className="h-4 w-4 mr-2" />
+                              View Details
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="text-red-600">
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
+              <div>Displaying {mockSimulations.length} items</div>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" disabled>
+                  Previous
+                </Button>
+                <div className="flex items-center gap-1">
+                  <Button variant="outline" size="sm" className="w-8 h-8 p-0">
+                    1
+                  </Button>
+                </div>
+                <Button variant="outline" size="sm" disabled>
+                  Next
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
