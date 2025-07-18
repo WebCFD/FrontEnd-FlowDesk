@@ -31,7 +31,7 @@ const sidebarItems: SidebarItem[] = [
   },
   {
     icon: Wand2,
-    label: "WizardDesign",
+    label: "Run Case Wizard",
     href: "/dashboard/wizard-design",
   },
   {
