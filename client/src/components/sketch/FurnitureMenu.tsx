@@ -130,6 +130,56 @@ export function FurnitureMenu({ onDragStart, floorContext }: FurnitureMenuProps)
   // Custom furniture goes with furniture category
   const allFurnitureItems = [...furnitureItems_category, ...customItems];
 
+  // Tools category - utility items for simulation
+  const toolsItems: FurnitureItem[] = [
+    {
+      id: 'thermometer',
+      name: 'Thermometer',
+      icon: `
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="18" y="5" width="4" height="25" fill="#ff6b6b" stroke="#dc2626" stroke-width="1"/>
+          <circle cx="20" cy="32" r="6" fill="#ff6b6b" stroke="#dc2626" stroke-width="2"/>
+          <line x1="16" y1="8" x2="14" y2="8" stroke="#374151" stroke-width="1"/>
+          <line x1="16" y1="12" x2="14" y2="12" stroke="#374151" stroke-width="1"/>
+          <line x1="16" y1="16" x2="14" y2="16" stroke="#374151" stroke-width="1"/>
+          <line x1="16" y1="20" x2="14" y2="20" stroke="#374151" stroke-width="1"/>
+        </svg>
+      `,
+      defaultDimensions: { width: 10, height: 50, depth: 10 }
+    },
+    {
+      id: 'anemometer',
+      name: 'Anemometer',
+      icon: `
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20" cy="20" r="3" fill="#3b82f6" stroke="#1d4ed8" stroke-width="2"/>
+          <circle cx="12" cy="12" r="4" fill="#60a5fa" stroke="#1d4ed8" stroke-width="1"/>
+          <circle cx="28" cy="12" r="4" fill="#60a5fa" stroke="#1d4ed8" stroke-width="1"/>
+          <circle cx="28" cy="28" r="4" fill="#60a5fa" stroke="#1d4ed8" stroke-width="1"/>
+          <circle cx="12" cy="28" r="4" fill="#60a5fa" stroke="#1d4ed8" stroke-width="1"/>
+          <line x1="20" y1="17" x2="15" y2="15" stroke="#1d4ed8" stroke-width="2"/>
+          <line x1="23" y1="20" x2="25" y2="15" stroke="#1d4ed8" stroke-width="2"/>
+          <line x1="20" y1="23" x2="25" y2="25" stroke="#1d4ed8" stroke-width="2"/>
+          <line x1="17" y1="20" x2="15" y2="25" stroke="#1d4ed8" stroke-width="2"/>
+        </svg>
+      `,
+      defaultDimensions: { width: 30, height: 30, depth: 30 }
+    },
+    {
+      id: 'sensor',
+      name: 'Sensor',
+      icon: `
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="20" height="20" rx="4" fill="#10b981" stroke="#047857" stroke-width="2"/>
+          <circle cx="20" cy="20" r="6" fill="#34d399" stroke="#047857" stroke-width="1"/>
+          <circle cx="20" cy="20" r="2" fill="#047857"/>
+          <path d="M8 8 L12 12 M32 8 L28 12 M32 32 L28 28 M8 32 L12 28" stroke="#6b7280" stroke-width="1.5"/>
+        </svg>
+      `,
+      defaultDimensions: { width: 15, height: 15, depth: 15 }
+    }
+  ];
+
   const renderCategory = (title: string, items: FurnitureItem[]) => (
     <div className="space-y-4">
       <h3 className="font-semibold">{title}</h3>
