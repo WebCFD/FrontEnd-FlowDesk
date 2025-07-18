@@ -20,6 +20,7 @@ export interface IStorage {
   getSimulation(id: number): Promise<Simulation | undefined>;
   updateSimulationStatus(id: number, status: UpdateSimulationStatus): Promise<Simulation>;
   getCompletedSimulationsByUserId(userId: number): Promise<Simulation[]>;
+  deleteSimulation(id: number, userId: number): Promise<boolean>;
 
   // Session store
   sessionStore: session.Store;
@@ -122,6 +123,30 @@ export class DatabaseStorage implements IStorage {
       .from(simulations)
       .where(eq(simulations.id, id));
     return simulation;
+  }
+
+  async deleteSimulation(id: number, userId: number): Promise<boolean> {
+    try {
+      // Verify the simulation belongs to the user
+      const simulation = await db
+        .select()
+        .from(simulations)
+        .where(and(eq(simulations.id, id), eq(simulations.userId, userId)));
+      
+      if (simulation.length === 0) {
+        return false; // Simulation not found or doesn't belong to user
+      }
+
+      // Delete the simulation from database
+      await db
+        .delete(simulations)
+        .where(and(eq(simulations.id, id), eq(simulations.userId, userId)));
+      
+      return true;
+    } catch (error) {
+      console.error('Error deleting simulation from database:', error);
+      return false;
+    }
   }
 }
 

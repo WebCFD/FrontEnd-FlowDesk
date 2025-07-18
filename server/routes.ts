@@ -195,6 +195,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Delete simulation endpoint
+  app.delete("/api/simulations/:id", async (req, res) => {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid simulation ID" });
+      }
+
+      // Get simulation details before deletion to get file path
+      const simulation = await storage.getSimulation(id);
+      if (!simulation) {
+        return res.status(404).json({ message: "Simulation not found" });
+      }
+
+      // Verify the simulation belongs to the authenticated user
+      if (simulation.userId !== req.user.id) {
+        return res.status(403).json({ message: "Unauthorized to delete this simulation" });
+      }
+
+      // Delete from database
+      const deleteSuccess = await storage.deleteSimulation(id, req.user.id);
+      if (!deleteSuccess) {
+        return res.status(500).json({ message: "Failed to delete simulation from database" });
+      }
+
+      // Delete JSON file from file system
+      try {
+        if (simulation.filePath) {
+          const fullPath = path.join(process.cwd(), simulation.filePath);
+          await fs.unlink(fullPath);
+        }
+      } catch (fileError) {
+        console.warn('Warning: Could not delete simulation file:', fileError);
+        // Continue even if file deletion fails - database cleanup is more important
+      }
+
+      res.json({ 
+        success: true, 
+        message: "Simulation deleted successfully" 
+      });
+
+    } catch (error) {
+      console.error('Error deleting simulation:', error);
+      res.status(500).json({ message: "Error deleting simulation" });
+    }
+  });
+
   // User credits API endpoint
   app.patch("/api/user/credits", async (req, res) => {
     try {
