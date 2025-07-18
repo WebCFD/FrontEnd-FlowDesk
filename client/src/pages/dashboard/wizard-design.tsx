@@ -256,7 +256,7 @@ export default function WizardDesign() {
   const [isAirEntryDialogOpen, setIsAirEntryDialogOpen] = useState(false);
   const [selectedLine, setSelectedLine] = useState<Line | null>(null);
   const [clickedPoint, setClickedPoint] = useState<Point | null>(null);
-  const [tab, setTab] = useState<"2d-editor" | "3d-preview">("3d-preview");
+  const [tab, setTab] = useState<"2d-editor" | "3d-preview">("2d-editor");
   const [showStartSimulationPrompt, setShowStartSimulationPrompt] =
     useState(false);
   const [showEraseDesignDialog, setShowEraseDesignDialog] = useState(false);
