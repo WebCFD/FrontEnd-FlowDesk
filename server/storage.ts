@@ -100,7 +100,7 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(simulations)
       .where(eq(simulations.userId, userId))
-      .orderBy(simulations.createdAt);
+      .orderBy(desc(simulations.createdAt));
   }
 
   async getSimulation(id: number): Promise<Simulation | undefined> {
