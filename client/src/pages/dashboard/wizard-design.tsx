@@ -2003,7 +2003,7 @@ export default function WizardDesign() {
               <div className="w-72 space-y-6 overflow-y-auto" style={{ height: `calc(100vh - ${viewportOffset}px)` }}>
                 {/* Main options */}
                 <div className="border rounded-lg p-4">
-                  <h3 className="font-semibold text-lg mb-4">3D Menu</h3>
+                  <h3 className="font-semibold text-xl mb-4 text-center">Add 3D Elements</h3>
 
 
 
