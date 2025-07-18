@@ -12,15 +12,6 @@ import { createTableModel, createPersonModel, createArmchairModel, createCarMode
 import { STLProcessor } from "./STLProcessor";
 import { customFurnitureStore } from "@/lib/custom-furniture-store";
 import { useRoomStore } from "@/lib/store/room-store";
-import { Settings } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
-import { Label } from "@/components/ui/label";
 
 interface Point {
   x: number;
@@ -112,7 +103,6 @@ interface Canvas3DProps {
     endPoint: { x: number; y: number };
     properties: { temperature: number };
   }>;
-  onWallTransparencyChange?: (value: number) => void;
 
   onUpdateAirEntry?: (
     floorName: string,
@@ -6332,37 +6322,6 @@ export default function Canvas3D({
     <>
       {/* 3D Canvas container - simplified layout with just the canvas */}
       <div ref={containerRef} className="w-full h-full relative">
-
-        {/* Settings Dropdown - Show when onWallTransparencyChange callback is available (indicating wizard mode) */}
-        {typeof onWallTransparencyChange === 'function' ? (
-          <div className="absolute top-2 right-2 z-10">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="bg-white shadow-md">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Settings
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80 p-4 space-y-4">
-                {/* Wall Transparency */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Wall Transparency</Label>
-                  <Slider
-                    value={[wallTransparency]}
-                    onValueChange={(values) => onWallTransparencyChange?.(values[0])}
-                    min={0}
-                    max={1}
-                    step={0.1}
-                    className="w-full"
-                  />
-                  <div className="text-sm text-right text-muted-foreground">
-                    {Math.round(wallTransparency * 100)}%
-                  </div>
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        ) : null}
 
       </div>
 
