@@ -270,6 +270,7 @@ export default function WizardDesign() {
   const [defaultWallTemperature, setDefaultWallTemperature] = useState(20); // Default wall temperature in °C
   const [defaultStairTemperature, setDefaultStairTemperature] = useState(20); // Default stair temperature in °C
   const [canvas3DKey, setCanvas3DKey] = useState(0); // Force re-render of Canvas3D
+  const [canvasHeight, setCanvasHeight] = useState(700); // Dynamic canvas height (45% of viewport)
   
   // Nuevos estados para parámetros por planta
   const [floorParameters, setFloorParameters] = useState<Record<string, { ceilingHeight: number; floorDeck: number; ceilingTemperature?: number; floorTemperature?: number }>>({
@@ -331,6 +332,26 @@ export default function WizardDesign() {
 
   // Estado para el diálogo de carga de diseño
   const [showLoadDesignDialog, setShowLoadDesignDialog] = useState(false);
+
+  // Calculate canvas height as 45% of viewport height
+  useEffect(() => {
+    const calculateCanvasHeight = () => {
+      const viewportHeight = window.innerHeight;
+      const calculatedHeight = Math.round(viewportHeight * 0.45);
+      // Ensure minimum height of 400px and maximum of 800px
+      const clampedHeight = Math.max(400, Math.min(800, calculatedHeight));
+      setCanvasHeight(clampedHeight);
+    };
+
+    // Calculate initial height
+    calculateCanvasHeight();
+
+    // Recalculate on window resize
+    window.addEventListener('resize', calculateCanvasHeight);
+
+    // Cleanup listener
+    return () => window.removeEventListener('resize', calculateCanvasHeight);
+  }, []);
 
   // Use the global room store with updated selectors
   const {
@@ -1389,7 +1410,7 @@ export default function WizardDesign() {
 
           <div className="flex gap-4">
             {/* Left side menus */}
-            <div className="w-72 space-y-6 overflow-y-auto max-h-[700px]">
+            <div className="w-72 space-y-6 overflow-y-auto" style={{ maxHeight: `${canvasHeight}px` }}>
               {/* 2D Configuration - only show when in 2D mode */}
               {tab === "2d-editor" && (
                 <div className="border rounded-lg p-4">
@@ -1985,7 +2006,7 @@ export default function WizardDesign() {
 
             <div className="flex gap-4">
               {/* Left side menus - adaptable with scroll */}
-              <div className="w-72 space-y-6 overflow-y-auto max-h-[700px]">
+              <div className="w-72 space-y-6 overflow-y-auto" style={{ maxHeight: `${canvasHeight}px` }}>
                 {/* Main options */}
                 <div className="border rounded-lg p-4">
                   <h3 className="font-semibold text-xl mb-4 text-center">Add 3D Elements</h3>
@@ -2572,9 +2593,9 @@ export default function WizardDesign() {
 
 
   const renderCanvasSection = (mode = "tabs") => {
-    // Fixed height for all canvas modes
-    const canvasClasses = "border rounded-lg overflow-hidden bg-white min-w-[600px] h-[700px]";
-    const canvasStyle = { flex: 1 }; // Maintain horizontal expansion for all modes
+    // Dynamic height based on 45% of viewport height
+    const canvasClasses = "border rounded-lg overflow-hidden bg-white min-w-[600px]";
+    const canvasStyle = { flex: 1, height: `${canvasHeight}px` }; // Dynamic height with horizontal expansion
 
     return (
       <div className={canvasClasses} style={canvasStyle}>
