@@ -2005,29 +2005,7 @@ export default function WizardDesign() {
                 <div className="border rounded-lg p-4">
                   <h3 className="font-semibold text-lg mb-4">3D Menu</h3>
 
-                  {/* Wall Transparency */}
-                  <div className="space-y-4 mt-4">
-                    <h3 className="font-semibold">Wall Transparency</h3>
-                    <div className="px-2">
-                      <Slider
-                        value={[wallTransparency]}
-                        onValueChange={(values: number[]) => {
-                          console.log(
-                            "Wizard: Wall transparency changing to:",
-                            values[0],
-                          );
-                          setWallTransparency(values[0]);
-                        }}
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        className="flex-1"
-                      />
-                      <div className="text-sm text-right mt-1">
-                        {Math.round(wallTransparency * 100)}%
-                      </div>
-                    </div>
-                  </div>
+
 
                   {/* Air Entry Transparency */}
                   <div className="space-y-4 mt-4">
