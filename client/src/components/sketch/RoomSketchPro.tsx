@@ -3,6 +3,16 @@ import Canvas3D from "./Canvas3D";
 import * as THREE from "three";
 import { TextureGenerator } from "./textureGenerator";
 import { useRoomStore } from "@/lib/store/room-store";
+import { Settings } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Point {
   x: number;
@@ -974,84 +984,98 @@ export function RoomSketchPro({
         onDeleteFurniture={onDeleteFurniture} // Enable furniture deletion in RSP
       />
       
-      {/* Controles específicos de RSP */}
-      <div className="absolute top-2 right-2 z-10 bg-white p-2 rounded shadow space-y-2">
-        {/* Control de transparencia - mantiene compatibilidad */}
-        <div>
-          <label className="block text-xs mb-1">Wall Transparency</label>
-          <input
-            type="range"
-            min={0}
-            max={1}
-            step={0.1}
-            value={wallTransparency}
-            onChange={(e) => onWallTransparencyChange(parseFloat(e.target.value))}
-            className="w-20"
-          />
-        </div>
+      {/* View Setup Dropdown */}
+      <div className="absolute top-2 right-2 z-10">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="bg-white shadow-md">
+              <Settings className="h-4 w-4 mr-2" />
+              View Setup
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-80 p-4 space-y-4">
+            {/* Wall Transparency */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Wall Transparency</Label>
+              <Slider
+                value={[wallTransparency]}
+                onValueChange={(values) => onWallTransparencyChange(values[0])}
+                min={0}
+                max={1}
+                step={0.1}
+                className="w-full"
+              />
+              <div className="text-xs text-gray-500 text-right">
+                {Math.round(wallTransparency * 100)}%
+              </div>
+            </div>
 
-        {/* Control de transparencia de puertas y ventanas */}
-        {onAirEntryTransparencyChange && (
-          <div>
-            <label className="block text-xs mb-1">Door/Window Transparency</label>
-            <input
-              type="range"
-              min={0}
-              max={1}
-              step={0.1}
-              value={airEntryTransparency}
-              onChange={(e) => onAirEntryTransparencyChange(parseFloat(e.target.value))}
-              className="w-20"
-            />
-          </div>
-        )}
+            {/* Door/Window Transparency */}
+            {onAirEntryTransparencyChange && (
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Door/Window Transparency</Label>
+                <Slider
+                  value={[airEntryTransparency]}
+                  onValueChange={(values) => onAirEntryTransparencyChange(values[0])}
+                  min={0}
+                  max={1}
+                  step={0.1}
+                  className="w-full"
+                />
+                <div className="text-xs text-gray-500 text-right">
+                  {Math.round(airEntryTransparency * 100)}%
+                </div>
+              </div>
+            )}
 
-        {/* Control de intensidad de iluminación */}
-        <div>
-          <label className="block text-xs mb-1">Lighting Intensity</label>
-          <input
-            type="range"
-            min={1.0}
-            max={5.0}
-            step={0.1}
-            value={lightingIntensity}
-            onChange={(e) => setLightingIntensity(parseFloat(e.target.value))}
-            className="w-20"
-          />
-        </div>
+            {/* Lighting Intensity */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Lighting Intensity</Label>
+              <Slider
+                value={[lightingIntensity]}
+                onValueChange={(values) => setLightingIntensity(values[0])}
+                min={1.0}
+                max={5.0}
+                step={0.1}
+                className="w-full"
+              />
+              <div className="text-xs text-gray-500 text-right">
+                {lightingIntensity.toFixed(1)}x
+              </div>
+            </div>
 
-        {/* Selector de tema - preparado para sistema de materiales */}
-        <div>
-          <label className="block text-xs mb-1">Tema</label>
-          <select
-            value={selectedTheme}
-            onChange={(e) => setSelectedTheme(e.target.value as typeof materialTheme)}
-            className="text-xs w-20 px-1 py-0.5 border rounded"
-          >
-            {Object.entries(themeConfig).map(([key, config]) => (
-              <option key={key} value={key}>
-                {config.name}
-              </option>
-            ))}
-          </select>
-        </div>
+            {/* Theme Selector */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Tema</Label>
+              <Select value={selectedTheme} onValueChange={(value) => setSelectedTheme(value as typeof materialTheme)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(themeConfig).map(([key, config]) => (
+                    <SelectItem key={key} value={key}>
+                      {config.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-        {/* Botón de borrado de muebles */}
-        {onToggleFurnitureEraserMode && (
-          <div>
-            <button
-              onClick={onToggleFurnitureEraserMode}
-              className={`text-xs px-2 py-1 rounded font-medium transition-colors ${
-                isFurnitureEraserMode
-                  ? 'bg-orange-500 text-white shadow-md'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-              title="Toggle furniture eraser mode"
-            >
-              Del Furn
-            </button>
-          </div>
-        )}
+            {/* Delete Furniture Button */}
+            {onToggleFurnitureEraserMode && (
+              <div className="pt-2 border-t">
+                <Button
+                  onClick={onToggleFurnitureEraserMode}
+                  variant={isFurnitureEraserMode ? "destructive" : "outline"}
+                  size="sm"
+                  className="w-full"
+                >
+                  {isFurnitureEraserMode ? "Exit Delete Mode" : "Delete Furniture"}
+                </Button>
+              </div>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
 
