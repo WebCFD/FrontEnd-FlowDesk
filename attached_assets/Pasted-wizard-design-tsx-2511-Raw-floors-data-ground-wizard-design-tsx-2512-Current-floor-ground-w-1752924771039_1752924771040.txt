@@ -1,0 +1,32 @@
+wizard-design.tsx:2511 Raw floors data: {ground: {…}}
+wizard-design.tsx:2512 Current floor: ground
+wizard-design.tsx:2513 Floor data: {lines: Array(4), airEntries: Array(2), walls: Array(4), measurements: Array(0), hasClosedContour: true, …}
+wizard-design.tsx:2443 [SCALE DEBUG 4] Mock object scale: {x: 1, y: 1, z: 1}
+simulationDataConverter.ts:945 🔧 [WALL SYNC] syncWallsWithLines called for floor: Ground Floor
+simulationDataConverter.ts:946 🔧 [WALL SYNC] Lines: 4, Existing walls: 4, Default temp: 20
+simulationDataConverter.ts:950 🔧 [WALL SYNC] After removing orphans: 4 valid walls
+simulationDataConverter.ts:980 🔧 [WALL SYNC] addMissingWalls called for floor: Ground Floor
+simulationDataConverter.ts:981 🔧 [WALL SYNC] Input: 4 lines, 4 existing walls
+simulationDataConverter.ts:982 🔧 [WALL SYNC] Existing walls: (4) [{…}, {…}, {…}, {…}]
+simulationDataConverter.ts:1005 🔧 [WALL SYNC] Line 0 has existing wall: {id: 'wall_0F_1', temp: 20}
+simulationDataConverter.ts:1005 🔧 [WALL SYNC] Line 1 has existing wall: {id: 'wall_0F_2', temp: 20}
+simulationDataConverter.ts:1005 🔧 [WALL SYNC] Line 2 has existing wall: {id: 'wall_0F_3', temp: 20}
+simulationDataConverter.ts:1005 🔧 [WALL SYNC] Line 3 has existing wall: {id: 'wall_0F_4', temp: 20}
+simulationDataConverter.ts:1009 🔧 [WALL SYNC] Result: 0 walls added, 4 total walls
+simulationDataConverter.ts:954 🔧 [WALL SYNC] Final result: 4 total walls
+simulationDataConverter.ts:604 [SCALE DEBUG 5] JSON Export - ID: table_0F_1
+simulationDataConverter.ts:605 [SCALE DEBUG 5] Type: table
+simulationDataConverter.ts:606 [SCALE DEBUG 5] Raw obj.scale: {x: 1, y: 1, z: 1}x: 1y: 1z: 1[[Prototype]]: Object
+simulationDataConverter.ts:607 [SCALE DEBUG 5] Export scale values: {x: 1, y: 1, z: 1}x: 1y: 1z: 1[[Prototype]]: Object
+wizard-design.tsx:2516 Export data for dimensions: {version: '1.0', floors: {…}}floors: {0: {…}}version: "1.0"[[Prototype]]: Object
+wizard-design.tsx:2268 Error calculating dimensions: TypeError: Cannot read properties of undefined (reading 'x')
+    at wizard-design.tsx:2572:23
+    at Array.forEach (<anonymous>)
+    at wizard-design.tsx:2571:18
+    at Array.forEach (<anonymous>)
+    at wizard-design.tsx:2568:21
+    at Array.forEach (<anonymous>)
+    at calculateDesignDimensions (wizard-design.tsx:2566:38)
+    at wizard-design.tsx:2266:34
+    at renderStep3 (wizard-design.tsx:2294:17)
+    at WizardDesign (wizard-design.tsx:3203:26)
