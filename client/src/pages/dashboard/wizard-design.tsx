@@ -2074,7 +2074,7 @@ export default function WizardDesign() {
       
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Left Column - Simulation Type Selection (2/3 width) */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Select Your Simulation Type</CardTitle>
@@ -2146,9 +2146,89 @@ export default function WizardDesign() {
           </Card>
             </CardContent>
           </Card>
+
+          {/* Subscription Plans Card - Horizontal Layout */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Subscription Plans</CardTitle>
+              <CardDescription>Save money with our subscription options</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-3 md:grid-cols-4">
+                {/* Pay per Use (Current) */}
+                <div className="p-3 border rounded-lg bg-gray-50 border-gray-200">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-semibold text-gray-700 text-sm">Pay per Use</span>
+                    <span className="text-xs font-medium text-gray-600">Current</span>
+                  </div>
+                  <div className="text-xs text-gray-600 space-y-1">
+                    <div>• Steady: €10</div>
+                    <div>• Advanced: €12</div>
+                    <div>• No commitment</div>
+                  </div>
+                </div>
+
+                {/* Monthly Plan */}
+                <div className="p-3 border rounded-lg bg-blue-50 border-blue-200">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="font-semibold text-blue-900 text-sm">Monthly</span>
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-blue-600">€75</div>
+                      <div className="text-xs text-blue-700 line-through">€100</div>
+                    </div>
+                  </div>
+                  <div className="text-xs text-blue-800 space-y-1">
+                    <div>• 10 simulations</div>
+                    <div>• 25% discount</div>
+                    <div>• Priority support</div>
+                  </div>
+                </div>
+
+                {/* Quarterly Plan */}
+                <div className="p-3 border rounded-lg bg-green-50 border-green-200">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="font-semibold text-green-900 text-sm">Quarterly</span>
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-green-600">€180</div>
+                      <div className="text-xs text-green-700 line-through">€300</div>
+                    </div>
+                  </div>
+                  <div className="text-xs text-green-800 space-y-1">
+                    <div>• 30 simulations</div>
+                    <div>• 40% discount</div>
+                    <div>• Advanced analytics</div>
+                    <div>• API access</div>
+                  </div>
+                </div>
+
+                {/* Annual Plan */}
+                <div className="p-3 border rounded-lg bg-purple-50 border-purple-200">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="font-semibold text-purple-900 text-sm">Annual</span>
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-purple-600">€600</div>
+                      <div className="text-xs text-purple-700 line-through">€1200</div>
+                    </div>
+                  </div>
+                  <div className="text-xs text-purple-800 space-y-1">
+                    <div>• 120 simulations</div>
+                    <div>• 50% discount</div>
+                    <div>• Account manager</div>
+                    <div>• Custom integrations</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-3 border-t mt-4">
+                <p className="text-xs text-gray-500 text-center">
+                  All plans include 3D visualization, CFD analysis, and cloud storage
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Right Column - Summary and Pricing (1/3 width) */}
+        {/* Right Column - Summary Only (1/3 width) */}
         <div className="space-y-6">
           {/* Simulation Summary Card */}
           <Card>
@@ -2175,85 +2255,6 @@ export default function WizardDesign() {
               <div className="flex justify-between items-center text-sm">
                 <span className="text-gray-600">Status:</span>
                 <span className="font-medium capitalize">{simulationStatus}</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Pricing Plan Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Subscription Plans</CardTitle>
-              <CardDescription>Save money with our subscription options</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {/* Pay per Use (Current) */}
-              <div className="p-3 border rounded-lg bg-gray-50 border-gray-200">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-semibold text-gray-700">Pay per Use</span>
-                  <span className="text-sm font-medium text-gray-600">Current</span>
-                </div>
-                <div className="text-xs text-gray-600 space-y-1">
-                  <div>• Steady: €10 per simulation</div>
-                  <div>• Advanced: €12 per simulation</div>
-                  <div>• No commitment required</div>
-                </div>
-              </div>
-
-              {/* Monthly Plan */}
-              <div className="p-3 border rounded-lg bg-blue-50 border-blue-200">
-                <div className="flex justify-between items-center mb-1">
-                  <span className="font-semibold text-blue-900">Monthly Plan</span>
-                  <div className="text-right">
-                    <div className="text-lg font-bold text-blue-600">€75</div>
-                    <div className="text-xs text-blue-700 line-through">€100</div>
-                  </div>
-                </div>
-                <div className="text-xs text-blue-800 space-y-1">
-                  <div>• 10 simulations included</div>
-                  <div>• 25% discount vs pay-per-use</div>
-                  <div>• Priority support</div>
-                </div>
-              </div>
-
-              {/* Quarterly Plan */}
-              <div className="p-3 border rounded-lg bg-green-50 border-green-200">
-                <div className="flex justify-between items-center mb-1">
-                  <span className="font-semibold text-green-900">Quarterly Plan</span>
-                  <div className="text-right">
-                    <div className="text-lg font-bold text-green-600">€180</div>
-                    <div className="text-xs text-green-700 line-through">€300</div>
-                  </div>
-                </div>
-                <div className="text-xs text-green-800 space-y-1">
-                  <div>• 30 simulations included</div>
-                  <div>• 40% discount vs pay-per-use</div>
-                  <div>• Advanced analytics</div>
-                  <div>• API access</div>
-                </div>
-              </div>
-
-              {/* Annual Plan */}
-              <div className="p-3 border rounded-lg bg-purple-50 border-purple-200">
-                <div className="flex justify-between items-center mb-1">
-                  <span className="font-semibold text-purple-900">Annual Plan</span>
-                  <div className="text-right">
-                    <div className="text-lg font-bold text-purple-600">€600</div>
-                    <div className="text-xs text-purple-700 line-through">€1200</div>
-                  </div>
-                </div>
-                <div className="text-xs text-purple-800 space-y-1">
-                  <div>• 120 simulations included</div>
-                  <div>• 50% discount vs pay-per-use</div>
-                  <div>• Dedicated account manager</div>
-                  <div>• Custom integrations</div>
-                  <div>• Unlimited cloud storage</div>
-                </div>
-              </div>
-
-              <div className="pt-2 border-t">
-                <p className="text-xs text-gray-500 text-center">
-                  All plans include 3D visualization, CFD analysis, and cloud storage
-                </p>
               </div>
             </CardContent>
           </Card>
