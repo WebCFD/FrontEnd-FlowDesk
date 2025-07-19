@@ -26,6 +26,7 @@ import { queryClient } from "@/lib/queryClient";
 import { customFurnitureStore } from "@/lib/custom-furniture-store";
 import SimulationDataDialog from "@/components/sketch/SimulationDataDialog";
 import LoadDesignDialog from "@/components/sketch/LoadDesignDialog";
+import LoginModal from "@/components/auth/login-modal";
 import { generateSimulationData, denormalizeCoordinates } from "@/lib/simulationDataConverter";
 import * as THREE from "three";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -2287,9 +2288,21 @@ export default function WizardDesign() {
   const [showStartSimulationDialog, setShowStartSimulationDialog] = useState(false);
   const [simulationStatus, setSimulationStatus] = useState("completed");
   const [isCreatingSimulation, setIsCreatingSimulation] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   // Función para mostrar el diálogo de confirmación antes de crear la simulación
   const handleStartSimulation = () => {
+    // Validar si el usuario está logueado
+    if (!user) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to create and run simulations.",
+        variant: "destructive",
+      });
+      setIsLoginOpen(true);
+      return;
+    }
+
     // Validaciones previas
     if (!simulationName || simulationName.trim().length === 0) {
       toast({
@@ -3060,6 +3073,11 @@ export default function WizardDesign() {
           </div>
         </div>
       )}
+
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+      />
     </DashboardLayout>
   );
 }
