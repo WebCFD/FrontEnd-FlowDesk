@@ -2673,17 +2673,22 @@ export default function WizardDesign() {
 
   // Función para calcular estadísticas del diseño
   const calculateDesignStats = () => {
+    console.log("=== DESIGN STATISTICS DEBUG ===");
     let totalFloors = 0;
     let totalStairs = 0;
     let totalAirEntries = 0;
     let totalFurniture = 0;
 
     Object.entries(rawFloors).forEach(([floorName, floorData]) => {
+      console.log(`Floor: ${floorName}`);
       totalFloors += 1;
 
       // Contar stairs
       if (floorData.stairPolygons && Array.isArray(floorData.stairPolygons)) {
+        console.log(`Found ${floorData.stairPolygons.length} stairPolygons in ${floorName}:`, floorData.stairPolygons);
         totalStairs += floorData.stairPolygons.length;
+      } else {
+        console.log(`No stairPolygons found in ${floorName}`);
       }
 
       // Contar air entries
@@ -2696,6 +2701,12 @@ export default function WizardDesign() {
         totalFurniture += floorData.furnitureItems.length;
       }
     });
+
+    console.log("=== FINAL DESIGN STATS ===");
+    console.log(`Total Floors: ${totalFloors}`);
+    console.log(`Total Stairs: ${totalStairs}`);
+    console.log(`Total AirEntries: ${totalAirEntries}`);
+    console.log(`Total Furniture: ${totalFurniture}`);
 
     return {
       floors: totalFloors,
