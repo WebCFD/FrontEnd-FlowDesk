@@ -76,12 +76,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid simulation status" });
       }
 
-      // Validation 4: Check if user has enough credits (10 euros)
-      const simulationCost = 10;
+      // Validation 4: Check if user has enough credits - dynamic pricing
+      const simulationCost = simulationType === 'comfort' ? 10 : 12; // Steady: €10, Air Renovation: €12
       const hasEnoughCredits = await storage.debitUserCredits(req.user.id, simulationCost);
       
       if (!hasEnoughCredits) {
-        return res.status(400).json({ message: "Insufficient credits. You need at least €10 to run a simulation." });
+        return res.status(400).json({ 
+          message: `Insufficient credits. You need at least €${simulationCost} to run this simulation.` 
+        });
       }
 
       // Create user folder if it doesn't exist

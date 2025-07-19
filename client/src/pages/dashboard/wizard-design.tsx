@@ -2347,6 +2347,11 @@ export default function WizardDesign() {
     setShowStartSimulationDialog(true);
   };
 
+  // Función para obtener el costo de la simulación
+  const getSimulationCost = (type: string) => {
+    return type === 'comfort' ? 10 : 12; // Steady: €10, Air Renovation: €12
+  };
+
   // Función para crear la simulación real
   const handleConfirmCreateSimulation = async () => {
     setIsCreatingSimulation(true);
@@ -3035,7 +3040,7 @@ export default function WizardDesign() {
 
             <div className="bg-blue-50 p-3 rounded-lg">
               <p className="text-sm text-blue-800">
-                <strong>Cost:</strong> €{simulationType === "renovation" ? "12.00" : "10.00"} will be deducted from your credits
+                <strong>Cost:</strong> €{getSimulationCost(simulationType).toFixed(2)} will be deducted from your credits
               </p>
             </div>
           </div>
