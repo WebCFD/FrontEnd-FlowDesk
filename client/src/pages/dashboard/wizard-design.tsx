@@ -2072,14 +2072,17 @@ export default function WizardDesign() {
       {/* Simulation Information */}
       {renderSimulationInfo()}
       
-      <Card>
-        <CardHeader>
-          <CardTitle>Select Your Simulation Type</CardTitle>
-          <CardDescription>
-            Click on your preferred option
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Left Column - Simulation Type Selection (2/3 width) */}
+        <div className="lg:col-span-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Select Your Simulation Type</CardTitle>
+              <CardDescription>
+                Click on your preferred option
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-6 md:grid-cols-2">
           <Card 
             className={cn(
               "cursor-pointer transition-all duration-200 hover:shadow-lg",
@@ -2141,8 +2144,84 @@ export default function WizardDesign() {
               </Button>
             </CardContent>
           </Card>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Column - Summary and Pricing (1/3 width) */}
+        <div className="space-y-6">
+          {/* Simulation Summary Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Simulation Summary</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-gray-600">Simulation name:</span>
+                <span className="font-medium">{simulationName || "MySim"}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-gray-600">Type:</span>
+                <span className="font-medium">
+                  {simulationType === "comfort" ? "Steady" : "Air Renovation"}
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-gray-600">Cost:</span>
+                <span className="font-medium text-blue-600">
+                  €{getSimulationCost(simulationType)}
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-gray-600">Status:</span>
+                <span className="font-medium capitalize">{simulationStatus}</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Pricing Plan Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Simulation Plans</CardTitle>
+              <CardDescription>Choose the best plan for your needs</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-3">
+                <div className="p-3 border rounded-lg bg-blue-50 border-blue-200">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-semibold text-blue-900">Basic</span>
+                    <span className="text-lg font-bold text-blue-600">€10</span>
+                  </div>
+                  <ul className="text-xs text-blue-800 space-y-1">
+                    <li>• Steady state simulation</li>
+                    <li>• Temperature distribution</li>
+                    <li>• Basic reporting</li>
+                  </ul>
+                </div>
+
+                <div className="p-3 border rounded-lg">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-semibold">Advanced</span>
+                    <span className="text-lg font-bold text-gray-600">€12</span>
+                  </div>
+                  <ul className="text-xs text-gray-600 space-y-1">
+                    <li>• Transient simulation</li>
+                    <li>• Air quality analysis</li>
+                    <li>• Advanced reporting</li>
+                    <li>• Optimization insights</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="pt-3 border-t">
+                <p className="text-xs text-gray-500 text-center">
+                  All plans include 3D visualization and CFD analysis
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
 
       <AlertDialog
         open={showStartSimulationPrompt}
