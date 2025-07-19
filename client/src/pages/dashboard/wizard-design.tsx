@@ -2074,9 +2074,9 @@ export default function WizardDesign() {
       
       <Card>
         <CardHeader>
-          <CardTitle>Choose Your Simulation Package</CardTitle>
+          <CardTitle>Select Your Simulation Type</CardTitle>
           <CardDescription>
-            Select the package that best fits your needs
+            Click on your preferred option
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-6 md:grid-cols-2">
@@ -2092,7 +2092,7 @@ export default function WizardDesign() {
               <CardDescription>Thermal Comfort Analysis</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-green-600">€10</div>
+              <div className="text-3xl font-bold text-blue-600">€10</div>
               <ul className="mt-4 space-y-2 text-sm">
                 <li>• Steady equilibrium simulation</li>
                 <li>• Temperature distribution</li>
@@ -2123,7 +2123,7 @@ export default function WizardDesign() {
               <CardDescription>Thermal Comfort + Air Quality</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-green-600">€12</div>
+              <div className="text-3xl font-bold text-blue-600">€12</div>
               <ul className="mt-4 space-y-2 text-sm">
                 <li>• Transient simulation</li>
                 <li>• Air renovation analysis</li>
