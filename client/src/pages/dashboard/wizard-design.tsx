@@ -2722,18 +2722,18 @@ export default function WizardDesign() {
         floorData.airEntries.forEach((entry, index) => {
           console.log(`AirEntry ${index}:`, entry);
           console.log(`Properties:`, entry.properties);
-          console.log(`Air Direction:`, entry.properties?.airDirection);
+          console.log(`Air Orientation:`, entry.properties?.airOrientation);
           
-          if (entry && entry.properties && entry.properties.airDirection) {
-            if (entry.properties.airDirection === 'inflow') {
+          if (entry && entry.properties && entry.properties.airOrientation) {
+            if (entry.properties.airOrientation === 'inflow') {
               console.log("Found INFLOW AirEntry");
               airEntryInflow += 1;
-            } else if (entry.properties.airDirection === 'outflow') {
+            } else if (entry.properties.airOrientation === 'outflow') {
               console.log("Found OUTFLOW AirEntry");
               airEntryOutflow += 1;
             }
           } else {
-            console.log("AirEntry missing airDirection property");
+            console.log("AirEntry missing airOrientation property");
           }
         });
       }
