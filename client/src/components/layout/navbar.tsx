@@ -13,11 +13,33 @@ import LoginModal from "@/components/auth/login-modal";
 import { AnalyticsButton } from "@/components/common/AnalyticsButton";
 import { AnalyticsCategories, AnalyticsActions } from "@/lib/analyticsEvents";
 import { trackEvent } from "@/lib/analytics";
+import { useAuth } from "@/hooks/use-auth";
+import { User, LogOut } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 export default function Navbar() {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [location, setLocation] = useLocation();
+  const { user, setUser } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include"
+      });
+      setUser(null);
+      setLocation("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
 
   const scrollToSection = (sectionId: string) => {
     // Rastrear el clic en enlaces de navegación
@@ -115,22 +137,43 @@ export default function Navbar() {
         </NavigationMenu>
 
         <div className="flex items-center gap-4">
-          <AnalyticsButton 
-            category={AnalyticsCategories.ACCOUNT} 
-            action={AnalyticsActions.LOGIN}
-            variant="outline" 
-            onClick={() => setIsLoginOpen(true)}
-          >
-            Log in
-          </AnalyticsButton>
-          
-          <AnalyticsButton 
-            category={AnalyticsCategories.ACCOUNT} 
-            action={AnalyticsActions.SIGNUP}
-            onClick={() => setIsRegisterOpen(true)}
-          >
-            Sign Up
-          </AnalyticsButton>
+          {user && !user.isAnonymous ? (
+            // Usuario logueado - mostrar dropdown con información del usuario
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  {user.username}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-2">
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            // Usuario no logueado - mostrar botones de login y registro
+            <>
+              <AnalyticsButton 
+                category={AnalyticsCategories.ACCOUNT} 
+                action={AnalyticsActions.LOGIN}
+                variant="outline" 
+                onClick={() => setIsLoginOpen(true)}
+              >
+                Log in
+              </AnalyticsButton>
+              
+              <AnalyticsButton 
+                category={AnalyticsCategories.ACCOUNT} 
+                action={AnalyticsActions.SIGNUP}
+                onClick={() => setIsRegisterOpen(true)}
+              >
+                Sign Up
+              </AnalyticsButton>
+            </>
+          )}
         </div>
       </div>
 
