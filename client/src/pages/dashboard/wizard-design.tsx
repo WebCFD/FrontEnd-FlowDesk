@@ -2102,9 +2102,9 @@ export default function WizardDesign() {
               <Button 
                 className={cn(
                   "w-full mt-4",
-                  simulationType === "comfort" ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-600 hover:bg-gray-700"
+                  simulationType === "comfort" ? "bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-50" : "bg-gray-600 hover:bg-gray-700 text-white"
                 )}
-                variant={simulationType === "comfort" ? "default" : "secondary"}
+                variant={simulationType === "comfort" ? "outline" : "secondary"}
               >
                 {simulationType === "comfort" ? "Selected" : "Select"}
               </Button>
@@ -2133,9 +2133,9 @@ export default function WizardDesign() {
               <Button 
                 className={cn(
                   "w-full mt-4",
-                  simulationType === "renovation" ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-600 hover:bg-gray-700"
+                  simulationType === "renovation" ? "bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-50" : "bg-gray-600 hover:bg-gray-700 text-white"
                 )}
-                variant={simulationType === "renovation" ? "default" : "secondary"}
+                variant={simulationType === "renovation" ? "outline" : "secondary"}
               >
                 {simulationType === "renovation" ? "Selected" : "Select"}
               </Button>
