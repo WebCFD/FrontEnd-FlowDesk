@@ -2673,22 +2673,19 @@ export default function WizardDesign() {
 
   // Función para calcular estadísticas del diseño
   const calculateDesignStats = () => {
-    console.log("=== DESIGN STATISTICS DEBUG ===");
     let totalFloors = 0;
     let totalStairs = 0;
     let totalAirEntries = 0;
     let totalFurniture = 0;
 
     Object.entries(rawFloors).forEach(([floorName, floorData]) => {
-      console.log(`Floor: ${floorName}`);
       totalFloors += 1;
 
-      // Contar stairs
+      // Contar stairs (excluyendo stairs importadas/conectadas)
       if (floorData.stairPolygons && Array.isArray(floorData.stairPolygons)) {
-        console.log(`Found ${floorData.stairPolygons.length} stairPolygons in ${floorName}:`, floorData.stairPolygons);
-        totalStairs += floorData.stairPolygons.length;
-      } else {
-        console.log(`No stairPolygons found in ${floorName}`);
+        // Solo contar stairs originales, no las importadas
+        const originalStairs = floorData.stairPolygons.filter(stair => !stair.isImported);
+        totalStairs += originalStairs.length;
       }
 
       // Contar air entries
@@ -2702,12 +2699,6 @@ export default function WizardDesign() {
       }
     });
 
-    console.log("=== FINAL DESIGN STATS ===");
-    console.log(`Total Floors: ${totalFloors}`);
-    console.log(`Total Stairs: ${totalStairs}`);
-    console.log(`Total AirEntries: ${totalAirEntries}`);
-    console.log(`Total Furniture: ${totalFurniture}`);
-
     return {
       floors: totalFloors,
       stairs: totalStairs,
@@ -2718,75 +2709,38 @@ export default function WizardDesign() {
 
   // Función para calcular condiciones de contorno (boundary conditions)
   const calculateBoundaryConditions = () => {
-    console.log("=== BOUNDARY CONDITIONS DEBUG ===");
     let airEntryInflow = 0;
     let airEntryOutflow = 0;
     let furnVentInflow = 0;
     let furnVentOutflow = 0;
 
     Object.entries(rawFloors).forEach(([floorName, floorData]) => {
-      console.log(`Floor: ${floorName}`, floorData);
-      
-      // DEBUG STAIRS: Contar stairs en este floor
-      if (floorData.stairPolygons && Array.isArray(floorData.stairPolygons)) {
-        console.log(`STAIRS DEBUG: Found ${floorData.stairPolygons.length} stairPolygons in ${floorName}:`, floorData.stairPolygons);
-      } else {
-        console.log(`STAIRS DEBUG: No stairPolygons found in ${floorName}`);
-      }
-      
       // Analizar AirEntry elements (windows, doors, vents en paredes)
       if (floorData.airEntries && Array.isArray(floorData.airEntries)) {
-        console.log(`Found ${floorData.airEntries.length} airEntries:`, floorData.airEntries);
-        floorData.airEntries.forEach((entry, index) => {
-          console.log(`AirEntry ${index}:`, entry);
-          console.log(`Properties:`, entry.properties);
-          console.log(`Air Orientation:`, entry.properties?.airOrientation);
-          
+        floorData.airEntries.forEach((entry) => {
           if (entry && entry.properties && entry.properties.airOrientation) {
             if (entry.properties.airOrientation === 'inflow') {
-              console.log("Found INFLOW AirEntry");
               airEntryInflow += 1;
             } else if (entry.properties.airOrientation === 'outflow') {
-              console.log("Found OUTFLOW AirEntry");
               airEntryOutflow += 1;
             }
-          } else {
-            console.log("AirEntry missing airOrientation property");
           }
         });
       }
 
       // Analizar FurnVent objects (ceiling/floor vents)
       if (floorData.furnitureItems && Array.isArray(floorData.furnitureItems)) {
-        console.log(`Found ${floorData.furnitureItems.length} furnitureItems:`, floorData.furnitureItems);
-        floorData.furnitureItems.forEach((item, index) => {
-          console.log(`FurnitureItem ${index}:`, item);
-          if (item && item.type === 'vent') {
-            console.log(`Found VENT furniture:`, item);
-            console.log(`Simulation Properties:`, item.simulationProperties);
-            console.log(`Air Direction:`, item.simulationProperties?.airDirection);
-            
-            if (item.simulationProperties && item.simulationProperties.airDirection) {
-              if (item.simulationProperties.airDirection === 'inflow') {
-                console.log("Found INFLOW FurnVent");
-                furnVentInflow += 1;
-              } else if (item.simulationProperties.airDirection === 'outflow') {
-                console.log("Found OUTFLOW FurnVent");
-                furnVentOutflow += 1;
-              }
-            } else {
-              console.log("FurnVent missing airDirection property");
+        floorData.furnitureItems.forEach((item) => {
+          if (item && item.type === 'vent' && item.simulationProperties && item.simulationProperties.airDirection) {
+            if (item.simulationProperties.airDirection === 'inflow') {
+              furnVentInflow += 1;
+            } else if (item.simulationProperties.airDirection === 'outflow') {
+              furnVentOutflow += 1;
             }
           }
         });
       }
     });
-
-    console.log("=== FINAL COUNTS ===");
-    console.log(`AirEntry Inflow: ${airEntryInflow}`);
-    console.log(`AirEntry Outflow: ${airEntryOutflow}`);
-    console.log(`FurnVent Inflow: ${furnVentInflow}`);
-    console.log(`FurnVent Outflow: ${furnVentOutflow}`);
 
     return {
       airEntry: {

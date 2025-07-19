@@ -1,0 +1,49 @@
+wizard-design.tsx:2676 === DESIGN STATISTICS DEBUG ===
+wizard-design.tsx:2683 Floor: ground
+wizard-design.tsx:2688 Found 1 stairPolygons in ground: [{…}]0: floor: "Ground Floor"id: "stair_0F_1"points: (4) [{…}, {…}, {…}, {…}]position3D: {baseHeight: 0, bottomZ: 220, topZ: 255}temperature: 20[[Prototype]]: Objectlength: 1[[Prototype]]: Array(0)
+wizard-design.tsx:2683 Floor: first
+wizard-design.tsx:2688 Found 1 stairPolygons in first: [{…}]0: connectsTo: "stair_0F_1"floor: "first"id: "imported-stair_0F_1"isImported: truepoints: (4) [{…}, {…}, {…}, {…}][[Prototype]]: Objectlength: 1[[Prototype]]: Array(0)
+wizard-design.tsx:2705 === FINAL DESIGN STATS ===
+wizard-design.tsx:2706 Total Floors: 2
+wizard-design.tsx:2707 Total Stairs: 2
+wizard-design.tsx:2708 Total AirEntries: 2
+wizard-design.tsx:2709 Total Furniture: 2
+wizard-design.tsx:2721 === BOUNDARY CONDITIONS DEBUG ===
+wizard-design.tsx:2728 Floor: ground {lines: Array(4), airEntries: Array(2), walls: Array(4), measurements: Array(0), hasClosedContour: true, …}
+wizard-design.tsx:2732 STAIRS DEBUG: Found 1 stairPolygons in ground: [{…}]0: floor: "Ground Floor"id: "stair_0F_1"points: (4) [{…}, {…}, {…}, {…}]position3D: {baseHeight: 0, bottomZ: 220, topZ: 255}temperature: 20[[Prototype]]: Objectlength: 1[[Prototype]]: Array(0)
+wizard-design.tsx:2739 Found 2 airEntries: (2) [{…}, {…}]
+wizard-design.tsx:2741 AirEntry 0: {id: 'window_0F_1', lineId: '1752912888082_xqmy16hi2', type: 'window', position: {…}, line: {…}, …}
+wizard-design.tsx:2742 Properties: {state: 'open', temperature: 20, flowIntensity: 'medium', airOrientation: 'outflow'}
+wizard-design.tsx:2743 Air Orientation: outflow
+wizard-design.tsx:2750 Found OUTFLOW AirEntry
+wizard-design.tsx:2741 AirEntry 1: {type: 'window', position: {…}, dimensions: {…}, line: {…}, lineId: '1752912882895_4tko3pj4s', …}
+wizard-design.tsx:2742 Properties: {state: 'open', temperature: 20, flowIntensity: 'medium', airOrientation: 'inflow'}
+wizard-design.tsx:2743 Air Orientation: inflow
+wizard-design.tsx:2747 Found INFLOW AirEntry
+wizard-design.tsx:2761 Found 1 furnitureItems: [{…}]
+wizard-design.tsx:2763 FurnitureItem 0: {id: 'Table 0F-1', type: 'table', name: 'Table 0F-1', floorName: 'ground', position: {…}, …}
+wizard-design.tsx:2728 Floor: first {lines: Array(4), airEntries: Array(0), walls: Array(4), measurements: Array(0), hasClosedContour: true, …}
+wizard-design.tsx:2732 STAIRS DEBUG: Found 1 stairPolygons in first: [{…}]
+wizard-design.tsx:2739 Found 0 airEntries: []
+wizard-design.tsx:2761 Found 1 furnitureItems: [{…}]
+wizard-design.tsx:2763 FurnitureItem 0: {id: 'Block 1F-1', type: 'block', name: 'Block 1F-1', floorName: 'first', position: {…}, …}
+wizard-design.tsx:2785 === FINAL COUNTS ===
+wizard-design.tsx:2786 AirEntry Inflow: 1
+wizard-design.tsx:2787 AirEntry Outflow: 1
+wizard-design.tsx:2788 FurnVent Inflow: 0
+wizard-design.tsx:2789 FurnVent Outflow: 0
+RoomSketchPro.tsx:898 🔗 RSP: Desregistrando suscripción para sincronización de AirEntry
+Canvas3D.tsx:3312 [Violation] 'requestAnimationFrame' handler took 50ms
+wizard-design:1 [.WebGL-0x132c049adc00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x132c049adc00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x132c049adc00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x132c049adc00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x132c049adc00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x132c049adc00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x132c049adc00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x132c049adc00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x132c049adc00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x132c049adc00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x132c049adc00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x132c049adc00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x132c049adc00] GL_INVALID_OPERATION: Texture is immutable.
