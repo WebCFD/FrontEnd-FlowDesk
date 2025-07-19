@@ -115,12 +115,12 @@ export default function DashboardSidebar() {
   };
 
   return (
-    <div className="w-64 h-screen bg-sidebar border-r border-sidebar-border">
+    <div className="w-64 h-screen bg-white border-r border-gray-200">
       <div className="p-6">
-        <Link href="/dashboard" className="text-2xl font-bold text-sidebar-primary">
+        <Link href="/dashboard" className="text-2xl font-bold text-primary hover:text-primary/80 transition-colors">
           FlowDesk
         </Link>
-        <div className="mt-2 text-sm text-muted-foreground">
+        <div className="mt-2 text-sm text-gray-600">
           {userData ? `Hi, ${userData.username}` : "No login yet"}
         </div>
       </div>
@@ -135,22 +135,22 @@ export default function DashboardSidebar() {
                 key={item.href} 
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                  "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200",
                   isActive
-                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                    : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
+                    ? "bg-primary text-white shadow-md"
+                    : "text-gray-700 hover:bg-blue-50 hover:text-primary hover:shadow-sm"
                 )}
               >
-                <Icon className="h-5 w-5" />
+                <Icon className={cn("h-5 w-5", isActive ? "text-white" : "")} />
                 {item.label}
               </Link>
             );
           })}
 
-          <div className="mt-2 pt-2 border-t border-sidebar-border">
+          <div className="mt-2 pt-2 border-t border-gray-200">
             <Button
               variant="ghost"
-              className="w-full justify-start gap-2 px-3"
+              className="w-full justify-start gap-3 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-primary hover:shadow-sm transition-all duration-200"
               onClick={() => setShowLogoutDialog(true)}
             >
               <LogOut className="h-5 w-5" />
