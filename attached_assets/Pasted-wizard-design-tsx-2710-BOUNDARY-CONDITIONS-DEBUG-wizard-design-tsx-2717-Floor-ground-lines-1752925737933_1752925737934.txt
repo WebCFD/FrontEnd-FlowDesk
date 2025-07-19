@@ -1,0 +1,36 @@
+wizard-design.tsx:2710 === BOUNDARY CONDITIONS DEBUG ===
+wizard-design.tsx:2717 Floor: ground {lines: Array(4), airEntries: Array(2), walls: Array(4), measurements: Array(0), hasClosedContour: true, …}
+wizard-design.tsx:2721 Found 2 airEntries: (2) [{…}, {…}]
+wizard-design.tsx:2723 AirEntry 0: {id: 'window_0F_1', lineId: '1752912888082_xqmy16hi2', type: 'window', position: {…}, line: {…}, …}dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 40.1}id: "window_0F_1"line: {id: '1752912888082_xqmy16hi2', start: {…}, end: {…}}lineId: "1752912888082_xqmy16hi2"position: {x: 282.43, y: 313.55}properties: {state: 'open', temperature: 20, flowIntensity: 'medium', airOrientation: 'outflow'}simulationProperties: undefinedtype: "window"[[Prototype]]: Object
+wizard-design.tsx:2724 Properties: {state: 'open', temperature: 20, flowIntensity: 'medium', airOrientation: 'outflow'}
+wizard-design.tsx:2725 Air Direction: undefined
+wizard-design.tsx:2736 AirEntry missing airDirection property
+wizard-design.tsx:2723 AirEntry 1: {type: 'window', position: {…}, dimensions: {…}, line: {…}, lineId: '1752912882895_4tko3pj4s', …}dimensions: {width: 60, height: 40, distanceToFloor: 110, shape: 'rectangular', wallPosition: 78.95542528245068}id: "window_0F_2"line: {id: '1752912882895_4tko3pj4s', start: {…}, end: {…}}lineId: "1752912882895_4tko3pj4s"position: {x: 638.1794874210927, y: 284.01424353776633}properties: {state: 'open', temperature: 20, flowIntensity: 'medium', airOrientation: 'inflow'}simulationProperties: undefinedtype: "window"wallContext: {wallId: 'wall_0F_2', floorName: 'Ground Floor', wallStart: {…}, wallEnd: {…}, clickPosition: {…}, …}[[Prototype]]: Object
+wizard-design.tsx:2724 Properties: {state: 'open', temperature: 20, flowIntensity: 'medium', airOrientation: 'inflow'}
+wizard-design.tsx:2725 Air Direction: undefined
+wizard-design.tsx:2736 AirEntry missing airDirection property
+wizard-design.tsx:2743 Found 1 furnitureItems: [{…}]0: {id: 'Table 0F-1', type: 'table', name: 'Table 0F-1', floorName: 'ground', position: {…}, …}length: 1[[Prototype]]: Array(0)
+wizard-design.tsx:2745 FurnitureItem 0: {id: 'Table 0F-1', type: 'table', name: 'Table 0F-1', floorName: 'ground', position: {…}, …}createdAt: 1752912908130dimensions: {width: 120, height: 75, depth: 80}floorName: "ground"id: "Table 0F-1"information: "Table 0F-1 placed on floor of ground"meshId: "5a436b1d-7296-4e59-bf77-b79bd97e79ae"name: "Table 0F-1"position: {x: 46.35, y: 23.11, z: 0}properties: {material: 'default', temperature: 20, emissivity: 0.9, thermalConductivity: 0.12, density: 600, …}rotation: {x: 0, y: 0, z: 0}surfaceType: "floor"type: "table"updatedAt: 1752912908130[[Prototype]]: Object
+wizard-design.tsx:2717 Floor: first {lines: Array(4), airEntries: Array(0), walls: Array(4), measurements: Array(0), hasClosedContour: true, …}airEntries: []furnitureItems: [{…}]hasClosedContour: truelines: (4) [{…}, {…}, {…}, {…}]measurements: []name: "first"stairPolygons: [{…}]walls: (4) [{…}, {…}, {…}, {…}][[Prototype]]: Object
+wizard-design.tsx:2721 Found 0 airEntries: []length: 0[[Prototype]]: Array(0)
+wizard-design.tsx:2743 Found 1 furnitureItems: [{…}]0: {id: 'Block 1F-1', type: 'block', name: 'Block 1F-1', floorName: 'first', position: {…}, …}length: 1[[Prototype]]: Array(0)
+wizard-design.tsx:2745 FurnitureItem 0: {id: 'Block 1F-1', type: 'block', name: 'Block 1F-1', floorName: 'first', position: {…}, …}createdAt: 1752925094998dimensions: {width: 80, height: 80, depth: 80}floorName: "first"id: "Block 1F-1"information: "Block 1F-1 placed on floor of first"meshId: "ce9703c8-df74-45dd-b445-d68fa7d94086"name: "Block 1F-1"position: {x: 147.2, y: 14.06, z: 255}properties: {material: 'default', temperature: 20, emissivity: 0.9}rotation: {x: 0, y: 0, z: 0}scale: {x: 1, y: 1, z: 1}surfaceType: "floor"type: "block"updatedAt: 1752925101518[[Prototype]]: Object
+wizard-design.tsx:2767 === FINAL COUNTS ===
+wizard-design.tsx:2768 AirEntry Inflow: 0
+wizard-design.tsx:2769 AirEntry Outflow: 0
+wizard-design.tsx:2770 FurnVent Inflow: 0
+wizard-design.tsx:2771 FurnVent Outflow: 0
+RoomSketchPro.tsx:898 🔗 RSP: Desregistrando suscripción para sincronización de AirEntry
+wizard-design:1 [.WebGL-0x132c0781ea00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x132c0781ea00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x132c0781ea00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x132c0781ea00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x132c0781ea00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x132c0781ea00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x132c0781ea00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x132c0781ea00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x132c0781ea00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x132c0781ea00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x132c0781ea00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x132c0781ea00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x132c0781ea00] GL_INVALID_OPERATION: Texture is immutable.
