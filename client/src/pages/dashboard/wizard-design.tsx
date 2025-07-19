@@ -2304,7 +2304,7 @@ export default function WizardDesign() {
                     <div className="space-y-2 text-xs">
                       <div className="flex justify-between">
                         <span className="text-gray-600">Total Inflow:</span>
-                        <span className="font-medium text-blue-600">
+                        <span className="font-medium text-black">
                           {conditions ? (conditions.airEntry.inflow + conditions.furnVent.inflow) : "0"} 
                           <span className="text-gray-500 ml-1">
                             ({conditions ? conditions.airEntry.inflow : "0"} AirEntries, {conditions ? conditions.furnVent.inflow : "0"} Horiz. Vents)
@@ -2313,7 +2313,7 @@ export default function WizardDesign() {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Total Outflow:</span>
-                        <span className="font-medium text-red-600">
+                        <span className="font-medium text-black">
                           {conditions ? (conditions.airEntry.outflow + conditions.furnVent.outflow) : "0"}
                           <span className="text-gray-500 ml-1">
                             ({conditions ? conditions.airEntry.outflow : "0"} AirEntries, {conditions ? conditions.furnVent.outflow : "0"} Horiz. Vents)
@@ -2359,7 +2359,7 @@ export default function WizardDesign() {
                       </div>
                       <div className="flex justify-between pt-1 border-t border-gray-200">
                         <span className="text-gray-600">Container Vol (m3):</span>
-                        <span className="font-medium text-blue-600">
+                        <span className="font-medium text-black">
                           {dimensions ? dimensions.volume.replace(' m3', '') : "NA"}
                         </span>
                       </div>
