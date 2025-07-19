@@ -27,6 +27,7 @@ import { customFurnitureStore } from "@/lib/custom-furniture-store";
 import SimulationDataDialog from "@/components/sketch/SimulationDataDialog";
 import LoadDesignDialog from "@/components/sketch/LoadDesignDialog";
 import LoginModal from "@/components/auth/login-modal";
+import RegisterModal from "@/components/auth/register-modal";
 import { generateSimulationData, denormalizeCoordinates } from "@/lib/simulationDataConverter";
 import * as THREE from "three";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -2289,6 +2290,8 @@ export default function WizardDesign() {
   const [simulationStatus, setSimulationStatus] = useState("completed");
   const [isCreatingSimulation, setIsCreatingSimulation] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
 
   // Función para mostrar el diálogo de confirmación antes de crear la simulación
   const handleStartSimulation = () => {
@@ -2299,7 +2302,7 @@ export default function WizardDesign() {
         description: "Please log in to create and run simulations.",
         variant: "destructive",
       });
-      setIsLoginOpen(true);
+      setShowAuthDialog(true);
       return;
     }
 
@@ -3074,9 +3077,48 @@ export default function WizardDesign() {
         </div>
       )}
 
+      {/* Authentication Selection Dialog */}
+      <Dialog open={showAuthDialog} onOpenChange={setShowAuthDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Authentication Required</DialogTitle>
+            <p className="text-sm text-muted-foreground mt-2">
+              Please log in or create an account to create and run simulations.
+            </p>
+          </DialogHeader>
+          
+          <div className="flex flex-col gap-3 mt-6">
+            <Button 
+              onClick={() => {
+                setShowAuthDialog(false);
+                setIsLoginOpen(true);
+              }}
+              className="w-full"
+            >
+              Log In
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={() => {
+                setShowAuthDialog(false);
+                setIsRegisterOpen(true);
+              }}
+              className="w-full"
+            >
+              Sign Up
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <LoginModal
         isOpen={isLoginOpen}
         onClose={() => setIsLoginOpen(false)}
+      />
+
+      <RegisterModal
+        isOpen={isRegisterOpen}
+        onClose={() => setIsRegisterOpen(false)}
       />
     </DashboardLayout>
   );
