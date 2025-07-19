@@ -246,7 +246,7 @@ export default function WizardDesign() {
   const { user, setReturnTo } = useAuth();
   const { viewportOffset, gridSize, canvasHeightPercentage, menuWidthPercentage, setGridSize } = useSketchStore();
   const [step, setStep] = useState(1);
-  const [simulationName, setSimulationName] = useState("");
+  const [simulationName, setSimulationName] = useState("MySim");
   const [simulationType, setSimulationType] = useState("comfort");
   const [currentTool, setCurrentTool] = useState<
     "wall" | "eraser" | "measure" | "stairs" | null
