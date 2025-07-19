@@ -2230,10 +2230,10 @@ export default function WizardDesign() {
 
         {/* Right Column - Summary Only (1/3 width) */}
         <div className="space-y-6">
-          {/* Simulation Summary Card */}
+          {/* Simulation Checkup and Summary Card */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Simulation Summary</CardTitle>
+              <CardTitle className="text-lg">Simulation Checkup and Summary</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex justify-between items-center text-sm">
@@ -2255,6 +2255,38 @@ export default function WizardDesign() {
               <div className="flex justify-between items-center text-sm">
                 <span className="text-gray-600">Status:</span>
                 <span className="font-medium capitalize">{simulationStatus}</span>
+              </div>
+              
+              {/* Design Dimensions Section */}
+              <div className="pt-3 border-t">
+                <h4 className="text-sm font-semibold text-gray-700 mb-2">Design Dimensions</h4>
+                {(() => {
+                  try {
+                    const dimensions = calculateDesignDimensions();
+                    return (
+                      <div className="space-y-2 text-xs">
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">X-axis:</span>
+                          <span className="font-mono">{dimensions.x.min} to {dimensions.x.max} ({dimensions.x.distance})</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Y-axis:</span>
+                          <span className="font-mono">{dimensions.y.min} to {dimensions.y.max} ({dimensions.y.distance})</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Z-axis:</span>
+                          <span className="font-mono">{dimensions.z.min} to {dimensions.z.max} ({dimensions.z.distance})</span>
+                        </div>
+                      </div>
+                    );
+                  } catch (error) {
+                    return (
+                      <div className="text-xs text-gray-500 italic">
+                        Design dimensions will appear when room is created
+                      </div>
+                    );
+                  }
+                })()}
               </div>
             </CardContent>
           </Card>
@@ -2467,6 +2499,90 @@ export default function WizardDesign() {
   // Función para obtener el costo de la simulación
   const getSimulationCost = (type: string) => {
     return type === 'comfort' ? 10 : 12; // Steady: €10, Air Renovation: €12
+  };
+
+  // Función para calcular las dimensiones del diseño (coordenadas min/max)
+  const calculateDesignDimensions = () => {
+    const exportData = generateSimulationDataForExport();
+    
+    let minX = Infinity, maxX = -Infinity;
+    let minY = Infinity, maxY = -Infinity;
+    let minZ = Infinity, maxZ = -Infinity;
+
+    // Analizar coordenadas de paredes
+    Object.values(exportData.floors).forEach((floor: any) => {
+      if (floor.walls) {
+        floor.walls.forEach((wall: any) => {
+          // Puntos de inicio y fin de paredes
+          const points = [wall.startPoint, wall.endPoint];
+          points.forEach((point) => {
+            if (point.x < minX) minX = point.x;
+            if (point.x > maxX) maxX = point.x;
+            if (point.y < minY) minY = point.y;
+            if (point.y > maxY) maxY = point.y;
+          });
+
+          // Air entries en las paredes
+          if (wall.airEntries) {
+            wall.airEntries.forEach((entry: any) => {
+              if (entry.position) {
+                if (entry.position.x < minX) minX = entry.position.x;
+                if (entry.position.x > maxX) maxX = entry.position.x;
+                if (entry.position.y < minY) minY = entry.position.y;
+                if (entry.position.y > maxY) maxY = entry.position.y;
+                if (entry.position.z < minZ) minZ = entry.position.z;
+                if (entry.position.z > maxZ) maxZ = entry.position.z;
+              }
+            });
+          }
+        });
+      }
+
+      // Analizar coordenadas de furniture
+      if (floor.furniture) {
+        floor.furniture.forEach((item: any) => {
+          if (item.position) {
+            if (item.position.x < minX) minX = item.position.x;
+            if (item.position.x > maxX) maxX = item.position.x;
+            if (item.position.y < minY) minY = item.position.y;
+            if (item.position.y > maxY) maxY = item.position.y;
+            if (item.position.z < minZ) minZ = item.position.z;
+            if (item.position.z > maxZ) maxZ = item.position.z;
+          }
+        });
+      }
+
+      // Analizar stairs
+      if (floor.stairs) {
+        floor.stairs.forEach((stair: any) => {
+          if (stair.lines) {
+            stair.lines.forEach((line: any) => {
+              const points = [line.startPoint, line.endPoint];
+              points.forEach((point) => {
+                if (point.x < minX) minX = point.x;
+                if (point.x > maxX) maxX = point.x;
+                if (point.y < minY) minY = point.y;
+                if (point.y > maxY) maxY = point.y;
+              });
+            });
+          }
+        });
+      }
+    });
+
+    // Si no hay coordenadas válidas, devolver valores por defecto
+    if (minX === Infinity) minX = 0;
+    if (maxX === -Infinity) maxX = 0;
+    if (minY === Infinity) minY = 0;
+    if (maxY === -Infinity) maxY = 0;
+    if (minZ === Infinity) minZ = 0;
+    if (maxZ === -Infinity) maxZ = 0;
+
+    return {
+      x: { min: minX.toFixed(2), max: maxX.toFixed(2), distance: (maxX - minX).toFixed(2) },
+      y: { min: minY.toFixed(2), max: maxY.toFixed(2), distance: (maxY - minY).toFixed(2) },
+      z: { min: minZ.toFixed(2), max: maxZ.toFixed(2), distance: (maxZ - minZ).toFixed(2) }
+    };
   };
 
   // Función para crear la simulación real
