@@ -68,45 +68,45 @@ export default function Navbar() {
           <NavigationMenuList>
             <NavigationMenuItem>
               <NavigationMenuLink 
-                className={navigationMenuTriggerStyle()}
-                onClick={() => scrollToSection('case-studies')}
-                style={{ cursor: 'pointer' }}
+                className={`${navigationMenuTriggerStyle()} ${location !== '/' ? 'text-gray-300 cursor-not-allowed hover:text-gray-300' : ''}`}
+                onClick={location === '/' ? () => scrollToSection('case-studies') : undefined}
+                style={{ cursor: location === '/' ? 'pointer' : 'not-allowed' }}
               >
                 Case Studies
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
               <NavigationMenuLink 
-                className={navigationMenuTriggerStyle()}
-                onClick={() => scrollToSection('certifications')}
-                style={{ cursor: 'pointer' }}
+                className={`${navigationMenuTriggerStyle()} ${location !== '/' ? 'text-gray-300 cursor-not-allowed hover:text-gray-300' : ''}`}
+                onClick={location === '/' ? () => scrollToSection('certifications') : undefined}
+                style={{ cursor: location === '/' ? 'pointer' : 'not-allowed' }}
               >
                 Certifications
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
               <NavigationMenuLink 
-                className={navigationMenuTriggerStyle()}
-                onClick={() => scrollToSection('hvac-solutions')}
-                style={{ cursor: 'pointer' }}
+                className={`${navigationMenuTriggerStyle()} ${location !== '/' ? 'text-gray-300 cursor-not-allowed hover:text-gray-300' : ''}`}
+                onClick={location === '/' ? () => scrollToSection('hvac-solutions') : undefined}
+                style={{ cursor: location === '/' ? 'pointer' : 'not-allowed' }}
               >
                 HVAC Solutions
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
               <NavigationMenuLink 
-                className={navigationMenuTriggerStyle()}
-                onClick={() => scrollToSection('pricing')}
-                style={{ cursor: 'pointer' }}
+                className={`${navigationMenuTriggerStyle()} ${location !== '/' ? 'text-gray-300 cursor-not-allowed hover:text-gray-300' : ''}`}
+                onClick={location === '/' ? () => scrollToSection('pricing') : undefined}
+                style={{ cursor: location === '/' ? 'pointer' : 'not-allowed' }}
               >
                 Pricing
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
               <NavigationMenuLink 
-                className={navigationMenuTriggerStyle()}
-                onClick={() => scrollToSection('contact')}
-                style={{ cursor: 'pointer' }}
+                className={`${navigationMenuTriggerStyle()} ${location !== '/' ? 'text-gray-300 cursor-not-allowed hover:text-gray-300' : ''}`}
+                onClick={location === '/' ? () => scrollToSection('contact') : undefined}
+                style={{ cursor: location === '/' ? 'pointer' : 'not-allowed' }}
               >
                 Contact Us
               </NavigationMenuLink>
