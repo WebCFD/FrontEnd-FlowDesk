@@ -2079,47 +2079,66 @@ export default function WizardDesign() {
             Select the package that best fits your needs
           </CardDescription>
         </CardHeader>
-        <CardContent className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <Card>
+        <CardContent className="grid gap-6 md:grid-cols-2">
+          <Card 
+            className={cn(
+              "cursor-pointer transition-all duration-200 hover:shadow-lg",
+              simulationType === "comfort" ? "ring-2 ring-blue-500 bg-blue-50" : "hover:border-blue-300"
+            )}
+            onClick={() => setSimulationType("comfort")}
+          >
             <CardHeader>
-              <CardTitle>Basic</CardTitle>
-              <CardDescription>For simple room simulations</CardDescription>
+              <CardTitle>Steady Simulation</CardTitle>
+              <CardDescription>Thermal Comfort Analysis</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">€49</div>
+              <div className="text-3xl font-bold text-green-600">€10</div>
               <ul className="mt-4 space-y-2 text-sm">
-                <li>• Basic airflow simulation</li>
+                <li>• Steady equilibrium simulation</li>
                 <li>• Temperature distribution</li>
-                <li>• Single room analysis</li>
+                <li>• Thermal comfort analysis</li>
+                <li>• Basic airflow patterns</li>
               </ul>
+              <Button 
+                className={cn(
+                  "w-full mt-4",
+                  simulationType === "comfort" ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-600 hover:bg-gray-700"
+                )}
+                variant={simulationType === "comfort" ? "default" : "secondary"}
+              >
+                {simulationType === "comfort" ? "Selected" : "Select"}
+              </Button>
             </CardContent>
           </Card>
-          <Card>
+          
+          <Card 
+            className={cn(
+              "cursor-pointer transition-all duration-200 hover:shadow-lg",
+              simulationType === "renovation" ? "ring-2 ring-blue-500 bg-blue-50" : "hover:border-blue-300"
+            )}
+            onClick={() => setSimulationType("renovation")}
+          >
             <CardHeader>
-              <CardTitle>Professional</CardTitle>
-              <CardDescription>For detailed analysis</CardDescription>
+              <CardTitle>Air Renovation Simulation</CardTitle>
+              <CardDescription>Thermal Comfort + Air Quality</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">€99</div>
+              <div className="text-3xl font-bold text-green-600">€12</div>
               <ul className="mt-4 space-y-2 text-sm">
-                <li>• Advanced CFD simulation</li>
-                <li>• Multi-room analysis</li>
-                <li>• Detailed reports</li>
+                <li>• Transient simulation</li>
+                <li>• Air renovation analysis</li>
+                <li>• Thermal comfort analysis</li>
+                <li>• Advanced airflow patterns</li>
               </ul>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Enterprise</CardTitle>
-              <CardDescription>For complex projects</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">€199</div>
-              <ul className="mt-4 space-y-2 text-sm">
-                <li>• Full building simulation</li>
-                <li>• Custom parameters</li>
-                <li>• Priority support</li>
-              </ul>
+              <Button 
+                className={cn(
+                  "w-full mt-4",
+                  simulationType === "renovation" ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-600 hover:bg-gray-700"
+                )}
+                variant={simulationType === "renovation" ? "default" : "secondary"}
+              >
+                {simulationType === "renovation" ? "Selected" : "Select"}
+              </Button>
             </CardContent>
           </Card>
         </CardContent>
@@ -2880,22 +2899,6 @@ export default function WizardDesign() {
           placeholder="Enter simulation name"
         />
       </div>
-      <div>
-        <Label htmlFor="simulation-type">Simulation type</Label>
-        <Select value={simulationType} onValueChange={setSimulationType}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select simulation type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="comfort">
-              Ensure Thermal Comfort (Steady Equilibrium Simulation)
-            </SelectItem>
-            <SelectItem value="renovation">
-              Thermal Comfort + Air Renovation (Transient Simulation)
-            </SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
     </div>
   );
 
@@ -3032,7 +3035,7 @@ export default function WizardDesign() {
 
             <div className="bg-blue-50 p-3 rounded-lg">
               <p className="text-sm text-blue-800">
-                <strong>Cost:</strong> €10.00 will be deducted from your credits
+                <strong>Cost:</strong> €{simulationType === "renovation" ? "12.00" : "10.00"} will be deducted from your credits
               </p>
             </div>
           </div>
