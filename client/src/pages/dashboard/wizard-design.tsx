@@ -2252,10 +2252,6 @@ export default function WizardDesign() {
                   €{getSimulationCost(simulationType)}
                 </span>
               </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-600">Status:</span>
-                <span className="font-medium capitalize">{simulationStatus}</span>
-              </div>
               
               {/* Design Statistics Section */}
               <div className="pt-3 border-t">
