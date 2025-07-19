@@ -2257,6 +2257,41 @@ export default function WizardDesign() {
                 <span className="font-medium capitalize">{simulationStatus}</span>
               </div>
               
+              {/* Design Statistics Section */}
+              <div className="pt-3 border-t">
+                <h4 className="text-sm font-semibold text-gray-700 mb-2">Design Statistics</h4>
+                {(() => {
+                  let stats;
+                  try {
+                    stats = calculateDesignStats();
+                  } catch (error) {
+                    console.log("Error calculating stats:", error);
+                    stats = null;
+                  }
+                  
+                  return (
+                    <div className="space-y-2 text-xs">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Floors:</span>
+                        <span className="font-medium">{stats ? stats.floors : "0"}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Stairs:</span>
+                        <span className="font-medium">{stats ? stats.stairs : "0"}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">AirEntry elements:</span>
+                        <span className="font-medium">{stats ? stats.airEntries : "0"}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">RSP objects:</span>
+                        <span className="font-medium">{stats ? stats.furniture : "0"}</span>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+
               {/* Design Dimensions Section */}
               <div className="pt-3 border-t">
                 <h4 className="text-sm font-semibold text-gray-700 mb-2">Design Dimensions</h4>
@@ -2600,6 +2635,40 @@ export default function WizardDesign() {
       x: { min: minX.toFixed(0), max: maxX.toFixed(0), distance: (maxX - minX).toFixed(0) },
       y: { min: minY.toFixed(0), max: maxY.toFixed(0), distance: (maxY - minY).toFixed(0) },
       z: { min: minZ.toFixed(0), max: maxZ.toFixed(0), distance: (maxZ - minZ).toFixed(0) }
+    };
+  };
+
+  // Función para calcular estadísticas del diseño
+  const calculateDesignStats = () => {
+    let totalFloors = 0;
+    let totalStairs = 0;
+    let totalAirEntries = 0;
+    let totalFurniture = 0;
+
+    Object.entries(rawFloors).forEach(([floorName, floorData]) => {
+      totalFloors += 1;
+
+      // Contar stairs
+      if (floorData.stairPolygons && Array.isArray(floorData.stairPolygons)) {
+        totalStairs += floorData.stairPolygons.length;
+      }
+
+      // Contar air entries
+      if (floorData.airEntries && Array.isArray(floorData.airEntries)) {
+        totalAirEntries += floorData.airEntries.length;
+      }
+
+      // Contar furniture (objetos RSP)
+      if (floorData.furnitureItems && Array.isArray(floorData.furnitureItems)) {
+        totalFurniture += floorData.furnitureItems.length;
+      }
+    });
+
+    return {
+      floors: totalFloors,
+      stairs: totalStairs,
+      airEntries: totalAirEntries,
+      furniture: totalFurniture
     };
   };
 
