@@ -2508,37 +2508,15 @@ export default function WizardDesign() {
 
   // Función para calcular las dimensiones del diseño (coordenadas min/max)
   const calculateDesignDimensions = () => {
-    console.log("Raw floors data:", rawFloors);
-    console.log("Current floor:", currentFloor);
-    console.log("Floor data:", rawFloors[currentFloor]);
-    
-    const exportData = generateSimulationDataForExport();
-    console.log("Export data for dimensions:", exportData);
-    
     let minX = Infinity, maxX = -Infinity;
     let minY = Infinity, maxY = -Infinity;
     let minZ = Infinity, maxZ = -Infinity;
 
-    // Analizar coordenadas de paredes y room points directamente del store
+    // Analizar coordenadas directamente del store (más confiable)
     Object.entries(rawFloors).forEach(([floorName, floorData]) => {
-      console.log(`Analyzing floor: ${floorName}`, floorData);
-
-      // Analizar room points
-      if (floorData.room && floorData.room.points) {
-        floorData.room.points.forEach((point) => {
-          if (point && typeof point.x === 'number' && typeof point.z === 'number') {
-            if (point.x < minX) minX = point.x;
-            if (point.x > maxX) maxX = point.x;
-            if (point.z < minY) minY = point.z;
-            if (point.z > maxY) maxY = point.z;
-          }
-        });
-      }
-
-      // Analizar lines (paredes)
+      // Analizar lines (paredes) - sabemos que funcionan
       if (floorData.lines && Array.isArray(floorData.lines)) {
         floorData.lines.forEach((line) => {
-          console.log("Analyzing line:", line);
           if (line && line.start && line.end) {
             const points = [line.start, line.end];
             points.forEach((point) => {
@@ -2587,81 +2565,41 @@ export default function WizardDesign() {
           }
         });
       }
-    });
 
-    // Analizar coordenadas de paredes del export data como fallback
-    Object.values(exportData.floors).forEach((floor: any) => {
-      if (floor.walls) {
-        floor.walls.forEach((wall: any) => {
-          // Puntos de inicio y fin de paredes
-          const points = [wall.startPoint, wall.endPoint];
-          points.forEach((point) => {
-            if (point.x < minX) minX = point.x;
-            if (point.x > maxX) maxX = point.x;
-            if (point.y < minY) minY = point.y;
-            if (point.y > maxY) maxY = point.y;
-          });
-
-          // Air entries en las paredes
-          if (wall.airEntries) {
-            wall.airEntries.forEach((entry: any) => {
-              if (entry.position) {
-                if (entry.position.x < minX) minX = entry.position.x;
-                if (entry.position.x > maxX) maxX = entry.position.x;
-                if (entry.position.y < minY) minY = entry.position.y;
-                if (entry.position.y > maxY) maxY = entry.position.y;
-                if (entry.position.z < minZ) minZ = entry.position.z;
-                if (entry.position.z > maxZ) maxZ = entry.position.z;
+      // Analizar stairs
+      if (floorData.stairPolygons && Array.isArray(floorData.stairPolygons)) {
+        floorData.stairPolygons.forEach((stair) => {
+          if (stair && stair.points && Array.isArray(stair.points)) {
+            stair.points.forEach((point) => {
+              if (point && typeof point.x === 'number' && typeof point.y === 'number') {
+                if (point.x < minX) minX = point.x;
+                if (point.x > maxX) maxX = point.x;
+                if (point.y < minY) minY = point.y;
+                if (point.y > maxY) maxY = point.y;
               }
             });
           }
         });
       }
-
-      // Analizar coordenadas de furniture
-      if (floor.furniture) {
-        floor.furniture.forEach((item: any) => {
-          if (item.position) {
-            if (item.position.x < minX) minX = item.position.x;
-            if (item.position.x > maxX) maxX = item.position.x;
-            if (item.position.y < minY) minY = item.position.y;
-            if (item.position.y > maxY) maxY = item.position.y;
-            if (item.position.z < minZ) minZ = item.position.z;
-            if (item.position.z > maxZ) maxZ = item.position.z;
-          }
-        });
-      }
-
-      // Analizar stairs
-      if (floor.stairs) {
-        floor.stairs.forEach((stair: any) => {
-          if (stair.lines) {
-            stair.lines.forEach((line: any) => {
-              const points = [line.startPoint, line.endPoint];
-              points.forEach((point) => {
-                if (point.x < minX) minX = point.x;
-                if (point.x > maxX) maxX = point.x;
-                if (point.y < minY) minY = point.y;
-                if (point.y > maxY) maxY = point.y;
-              });
-            });
-          }
-        });
-      }
     });
 
-    // Si no hay coordenadas válidas, devolver valores por defecto
-    if (minX === Infinity) minX = 0;
-    if (maxX === -Infinity) maxX = 0;
-    if (minY === Infinity) minY = 0;
-    if (maxY === -Infinity) maxY = 0;
+    // Si no hay coordenadas válidas, devolver valores por defecto con NA
+    if (minX === Infinity || maxX === -Infinity) {
+      return {
+        x: { min: "NA", max: "NA", distance: "NA" },
+        y: { min: "NA", max: "NA", distance: "NA" },
+        z: { min: "NA", max: "NA", distance: "NA" }
+      };
+    }
+
+    // Z por defecto si no hay datos de altura
     if (minZ === Infinity) minZ = 0;
-    if (maxZ === -Infinity) maxZ = 0;
+    if (maxZ === -Infinity) maxZ = 250; // altura por defecto en cm
 
     return {
-      x: { min: minX.toFixed(2), max: maxX.toFixed(2), distance: (maxX - minX).toFixed(2) },
-      y: { min: minY.toFixed(2), max: maxY.toFixed(2), distance: (maxY - minY).toFixed(2) },
-      z: { min: minZ.toFixed(2), max: maxZ.toFixed(2), distance: (maxZ - minZ).toFixed(2) }
+      x: { min: minX.toFixed(0), max: maxX.toFixed(0), distance: (maxX - minX).toFixed(0) },
+      y: { min: minY.toFixed(0), max: maxY.toFixed(0), distance: (maxY - minY).toFixed(0) },
+      z: { min: minZ.toFixed(0), max: maxZ.toFixed(0), distance: (maxZ - minZ).toFixed(0) }
     };
   };
 
