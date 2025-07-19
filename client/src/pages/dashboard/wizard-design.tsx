@@ -807,7 +807,7 @@ export default function WizardDesign() {
   };
 
   const steps = [
-    { id: 1, name: "Room Design" },
+    { id: 1, name: "Contour Design" },
     { id: 2, name: "Add Elements" },
     { id: 3, name: "Run Case" },
   ];
