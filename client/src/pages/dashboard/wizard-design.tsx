@@ -2325,6 +2325,15 @@ export default function WizardDesign() {
                             </span>
                           </span>
                         </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Pressure BCs:</span>
+                          <span className="font-medium text-black">
+                            {conditions ? conditions.pressureBCs : "0"}
+                            <span className="text-gray-500 ml-1">
+                              (Windows/Doors + Pressure Vents)
+                            </span>
+                          </span>
+                        </div>
                       </div>
                       
                       {/* Validation Alert */}
@@ -2771,6 +2780,7 @@ export default function WizardDesign() {
     let airEntryOutflow = 0;
     let furnVentInflow = 0;
     let furnVentOutflow = 0;
+    let pressureBCs = 0; // Contador de boundary conditions de presión
 
     Object.entries(rawFloors).forEach(([floorName, floorData]) => {
       // Analizar AirEntry elements (windows, doors, vents en paredes)
@@ -2781,6 +2791,15 @@ export default function WizardDesign() {
               airEntryInflow += 1;
             } else if (entry.properties.airOrientation === 'outflow') {
               airEntryOutflow += 1;
+            }
+
+            // Contar Pressure BCs para AirEntry elements
+            if (entry.type === 'window' || entry.type === 'door') {
+              // Puertas y ventanas siempre son presión
+              pressureBCs += 1;
+            } else if (entry.type === 'vent' && entry.properties.flowType === 'Pressure') {
+              // AirEntry Vents solo si su flowType es 'Pressure'
+              pressureBCs += 1;
             }
           }
         });
@@ -2794,6 +2813,11 @@ export default function WizardDesign() {
               furnVentInflow += 1;
             } else if (item.simulationProperties.airDirection === 'outflow') {
               furnVentOutflow += 1;
+            }
+
+            // Contar Pressure BCs para FurnVent objects
+            if (item.simulationProperties.flowType === 'Pressure') {
+              pressureBCs += 1;
             }
           }
         });
@@ -2810,7 +2834,8 @@ export default function WizardDesign() {
         inflow: furnVentInflow,
         outflow: furnVentOutflow,
         total: furnVentInflow + furnVentOutflow
-      }
+      },
+      pressureBCs: pressureBCs // Total de boundary conditions de presión
     };
   };
 
