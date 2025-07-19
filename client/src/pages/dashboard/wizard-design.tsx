@@ -2292,6 +2292,41 @@ export default function WizardDesign() {
                 })()}
               </div>
 
+              {/* Boundary Conditions Section */}
+              <div className="pt-3 border-t">
+                <h4 className="text-sm font-semibold text-gray-700 mb-2">Boundary Conditions</h4>
+                {(() => {
+                  let conditions;
+                  try {
+                    conditions = calculateBoundaryConditions();
+                  } catch (error) {
+                    console.log("Error calculating boundary conditions:", error);
+                    conditions = null;
+                  }
+                  
+                  return (
+                    <div className="space-y-2 text-xs">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">AirEntry inflow:</span>
+                        <span className="font-medium text-blue-600">{conditions ? conditions.airEntry.inflow : "0"}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">AirEntry outflow:</span>
+                        <span className="font-medium text-red-600">{conditions ? conditions.airEntry.outflow : "0"}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">FurnVent inflow:</span>
+                        <span className="font-medium text-blue-600">{conditions ? conditions.furnVent.inflow : "0"}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">FurnVent outflow:</span>
+                        <span className="font-medium text-red-600">{conditions ? conditions.furnVent.outflow : "0"}</span>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+
               {/* Design Dimensions Section */}
               <div className="pt-3 border-t">
                 <h4 className="text-sm font-semibold text-gray-700 mb-2">Design Dimensions</h4>
@@ -2669,6 +2704,55 @@ export default function WizardDesign() {
       stairs: totalStairs,
       airEntries: totalAirEntries,
       furniture: totalFurniture
+    };
+  };
+
+  // Función para calcular condiciones de contorno (boundary conditions)
+  const calculateBoundaryConditions = () => {
+    let airEntryInflow = 0;
+    let airEntryOutflow = 0;
+    let furnVentInflow = 0;
+    let furnVentOutflow = 0;
+
+    Object.entries(rawFloors).forEach(([floorName, floorData]) => {
+      // Analizar AirEntry elements (windows, doors, vents en paredes)
+      if (floorData.airEntries && Array.isArray(floorData.airEntries)) {
+        floorData.airEntries.forEach((entry) => {
+          if (entry && entry.properties && entry.properties.airDirection) {
+            if (entry.properties.airDirection === 'inflow') {
+              airEntryInflow += 1;
+            } else if (entry.properties.airDirection === 'outflow') {
+              airEntryOutflow += 1;
+            }
+          }
+        });
+      }
+
+      // Analizar FurnVent objects (ceiling/floor vents)
+      if (floorData.furnitureItems && Array.isArray(floorData.furnitureItems)) {
+        floorData.furnitureItems.forEach((item) => {
+          if (item && item.type === 'vent' && item.simulationProperties && item.simulationProperties.airDirection) {
+            if (item.simulationProperties.airDirection === 'inflow') {
+              furnVentInflow += 1;
+            } else if (item.simulationProperties.airDirection === 'outflow') {
+              furnVentOutflow += 1;
+            }
+          }
+        });
+      }
+    });
+
+    return {
+      airEntry: {
+        inflow: airEntryInflow,
+        outflow: airEntryOutflow,
+        total: airEntryInflow + airEntryOutflow
+      },
+      furnVent: {
+        inflow: furnVentInflow,
+        outflow: furnVentOutflow,
+        total: furnVentInflow + furnVentOutflow
+      }
     };
   };
 
