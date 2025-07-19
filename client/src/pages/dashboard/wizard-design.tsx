@@ -2300,26 +2300,52 @@ export default function WizardDesign() {
                     conditions = null;
                   }
                   
+                  const totalInflow = conditions ? (conditions.airEntry.inflow + conditions.furnVent.inflow) : 0;
+                  const totalOutflow = conditions ? (conditions.airEntry.outflow + conditions.furnVent.outflow) : 0;
+                  const hasValidBoundaryConditions = totalInflow >= 1 && totalOutflow >= 1;
+                  
                   return (
-                    <div className="space-y-2 text-xs">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Total Inflow:</span>
-                        <span className="font-medium text-black">
-                          {conditions ? (conditions.airEntry.inflow + conditions.furnVent.inflow) : "0"} 
-                          <span className="text-gray-500 ml-1">
-                            ({conditions ? conditions.airEntry.inflow : "0"} AirEntries, {conditions ? conditions.furnVent.inflow : "0"} Horiz. Vents)
+                    <div className="space-y-2">
+                      <div className="space-y-2 text-xs">
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Total Inflow:</span>
+                          <span className="font-medium text-black">
+                            {totalInflow} 
+                            <span className="text-gray-500 ml-1">
+                              ({conditions ? conditions.airEntry.inflow : "0"} AirEntries, {conditions ? conditions.furnVent.inflow : "0"} Horiz. Vents)
+                            </span>
                           </span>
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Total Outflow:</span>
-                        <span className="font-medium text-black">
-                          {conditions ? (conditions.airEntry.outflow + conditions.furnVent.outflow) : "0"}
-                          <span className="text-gray-500 ml-1">
-                            ({conditions ? conditions.airEntry.outflow : "0"} AirEntries, {conditions ? conditions.furnVent.outflow : "0"} Horiz. Vents)
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Total Outflow:</span>
+                          <span className="font-medium text-black">
+                            {totalOutflow}
+                            <span className="text-gray-500 ml-1">
+                              ({conditions ? conditions.airEntry.outflow : "0"} AirEntries, {conditions ? conditions.furnVent.outflow : "0"} Horiz. Vents)
+                            </span>
                           </span>
-                        </span>
+                        </div>
                       </div>
+                      
+                      {/* Validation Alert */}
+                      {!hasValidBoundaryConditions && (
+                        <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded-md">
+                          <div className="flex items-start">
+                            <div className="flex-shrink-0">
+                              <svg className="h-4 w-4 text-red-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                            <div className="ml-2">
+                              <h5 className="text-xs font-medium text-red-800">Insufficient Boundary Conditions</h5>
+                              <p className="text-xs text-red-700 mt-1">
+                                At least 1 Inflow and 1 Outflow condition are required for the CFD problem to be solvable. 
+                                Configure air direction in your AirEntries (windows/doors) or add ceiling/floor vents.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   );
                 })()}
