@@ -2568,7 +2568,29 @@ export default function WizardDesign() {
 
   // Función para mostrar el diálogo de confirmación antes de crear la simulación
   const handleStartSimulation = () => {
-    // Validar si el usuario está logueado
+    // PRIMERA VALIDACIÓN: Boundary Conditions (IBC - Insufficient Boundary Conditions)
+    let conditions;
+    try {
+      conditions = calculateBoundaryConditions();
+    } catch (error) {
+      console.log("Error calculating boundary conditions:", error);
+      conditions = null;
+    }
+    
+    const totalInflow = conditions ? (conditions.airEntry.inflow + conditions.furnVent.inflow) : 0;
+    const totalOutflow = conditions ? (conditions.airEntry.outflow + conditions.furnVent.outflow) : 0;
+    const hasValidBoundaryConditions = totalInflow >= 1 && totalOutflow >= 1;
+    
+    if (!hasValidBoundaryConditions) {
+      toast({
+        title: "Insufficient Boundary Conditions",
+        description: "At least 1 Inflow and 1 Outflow condition are required for the CFD problem to be solvable. Configure air direction in your AirEntries or add ceiling/floor vents.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // SEGUNDA VALIDACIÓN: Usuario logueado
     if (!user) {
       toast({
         title: "Login Required",
@@ -2579,7 +2601,7 @@ export default function WizardDesign() {
       return;
     }
 
-    // Validaciones previas
+    // TERCERA VALIDACIÓN: Nombre de simulación
     if (!simulationName || simulationName.trim().length === 0) {
       toast({
         title: "Simulation Name Required",
