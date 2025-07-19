@@ -1,0 +1,290 @@
+{
+  "version": "1.0",
+  "floors": {
+    "0": {
+      "height": 2.2,
+      "floorDeck": 0.35,
+      "ceiling": {
+        "temp": 20,
+        "airEntries": []
+      },
+      "floor_surf": {
+        "temp": 20,
+        "airEntries": []
+      },
+      "walls": [
+        {
+          "id": "wall_0F_1",
+          "start": {
+            "x": -2.9,
+            "y": -1.95
+          },
+          "end": {
+            "x": 2.65,
+            "y": -1.8
+          },
+          "temp": 20,
+          "airEntries": []
+        },
+        {
+          "id": "wall_0F_2",
+          "start": {
+            "x": 2.65,
+            "y": -1.8
+          },
+          "end": {
+            "x": 3.1,
+            "y": 0.95
+          },
+          "temp": 20,
+          "airEntries": [
+            {
+              "id": "window_0F_2",
+              "type": "window",
+              "position": {
+                "x": 2.97725,
+                "y": 0.19988,
+                "z": 1.1,
+                "normal": {
+                  "x": 0.98687,
+                  "y": 0.16149,
+                  "z": 0
+                }
+              },
+              "dimensions": {
+                "width": 0.6,
+                "height": 0.4,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "temperature": 20,
+                "airDirection": "inflow",
+                "flowIntensity": "medium"
+              }
+            }
+          ]
+        },
+        {
+          "id": "wall_0F_3",
+          "start": {
+            "x": 3.1,
+            "y": 0.95
+          },
+          "end": {
+            "x": -0.45,
+            "y": 1.1
+          },
+          "temp": 20,
+          "airEntries": []
+        },
+        {
+          "id": "wall_0F_4",
+          "start": {
+            "x": -0.45,
+            "y": 1.1
+          },
+          "end": {
+            "x": -2.9,
+            "y": -1.95
+          },
+          "temp": 20,
+          "airEntries": [
+            {
+              "id": "window_0F_1",
+              "type": "window",
+              "position": {
+                "x": -1.46962,
+                "y": -0.16938,
+                "z": 1.1,
+                "normal": {
+                  "x": -0.77962,
+                  "y": -0.62625,
+                  "z": 0
+                }
+              },
+              "dimensions": {
+                "width": 0.6,
+                "height": 0.4,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "temperature": 20,
+                "airDirection": "outflow",
+                "flowIntensity": "medium"
+              }
+            }
+          ]
+        }
+      ],
+      "stairs": [
+        {
+          "id": "stair_0F_1",
+          "lines": [
+            {
+              "id": "stair_line_1",
+              "start": {
+                "x": -2.9,
+                "y": -1.95
+              },
+              "end": {
+                "x": 2.65,
+                "y": -1.8
+              }
+            },
+            {
+              "id": "stair_line_2",
+              "start": {
+                "x": 2.65,
+                "y": -1.8
+              },
+              "end": {
+                "x": 2.15,
+                "y": -1.2
+              }
+            },
+            {
+              "id": "stair_line_3",
+              "start": {
+                "x": 2.15,
+                "y": -1.2
+              },
+              "end": {
+                "x": -2,
+                "y": -0.85
+              }
+            },
+            {
+              "id": "stair_line_4",
+              "start": {
+                "x": -2,
+                "y": -0.85
+              },
+              "end": {
+                "x": -2.9,
+                "y": -1.95
+              }
+            }
+          ],
+          "temp": 20
+        }
+      ],
+      "furniture": [
+        {
+          "id": "table_0F_1",
+          "position": {
+            "x": 0.4635,
+            "y": 0.2311,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "scale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "simulationProperties": {
+            "temperature": 20,
+            "emissivity": 0.9
+          }
+        }
+      ]
+    },
+    "1": {
+      "height": 2.2,
+      "floorDeck": 0.35,
+      "ceiling": {
+        "temp": 20,
+        "airEntries": []
+      },
+      "floor_surf": {
+        "temp": 20,
+        "airEntries": []
+      },
+      "walls": [
+        {
+          "id": "wall_1F_1",
+          "start": {
+            "x": -2.9,
+            "y": -1.95
+          },
+          "end": {
+            "x": 2.65,
+            "y": -1.8
+          },
+          "temp": 20,
+          "airEntries": []
+        },
+        {
+          "id": "wall_1F_2",
+          "start": {
+            "x": 2.65,
+            "y": -1.8
+          },
+          "end": {
+            "x": 3.1,
+            "y": 0.95
+          },
+          "temp": 20,
+          "airEntries": []
+        },
+        {
+          "id": "wall_1F_3",
+          "start": {
+            "x": 3.1,
+            "y": 0.95
+          },
+          "end": {
+            "x": -0.45,
+            "y": 1.1
+          },
+          "temp": 20,
+          "airEntries": []
+        },
+        {
+          "id": "wall_1F_4",
+          "start": {
+            "x": -0.45,
+            "y": 1.1
+          },
+          "end": {
+            "x": -2.9,
+            "y": -1.95
+          },
+          "temp": 20,
+          "airEntries": []
+        }
+      ],
+      "stairs": [],
+      "furniture": [
+        {
+          "id": "block_1F_1",
+          "position": {
+            "x": 1.472,
+            "y": 0.1406,
+            "z": 2.55
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "scale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "simulationProperties": {
+            "temperature": 20,
+            "emissivity": 0.9
+          }
+        }
+      ]
+    }
+  }
+}
