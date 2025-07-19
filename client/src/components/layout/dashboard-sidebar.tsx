@@ -126,24 +126,29 @@ export default function DashboardSidebar() {
       </div>
       <nav className="px-4 py-2">
         <div className="space-y-1">
-          {sidebarItems.map((item) => {
+          {sidebarItems.map((item, index) => {
             const Icon = item.icon;
             const isActive = location === item.href;
+            const showSeparator = item.label === "Settings"; // Separador antes de Settings
 
             return (
-              <Link 
-                key={item.href} 
-                href={item.href}
-                className={cn(
-                  "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200",
-                  isActive
-                    ? "bg-primary text-white shadow-md"
-                    : "text-gray-700 hover:bg-blue-50 hover:text-primary hover:shadow-sm"
+              <div key={item.href}>
+                {showSeparator && (
+                  <div className="mt-2 pt-2 border-t border-gray-200" />
                 )}
-              >
-                <Icon className={cn("h-5 w-5", isActive ? "text-white" : "")} />
-                {item.label}
-              </Link>
+                <Link 
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200",
+                    isActive
+                      ? "bg-primary text-white shadow-md"
+                      : "text-gray-700 hover:bg-blue-50 hover:text-primary hover:shadow-sm"
+                  )}
+                >
+                  <Icon className={cn("h-5 w-5", isActive ? "text-white" : "")} />
+                  {item.label}
+                </Link>
+              </div>
             );
           })}
 
