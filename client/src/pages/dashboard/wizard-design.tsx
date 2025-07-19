@@ -2357,6 +2357,12 @@ export default function WizardDesign() {
                           {dimensions ? `${dimensions.z.min} to ${dimensions.z.max} (${dimensions.z.distance})` : "NA to NA (NA)"}
                         </span>
                       </div>
+                      <div className="flex justify-between pt-1 border-t border-gray-200">
+                        <span className="text-gray-600">Container Vol:</span>
+                        <span className="font-medium text-blue-600">
+                          {dimensions ? dimensions.volume : "NA m³"}
+                        </span>
+                      </div>
                     </div>
                   );
                 })()}
@@ -2664,10 +2670,14 @@ export default function WizardDesign() {
     if (minZ === Infinity) minZ = 0;
     if (maxZ === -Infinity) maxZ = 250; // altura por defecto en cm
 
+    // Calcular volumen del contenedor en m³
+    const volumeM3 = ((maxX - minX) * (maxY - minY) * (maxZ - minZ)) / 1000000; // cm³ a m³
+
     return {
-      x: { min: minX.toFixed(0), max: maxX.toFixed(0), distance: (maxX - minX).toFixed(0) },
-      y: { min: minY.toFixed(0), max: maxY.toFixed(0), distance: (maxY - minY).toFixed(0) },
-      z: { min: minZ.toFixed(0), max: maxZ.toFixed(0), distance: (maxZ - minZ).toFixed(0) }
+      x: { min: `${minX.toFixed(0)} cm`, max: `${maxX.toFixed(0)} cm`, distance: `${(maxX - minX).toFixed(0)} cm` },
+      y: { min: `${minY.toFixed(0)} cm`, max: `${maxY.toFixed(0)} cm`, distance: `${(maxY - minY).toFixed(0)} cm` },
+      z: { min: `${minZ.toFixed(0)} cm`, max: `${maxZ.toFixed(0)} cm`, distance: `${(maxZ - minZ).toFixed(0)} cm` },
+      volume: `${volumeM3.toFixed(2)} m³`
     };
   };
 
