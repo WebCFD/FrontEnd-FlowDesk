@@ -2182,40 +2182,77 @@ export default function WizardDesign() {
           {/* Pricing Plan Card */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Simulation Plans</CardTitle>
-              <CardDescription>Choose the best plan for your needs</CardDescription>
+              <CardTitle className="text-lg">Subscription Plans</CardTitle>
+              <CardDescription>Save money with our subscription options</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <div className="p-3 border rounded-lg bg-blue-50 border-blue-200">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-semibold text-blue-900">Basic</span>
-                    <span className="text-lg font-bold text-blue-600">€10</span>
-                  </div>
-                  <ul className="text-xs text-blue-800 space-y-1">
-                    <li>• Steady state simulation</li>
-                    <li>• Temperature distribution</li>
-                    <li>• Basic reporting</li>
-                  </ul>
+            <CardContent className="space-y-3">
+              {/* Pay per Use (Current) */}
+              <div className="p-3 border rounded-lg bg-gray-50 border-gray-200">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="font-semibold text-gray-700">Pay per Use</span>
+                  <span className="text-sm font-medium text-gray-600">Current</span>
                 </div>
-
-                <div className="p-3 border rounded-lg">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-semibold">Advanced</span>
-                    <span className="text-lg font-bold text-gray-600">€12</span>
-                  </div>
-                  <ul className="text-xs text-gray-600 space-y-1">
-                    <li>• Transient simulation</li>
-                    <li>• Air quality analysis</li>
-                    <li>• Advanced reporting</li>
-                    <li>• Optimization insights</li>
-                  </ul>
+                <div className="text-xs text-gray-600 space-y-1">
+                  <div>• Steady: €10 per simulation</div>
+                  <div>• Advanced: €12 per simulation</div>
+                  <div>• No commitment required</div>
                 </div>
               </div>
 
-              <div className="pt-3 border-t">
+              {/* Monthly Plan */}
+              <div className="p-3 border rounded-lg bg-blue-50 border-blue-200">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="font-semibold text-blue-900">Monthly Plan</span>
+                  <div className="text-right">
+                    <div className="text-lg font-bold text-blue-600">€75</div>
+                    <div className="text-xs text-blue-700 line-through">€100</div>
+                  </div>
+                </div>
+                <div className="text-xs text-blue-800 space-y-1">
+                  <div>• 10 simulations included</div>
+                  <div>• 25% discount vs pay-per-use</div>
+                  <div>• Priority support</div>
+                </div>
+              </div>
+
+              {/* Quarterly Plan */}
+              <div className="p-3 border rounded-lg bg-green-50 border-green-200">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="font-semibold text-green-900">Quarterly Plan</span>
+                  <div className="text-right">
+                    <div className="text-lg font-bold text-green-600">€180</div>
+                    <div className="text-xs text-green-700 line-through">€300</div>
+                  </div>
+                </div>
+                <div className="text-xs text-green-800 space-y-1">
+                  <div>• 30 simulations included</div>
+                  <div>• 40% discount vs pay-per-use</div>
+                  <div>• Advanced analytics</div>
+                  <div>• API access</div>
+                </div>
+              </div>
+
+              {/* Annual Plan */}
+              <div className="p-3 border rounded-lg bg-purple-50 border-purple-200">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="font-semibold text-purple-900">Annual Plan</span>
+                  <div className="text-right">
+                    <div className="text-lg font-bold text-purple-600">€600</div>
+                    <div className="text-xs text-purple-700 line-through">€1200</div>
+                  </div>
+                </div>
+                <div className="text-xs text-purple-800 space-y-1">
+                  <div>• 120 simulations included</div>
+                  <div>• 50% discount vs pay-per-use</div>
+                  <div>• Dedicated account manager</div>
+                  <div>• Custom integrations</div>
+                  <div>• Unlimited cloud storage</div>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t">
                 <p className="text-xs text-gray-500 text-center">
-                  All plans include 3D visualization and CFD analysis
+                  All plans include 3D visualization, CFD analysis, and cloud storage
                 </p>
               </div>
             </CardContent>
