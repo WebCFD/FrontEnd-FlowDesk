@@ -2261,31 +2261,36 @@ export default function WizardDesign() {
               <div className="pt-3 border-t">
                 <h4 className="text-sm font-semibold text-gray-700 mb-2">Design Dimensions</h4>
                 {(() => {
+                  let dimensions;
                   try {
-                    const dimensions = calculateDesignDimensions();
-                    return (
-                      <div className="space-y-2 text-xs">
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">X-axis:</span>
-                          <span className="font-mono">{dimensions.x.min} to {dimensions.x.max} ({dimensions.x.distance})</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Y-axis:</span>
-                          <span className="font-mono">{dimensions.y.min} to {dimensions.y.max} ({dimensions.y.distance})</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Z-axis:</span>
-                          <span className="font-mono">{dimensions.z.min} to {dimensions.z.max} ({dimensions.z.distance})</span>
-                        </div>
-                      </div>
-                    );
+                    dimensions = calculateDesignDimensions();
                   } catch (error) {
-                    return (
-                      <div className="text-xs text-gray-500 italic">
-                        Design dimensions will appear when room is created
-                      </div>
-                    );
+                    console.log("Error calculating dimensions:", error);
+                    dimensions = null;
                   }
+                  
+                  return (
+                    <div className="space-y-2 text-xs">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">X-axis:</span>
+                        <span className="font-mono">
+                          {dimensions ? `${dimensions.x.min} to ${dimensions.x.max} (${dimensions.x.distance})` : "NA to NA (NA)"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Y-axis:</span>
+                        <span className="font-mono">
+                          {dimensions ? `${dimensions.y.min} to ${dimensions.y.max} (${dimensions.y.distance})` : "NA to NA (NA)"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Z-axis:</span>
+                        <span className="font-mono">
+                          {dimensions ? `${dimensions.z.min} to ${dimensions.z.max} (${dimensions.z.distance})` : "NA to NA (NA)"}
+                        </span>
+                      </div>
+                    </div>
+                  );
                 })()}
               </div>
             </CardContent>
@@ -2503,13 +2508,61 @@ export default function WizardDesign() {
 
   // Función para calcular las dimensiones del diseño (coordenadas min/max)
   const calculateDesignDimensions = () => {
+    console.log("Raw floors data:", rawFloors);
+    console.log("Current floor:", currentFloor);
+    console.log("Floor data:", rawFloors[currentFloor]);
+    
     const exportData = generateSimulationDataForExport();
+    console.log("Export data for dimensions:", exportData);
     
     let minX = Infinity, maxX = -Infinity;
     let minY = Infinity, maxY = -Infinity;
     let minZ = Infinity, maxZ = -Infinity;
 
-    // Analizar coordenadas de paredes
+    // Analizar coordenadas de paredes y room points directamente del store
+    Object.entries(rawFloors).forEach(([floorName, floorData]) => {
+      // Analizar room points
+      if (floorData.room && floorData.room.points) {
+        floorData.room.points.forEach((point) => {
+          if (point.x < minX) minX = point.x;
+          if (point.x > maxX) maxX = point.x;
+          if (point.z < minY) minY = point.z;
+          if (point.z > maxY) maxY = point.z;
+        });
+      }
+
+      // Analizar lines (paredes)
+      if (floorData.lines) {
+        floorData.lines.forEach((line) => {
+          const points = [line.start, line.end];
+          points.forEach((point) => {
+            if (point.x < minX) minX = point.x;
+            if (point.x > maxX) maxX = point.x;
+            if (point.y < minY) minY = point.y;
+            if (point.y > maxY) maxY = point.y;
+          });
+        });
+      }
+
+      // Analizar air entries
+      if (floorData.airEntries) {
+        floorData.airEntries.forEach((entry) => {
+          if (entry.position) {
+            if (entry.position.x < minX) minX = entry.position.x;
+            if (entry.position.x > maxX) maxX = entry.position.x;
+            if (entry.position.y < minY) minY = entry.position.y;
+            if (entry.position.y > maxY) maxY = entry.position.y;
+            // Z para height
+            if (entry.centerHeight) {
+              if (entry.centerHeight < minZ) minZ = entry.centerHeight;
+              if (entry.centerHeight > maxZ) maxZ = entry.centerHeight;
+            }
+          }
+        });
+      }
+    });
+
+    // Analizar coordenadas de paredes del export data como fallback
     Object.values(exportData.floors).forEach((floor: any) => {
       if (floor.walls) {
         floor.walls.forEach((wall: any) => {
