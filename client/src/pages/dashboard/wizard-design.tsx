@@ -2521,41 +2521,68 @@ export default function WizardDesign() {
 
     // Analizar coordenadas de paredes y room points directamente del store
     Object.entries(rawFloors).forEach(([floorName, floorData]) => {
+      console.log(`Analyzing floor: ${floorName}`, floorData);
+
       // Analizar room points
       if (floorData.room && floorData.room.points) {
         floorData.room.points.forEach((point) => {
-          if (point.x < minX) minX = point.x;
-          if (point.x > maxX) maxX = point.x;
-          if (point.z < minY) minY = point.z;
-          if (point.z > maxY) maxY = point.z;
+          if (point && typeof point.x === 'number' && typeof point.z === 'number') {
+            if (point.x < minX) minX = point.x;
+            if (point.x > maxX) maxX = point.x;
+            if (point.z < minY) minY = point.z;
+            if (point.z > maxY) maxY = point.z;
+          }
         });
       }
 
       // Analizar lines (paredes)
-      if (floorData.lines) {
+      if (floorData.lines && Array.isArray(floorData.lines)) {
         floorData.lines.forEach((line) => {
-          const points = [line.start, line.end];
-          points.forEach((point) => {
-            if (point.x < minX) minX = point.x;
-            if (point.x > maxX) maxX = point.x;
-            if (point.y < minY) minY = point.y;
-            if (point.y > maxY) maxY = point.y;
-          });
+          console.log("Analyzing line:", line);
+          if (line && line.start && line.end) {
+            const points = [line.start, line.end];
+            points.forEach((point) => {
+              if (point && typeof point.x === 'number' && typeof point.y === 'number') {
+                if (point.x < minX) minX = point.x;
+                if (point.x > maxX) maxX = point.x;
+                if (point.y < minY) minY = point.y;
+                if (point.y > maxY) maxY = point.y;
+              }
+            });
+          }
         });
       }
 
       // Analizar air entries
-      if (floorData.airEntries) {
+      if (floorData.airEntries && Array.isArray(floorData.airEntries)) {
         floorData.airEntries.forEach((entry) => {
-          if (entry.position) {
-            if (entry.position.x < minX) minX = entry.position.x;
-            if (entry.position.x > maxX) maxX = entry.position.x;
-            if (entry.position.y < minY) minY = entry.position.y;
-            if (entry.position.y > maxY) maxY = entry.position.y;
+          if (entry && entry.position) {
+            if (typeof entry.position.x === 'number' && typeof entry.position.y === 'number') {
+              if (entry.position.x < minX) minX = entry.position.x;
+              if (entry.position.x > maxX) maxX = entry.position.x;
+              if (entry.position.y < minY) minY = entry.position.y;
+              if (entry.position.y > maxY) maxY = entry.position.y;
+            }
             // Z para height
-            if (entry.centerHeight) {
+            if (entry.centerHeight && typeof entry.centerHeight === 'number') {
               if (entry.centerHeight < minZ) minZ = entry.centerHeight;
               if (entry.centerHeight > maxZ) maxZ = entry.centerHeight;
+            }
+          }
+        });
+      }
+
+      // Analizar furniture items
+      if (floorData.furnitureItems && Array.isArray(floorData.furnitureItems)) {
+        floorData.furnitureItems.forEach((item) => {
+          if (item && item.position) {
+            if (typeof item.position.x === 'number' && typeof item.position.y === 'number' && typeof item.position.z === 'number') {
+              if (item.position.x < minX) minX = item.position.x;
+              if (item.position.x > maxX) maxX = item.position.x;
+              if (item.position.y < minY) minY = item.position.y;
+              if (item.position.y > maxY) maxY = item.position.y;
+              if (item.position.z < minZ) minZ = item.position.z;
+              if (item.position.z > maxZ) maxZ = item.position.z;
             }
           }
         });
