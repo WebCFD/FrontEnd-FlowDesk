@@ -1,9 +1,8 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
+import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
-import LoginModal from "@/components/auth/login-modal";
 
 const caseStudies = [
   {
@@ -24,7 +23,7 @@ const caseStudies = [
 ];
 
 export default function CaseStudies() {
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [, setLocation] = useLocation();
 
   return (
     <section id="case-studies" className="py-20 bg-slate-50">
@@ -63,16 +62,11 @@ export default function CaseStudies() {
         </div>
 
         <div className="mt-12 text-center">
-          <Button size="lg" onClick={() => setIsLoginOpen(true)}>
+          <Button size="lg" onClick={() => setLocation("/dashboard/wizard-design")}>
             Get Started
           </Button>
         </div>
       </div>
-
-      <LoginModal
-        isOpen={isLoginOpen}
-        onClose={() => setIsLoginOpen(false)}
-      />
     </section>
   );
 }
