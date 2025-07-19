@@ -136,18 +136,27 @@ export default function Navbar() {
           </NavigationMenuList>
         </NavigationMenu>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           {user && !user.isAnonymous ? (
             // Usuario logueado - mostrar dropdown con información del usuario
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <User className="h-4 w-4" />
-                  {user.username}
+                <Button 
+                  variant="ghost" 
+                  className="h-9 px-3 flex items-center gap-2 text-sm font-medium hover:bg-gray-100 transition-colors"
+                >
+                  <div className="w-7 h-7 bg-primary/10 rounded-full flex items-center justify-center">
+                    <User className="h-4 w-4 text-primary" />
+                  </div>
+                  <span className="text-gray-700">{user.username}</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-2">
+              <DropdownMenuContent align="end" className="w-48">
+                <div className="px-3 py-2 text-sm border-b">
+                  <p className="font-medium text-gray-900">{user.username}</p>
+                  <p className="text-gray-500 truncate">{user.email}</p>
+                </div>
+                <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-2 text-sm">
                   <LogOut className="h-4 w-4" />
                   Logout
                 </DropdownMenuItem>
@@ -159,7 +168,8 @@ export default function Navbar() {
               <AnalyticsButton 
                 category={AnalyticsCategories.ACCOUNT} 
                 action={AnalyticsActions.LOGIN}
-                variant="outline" 
+                variant="ghost" 
+                className="h-9 px-4 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100"
                 onClick={() => setIsLoginOpen(true)}
               >
                 Log in
@@ -168,6 +178,7 @@ export default function Navbar() {
               <AnalyticsButton 
                 category={AnalyticsCategories.ACCOUNT} 
                 action={AnalyticsActions.SIGNUP}
+                className="h-9 px-4 text-sm font-medium"
                 onClick={() => setIsRegisterOpen(true)}
               >
                 Sign Up
