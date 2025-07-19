@@ -2340,27 +2340,27 @@ export default function WizardDesign() {
                   return (
                     <div className="space-y-2 text-xs">
                       <div className="flex justify-between">
-                        <span className="text-gray-600">X-axis:</span>
+                        <span className="text-gray-600">X-axis (cm):</span>
                         <span className="font-mono">
-                          {dimensions ? `${dimensions.x.min} to ${dimensions.x.max} (${dimensions.x.distance})` : "NA to NA (NA)"}
+                          {dimensions ? `${dimensions.x.min.replace(' cm', '')} to ${dimensions.x.max.replace(' cm', '')} (${dimensions.x.distance.replace(' cm', '')})` : "NA to NA (NA)"}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Y-axis:</span>
+                        <span className="text-gray-600">Y-axis (cm):</span>
                         <span className="font-mono">
-                          {dimensions ? `${dimensions.y.min} to ${dimensions.y.max} (${dimensions.y.distance})` : "NA to NA (NA)"}
+                          {dimensions ? `${dimensions.y.min.replace(' cm', '')} to ${dimensions.y.max.replace(' cm', '')} (${dimensions.y.distance.replace(' cm', '')})` : "NA to NA (NA)"}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Z-axis:</span>
+                        <span className="text-gray-600">Z-axis (cm):</span>
                         <span className="font-mono">
-                          {dimensions ? `${dimensions.z.min} to ${dimensions.z.max} (${dimensions.z.distance})` : "NA to NA (NA)"}
+                          {dimensions ? `${dimensions.z.min.replace(' cm', '')} to ${dimensions.z.max.replace(' cm', '')} (${dimensions.z.distance.replace(' cm', '')})` : "NA to NA (NA)"}
                         </span>
                       </div>
                       <div className="flex justify-between pt-1 border-t border-gray-200">
-                        <span className="text-gray-600">Container Vol:</span>
+                        <span className="text-gray-600">Container Vol (m³):</span>
                         <span className="font-medium text-blue-600">
-                          {dimensions ? dimensions.volume : "NA m³"}
+                          {dimensions ? dimensions.volume.replace(' m³', '') : "NA"}
                         </span>
                       </div>
                     </div>
