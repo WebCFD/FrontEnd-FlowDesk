@@ -56,9 +56,8 @@ const formatDate = (date: string) => {
 export default function Dashboard() {
   const [, setLocation] = useLocation();
   const [isVideoOpen, setIsVideoOpen] = useState(false);
-  const [showNewSimulationDialog, setShowNewSimulationDialog] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; simulationId?: number; simulationName?: string }>({ open: false });
-  const { lines, reset } = useRoomStore();
+  const { reset } = useRoomStore();
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -112,22 +111,9 @@ export default function Dashboard() {
   };
 
   const handleStartSimulation = () => {
-    if (lines.length > 0) {
-      setShowNewSimulationDialog(true);
-    } else {
-      reset();
-      setLocation("/dashboard/wizard-design");
-    }
-  };
-
-  const handleConfirmNewSimulation = () => {
+    // Borrar los datos del diseño (igual que hace "Erase Design")
     reset();
-    setShowNewSimulationDialog(false);
-    setLocation("/dashboard/wizard-design");
-  };
-
-  const handleReturnToWizard = () => {
-    setShowNewSimulationDialog(false);
+    // Abrir el Run Case Wizard para que el usuario pueda empezar un nuevo diseño
     setLocation("/dashboard/wizard-design");
   };
 
@@ -336,25 +322,6 @@ export default function Dashboard() {
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* New Simulation Confirmation Dialog */}
-      <AlertDialog open={showNewSimulationDialog} onOpenChange={setShowNewSimulationDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Start New Simulation?</AlertDialogTitle>
-            <AlertDialogDescription>
-              You have an existing room in the WizardDesign. Starting a new simulation will clear your current design. 
-              Are you sure you want to continue?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleReturnToWizard}>Return to WizardDesign</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmNewSimulation}>
-              New Design
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       {/* Delete Simulation Confirmation Dialog */}
       <AlertDialog open={deleteDialog.open} onOpenChange={(open) => setDeleteDialog({ open })}>
