@@ -2819,19 +2819,24 @@ export default function WizardDesign() {
       if (floorData.airEntries && Array.isArray(floorData.airEntries)) {
         floorData.airEntries.forEach((entry) => {
           if (entry && entry.properties && entry.properties.airOrientation) {
-            if (entry.properties.airOrientation === 'inflow') {
-              airEntryInflow += 1;
-            } else if (entry.properties.airOrientation === 'outflow') {
-              airEntryOutflow += 1;
-            }
+            // Solo contar si el elemento está en estado 'open' (no cerrado)
+            const isOpen = !entry.properties.state || entry.properties.state === 'open';
+            
+            if (isOpen) {
+              if (entry.properties.airOrientation === 'inflow') {
+                airEntryInflow += 1;
+              } else if (entry.properties.airOrientation === 'outflow') {
+                airEntryOutflow += 1;
+              }
 
-            // Contar Pressure BCs para AirEntry elements
-            if (entry.type === 'window' || entry.type === 'door') {
-              // Puertas y ventanas siempre son presión
-              pressureBCs += 1;
-            } else if (entry.type === 'vent' && entry.properties.flowType === 'Pressure') {
-              // AirEntry Vents solo si su flowType es 'Pressure'
-              pressureBCs += 1;
+              // Contar Pressure BCs para AirEntry elements
+              if (entry.type === 'window' || entry.type === 'door') {
+                // Puertas y ventanas siempre son presión (si están abiertas)
+                pressureBCs += 1;
+              } else if (entry.type === 'vent' && entry.properties.flowType === 'Pressure') {
+                // AirEntry Vents solo si su flowType es 'Pressure' (y están abiertas)
+                pressureBCs += 1;
+              }
             }
           }
         });
@@ -2841,15 +2846,20 @@ export default function WizardDesign() {
       if (floorData.furnitureItems && Array.isArray(floorData.furnitureItems)) {
         floorData.furnitureItems.forEach((item) => {
           if (item && item.type === 'vent' && item.simulationProperties && item.simulationProperties.airDirection) {
-            if (item.simulationProperties.airDirection === 'inflow') {
-              furnVentInflow += 1;
-            } else if (item.simulationProperties.airDirection === 'outflow') {
-              furnVentOutflow += 1;
-            }
+            // Solo contar si el elemento está en estado 'open' (no cerrado)
+            const isOpen = !item.simulationProperties.state || item.simulationProperties.state === 'open';
+            
+            if (isOpen) {
+              if (item.simulationProperties.airDirection === 'inflow') {
+                furnVentInflow += 1;
+              } else if (item.simulationProperties.airDirection === 'outflow') {
+                furnVentOutflow += 1;
+              }
 
-            // Contar Pressure BCs para FurnVent objects
-            if (item.simulationProperties.flowType === 'Pressure') {
-              pressureBCs += 1;
+              // Contar Pressure BCs para FurnVent objects
+              if (item.simulationProperties.flowType === 'Pressure') {
+                pressureBCs += 1;
+              }
             }
           }
         });
