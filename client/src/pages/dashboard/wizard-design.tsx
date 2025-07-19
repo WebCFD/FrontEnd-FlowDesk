@@ -2302,7 +2302,9 @@ export default function WizardDesign() {
                   
                   const totalInflow = conditions ? (conditions.airEntry.inflow + conditions.furnVent.inflow) : 0;
                   const totalOutflow = conditions ? (conditions.airEntry.outflow + conditions.furnVent.outflow) : 0;
+                  const totalPressureBCs = conditions ? conditions.pressureBCs : 0;
                   const hasValidBoundaryConditions = totalInflow >= 1 && totalOutflow >= 1;
+                  const hasValidPressureConditions = totalPressureBCs >= 1;
                   
                   return (
                     <div className="space-y-2">
@@ -2336,7 +2338,7 @@ export default function WizardDesign() {
                         </div>
                       </div>
                       
-                      {/* Validation Alert */}
+                      {/* Validation Alerts */}
                       {!hasValidBoundaryConditions && (
                         <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded-md">
                           <div className="flex items-start">
@@ -2346,10 +2348,29 @@ export default function WizardDesign() {
                               </svg>
                             </div>
                             <div className="ml-2">
-                              <h5 className="text-xs font-medium text-red-800">Insufficient Boundary Conditions</h5>
+                              <h5 className="text-xs font-medium text-red-800">Insufficient Boundary Conditions (IBC)</h5>
                               <p className="text-xs text-red-700 mt-1">
                                 At least 1 Inflow and 1 Outflow condition are required for the CFD problem to be solvable. 
                                 Configure air direction in your AirEntries (windows/doors) or add ceiling/floor vents.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {!hasValidPressureConditions && (
+                        <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded-md">
+                          <div className="flex items-start">
+                            <div className="flex-shrink-0">
+                              <svg className="h-4 w-4 text-red-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                            <div className="ml-2">
+                              <h5 className="text-xs font-medium text-red-800">Insufficient Boundary Pressure (IBS)</h5>
+                              <p className="text-xs text-red-700 mt-1">
+                                At least 1 Pressure boundary condition is required for the CFD problem to be solvable. 
+                                Add windows/doors or configure existing vents to use Pressure flow type.
                               </p>
                             </div>
                           </div>
@@ -2588,12 +2609,23 @@ export default function WizardDesign() {
     
     const totalInflow = conditions ? (conditions.airEntry.inflow + conditions.furnVent.inflow) : 0;
     const totalOutflow = conditions ? (conditions.airEntry.outflow + conditions.furnVent.outflow) : 0;
+    const totalPressureBCs = conditions ? conditions.pressureBCs : 0;
     const hasValidBoundaryConditions = totalInflow >= 1 && totalOutflow >= 1;
+    const hasValidPressureConditions = totalPressureBCs >= 1;
     
     if (!hasValidBoundaryConditions) {
       toast({
-        title: "Insufficient Boundary Conditions",
+        title: "Insufficient Boundary Conditions (IBC)",
         description: "At least 1 Inflow and 1 Outflow condition are required for the CFD problem to be solvable. Configure air direction in your AirEntries or add ceiling/floor vents.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!hasValidPressureConditions) {
+      toast({
+        title: "Insufficient Boundary Pressure (IBS)",
+        description: "At least 1 Pressure boundary condition is required for the CFD problem to be solvable. Add windows/doors or configure existing vents to use Pressure flow type.",
         variant: "destructive",
       });
       return;
