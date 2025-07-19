@@ -2727,6 +2727,13 @@ export default function WizardDesign() {
     Object.entries(rawFloors).forEach(([floorName, floorData]) => {
       console.log(`Floor: ${floorName}`, floorData);
       
+      // DEBUG STAIRS: Contar stairs en este floor
+      if (floorData.stairPolygons && Array.isArray(floorData.stairPolygons)) {
+        console.log(`STAIRS DEBUG: Found ${floorData.stairPolygons.length} stairPolygons in ${floorName}:`, floorData.stairPolygons);
+      } else {
+        console.log(`STAIRS DEBUG: No stairPolygons found in ${floorName}`);
+      }
+      
       // Analizar AirEntry elements (windows, doors, vents en paredes)
       if (floorData.airEntries && Array.isArray(floorData.airEntries)) {
         console.log(`Found ${floorData.airEntries.length} airEntries:`, floorData.airEntries);
