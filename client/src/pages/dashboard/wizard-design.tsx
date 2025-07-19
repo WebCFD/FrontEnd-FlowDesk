@@ -2307,20 +2307,22 @@ export default function WizardDesign() {
                   return (
                     <div className="space-y-2 text-xs">
                       <div className="flex justify-between">
-                        <span className="text-gray-600">AirEntry inflow:</span>
-                        <span className="font-medium text-blue-600">{conditions ? conditions.airEntry.inflow : "0"}</span>
+                        <span className="text-gray-600">Total Inflow:</span>
+                        <span className="font-medium text-blue-600">
+                          {conditions ? (conditions.airEntry.inflow + conditions.furnVent.inflow) : "0"} 
+                          <span className="text-gray-500 ml-1">
+                            ({conditions ? conditions.airEntry.inflow : "0"} AirEntries, {conditions ? conditions.furnVent.inflow : "0"} Horiz. Vents)
+                          </span>
+                        </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-600">AirEntry outflow:</span>
-                        <span className="font-medium text-red-600">{conditions ? conditions.airEntry.outflow : "0"}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">FurnVent inflow:</span>
-                        <span className="font-medium text-blue-600">{conditions ? conditions.furnVent.inflow : "0"}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">FurnVent outflow:</span>
-                        <span className="font-medium text-red-600">{conditions ? conditions.furnVent.outflow : "0"}</span>
+                        <span className="text-gray-600">Total Outflow:</span>
+                        <span className="font-medium text-red-600">
+                          {conditions ? (conditions.airEntry.outflow + conditions.furnVent.outflow) : "0"}
+                          <span className="text-gray-500 ml-1">
+                            ({conditions ? conditions.airEntry.outflow : "0"} AirEntries, {conditions ? conditions.furnVent.outflow : "0"} Horiz. Vents)
+                          </span>
+                        </span>
                       </div>
                     </div>
                   );
