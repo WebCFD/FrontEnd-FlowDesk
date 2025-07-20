@@ -3206,24 +3206,53 @@ export default function WizardDesign() {
         const floorName = floorNameMap[floorNumber] || `floor_${floorNumber}`;
         
         // Convertir coordenadas del JSON de vuelta al sistema interno usando denormalizeCoordinates
-        const convertedLines = floorData.walls.map((wall: any) => ({
+        const convertedLines = (floorData.walls || []).map((wall: any) => ({
           start: denormalizeCoordinates({ x: wall.start.x, y: wall.start.y }),
           end: denormalizeCoordinates({ x: wall.end.x, y: wall.end.y })
         }));
         
-        const convertedAirEntries = floorData.airEntries.map((entry: any) => {
-          const denormalizedPosition = denormalizeCoordinates({ x: entry.position.x, y: entry.position.y });
-          return {
-            type: entry.type,
-            position: denormalizedPosition,
-            dimensions: {
-              width: entry.size.width / 1.25, // Convertir de cm a píxeles
-              height: entry.size.height / 1.25,
-              distanceToFloor: entry.position.z / 1.25
-            },
-            line: { start: { x: 0, y: 0 }, end: { x: 0, y: 0 } } // Se calculará automáticamente
-          };
-        });
+        // Procesar air entries tanto del formato antiguo como nuevo
+        let airEntries = [];
+        
+        // Formato nuevo: air entries en walls
+        if (floorData.walls) {
+          floorData.walls.forEach((wall: any) => {
+            if (wall.airEntries && wall.airEntries.length > 0) {
+              wall.airEntries.forEach((entry: any) => {
+                const denormalizedPosition = denormalizeCoordinates({ x: entry.position.x, y: entry.position.y });
+                airEntries.push({
+                  type: entry.type,
+                  position: denormalizedPosition,
+                  dimensions: {
+                    width: entry.size?.width / 1.25 || 100, // Convertir de cm a píxeles o default
+                    height: entry.size?.height / 1.25 || 100,
+                    distanceToFloor: entry.position?.z / 1.25 || 0
+                  },
+                  line: { start: { x: 0, y: 0 }, end: { x: 0, y: 0 } } // Se calculará automáticamente
+                });
+              });
+            }
+          });
+        }
+        
+        // Formato antiguo: air entries directo en floor
+        if (floorData.airEntries) {
+          floorData.airEntries.forEach((entry: any) => {
+            const denormalizedPosition = denormalizeCoordinates({ x: entry.position.x, y: entry.position.y });
+            airEntries.push({
+              type: entry.type,
+              position: denormalizedPosition,
+              dimensions: {
+                width: entry.size?.width / 1.25 || 100,
+                height: entry.size?.height / 1.25 || 100,
+                distanceToFloor: entry.position?.z / 1.25 || 0
+              },
+              line: { start: { x: 0, y: 0 }, end: { x: 0, y: 0 } }
+            });
+          });
+        }
+        
+        const convertedAirEntries = airEntries;
         
         const convertedStairs = (floorData.stairs || []).map((stair: any) => ({
           id: stair.id,
@@ -3246,8 +3275,8 @@ export default function WizardDesign() {
         newFloorParameters[floorName] = {
           ceilingHeight: (floorData.height || 2.2) * 100, // Convertir metros a cm
           floorDeck: (floorData.floorDeck || 0) * 100, // Convertir metros a cm
-          ceilingTemperature: floorData.ceilingTemperature || 20, // Default 20°C
-          floorTemperature: floorData.floorTemperature || 20 // Default 20°C
+          ceilingTemperature: floorData.ceiling?.temp || floorData.ceilingTemperature || 20, // Leer de ceiling.temp o default
+          floorTemperature: floorData.floor_surf?.temp || floorData.floorTemperature || 20 // Leer de floor_surf.temp o default
         };
       });
       
