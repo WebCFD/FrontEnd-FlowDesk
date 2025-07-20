@@ -2368,8 +2368,7 @@ export default function WizardDesign() {
                             <div className="ml-2">
                               <h5 className="text-xs font-medium text-red-800">Insufficient Boundary Pressure (IBS)</h5>
                               <p className="text-xs text-red-700 mt-1">
-                                At least 1 Pressure boundary condition is required for the CFD problem to be solvable. 
-                                Add windows/doors or configure existing vents to use Pressure flow type.
+                                Your simulation needs at least one pressure reference point to calculate air flow accurately. Please add open windows, open doors, or configure existing vents to use at least one Pressure flow type. Without a pressure reference, the CFD solver cannot determine the driving forces for air movement in your space.
                               </p>
                             </div>
                           </div>
