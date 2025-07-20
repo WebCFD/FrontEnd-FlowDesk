@@ -3244,15 +3244,19 @@ export default function WizardDesign() {
           floorData.walls.forEach((wall: any) => {
             if (wall.airEntries && wall.airEntries.length > 0) {
               wall.airEntries.forEach((entry: any) => {
-                const denormalizedPosition = denormalizeCoordinates({ x: entry.position.x, y: entry.position.y });
+                // Convertir metros a centímetros (* 100), luego aplicar denormalizeCoordinates
+                const positionInCm = { x: entry.position.x * 100, y: entry.position.y * 100 };
+                const denormalizedPosition = denormalizeCoordinates(positionInCm);
+                
                 airEntries.push({
                   type: entry.type,
                   position: denormalizedPosition,
                   dimensions: {
-                    width: entry.size?.width / 1.25 || 100, // Convertir de cm a píxeles o default
-                    height: entry.size?.height / 1.25 || 100,
-                    distanceToFloor: entry.position?.z / 1.25 || 0
+                    width: (entry.dimensions?.width * 100) || 100, // Convertir metros a centímetros
+                    height: (entry.dimensions?.height * 100) || 100,
+                    distanceToFloor: (entry.position?.z * 100) || 110 // Convertir metros a centímetros, default 110cm
                   },
+                  properties: entry.simulation || {}, // Preservar propiedades de simulación
                   line: { start: { x: 0, y: 0 }, end: { x: 0, y: 0 } } // Se calculará automáticamente
                 });
               });
@@ -3263,15 +3267,19 @@ export default function WizardDesign() {
         // Formato antiguo: air entries directo en floor
         if (floorData.airEntries) {
           floorData.airEntries.forEach((entry: any) => {
-            const denormalizedPosition = denormalizeCoordinates({ x: entry.position.x, y: entry.position.y });
+            // Convertir metros a centímetros (* 100), luego aplicar denormalizeCoordinates
+            const positionInCm = { x: entry.position.x * 100, y: entry.position.y * 100 };
+            const denormalizedPosition = denormalizeCoordinates(positionInCm);
+            
             airEntries.push({
               type: entry.type,
               position: denormalizedPosition,
               dimensions: {
-                width: entry.size?.width / 1.25 || 100,
-                height: entry.size?.height / 1.25 || 100,
-                distanceToFloor: entry.position?.z / 1.25 || 0
+                width: (entry.dimensions?.width * 100) || 100, // Convertir metros a centímetros
+                height: (entry.dimensions?.height * 100) || 100,
+                distanceToFloor: (entry.position?.z * 100) || 110 // Convertir metros a centímetros, default 110cm
               },
+              properties: entry.simulation || {}, // Preservar propiedades de simulación
               line: { start: { x: 0, y: 0 }, end: { x: 0, y: 0 } }
             });
           });
