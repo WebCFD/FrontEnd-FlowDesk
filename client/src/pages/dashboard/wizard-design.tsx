@@ -3556,7 +3556,7 @@ export default function WizardDesign() {
           console.log(`🔍 LOADING ${floorData.horizontalVents.length} horizontal vents for floor ${floorName}:`, floorData.horizontalVents);
           floorData.horizontalVents.forEach((vent: any) => {
             console.log(`🔍 Adding vent to store:`, vent);
-            addFurnitureItem(vent);
+            addFurnitureToFloor(floorName, vent);
           });
         } else {
           console.log(`🔍 No horizontal vents found for floor ${floorName}`);
