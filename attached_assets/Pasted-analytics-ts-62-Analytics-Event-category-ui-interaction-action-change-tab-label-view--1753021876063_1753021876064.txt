@@ -1,0 +1,31 @@
+analytics.ts:62 📊 Analytics Event: {category: 'ui_interaction', action: 'change_tab', label: 'view_2d_editor', value: undefined, status: 'sent'}
+wizard-design:1 [.WebGL-0x29e4072b3f00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x29e4072b3f00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x29e4072b3f00] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x29e4072b3f00] GL_INVALID_OPERATION: Texture is immutable.
+analytics.ts:62 📊 Analytics Event: {category: 'ui_interaction', action: 'change_tab', label: 'view_3d_preview', value: undefined, status: 'sent'}
+Canvas3D.tsx:4996 Floor ground has 1 stair polygons: [{…}]
+Canvas3D.tsx:2541 🔍 [GLITCH INVESTIGATION] createFloorObjects called for floor: {floorName: 'ground', isCurrentFloor: true, airEntriesCount: 0, airEntriesData: Array(0), timestamp: 1753021855651}
+Canvas3D.tsx:2336 Creating stair from ground to first Direction: up {id: 'stair_0F_1', points: Array(4), floor: 'ground', direction: 'up', connectsTo: undefined, …}
+Canvas3D.tsx:2409 🔢 STAIR 3D POSITION DATA: stair_0F_1 {baseHeight: 0, bottomZ: 220.00000000000003, topZ: 255.00000000000003}
+Canvas3D.tsx:2956 🔍 [FURNITURE DEBUG] Floor ground furnitureItems: 1 [{…}]
+Canvas3D.tsx:2541 🔍 [GLITCH INVESTIGATION] createFloorObjects called for floor: {floorName: 'first', isCurrentFloor: false, airEntriesCount: 0, airEntriesData: Array(0), timestamp: 1753021855658}
+Canvas3D.tsx:2956 🔍 [FURNITURE DEBUG] Floor first furnitureItems: 1 [{…}]0: {id: 'Vent 1F-1', type: 'vent', name: 'Vent 1F-1', floorName: 'first', position: {…}, …}length: 1[[Prototype]]: Array(0)
+Canvas3D.tsx:5158 🔥 SCENE REBUILD TRIGGERED: {editingAirEntry: false, finalFloorsId: '["ground","first"]', thisWillRecreateEverything: true, triggerCause: 'finalFloors, currentFloor, ceilingHeight, or floorDeckThickness changed'}
+Canvas3D.tsx:5166 🔍 [GLITCH ROOT CAUSE] Scene rebuild details: {currentFloor: 'ground', finalFloorsKeys: Array(2), totalAirEntries: 0, allAirEntryPositions: {…}, timestamp: 1753021855661}
+chunk-WERSD76P.js?v=f2303d23:18625 [Violation] 'click' handler took 151ms
+Canvas3D.tsx:4996 Floor ground has 1 stair polygons: [{…}]
+Canvas3D.tsx:2541 🔍 [GLITCH INVESTIGATION] createFloorObjects called for floor: {floorName: 'ground', isCurrentFloor: true, airEntriesCount: 0, airEntriesData: Array(0), timestamp: 1753021862188}
+Canvas3D.tsx:2336 Creating stair from ground to first Direction: up {id: 'stair_0F_1', points: Array(4), floor: 'ground', direction: 'up', connectsTo: undefined, …}
+Canvas3D.tsx:2409 🔢 STAIR 3D POSITION DATA: stair_0F_1 {baseHeight: 0, bottomZ: 220.00000000000003, topZ: 255.00000000000003}
+Canvas3D.tsx:2956 🔍 [FURNITURE DEBUG] Floor ground furnitureItems: 1 [{…}]
+Canvas3D.tsx:2541 🔍 [GLITCH INVESTIGATION] createFloorObjects called for floor: {floorName: 'first', isCurrentFloor: false, airEntriesCount: 0, airEntriesData: Array(0), timestamp: 1753021862193}
+Canvas3D.tsx:2956 🔍 [FURNITURE DEBUG] Floor first furnitureItems: 1 [{…}]0: {id: 'Vent 1F-1', type: 'vent', name: 'Vent 1F-1', floorName: 'first', position: {…}, …}length: 1[[Prototype]]: Array(0)
+Canvas3D.tsx:5158 🔥 SCENE REBUILD TRIGGERED: {editingAirEntry: false, finalFloorsId: '["ground","first"]', thisWillRecreateEverything: true, triggerCause: 'finalFloors, currentFloor, ceilingHeight, or floorDeckThickness changed'}
+Canvas3D.tsx:5166 🔍 [GLITCH ROOT CAUSE] Scene rebuild details: {currentFloor: 'ground', finalFloorsKeys: Array(2), totalAirEntries: 0, allAirEntryPositions: {…}, timestamp: 1753021862195}
+RoomSketchPro.tsx:882 🔗 RSP: Registrando suscripción para sincronización de AirEntry
+chunk-WERSD76P.js?v=f2303d23:18625 [Violation] 'click' handler took 230ms
+wizard-design:1 [.WebGL-0x29e4027f7100] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x29e4027f7100] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x29e4027f7100] GL_INVALID_OPERATION: Texture is immutable.
+wizard-design:1 [.WebGL-0x29e4027f7100] GL_INVALID_OPERATION: Texture is immutable.
