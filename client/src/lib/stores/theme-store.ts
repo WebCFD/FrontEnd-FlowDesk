@@ -105,6 +105,12 @@ export const useThemeStore = create<ThemeStore>()(
         
         // Add new variant class - this will use CSS defined in theme-variants.css
         root.classList.add(`theme-${theme.variant}`);
+        
+        console.log('Applied theme variant:', theme.variant);
+        console.log('Root classes after theme application:', root.className);
+        console.log('Applied appearance:', theme.appearance);
+        console.log('Dark class present:', root.classList.contains('dark'));
+        console.log('Light class present:', root.classList.contains('light'));
       },
       
       resetToDefault: () => {

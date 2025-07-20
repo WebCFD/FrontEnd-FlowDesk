@@ -1,8 +1,8 @@
+@import './styles/theme-variants.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import './styles/theme-variants.css';
 
 @layer base {
   * {
