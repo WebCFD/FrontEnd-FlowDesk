@@ -404,6 +404,37 @@ export default function WizardDesign() {
     reset: storeReset, // Import store reset function with alias
   } = useRoomStore();
 
+  // Función para aplicar temperaturas del JSON a las paredes sincronizadas
+  const applyWallTemperaturesFromJSON = useCallback((floorName: string, wallTemperatures: Map<string, number>) => {
+    const currentFloorData = rawFloors[floorName];
+    if (!currentFloorData?.walls) return;
+
+    const updatedWalls = currentFloorData.walls.map(wall => {
+      // Crear clave de línea para buscar la temperatura correspondiente
+      const lineKey = `${wall.startPoint.x.toFixed(2)},${wall.startPoint.y.toFixed(2)}-${wall.endPoint.x.toFixed(2)},${wall.endPoint.y.toFixed(2)}`;
+      const temperature = wallTemperatures.get(lineKey);
+      
+      if (temperature !== undefined) {
+        return {
+          ...wall,
+          properties: {
+            ...wall.properties,
+            temperature: temperature
+          }
+        };
+      }
+      return wall;
+    });
+
+    // Actualizar las paredes con las temperaturas correctas
+    const previousFloor = currentFloor;
+    setCurrentFloor(floorName);
+    setWalls(updatedWalls);
+    if (previousFloor !== floorName) {
+      setCurrentFloor(previousFloor);
+    }
+  }, [rawFloors, currentFloor, setCurrentFloor, setWalls]);
+
   // Reactive store subscription ensures real-time updates across components
 
   // CRITICAL OPTIMIZATION: Memoize floors to prevent unnecessary scene rebuilds
@@ -3219,6 +3250,20 @@ export default function WizardDesign() {
 
           return { start, end };
         });
+
+        // Extraer temperaturas de las paredes del JSON para preservarlas
+        const wallTemperatures = new Map<string, number>();
+        (floorData.walls || []).forEach((wall: any) => {
+          const startInCm = { x: wall.start.x * 100, y: wall.start.y * 100 };
+          const endInCm = { x: wall.end.x * 100, y: wall.end.y * 100 };
+          
+          const start = denormalizeCoordinates(startInCm);
+          const end = denormalizeCoordinates(endInCm);
+          
+          // Crear clave única para la línea basada en coordenadas
+          const lineKey = `${start.x.toFixed(2)},${start.y.toFixed(2)}-${end.x.toFixed(2)},${end.y.toFixed(2)}`;
+          wallTemperatures.set(lineKey, wall.temp || 20);
+        });
         
         // Procesar air entries tanto del formato antiguo como nuevo
         let airEntries = [];
@@ -3277,7 +3322,8 @@ export default function WizardDesign() {
           airEntries: convertedAirEntries,
           hasClosedContour: convertedLines.length > 2,
           name: floorName,
-          stairPolygons: convertedStairs
+          stairPolygons: convertedStairs,
+          wallTemperatures: wallTemperatures // Preservar las temperaturas para uso posterior
         };
         
 
@@ -3308,6 +3354,14 @@ export default function WizardDesign() {
         
         // Sincronizar las paredes
         syncWallsForCurrentFloor();
+
+        // CRÍTICO: Aplicar temperaturas preservadas del JSON después de sincronizar paredes
+        if (floorData.wallTemperatures && floorData.wallTemperatures.size > 0) {
+          // Usar setTimeout para asegurar que la sincronización de paredes ocurra primero
+          setTimeout(() => {
+            applyWallTemperaturesFromJSON(floorName, floorData.wallTemperatures);
+          }, 100);
+        }
       });
       
       // Configurar el estado adicional
