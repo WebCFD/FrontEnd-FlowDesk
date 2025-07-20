@@ -3270,8 +3270,8 @@ export default function WizardDesign() {
                     flowIntensity: entry.simulation?.flowIntensity || 'medium',
                     airOrientation: entry.simulation?.airDirection || 'inflow',
                     flowType: entry.simulation?.flowType || 'airMassFlow',
-                    // Mapear customValue del JSON a customIntensityValue interno
-                    ...(entry.simulation?.customValue && {
+                    // Mapear customValue solo cuando flowIntensity es "custom"
+                    ...(entry.simulation?.flowIntensity === 'custom' && entry.simulation?.customValue && {
                       customIntensityValue: entry.simulation.customValue
                     }),
                     // También manejar el formato anterior customIntensityValue
@@ -3336,8 +3336,8 @@ export default function WizardDesign() {
                 flowIntensity: entry.simulation?.flowIntensity || 'medium',
                 airOrientation: entry.simulation?.airDirection || 'inflow',
                 flowType: entry.simulation?.flowType || 'airMassFlow',
-                // Mapear customValue del JSON a customIntensityValue interno
-                ...(entry.simulation?.customValue && {
+                // Mapear customValue solo cuando flowIntensity es "custom"
+                ...(entry.simulation?.flowIntensity === 'custom' && entry.simulation?.customValue && {
                   customIntensityValue: entry.simulation.customValue
                 }),
                 // También manejar el formato anterior customIntensityValue
