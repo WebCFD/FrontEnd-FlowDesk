@@ -16,7 +16,6 @@ import Footer from "@/components/layout/footer";
 import { ProtectedRoute } from "@/lib/protected-route";
 import { AnalyticsProvider } from "./components/common/AnalyticsProvider";
 import { useAuth } from "@/hooks/use-auth";
-import { useThemeInitialization } from "@/hooks/use-theme-initialization";
 import { useEffect } from "react";
 
 function Router() {
@@ -58,9 +57,6 @@ function Router() {
 
 function App() {
   const { setUser } = useAuth();
-  
-  // Initialize theme system
-  useThemeInitialization();
 
   // Check if user is already authenticated on app startup
   useEffect(() => {

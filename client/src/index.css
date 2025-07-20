@@ -1,6 +1,3 @@
-@import './styles/theme-variants.css';
-@import './styles/border-utilities.css';
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
