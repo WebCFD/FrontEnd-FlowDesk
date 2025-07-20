@@ -1029,6 +1029,11 @@ export default function Canvas3D({
   };
 
   const findAssociatedWall = (airEntry: AirEntry) => {
+    // Handle ceiling and floor vents that don't have wall lines
+    if (!airEntry.line || !airEntry.line.start || !airEntry.line.end) {
+      return null;
+    }
+    
     const lineId = airEntry.line.id?.toString() || lineToUniqueId(airEntry.line);
     return walls.find(wall => 
       wall.lineRef === lineId || 
@@ -1045,11 +1050,19 @@ export default function Canvas3D({
     const wallId = associatedWall?.id || `${currentFloor}_wall_unknown`;
     const currentCeilingHeight = floorParameters[currentFloor]?.ceilingHeight || ceilingHeight;
     
+    // Handle ceiling and floor vents that don't have wall lines
+    const wallStart = airEntry.line?.start ? 
+      { x: airEntry.line.start.x, y: airEntry.line.start.y } : 
+      { x: 0, y: 0 };
+    const wallEnd = airEntry.line?.end ? 
+      { x: airEntry.line.end.x, y: airEntry.line.end.y } : 
+      { x: 1, y: 0 };
+    
     return {
       wallId,
       floorName: currentFloor,
-      wallStart: { x: airEntry.line.start.x, y: airEntry.line.start.y },
-      wallEnd: { x: airEntry.line.end.x, y: airEntry.line.end.y },
+      wallStart,
+      wallEnd,
       clickPosition: { x: airEntry.position.x, y: airEntry.position.y },
       ceilingHeight: currentCeilingHeight * 100 // Convert to cm
     };
@@ -1325,6 +1338,32 @@ export default function Canvas3D({
   // Combines orientation calculations with dimensional properties for both initial creation and real-time updates
   // This ensures complete consistency in orientation, dimensions, colors, and visual properties
   const calculateAirEntryCoordinateSystemComplete = useCallback((airEntry: AirEntry) => {
+    // Handle ceiling and floor vents that don't have wall lines
+    if (!airEntry.line || !airEntry.line.end || !airEntry.line.start) {
+      // For ceiling/floor vents, use default horizontal orientation
+      const xDirection = new THREE.Vector3(1, 0, 0);
+      const yDirection = new THREE.Vector3(0, 0, 1);
+      const zDirection = new THREE.Vector3(0, 1, 0);
+      const forward = zDirection.clone();
+      const right = xDirection.clone();
+      const up = yDirection.clone();
+      
+      return { 
+        xDirection, 
+        yDirection, 
+        zDirection, 
+        forward, 
+        right, 
+        up,
+        // Add other required properties with default values
+        position: transform2DTo3D(airEntry.position),
+        dimensions: { 
+          width: airEntry.dimensions.width / 100, 
+          height: airEntry.dimensions.height / 100 
+        }
+      };
+    }
+    
     // ORIENTATION CALCULATIONS: Same mathematical approach as before
     const wallDir = new THREE.Vector3()
       .subVectors(
