@@ -382,32 +382,6 @@ export default function WizardDesign() {
     return () => window.removeEventListener('resize', calculateMenuWidth);
   }, [menuWidthPercentage, viewportOffset]);
 
-  // Smart state management for Wall Line restriction
-  useEffect(() => {
-    const linesHash = JSON.stringify(lines);
-    
-    if (linesHash !== lastLinesHash) {
-      // Clear cache when lines change
-      setClosedContourCache(new Map());
-      
-      // Check contour status
-      const hasClosedContour = hasClosedContourOnCurrentFloor();
-      setIsWallLineDisabled(hasClosedContour);
-      
-      // Auto-deselect Wall Line if contour just closed and tool is active
-      if (hasClosedContour && currentTool === "wall") {
-        setCurrentTool(null);
-        toast({
-          title: "Wall Line Tool Disabled",
-          description: "Room contour completed. Wall Line tool automatically disabled.",
-          variant: "default",
-        });
-      }
-      
-      setLastLinesHash(linesHash);
-    }
-  }, [lines, currentFloor, hasClosedContourOnCurrentFloor, currentTool, lastLinesHash, toast]);
-
   // Use the global room store with updated selectors
   const {
     floors: rawFloors,
@@ -543,7 +517,31 @@ export default function WizardDesign() {
   // Get stairPolygons directly from store to ensure real-time updates
   const stairPolygons = currentFloorData.stairPolygons || [];
 
-
+  // Smart state management for Wall Line restriction
+  useEffect(() => {
+    const linesHash = JSON.stringify(lines);
+    
+    if (linesHash !== lastLinesHash) {
+      // Clear cache when lines change
+      setClosedContourCache(new Map());
+      
+      // Check contour status
+      const hasClosedContour = hasClosedContourOnCurrentFloor();
+      setIsWallLineDisabled(hasClosedContour);
+      
+      // Auto-deselect Wall Line if contour just closed and tool is active
+      if (hasClosedContour && currentTool === "wall") {
+        setCurrentTool(null);
+        toast({
+          title: "Wall Line Tool Disabled",
+          description: "Room contour completed. Wall Line tool automatically disabled.",
+          variant: "default",
+        });
+      }
+      
+      setLastLinesHash(linesHash);
+    }
+  }, [lines, currentFloor, hasClosedContourOnCurrentFloor, currentTool, lastLinesHash, toast]);
 
   // Auto-inicializar parámetros cuando se activa multifloor
   useEffect(() => {
