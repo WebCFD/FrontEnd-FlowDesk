@@ -14,17 +14,28 @@ export const useThemeInitialization = () => {
     
     // Listen for system theme changes
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleSystemThemeChange = () => {
+    const handleSystemThemeChange = (e: MediaQueryListEvent) => {
       const { theme } = useThemeStore.getState();
       if (theme.appearance === 'system') {
+        console.log('System theme changed:', e.matches ? 'dark' : 'light');
         applyTheme();
       }
     };
     
-    mediaQuery.addEventListener('change', handleSystemThemeChange);
+    // Add event listener for system theme changes
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleSystemThemeChange);
+    } else {
+      // Fallback for older browsers
+      mediaQuery.addListener(handleSystemThemeChange);
+    }
     
     return () => {
-      mediaQuery.removeEventListener('change', handleSystemThemeChange);
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener('change', handleSystemThemeChange);
+      } else {
+        mediaQuery.removeListener(handleSystemThemeChange);
+      }
     };
   }, [applyTheme]);
 };

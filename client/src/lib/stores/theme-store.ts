@@ -86,9 +86,10 @@ export const useThemeStore = create<ThemeStore>()(
         } else if (theme.appearance === 'light') {
           root.classList.add('light');
           root.classList.remove('dark');
-        } else {
+        } else if (theme.appearance === 'system') {
           // System mode - detect user preference
           const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          console.log('System appearance detected:', prefersDark ? 'dark' : 'light');
           if (prefersDark) {
             root.classList.add('dark');
             root.classList.remove('light');
@@ -97,6 +98,13 @@ export const useThemeStore = create<ThemeStore>()(
             root.classList.remove('dark');
           }
         }
+        
+        // Apply theme variant by updating CSS classes
+        // Remove existing variant classes
+        root.classList.remove('theme-professional', 'theme-tint', 'theme-vibrant');
+        
+        // Add new variant class - this will use CSS defined in theme-variants.css
+        root.classList.add(`theme-${theme.variant}`);
       },
       
       resetToDefault: () => {
