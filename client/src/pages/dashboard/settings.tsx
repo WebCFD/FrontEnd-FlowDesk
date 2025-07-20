@@ -7,22 +7,22 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { Slider } from "@/components/ui/slider";
 import { useSketchStore } from "@/lib/stores/sketch-store";
+import { useThemeStore } from "@/lib/stores/theme-store";
 
 interface Theme {
   primary: string;
   variant: 'professional' | 'tint' | 'vibrant';
   appearance: 'light' | 'dark' | 'system';
-  radius: number;
 }
 
 export default function Settings() {
   const { toast } = useToast();
-  const [theme, setTheme] = useState<Theme>({
-    primary: '#0096FF',
-    variant: 'professional',
-    appearance: 'system',
-    radius: 0.5
-  });
+  const { theme, setTheme } = useThemeStore();
+  
+  // Initialize theme on component mount
+  useEffect(() => {
+    useThemeStore.getState().applyTheme();
+  }, []);
 
   const { snapDistance, setSnapDistance, showCursorCoordinates, setShowCursorCoordinates, fontScale, setFontScale, viewportOffset, setViewportOffset, gridSize, setGridSize, canvasHeightPercentage, setCanvasHeightPercentage, menuWidthPercentage, setMenuWidthPercentage } = useSketchStore();
 
@@ -38,8 +38,8 @@ export default function Settings() {
     { value: 'system', label: 'System' }
   ];
 
-  const handleThemeChange = (key: keyof Theme, value: string | number) => {
-    setTheme(prev => ({ ...prev, [key]: value }));
+  const handleThemeChange = (key: keyof Theme, value: string) => {
+    setTheme({ [key]: value });
     toast({
       title: "Theme updated",
       description: "Your dashboard theme has been updated successfully."
@@ -165,23 +165,7 @@ export default function Settings() {
                 </RadioGroup>
               </div>
 
-              <div>
-                <Label>Border Radius</Label>
-                <div className="flex items-center gap-4 mt-2">
-                  <input
-                    type="range"
-                    min="0"
-                    max="1"
-                    step="0.1"
-                    value={theme.radius}
-                    onChange={(e) => handleThemeChange('radius', parseFloat(e.target.value))}
-                    className="w-48"
-                  />
-                  <span className="text-sm text-muted-foreground">
-                    {theme.radius}rem
-                  </span>
-                </div>
-              </div>
+
             </div>
           </CardContent>
         </Card>
