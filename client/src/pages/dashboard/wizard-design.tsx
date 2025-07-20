@@ -3409,14 +3409,41 @@ export default function WizardDesign() {
         if (floorData.wallTemperatures && floorData.wallTemperatures.size > 0) {
           // Usar verificación activa en lugar de timeout fijo
           const checkWallsAndApplyTemperatures = () => {
-            const floors = useRoomStore.getState().floors;
+            const currentStoreState = useRoomStore.getState();
+            const floors = currentStoreState.floors;
             const currentWalls = floors[floorName]?.walls || [];
             
             console.log(`[TEMP DEBUG] Checking walls for ${floorName}: ${currentWalls.length} walls found`);
+            console.log(`[TEMP DEBUG] Store floors available:`, Object.keys(floors));
+            console.log(`[TEMP DEBUG] Current store state for ${floorName}:`, floors[floorName] ? 'exists' : 'null');
             
             if (currentWalls.length > 0) {
               console.log(`[TEMP DEBUG] Walls ready for ${floorName}, applying temperatures`);
-              applyWallTemperaturesFromJSON(floorName, floorData.wallTemperatures);
+              // Aplicar temperaturas directamente usando el store state actual
+              const updatedWalls = currentWalls.map(wall => {
+                const lineKey = `${wall.startPoint.x.toFixed(2)},${wall.startPoint.y.toFixed(2)}-${wall.endPoint.x.toFixed(2)},${wall.endPoint.y.toFixed(2)}`;
+                const temperature = floorData.wallTemperatures.get(lineKey);
+                
+                if (temperature !== undefined) {
+                  console.log(`[TEMP DEBUG] Updating wall ${wall.id} from ${wall.properties.temperature} to ${temperature}`);
+                  return {
+                    ...wall,
+                    properties: {
+                      ...wall.properties,
+                      temperature: temperature
+                    }
+                  };
+                }
+                return wall;
+              });
+              
+              // Actualizar directamente usando el store
+              const previousFloor = currentStoreState.currentFloor;
+              setCurrentFloor(floorName);
+              setWalls(updatedWalls);
+              if (previousFloor !== floorName) {
+                setCurrentFloor(previousFloor);
+              }
             } else {
               console.log(`[TEMP DEBUG] Walls not ready for ${floorName}, retrying in 100ms`);
               setTimeout(checkWallsAndApplyTemperatures, 100);
