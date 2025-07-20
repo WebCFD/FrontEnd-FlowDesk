@@ -689,11 +689,12 @@ const calculateFurniturePosition = (
 const createVentPlaneModel = (furnitureItem: FurnitureItem): THREE.Group => {
   const group = new THREE.Group();
   
-  // Use dimensions in cm (same units as other furniture) - no conversion needed
-  const width = furnitureItem.dimensions?.width || 50; // cm
-  const height = furnitureItem.dimensions?.height || 50; // cm
+  // Use default dimensions for geometry creation, scaling will be applied later
+  const defaultDimensions = getDefaultDimensions('vent');
+  const width = defaultDimensions.width; // Use default 50cm
+  const height = defaultDimensions.height; // Use default 50cm
   
-  // Create PlaneGeometry for the vent (dimensions in cm like other furniture)
+  // Create PlaneGeometry with default dimensions (scaling applied later like other furniture)
   const geometry = new THREE.PlaneGeometry(width, height);
   
   // Create material with vent-specific properties
@@ -827,6 +828,12 @@ const createFurnitureModel = (
       model.scale.set(scaleX, scaleY, scaleZ);
       
 
+    } else if (furnitureItem.type === 'vent') {
+      // Special handling for vents: they are horizontal planes, so Y should use height, not depth
+      const scaleX = furnitureItem.dimensions.width / defaultDimensions.width;
+      const scaleY = furnitureItem.dimensions.height / defaultDimensions.height; // Use height for Y axis
+      const scaleZ = furnitureItem.dimensions.depth / defaultDimensions.depth;
+      model.scale.set(scaleX, scaleY, scaleZ);
     } else {
       const scaleX = furnitureItem.dimensions.width / defaultDimensions.width;
       const scaleY = furnitureItem.dimensions.depth / defaultDimensions.depth;
