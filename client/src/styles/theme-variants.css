@@ -4,7 +4,8 @@
 html.theme-professional,
 body.theme-professional,
 .theme-professional {
-  /* Force visible change for testing */
+  /* Professional Theme - Clean white background */
+  background-color: hsl(0 0% 100%) !important;
   --background: hsl(0 0% 100%) !important;
   --foreground: hsl(224 71.4% 4.1%);
   --card: hsl(0 0% 100%);
@@ -26,8 +27,12 @@ body.theme-professional,
   --ring: var(--primary);
 }
 
+html.dark.theme-professional,
+body.dark.theme-professional,
 .dark.theme-professional {
-  --background: hsl(224 71.4% 4.1%);
+  /* Professional Theme - Dark background */
+  background-color: hsl(224 71.4% 4.1%) !important;
+  --background: hsl(224 71.4% 4.1%) !important;
   --foreground: hsl(210 20% 98%);
   --card: hsl(224 71.4% 4.1%);
   --card-foreground: hsl(210 20% 98%);
@@ -52,9 +57,9 @@ body.theme-professional,
 html.theme-tint,
 body.theme-tint,
 .theme-tint {
-  /* Force visible change for testing */
-  background-color: hsl(210 40% 90%) !important;
-  --background: hsl(210 40% 90%) !important;
+  /* Tint Theme - Blue-tinted background */
+  background-color: hsl(210 40% 95%) !important;
+  --background: hsl(210 40% 95%) !important;
   --foreground: hsl(215 25% 27%);
   --card: hsl(210 60% 97%);
   --card-foreground: hsl(215 25% 27%);
@@ -75,8 +80,12 @@ body.theme-tint,
   --ring: var(--primary);
 }
 
+html.dark.theme-tint,
+body.dark.theme-tint,
 .dark.theme-tint {
-  --background: hsl(220 18% 8%);
+  /* Tint Theme - Dark blue-tinted background */
+  background-color: hsl(220 18% 8%) !important;
+  --background: hsl(220 18% 8%) !important;
   --foreground: hsl(210 25% 88%);
   --card: hsl(220 20% 10%);
   --card-foreground: hsl(210 25% 88%);
@@ -101,9 +110,9 @@ body.theme-tint,
 html.theme-vibrant,
 body.theme-vibrant,
 .theme-vibrant {
-  /* Force visible change for testing */
-  background-color: hsl(120 100% 90%) !important;
-  --background: hsl(120 100% 90%) !important;
+  /* Vibrant Theme - Bright saturated background */
+  background-color: hsl(210 100% 95%) !important;
+  --background: hsl(210 100% 95%) !important;
   --foreground: hsl(0 0% 9%);
   --card: hsl(0 0% 98%);
   --card-foreground: hsl(0 0% 9%);
@@ -124,8 +133,12 @@ body.theme-vibrant,
   --ring: var(--primary);
 }
 
+html.dark.theme-vibrant,
+body.dark.theme-vibrant,
 .dark.theme-vibrant {
-  --background: hsl(224 71.4% 2%);
+  /* Vibrant Theme - Dark saturated background */
+  background-color: hsl(224 71.4% 2%) !important;
+  --background: hsl(224 71.4% 2%) !important;
   --foreground: hsl(210 20% 98%);
   --card: hsl(224 71.4% 3%);
   --card-foreground: hsl(210 20% 98%);
