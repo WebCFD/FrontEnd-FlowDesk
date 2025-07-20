@@ -1342,15 +1342,35 @@ export default function Canvas2D({
     
     // FOURTH: Check for wall properties editing (lines but not endpoints)
     const nearbyLines = findLinesNearPoint(point);
+    console.log(`[WALL DEBUG] Double-click at point (${point.x.toFixed(2)}, ${point.y.toFixed(2)})`);
+    console.log(`[WALL DEBUG] Found ${nearbyLines.length} nearby lines:`, nearbyLines.map(line => ({
+      start: { x: line.start.x.toFixed(2), y: line.start.y.toFixed(2) },
+      end: { x: line.end.x.toFixed(2), y: line.end.y.toFixed(2) }
+    })));
+    console.log(`[WALL DEBUG] Available walls (${walls.length}):`, walls.map(wall => ({
+      id: wall.id,
+      start: { x: wall.startPoint.x.toFixed(2), y: wall.startPoint.y.toFixed(2) },
+      end: { x: wall.endPoint.x.toFixed(2), y: wall.endPoint.y.toFixed(2) },
+      temp: wall.properties?.temperature
+    })));
+    
     if (nearbyLines.length > 0) {
       const associatedWall = findWallForLine(walls, nearbyLines[0]);
+      console.log(`[WALL DEBUG] Associated wall for line:`, associatedWall ? {
+        id: associatedWall.id,
+        temp: associatedWall.properties?.temperature
+      } : 'null');
+      
       if (associatedWall) {
-
         setEditingWall(associatedWall);
         setWallPropertiesDialogOpen(true);
-        debugLog(`Opening wall properties for wall: ${associatedWall.id}`);
+        console.log(`[WALL DEBUG] Opening wall properties dialog for wall: ${associatedWall.id}`);
         return;
+      } else {
+        console.log(`[WALL DEBUG] No associated wall found for nearby line`);
       }
+    } else {
+      console.log(`[WALL DEBUG] No nearby lines found for double-click`);
     }
     
     // FIFTH: Fall back to existing functionality (other elements)
