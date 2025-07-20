@@ -2306,6 +2306,18 @@ export default function WizardDesign() {
                   const hasValidBoundaryConditions = totalInflow >= 1 && totalOutflow >= 1;
                   const hasValidPressureConditions = totalPressureBCs >= 1;
                   
+                  // Stair connectivity validation
+                  let stats;
+                  try {
+                    stats = calculateDesignStats();
+                  } catch (error) {
+                    stats = null;
+                  }
+                  const totalFloors = stats ? stats.floors : 0;
+                  const totalStairs = stats ? stats.stairs : 0;
+                  const requiredStairs = totalFloors > 1 ? totalFloors - 1 : 0;
+                  const hasValidStairConnectivity = totalFloors <= 1 || totalStairs >= requiredStairs;
+                  
                   return (
                     <div className="space-y-2">
                       <div className="space-y-2 text-xs">
@@ -2369,6 +2381,24 @@ export default function WizardDesign() {
                               <h5 className="text-xs font-medium text-red-800">Insufficient Boundary Pressure (IBS)</h5>
                               <p className="text-xs text-red-700 mt-1">
                                 Please add at least an open window, or an open door, or configure an existing vent to use at least one Pressure flow type. Without a pressure reference, the simulation cannot determine the air movement in your space.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {!hasValidStairConnectivity && (
+                        <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded-md">
+                          <div className="flex items-start">
+                            <div className="flex-shrink-0">
+                              <svg className="h-4 w-4 text-red-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                            <div className="ml-2">
+                              <h5 className="text-xs font-medium text-red-800">Insufficient Stair Connectivity (ISC)</h5>
+                              <p className="text-xs text-red-700 mt-1">
+                                Stairs connecting floors are lower than the number of floors. This means some floors are not connected to the rest. While feasible, we recommend to connect them with the Stairs element or to analyze only the floors you have connected.
                               </p>
                             </div>
                           </div>
@@ -2623,13 +2653,34 @@ export default function WizardDesign() {
     if (!hasValidPressureConditions) {
       toast({
         title: "Insufficient Boundary Pressure (IBS)",
-        description: "At least 1 Pressure boundary condition is required for the CFD problem to be solvable. Add windows/doors or configure existing vents to use Pressure flow type.",
+        description: "Please add at least an open window, or an open door, or configure an existing vent to use at least one Pressure flow type. Without a pressure reference, the simulation cannot determine the air movement in your space.",
         variant: "destructive",
       });
       return;
     }
 
-    // SEGUNDA VALIDACIÓN: Usuario logueado
+    // SEGUNDA VALIDACIÓN: Stair Connectivity (ISC - Insufficient Stair Connectivity)
+    let stats;
+    try {
+      stats = calculateDesignStats();
+    } catch (error) {
+      stats = null;
+    }
+    const totalFloors = stats ? stats.floors : 0;
+    const totalStairs = stats ? stats.stairs : 0;
+    const requiredStairs = totalFloors > 1 ? totalFloors - 1 : 0;
+    const hasValidStairConnectivity = totalFloors <= 1 || totalStairs >= requiredStairs;
+
+    if (!hasValidStairConnectivity) {
+      toast({
+        title: "Insufficient Stair Connectivity (ISC)",
+        description: "Stairs connecting floors are lower than the number of floors. This means some floors are not connected to the rest. While feasible, we recommend to connect them with the Stairs element or to analyze only the floors you have connected.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // TERCERA VALIDACIÓN: Usuario logueado
     if (!user) {
       toast({
         title: "Login Required",
@@ -2640,7 +2691,7 @@ export default function WizardDesign() {
       return;
     }
 
-    // TERCERA VALIDACIÓN: Nombre de simulación
+    // CUARTA VALIDACIÓN: Nombre de simulación
     if (!simulationName || simulationName.trim().length === 0) {
       toast({
         title: "Simulation Name Required",
