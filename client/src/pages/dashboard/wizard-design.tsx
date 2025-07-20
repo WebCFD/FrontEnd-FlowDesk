@@ -3208,6 +3208,7 @@ export default function WizardDesign() {
       
       Object.entries(designData.floors).forEach(([floorNumber, floorData]: [string, any]) => {
         const floorName = floorNameMap[floorNumber] || `floor_${floorNumber}`;
+        console.log(`🔍 IMPORT DEBUG: Processing floor ${floorNumber} → ${floorName}`, floorData);
         
         // Convertir coordenadas del JSON de vuelta al sistema interno
         // JSON está en S.I. units (metros), convertir a centímetros primero
@@ -3398,6 +3399,8 @@ export default function WizardDesign() {
         
         // Procesar vents horizontales (ceiling y floor_surf)
         const horizontalVents: any[] = [];
+        console.log(`🔍 VENTS DEBUG: Floor ${floorName} ceiling airEntries:`, floorData.ceiling?.airEntries);
+        console.log(`🔍 VENTS DEBUG: Floor ${floorName} floor_surf airEntries:`, floorData.floor_surf?.airEntries);
         
         // Procesar ceiling vents
         if (floorData.ceiling?.airEntries) {
@@ -3550,9 +3553,13 @@ export default function WizardDesign() {
         
         // Cargar vents horizontales al store de furniture
         if (floorData.horizontalVents && floorData.horizontalVents.length > 0) {
+          console.log(`🔍 LOADING ${floorData.horizontalVents.length} horizontal vents for floor ${floorName}:`, floorData.horizontalVents);
           floorData.horizontalVents.forEach((vent: any) => {
+            console.log(`🔍 Adding vent to store:`, vent);
             addFurnitureItem(vent);
           });
+        } else {
+          console.log(`🔍 No horizontal vents found for floor ${floorName}`);
         }
 
         // CRÍTICO: Aplicar temperaturas preservadas del JSON después de sincronizar paredes
