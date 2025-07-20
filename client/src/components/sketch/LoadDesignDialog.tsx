@@ -27,6 +27,12 @@ interface ValidationResult {
     version: string;
     floorCount: number;
     floors: string[];
+    floorDetails: Array<{
+      name: string;
+      airEntryCount: number;
+      wallCount: number;
+      stairCount: number;
+    }>;
   };
 }
 
@@ -68,7 +74,9 @@ export default function LoadDesignDialog({
       return { isValid: false, errors, warnings };
     }
 
-    // Validar estructura de cada planta
+    // Validar estructura de cada planta y recopilar detalles
+    const floorDetails: Array<{name: string; airEntryCount: number; wallCount: number; stairCount: number}> = [];
+    
     for (const floorKey of floorKeys) {
       const floor = data.floors[floorKey];
       
@@ -89,23 +97,37 @@ export default function LoadDesignDialog({
         errors.push(`Planta ${floorKey}: Paredes no válidas`);
       }
 
-      // Verificar Air Entries en formato nuevo (dentro de walls) y formato antiguo (directo en floor)
-      let hasAirEntries = false;
+      // Contar Air Entries en formato nuevo (dentro de walls) y formato antiguo (directo en floor)
+      let airEntryCount = 0;
       
       // Formato nuevo: air entries dentro de walls
       if (Array.isArray(floor.walls)) {
-        hasAirEntries = floor.walls.some((wall: any) => 
-          Array.isArray(wall.airEntries) && wall.airEntries.length > 0
-        );
+        floor.walls.forEach((wall: any) => {
+          if (Array.isArray(wall.airEntries)) {
+            airEntryCount += wall.airEntries.length;
+          }
+        });
       }
       
       // Formato antiguo: air entries directamente en floor
-      if (!hasAirEntries && Array.isArray(floor.airEntries) && floor.airEntries.length > 0) {
-        hasAirEntries = true;
+      if (Array.isArray(floor.airEntries)) {
+        airEntryCount += floor.airEntries.length;
       }
       
-      if (!hasAirEntries) {
-        warnings.push(`Planta ${floorKey}: Air Entries no definidas`);
+      // Contar walls y stairs
+      const wallCount = Array.isArray(floor.walls) ? floor.walls.length : 0;
+      const stairCount = Array.isArray(floor.stairs) ? floor.stairs.length : 0;
+      
+      // Agregar detalles del piso
+      floorDetails.push({
+        name: `Planta ${floorKey}`,
+        airEntryCount,
+        wallCount,
+        stairCount
+      });
+      
+      if (airEntryCount === 0) {
+        warnings.push(`Planta ${floorKey}: Sin Air Entries definidas`);
       }
     }
 
@@ -113,7 +135,8 @@ export default function LoadDesignDialog({
     const preview = isValid ? {
       version: data.version || "Unknown",
       floorCount: floorKeys.length,
-      floors: floorKeys.map(key => `Planta ${key}`)
+      floors: floorKeys.map(key => `Planta ${key}`),
+      floorDetails
     } : undefined;
 
     return { isValid, errors, warnings, preview };
@@ -230,10 +253,22 @@ export default function LoadDesignDialog({
                   <AlertDescription>
                     <div className="space-y-1">
                       <div className="font-medium">Archivo válido</div>
-                      <div className="text-sm">
+                      <div className="text-sm space-y-2">
                         <div>Versión: {validation.preview.version}</div>
                         <div>Plantas: {validation.preview.floorCount}</div>
                         <div>Pisos: {validation.preview.floors.join(", ")}</div>
+                        
+                        <div className="mt-3">
+                          <div className="font-medium text-gray-700 mb-2">Detalles por planta:</div>
+                          {validation.preview.floorDetails.map((floor, index) => (
+                            <div key={index} className="ml-2 text-xs bg-gray-50 p-2 rounded border mb-1">
+                              <div className="font-medium">{floor.name}:</div>
+                              <div>• AirEntries: {floor.airEntryCount}</div>
+                              <div>• Paredes: {floor.wallCount}</div>
+                              <div>• Escaleras: {floor.stairCount}</div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </AlertDescription>
