@@ -248,6 +248,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Endpoint to serve JSON files for design loading
+  app.get("/api/files/*", async (req, res) => {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const filePath = req.params[0];
+      if (!filePath) {
+        return res.status(400).json({ message: "File path is required" });
+      }
+
+      // Find simulation to verify user owns the file
+      const simulations = await storage.getSimulationsByUserId(req.user.id);
+      const simulation = simulations.find(sim => sim.filePath === filePath);
+      
+      if (!simulation) {
+        return res.status(403).json({ message: "Unauthorized to access this file" });
+      }
+
+      const fullPath = path.join(process.cwd(), filePath);
+      
+      // Check if file exists
+      try {
+        await fs.access(fullPath);
+      } catch {
+        return res.status(404).json({ message: "File not found" });
+      }
+
+      // Read and return JSON file
+      const fileContent = await fs.readFile(fullPath, 'utf-8');
+      const jsonData = JSON.parse(fileContent);
+      
+      res.json(jsonData);
+    } catch (error) {
+      console.error('Error serving file:', error);
+      res.status(500).json({ message: "Error reading file" });
+    }
+  });
+
   // User credits API endpoint
   app.patch("/api/user/credits", async (req, res) => {
     try {

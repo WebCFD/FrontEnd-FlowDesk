@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Play, Mail, MoreHorizontal, ExternalLink, Trash2 } from "lucide-react";
+import { PlusCircle, Play, Mail, MoreHorizontal, ExternalLink, Trash2, FolderOpen } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useRoomStore } from "@/lib/store/room-store";
 import { useAuth } from "@/hooks/use-auth";
@@ -125,6 +125,45 @@ export default function Dashboard() {
     window.location.href = "mailto:support@flowdesk.com";
   };
 
+  // Load design mutation
+  const loadDesignMutation = useMutation({
+    mutationFn: async (filePath: string) => {
+      const response = await fetch(`/api/files/${filePath}`, {
+        credentials: 'include'
+      });
+      if (!response.ok) {
+        throw new Error('Failed to load design file');
+      }
+      return response.json();
+    },
+    onSuccess: (jsonData) => {
+      // Use the existing load design functionality from wizard-design
+      // We'll import and reuse the handleLoadDesign logic
+      
+      // First, navigate to wizard-design
+      setLocation("/dashboard/wizard-design");
+      
+      // Store the JSON data temporarily for the wizard to pick up
+      sessionStorage.setItem('pendingDesignLoad', JSON.stringify(jsonData));
+      
+      toast({
+        title: "Design Loaded",
+        description: "The design has been loaded successfully.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Load Failed", 
+        description: "Failed to load the design. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleLoadDesign = (filePath: string) => {
+    loadDesignMutation.mutate(filePath);
+  };
+
   return (
     <DashboardLayout>
       <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
@@ -232,9 +271,21 @@ export default function Dashboard() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <code className="text-sm bg-muted px-2 py-1 rounded font-mono">
-                            {simulation.filePath}
-                          </code>
+                          <div className="flex items-center gap-2">
+                            <code className="text-sm bg-muted px-2 py-1 rounded font-mono">
+                              {simulation.filePath}
+                            </code>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleLoadDesign(simulation.filePath)}
+                              disabled={loadDesignMutation.isPending}
+                              className="flex items-center gap-1"
+                            >
+                              <FolderOpen className="h-3 w-3" />
+                              Load
+                            </Button>
+                          </div>
                         </TableCell>
                         <TableCell>
                           <Badge 
