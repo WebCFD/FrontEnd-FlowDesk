@@ -3395,7 +3395,8 @@ export default function WizardDesign() {
                   horizontalAngle: entry.simulation.airOrientation.horizontalAngle
                 })
               },
-              surfaceType: 'ceiling' // Marcar como vent de techo
+              surfaceType: 'ceiling', // Marcar como vent de techo
+              line: { start: { x: 0, y: 0 }, end: { x: 1, y: 0 } } // Línea horizontal por defecto para cálculo de normal
             });
           });
         }
@@ -3438,7 +3439,8 @@ export default function WizardDesign() {
                   horizontalAngle: entry.simulation.airOrientation.horizontalAngle
                 })
               },
-              surfaceType: 'floor' // Marcar como vent de suelo
+              surfaceType: 'floor', // Marcar como vent de suelo
+              line: { start: { x: 0, y: 0 }, end: { x: 1, y: 0 } } // Línea horizontal por defecto para cálculo de normal
             });
           });
         }
