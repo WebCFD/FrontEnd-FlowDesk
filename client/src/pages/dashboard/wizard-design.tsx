@@ -3187,7 +3187,7 @@ export default function WizardDesign() {
   // Función para manejar la carga de un diseño desde JSON
   const handleLoadDesign = (designData: any) => {
     try {
-      console.log('🔍 JSON LOAD: Starting design load with data:', designData);
+
       
       // Primero limpiar el estado actual
       reset();
@@ -3216,7 +3216,7 @@ export default function WizardDesign() {
           
           const start = denormalizeCoordinates(startInCm);
           const end = denormalizeCoordinates(endInCm);
-          console.log('🔍 JSON LOAD: Converting wall:', wall.id, 'from', wall.start, 'm to', startInCm, 'cm to', start, 'px');
+
           return { start, end };
         });
         
@@ -3280,7 +3280,7 @@ export default function WizardDesign() {
           stairPolygons: convertedStairs
         };
         
-        console.log('🔍 JSON LOAD: Created floor', floorName, 'with', convertedLines.length, 'lines:', convertedFloors[floorName]);
+
         
         // Configurar parámetros del piso
         newFloorParameters[floorName] = {
@@ -3292,20 +3292,15 @@ export default function WizardDesign() {
       });
       
       // Actualizar el estado con los datos convertidos
-      console.log('🔍 JSON LOAD: Setting floor parameters:', newFloorParameters);
       setFloorParameters(newFloorParameters);
       
       // Cargar datos en el store
-      console.log('🔍 JSON LOAD: Loading', Object.keys(convertedFloors).length, 'floors into store');
       Object.entries(convertedFloors).forEach(([floorName, floorData]) => {
-        console.log('🔍 JSON LOAD: Processing floor', floorName, 'with data:', floorData);
-        
         // Primero agregar el piso vacío
         addFloor(floorName);
         
         // Luego cargar los datos específicos del piso
         setCurrentFloor(floorName);
-        console.log('🔍 JSON LOAD: Setting', floorData.lines.length, 'lines for floor', floorName);
         setLines(floorData.lines);
         setAirEntries(floorData.airEntries);
         setStairPolygons(floorData.stairPolygons || []);
