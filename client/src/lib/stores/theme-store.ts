@@ -11,6 +11,7 @@ interface ThemeStore {
   theme: Theme;
   setTheme: (theme: Partial<Theme>) => void;
   applyTheme: () => void;
+  updateCSSVariables: (theme: Theme) => void;
   resetToDefault: () => void;
 }
 
@@ -108,11 +109,159 @@ export const useThemeStore = create<ThemeStore>()(
         root.classList.add(`theme-${theme.variant}`);
         document.body.classList.add(`theme-${theme.variant}`);
         
-        console.log('Applied theme variant:', theme.variant);
-        console.log('Root classes after theme application:', root.className);
-        console.log('Applied appearance:', theme.appearance);
-        console.log('Dark class present:', root.classList.contains('dark'));
-        console.log('Light class present:', root.classList.contains('light'));
+        // Apply CSS custom properties directly to root
+        get().updateCSSVariables(theme);
+      },
+      
+      updateCSSVariables: (theme: Theme) => {
+        const root = document.documentElement;
+        const isDark = theme.appearance === 'dark' || 
+          (theme.appearance === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+        // Set primary color
+        root.style.setProperty('--primary', theme.primary);
+
+        // Define theme variants with complete color palettes
+        const themeVariants = {
+          professional: {
+            light: {
+              background: 'hsl(0 0% 100%)',
+              foreground: 'hsl(222.2 84% 4.9%)',
+              card: 'hsl(0 0% 100%)',
+              'card-foreground': 'hsl(222.2 84% 4.9%)',
+              popover: 'hsl(0 0% 100%)',
+              'popover-foreground': 'hsl(222.2 84% 4.9%)',
+              'primary-foreground': 'hsl(210 40% 98%)',
+              secondary: 'hsl(210 40% 96%)',
+              'secondary-foreground': 'hsl(222.2 84% 4.9%)',
+              muted: 'hsl(210 40% 96%)',
+              'muted-foreground': 'hsl(215.4 16.3% 46.9%)',
+              accent: 'hsl(210 40% 96%)',
+              'accent-foreground': 'hsl(222.2 84% 4.9%)',
+              destructive: 'hsl(0 84.2% 60.2%)',
+              'destructive-foreground': 'hsl(210 40% 98%)',
+              border: 'hsl(214.3 31.8% 91.4%)',
+              input: 'hsl(214.3 31.8% 91.4%)',
+              ring: theme.primary,
+            },
+            dark: {
+              background: 'hsl(222.2 84% 4.9%)',
+              foreground: 'hsl(210 40% 98%)',
+              card: 'hsl(222.2 84% 4.9%)',
+              'card-foreground': 'hsl(210 40% 98%)',
+              popover: 'hsl(222.2 84% 4.9%)',
+              'popover-foreground': 'hsl(210 40% 98%)',
+              'primary-foreground': 'hsl(222.2 84% 4.9%)',
+              secondary: 'hsl(217.2 32.6% 17.5%)',
+              'secondary-foreground': 'hsl(210 40% 98%)',
+              muted: 'hsl(217.2 32.6% 17.5%)',
+              'muted-foreground': 'hsl(215 20.2% 65.1%)',
+              accent: 'hsl(217.2 32.6% 17.5%)',
+              'accent-foreground': 'hsl(210 40% 98%)',
+              destructive: 'hsl(0 62.8% 30.6%)',
+              'destructive-foreground': 'hsl(210 40% 98%)',
+              border: 'hsl(217.2 32.6% 17.5%)',
+              input: 'hsl(217.2 32.6% 17.5%)',
+              ring: theme.primary,
+            }
+          },
+          tint: {
+            light: {
+              background: 'hsl(210 40% 98%)',
+              foreground: 'hsl(215 25% 27%)',
+              card: 'hsl(210 60% 97%)',
+              'card-foreground': 'hsl(215 25% 27%)',
+              popover: 'hsl(210 60% 97%)',
+              'popover-foreground': 'hsl(215 25% 27%)',
+              'primary-foreground': 'hsl(210 20% 98%)',
+              secondary: 'hsl(210 60% 90%)',
+              'secondary-foreground': 'hsl(215 25% 27%)',
+              muted: 'hsl(210 60% 90%)',
+              'muted-foreground': 'hsl(215.4 16.3% 56.9%)',
+              accent: 'hsl(210 70% 88%)',
+              'accent-foreground': 'hsl(215 25% 27%)',
+              destructive: 'hsl(0 84.2% 60.2%)',
+              'destructive-foreground': 'hsl(210 20% 98%)',
+              border: 'hsl(210 60% 85%)',
+              input: 'hsl(210 60% 85%)',
+              ring: theme.primary,
+            },
+            dark: {
+              background: 'hsl(220 18% 8%)',
+              foreground: 'hsl(210 25% 88%)',
+              card: 'hsl(220 20% 10%)',
+              'card-foreground': 'hsl(210 25% 88%)',
+              popover: 'hsl(220 20% 10%)',
+              'popover-foreground': 'hsl(210 25% 88%)',
+              'primary-foreground': 'hsl(222.2 84% 4.9%)',
+              secondary: 'hsl(215 25% 18%)',
+              'secondary-foreground': 'hsl(210 25% 88%)',
+              muted: 'hsl(215 25% 18%)',
+              'muted-foreground': 'hsl(217.9 10.6% 64.9%)',
+              accent: 'hsl(215 30% 22%)',
+              'accent-foreground': 'hsl(210 25% 88%)',
+              destructive: 'hsl(0 62.8% 30.6%)',
+              'destructive-foreground': 'hsl(210 20% 98%)',
+              border: 'hsl(215 25% 18%)',
+              input: 'hsl(215 25% 18%)',
+              ring: theme.primary,
+            }
+          },
+          vibrant: {
+            light: {
+              background: 'hsl(210 100% 97%)',
+              foreground: 'hsl(0 0% 9%)',
+              card: 'hsl(210 100% 98%)',
+              'card-foreground': 'hsl(0 0% 9%)',
+              popover: 'hsl(210 100% 98%)',
+              'popover-foreground': 'hsl(0 0% 9%)',
+              'primary-foreground': 'hsl(210 20% 98%)',
+              secondary: 'hsl(210 100% 92%)',
+              'secondary-foreground': 'hsl(0 0% 9%)',
+              muted: 'hsl(210 100% 94%)',
+              'muted-foreground': 'hsl(215.4 16.3% 36.9%)',
+              accent: 'hsl(210 100% 90%)',
+              'accent-foreground': 'hsl(0 0% 9%)',
+              destructive: 'hsl(0 90% 55%)',
+              'destructive-foreground': 'hsl(210 20% 98%)',
+              border: 'hsl(210 80% 80%)',
+              input: 'hsl(210 80% 80%)',
+              ring: theme.primary,
+            },
+            dark: {
+              background: 'hsl(224 71.4% 2%)',
+              foreground: 'hsl(210 20% 98%)',
+              card: 'hsl(224 71.4% 3%)',
+              'card-foreground': 'hsl(210 20% 98%)',
+              popover: 'hsl(224 71.4% 3%)',
+              'popover-foreground': 'hsl(210 20% 98%)',
+              'primary-foreground': 'hsl(222.2 84% 4.9%)',
+              secondary: 'hsl(215 35% 20%)',
+              'secondary-foreground': 'hsl(210 20% 98%)',
+              muted: 'hsl(215 35% 20%)',
+              'muted-foreground': 'hsl(217.9 10.6% 64.9%)',
+              accent: 'hsl(215 40% 25%)',
+              'accent-foreground': 'hsl(210 20% 98%)',
+              destructive: 'hsl(0 70% 40%)',
+              'destructive-foreground': 'hsl(210 20% 98%)',
+              border: 'hsl(215 35% 20%)',
+              input: 'hsl(215 35% 20%)',
+              ring: theme.primary,
+            }
+          }
+        } as const;
+
+        // Get the appropriate color scheme
+        const colorScheme = themeVariants[theme.variant][isDark ? 'dark' : 'light'];
+
+        // Apply all color variables
+        Object.entries(colorScheme).forEach(([key, value]) => {
+          root.style.setProperty(`--${key}`, value);
+        });
+
+        // Force body background update
+        document.body.style.backgroundColor = `var(--background)`;
+        document.body.style.color = `var(--foreground)`;
       },
       
       resetToDefault: () => {
