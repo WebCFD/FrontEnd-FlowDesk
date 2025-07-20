@@ -404,58 +404,7 @@ export default function WizardDesign() {
     reset: storeReset, // Import store reset function with alias
   } = useRoomStore();
 
-  // Función para aplicar temperaturas del JSON a las paredes sincronizadas
-  const applyWallTemperaturesFromJSON = useCallback((floorName: string, wallTemperatures: Map<string, number>) => {
-    console.log(`[TEMP DEBUG] === APPLYING TEMPERATURES FOR FLOOR: ${floorName} ===`);
-    console.log(`[TEMP DEBUG] Available floors in store:`, Object.keys(rawFloors));
-    console.log(`[TEMP DEBUG] Current currentFloor state:`, currentFloor);
-    
-    const currentFloorData = rawFloors[floorName];
-    console.log(`[TEMP DEBUG] Floor data for ${floorName}:`, currentFloorData ? 'exists' : 'null');
-    console.log(`[TEMP DEBUG] Walls in floor ${floorName}:`, currentFloorData?.walls?.length || 0);
-    
-    if (!currentFloorData?.walls) {
-      console.log(`[TEMP DEBUG] No walls found for floor: ${floorName}`);
-      return;
-    }
 
-    console.log(`[TEMP DEBUG] Applying temperatures for floor: ${floorName}`);
-    console.log(`[TEMP DEBUG] Wall temperatures map:`, Array.from(wallTemperatures.entries()));
-    console.log(`[TEMP DEBUG] Current walls:`, currentFloorData.walls.map(w => ({
-      id: w.id,
-      start: w.startPoint,
-      end: w.endPoint,
-      currentTemp: w.properties.temperature
-    })));
-
-    const updatedWalls = currentFloorData.walls.map(wall => {
-      // Crear clave de línea para buscar la temperatura correspondiente
-      const lineKey = `${wall.startPoint.x.toFixed(2)},${wall.startPoint.y.toFixed(2)}-${wall.endPoint.x.toFixed(2)},${wall.endPoint.y.toFixed(2)}`;
-      const temperature = wallTemperatures.get(lineKey);
-      
-      console.log(`[TEMP DEBUG] Wall ${wall.id}: key=${lineKey}, found temp=${temperature}`);
-      
-      if (temperature !== undefined) {
-        console.log(`[TEMP DEBUG] Updating wall ${wall.id} from ${wall.properties.temperature} to ${temperature}`);
-        return {
-          ...wall,
-          properties: {
-            ...wall.properties,
-            temperature: temperature
-          }
-        };
-      }
-      return wall;
-    });
-
-    // Actualizar las paredes con las temperaturas correctas
-    const previousFloor = currentFloor;
-    setCurrentFloor(floorName);
-    setWalls(updatedWalls);
-    if (previousFloor !== floorName) {
-      setCurrentFloor(previousFloor);
-    }
-  }, [rawFloors, currentFloor, setCurrentFloor, setWalls]);
 
   // Reactive store subscription ensures real-time updates across components
 
@@ -3413,19 +3362,13 @@ export default function WizardDesign() {
             const floors = currentStoreState.floors;
             const currentWalls = floors[floorName]?.walls || [];
             
-            console.log(`[TEMP DEBUG] Checking walls for ${floorName}: ${currentWalls.length} walls found`);
-            console.log(`[TEMP DEBUG] Store floors available:`, Object.keys(floors));
-            console.log(`[TEMP DEBUG] Current store state for ${floorName}:`, floors[floorName] ? 'exists' : 'null');
-            
             if (currentWalls.length > 0) {
-              console.log(`[TEMP DEBUG] Walls ready for ${floorName}, applying temperatures`);
               // Aplicar temperaturas directamente usando el store state actual
               const updatedWalls = currentWalls.map(wall => {
                 const lineKey = `${wall.startPoint.x.toFixed(2)},${wall.startPoint.y.toFixed(2)}-${wall.endPoint.x.toFixed(2)},${wall.endPoint.y.toFixed(2)}`;
                 const temperature = floorData.wallTemperatures.get(lineKey);
                 
                 if (temperature !== undefined) {
-                  console.log(`[TEMP DEBUG] Updating wall ${wall.id} from ${wall.properties.temperature} to ${temperature}`);
                   return {
                     ...wall,
                     properties: {
@@ -3445,7 +3388,6 @@ export default function WizardDesign() {
                 setCurrentFloor(previousFloor);
               }
             } else {
-              console.log(`[TEMP DEBUG] Walls not ready for ${floorName}, retrying in 100ms`);
               setTimeout(checkWallsAndApplyTemperatures, 100);
             }
           };
