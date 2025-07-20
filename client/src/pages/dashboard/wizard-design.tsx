@@ -280,6 +280,11 @@ export default function WizardDesign() {
     ground: { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20 }
   });
 
+  // Wall Line restriction state variables
+  const [isWallLineDisabled, setIsWallLineDisabled] = useState(false);
+  const [closedContourCache, setClosedContourCache] = useState(new Map());
+  const [lastLinesHash, setLastLinesHash] = useState('');
+
   // Funciones auxiliares para manejo de parámetros por planta
   const getCurrentFloorParameters = () => {
     return floorParameters[selectedFloor] || { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20 };
@@ -376,6 +381,32 @@ export default function WizardDesign() {
     // Cleanup listener
     return () => window.removeEventListener('resize', calculateMenuWidth);
   }, [menuWidthPercentage, viewportOffset]);
+
+  // Smart state management for Wall Line restriction
+  useEffect(() => {
+    const linesHash = JSON.stringify(lines);
+    
+    if (linesHash !== lastLinesHash) {
+      // Clear cache when lines change
+      setClosedContourCache(new Map());
+      
+      // Check contour status
+      const hasClosedContour = hasClosedContourOnCurrentFloor();
+      setIsWallLineDisabled(hasClosedContour);
+      
+      // Auto-deselect Wall Line if contour just closed and tool is active
+      if (hasClosedContour && currentTool === "wall") {
+        setCurrentTool(null);
+        toast({
+          title: "Wall Line Tool Disabled",
+          description: "Room contour completed. Wall Line tool automatically disabled.",
+          variant: "default",
+        });
+      }
+      
+      setLastLinesHash(linesHash);
+    }
+  }, [lines, currentFloor, hasClosedContourOnCurrentFloor, currentTool, lastLinesHash, toast]);
 
   // Use the global room store with updated selectors
   const {
@@ -808,6 +839,66 @@ export default function WizardDesign() {
     });
   };
 
+  // Wall Line restriction utility functions
+  const arePointsEqual = (p1: Point, p2: Point): boolean => {
+    const dx = p1.x - p2.x;
+    const dy = p1.y - p2.y;
+    return Math.sqrt(dx * dx + dy * dy) < 5;
+  };
+
+  const findConnectedLines = (point: Point, lines: Line[]) => {
+    return lines.filter(line => 
+      arePointsEqual(line.start, point) || arePointsEqual(line.end, point)
+    );
+  };
+
+  const isInClosedContour = (point: Point, lines: Line[]): boolean => {
+    const visited = new Set<string>();
+    const startPoint = point;
+    
+    const dfs = (currentPoint: Point, depth: number): boolean => {
+      if (depth > 50) return false; // Prevent infinite loops
+      
+      const pointKey = `${Math.round(currentPoint.x)},${Math.round(currentPoint.y)}`;
+      if (visited.has(pointKey)) {
+        // We've returned to a visited point - check if it's the start
+        return arePointsEqual(currentPoint, startPoint) && depth > 2;
+      }
+      
+      visited.add(pointKey);
+      
+      const connectedLines = findConnectedLines(currentPoint, lines);
+      
+      for (const line of connectedLines) {
+        const nextPoint = arePointsEqual(line.start, currentPoint) ? line.end : line.start;
+        if (dfs(nextPoint, depth + 1)) {
+          return true;
+        }
+      }
+      
+      return false;
+    };
+    
+    return dfs(startPoint, 0);
+  };
+
+  const hasClosedContourOnCurrentFloor = useCallback(() => {
+    const linesHash = JSON.stringify(lines);
+    
+    if (closedContourCache.has(linesHash)) {
+      return closedContourCache.get(linesHash);
+    }
+    
+    const endpoints = [...new Set(lines.flatMap(line => [line.start, line.end]))];
+    const result = endpoints.some(point => {
+      const connections = findConnectedLines(point, lines).length;
+      return connections > 1 && isInClosedContour(point, lines);
+    });
+    
+    closedContourCache.set(linesHash, result);
+    return result;
+  }, [lines, closedContourCache]);
+
   const steps = [
     { id: 1, name: "Contour Design" },
     { id: 2, name: "Add Elements" },
@@ -815,6 +906,16 @@ export default function WizardDesign() {
   ];
 
   const handleToolSelect = (tool: "wall" | "eraser" | "measure" | "stairs") => {
+    // Wall Line restriction check
+    if (tool === "wall" && isWallLineDisabled) {
+      toast({
+        title: "Cannot Add Wall Lines",
+        description: "To add more lines, open the existing contour by moving points or erasing lines. Only one closed room per floor is allowed.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     // Rastrear cambio de herramienta
     trackEvent(
       AnalyticsCategories.DESIGN,
@@ -913,19 +1014,16 @@ export default function WizardDesign() {
   }
 
   const getWallStyles = () => {
-    const baseStyles =
-      "w-20 h-16 p-2 flex flex-col items-center justify-center transition-all duration-200 shadow-sm";
-    const activeStyles = "scale-95 shadow-inner";
-    const colorStyles = "hover:bg-gray-100 text-gray-700";
-    const activeColorStyles = "bg-gray-100";
-    const borderStyles = "border-gray-500";
+    const baseStyles = "w-20 h-16 p-2 flex flex-col items-center justify-center transition-all duration-200 shadow-sm";
+    const disabledStyles = "bg-gray-200 text-gray-400 cursor-not-allowed opacity-60";
+    const enabledStyles = "hover:bg-gray-100 text-gray-700";
+    const activeStyles = "scale-95 shadow-inner bg-gray-100";
+    const borderStyles = isWallLineDisabled ? "border-gray-300" : "border-gray-500";
 
     return cn(
       baseStyles,
-      colorStyles,
-      currentTool === "wall" ? activeStyles : "",
-      currentTool === "wall" ? activeColorStyles : "",
-      currentTool === "wall" ? borderStyles : "",
+      isWallLineDisabled ? disabledStyles : enabledStyles,
+      currentTool === "wall" && !isWallLineDisabled ? activeStyles : "",
       "border-2",
       borderStyles,
     );
@@ -1449,8 +1547,10 @@ export default function WizardDesign() {
                       variant="outline"
                       className={getWallStyles()}
                       onClick={() => handleToolSelect("wall")}
+                      disabled={isWallLineDisabled}
+                      title={isWallLineDisabled ? "Cannot add lines - room contour is closed" : "Add wall lines"}
                     >
-                      <div className="w-6 h-6 border-2 border-gray-500" />
+                      <div className={`w-6 h-6 border-2 ${isWallLineDisabled ? 'border-gray-400' : 'border-gray-500'}`} />
                       <span className="text-xs mt-1">Wall Line</span>
                     </Button>
                     
@@ -2481,77 +2581,6 @@ export default function WizardDesign() {
       </AlertDialog>
     </div>
   );
-
-  const isInClosedContour = (point: Point, lines: Line[]): boolean => {
-    const arePointsEqual = (p1: Point, p2: Point): boolean => {
-      const dx = p1.x - p2.x;
-      const dy = p1.y - p2.y;
-      return Math.sqrt(dx * dx + dy * dy) < 5;
-    };
-
-    const connectedLines = lines.filter(
-      (line) =>
-        arePointsEqual(line.start, point) || arePointsEqual(line.end, point),
-    );
-
-    for (const startLine of connectedLines) {
-      const visited = new Set<string>();
-      const pointKey = (p: Point) => `${Math.round(p.x)},${Math.round(p.y)}`;
-      const stack: { point: Point; path: Line[] }[] = [
-        {
-          point: arePointsEqual(startLine.start, point)
-            ? startLine.end
-            : startLine.start,
-          path: [startLine],
-        },
-      ];
-
-      while (stack.length > 0) {
-        const { point: currentPoint, path } = stack.pop()!;
-        const key = pointKey(currentPoint);
-
-        if (path.length >= 2 && arePointsEqual(currentPoint, point)) {
-          //  console.log("Found closed contour:", path);
-          return true;
-        }
-
-        if (visited.has(key)) continue;
-        visited.add(key);
-
-        const nextLines = lines.filter(
-          (line) =>
-            !path.includes(line) &&
-            (arePointsEqual(line.start, currentPoint) ||
-              arePointsEqual(line.end, currentPoint)),
-        );
-
-        for (const nextLine of nextLines) {
-          const nextPoint = arePointsEqual(nextLine.start, currentPoint)
-            ? nextLine.end
-            : nextLine.start;
-          stack.push({
-            point: nextPoint,
-            path: [...path, nextLine],
-          });
-        }
-      }
-    }
-
-    return false;
-  };
-
-  const findConnectedLines = (point: Point, lines: Line[]): Line[] => {
-    return lines.filter(
-      (line) =>
-        arePointsClose(line.start, point) || arePointsClose(line.end, point),
-    );
-  };
-
-  const arePointsClose = (p1: Point, p2: Point): boolean => {
-    const dx = p1.x - p2.x;
-    const dy = p1.y - p2.y;
-    return Math.sqrt(dx * dx + dy * dy) < 15;
-  };
 
   // Función central que genera los datos de simulación
   const generateSimulationDataForExport = () => {
