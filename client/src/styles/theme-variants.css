@@ -1,0 +1,136 @@
+/* Theme Variant Styles */
+
+/* Professional Theme - Clean, corporate look (default) */
+.theme-professional {
+  --background: hsl(0 0% 100%);
+  --foreground: hsl(224 71.4% 4.1%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(224 71.4% 4.1%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(224 71.4% 4.1%);
+  --primary: var(--primary);
+  --primary-foreground: hsl(210 20% 98%);
+  --secondary: hsl(210 40% 96%);
+  --secondary-foreground: hsl(222.2 84% 4.9%);
+  --muted: hsl(210 40% 96%);
+  --muted-foreground: hsl(215.4 16.3% 46.9%);
+  --accent: hsl(210 40% 96%);
+  --accent-foreground: hsl(222.2 84% 4.9%);
+  --destructive: hsl(0 84.2% 60.2%);
+  --destructive-foreground: hsl(210 20% 98%);
+  --border: hsl(214.3 31.8% 91.4%);
+  --input: hsl(214.3 31.8% 91.4%);
+  --ring: var(--primary);
+}
+
+.dark.theme-professional {
+  --background: hsl(224 71.4% 4.1%);
+  --foreground: hsl(210 20% 98%);
+  --card: hsl(224 71.4% 4.1%);
+  --card-foreground: hsl(210 20% 98%);
+  --popover: hsl(224 71.4% 4.1%);
+  --popover-foreground: hsl(210 20% 98%);
+  --primary: var(--primary);
+  --primary-foreground: hsl(222.2 84% 4.9%);
+  --secondary: hsl(215 27.9% 16.9%);
+  --secondary-foreground: hsl(210 20% 98%);
+  --muted: hsl(215 27.9% 16.9%);
+  --muted-foreground: hsl(217.9 10.6% 64.9%);
+  --accent: hsl(215 27.9% 16.9%);
+  --accent-foreground: hsl(210 20% 98%);
+  --destructive: hsl(0 62.8% 30.6%);
+  --destructive-foreground: hsl(210 20% 98%);
+  --border: hsl(215 27.9% 16.9%);
+  --input: hsl(215 27.9% 16.9%);
+  --ring: var(--primary);
+}
+
+/* Tint Theme - Softer, warmer colors with blue tints */
+.theme-tint {
+  --background: hsl(210 40% 98%);
+  --foreground: hsl(215 25% 27%);
+  --card: hsl(210 60% 97%);
+  --card-foreground: hsl(215 25% 27%);
+  --popover: hsl(210 60% 97%);
+  --popover-foreground: hsl(215 25% 27%);
+  --primary: var(--primary);
+  --primary-foreground: hsl(210 20% 98%);
+  --secondary: hsl(210 60% 90%);
+  --secondary-foreground: hsl(215 25% 27%);
+  --muted: hsl(210 60% 90%);
+  --muted-foreground: hsl(215.4 16.3% 56.9%);
+  --accent: hsl(210 70% 88%);
+  --accent-foreground: hsl(215 25% 27%);
+  --destructive: hsl(0 84.2% 60.2%);
+  --destructive-foreground: hsl(210 20% 98%);
+  --border: hsl(210 60% 85%);
+  --input: hsl(210 60% 85%);
+  --ring: var(--primary);
+}
+
+.dark.theme-tint {
+  --background: hsl(220 18% 8%);
+  --foreground: hsl(210 25% 88%);
+  --card: hsl(220 20% 10%);
+  --card-foreground: hsl(210 25% 88%);
+  --popover: hsl(220 20% 10%);
+  --popover-foreground: hsl(210 25% 88%);
+  --primary: var(--primary);
+  --primary-foreground: hsl(222.2 84% 4.9%);
+  --secondary: hsl(215 25% 18%);
+  --secondary-foreground: hsl(210 25% 88%);
+  --muted: hsl(215 25% 18%);
+  --muted-foreground: hsl(217.9 10.6% 64.9%);
+  --accent: hsl(215 30% 22%);
+  --accent-foreground: hsl(210 25% 88%);
+  --destructive: hsl(0 62.8% 30.6%);
+  --destructive-foreground: hsl(210 20% 98%);
+  --border: hsl(215 25% 18%);
+  --input: hsl(215 25% 18%);
+  --ring: var(--primary);
+}
+
+/* Vibrant Theme - High contrast, saturated colors */
+.theme-vibrant {
+  --background: hsl(0 0% 99%);
+  --foreground: hsl(0 0% 9%);
+  --card: hsl(0 0% 98%);
+  --card-foreground: hsl(0 0% 9%);
+  --popover: hsl(0 0% 98%);
+  --popover-foreground: hsl(0 0% 9%);
+  --primary: var(--primary);
+  --primary-foreground: hsl(210 20% 98%);
+  --secondary: hsl(210 100% 92%);
+  --secondary-foreground: hsl(0 0% 9%);
+  --muted: hsl(210 100% 94%);
+  --muted-foreground: hsl(215.4 16.3% 36.9%);
+  --accent: hsl(210 100% 90%);
+  --accent-foreground: hsl(0 0% 9%);
+  --destructive: hsl(0 90% 55%);
+  --destructive-foreground: hsl(210 20% 98%);
+  --border: hsl(210 80% 80%);
+  --input: hsl(210 80% 80%);
+  --ring: var(--primary);
+}
+
+.dark.theme-vibrant {
+  --background: hsl(224 71.4% 2%);
+  --foreground: hsl(210 20% 98%);
+  --card: hsl(224 71.4% 3%);
+  --card-foreground: hsl(210 20% 98%);
+  --popover: hsl(224 71.4% 3%);
+  --popover-foreground: hsl(210 20% 98%);
+  --primary: var(--primary);
+  --primary-foreground: hsl(222.2 84% 4.9%);
+  --secondary: hsl(215 35% 20%);
+  --secondary-foreground: hsl(210 20% 98%);
+  --muted: hsl(215 35% 20%);
+  --muted-foreground: hsl(217.9 10.6% 64.9%);
+  --accent: hsl(215 40% 25%);
+  --accent-foreground: hsl(210 20% 98%);
+  --destructive: hsl(0 70% 40%);
+  --destructive-foreground: hsl(210 20% 98%);
+  --border: hsl(215 35% 20%);
+  --input: hsl(215 35% 20%);
+  --ring: var(--primary);
+}

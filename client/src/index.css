@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import './styles/theme-variants.css';
+
 @layer base {
   * {
     @apply border-border;

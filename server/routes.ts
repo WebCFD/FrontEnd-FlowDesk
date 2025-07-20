@@ -314,21 +314,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { primary, variant, appearance, radius } = req.body;
       
-      // Update theme.json file
-      const fs = require('fs');
-      const path = require('path');
       const themeData = {
-        primary: primary || "hsl(210, 100%, 50%)",
+        primary: primary || "#0096FF",
         variant: variant || "professional", 
         appearance: appearance || "light",
         radius: radius || 0.5
       };
       
-      fs.writeFileSync(
-        path.join(__dirname, '../theme.json'), 
-        JSON.stringify(themeData, null, 2)
-      );
-      
+      // For now, just return success without file write
+      // The theme is stored in localStorage on frontend
       res.json({ success: true, theme: themeData });
     } catch (error) {
       console.error("Theme update error:", error);
