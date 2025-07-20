@@ -1,0 +1,26 @@
+analytics.ts:62 📊 Analytics Event: {category: 'ui_interaction', action: 'change_tab', label: 'view_3d_preview', value: undefined, status: 'sent'}
+Canvas3D.tsx:5012 Floor ground has 1 stair polygons: [{…}]
+Canvas3D.tsx:2541 🔍 [GLITCH INVESTIGATION] createFloorObjects called for floor: {floorName: 'ground', isCurrentFloor: true, airEntriesCount: 0, airEntriesData: Array(0), timestamp: 1753022059959}
+Canvas3D.tsx:2336 Creating stair from ground to first Direction: up {id: 'stair_0F_1', points: Array(4), floor: 'ground', direction: 'up', connectsTo: undefined, …}
+Canvas3D.tsx:2409 🔢 STAIR 3D POSITION DATA: stair_0F_1 {baseHeight: 0, bottomZ: 220.00000000000003, topZ: 255.00000000000003}
+Canvas3D.tsx:2956 🔍 [FURNITURE DEBUG] Floor ground furnitureItems: 1 [{…}]
+Canvas3D.tsx:2976 🔍 [FURNITURE CREATE] Creating furniture: vent Vent 0F-1 {position: {…}, dimensions: {…}, rotation: {…}, surfaceType: 'ceiling'}
+Canvas3D.tsx:2984 🔍 [FURNITURE SUCCESS] Furniture model created successfully: Vent 0F-1 {position: _Vector3, scale: _Vector3, rotation: _Euler, boundingBox: Box3}
+Canvas3D.tsx:2541 🔍 [GLITCH INVESTIGATION] createFloorObjects called for floor: {floorName: 'first', isCurrentFloor: false, airEntriesCount: 0, airEntriesData: Array(0), timestamp: 1753022059968}
+Canvas3D.tsx:2956 🔍 [FURNITURE DEBUG] Floor first furnitureItems: 1 [{…}]
+Canvas3D.tsx:2976 🔍 [FURNITURE CREATE] Creating furniture: vent Vent 1F-1 {position: {…}, dimensions: {…}, rotation: {…}, surfaceType: 'floor'}
+Canvas3D.tsx:2984 🔍 [FURNITURE SUCCESS] Furniture model created successfully: Vent 1F-1 {position: _Vector3, scale: _Vector3, rotation: _Euler, boundingBox: Box3}
+Canvas3D.tsx:5174 🔥 SCENE REBUILD TRIGGERED: {editingAirEntry: false, finalFloorsId: '["ground","first"]', thisWillRecreateEverything: true, triggerCause: 'finalFloors, currentFloor, ceilingHeight, or floorDeckThickness changed'}
+Canvas3D.tsx:5182 🔍 [GLITCH ROOT CAUSE] Scene rebuild details: {currentFloor: 'ground', finalFloorsKeys: Array(2), totalAirEntries: 0, allAirEntryPositions: {…}, timestamp: 1753022059974}
+chunk-WERSD76P.js?v=f2303d23:18625 [Violation] 'click' handler took 180ms
+Canvas3D.tsx:5012 Floor ground has 1 stair polygons: [{…}]
+Canvas3D.tsx:2541 🔍 [GLITCH INVESTIGATION] createFloorObjects called for floor: {floorName: 'ground', isCurrentFloor: true, airEntriesCount: 0, airEntriesData: Array(0), timestamp: 1753022060074}
+Canvas3D.tsx:2336 Creating stair from ground to first Direction: up {id: 'stair_0F_1', points: Array(4), floor: 'ground', direction: 'up', connectsTo: undefined, …}
+Canvas3D.tsx:2409 🔢 STAIR 3D POSITION DATA: stair_0F_1 {baseHeight: 0, bottomZ: 220.00000000000003, topZ: 255.00000000000003}
+Canvas3D.tsx:2956 🔍 [FURNITURE DEBUG] Floor ground furnitureItems: 1 [{…}]
+Canvas3D.tsx:2995 🔍 [FURNITURE EXISTS] Furniture already exists in scene: Vent 0F-1
+Canvas3D.tsx:2541 🔍 [GLITCH INVESTIGATION] createFloorObjects called for floor: {floorName: 'first', isCurrentFloor: false, airEntriesCount: 0, airEntriesData: Array(0), timestamp: 1753022060081}
+Canvas3D.tsx:2956 🔍 [FURNITURE DEBUG] Floor first furnitureItems: 1 [{…}]0: dimensions: {width: 60, height: 60, depth: 1}floorName: "first"id: "Vent 1F-1"meshId: "944e0ac3-5bb0-4e7b-b72c-64c42e84cca8"name: "Vent 1F-1"position: {x: 4400, y: -3700, z: 25500}properties: {material: 'aluminum', emissivity: 0.9, temperature: 20}rotation: {x: 0, y: 0, z: 0}scale: {x: 1, y: 1, z: 1}simulationProperties: {state: 'open', airTemperature: 50, airOrientation: 'inflow', flowType: 'Air Velocity', flowIntensity: 'medium', …}surfaceType: "floor"type: "vent"[[Prototype]]: Objectlength: 1[[Prototype]]: Array(0)
+Canvas3D.tsx:2995 🔍 [FURNITURE EXISTS] Furniture already exists in scene: Vent 1F-1
+Canvas3D.tsx:5174 🔥 SCENE REBUILD TRIGGERED: {editingAirEntry: false, finalFloorsId: '["ground","first"]', thisWillRecreateEverything: true, triggerCause: 'finalFloors, currentFloor, ceilingHeight, or floorDeckThickness changed'}
+Canvas3D.tsx:5182 🔍 [GLITCH ROOT CAUSE] Scene rebuild details: {currentFloor: 'ground', finalFloorsKeys: Array(2), totalAirEntries: 0, allAirEntryPositions: {…}, timestamp: 1753022060084}allAirEntryPositions: {ground: Array(0), first: Array(0)}currentFloor: "ground"finalFloorsKeys: (2) ['ground', 'first']timestamp: 1753022060084totalAirEntries: 0[[Prototype]]: Object

@@ -2953,7 +2953,6 @@ export default function Canvas3D({
     }
 
     // Create furniture items from props
-    console.log(`🔍 [FURNITURE DEBUG] Floor ${floorData.name} furnitureItems:`, floorData.furnitureItems?.length || 0, floorData.furnitureItems);
     if (floorData.furnitureItems && floorData.furnitureItems.length > 0) {
       floorData.furnitureItems.forEach((furnitureItem) => {
         // Validate furniture item data before processing
@@ -2973,26 +2972,10 @@ export default function Canvas3D({
         
         // Only create furniture if it doesn't already exist in scene
         if (!furnitureExists) {
-          console.log(`🔍 [FURNITURE CREATE] Creating furniture:`, furnitureItem.type, furnitureItem.id, {
-            position: furnitureItem.position,
-            dimensions: furnitureItem.dimensions,
-            rotation: furnitureItem.rotation,
-            surfaceType: furnitureItem.surfaceType
-          });
           const furnitureModel = createFurnitureModel(furnitureItem, sceneRef.current!, onDeleteFurniture);
           if (furnitureModel) {
-            console.log(`🔍 [FURNITURE SUCCESS] Furniture model created successfully:`, furnitureItem.id, {
-              position: furnitureModel.position,
-              scale: furnitureModel.scale,
-              rotation: furnitureModel.rotation,
-              boundingBox: new THREE.Box3().setFromObject(furnitureModel)
-            });
             objects.push(furnitureModel);
-          } else {
-            console.log(`🔍 [FURNITURE FAILED] Furniture model creation failed:`, furnitureItem.id);
           }
-        } else {
-          console.log(`🔍 [FURNITURE EXISTS] Furniture already exists in scene:`, furnitureItem.id);
         }
       });
     }
