@@ -3396,13 +3396,127 @@ export default function WizardDesign() {
           };
         });
         
+        // Procesar vents horizontales (ceiling y floor_surf)
+        const horizontalVents: any[] = [];
+        
+        // Procesar ceiling vents
+        if (floorData.ceiling?.airEntries) {
+          floorData.ceiling.airEntries.forEach((entry: any) => {
+            if (entry.type === 'vent') {
+              // Convertir metros a centímetros (* 100), luego aplicar denormalizeCoordinates
+              const positionInCm = { x: entry.position.x * 100, y: entry.position.y * 100 };
+              const denormalizedPosition = denormalizeCoordinates(positionInCm);
+              
+              horizontalVents.push({
+                id: entry.id,
+                type: 'vent' as const,
+                name: entry.id,
+                floorName: floorName,
+                position: {
+                  x: denormalizedPosition.x,
+                  y: denormalizedPosition.y,
+                  z: (entry.position?.z * 100) || 220 // Convertir metros a cm, default ceiling height
+                },
+                rotation: { x: 0, y: 0, z: 0 },
+                scale: { x: 1, y: 1, z: 1 },
+                dimensions: {
+                  width: (entry.dimensions?.width * 100) || 50, // Convertir metros a centímetros
+                  height: (entry.dimensions?.height * 100) || 50,
+                  depth: 1 // Mínimo espesor para vents horizontales
+                },
+                surfaceType: 'ceiling' as const,
+                properties: {
+                  material: 'aluminum',
+                  emissivity: 0.9,
+                  temperature: 20
+                },
+                simulationProperties: {
+                  state: entry.simulation?.state || 'closed',
+                  airTemperature: entry.simulation?.temperature || 20,
+                  airOrientation: entry.simulation?.airDirection || 'inflow',
+                  flowType: entry.simulation?.flowType || 'airMassFlow',
+                  flowIntensity: entry.simulation?.flowIntensity || 'medium',
+                  // Mapear customValue solo cuando flowIntensity es "custom"
+                  ...(entry.simulation?.flowIntensity === 'custom' && entry.simulation?.customValue && {
+                    customIntensityValue: entry.simulation.customValue
+                  }),
+                  // Mapear ángulos de orientación del aire si están presentes
+                  ...(entry.simulation?.airOrientation?.verticalAngle !== undefined && {
+                    verticalAngle: entry.simulation.airOrientation.verticalAngle
+                  }),
+                  ...(entry.simulation?.airOrientation?.horizontalAngle !== undefined && {
+                    horizontalAngle: entry.simulation.airOrientation.horizontalAngle
+                  }),
+                  normalVector: { x: 0, y: 0, z: -1 } // Ceiling vents apuntan hacia abajo
+                }
+              });
+            }
+          });
+        }
+        
+        // Procesar floor_surf vents
+        if (floorData.floor_surf?.airEntries) {
+          floorData.floor_surf.airEntries.forEach((entry: any) => {
+            if (entry.type === 'vent') {
+              // Convertir metros a centímetros (* 100), luego aplicar denormalizeCoordinates
+              const positionInCm = { x: entry.position.x * 100, y: entry.position.y * 100 };
+              const denormalizedPosition = denormalizeCoordinates(positionInCm);
+              
+              horizontalVents.push({
+                id: entry.id,
+                type: 'vent' as const,
+                name: entry.id,
+                floorName: floorName,
+                position: {
+                  x: denormalizedPosition.x,
+                  y: denormalizedPosition.y,
+                  z: (entry.position?.z * 100) || 0 // Convertir metros a cm, default floor level
+                },
+                rotation: { x: 0, y: 0, z: 0 },
+                scale: { x: 1, y: 1, z: 1 },
+                dimensions: {
+                  width: (entry.dimensions?.width * 100) || 50, // Convertir metros a centímetros
+                  height: (entry.dimensions?.height * 100) || 50,
+                  depth: 1 // Mínimo espesor para vents horizontales
+                },
+                surfaceType: 'floor' as const,
+                properties: {
+                  material: 'aluminum',
+                  emissivity: 0.9,
+                  temperature: 20
+                },
+                simulationProperties: {
+                  state: entry.simulation?.state || 'closed',
+                  airTemperature: entry.simulation?.temperature || 20,
+                  airOrientation: entry.simulation?.airDirection || 'inflow',
+                  flowType: entry.simulation?.flowType || 'airMassFlow',
+                  flowIntensity: entry.simulation?.flowIntensity || 'medium',
+                  // Mapear customValue solo cuando flowIntensity es "custom"
+                  ...(entry.simulation?.flowIntensity === 'custom' && entry.simulation?.customValue && {
+                    customIntensityValue: entry.simulation.customValue
+                  }),
+                  // Mapear ángulos de orientación del aire si están presentes
+                  ...(entry.simulation?.airOrientation?.verticalAngle !== undefined && {
+                    verticalAngle: entry.simulation.airOrientation.verticalAngle
+                  }),
+                  ...(entry.simulation?.airOrientation?.horizontalAngle !== undefined && {
+                    horizontalAngle: entry.simulation.airOrientation.horizontalAngle
+                  }),
+                  normalVector: { x: 0, y: 0, z: 1 } // Floor vents apuntan hacia arriba
+                }
+              });
+            }
+          });
+        }
+
         convertedFloors[floorName] = {
           lines: convertedLines,
           airEntries: convertedAirEntries,
           hasClosedContour: convertedLines.length > 2,
           name: floorName,
           stairPolygons: convertedStairs,
-          wallTemperatures: wallTemperatures // Preservar las temperaturas para uso posterior
+          wallTemperatures: wallTemperatures, // Preservar las temperaturas para uso posterior
+          horizontalVents: horizontalVents // Agregar vents horizontales
         };
         
 
@@ -3433,6 +3547,13 @@ export default function WizardDesign() {
         
         // Sincronizar las paredes
         syncWallsForCurrentFloor();
+        
+        // Cargar vents horizontales al store de furniture
+        if (floorData.horizontalVents && floorData.horizontalVents.length > 0) {
+          floorData.horizontalVents.forEach((vent: any) => {
+            addFurnitureItem(vent);
+          });
+        }
 
         // CRÍTICO: Aplicar temperaturas preservadas del JSON después de sincronizar paredes
         if (floorData.wallTemperatures && floorData.wallTemperatures.size > 0) {

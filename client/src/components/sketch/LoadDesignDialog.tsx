@@ -114,6 +114,18 @@ export default function LoadDesignDialog({
         airEntryCount += floor.airEntries.length;
       }
       
+      // Contar vents horizontales (ceiling y floor_surf)
+      let horizontalVentCount = 0;
+      if (floor.ceiling?.airEntries) {
+        horizontalVentCount += floor.ceiling.airEntries.filter((entry: any) => entry.type === 'vent').length;
+      }
+      if (floor.floor_surf?.airEntries) {
+        horizontalVentCount += floor.floor_surf.airEntries.filter((entry: any) => entry.type === 'vent').length;
+      }
+      
+      // Sumar vents horizontales al total de air entries
+      airEntryCount += horizontalVentCount;
+      
       // Contar walls y stairs
       const wallCount = Array.isArray(floor.walls) ? floor.walls.length : 0;
       const stairCount = Array.isArray(floor.stairs) ? floor.stairs.length : 0;
