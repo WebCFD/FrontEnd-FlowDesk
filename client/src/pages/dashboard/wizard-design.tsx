@@ -3406,9 +3406,8 @@ export default function WizardDesign() {
         if (floorData.ceiling?.airEntries) {
           floorData.ceiling.airEntries.forEach((entry: any) => {
             if (entry.type === 'vent') {
-              // Convertir metros a centímetros (* 100), luego aplicar denormalizeCoordinates
+              // Convertir metros a centímetros (* 100) directamente, SIN denormalizeCoordinates
               const positionInCm = { x: entry.position.x * 100, y: entry.position.y * 100 };
-              const denormalizedPosition = denormalizeCoordinates(positionInCm);
               
               horizontalVents.push({
                 id: entry.id,
@@ -3416,8 +3415,8 @@ export default function WizardDesign() {
                 name: entry.id,
                 floorName: floorName,
                 position: {
-                  x: denormalizedPosition.x,
-                  y: denormalizedPosition.y,
+                  x: positionInCm.x,
+                  y: positionInCm.y,
                   z: (entry.position?.z * 100) || 220 // Convertir metros a cm, default ceiling height
                 },
                 rotation: { x: 0, y: 0, z: 0 },
@@ -3461,9 +3460,8 @@ export default function WizardDesign() {
         if (floorData.floor_surf?.airEntries) {
           floorData.floor_surf.airEntries.forEach((entry: any) => {
             if (entry.type === 'vent') {
-              // Convertir metros a centímetros (* 100), luego aplicar denormalizeCoordinates
+              // Convertir metros a centímetros (* 100) directamente, SIN denormalizeCoordinates
               const positionInCm = { x: entry.position.x * 100, y: entry.position.y * 100 };
-              const denormalizedPosition = denormalizeCoordinates(positionInCm);
               
               horizontalVents.push({
                 id: entry.id,
@@ -3471,8 +3469,8 @@ export default function WizardDesign() {
                 name: entry.id,
                 floorName: floorName,
                 position: {
-                  x: denormalizedPosition.x,
-                  y: denormalizedPosition.y,
+                  x: positionInCm.x,
+                  y: positionInCm.y,
                   z: (entry.position?.z * 100) || 0 // Convertir metros a cm, default floor level
                 },
                 rotation: { x: 0, y: 0, z: 0 },
