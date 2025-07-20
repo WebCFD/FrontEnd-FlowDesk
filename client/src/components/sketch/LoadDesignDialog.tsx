@@ -114,16 +114,6 @@ export default function LoadDesignDialog({
         airEntryCount += floor.airEntries.length;
       }
       
-      // Contar air entries en ceiling (vents de techo)
-      if (floor.ceiling?.airEntries && Array.isArray(floor.ceiling.airEntries)) {
-        airEntryCount += floor.ceiling.airEntries.length;
-      }
-      
-      // Contar air entries en floor_surf (vents de suelo)
-      if (floor.floor_surf?.airEntries && Array.isArray(floor.floor_surf.airEntries)) {
-        airEntryCount += floor.floor_surf.airEntries.length;
-      }
-      
       // Contar walls y stairs
       const wallCount = Array.isArray(floor.walls) ? floor.walls.length : 0;
       const stairCount = Array.isArray(floor.stairs) ? floor.stairs.length : 0;
