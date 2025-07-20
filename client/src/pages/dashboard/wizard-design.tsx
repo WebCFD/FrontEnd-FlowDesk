@@ -1541,25 +1541,45 @@ export default function WizardDesign() {
                   <h3 className="font-semibold">Wall Design</h3>
                   <div className="flex items-start gap-4">
                     {/* Wall Line Button */}
-                    <Button
-                      variant="outline"
-                      className={getWallStyles()}
-                      onClick={() => {
-                        if (isWallLineDisabled) {
-                          toast({
-                            title: "Cannot Add Wall Lines",
-                            description: "To add more lines, open the existing contour by moving points or erasing lines. Only one closed room per floor is allowed.",
-                            variant: "destructive",
-                          });
-                          return;
-                        }
-                        handleToolSelect("wall");
-                      }}
-                      title={isWallLineDisabled ? "Cannot add lines - room contour is closed" : "Add wall lines"}
-                    >
-                      <div className={`w-6 h-6 border-2 ${isWallLineDisabled ? 'border-gray-400' : 'border-gray-500'}`} />
-                      <span className="text-xs mt-1">Wall Line</span>
-                    </Button>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={getWallStyles()}
+                            onClick={() => {
+                              if (isWallLineDisabled) {
+                                toast({
+                                  title: "Cannot Add Wall Lines",
+                                  description: "To add more lines, open the existing contour by moving points or erasing lines. Only one closed room per floor is allowed.",
+                                  variant: "destructive",
+                                });
+                                return;
+                              }
+                              handleToolSelect("wall");
+                            }}
+                          >
+                            <div className={`w-6 h-6 border-2 ${isWallLineDisabled ? 'border-gray-400' : 'border-gray-500'}`} />
+                            <span className="text-xs mt-1">Wall Line</span>
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent 
+                          side="top" 
+                          className={isWallLineDisabled ? "bg-red-50 border-red-200 text-red-800" : ""}
+                        >
+                          {isWallLineDisabled ? (
+                            <div className="space-y-1">
+                              <p className="font-semibold">Wall Line Disabled</p>
+                              <p className="text-xs">Room contour is closed. To add more lines:</p>
+                              <p className="text-xs">• Move existing points, or</p>
+                              <p className="text-xs">• Use Eraser to remove lines</p>
+                            </div>
+                          ) : (
+                            "Add wall lines to create room boundaries"
+                          )}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                     
                     {/* Wall Temperature */}
                     <div className="space-y-2 flex-1">
