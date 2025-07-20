@@ -3308,14 +3308,42 @@ export default function WizardDesign() {
         
         const convertedAirEntries = airEntries;
         
-        const convertedStairs = (floorData.stairs || []).map((stair: any) => ({
-          id: stair.id,
-          points: stair.points.map((p: any) => denormalizeCoordinates({ x: p.x, y: p.y })),
-          floor: floorName,
-          direction: stair.direction,
-          connectsTo: stair.connectsTo,
-          isImported: !!stair.connectsTo
-        }));
+        // Procesar escaleras: el JSON puede tener formato 'lines' o 'points'
+        const convertedStairs = (floorData.stairs || []).map((stair: any) => {
+          let points = [];
+          
+          if (stair.lines) {
+            // Formato nuevo: usar lines para crear puntos del polígono
+            points = stair.lines.map((line: any) => {
+              const startInCm = { x: line.start.x * 100, y: line.start.y * 100 };
+              return denormalizeCoordinates(startInCm);
+            });
+            
+            // Añadir el último punto si no forma un polígono cerrado
+            const lastLine = stair.lines[stair.lines.length - 1];
+            const endInCm = { x: lastLine.end.x * 100, y: lastLine.end.y * 100 };
+            const lastPoint = denormalizeCoordinates(endInCm);
+            
+            // Solo añadir si no es igual al primer punto (evitar duplicados)
+            const firstPoint = points[0];
+            if (firstPoint && (Math.abs(lastPoint.x - firstPoint.x) > 1 || Math.abs(lastPoint.y - firstPoint.y) > 1)) {
+              points.push(lastPoint);
+            }
+          } else if (stair.points) {
+            // Formato antiguo: usar points directamente
+            points = stair.points.map((p: any) => denormalizeCoordinates({ x: p.x, y: p.y }));
+          }
+          
+          return {
+            id: stair.id,
+            points: points,
+            floor: floorName,
+            direction: stair.direction || 'up',
+            connectsTo: stair.connectsTo,
+            isImported: !!stair.connectsTo,
+            temperature: stair.temp || 20
+          };
+        });
         
         convertedFloors[floorName] = {
           lines: convertedLines,
