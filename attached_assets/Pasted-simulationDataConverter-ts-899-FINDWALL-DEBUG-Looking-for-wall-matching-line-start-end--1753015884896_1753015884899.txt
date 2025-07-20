@@ -1,0 +1,51 @@
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: null
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: null
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: null
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_0F_1: {wallStart: {…}, wallEnd: {…}, startMatch: true, endMatch: true}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: wall_0F_1
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_0F_1: {wallStart: {…}, wallEnd: {…}, startMatch: false, endMatch: false}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_0F_2: {wallStart: {…}, wallEnd: {…}, startMatch: true, endMatch: true}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: wall_0F_2
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_0F_1: {wallStart: {…}, wallEnd: {…}, startMatch: false, endMatch: false}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_0F_2: {wallStart: {…}, wallEnd: {…}, startMatch: false, endMatch: false}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_0F_3: {wallStart: {…}, wallEnd: {…}, startMatch: true, endMatch: true}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: wall_0F_3
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: null
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: null
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: null
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_1F_1: {wallStart: {…}, wallEnd: {…}, startMatch: true, endMatch: true}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: wall_1F_1
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_1F_1: {wallStart: {…}, wallEnd: {…}, startMatch: false, endMatch: false}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_1F_2: {wallStart: {…}, wallEnd: {…}, startMatch: true, endMatch: true}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: wall_1F_2
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_1F_1: {wallStart: {…}, wallEnd: {…}, startMatch: false, endMatch: false}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_1F_2: {wallStart: {…}, wallEnd: {…}, startMatch: false, endMatch: false}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_1F_3: {wallStart: {…}, wallEnd: {…}, startMatch: true, endMatch: true}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: wall_1F_3
+analytics.ts:62 📊 Analytics Event: {category: 'simulation', action: 'start_simulation', label: 'design_loaded', value: 2, status: 'sent'}
+wizard-design.tsx:3416 [TEMP DEBUG] Checking walls for ground: 3 walls found
+wizard-design.tsx:3417 [TEMP DEBUG] Store floors available: (2) ['ground', 'first']
+wizard-design.tsx:3418 [TEMP DEBUG] Current store state for ground: exists
+wizard-design.tsx:3421 [TEMP DEBUG] Walls ready for ground, applying temperatures
+wizard-design.tsx:3428 [TEMP DEBUG] Updating wall wall_0F_1 from 20 to 33
+wizard-design.tsx:3428 [TEMP DEBUG] Updating wall wall_0F_2 from 20 to 33
+wizard-design.tsx:3428 [TEMP DEBUG] Updating wall wall_0F_3 from 20 to 33
+wizard-design.tsx:3416 [TEMP DEBUG] Checking walls for first: 3 walls found
+wizard-design.tsx:3417 [TEMP DEBUG] Store floors available: (2) ['ground', 'first']
+wizard-design.tsx:3418 [TEMP DEBUG] Current store state for first: exists
+wizard-design.tsx:3421 [TEMP DEBUG] Walls ready for first, applying temperatures
+wizard-design.tsx:3428 [TEMP DEBUG] Updating wall wall_1F_1 from 20 to 44
+wizard-design.tsx:3428 [TEMP DEBUG] Updating wall wall_1F_2 from 20 to 44
+wizard-design.tsx:3428 [TEMP DEBUG] Updating wall wall_1F_3 from 20 to 44
