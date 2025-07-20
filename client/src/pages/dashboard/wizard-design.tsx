@@ -3400,10 +3400,24 @@ export default function WizardDesign() {
 
         // CRÍTICO: Aplicar temperaturas preservadas del JSON después de sincronizar paredes
         if (floorData.wallTemperatures && floorData.wallTemperatures.size > 0) {
-          // Usar setTimeout más largo para asegurar que la sincronización de paredes ocurra primero
-          setTimeout(() => {
-            applyWallTemperaturesFromJSON(floorName, floorData.wallTemperatures);
-          }, 500);
+          // Usar verificación activa en lugar de timeout fijo
+          const checkWallsAndApplyTemperatures = () => {
+            const floors = useRoomStore.getState().floors;
+            const currentWalls = floors[floorName]?.walls || [];
+            
+            console.log(`[TEMP DEBUG] Checking walls for ${floorName}: ${currentWalls.length} walls found`);
+            
+            if (currentWalls.length > 0) {
+              console.log(`[TEMP DEBUG] Walls ready for ${floorName}, applying temperatures`);
+              applyWallTemperaturesFromJSON(floorName, floorData.wallTemperatures);
+            } else {
+              console.log(`[TEMP DEBUG] Walls not ready for ${floorName}, retrying in 100ms`);
+              setTimeout(checkWallsAndApplyTemperatures, 100);
+            }
+          };
+          
+          // Iniciar verificación después de un pequeño delay para permitir que syncWallsForCurrentFloor termine
+          setTimeout(checkWallsAndApplyTemperatures, 50);
         }
       });
       
