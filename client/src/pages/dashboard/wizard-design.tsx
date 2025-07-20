@@ -3400,10 +3400,10 @@ export default function WizardDesign() {
 
         // CRÍTICO: Aplicar temperaturas preservadas del JSON después de sincronizar paredes
         if (floorData.wallTemperatures && floorData.wallTemperatures.size > 0) {
-          // Usar setTimeout para asegurar que la sincronización de paredes ocurra primero
+          // Usar setTimeout más largo para asegurar que la sincronización de paredes ocurra primero
           setTimeout(() => {
             applyWallTemperaturesFromJSON(floorName, floorData.wallTemperatures);
-          }, 100);
+          }, 500);
         }
       });
       
