@@ -2953,6 +2953,7 @@ export default function Canvas3D({
     }
 
     // Create furniture items from props
+    console.log(`🔍 [FURNITURE DEBUG] Floor ${floorData.name} furnitureItems:`, floorData.furnitureItems?.length || 0, floorData.furnitureItems);
     if (floorData.furnitureItems && floorData.furnitureItems.length > 0) {
       floorData.furnitureItems.forEach((furnitureItem) => {
         // Validate furniture item data before processing
