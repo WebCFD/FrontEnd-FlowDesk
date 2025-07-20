@@ -1,0 +1,145 @@
+{
+  "version": "1.0",
+  "floors": {
+    "0": {
+      "height": 2.5,
+      "floorDeck": 0.0,
+      "ceilingTemperature": 22,
+      "floorTemperature": 20,
+      "walls": [
+        {
+          "id": "0F_wall1",
+          "uuid": "wall-ground-001",
+          "floor": "Ground Floor",
+          "lineRef": "line-ground-001",
+          "start": {
+            "x": -200,
+            "y": -150
+          },
+          "end": {
+            "x": 200,
+            "y": -150
+          },
+          "temp": 20
+        },
+        {
+          "id": "0F_wall2", 
+          "uuid": "wall-ground-002",
+          "floor": "Ground Floor",
+          "lineRef": "line-ground-002",
+          "start": {
+            "x": 200,
+            "y": -150
+          },
+          "end": {
+            "x": 200,
+            "y": 150
+          },
+          "temp": 20
+        },
+        {
+          "id": "0F_wall3",
+          "uuid": "wall-ground-003", 
+          "floor": "Ground Floor",
+          "lineRef": "line-ground-003",
+          "start": {
+            "x": 200,
+            "y": 150
+          },
+          "end": {
+            "x": -200,
+            "y": 150
+          },
+          "temp": 20
+        },
+        {
+          "id": "0F_wall4",
+          "uuid": "wall-ground-004", 
+          "floor": "Ground Floor",
+          "lineRef": "line-ground-004",
+          "start": {
+            "x": -200,
+            "y": 150
+          },
+          "end": {
+            "x": -200,
+            "y": -150
+          },
+          "temp": 20
+        }
+      ],
+      "airEntries": [],
+      "stairs": []
+    },
+    "1": {
+      "height": 2.5,
+      "floorDeck": 0.0,
+      "ceilingTemperature": 24,
+      "floorTemperature": 22,
+      "walls": [
+        {
+          "id": "1F_wall1",
+          "uuid": "wall-first-001",
+          "floor": "First Floor",
+          "lineRef": "line-first-001",
+          "start": {
+            "x": 50,
+            "y": 50
+          },
+          "end": {
+            "x": 350,
+            "y": 50
+          },
+          "temp": 22
+        },
+        {
+          "id": "1F_wall2", 
+          "uuid": "wall-first-002",
+          "floor": "First Floor",
+          "lineRef": "line-first-002",
+          "start": {
+            "x": 350,
+            "y": 50
+          },
+          "end": {
+            "x": 350,
+            "y": 250
+          },
+          "temp": 22
+        },
+        {
+          "id": "1F_wall3",
+          "uuid": "wall-first-003", 
+          "floor": "First Floor",
+          "lineRef": "line-first-003",
+          "start": {
+            "x": 350,
+            "y": 250
+          },
+          "end": {
+            "x": 50,
+            "y": 250
+          },
+          "temp": 22
+        },
+        {
+          "id": "1F_wall4",
+          "uuid": "wall-first-004", 
+          "floor": "First Floor",
+          "lineRef": "line-first-004",
+          "start": {
+            "x": 50,
+            "y": 250
+          },
+          "end": {
+            "x": 50,
+            "y": 50
+          },
+          "temp": 22
+        }
+      ],
+      "airEntries": [],
+      "stairs": []
+    }
+  }
+}
