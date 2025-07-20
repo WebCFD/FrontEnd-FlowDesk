@@ -1,0 +1,130 @@
+Enhanced Wall Line Restriction Implementation Summary
+Goal
+Prevent users from creating multiple closed contours per floor by disabling Wall Line tool when a closed contour exists, with robust performance and user experience considerations.
+
+Core Components
+1. Shared Utility Functions
+// Move to shared utility or keep in wizard-design.tsx
+const arePointsEqual = (p1: Point, p2: Point): boolean => {
+  const dx = p1.x - p2.x;
+  const dy = p1.y - p2.y;
+  return Math.sqrt(dx * dx + dy * dy) < 5;
+};
+const findConnectedLines = (point: Point, lines: Line[]) => {
+  return lines.filter(line => 
+    arePointsEqual(line.start, point) || arePointsEqual(line.end, point)
+  );
+};
+const isInClosedContour = (point: Point, lines: Line[]): boolean => {
+  // Implement graph traversal algorithm (copy from Canvas2D)
+  // Returns true if point is part of a closed contour
+};
+2. Performance-Optimized Detection
+// State variables
+const [isWallLineDisabled, setIsWallLineDisabled] = useState(false);
+const [closedContourCache, setClosedContourCache] = useState(new Map());
+const [lastLinesHash, setLastLinesHash] = useState('');
+const hasClosedContourOnCurrentFloor = useCallback(() => {
+  const linesHash = JSON.stringify(lines);
+  
+  if (closedContourCache.has(linesHash)) {
+    return closedContourCache.get(linesHash);
+  }
+  
+  const endpoints = [...new Set(lines.flatMap(line => [line.start, line.end]))];
+  const result = endpoints.some(point => {
+    const connections = findConnectedLines(point, lines).length;
+    return connections > 1 && isInClosedContour(point, lines);
+  });
+  
+  closedContourCache.set(linesHash, result);
+  return result;
+}, [lines, closedContourCache]);
+3. Smart State Management
+useEffect(() => {
+  const linesHash = JSON.stringify(lines);
+  
+  if (linesHash !== lastLinesHash) {
+    // Clear cache when lines change
+    setClosedContourCache(new Map());
+    
+    // Check contour status
+    const hasClosedContour = hasClosedContourOnCurrentFloor();
+    setIsWallLineDisabled(hasClosedContour);
+    
+    // Auto-deselect Wall Line if contour just closed and tool is active
+    if (hasClosedContour && currentTool === "wall") {
+      setCurrentTool(null);
+      toast({
+        title: "Wall Line Tool Disabled",
+        description: "Room contour completed. Wall Line tool automatically disabled.",
+        variant: "default",
+      });
+    }
+    
+    setLastLinesHash(linesHash);
+  }
+}, [lines, currentFloor, hasClosedContourOnCurrentFloor, currentTool]);
+4. Enhanced Tool Selection Logic
+const handleToolSelect = (tool: "wall" | "eraser" | "measure" | "stairs") => {
+  // Wall Line restriction check
+  if (tool === "wall" && isWallLineDisabled) {
+    toast({
+      title: "Cannot Add Wall Lines",
+      description: "To add more lines, open the existing contour by moving points or erasing lines. Only one closed room per floor is allowed.",
+      variant: "destructive",
+    });
+    return;
+  }
+  // Existing analytics and tool selection logic
+  trackEvent(/* ... existing analytics ... */);
+  
+  if (currentTool === tool) {
+    setCurrentTool(null);
+  } else {
+    setCurrentTool(tool);
+    setCurrentAirEntry(null);
+  }
+};
+5. Dynamic Button Styling
+const getWallStyles = () => {
+  const baseStyles = "w-20 h-16 p-2 flex flex-col items-center justify-center transition-all duration-200 shadow-sm";
+  const disabledStyles = "bg-gray-200 text-gray-400 cursor-not-allowed opacity-60";
+  const enabledStyles = "hover:bg-gray-100 text-gray-700";
+  const activeStyles = "scale-95 shadow-inner bg-gray-100";
+  const borderStyles = isWallLineDisabled ? "border-gray-300" : "border-gray-500";
+  return cn(
+    baseStyles,
+    isWallLineDisabled ? disabledStyles : enabledStyles,
+    currentTool === "wall" && !isWallLineDisabled ? activeStyles : "",
+    "border-2",
+    borderStyles,
+  );
+};
+6. Enhanced Button Component
+<Button
+  variant="outline"
+  className={getWallStyles()}
+  onClick={() => handleToolSelect("wall")}
+  disabled={isWallLineDisabled}
+  title={isWallLineDisabled ? "Cannot add lines - room contour is closed" : "Add wall lines"}
+>
+  <div className={`w-6 h-6 border-2 ${isWallLineDisabled ? 'border-gray-400' : 'border-gray-500'}`} />
+  <span className="text-xs mt-1">Wall Line</span>
+</Button>
+Key Enhancements Over Simple Version
+Performance: Caching prevents expensive recalculations
+UX: Auto-deselect tool when contour closes + informative tooltips
+Floor-aware: Resets state when switching floors
+Visual feedback: Clear disabled styling with opacity
+Error prevention: Early return in tool selection
+User guidance: Multiple toast messages for different scenarios
+Implementation Sequence
+Add utility functions and state variables
+Implement cached contour detection
+Add smart useEffect with floor awareness
+Enhance handleToolSelect with restriction logic
+Update getWallStyles for disabled state
+Modify button with disabled prop and tooltip
+Test edge cases and performance
+This enhanced implementation provides robust single-contour-per-floor enforcement while maintaining optimal performance and user experience.
