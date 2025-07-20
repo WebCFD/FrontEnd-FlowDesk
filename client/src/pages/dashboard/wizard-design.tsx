@@ -3207,11 +3207,16 @@ export default function WizardDesign() {
       Object.entries(designData.floors).forEach(([floorNumber, floorData]: [string, any]) => {
         const floorName = floorNameMap[floorNumber] || `floor_${floorNumber}`;
         
-        // Convertir coordenadas del JSON de vuelta al sistema interno usando denormalizeCoordinates
+        // Convertir coordenadas del JSON de vuelta al sistema interno
+        // JSON está en S.I. units (metros), convertir a centímetros primero
         const convertedLines = (floorData.walls || []).map((wall: any) => {
-          const start = denormalizeCoordinates({ x: wall.start.x, y: wall.start.y });
-          const end = denormalizeCoordinates({ x: wall.end.x, y: wall.end.y });
-          console.log('🔍 JSON LOAD: Converting wall:', wall.id, 'from', wall.start, 'to', start, 'and', wall.end, 'to', end);
+          // Convertir metros a centímetros (* 100), luego aplicar denormalizeCoordinates
+          const startInCm = { x: wall.start.x * 100, y: wall.start.y * 100 };
+          const endInCm = { x: wall.end.x * 100, y: wall.end.y * 100 };
+          
+          const start = denormalizeCoordinates(startInCm);
+          const end = denormalizeCoordinates(endInCm);
+          console.log('🔍 JSON LOAD: Converting wall:', wall.id, 'from', wall.start, 'm to', startInCm, 'cm to', start, 'px');
           return { start, end };
         });
         

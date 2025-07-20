@@ -909,25 +909,13 @@ export function findWallForLine(walls: Wall[], line: Line): Wall | undefined {
 export function findSimilarWallForLine(walls: Wall[], line: Line): Wall | undefined {
   const SIMILARITY_TOLERANCE = 1.0; // 1 pixel tolerance for finding similar walls
   
-  console.log(`🔍 [SIMILAR WALL] Looking for similar wall for line:`, { start: line.start, end: line.end });
-  console.log(`🔍 [SIMILAR WALL] Checking against ${walls.length} walls with tolerance ${SIMILARITY_TOLERANCE}`);
-  
   const result = walls.find(wall => {
     const startMatch = arePointsEqual(wall.startPoint, line.start, SIMILARITY_TOLERANCE);
     const endMatch = arePointsEqual(wall.endPoint, line.end, SIMILARITY_TOLERANCE);
     
-    console.log(`🔍 [SIMILAR WALL] Wall ${wall.id}:`, {
-      wallStart: wall.startPoint,
-      wallEnd: wall.endPoint,
-      startMatch,
-      endMatch,
-      temp: wall.properties.temperature
-    });
-    
     return startMatch && endMatch;
   });
   
-  console.log(`🔍 [SIMILAR WALL] Found similar wall:`, result ? { id: result.id, temp: result.properties.temperature } : 'none');
   return result;
 }
 
@@ -942,16 +930,11 @@ export function syncWallsWithLines(
   floorName: string,
   defaultTemperature: number = 20
 ): Wall[] {
-  console.log(`🔧 [WALL SYNC] syncWallsWithLines called for floor: ${floorName}`);
-  console.log(`🔧 [WALL SYNC] Lines: ${lines.length}, Existing walls: ${existingWalls.length}, Default temp: ${defaultTemperature}`);
-  
   // Step 1: Remove orphaned walls (walls that don't have corresponding lines)
   const validWalls = removeOrphanedWalls(existingWalls, lines);
-  console.log(`🔧 [WALL SYNC] After removing orphans: ${validWalls.length} valid walls`);
   
   // Step 2: Add missing walls (lines that don't have corresponding walls)
   const syncedWalls = addMissingWalls(lines, validWalls, floorName, defaultTemperature);
-  console.log(`🔧 [WALL SYNC] Final result: ${syncedWalls.length} total walls`);
   
   return syncedWalls;
 }
@@ -977,10 +960,6 @@ export function addMissingWalls(
   floorName: string,
   defaultTemperature: number = 20.0
 ): Wall[] {
-  console.log(`🔧 [WALL SYNC] addMissingWalls called for floor: ${floorName}`);
-  console.log(`🔧 [WALL SYNC] Input: ${lines.length} lines, ${existingWalls.length} existing walls`);
-  console.log(`🔧 [WALL SYNC] Existing walls:`, existingWalls.map(w => ({ id: w.id, temp: w.properties.temperature })));
-  
   const wallsToAdd: Wall[] = [];
   
   lines.forEach((line, index) => {
@@ -988,25 +967,16 @@ export function addMissingWalls(
     const existingWall = findWallForLine(existingWalls, line);
     
     if (!existingWall) {
-      console.log(`🔧 [WALL SYNC] Line ${index} needs new wall:`, { start: line.start, end: line.end });
-      
       // Check if there's a wall with similar coordinates but different precision that might have custom temperature
       const similarWall = findSimilarWallForLine(existingWalls, line);
       const preservedTemperature = similarWall?.properties?.temperature || defaultTemperature;
       
-      console.log(`🔧 [WALL SYNC] Similar wall found:`, similarWall ? { id: similarWall.id, temp: similarWall.properties.temperature } : 'none');
-      console.log(`🔧 [WALL SYNC] Using temperature: ${preservedTemperature} (default: ${defaultTemperature})`);
-      
       // Create a new wall for this line, preserving temperature if found
       const newWall = createWallFromLine(line, floorName, existingWalls.concat(wallsToAdd), preservedTemperature);
-      console.log(`🔧 [WALL SYNC] Created new wall:`, { id: newWall.id, temp: newWall.properties.temperature });
       wallsToAdd.push(newWall);
-    } else {
-      console.log(`🔧 [WALL SYNC] Line ${index} has existing wall:`, { id: existingWall.id, temp: existingWall.properties.temperature });
     }
   });
   
-  console.log(`🔧 [WALL SYNC] Result: ${wallsToAdd.length} walls added, ${existingWalls.length + wallsToAdd.length} total walls`);
   return [...existingWalls, ...wallsToAdd];
 }
 
