@@ -404,6 +404,32 @@ export default function WizardDesign() {
     return () => window.removeEventListener('resize', calculateMenuWidth);
   }, [menuWidthPercentage, viewportOffset]);
 
+  // Check for pending design load from dashboard
+  useEffect(() => {
+    const pendingDesignData = sessionStorage.getItem('pendingDesignLoad');
+    if (pendingDesignData) {
+      try {
+        const jsonData = JSON.parse(pendingDesignData);
+        // Clear the pending data immediately
+        sessionStorage.removeItem('pendingDesignLoad');
+        // Load the design using existing function
+        handleLoadDesign(jsonData);
+        toast({
+          title: "Design Loaded",
+          description: "Design from dashboard loaded successfully.",
+        });
+      } catch (error) {
+        console.error('Error loading pending design:', error);
+        sessionStorage.removeItem('pendingDesignLoad');
+        toast({
+          title: "Load Error",
+          description: "Failed to load design from dashboard.",
+          variant: "destructive",
+        });
+      }
+    }
+  }, []); // Run only once on component mount
+
   // Use the global room store with updated selectors
   const {
     floors: rawFloors,
