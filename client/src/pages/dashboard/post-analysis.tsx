@@ -55,6 +55,18 @@ export default function PostAnalysis() {
               <div className="text-center py-8">
                 <div className="text-red-600">Error loading simulations</div>
               </div>
+            ) : !user || user.isAnonymous ? (
+              <div className="text-center py-8">
+                <div className="flex justify-center mb-4">
+                  <div className="p-4 bg-muted rounded-full">
+                    <FileText className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                </div>
+                <h3 className="text-lg font-semibold mb-2">Login Required</h3>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  Please log in to your account to view and analyze your completed simulations.
+                </p>
+              </div>
             ) : completedSimulations.length === 0 ? (
               <div className="text-center py-8">
                 <div className="flex justify-center mb-4">
