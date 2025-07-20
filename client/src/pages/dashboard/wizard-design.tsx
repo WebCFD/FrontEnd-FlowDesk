@@ -2280,7 +2280,7 @@ export default function WizardDesign() {
                         <span className="font-medium">{stats ? stats.airEntries : "0"}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-600">RSP objects:</span>
+                        <span className="text-gray-600">3D objects:</span>
                         <span className="font-medium">{stats ? stats.furniture : "0"}</span>
                       </div>
                     </div>
