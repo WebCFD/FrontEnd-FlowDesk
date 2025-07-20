@@ -3333,6 +3333,20 @@ export default function WizardDesign() {
         
         const convertedAirEntries = airEntries;
         
+        // Debug: Log imported AirEntries for verification
+        console.log(`🔍 [JSON IMPORT] Floor ${floorName} - AirEntries imported:`, {
+          count: convertedAirEntries.length,
+          entries: convertedAirEntries.map(e => ({
+            id: e.id,
+            type: e.type,
+            position: e.position,
+            dimensions: e.dimensions,
+            hasLine: !!e.line,
+            lineCoords: e.line ? `${e.line.start.x},${e.line.start.y} -> ${e.line.end.x},${e.line.end.y}` : 'no line',
+            properties: e.properties
+          }))
+        });
+        
         // Procesar escaleras: el JSON puede tener formato 'lines' o 'points'
         const convertedStairs = (floorData.stairs || []).map((stair: any) => {
           let points = [];
