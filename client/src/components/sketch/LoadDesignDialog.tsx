@@ -130,12 +130,16 @@ export default function LoadDesignDialog({
       const wallCount = Array.isArray(floor.walls) ? floor.walls.length : 0;
       const stairCount = Array.isArray(floor.stairs) ? floor.stairs.length : 0;
       
+      // Contar furniture 3D elements
+      const furnitureCount = Array.isArray(floor.furniture) ? floor.furniture.length : 0;
+      
       // Agregar detalles del piso
       floorDetails.push({
         name: `Planta ${floorKey}`,
         airEntryCount,
         wallCount,
-        stairCount
+        stairCount,
+        furnitureCount
       });
       
       if (airEntryCount === 0) {
@@ -278,6 +282,7 @@ export default function LoadDesignDialog({
                               <div>• AirEntries: {floor.airEntryCount}</div>
                               <div>• Paredes: {floor.wallCount}</div>
                               <div>• Escaleras: {floor.stairCount}</div>
+                              <div>• Furniture: {floor.furnitureCount}</div>
                             </div>
                           ))}
                         </div>

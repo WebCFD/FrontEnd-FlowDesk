@@ -30,6 +30,28 @@ import LoginModal from "@/components/auth/login-modal";
 import RegisterModal from "@/components/auth/register-modal";
 import { generateSimulationData, denormalizeCoordinates } from "@/lib/simulationDataConverter";
 import * as THREE from "three";
+
+// Helper function for default dimensions (matching Canvas3D)
+const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'car' | 'block' | 'vent' | 'custom') => {
+  switch (type) {
+    case 'table':
+      return { width: 120, height: 75, depth: 80 };
+    case 'person':
+      return { width: 50, height: 170, depth: 30 };
+    case 'armchair':
+      return { width: 70, height: 85, depth: 70 };
+    case 'car':
+      return { width: 450, height: 150, depth: 180 };
+    case 'block':
+      return { width: 80, height: 80, depth: 80 };
+    case 'vent':
+      return { width: 50, height: 50, depth: 10 };
+    case 'custom':
+      return { width: 100, height: 100, depth: 100 };
+    default:
+      return { width: 80, height: 80, depth: 80 };
+  }
+};
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
 import {
@@ -3510,6 +3532,67 @@ export default function WizardDesign() {
           });
         }
 
+        // Procesar furniture 3D elements
+        const furnitureItems: any[] = [];
+        if (floorData.furniture) {
+          floorData.furniture.forEach((item: any) => {
+            // Extraer tipo de furniture del ID (person_0F_1 -> person)
+            const furnitureType = item.id.split('_')[0];
+            
+            // Convertir posición de metros a centímetros (* 100) directamente, SIN denormalizeCoordinates
+            const positionInCm = { 
+              x: item.position.x * 100, 
+              y: item.position.y * 100, 
+              z: item.position.z * 100 
+            };
+            
+            // Mapear tipos conocidos o usar 'block' como fallback
+            const mappedType = ['table', 'person', 'armchair', 'car', 'block'].includes(furnitureType) 
+              ? furnitureType 
+              : 'block';
+            
+            furnitureItems.push({
+              id: item.id,
+              type: mappedType as const,
+              name: item.id,
+              floorName: floorName,
+              position: {
+                x: positionInCm.x,
+                y: positionInCm.y,
+                z: positionInCm.z
+              },
+              rotation: { 
+                x: item.rotation?.x || 0, 
+                y: item.rotation?.y || 0, 
+                z: item.rotation?.z || 0 
+              },
+              scale: { 
+                x: item.scale?.x || 1, 
+                y: item.scale?.y || 1, 
+                z: item.scale?.z || 1 
+              },
+              // Convertir dimensiones usando defaults para el tipo específico
+              dimensions: (() => {
+                const defaultDims = getDefaultDimensions(mappedType);
+                return {
+                  width: defaultDims.width * (item.scale?.x || 1),
+                  height: defaultDims.height * (item.scale?.z || 1), // Z scale -> height
+                  depth: defaultDims.depth * (item.scale?.y || 1)    // Y scale -> depth
+                };
+              })(),
+              properties: {
+                material: 'wood', // Default material
+                emissivity: item.simulationProperties?.emissivity || 0.9,
+                temperature: item.simulationProperties?.temperature || 20
+              },
+              simulationProperties: {
+                temperature: item.simulationProperties?.temperature || 20,
+                emissivity: item.simulationProperties?.emissivity || 0.9
+              }
+            });
+          });
+        }
+
         convertedFloors[floorName] = {
           lines: convertedLines,
           airEntries: convertedAirEntries,
@@ -3517,7 +3600,8 @@ export default function WizardDesign() {
           name: floorName,
           stairPolygons: convertedStairs,
           wallTemperatures: wallTemperatures, // Preservar las temperaturas para uso posterior
-          horizontalVents: horizontalVents // Agregar vents horizontales
+          horizontalVents: horizontalVents, // Agregar vents horizontales
+          furnitureItems: furnitureItems    // Agregar furniture 3D elements
         };
         
 
@@ -3558,6 +3642,17 @@ export default function WizardDesign() {
           });
         } else {
           console.log(`🔍 No horizontal vents found for floor ${floorName}`);
+        }
+
+        // Cargar furniture 3D elements al store
+        if (floorData.furnitureItems && floorData.furnitureItems.length > 0) {
+          console.log(`🔍 LOADING ${floorData.furnitureItems.length} furniture items for floor ${floorName}:`, floorData.furnitureItems);
+          floorData.furnitureItems.forEach((furniture: any) => {
+            console.log(`🔍 Adding furniture to store:`, furniture);
+            addFurnitureToFloor(floorName, furniture);
+          });
+        } else {
+          console.log(`🔍 No furniture items found for floor ${floorName}`);
         }
 
         // CRÍTICO: Aplicar temperaturas preservadas del JSON después de sincronizar paredes
