@@ -2350,7 +2350,7 @@ export default function WizardDesign() {
                             <div className="ml-2">
                               <h5 className="text-xs font-medium text-red-800">Insufficient Boundary Conditions (IBC)</h5>
                               <p className="text-xs text-red-700 mt-1">
-                                Your simulation needs at least one Air-inlet and one Air-outlet to calculate air circulation patterns. Please return to Step 1, or Step 2 and configure the Air Direction field. Set up at least one Inflow (where air enters) and one Outflow (where air exits) using either Wall Air Entries 2D or Floor/Ceiling Air Entries. Without these airflow boundaries, the simulation cannot determine how air moves through your space.
+                                Your simulation needs at least one Air-inlet and one Air-outlet. Please return to Step 1, or Step 2 and configure the Air Direction field. Set up at least one Inflow (where air enters) and one Outflow (where air exits) using either Wall Air Entries 2D or Floor/Ceiling Air Entries. Without these airflow boundaries, the simulation cannot determine how air moves through your space.
                               </p>
                             </div>
                           </div>
