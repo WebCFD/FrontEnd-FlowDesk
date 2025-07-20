@@ -59,22 +59,10 @@ const pixelsToCm = (pixels: number): number => {
   return pixels * PIXELS_TO_CM;
 };
 
-const calculateNormal = (line: Line | undefined): Point => {
-  // Handle undefined line or missing line properties
-  if (!line || !line.end || !line.start) {
-    // Return default horizontal normal for ceiling/floor vents
-    return { x: 1, y: 0 };
-  }
-  
+const calculateNormal = (line: Line): Point => {
   const dx = line.end.x - line.start.x;
   const dy = line.end.y - line.start.y;
   const length = Math.sqrt(dx * dx + dy * dy);
-  
-  // Handle zero-length lines
-  if (length === 0) {
-    return { x: 1, y: 0 };
-  }
-  
   return {
     x: dx / length,
     y: dy / length,
