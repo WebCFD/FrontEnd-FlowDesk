@@ -663,9 +663,9 @@ export function generateSimulationData(
         id: ventObj.userData?.id || `vent_${floorNumber}_${ceilingAirEntries.length + floorSurfAirEntries.length + 1}`,
         type: "vent",
         position: {
-          x: parseFloat(ventObj.position.x.toFixed(5)),
-          y: parseFloat(ventObj.position.y.toFixed(5)), // Y se mantiene como Y
-          z: parseFloat(ventObj.position.z.toFixed(5)), // Z se mantiene como Z
+          x: cmToM(ventObj.position.x), // Convertir cm a metros
+          y: cmToM(ventObj.position.y), // Convertir cm a metros
+          z: cmToM(ventObj.position.z), // Convertir cm a metros
           normal: {
             x: 0,
             y: 0,
@@ -673,8 +673,8 @@ export function generateSimulationData(
           }
         },
         dimensions: {
-          width: parseFloat((ventObj.scale.x * 0.6).toFixed(5)), // Tamaño basado en escala
-          height: parseFloat((ventObj.scale.z * 0.6).toFixed(5)),
+          width: cmToM(ventObj.userData?.dimensions?.width || 50), // Convertir cm a metros
+          height: cmToM(ventObj.userData?.dimensions?.height || 50), // Convertir cm a metros
           shape: "rectangular" as const
         },
         simulation: {
