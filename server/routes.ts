@@ -260,17 +260,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "File path is required" });
       }
 
-      console.log(`[DEBUG] User authenticated:`, !!req.user, req.user?.id);
-      console.log(`[DEBUG] Looking for file: ${filePath}`);
-      
       // Find simulation to verify user owns the file
       const simulations = await storage.getSimulationsByUserId(req.user.id);
-      console.log(`[DEBUG] Available simulations:`, simulations.map(s => ({ id: s.id, filePath: s.filePath })));
       
-      const simulation = simulations.find(sim => sim.filePath === filePath);
+      // Normalize file paths for comparison (handle both /path and path formats)
+      const normalizedRequestPath = filePath.startsWith('/') ? filePath : `/${filePath}`;
+      const simulation = simulations.find(sim => {
+        const normalizedDbPath = sim.filePath.startsWith('/') ? sim.filePath : `/${sim.filePath}`;
+        return normalizedDbPath === normalizedRequestPath;
+      });
       
       if (!simulation) {
-        console.log(`[DEBUG] File not found in user's simulations`);
         return res.status(403).json({ message: "Unauthorized to access this file" });
       }
 
