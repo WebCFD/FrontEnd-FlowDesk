@@ -2398,7 +2398,7 @@ export default function WizardDesign() {
                             <div className="ml-2">
                               <h5 className="text-xs font-medium text-red-800">Insufficient Stair Connectivity (ISC)</h5>
                               <p className="text-xs text-red-700 mt-1">
-                                Stairs connecting floors are lower than the number of floors. This means some floors are not connected to the rest. While feasible, we recommend to connect them with the Stairs element or to analyze only the floors you have connected.
+                                Your stairs do not connect all floors, leaving some isolated. While possible, this may affect air flow accuracy. Please, add more Stairs elements to connect all floors, or analyze only connected floors (remove others) for realistic results.
                               </p>
                             </div>
                           </div>
@@ -2674,7 +2674,7 @@ export default function WizardDesign() {
     if (!hasValidStairConnectivity) {
       toast({
         title: "Insufficient Stair Connectivity (ISC)",
-        description: "Stairs connecting floors are lower than the number of floors. This means some floors are not connected to the rest. While feasible, we recommend to connect them with the Stairs element or to analyze only the floors you have connected.",
+        description: "Your stairs do not connect all floors, leaving some isolated. While possible, this may affect air flow accuracy. Please, add more Stairs elements to connect all floors, or analyze only connected floors (remove others) for realistic results.",
         variant: "destructive",
       });
       return;
