@@ -309,27 +309,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Theme API endpoint
-  app.post("/api/theme", (req, res) => {
-    try {
-      const { primary, variant, appearance, radius } = req.body;
-      
-      const themeData = {
-        primary: primary || "#0096FF",
-        variant: variant || "professional", 
-        appearance: appearance || "light",
-        radius: radius || 0.5
-      };
-      
-      // For now, just return success without file write
-      // The theme is stored in localStorage on frontend
-      res.json({ success: true, theme: themeData });
-    } catch (error) {
-      console.error("Theme update error:", error);
-      res.status(500).json({ error: "Failed to update theme" });
-    }
-  });
-
   const httpServer = createServer(app);
   return httpServer;
 }

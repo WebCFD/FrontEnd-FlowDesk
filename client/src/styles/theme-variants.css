@@ -1,9 +1,0 @@
-/* Theme Variant Styles - Simplified for CSS Variable System */
-
-/* Themes are now handled via CSS Variables in JavaScript (updateCSSVariables function) */
-/* This file is kept for compatibility but main theming is done programmatically */
-
-/* Placeholder to prevent import errors */
-.theme-placeholder {
-  /* All theming is now handled via updateCSSVariables() in theme-store.ts */
-}
