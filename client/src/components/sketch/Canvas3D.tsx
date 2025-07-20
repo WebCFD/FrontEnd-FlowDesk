@@ -2973,10 +2973,20 @@ export default function Canvas3D({
         
         // Only create furniture if it doesn't already exist in scene
         if (!furnitureExists) {
-          console.log(`🔍 [FURNITURE CREATE] Creating furniture:`, furnitureItem.type, furnitureItem.id, furnitureItem);
+          console.log(`🔍 [FURNITURE CREATE] Creating furniture:`, furnitureItem.type, furnitureItem.id, {
+            position: furnitureItem.position,
+            dimensions: furnitureItem.dimensions,
+            rotation: furnitureItem.rotation,
+            surfaceType: furnitureItem.surfaceType
+          });
           const furnitureModel = createFurnitureModel(furnitureItem, sceneRef.current!, onDeleteFurniture);
           if (furnitureModel) {
-            console.log(`🔍 [FURNITURE SUCCESS] Furniture model created successfully:`, furnitureItem.id);
+            console.log(`🔍 [FURNITURE SUCCESS] Furniture model created successfully:`, furnitureItem.id, {
+              position: furnitureModel.position,
+              scale: furnitureModel.scale,
+              rotation: furnitureModel.rotation,
+              boundingBox: new THREE.Box3().setFromObject(furnitureModel)
+            });
             objects.push(furnitureModel);
           } else {
             console.log(`🔍 [FURNITURE FAILED] Furniture model creation failed:`, furnitureItem.id);
