@@ -517,6 +517,66 @@ export default function WizardDesign() {
   // Get stairPolygons directly from store to ensure real-time updates
   const stairPolygons = currentFloorData.stairPolygons || [];
 
+  // Wall Line restriction utility functions
+  const arePointsEqual = (p1: Point, p2: Point): boolean => {
+    const dx = p1.x - p2.x;
+    const dy = p1.y - p2.y;
+    return Math.sqrt(dx * dx + dy * dy) < 5;
+  };
+
+  const findConnectedLines = (point: Point, lines: Line[]) => {
+    return lines.filter(line => 
+      arePointsEqual(line.start, point) || arePointsEqual(line.end, point)
+    );
+  };
+
+  const isInClosedContour = (point: Point, lines: Line[]): boolean => {
+    const visited = new Set<string>();
+    const startPoint = point;
+    
+    const dfs = (currentPoint: Point, depth: number): boolean => {
+      if (depth > 50) return false; // Prevent infinite loops
+      
+      const pointKey = `${Math.round(currentPoint.x)},${Math.round(currentPoint.y)}`;
+      if (visited.has(pointKey)) {
+        // We've returned to a visited point - check if it's the start
+        return arePointsEqual(currentPoint, startPoint) && depth > 2;
+      }
+      
+      visited.add(pointKey);
+      
+      const connectedLines = findConnectedLines(currentPoint, lines);
+      
+      for (const line of connectedLines) {
+        const nextPoint = arePointsEqual(line.start, currentPoint) ? line.end : line.start;
+        if (dfs(nextPoint, depth + 1)) {
+          return true;
+        }
+      }
+      
+      return false;
+    };
+    
+    return dfs(startPoint, 0);
+  };
+
+  const hasClosedContourOnCurrentFloor = useCallback(() => {
+    const linesHash = JSON.stringify(lines);
+    
+    if (closedContourCache.has(linesHash)) {
+      return closedContourCache.get(linesHash);
+    }
+    
+    const endpoints = [...new Set(lines.flatMap(line => [line.start, line.end]))];
+    const result = endpoints.some(point => {
+      const connections = findConnectedLines(point, lines).length;
+      return connections > 1 && isInClosedContour(point, lines);
+    });
+    
+    closedContourCache.set(linesHash, result);
+    return result;
+  }, [lines, closedContourCache]);
+
   // Smart state management for Wall Line restriction
   useEffect(() => {
     const linesHash = JSON.stringify(lines);
@@ -836,66 +896,6 @@ export default function WizardDesign() {
       description: `Successfully removed ${formatFloorText(floorName)}`,
     });
   };
-
-  // Wall Line restriction utility functions
-  const arePointsEqual = (p1: Point, p2: Point): boolean => {
-    const dx = p1.x - p2.x;
-    const dy = p1.y - p2.y;
-    return Math.sqrt(dx * dx + dy * dy) < 5;
-  };
-
-  const findConnectedLines = (point: Point, lines: Line[]) => {
-    return lines.filter(line => 
-      arePointsEqual(line.start, point) || arePointsEqual(line.end, point)
-    );
-  };
-
-  const isInClosedContour = (point: Point, lines: Line[]): boolean => {
-    const visited = new Set<string>();
-    const startPoint = point;
-    
-    const dfs = (currentPoint: Point, depth: number): boolean => {
-      if (depth > 50) return false; // Prevent infinite loops
-      
-      const pointKey = `${Math.round(currentPoint.x)},${Math.round(currentPoint.y)}`;
-      if (visited.has(pointKey)) {
-        // We've returned to a visited point - check if it's the start
-        return arePointsEqual(currentPoint, startPoint) && depth > 2;
-      }
-      
-      visited.add(pointKey);
-      
-      const connectedLines = findConnectedLines(currentPoint, lines);
-      
-      for (const line of connectedLines) {
-        const nextPoint = arePointsEqual(line.start, currentPoint) ? line.end : line.start;
-        if (dfs(nextPoint, depth + 1)) {
-          return true;
-        }
-      }
-      
-      return false;
-    };
-    
-    return dfs(startPoint, 0);
-  };
-
-  const hasClosedContourOnCurrentFloor = useCallback(() => {
-    const linesHash = JSON.stringify(lines);
-    
-    if (closedContourCache.has(linesHash)) {
-      return closedContourCache.get(linesHash);
-    }
-    
-    const endpoints = [...new Set(lines.flatMap(line => [line.start, line.end]))];
-    const result = endpoints.some(point => {
-      const connections = findConnectedLines(point, lines).length;
-      return connections > 1 && isInClosedContour(point, lines);
-    });
-    
-    closedContourCache.set(linesHash, result);
-    return result;
-  }, [lines, closedContourCache]);
 
   const steps = [
     { id: 1, name: "Contour Design" },
