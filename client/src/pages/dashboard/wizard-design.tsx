@@ -3241,14 +3241,22 @@ export default function WizardDesign() {
         
         // Formato nuevo: air entries en walls
         if (floorData.walls) {
-          floorData.walls.forEach((wall: any) => {
+          floorData.walls.forEach((wall: any, wallIndex: number) => {
             if (wall.airEntries && wall.airEntries.length > 0) {
+              // Calcular la línea de esta pared para asociarla con los AirEntries
+              const startInCm = { x: wall.start.x * 100, y: wall.start.y * 100 };
+              const endInCm = { x: wall.end.x * 100, y: wall.end.y * 100 };
+              const wallLineStart = denormalizeCoordinates(startInCm);
+              const wallLineEnd = denormalizeCoordinates(endInCm);
+              const wallLine = { start: wallLineStart, end: wallLineEnd };
+              
               wall.airEntries.forEach((entry: any) => {
                 // Convertir metros a centímetros (* 100), luego aplicar denormalizeCoordinates
                 const positionInCm = { x: entry.position.x * 100, y: entry.position.y * 100 };
                 const denormalizedPosition = denormalizeCoordinates(positionInCm);
                 
                 airEntries.push({
+                  id: entry.id, // Preservar ID del JSON
                   type: entry.type,
                   position: denormalizedPosition,
                   dimensions: {
@@ -3257,7 +3265,7 @@ export default function WizardDesign() {
                     distanceToFloor: (entry.position?.z * 100) || 110 // Convertir metros a centímetros, default 110cm
                   },
                   properties: entry.simulation || {}, // Preservar propiedades de simulación
-                  line: { start: { x: 0, y: 0 }, end: { x: 0, y: 0 } } // Se calculará automáticamente
+                  line: wallLine // Asociar con la línea de pared correcta
                 });
               });
             }
@@ -3271,7 +3279,29 @@ export default function WizardDesign() {
             const positionInCm = { x: entry.position.x * 100, y: entry.position.y * 100 };
             const denormalizedPosition = denormalizeCoordinates(positionInCm);
             
+            // Para formato antiguo, buscar la línea más cercana basada en la posición
+            let closestLine = { start: { x: 0, y: 0 }, end: { x: 0, y: 0 } };
+            let minDistance = Infinity;
+            
+            convertedLines.forEach((line: any) => {
+              const distance = Math.abs(
+                ((line.end.y - line.start.y) * denormalizedPosition.x) -
+                ((line.end.x - line.start.x) * denormalizedPosition.y) +
+                (line.end.x * line.start.y) -
+                (line.end.y * line.start.x)
+              ) / Math.sqrt(
+                Math.pow(line.end.y - line.start.y, 2) +
+                Math.pow(line.end.x - line.start.x, 2)
+              );
+              
+              if (distance < minDistance) {
+                minDistance = distance;
+                closestLine = line;
+              }
+            });
+            
             airEntries.push({
+              id: entry.id, // Preservar ID del JSON
               type: entry.type,
               position: denormalizedPosition,
               dimensions: {
@@ -3280,7 +3310,7 @@ export default function WizardDesign() {
                 distanceToFloor: (entry.position?.z * 100) || 110 // Convertir metros a centímetros, default 110cm
               },
               properties: entry.simulation || {}, // Preservar propiedades de simulación
-              line: { start: { x: 0, y: 0 }, end: { x: 0, y: 0 } }
+              line: closestLine // Asociar con la línea más cercana
             });
           });
         }
