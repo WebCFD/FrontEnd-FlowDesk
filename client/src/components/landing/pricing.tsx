@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check } from "lucide-react";
+import { useLocation } from "wouter";
 
 const plans = [
   {
@@ -46,6 +47,7 @@ const plans = [
 ];
 
 export default function Pricing() {
+  const [, setLocation] = useLocation();
   return (
     <section id="pricing" className="py-20 bg-slate-50">
       <div className="container mx-auto px-4">
@@ -87,7 +89,19 @@ export default function Pricing() {
                   </ul>
                 </CardContent>
                 <CardFooter className="mt-auto">
-                  <Button className="w-full">
+                  <Button 
+                    className="w-full"
+                    onClick={() => {
+                      if (plan.price === "Custom") {
+                        // For Enterprise plan, scroll to contact section
+                        document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                      } else {
+                        // For Pay as you go and Discovery plans, go to dashboard
+                        setLocation("/dashboard");
+                        setTimeout(() => window.scrollTo(0, 0), 100);
+                      }
+                    }}
+                  >
                     {plan.price === "Custom" ? "Contact Sales" : "Get Started"}
                   </Button>
                 </CardFooter>
