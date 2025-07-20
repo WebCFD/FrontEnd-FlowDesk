@@ -63,7 +63,7 @@ export default function CaseStudies() {
 
         <div className="mt-12 text-center">
           <Button size="lg" onClick={() => {
-            setLocation("/dashboard/wizard-design");
+            setLocation("/dashboard");
             setTimeout(() => window.scrollTo(0, 0), 100);
           }}>
             Get Started

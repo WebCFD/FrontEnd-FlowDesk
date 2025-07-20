@@ -84,7 +84,7 @@ export default function Hero() {
             transition={{ duration: 0.6, delay: 0.4 }}
           >
             <Button size="lg" onClick={() => {
-              setLocation("/dashboard/wizard-design");
+              setLocation("/dashboard");
               setTimeout(() => window.scrollTo(0, 0), 100);
             }}>Get Started</Button>
             <Button size="lg" variant="outline" onClick={() => setIsLoginOpen(true)}>Log In</Button>
