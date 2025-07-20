@@ -1,0 +1,86 @@
+client:495 [vite] connecting...
+client:614 [vite] connected.
+chunk-WERSD76P.js?v=f2303d23:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+AnalyticsProvider.tsx:21 Analytics initialized: false
+chunk-WERSD76P.js?v=f2303d23:377 [Violation] 'message' handler took 163ms
+dashboard-sidebar.tsx:65 
+            
+            
+           GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+fetchUserData @ dashboard-sidebar.tsx:65
+(anonymous) @ dashboard-sidebar.tsx:83
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=f2303d23:18868
+flushSyncCallbacks @ chunk-WERSD76P.js?v=f2303d23:9119
+commitRootImpl @ chunk-WERSD76P.js?v=f2303d23:19432
+commitRoot @ chunk-WERSD76P.js?v=f2303d23:19277
+finishConcurrentRender @ chunk-WERSD76P.js?v=f2303d23:18805
+performConcurrentWorkOnRoot @ chunk-WERSD76P.js?v=f2303d23:18718
+workLoop @ chunk-WERSD76P.js?v=f2303d23:197
+flushWork @ chunk-WERSD76P.js?v=f2303d23:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=f2303d23:384
+analytics.ts:26 Google Analytics initialized with ID: G-XZYY9DVVHW
+useAnalytics.ts:59 Google Analytics initialized successfully
+App.tsx:65 
+            
+            
+           GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+checkAuthStatus @ App.tsx:65
+(anonymous) @ App.tsx:82
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=f2303d23:18868
+flushSyncCallbacks @ chunk-WERSD76P.js?v=f2303d23:9119
+commitRootImpl @ chunk-WERSD76P.js?v=f2303d23:19432
+commitRoot @ chunk-WERSD76P.js?v=f2303d23:19277
+finishConcurrentRender @ chunk-WERSD76P.js?v=f2303d23:18805
+performConcurrentWorkOnRoot @ chunk-WERSD76P.js?v=f2303d23:18718
+workLoop @ chunk-WERSD76P.js?v=f2303d23:197
+flushWork @ chunk-WERSD76P.js?v=f2303d23:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=f2303d23:384
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+AnalyticsProvider.tsx:21 Analytics initialized: true
+analytics.ts:62 📊 Analytics Event: {category: 'ui_interaction', action: 'change_tab', label: 'view_3d_preview', value: undefined, status: 'sent'}
+Canvas3D.tsx:5002 Floor ground has 1 stair polygons: [{…}]
+Canvas3D.tsx:2541 🔍 [GLITCH INVESTIGATION] createFloorObjects called for floor: {floorName: 'ground', isCurrentFloor: true, airEntriesCount: 0, airEntriesData: Array(0), timestamp: 1753021959568}
+Canvas3D.tsx:2336 Creating stair from ground to first Direction: up {id: 'stair_0F_1', points: Array(4), floor: 'ground', direction: 'up', isImported: false, …}
+Canvas3D.tsx:2409 🔢 STAIR 3D POSITION DATA: stair_0F_1 {baseHeight: 0, bottomZ: 220, topZ: 255}
+Canvas3D.tsx:2956 🔍 [FURNITURE DEBUG] Floor ground furnitureItems: 1 [{…}]
+Canvas3D.tsx:2976 🔍 [FURNITURE CREATE] Creating furniture: vent Vent 0F-1 {id: 'Vent 0F-1', type: 'vent', name: 'Vent 0F-1', floorName: 'ground', position: {…}, …}
+Canvas3D.tsx:2979 🔍 [FURNITURE SUCCESS] Furniture model created successfully: Vent 0F-1
+Canvas3D.tsx:2541 🔍 [GLITCH INVESTIGATION] createFloorObjects called for floor: {floorName: 'first', isCurrentFloor: false, airEntriesCount: 0, airEntriesData: Array(0), timestamp: 1753021959576}
+Canvas3D.tsx:2956 🔍 [FURNITURE DEBUG] Floor first furnitureItems: 1 [{…}]
+Canvas3D.tsx:2976 🔍 [FURNITURE CREATE] Creating furniture: vent Vent 1F-1 {id: 'Vent 1F-1', type: 'vent', name: 'Vent 1F-1', floorName: 'first', position: {…}, …}
+Canvas3D.tsx:2979 🔍 [FURNITURE SUCCESS] Furniture model created successfully: Vent 1F-1
+Canvas3D.tsx:5164 🔥 SCENE REBUILD TRIGGERED: {editingAirEntry: false, finalFloorsId: '["ground","first"]', thisWillRecreateEverything: true, triggerCause: 'finalFloors, currentFloor, ceilingHeight, or floorDeckThickness changed'}
+Canvas3D.tsx:5172 🔍 [GLITCH ROOT CAUSE] Scene rebuild details: {currentFloor: 'ground', finalFloorsKeys: Array(2), totalAirEntries: 0, allAirEntryPositions: {…}, timestamp: 1753021959578}
+chunk-WERSD76P.js?v=f2303d23:18625 [Violation] 'click' handler took 167ms
+Canvas3D.tsx:5002 Floor ground has 1 stair polygons: [{…}]
+Canvas3D.tsx:2541 🔍 [GLITCH INVESTIGATION] createFloorObjects called for floor: {floorName: 'ground', isCurrentFloor: true, airEntriesCount: 0, airEntriesData: Array(0), timestamp: 1753021959630}
+Canvas3D.tsx:2336 Creating stair from ground to first Direction: up {id: 'stair_0F_1', points: Array(4), floor: 'ground', direction: 'up', isImported: false, …}
+Canvas3D.tsx:2409 🔢 STAIR 3D POSITION DATA: stair_0F_1 {baseHeight: 0, bottomZ: 220, topZ: 255}
+Canvas3D.tsx:2956 🔍 [FURNITURE DEBUG] Floor ground furnitureItems: 1 [{…}]0: {id: 'Vent 0F-1', type: 'vent', name: 'Vent 0F-1', floorName: 'ground', position: {…}, …}length: 1[[Prototype]]: Array(0)
+Canvas3D.tsx:2985 🔍 [FURNITURE EXISTS] Furniture already exists in scene: Vent 0F-1
+Canvas3D.tsx:2541 🔍 [GLITCH INVESTIGATION] createFloorObjects called for floor: {floorName: 'first', isCurrentFloor: false, airEntriesCount: 0, airEntriesData: Array(0), timestamp: 1753021959634}
+Canvas3D.tsx:2956 🔍 [FURNITURE DEBUG] Floor first furnitureItems: 1 [{…}]0: {id: 'Vent 1F-1', type: 'vent', name: 'Vent 1F-1', floorName: 'first', position: {…}, …}length: 1[[Prototype]]: Array(0)
+Canvas3D.tsx:2985 🔍 [FURNITURE EXISTS] Furniture already exists in scene: Vent 1F-1
+Canvas3D.tsx:5164 🔥 SCENE REBUILD TRIGGERED: {editingAirEntry: false, finalFloorsId: '["ground","first"]', thisWillRecreateEverything: true, triggerCause: 'finalFloors, currentFloor, ceilingHeight, or floorDeckThickness changed'}
+Canvas3D.tsx:5172 🔍 [GLITCH ROOT CAUSE] Scene rebuild details: {currentFloor: 'ground', finalFloorsKeys: Array(2), totalAirEntries: 0, allAirEntryPositions: {…}, timestamp: 1753021959636}
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
