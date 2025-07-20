@@ -1,0 +1,60 @@
+{
+  "version": "1.0",
+  "floors": {
+    "0": {
+      "height": 2.5,
+      "floorDeck": 0.0,
+      "ceilingTemperature": 22,
+      "floorTemperature": 20,
+      "walls": [
+        {
+          "id": "0F_wall1",
+          "uuid": "wall-001",
+          "floor": "Ground Floor",
+          "lineRef": "line-001",
+          "start": {
+            "x": -150,
+            "y": -100
+          },
+          "end": {
+            "x": 150,
+            "y": -100
+          },
+          "temp": 20
+        },
+        {
+          "id": "0F_wall2", 
+          "uuid": "wall-002",
+          "floor": "Ground Floor",
+          "lineRef": "line-002",
+          "start": {
+            "x": 150,
+            "y": -100
+          },
+          "end": {
+            "x": 150,
+            "y": 100
+          },
+          "temp": 20
+        },
+        {
+          "id": "0F_wall3",
+          "uuid": "wall-003", 
+          "floor": "Ground Floor",
+          "lineRef": "line-003",
+          "start": {
+            "x": 150,
+            "y": 100
+          },
+          "end": {
+            "x": -150,
+            "y": 100
+          },
+          "temp": 20
+        }
+      ],
+      "airEntries": [],
+      "stairs": []
+    }
+  }
+}
