@@ -3264,7 +3264,15 @@ export default function WizardDesign() {
                     height: (entry.dimensions?.height * 100) || 100,
                     distanceToFloor: (entry.position?.z * 100) || 110 // Convertir metros a centímetros, default 110cm
                   },
-                  properties: entry.simulation || {}, // Preservar propiedades de simulación
+                  properties: { // Mapear correctamente las propiedades de simulación
+                    state: entry.simulation?.state || 'closed',
+                    temperature: entry.simulation?.temperature || 20,
+                    flowIntensity: entry.simulation?.flowIntensity || 'medium',
+                    airOrientation: entry.simulation?.airDirection || 'inflow',
+                    ...(entry.simulation?.customIntensityValue && {
+                      customIntensityValue: entry.simulation.customIntensityValue
+                    })
+                  },
                   line: wallLine // Asociar con la línea de pared correcta
                 });
               });
@@ -3309,7 +3317,15 @@ export default function WizardDesign() {
                 height: (entry.dimensions?.height * 100) || 100,
                 distanceToFloor: (entry.position?.z * 100) || 110 // Convertir metros a centímetros, default 110cm
               },
-              properties: entry.simulation || {}, // Preservar propiedades de simulación
+              properties: { // Mapear correctamente las propiedades de simulación
+                state: entry.simulation?.state || 'closed',
+                temperature: entry.simulation?.temperature || 20,
+                flowIntensity: entry.simulation?.flowIntensity || 'medium',
+                airOrientation: entry.simulation?.airDirection || 'inflow',
+                ...(entry.simulation?.customIntensityValue && {
+                  customIntensityValue: entry.simulation.customIntensityValue
+                })
+              },
               line: closestLine // Asociar con la línea más cercana
             });
           });
