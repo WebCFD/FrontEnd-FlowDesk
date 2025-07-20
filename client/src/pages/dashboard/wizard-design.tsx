@@ -3187,6 +3187,8 @@ export default function WizardDesign() {
   // Función para manejar la carga de un diseño desde JSON
   const handleLoadDesign = (designData: any) => {
     try {
+      console.log('🔍 JSON LOAD: Starting design load with data:', designData);
+      
       // Primero limpiar el estado actual
       reset();
       
@@ -3206,10 +3208,12 @@ export default function WizardDesign() {
         const floorName = floorNameMap[floorNumber] || `floor_${floorNumber}`;
         
         // Convertir coordenadas del JSON de vuelta al sistema interno usando denormalizeCoordinates
-        const convertedLines = (floorData.walls || []).map((wall: any) => ({
-          start: denormalizeCoordinates({ x: wall.start.x, y: wall.start.y }),
-          end: denormalizeCoordinates({ x: wall.end.x, y: wall.end.y })
-        }));
+        const convertedLines = (floorData.walls || []).map((wall: any) => {
+          const start = denormalizeCoordinates({ x: wall.start.x, y: wall.start.y });
+          const end = denormalizeCoordinates({ x: wall.end.x, y: wall.end.y });
+          console.log('🔍 JSON LOAD: Converting wall:', wall.id, 'from', wall.start, 'to', start, 'and', wall.end, 'to', end);
+          return { start, end };
+        });
         
         // Procesar air entries tanto del formato antiguo como nuevo
         let airEntries = [];
@@ -3271,6 +3275,8 @@ export default function WizardDesign() {
           stairPolygons: convertedStairs
         };
         
+        console.log('🔍 JSON LOAD: Created floor', floorName, 'with', convertedLines.length, 'lines:', convertedFloors[floorName]);
+        
         // Configurar parámetros del piso
         newFloorParameters[floorName] = {
           ceilingHeight: (floorData.height || 2.2) * 100, // Convertir metros a cm
@@ -3281,15 +3287,20 @@ export default function WizardDesign() {
       });
       
       // Actualizar el estado con los datos convertidos
+      console.log('🔍 JSON LOAD: Setting floor parameters:', newFloorParameters);
       setFloorParameters(newFloorParameters);
       
       // Cargar datos en el store
+      console.log('🔍 JSON LOAD: Loading', Object.keys(convertedFloors).length, 'floors into store');
       Object.entries(convertedFloors).forEach(([floorName, floorData]) => {
+        console.log('🔍 JSON LOAD: Processing floor', floorName, 'with data:', floorData);
+        
         // Primero agregar el piso vacío
         addFloor(floorName);
         
         // Luego cargar los datos específicos del piso
         setCurrentFloor(floorName);
+        console.log('🔍 JSON LOAD: Setting', floorData.lines.length, 'lines for floor', floorName);
         setLines(floorData.lines);
         setAirEntries(floorData.airEntries);
         setStairPolygons(floorData.stairPolygons || []);
