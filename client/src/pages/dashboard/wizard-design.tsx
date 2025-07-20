@@ -3571,15 +3571,8 @@ export default function WizardDesign() {
                 y: item.scale?.y || 1, 
                 z: item.scale?.z || 1 
               },
-              // Convertir dimensiones usando defaults para el tipo específico
-              dimensions: (() => {
-                const defaultDims = getDefaultDimensions(mappedType);
-                return {
-                  width: defaultDims.width * (item.scale?.x || 1),
-                  height: defaultDims.height * (item.scale?.z || 1), // Z scale -> height
-                  depth: defaultDims.depth * (item.scale?.y || 1)    // Y scale -> depth
-                };
-              })(),
+              // Usar dimensiones default SIN aplicar escala aquí (la escala se maneja por separado)
+              dimensions: getDefaultDimensions(mappedType),
               properties: {
                 material: 'wood', // Default material
                 emissivity: item.simulationProperties?.emissivity || 0.9,
