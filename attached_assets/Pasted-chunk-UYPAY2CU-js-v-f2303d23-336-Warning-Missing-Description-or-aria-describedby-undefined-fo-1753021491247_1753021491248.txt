@@ -1,0 +1,77 @@
+chunk-UYPAY2CU.js?v=f2303d23:336 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-UYPAY2CU.js?v=f2303d23:336
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+commitRootImpl @ chunk-WERSD76P.js?v=f2303d23:19416
+commitRoot @ chunk-WERSD76P.js?v=f2303d23:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=f2303d23:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=f2303d23:9119
+(anonymous) @ chunk-WERSD76P.js?v=f2303d23:18627
+[Violation] Forced reflow while executing JavaScript took 39ms
+wizard-design.tsx:3211 🔍 IMPORT DEBUG: Processing floor 0 → ground {height: 2.2, floorDeck: 0.35, ceiling: {…}, floor_surf: {…}, walls: Array(4), …}
+wizard-design.tsx:3402 🔍 VENTS DEBUG: Floor ground ceiling airEntries: [{…}]
+wizard-design.tsx:3403 🔍 VENTS DEBUG: Floor ground floor_surf airEntries: []
+wizard-design.tsx:3211 🔍 IMPORT DEBUG: Processing floor 1 → first {height: 2.2, floorDeck: 0.35, ceiling: {…}, floor_surf: {…}, walls: Array(4), …}
+wizard-design.tsx:3402 🔍 VENTS DEBUG: Floor first ceiling airEntries: []
+wizard-design.tsx:3403 🔍 VENTS DEBUG: Floor first floor_surf airEntries: [{…}]
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: null
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: null
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: null
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: null
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_0F_1: {wallStart: {…}, wallEnd: {…}, startMatch: true, endMatch: true}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: wall_0F_1
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_0F_1: {wallStart: {…}, wallEnd: {…}, startMatch: false, endMatch: false}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_0F_2: {wallStart: {…}, wallEnd: {…}, startMatch: true, endMatch: true}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: wall_0F_2
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_0F_1: {wallStart: {…}, wallEnd: {…}, startMatch: false, endMatch: false}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_0F_2: {wallStart: {…}, wallEnd: {…}, startMatch: false, endMatch: false}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_0F_3: {wallStart: {…}, wallEnd: {…}, startMatch: true, endMatch: true}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: wall_0F_3
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_0F_1: {wallStart: {…}, wallEnd: {…}, startMatch: false, endMatch: false}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_0F_2: {wallStart: {…}, wallEnd: {…}, startMatch: false, endMatch: false}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_0F_3: {wallStart: {…}, wallEnd: {…}, startMatch: false, endMatch: false}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_0F_4: {wallStart: {…}, wallEnd: {…}, startMatch: true, endMatch: true}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: wall_0F_4
+wizard-design.tsx:3556 🔍 LOADING 1 horizontal vents for floor ground: [{…}]
+wizard-design.tsx:3558 🔍 Adding vent to store: {id: 'Vent 0F-1', type: 'vent', name: 'Vent 0F-1', floorName: 'ground', position: {…}, …}
+wizard-design.tsx:3633 Error cargando diseño: ReferenceError: addFurnitureItem is not defined
+    at wizard-design.tsx:3559:13
+    at Array.forEach (<anonymous>)
+    at wizard-design.tsx:3557:37
+    at Array.forEach (<anonymous>)
+    at handleLoadDesign (wizard-design.tsx:3540:39)
+    at handleLoad (LoadDesignDialog.tsx:206:5)
+    at HTMLUnknownElement.callCallback2 (chunk-WERSD76P.js?v=f2303d23:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-WERSD76P.js?v=f2303d23:3699:24)
+    at invokeGuardedCallback (chunk-WERSD76P.js?v=f2303d23:3733:39)
+    at invokeGuardedCallbackAndCatchFirstError (chunk-WERSD76P.js?v=f2303d23:3736:33)
+handleLoadDesign @ wizard-design.tsx:3633
+handleLoad @ LoadDesignDialog.tsx:206
+callCallback2 @ chunk-WERSD76P.js?v=f2303d23:3674
+invokeGuardedCallbackDev @ chunk-WERSD76P.js?v=f2303d23:3699
+invokeGuardedCallback @ chunk-WERSD76P.js?v=f2303d23:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-WERSD76P.js?v=f2303d23:3736
+executeDispatch @ chunk-WERSD76P.js?v=f2303d23:7014
+processDispatchQueueItemsInOrder @ chunk-WERSD76P.js?v=f2303d23:7034
+processDispatchQueue @ chunk-WERSD76P.js?v=f2303d23:7043
+dispatchEventsForPlugins @ chunk-WERSD76P.js?v=f2303d23:7051
+(anonymous) @ chunk-WERSD76P.js?v=f2303d23:7174
+batchedUpdates$1 @ chunk-WERSD76P.js?v=f2303d23:18913
+batchedUpdates @ chunk-WERSD76P.js?v=f2303d23:3579
+dispatchEventForPluginEventSystem @ chunk-WERSD76P.js?v=f2303d23:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-WERSD76P.js?v=f2303d23:5478
+dispatchEvent @ chunk-WERSD76P.js?v=f2303d23:5472
+dispatchDiscreteEvent @ chunk-WERSD76P.js?v=f2303d23:5449
