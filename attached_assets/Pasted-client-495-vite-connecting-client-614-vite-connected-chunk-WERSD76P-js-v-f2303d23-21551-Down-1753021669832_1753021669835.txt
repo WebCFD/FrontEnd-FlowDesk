@@ -1,0 +1,153 @@
+client:495 [vite] connecting...
+client:614 [vite] connected.
+chunk-WERSD76P.js?v=f2303d23:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+AnalyticsProvider.tsx:21 Analytics initialized: false
+dashboard-sidebar.tsx:65 
+            
+            
+           GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+fetchUserData @ dashboard-sidebar.tsx:65
+(anonymous) @ dashboard-sidebar.tsx:83
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=f2303d23:18868
+flushSyncCallbacks @ chunk-WERSD76P.js?v=f2303d23:9119
+commitRootImpl @ chunk-WERSD76P.js?v=f2303d23:19432
+commitRoot @ chunk-WERSD76P.js?v=f2303d23:19277
+finishConcurrentRender @ chunk-WERSD76P.js?v=f2303d23:18805
+performConcurrentWorkOnRoot @ chunk-WERSD76P.js?v=f2303d23:18718
+workLoop @ chunk-WERSD76P.js?v=f2303d23:197
+flushWork @ chunk-WERSD76P.js?v=f2303d23:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=f2303d23:384
+analytics.ts:26 Google Analytics initialized with ID: G-XZYY9DVVHW
+useAnalytics.ts:59 Google Analytics initialized successfully
+App.tsx:65 
+            
+            
+           GET https://e6d70a7c-6e99-4261-89d9-79d6b4d4c145-00-2hh1t74mr2tvm.worf.replit.dev/api/auth/user 401 (Unauthorized)
+checkAuthStatus @ App.tsx:65
+(anonymous) @ App.tsx:82
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=f2303d23:18868
+flushSyncCallbacks @ chunk-WERSD76P.js?v=f2303d23:9119
+commitRootImpl @ chunk-WERSD76P.js?v=f2303d23:19432
+commitRoot @ chunk-WERSD76P.js?v=f2303d23:19277
+finishConcurrentRender @ chunk-WERSD76P.js?v=f2303d23:18805
+performConcurrentWorkOnRoot @ chunk-WERSD76P.js?v=f2303d23:18718
+workLoop @ chunk-WERSD76P.js?v=f2303d23:197
+flushWork @ chunk-WERSD76P.js?v=f2303d23:176
+performWorkUntilDeadline @ chunk-WERSD76P.js?v=f2303d23:384
+useAnalytics.ts:59 Google Analytics initialized successfully
+useAnalytics.ts:59 Google Analytics initialized successfully
+AnalyticsProvider.tsx:21 Analytics initialized: true
+chunk-UYPAY2CU.js?v=f2303d23:336 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-UYPAY2CU.js?v=f2303d23:336
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+commitRootImpl @ chunk-WERSD76P.js?v=f2303d23:19416
+commitRoot @ chunk-WERSD76P.js?v=f2303d23:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=f2303d23:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=f2303d23:9119
+(anonymous) @ chunk-WERSD76P.js?v=f2303d23:18627
+[Violation] Forced reflow while executing JavaScript took 37ms
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
+wizard-design.tsx:3211 🔍 IMPORT DEBUG: Processing floor 0 → ground {height: 2.2, floorDeck: 0.35, ceiling: {…}, floor_surf: {…}, walls: Array(4), …}
+wizard-design.tsx:3402 🔍 VENTS DEBUG: Floor ground ceiling airEntries: [{…}]
+wizard-design.tsx:3403 🔍 VENTS DEBUG: Floor ground floor_surf airEntries: []
+wizard-design.tsx:3211 🔍 IMPORT DEBUG: Processing floor 1 → first {height: 2.2, floorDeck: 0.35, ceiling: {…}, floor_surf: {…}, walls: Array(4), …}
+wizard-design.tsx:3402 🔍 VENTS DEBUG: Floor first ceiling airEntries: []
+wizard-design.tsx:3403 🔍 VENTS DEBUG: Floor first floor_surf airEntries: [{…}]
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: null
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: null
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: null
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: null
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_0F_1: {wallStart: {…}, wallEnd: {…}, startMatch: true, endMatch: true}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: wall_0F_1
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_0F_1: {wallStart: {…}, wallEnd: {…}, startMatch: false, endMatch: false}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_0F_2: {wallStart: {…}, wallEnd: {…}, startMatch: true, endMatch: true}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: wall_0F_2
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_0F_1: {wallStart: {…}, wallEnd: {…}, startMatch: false, endMatch: false}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_0F_2: {wallStart: {…}, wallEnd: {…}, startMatch: false, endMatch: false}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_0F_3: {wallStart: {…}, wallEnd: {…}, startMatch: true, endMatch: true}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: wall_0F_3
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_0F_1: {wallStart: {…}, wallEnd: {…}, startMatch: false, endMatch: false}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_0F_2: {wallStart: {…}, wallEnd: {…}, startMatch: false, endMatch: false}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_0F_3: {wallStart: {…}, wallEnd: {…}, startMatch: false, endMatch: false}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_0F_4: {wallStart: {…}, wallEnd: {…}, startMatch: true, endMatch: true}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: wall_0F_4
+wizard-design.tsx:3556 🔍 LOADING 1 horizontal vents for floor ground: [{…}]
+wizard-design.tsx:3558 🔍 Adding vent to store: {id: 'Vent 0F-1', type: 'vent', name: 'Vent 0F-1', floorName: 'ground', position: {…}, …}
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: null
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: null
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: null
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: null
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_1F_1: {wallStart: {…}, wallEnd: {…}, startMatch: true, endMatch: true}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: wall_1F_1
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_1F_1: {wallStart: {…}, wallEnd: {…}, startMatch: false, endMatch: false}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_1F_2: {wallStart: {…}, wallEnd: {…}, startMatch: true, endMatch: true}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: wall_1F_2
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_1F_1: {wallStart: {…}, wallEnd: {…}, startMatch: false, endMatch: false}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_1F_2: {wallStart: {…}, wallEnd: {…}, startMatch: false, endMatch: false}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_1F_3: {wallStart: {…}, wallEnd: {…}, startMatch: true, endMatch: true}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: wall_1F_3
+simulationDataConverter.ts:899 [FINDWALL DEBUG] Looking for wall matching line: {start: {…}, end: {…}}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_1F_1: {wallStart: {…}, wallEnd: {…}, startMatch: false, endMatch: false}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_1F_2: {wallStart: {…}, wallEnd: {…}, startMatch: false, endMatch: false}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_1F_3: {wallStart: {…}, wallEnd: {…}, startMatch: false, endMatch: false}
+simulationDataConverter.ts:908 [FINDWALL DEBUG] Checking wall wall_1F_4: {wallStart: {…}, wallEnd: {…}, startMatch: true, endMatch: true}
+simulationDataConverter.ts:918 [FINDWALL DEBUG] Result: wall_1F_4
+wizard-design.tsx:3556 🔍 LOADING 1 horizontal vents for floor first: [{…}]
+wizard-design.tsx:3558 🔍 Adding vent to store: {id: 'Vent 1F-1', type: 'vent', name: 'Vent 1F-1', floorName: 'first', position: {…}, …}
+analytics.ts:62 📊 Analytics Event: {category: 'simulation', action: 'start_simulation', label: 'design_loaded', value: 2, status: 'sent'}
+analytics.ts:62 📊 Analytics Event: {category: 'ui_interaction', action: 'change_tab', label: 'view_3d_preview', value: undefined, status: 'sent'}
+Canvas3D.tsx:4995 Floor ground has 1 stair polygons: [{…}]
+Canvas3D.tsx:2541 🔍 [GLITCH INVESTIGATION] createFloorObjects called for floor: {floorName: 'ground', isCurrentFloor: true, airEntriesCount: 0, airEntriesData: Array(0), timestamp: 1753021660393}
+Canvas3D.tsx:2336 Creating stair from ground to first Direction: up {id: 'stair_0F_1', points: Array(4), floor: 'ground', direction: 'up', connectsTo: undefined, …}
+Canvas3D.tsx:2409 🔢 STAIR 3D POSITION DATA: stair_0F_1 {baseHeight: 0, bottomZ: 220.00000000000003, topZ: 255.00000000000003}
+Canvas3D.tsx:2541 🔍 [GLITCH INVESTIGATION] createFloorObjects called for floor: {floorName: 'first', isCurrentFloor: false, airEntriesCount: 0, airEntriesData: Array(0), timestamp: 1753021660414}
+Canvas3D.tsx:5157 🔥 SCENE REBUILD TRIGGERED: {editingAirEntry: false, finalFloorsId: '["ground","first"]', thisWillRecreateEverything: true, triggerCause: 'finalFloors, currentFloor, ceilingHeight, or floorDeckThickness changed'}
+Canvas3D.tsx:5165 🔍 [GLITCH ROOT CAUSE] Scene rebuild details: {currentFloor: 'ground', finalFloorsKeys: Array(2), totalAirEntries: 0, allAirEntryPositions: {…}, timestamp: 1753021660417}
+chunk-WERSD76P.js?v=f2303d23:18625 [Violation] 'click' handler took 205ms
+Canvas3D.tsx:4995 Floor ground has 1 stair polygons: [{…}]
+Canvas3D.tsx:2541 🔍 [GLITCH INVESTIGATION] createFloorObjects called for floor: {floorName: 'ground', isCurrentFloor: true, airEntriesCount: 0, airEntriesData: Array(0), timestamp: 1753021660461}
+Canvas3D.tsx:2336 Creating stair from ground to first Direction: up {id: 'stair_0F_1', points: Array(4), floor: 'ground', direction: 'up', connectsTo: undefined, …}
+Canvas3D.tsx:2409 🔢 STAIR 3D POSITION DATA: stair_0F_1 {baseHeight: 0, bottomZ: 220.00000000000003, topZ: 255.00000000000003}
+Canvas3D.tsx:2541 🔍 [GLITCH INVESTIGATION] createFloorObjects called for floor: {floorName: 'first', isCurrentFloor: false, airEntriesCount: 0, airEntriesData: Array(0), timestamp: 1753021660464}
+Canvas3D.tsx:5157 🔥 SCENE REBUILD TRIGGERED: {editingAirEntry: false, finalFloorsId: '["ground","first"]', thisWillRecreateEverything: true, triggerCause: 'finalFloors, currentFloor, ceilingHeight, or floorDeckThickness changed'}
+Canvas3D.tsx:5165 🔍 [GLITCH ROOT CAUSE] Scene rebuild details: {currentFloor: 'ground', finalFloorsKeys: Array(2), totalAirEntries: 0, allAirEntryPositions: {…}, timestamp: 1753021660466}
