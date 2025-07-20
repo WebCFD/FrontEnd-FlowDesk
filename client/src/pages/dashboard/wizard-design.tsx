@@ -407,14 +407,29 @@ export default function WizardDesign() {
   // Función para aplicar temperaturas del JSON a las paredes sincronizadas
   const applyWallTemperaturesFromJSON = useCallback((floorName: string, wallTemperatures: Map<string, number>) => {
     const currentFloorData = rawFloors[floorName];
-    if (!currentFloorData?.walls) return;
+    if (!currentFloorData?.walls) {
+      console.log(`[TEMP DEBUG] No walls found for floor: ${floorName}`);
+      return;
+    }
+
+    console.log(`[TEMP DEBUG] Applying temperatures for floor: ${floorName}`);
+    console.log(`[TEMP DEBUG] Wall temperatures map:`, Array.from(wallTemperatures.entries()));
+    console.log(`[TEMP DEBUG] Current walls:`, currentFloorData.walls.map(w => ({
+      id: w.id,
+      start: w.startPoint,
+      end: w.endPoint,
+      currentTemp: w.properties.temperature
+    })));
 
     const updatedWalls = currentFloorData.walls.map(wall => {
       // Crear clave de línea para buscar la temperatura correspondiente
       const lineKey = `${wall.startPoint.x.toFixed(2)},${wall.startPoint.y.toFixed(2)}-${wall.endPoint.x.toFixed(2)},${wall.endPoint.y.toFixed(2)}`;
       const temperature = wallTemperatures.get(lineKey);
       
+      console.log(`[TEMP DEBUG] Wall ${wall.id}: key=${lineKey}, found temp=${temperature}`);
+      
       if (temperature !== undefined) {
+        console.log(`[TEMP DEBUG] Updating wall ${wall.id} from ${wall.properties.temperature} to ${temperature}`);
         return {
           ...wall,
           properties: {
