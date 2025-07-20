@@ -1544,8 +1544,17 @@ export default function WizardDesign() {
                     <Button
                       variant="outline"
                       className={getWallStyles()}
-                      onClick={() => handleToolSelect("wall")}
-                      disabled={isWallLineDisabled}
+                      onClick={() => {
+                        if (isWallLineDisabled) {
+                          toast({
+                            title: "Cannot Add Wall Lines",
+                            description: "To add more lines, open the existing contour by moving points or erasing lines. Only one closed room per floor is allowed.",
+                            variant: "destructive",
+                          });
+                          return;
+                        }
+                        handleToolSelect("wall");
+                      }}
                       title={isWallLineDisabled ? "Cannot add lines - room contour is closed" : "Add wall lines"}
                     >
                       <div className={`w-6 h-6 border-2 ${isWallLineDisabled ? 'border-gray-400' : 'border-gray-500'}`} />
