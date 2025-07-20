@@ -2368,7 +2368,7 @@ export default function WizardDesign() {
                             <div className="ml-2">
                               <h5 className="text-xs font-medium text-red-800">Insufficient Boundary Pressure (IBS)</h5>
                               <p className="text-xs text-red-700 mt-1">
-                                Your simulation needs at least one pressure reference point to calculate air flow accurately. Please add at a leat an open window, or an open door, or configure an existing vent to use at least one Pressure flow type. Without a pressure reference, the simulation cannot determine the air movement in your space.
+                                Your simulation needs at least one pressure reference point to calculate air flow accurately. Please add at least an open window, or an open door, or configure an existing vent to use at least one Pressure flow type. Without a pressure reference, the simulation cannot determine the air movement in your space.
                               </p>
                             </div>
                           </div>
