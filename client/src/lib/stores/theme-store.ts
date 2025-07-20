@@ -100,11 +100,13 @@ export const useThemeStore = create<ThemeStore>()(
         }
         
         // Apply theme variant by updating CSS classes
-        // Remove existing variant classes
+        // Remove existing variant classes from both html and body
         root.classList.remove('theme-professional', 'theme-tint', 'theme-vibrant');
+        document.body.classList.remove('theme-professional', 'theme-tint', 'theme-vibrant');
         
-        // Add new variant class - this will use CSS defined in theme-variants.css
+        // Add new variant class to both html and body - this will use CSS defined in theme-variants.css
         root.classList.add(`theme-${theme.variant}`);
+        document.body.classList.add(`theme-${theme.variant}`);
         
         console.log('Applied theme variant:', theme.variant);
         console.log('Root classes after theme application:', root.className);

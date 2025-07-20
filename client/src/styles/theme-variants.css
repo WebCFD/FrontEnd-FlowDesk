@@ -1,9 +1,11 @@
 /* Theme Variant Styles */
 
 /* Professional Theme - Clean, corporate look (default) */
+html.theme-professional,
+body.theme-professional,
 .theme-professional {
   /* Force visible change for testing */
-  --background: hsl(0 0% 100%);
+  --background: hsl(0 0% 100%) !important;
   --foreground: hsl(224 71.4% 4.1%);
   --card: hsl(0 0% 100%);
   --card-foreground: hsl(224 71.4% 4.1%);
@@ -47,9 +49,12 @@
 }
 
 /* Tint Theme - Softer, warmer colors with blue tints */
+html.theme-tint,
+body.theme-tint,
 .theme-tint {
   /* Force visible change for testing */
-  --background: hsl(210 40% 95%) !important;
+  background-color: hsl(210 40% 90%) !important;
+  --background: hsl(210 40% 90%) !important;
   --foreground: hsl(215 25% 27%);
   --card: hsl(210 60% 97%);
   --card-foreground: hsl(215 25% 27%);
@@ -93,9 +98,12 @@
 }
 
 /* Vibrant Theme - High contrast, saturated colors */
+html.theme-vibrant,
+body.theme-vibrant,
 .theme-vibrant {
   /* Force visible change for testing */
-  --background: hsl(120 100% 95%) !important;
+  background-color: hsl(120 100% 90%) !important;
+  --background: hsl(120 100% 90%) !important;
   --foreground: hsl(0 0% 9%);
   --card: hsl(0 0% 98%);
   --card-foreground: hsl(0 0% 9%);
