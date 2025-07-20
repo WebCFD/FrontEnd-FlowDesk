@@ -89,7 +89,22 @@ export default function LoadDesignDialog({
         errors.push(`Planta ${floorKey}: Paredes no válidas`);
       }
 
-      if (!Array.isArray(floor.airEntries)) {
+      // Verificar Air Entries en formato nuevo (dentro de walls) y formato antiguo (directo en floor)
+      let hasAirEntries = false;
+      
+      // Formato nuevo: air entries dentro de walls
+      if (Array.isArray(floor.walls)) {
+        hasAirEntries = floor.walls.some((wall: any) => 
+          Array.isArray(wall.airEntries) && wall.airEntries.length > 0
+        );
+      }
+      
+      // Formato antiguo: air entries directamente en floor
+      if (!hasAirEntries && Array.isArray(floor.airEntries) && floor.airEntries.length > 0) {
+        hasAirEntries = true;
+      }
+      
+      if (!hasAirEntries) {
         warnings.push(`Planta ${floorKey}: Air Entries no definidas`);
       }
     }
