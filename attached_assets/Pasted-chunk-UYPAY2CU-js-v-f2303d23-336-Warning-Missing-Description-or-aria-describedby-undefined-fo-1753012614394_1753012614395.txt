@@ -1,0 +1,72 @@
+chunk-UYPAY2CU.js?v=f2303d23:336 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-UYPAY2CU.js?v=f2303d23:336
+commitHookEffectListMount @ chunk-WERSD76P.js?v=f2303d23:16915
+commitPassiveMountOnFiber @ chunk-WERSD76P.js?v=f2303d23:18156
+commitPassiveMountEffects_complete @ chunk-WERSD76P.js?v=f2303d23:18129
+commitPassiveMountEffects_begin @ chunk-WERSD76P.js?v=f2303d23:18119
+commitPassiveMountEffects @ chunk-WERSD76P.js?v=f2303d23:18109
+flushPassiveEffectsImpl @ chunk-WERSD76P.js?v=f2303d23:19490
+flushPassiveEffects @ chunk-WERSD76P.js?v=f2303d23:19447
+commitRootImpl @ chunk-WERSD76P.js?v=f2303d23:19416
+commitRoot @ chunk-WERSD76P.js?v=f2303d23:19277
+performSyncWorkOnRoot @ chunk-WERSD76P.js?v=f2303d23:18895
+flushSyncCallbacks @ chunk-WERSD76P.js?v=f2303d23:9119
+(anonymous) @ chunk-WERSD76P.js?v=f2303d23:18627
+wizard-design.tsx:3190 🔍 JSON LOAD: Starting design load with data: {version: '1.0', floors: {…}}
+simulationDataConverter.ts:945 🔧 [WALL SYNC] syncWallsWithLines called for floor: Ground Floor
+simulationDataConverter.ts:946 🔧 [WALL SYNC] Lines: 0, Existing walls: 0, Default temp: 20
+simulationDataConverter.ts:950 🔧 [WALL SYNC] After removing orphans: 0 valid walls
+simulationDataConverter.ts:980 🔧 [WALL SYNC] addMissingWalls called for floor: Ground Floor
+simulationDataConverter.ts:981 🔧 [WALL SYNC] Input: 0 lines, 0 existing walls
+simulationDataConverter.ts:982 🔧 [WALL SYNC] Existing walls: []
+simulationDataConverter.ts:1009 🔧 [WALL SYNC] Result: 0 walls added, 0 total walls
+simulationDataConverter.ts:954 🔧 [WALL SYNC] Final result: 0 total walls
+wizard-design.tsx:3214 🔍 JSON LOAD: Converting wall: wall_0F_1 from {x: 0, y: 0}x: 0y: 0[[Prototype]]: Object to {x: 400, y: 300} and {x: 5, y: 0} to {x: 404, y: 300}
+wizard-design.tsx:3214 🔍 JSON LOAD: Converting wall: wall_0F_2 from {x: 5, y: 0}x: 5y: 0[[Prototype]]: Object to {x: 404, y: 300} and {x: 5, y: 5} to {x: 404, y: 296}
+wizard-design.tsx:3214 🔍 JSON LOAD: Converting wall: wall_0F_3 from {x: 5, y: 5}x: 5y: 5[[Prototype]]: Object to {x: 404, y: 296} and {x: 0, y: 0} to {x: 400, y: 300}
+wizard-design.tsx:3278 🔍 JSON LOAD: Created floor ground with 3 lines: {lines: Array(3), airEntries: Array(0), hasClosedContour: true, name: 'ground', stairPolygons: Array(0)}
+wizard-design.tsx:3290 🔍 JSON LOAD: Setting floor parameters: {ground: {…}}ground: {ceilingHeight: 213, floorDeck: 33, ceilingTemperature: 33, floorTemperature: 33}[[Prototype]]: Object
+wizard-design.tsx:3294 🔍 JSON LOAD: Loading 1 floors into store
+wizard-design.tsx:3296 🔍 JSON LOAD: Processing floor ground with data: {lines: Array(3), airEntries: Array(0), hasClosedContour: true, name: 'ground', stairPolygons: Array(0)}airEntries: []hasClosedContour: truelines: (3) [{…}, {…}, {…}]name: "ground"stairPolygons: [][[Prototype]]: Object
+wizard-design.tsx:3303 🔍 JSON LOAD: Setting 3 lines for floor ground
+simulationDataConverter.ts:945 🔧 [WALL SYNC] syncWallsWithLines called for floor: ground
+simulationDataConverter.ts:946 🔧 [WALL SYNC] Lines: 3, Existing walls: 0, Default temp: 20
+simulationDataConverter.ts:950 🔧 [WALL SYNC] After removing orphans: 0 valid walls
+simulationDataConverter.ts:980 🔧 [WALL SYNC] addMissingWalls called for floor: ground
+simulationDataConverter.ts:981 🔧 [WALL SYNC] Input: 3 lines, 0 existing walls
+simulationDataConverter.ts:982 🔧 [WALL SYNC] Existing walls: []
+simulationDataConverter.ts:991 🔧 [WALL SYNC] Line 0 needs new wall: {start: {…}, end: {…}}
+simulationDataConverter.ts:912 🔍 [SIMILAR WALL] Looking for similar wall for line: {start: {…}, end: {…}}
+simulationDataConverter.ts:913 🔍 [SIMILAR WALL] Checking against 0 walls with tolerance 1
+simulationDataConverter.ts:930 🔍 [SIMILAR WALL] Found similar wall: none
+simulationDataConverter.ts:997 🔧 [WALL SYNC] Similar wall found: none
+simulationDataConverter.ts:998 🔧 [WALL SYNC] Using temperature: 20 (default: 20)
+simulationDataConverter.ts:1002 🔧 [WALL SYNC] Created new wall: {id: 'wall_0F_1', temp: 20}
+simulationDataConverter.ts:991 🔧 [WALL SYNC] Line 1 needs new wall: {start: {…}, end: {…}}
+simulationDataConverter.ts:912 🔍 [SIMILAR WALL] Looking for similar wall for line: {start: {…}, end: {…}}
+simulationDataConverter.ts:913 🔍 [SIMILAR WALL] Checking against 0 walls with tolerance 1
+simulationDataConverter.ts:930 🔍 [SIMILAR WALL] Found similar wall: none
+simulationDataConverter.ts:997 🔧 [WALL SYNC] Similar wall found: none
+simulationDataConverter.ts:998 🔧 [WALL SYNC] Using temperature: 20 (default: 20)
+simulationDataConverter.ts:1002 🔧 [WALL SYNC] Created new wall: {id: 'wall_0F_2', temp: 20}
+simulationDataConverter.ts:991 🔧 [WALL SYNC] Line 2 needs new wall: {start: {…}, end: {…}}
+simulationDataConverter.ts:912 🔍 [SIMILAR WALL] Looking for similar wall for line: {start: {…}, end: {…}}
+simulationDataConverter.ts:913 🔍 [SIMILAR WALL] Checking against 0 walls with tolerance 1
+simulationDataConverter.ts:930 🔍 [SIMILAR WALL] Found similar wall: none
+simulationDataConverter.ts:997 🔧 [WALL SYNC] Similar wall found: none
+simulationDataConverter.ts:998 🔧 [WALL SYNC] Using temperature: 20 (default: 20)
+simulationDataConverter.ts:1002 🔧 [WALL SYNC] Created new wall: {id: 'wall_0F_3', temp: 20}
+simulationDataConverter.ts:1009 🔧 [WALL SYNC] Result: 3 walls added, 3 total walls
+simulationDataConverter.ts:954 🔧 [WALL SYNC] Final result: 3 total walls
+simulationDataConverter.ts:945 🔧 [WALL SYNC] syncWallsWithLines called for floor: ground
+simulationDataConverter.ts:946 🔧 [WALL SYNC] Lines: 3, Existing walls: 3, Default temp: 20
+simulationDataConverter.ts:950 🔧 [WALL SYNC] After removing orphans: 3 valid walls
+simulationDataConverter.ts:980 🔧 [WALL SYNC] addMissingWalls called for floor: ground
+simulationDataConverter.ts:981 🔧 [WALL SYNC] Input: 3 lines, 3 existing walls
+simulationDataConverter.ts:982 🔧 [WALL SYNC] Existing walls: (3) [{…}, {…}, {…}]
+simulationDataConverter.ts:1005 🔧 [WALL SYNC] Line 0 has existing wall: {id: 'wall_0F_1', temp: 20}
+simulationDataConverter.ts:1005 🔧 [WALL SYNC] Line 1 has existing wall: {id: 'wall_0F_2', temp: 20}
+simulationDataConverter.ts:1005 🔧 [WALL SYNC] Line 2 has existing wall: {id: 'wall_0F_3', temp: 20}
+simulationDataConverter.ts:1009 🔧 [WALL SYNC] Result: 0 walls added, 3 total walls
+simulationDataConverter.ts:954 🔧 [WALL SYNC] Final result: 3 total walls
+analytics.ts:62 📊 Analytics Event: {category: 'simulation', action: 'start_simulation', label: 'design_loaded', value: 1, status: 'sent'}
