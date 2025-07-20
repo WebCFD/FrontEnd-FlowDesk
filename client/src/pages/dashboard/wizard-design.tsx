@@ -3269,8 +3269,21 @@ export default function WizardDesign() {
                     temperature: entry.simulation?.temperature || 20,
                     flowIntensity: entry.simulation?.flowIntensity || 'medium',
                     airOrientation: entry.simulation?.airDirection || 'inflow',
+                    flowType: entry.simulation?.flowType || 'airMassFlow',
+                    // Mapear customValue del JSON a customIntensityValue interno
+                    ...(entry.simulation?.customValue && {
+                      customIntensityValue: entry.simulation.customValue
+                    }),
+                    // También manejar el formato anterior customIntensityValue
                     ...(entry.simulation?.customIntensityValue && {
                       customIntensityValue: entry.simulation.customIntensityValue
+                    }),
+                    // Mapear ángulos de orientación del aire si están presentes
+                    ...(entry.simulation?.airOrientation?.verticalAngle !== undefined && {
+                      verticalAngle: entry.simulation.airOrientation.verticalAngle
+                    }),
+                    ...(entry.simulation?.airOrientation?.horizontalAngle !== undefined && {
+                      horizontalAngle: entry.simulation.airOrientation.horizontalAngle
                     })
                   },
                   line: wallLine // Asociar con la línea de pared correcta
@@ -3322,8 +3335,21 @@ export default function WizardDesign() {
                 temperature: entry.simulation?.temperature || 20,
                 flowIntensity: entry.simulation?.flowIntensity || 'medium',
                 airOrientation: entry.simulation?.airDirection || 'inflow',
+                flowType: entry.simulation?.flowType || 'airMassFlow',
+                // Mapear customValue del JSON a customIntensityValue interno
+                ...(entry.simulation?.customValue && {
+                  customIntensityValue: entry.simulation.customValue
+                }),
+                // También manejar el formato anterior customIntensityValue
                 ...(entry.simulation?.customIntensityValue && {
                   customIntensityValue: entry.simulation.customIntensityValue
+                }),
+                // Mapear ángulos de orientación del aire si están presentes
+                ...(entry.simulation?.airOrientation?.verticalAngle !== undefined && {
+                  verticalAngle: entry.simulation.airOrientation.verticalAngle
+                }),
+                ...(entry.simulation?.airOrientation?.horizontalAngle !== undefined && {
+                  horizontalAngle: entry.simulation.airOrientation.horizontalAngle
                 })
               },
               line: closestLine // Asociar con la línea más cercana
