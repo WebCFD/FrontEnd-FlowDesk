@@ -896,10 +896,27 @@ export function findWallsForDeletedLines(walls: Wall[], deletedLines: Line[]): W
  * Encuentra la pared asociada a una línea específica
  */
 export function findWallForLine(walls: Wall[], line: Line): Wall | undefined {
-  return walls.find(wall => 
-    arePointsEqual(wall.startPoint, line.start) &&
-    arePointsEqual(wall.endPoint, line.end)
-  );
+  console.log(`[FINDWALL DEBUG] Looking for wall matching line:`, {
+    start: { x: line.start.x.toFixed(2), y: line.start.y.toFixed(2) },
+    end: { x: line.end.x.toFixed(2), y: line.end.y.toFixed(2) }
+  });
+  
+  const result = walls.find(wall => {
+    const startMatch = arePointsEqual(wall.startPoint, line.start);
+    const endMatch = arePointsEqual(wall.endPoint, line.end);
+    
+    console.log(`[FINDWALL DEBUG] Checking wall ${wall.id}:`, {
+      wallStart: { x: wall.startPoint.x.toFixed(2), y: wall.startPoint.y.toFixed(2) },
+      wallEnd: { x: wall.endPoint.x.toFixed(2), y: wall.endPoint.y.toFixed(2) },
+      startMatch,
+      endMatch
+    });
+    
+    return startMatch && endMatch;
+  });
+  
+  console.log(`[FINDWALL DEBUG] Result:`, result ? result.id : 'null');
+  return result;
 }
 
 /**
