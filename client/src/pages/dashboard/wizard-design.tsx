@@ -1616,7 +1616,7 @@ export default function WizardDesign() {
           <PanelGroup direction="horizontal" className="h-full">
             {/* Left side menus - resizable panel */}
             <Panel defaultSize={25} minSize={15} maxSize={50}>
-              <div className="space-y-6 overflow-y-auto pr-2" style={{ maxHeight: `${canvasHeight}px` }}>
+              <div className="space-y-6 overflow-y-auto pr-2" style={{ maxHeight: `${dynamicCanvasHeight}px` }}>
               {/* 2D Configuration - only show when in 2D mode */}
               {tab === "2d-editor" && (
                 <div className="border rounded-lg p-4">
@@ -2310,7 +2310,7 @@ export default function WizardDesign() {
           <PanelGroup direction="horizontal" className="h-full">
             {/* Left side menus - resizable panel */}
             <Panel defaultSize={25} minSize={15} maxSize={50}>
-              <div className="space-y-6 overflow-y-auto pr-2" style={{ maxHeight: `${canvasHeight}px` }}>
+              <div className="space-y-6 overflow-y-auto pr-2" style={{ maxHeight: `${dynamicCanvasHeight}px` }}>
                 {/* Main options */}
                 <div className="border rounded-lg p-4">
                   <h3 className="font-semibold text-xl mb-4 text-center">Add 3D Elements</h3>
