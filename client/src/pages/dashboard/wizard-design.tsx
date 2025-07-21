@@ -1589,7 +1589,11 @@ export default function WizardDesign() {
             hasClosedContour={hasClosedContour}
           />
 
-          <PanelGroup direction="horizontal" className="h-full">
+          {/* Vertical Panel Group for resizable height */}
+          <PanelGroup direction="vertical" className="h-full">
+            {/* Main workspace panel */}
+            <Panel defaultSize={90} minSize={30}>
+              <PanelGroup direction="horizontal" className="h-full">
             {/* Left side menus - resizable panel */}
             <Panel defaultSize={25} minSize={15} maxSize={50}>
               <div className="space-y-6 overflow-y-auto pr-2" style={{ maxHeight: `${canvasHeight}px` }}>
@@ -2219,6 +2223,18 @@ export default function WizardDesign() {
             <Panel defaultSize={75} minSize={50}>
               {renderCanvasSection("tabs")}
             </Panel>
+              </PanelGroup>
+            </Panel>
+            
+            {/* Vertical resize handle */}
+            <PanelResizeHandle className="h-1 bg-transparent hover:bg-gray-200 active:bg-gray-300 cursor-row-resize transition-colors" />
+            
+            {/* Bottom panel for additional space if needed */}
+            <Panel defaultSize={10} minSize={5} maxSize={40}>
+              <div className="h-full bg-gray-50/30 border rounded-lg flex items-center justify-center text-sm text-muted-foreground">
+                <span>Drag above to resize workspace</span>
+              </div>
+            </Panel>
           </PanelGroup>
         </CardContent>
       </Card>
@@ -2263,11 +2279,14 @@ export default function WizardDesign() {
         <Card className="mt-4">
           <CardContent className="p-4">
 
-
-            <PanelGroup direction="horizontal" className="h-full">
-              {/* Left side menus - resizable panel */}
-              <Panel defaultSize={25} minSize={15} maxSize={50}>
-                <div className="space-y-6 overflow-y-auto pr-2" style={{ maxHeight: `${canvasHeight}px` }}>
+          {/* Vertical Panel Group for resizable height */}
+          <PanelGroup direction="vertical" className="h-full">
+            {/* Main workspace panel */}
+            <Panel defaultSize={90} minSize={30}>
+              <PanelGroup direction="horizontal" className="h-full">
+                {/* Left side menus - resizable panel */}
+                <Panel defaultSize={25} minSize={15} maxSize={50}>
+                  <div className="space-y-6 overflow-y-auto pr-2 h-full">
                 {/* Main options */}
                 <div className="border rounded-lg p-4">
                   <h3 className="font-semibold text-xl mb-4 text-center">Add 3D Elements</h3>
@@ -2303,7 +2322,19 @@ export default function WizardDesign() {
               <Panel defaultSize={75} minSize={50}>
                 {renderCanvasSection("step2")}
               </Panel>
-            </PanelGroup>
+              </PanelGroup>
+            </Panel>
+            
+            {/* Vertical resize handle */}
+            <PanelResizeHandle className="h-1 bg-transparent hover:bg-gray-200 active:bg-gray-300 cursor-row-resize transition-colors" />
+            
+            {/* Bottom panel for additional space if needed */}
+            <Panel defaultSize={10} minSize={5} maxSize={40}>
+              <div className="h-full bg-gray-50/30 border rounded-lg flex items-center justify-center text-sm text-muted-foreground">
+                <span>Drag above to resize workspace</span>
+              </div>
+            </Panel>
+          </PanelGroup>
           </CardContent>
         </Card>
       </>
