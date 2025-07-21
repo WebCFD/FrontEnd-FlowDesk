@@ -26,21 +26,25 @@ export function ToolbarToggle({ mode, onModeChange, hasClosedContour }: ToolbarT
   
   // Manejador para el cambio a vista 3D
   const handle3DClick = () => {
-    if (hasClosedContour && mode !== "3d-preview") {
+    // Siempre permitir el cambio a 3D
+    if (mode !== "3d-preview") {
       trackEvent(
         AnalyticsCategories.UI,
         AnalyticsActions.CHANGE_TAB,
         "view_3d_preview"
       );
-      onModeChange("3d-preview");
-    } else if (!hasClosedContour) {
-      // Rastrear evento de error al intentar cambiar a 3D sin contorno cerrado
+    }
+    
+    // Rastrear si no hay contorno cerrado (para analytics)
+    if (!hasClosedContour) {
       trackEvent(
         AnalyticsCategories.UI,
-        "validation_error",
-        "attempt_3d_view_without_closed_contour"
+        "validation_warning",
+        "3d_view_without_closed_contour"
       );
     }
+    
+    onModeChange("3d-preview");
   };
   
   return (
@@ -56,11 +60,7 @@ export function ToolbarToggle({ mode, onModeChange, hasClosedContour }: ToolbarT
       <Button
         variant={mode === "3d-preview" ? "default" : "outline"}
         onClick={handle3DClick}
-        className={cn(
-          "w-32",
-          !hasClosedContour && "opacity-50 cursor-not-allowed"
-        )}
-        disabled={!hasClosedContour}
+        className="w-32"
       >
         <Box className="w-4 h-4 mr-2" />
         3D Preview

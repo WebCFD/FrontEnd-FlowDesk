@@ -88,6 +88,7 @@ interface RoomSketchProProps {
   isFurnitureEraserMode?: boolean;
   onToggleFurnitureEraserMode?: () => void;
   onWizardSceneReady?: (scene: THREE.Scene) => void; // New prop for wizard scene callback
+  hasClosedContour?: boolean; // NEW: indicates if current floor has closed contour
 }
 
 /**
@@ -123,6 +124,7 @@ export function RoomSketchPro({
   materialTheme = "modern",
   isFurnitureEraserMode = false,
   onToggleFurnitureEraserMode,
+  hasClosedContour = false, // NEW: default value
   onWizardSceneReady
 }: RoomSketchProProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -970,6 +972,7 @@ export function RoomSketchPro({
         isFurnitureEraserMode={isFurnitureEraserMode}
         isMultifloor={isMultifloor}
         floorParameters={floorParameters}
+        hasClosedContour={hasClosedContour} // NEW: Pass hasClosedContour to show warning in RSP
         onUpdateAirEntry={onUpdateAirEntry}
         onPositionUpdate={onPositionUpdate}
         onDimensionsUpdate={onDimensionsUpdate}

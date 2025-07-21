@@ -1565,15 +1565,6 @@ export default function WizardDesign() {
           <ToolbarToggle
             mode={tab}
             onModeChange={(value: "2d-editor" | "3d-preview") => {
-              if (value === "3d-preview" && !hasClosedContour) {
-                toast({
-                  title: "Invalid Room Layout",
-                  description:
-                    "Please create a closed room contour before viewing in 3D",
-                  variant: "destructive",
-                });
-                return;
-              }
               setTab(value);
             }}
             hasClosedContour={hasClosedContour}
@@ -3836,6 +3827,7 @@ export default function WizardDesign() {
               floors={floors} // Pass the entire floors object directly
               isMultifloor={isMultifloor}
               floorParameters={floorParameters}
+              hasClosedContour={hasClosedContour} // NEW: Pass hasClosedContour for warning message in RSP
               onWallTransparencyChange={(value) => {
                 setWallTransparency(value);
               }}
@@ -3947,6 +3939,7 @@ export default function WizardDesign() {
               isMeasureMode={isMeasureMode}
               isEraserMode={isEraserMode}
               walls={walls} // Phase 1: Pass walls for AirEntry dialog unification
+              hasClosedContour={hasClosedContour} // NEW: Pass hasClosedContour to show warning
               simulationName={simulationName}
               simulationType={
                 simulationType === "comfort"
