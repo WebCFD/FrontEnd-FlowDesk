@@ -2177,7 +2177,7 @@ export default function WizardDesign() {
             </Panel>
 
             {/* Resizable handle */}
-            <PanelResizeHandle className="w-1 bg-red-400 hover:bg-red-500 transition-colors active:bg-red-600 cursor-col-resize" />
+            <PanelResizeHandle className="w-1 bg-transparent hover:bg-gray-200 active:bg-gray-300 cursor-col-resize transition-colors" />
 
             {/* Right side - Canvas */}
             <Panel defaultSize={75} minSize={50}>
@@ -2238,7 +2238,7 @@ export default function WizardDesign() {
               </Panel>
 
               {/* Resizable handle */}
-              <PanelResizeHandle className="w-1 bg-red-400 hover:bg-red-500 transition-colors active:bg-red-600 cursor-col-resize" />
+              <PanelResizeHandle className="w-1 bg-transparent hover:bg-gray-200 active:bg-gray-300 cursor-col-resize transition-colors" />
 
               {/* Main content area - using the same renderCanvasSection as 3D preview for consistency */}
               <Panel defaultSize={75} minSize={50}>
