@@ -1579,10 +1579,8 @@ export default function WizardDesign() {
 
   const renderStep1 = () => (
     <>
-      <PanelGroup direction="vertical" className="mt-4">
-        <Panel defaultSize={95} minSize={70} maxSize={98}>
-          <Card className="h-full">
-            <CardContent className="p-4 h-full">
+      <Card className="mt-4">
+        <CardContent className="p-4">
           <ToolbarToggle
             mode={tab}
             onModeChange={(value: "2d-editor" | "3d-preview") => {
@@ -2222,20 +2220,17 @@ export default function WizardDesign() {
               {renderCanvasSection("tabs")}
             </Panel>
           </PanelGroup>
-            </CardContent>
-          </Card>
-        </Panel>
-        
-        {/* Vertical resize handle */}
-        <PanelResizeHandle className="h-1 bg-transparent hover:bg-gray-200 active:bg-gray-300 cursor-row-resize transition-colors" />
-        
-        {/* Bottom panel for vertical resize */}
-        <Panel defaultSize={5} minSize={2} maxSize={30}>
-          <div className="h-full bg-gray-50/20 border rounded-lg flex items-center justify-center text-xs text-muted-foreground/60">
-            <span>↕ Drag to resize</span>
-          </div>
-        </Panel>
-      </PanelGroup>
+        </CardContent>
+      </Card>
+      
+      {/* Vertical resize handle - positioned exactly at the green line location */}
+      <div className="flex items-center justify-center py-1 bg-gray-50/50 hover:bg-gray-100/50 cursor-row-resize transition-colors group border-t border-gray-200/50">
+        <div className="flex items-center gap-1 text-xs text-muted-foreground/60 group-hover:text-muted-foreground/80">
+          <div className="w-8 h-0.5 bg-gray-300 rounded group-hover:bg-gray-400"></div>
+          <span>↕</span>
+          <div className="w-8 h-0.5 bg-gray-300 rounded group-hover:bg-gray-400"></div>
+        </div>
+      </div>
       <AirEntryDialog
         type={currentAirEntry || "window"}
         isOpen={isAirEntryDialogOpen}
@@ -2274,10 +2269,8 @@ export default function WizardDesign() {
   const renderStep2 = () => {
     return (
       <>
-        <PanelGroup direction="vertical" className="mt-4">
-          <Panel defaultSize={95} minSize={70} maxSize={98}>
-            <Card className="h-full">
-              <CardContent className="p-4 h-full">
+        <Card className="mt-4">
+          <CardContent className="p-4">
 
           <PanelGroup direction="horizontal" className="h-full">
             {/* Left side menus - resizable panel */}
@@ -2319,20 +2312,17 @@ export default function WizardDesign() {
                 {renderCanvasSection("step2")}
               </Panel>
           </PanelGroup>
-              </CardContent>
-            </Card>
-          </Panel>
-          
-          {/* Vertical resize handle */}
-          <PanelResizeHandle className="h-1 bg-transparent hover:bg-gray-200 active:bg-gray-300 cursor-row-resize transition-colors" />
-          
-          {/* Bottom panel for vertical resize */}
-          <Panel defaultSize={5} minSize={2} maxSize={30}>
-            <div className="h-full bg-gray-50/20 border rounded-lg flex items-center justify-center text-xs text-muted-foreground/60">
-              <span>↕ Drag to resize</span>
-            </div>
-          </Panel>
-        </PanelGroup>
+          </CardContent>
+        </Card>
+        
+        {/* Vertical resize handle - positioned exactly at the green line location */}
+        <div className="flex items-center justify-center py-1 bg-gray-50/50 hover:bg-gray-100/50 cursor-row-resize transition-colors group border-t border-gray-200/50">
+          <div className="flex items-center gap-1 text-xs text-muted-foreground/60 group-hover:text-muted-foreground/80">
+            <div className="w-8 h-0.5 bg-gray-300 rounded group-hover:bg-gray-400"></div>
+            <span>↕</span>
+            <div className="w-8 h-0.5 bg-gray-300 rounded group-hover:bg-gray-400"></div>
+          </div>
+        </div>
       </>
     );
   };
