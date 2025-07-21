@@ -3888,9 +3888,9 @@ export default function WizardDesign() {
 
 
   const renderCanvasSection = (mode = "tabs") => {
-    // Dynamic height based on 45% of viewport height
-    const canvasClasses = "border rounded-lg overflow-hidden bg-white min-w-[600px]";
-    const canvasStyle = { flex: 1, height: `${dynamicCanvasHeight}px` }; // Dynamic height with horizontal expansion
+    // Use full height with flex
+    const canvasClasses = "border rounded-lg overflow-hidden bg-white min-w-[600px] h-full";
+    const canvasStyle = { flex: 1 }; // Full height with horizontal expansion
 
     return (
       <div className={canvasClasses} style={canvasStyle}>
