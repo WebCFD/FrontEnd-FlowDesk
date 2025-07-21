@@ -103,7 +103,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { PlusCircle, Play, Mail, FileEdit, Trash2, Plus, Minus } from "lucide-react";
+import { PlusCircle, Play, Mail, FileEdit, Trash2 } from "lucide-react";
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 import {
   Dialog,
@@ -368,18 +368,7 @@ export default function WizardDesign() {
 
   // Estado para el diálogo de carga de diseño
   const [showLoadDesignDialog, setShowLoadDesignDialog] = useState(false);
-  
-  // Estado para la altura dinámica de los paneles verticales
-  const [dynamicCanvasHeight, setDynamicCanvasHeight] = useState(canvasHeight);
-  
-  // Sistema simplificado de altura con botón de redimensionamiento
-  const handleHeightAdjustment = (direction: 'increase' | 'decrease') => {
-    const increment = 50; // incremento de 50px cada vez
-    const newHeight = direction === 'increase' 
-      ? Math.min(1000, dynamicCanvasHeight + increment)
-      : Math.max(300, dynamicCanvasHeight - increment);
-    setDynamicCanvasHeight(newHeight);
-  };
+
 
   // Calculate canvas height as configurable percentage of viewport height
   useEffect(() => {
@@ -1592,9 +1581,9 @@ export default function WizardDesign() {
 
   const renderStep1 = () => (
     <>
-      <div className="mt-4">
-        <Card style={{ height: `${dynamicCanvasHeight + 200}px` }}>
-          <CardContent className="p-4 h-full">
+      <div className="mt-4 flex-1 flex flex-col">
+        <Card className="flex-1 flex flex-col">
+          <CardContent className="p-4 flex-1 flex flex-col">
           <ToolbarToggle
             mode={tab}
             onModeChange={(value: "2d-editor" | "3d-preview") => {
@@ -1603,10 +1592,10 @@ export default function WizardDesign() {
             hasClosedContour={hasClosedContour}
           />
 
-          <PanelGroup direction="horizontal" className="h-full">
+          <PanelGroup direction="horizontal" className="flex-1">
             {/* Left side menus - resizable panel */}
             <Panel defaultSize={25} minSize={15} maxSize={50}>
-              <div className="space-y-6 overflow-y-auto pr-2" style={{ maxHeight: `${dynamicCanvasHeight}px` }}>
+              <div className="space-y-6 overflow-y-auto pr-2 h-full">
               {/* 2D Configuration - only show when in 2D mode */}
               {tab === "2d-editor" && (
                 <div className="border rounded-lg p-4">
@@ -2237,28 +2226,7 @@ export default function WizardDesign() {
             </CardContent>
           </Card>
         </div>
-        
-        {/* Simple height adjustment controls */}
-        <div className="mt-2 flex items-center justify-center gap-4 p-2 bg-gray-50 rounded-lg border">
-          <span className="text-sm text-muted-foreground">Canvas Height:</span>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => handleHeightAdjustment('decrease')}
-            disabled={dynamicCanvasHeight <= 300}
-          >
-            <Minus className="h-3 w-3" />
-          </Button>
-          <span className="text-sm font-mono w-16 text-center">{dynamicCanvasHeight}px</span>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => handleHeightAdjustment('increase')}
-            disabled={dynamicCanvasHeight >= 1000}
-          >
-            <Plus className="h-3 w-3" />
-          </Button>
-        </div>
+
       <AirEntryDialog
         type={currentAirEntry || "window"}
         isOpen={isAirEntryDialogOpen}
@@ -2297,14 +2265,14 @@ export default function WizardDesign() {
   const renderStep2 = () => {
     return (
       <>
-        <div className="mt-4">
-          <Card style={{ height: `${dynamicCanvasHeight + 200}px` }}>
-            <CardContent className="p-4 h-full">
+        <div className="mt-4 flex-1 flex flex-col">
+          <Card className="flex-1 flex flex-col">
+            <CardContent className="p-4 flex-1 flex flex-col">
 
-          <PanelGroup direction="horizontal" className="h-full">
+          <PanelGroup direction="horizontal" className="flex-1">
             {/* Left side menus - resizable panel */}
             <Panel defaultSize={25} minSize={15} maxSize={50}>
-              <div className="space-y-6 overflow-y-auto pr-2" style={{ maxHeight: `${dynamicCanvasHeight}px` }}>
+              <div className="space-y-6 overflow-y-auto pr-2 h-full">
                 {/* Main options */}
                 <div className="border rounded-lg p-4">
                   <h3 className="font-semibold text-xl mb-4 text-center">Add 3D Elements</h3>
@@ -2344,28 +2312,7 @@ export default function WizardDesign() {
               </CardContent>
             </Card>
           </div>
-          
-          {/* Simple height adjustment controls */}
-          <div className="mt-2 flex items-center justify-center gap-4 p-2 bg-gray-50 rounded-lg border">
-            <span className="text-sm text-muted-foreground">Canvas Height:</span>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => handleHeightAdjustment('decrease')}
-              disabled={dynamicCanvasHeight <= 300}
-            >
-              <Minus className="h-3 w-3" />
-            </Button>
-            <span className="text-sm font-mono w-16 text-center">{dynamicCanvasHeight}px</span>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => handleHeightAdjustment('increase')}
-              disabled={dynamicCanvasHeight >= 1000}
-            >
-              <Plus className="h-3 w-3" />
-            </Button>
-          </div>
+
       </>
     );
   };
@@ -4118,9 +4065,9 @@ export default function WizardDesign() {
 
   return (
     <DashboardLayout>
-      <div className="container mx-auto py-4 px-3 space-y-4">
+      <div className="container mx-auto py-4 px-3 space-y-4 h-full flex flex-col">
         {renderStepIndicator()}
-        <div className="min-h-[690px]">
+        <div className="flex-1 flex flex-col">
           {step === 1 && renderStep1()}
           {step === 2 && renderStep2()}
           {step === 3 && renderStep3()}
