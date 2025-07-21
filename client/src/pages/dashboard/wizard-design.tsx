@@ -103,7 +103,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { PlusCircle, Play, Mail, FileEdit, Trash2 } from "lucide-react";
+import { PlusCircle, Play, Mail, FileEdit, Trash2, Plus, Minus } from "lucide-react";
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 import {
   Dialog,
@@ -372,22 +372,13 @@ export default function WizardDesign() {
   // Estado para la altura dinámica de los paneles verticales
   const [dynamicCanvasHeight, setDynamicCanvasHeight] = useState(canvasHeight);
   
-  // Función para manejar el redimensionamiento vertical
-  const handleVerticalResize = (sizes: number[]) => {
-    // sizes[0] es el tamaño del panel principal (en porcentaje)
-    // Calculamos la nueva altura del canvas basada en el tamaño del panel principal
-    const mainPanelPercentage = sizes[0];
-    const baseHeight = canvasHeight; // altura base desde la configuración
-    
-    // Calculamos el factor de escala basado en el tamaño del panel
-    // Si el panel es 90% (por defecto), mantenemos la altura base
-    // Si se hace más grande o más pequeño, escalamos proporcionalmente
-    const scaleFactor = mainPanelPercentage / 90; // 90 es el tamaño por defecto
-    const newCanvasHeight = Math.round(baseHeight * scaleFactor);
-    
-    // Aplicamos límites para mantener usabilidad
-    const clampedHeight = Math.max(300, Math.min(1000, newCanvasHeight));
-    setDynamicCanvasHeight(clampedHeight);
+  // Sistema simplificado de altura con botón de redimensionamiento
+  const handleHeightAdjustment = (direction: 'increase' | 'decrease') => {
+    const increment = 50; // incremento de 50px cada vez
+    const newHeight = direction === 'increase' 
+      ? Math.min(1000, dynamicCanvasHeight + increment)
+      : Math.max(300, dynamicCanvasHeight - increment);
+    setDynamicCanvasHeight(newHeight);
   };
 
   // Calculate canvas height as configurable percentage of viewport height
@@ -1601,10 +1592,9 @@ export default function WizardDesign() {
 
   const renderStep1 = () => (
     <>
-      <PanelGroup direction="vertical" className="mt-4" style={{ height: `${dynamicCanvasHeight + 200}px` }} onLayout={handleVerticalResize}>
-        <Panel defaultSize={90} minSize={80} maxSize={98}>
-          <Card className="h-full">
-            <CardContent className="p-4 h-full">
+      <div className="mt-4">
+        <Card style={{ height: `${dynamicCanvasHeight + 200}px` }}>
+          <CardContent className="p-4 h-full">
           <ToolbarToggle
             mode={tab}
             onModeChange={(value: "2d-editor" | "3d-preview") => {
@@ -2246,24 +2236,29 @@ export default function WizardDesign() {
           </PanelGroup>
             </CardContent>
           </Card>
-        </Panel>
+        </div>
         
-        {/* Functional vertical resize handle */}
-        <PanelResizeHandle className="h-2 bg-gray-100 hover:bg-gray-200 active:bg-gray-300 cursor-row-resize transition-colors flex items-center justify-center group">
-          <div className="flex items-center gap-1 text-xs text-muted-foreground/60 group-hover:text-muted-foreground/80">
-            <div className="w-8 h-0.5 bg-gray-300 rounded group-hover:bg-gray-400"></div>
-            <span>↕</span>
-            <div className="w-8 h-0.5 bg-gray-300 rounded group-hover:bg-gray-400"></div>
-          </div>
-        </PanelResizeHandle>
-        
-        {/* Bottom expandable panel */}
-        <Panel defaultSize={10} minSize={2} maxSize={20}>
-          <div className="h-full bg-gray-50/30 border rounded-lg flex items-center justify-center">
-            <span className="text-xs text-muted-foreground/50">Expandable area</span>
-          </div>
-        </Panel>
-      </PanelGroup>
+        {/* Simple height adjustment controls */}
+        <div className="mt-2 flex items-center justify-center gap-4 p-2 bg-gray-50 rounded-lg border">
+          <span className="text-sm text-muted-foreground">Canvas Height:</span>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => handleHeightAdjustment('decrease')}
+            disabled={dynamicCanvasHeight <= 300}
+          >
+            <Minus className="h-3 w-3" />
+          </Button>
+          <span className="text-sm font-mono w-16 text-center">{dynamicCanvasHeight}px</span>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => handleHeightAdjustment('increase')}
+            disabled={dynamicCanvasHeight >= 1000}
+          >
+            <Plus className="h-3 w-3" />
+          </Button>
+        </div>
       <AirEntryDialog
         type={currentAirEntry || "window"}
         isOpen={isAirEntryDialogOpen}
@@ -2302,10 +2297,9 @@ export default function WizardDesign() {
   const renderStep2 = () => {
     return (
       <>
-        <PanelGroup direction="vertical" className="mt-4" style={{ height: `${dynamicCanvasHeight + 200}px` }} onLayout={handleVerticalResize}>
-          <Panel defaultSize={90} minSize={80} maxSize={98}>
-            <Card className="h-full">
-              <CardContent className="p-4 h-full">
+        <div className="mt-4">
+          <Card style={{ height: `${dynamicCanvasHeight + 200}px` }}>
+            <CardContent className="p-4 h-full">
 
           <PanelGroup direction="horizontal" className="h-full">
             {/* Left side menus - resizable panel */}
@@ -2349,24 +2343,29 @@ export default function WizardDesign() {
               </PanelGroup>
               </CardContent>
             </Card>
-          </Panel>
+          </div>
           
-          {/* Functional vertical resize handle */}
-          <PanelResizeHandle className="h-2 bg-gray-100 hover:bg-gray-200 active:bg-gray-300 cursor-row-resize transition-colors flex items-center justify-center group">
-            <div className="flex items-center gap-1 text-xs text-muted-foreground/60 group-hover:text-muted-foreground/80">
-              <div className="w-8 h-0.5 bg-gray-300 rounded group-hover:bg-gray-400"></div>
-              <span>↕</span>
-              <div className="w-8 h-0.5 bg-gray-300 rounded group-hover:bg-gray-400"></div>
-            </div>
-          </PanelResizeHandle>
-          
-          {/* Bottom expandable panel */}
-          <Panel defaultSize={10} minSize={2} maxSize={20}>
-            <div className="h-full bg-gray-50/30 border rounded-lg flex items-center justify-center">
-              <span className="text-xs text-muted-foreground/50">Expandable area</span>
-            </div>
-          </Panel>
-        </PanelGroup>
+          {/* Simple height adjustment controls */}
+          <div className="mt-2 flex items-center justify-center gap-4 p-2 bg-gray-50 rounded-lg border">
+            <span className="text-sm text-muted-foreground">Canvas Height:</span>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => handleHeightAdjustment('decrease')}
+              disabled={dynamicCanvasHeight <= 300}
+            >
+              <Minus className="h-3 w-3" />
+            </Button>
+            <span className="text-sm font-mono w-16 text-center">{dynamicCanvasHeight}px</span>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => handleHeightAdjustment('increase')}
+              disabled={dynamicCanvasHeight >= 1000}
+            >
+              <Plus className="h-3 w-3" />
+            </Button>
+          </div>
       </>
     );
   };
