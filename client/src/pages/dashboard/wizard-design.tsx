@@ -103,7 +103,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { PlusCircle, Play, Mail, FileEdit } from "lucide-react";
+import { PlusCircle, Play, Mail, FileEdit, Trash2 } from "lucide-react";
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 import {
   Dialog,
@@ -306,6 +306,10 @@ export default function WizardDesign() {
 
   // Wall Line restriction state variables
   const [isWallLineDisabled, setIsWallLineDisabled] = useState(false);
+  
+  // Floor deletion dialog state variables
+  const [floorToDelete, setFloorToDelete] = useState<string | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [closedContourCache, setClosedContourCache] = useState(new Map());
   const [lastLinesHash, setLastLinesHash] = useState('');
 
@@ -947,6 +951,20 @@ export default function WizardDesign() {
       title: "Floor Removed",
       description: `Successfully removed ${formatFloorText(floorName)}`,
     });
+  };
+
+  // Handle floor deletion confirmation dialog
+  const handleDeleteFloorConfirm = (floorName: string) => {
+    setFloorToDelete(floorName);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const executeFloorDeletion = () => {
+    if (floorToDelete) {
+      handleRemoveFloor(floorToDelete);
+      setFloorToDelete(null);
+      setIsDeleteDialogOpen(false);
+    }
   };
 
   const steps = [
@@ -1854,6 +1872,118 @@ export default function WizardDesign() {
                           )}
                         </div>
 
+                        {/* Floor List with Delete Buttons */}
+                        <div className="space-y-2">
+                          <Label>Available Floors</Label>
+                          <div className="space-y-1">
+                            {/* Ground Floor - No delete button */}
+                            <div className="flex items-center justify-between p-2 border rounded-md">
+                              <span className="text-sm font-medium">
+                                {formatFloorText("ground")}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                Main floor
+                              </span>
+                            </div>
+                            
+                            {/* Other floors with delete buttons */}
+                            {floors.ground.hasClosedContour && (
+                              <>
+                                {floors.first?.hasClosedContour && (
+                                  <div className="flex items-center justify-between p-2 border rounded-md group">
+                                    <span className="text-sm font-medium">
+                                      {formatFloorText("first")}
+                                    </span>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-6 w-6 p-0 opacity-60 group-hover:opacity-100 hover:bg-red-100 hover:text-red-600 transition-all"
+                                      onClick={() => handleDeleteFloorConfirm("first")}
+                                      disabled={tab !== "2d-editor"}
+                                      title={tab !== "2d-editor" ? "Floor management available only in 2D Editor" : "Delete floor"}
+                                    >
+                                      <Trash2 className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                )}
+                                {floors.second?.hasClosedContour && (
+                                  <div className="flex items-center justify-between p-2 border rounded-md group">
+                                    <span className="text-sm font-medium">
+                                      {formatFloorText("second")}
+                                    </span>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-6 w-6 p-0 opacity-60 group-hover:opacity-100 hover:bg-red-100 hover:text-red-600 transition-all"
+                                      onClick={() => handleDeleteFloorConfirm("second")}
+                                      disabled={tab !== "2d-editor"}
+                                      title={tab !== "2d-editor" ? "Floor management available only in 2D Editor" : "Delete floor"}
+                                    >
+                                      <Trash2 className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                )}
+                                {floors.third?.hasClosedContour && (
+                                  <div className="flex items-center justify-between p-2 border rounded-md group">
+                                    <span className="text-sm font-medium">
+                                      {formatFloorText("third")}
+                                    </span>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-6 w-6 p-0 opacity-60 group-hover:opacity-100 hover:bg-red-100 hover:text-red-600 transition-all"
+                                      onClick={() => handleDeleteFloorConfirm("third")}
+                                      disabled={tab !== "2d-editor"}
+                                      title={tab !== "2d-editor" ? "Floor management available only in 2D Editor" : "Delete floor"}
+                                    >
+                                      <Trash2 className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                )}
+                                {floors.fourth?.hasClosedContour && (
+                                  <div className="flex items-center justify-between p-2 border rounded-md group">
+                                    <span className="text-sm font-medium">
+                                      {formatFloorText("fourth")}
+                                    </span>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-6 w-6 p-0 opacity-60 group-hover:opacity-100 hover:bg-red-100 hover:text-red-600 transition-all"
+                                      onClick={() => handleDeleteFloorConfirm("fourth")}
+                                      disabled={tab !== "2d-editor"}
+                                      title={tab !== "2d-editor" ? "Floor management available only in 2D Editor" : "Delete floor"}
+                                    >
+                                      <Trash2 className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                )}
+                                {floors.fifth?.hasClosedContour && (
+                                  <div className="flex items-center justify-between p-2 border rounded-md group">
+                                    <span className="text-sm font-medium">
+                                      {formatFloorText("fifth")}
+                                    </span>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-6 w-6 p-0 opacity-60 group-hover:opacity-100 hover:bg-red-100 hover:text-red-600 transition-all"
+                                      onClick={() => handleDeleteFloorConfirm("fifth")}
+                                      disabled={tab !== "2d-editor"}
+                                      title={tab !== "2d-editor" ? "Floor management available only in 2D Editor" : "Delete floor"}
+                                    >
+                                      <Trash2 className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                )}
+                              </>
+                            )}
+                          </div>
+                          {tab !== "2d-editor" && (
+                            <p className="text-xs text-muted-foreground">
+                              Switch to 2D Editor to delete floors
+                            </p>
+                          )}
+                        </div>
+
                         <div className="space-y-2">
                           <Label>Load from Floor</Label>
                           <div className="flex gap-2">
@@ -2195,6 +2325,29 @@ export default function WizardDesign() {
         }}
         onConfirm={handleAirEntryDimensionsConfirm}
       />
+      
+      {/* Floor Deletion Confirmation Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Floor</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete {floorToDelete && formatFloorText(floorToDelete)}? 
+              This will permanently remove all content including walls, windows, doors, 
+              furniture, and stairs. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={executeFloorDeletion}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete Floor
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 
