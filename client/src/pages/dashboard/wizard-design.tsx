@@ -1583,14 +1583,14 @@ export default function WizardDesign() {
                 {/* Wall Design */}
                 <div className="space-y-4">
                   <h3 className="font-semibold">Wall Design</h3>
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-start gap-2">
                     {/* Wall Line Button */}
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
                             variant="outline"
-                            className={getWallStyles()}
+                            className={`${getWallStyles()} flex-1 min-w-0 h-16 flex-col justify-center`}
                             onClick={() => {
                               if (isWallLineDisabled) {
                                 toast({
@@ -1656,7 +1656,7 @@ export default function WizardDesign() {
                               setDefaultWallTemperature(value);
                             }
                           }}
-                          className="w-20 h-8"
+                          className="w-full h-8 text-xs"
                           min={-50}
                           max={100}
                           step={0.5}
@@ -1670,29 +1670,29 @@ export default function WizardDesign() {
 
                 <div className="space-y-4 mt-4">
                   <h3 className="font-semibold">Air Entries</h3>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-3 gap-1">
                     <Button
                       variant="outline"
-                      className={getAirEntryStyles("window")}
+                      className={`${getAirEntryStyles("window")} h-16 flex-col justify-center text-xs p-1`}
                       onClick={() => handleAirEntrySelect("window")}
                     >
-                      <div className="w-6 h-6 border-2 border-blue-500 grid grid-cols-2" />
+                      <div className="w-4 h-4 border-2 border-blue-500 grid grid-cols-2" />
                       <span className="text-xs mt-1">Window</span>
                     </Button>
                     <Button
                       variant="outline"
-                      className={getAirEntryStyles("door")}
+                      className={`${getAirEntryStyles("door")} h-16 flex-col justify-center text-xs p-1`}
                       onClick={() => handleAirEntrySelect("door")}
                     >
-                      <div className="w-6 h-6 border-2 border-amber-500" />
+                      <div className="w-4 h-4 border-2 border-amber-500" />
                       <span className="text-xs mt-1">Door</span>
                     </Button>
                     <Button
                       variant="outline"
-                      className={getAirEntryStyles("vent")}
+                      className={`${getAirEntryStyles("vent")} h-16 flex-col justify-center text-xs p-1`}
                       onClick={() => handleAirEntrySelect("vent")}
                     >
-                      <div className="w-6 h-6 border-2 border-green-500 grid grid-cols-2 grid-rows-2" />
+                      <div className="w-4 h-4 border-2 border-green-500 grid grid-cols-2 grid-rows-2" />
                       <span className="text-xs mt-1">Vent-Grid</span>
                     </Button>
                   </div>
@@ -1702,11 +1702,11 @@ export default function WizardDesign() {
                 {isMultifloor && (
                   <div className="space-y-4 mt-4">
                     <h3 className="font-semibold">Stair Design</h3>
-                    <div className="flex items-start gap-4">
+                    <div className="flex items-start gap-2">
                       {/* Stair Design Button */}
                       <Button
                         variant="outline"
-                        className={getStairStyles()}
+                        className={`${getStairStyles()} flex-1 min-w-0 h-16 flex-col justify-center`}
                         onClick={() => {
                           handleToolSelect("stairs");
                           if (currentTool !== "stairs") {
@@ -1754,7 +1754,7 @@ export default function WizardDesign() {
                                 setDefaultStairTemperature(value);
                               }
                             }}
-                            className="w-20 h-8"
+                            className="w-full h-8 text-xs"
                             min={-50}
                             max={100}
                             step={0.5}
@@ -1770,10 +1770,10 @@ export default function WizardDesign() {
                 {/* 2D Tools Section */}
                 <div className="space-y-4 mt-4">
                   <h3 className="font-semibold">2D Tools</h3>
-                  <div className="flex gap-4 justify-center">
+                  <div className="flex gap-2">
                     <Button
                       variant={currentTool === "eraser" ? "default" : "outline"}
-                      className="w-20 h-16 flex flex-col items-center justify-center gap-1"
+                      className="flex-1 h-16 flex flex-col items-center justify-center gap-1"
                       onClick={() => handleToolSelect("eraser")}
                     >
                       <Eraser className="w-6 h-6" />
@@ -1781,7 +1781,7 @@ export default function WizardDesign() {
                     </Button>
                     <Button
                       variant={currentTool === "measure" ? "default" : "outline"}
-                      className="w-20 h-16 flex flex-col items-center justify-center gap-1"
+                      className="flex-1 h-16 flex flex-col items-center justify-center gap-1"
                       onClick={() => handleToolSelect("measure")}
                     >
                       <Ruler className="w-6 h-6" />
