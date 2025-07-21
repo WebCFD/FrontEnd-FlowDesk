@@ -1670,10 +1670,10 @@ export default function WizardDesign() {
 
                 <div className="space-y-4 mt-4">
                   <h3 className="font-semibold">Air Entries</h3>
-                  <div className="grid grid-cols-3 gap-1">
+                  <div className="flex gap-1">
                     <Button
                       variant="outline"
-                      className={`${getAirEntryStyles("window")} h-16 flex-col justify-center text-xs p-1`}
+                      className={`${getAirEntryStyles("window")} flex-1 h-16 flex-col justify-center text-xs p-1`}
                       onClick={() => handleAirEntrySelect("window")}
                     >
                       <div className="w-4 h-4 border-2 border-blue-500 grid grid-cols-2" />
@@ -1681,7 +1681,7 @@ export default function WizardDesign() {
                     </Button>
                     <Button
                       variant="outline"
-                      className={`${getAirEntryStyles("door")} h-16 flex-col justify-center text-xs p-1`}
+                      className={`${getAirEntryStyles("door")} flex-1 h-16 flex-col justify-center text-xs p-1`}
                       onClick={() => handleAirEntrySelect("door")}
                     >
                       <div className="w-4 h-4 border-2 border-amber-500" />
@@ -1689,7 +1689,7 @@ export default function WizardDesign() {
                     </Button>
                     <Button
                       variant="outline"
-                      className={`${getAirEntryStyles("vent")} h-16 flex-col justify-center text-xs p-1`}
+                      className={`${getAirEntryStyles("vent")} flex-1 h-16 flex-col justify-center text-xs p-1`}
                       onClick={() => handleAirEntrySelect("vent")}
                     >
                       <div className="w-4 h-4 border-2 border-green-500 grid grid-cols-2 grid-rows-2" />
