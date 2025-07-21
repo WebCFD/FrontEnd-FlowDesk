@@ -1591,10 +1591,13 @@ export default function WizardDesign() {
             hasClosedContour={hasClosedContour}
           />
 
-          <PanelGroup direction="horizontal" className="flex-1 min-w-[1200px]">
-            {/* Left side menus - resizable panel */}
-            <Panel defaultSize={25} minSize={15} maxSize={50}>
-              <div className="space-y-6 overflow-y-auto pr-2 h-full">
+          <PanelGroup direction="vertical" className="flex-1">
+            {/* Top section - horizontal panels (menu + canvas) */}
+            <Panel defaultSize={70} minSize={30}>
+              <PanelGroup direction="horizontal" className="h-full min-w-[1200px]">
+                {/* Left side menus - resizable panel */}
+                <Panel defaultSize={25} minSize={15} maxSize={50}>
+                  <div className="space-y-6 overflow-y-auto pr-2 h-full">
               {/* 2D Configuration - only show when in 2D mode */}
               {tab === "2d-editor" && (
                 <div className="border rounded-lg p-4">
@@ -2214,25 +2217,22 @@ export default function WizardDesign() {
               </div>
             </Panel>
 
-            {/* Resizable handle */}
-            <PanelResizeHandle className="w-1 bg-transparent hover:bg-gray-200 active:bg-gray-300 cursor-col-resize transition-colors" />
+                {/* Resizable handle */}
+                <PanelResizeHandle className="w-1 bg-transparent hover:bg-gray-200 active:bg-gray-300 cursor-col-resize transition-colors" />
 
-            {/* Right side - Canvas with vertical resizing */}
-            <Panel defaultSize={75} minSize={50}>
-              <PanelGroup direction="vertical" className="h-full">
-                {/* Canvas section */}
-                <Panel defaultSize={70} minSize={30}>
+                {/* Right side - Canvas */}
+                <Panel defaultSize={75} minSize={50}>
                   {renderCanvasSection("tabs")}
                 </Panel>
-                
-                {/* Horizontal resize handle for vertical resizing */}
-                <PanelResizeHandle className="h-1 bg-gray-200 hover:bg-gray-300 active:bg-blue-400 cursor-row-resize transition-colors" />
-                
-                {/* Bottom area */}
-                <Panel defaultSize={30} minSize={10}>
-                  <div className="h-full bg-gray-50 border rounded-lg"></div>
-                </Panel>
               </PanelGroup>
+            </Panel>
+            
+            {/* Horizontal resize handle for vertical resizing */}
+            <PanelResizeHandle className="h-1 bg-gray-200 hover:bg-gray-300 active:bg-blue-400 cursor-row-resize transition-colors" />
+            
+            {/* Bottom area */}
+            <Panel defaultSize={30} minSize={10}>
+              <div className="h-full bg-gray-50 border rounded-lg"></div>
             </Panel>
           </PanelGroup>
             </CardContent>
