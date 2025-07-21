@@ -104,6 +104,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { PlusCircle, Play, Mail, FileEdit } from "lucide-react";
+import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 import {
   Dialog,
   DialogContent,
@@ -1570,9 +1571,10 @@ export default function WizardDesign() {
             hasClosedContour={hasClosedContour}
           />
 
-          <div className="flex gap-4">
-            {/* Left side menus */}
-            <div className="space-y-6 overflow-y-auto" style={{ maxHeight: `${canvasHeight}px`, width: `${menuWidth}px` }}>
+          <PanelGroup direction="horizontal" className="h-full">
+            {/* Left side menus - resizable panel */}
+            <Panel defaultSize={25} minSize={15} maxSize={50}>
+              <div className="space-y-6 overflow-y-auto pr-2" style={{ maxHeight: `${canvasHeight}px` }}>
               {/* 2D Configuration - only show when in 2D mode */}
               {tab === "2d-editor" && (
                 <div className="border rounded-lg p-4">
@@ -2171,11 +2173,17 @@ export default function WizardDesign() {
               )}
 
               {renderFilesMenu()}
-            </div>
+              </div>
+            </Panel>
+
+            {/* Resizable handle */}
+            <PanelResizeHandle className="w-1 bg-red-400 hover:bg-red-500 transition-colors active:bg-red-600 cursor-col-resize" />
 
             {/* Right side - Canvas */}
-            {renderCanvasSection("tabs")}
-          </div>
+            <Panel defaultSize={75} minSize={50}>
+              {renderCanvasSection("tabs")}
+            </Panel>
+          </PanelGroup>
         </CardContent>
       </Card>
       <AirEntryDialog
@@ -2197,9 +2205,10 @@ export default function WizardDesign() {
           <CardContent className="p-4">
 
 
-            <div className="flex gap-4">
-              {/* Left side menus - adaptable with scroll */}
-              <div className="space-y-6 overflow-y-auto" style={{ maxHeight: `${canvasHeight}px`, width: `${menuWidth}px` }}>
+            <PanelGroup direction="horizontal" className="h-full">
+              {/* Left side menus - resizable panel */}
+              <Panel defaultSize={25} minSize={15} maxSize={50}>
+                <div className="space-y-6 overflow-y-auto pr-2" style={{ maxHeight: `${canvasHeight}px` }}>
                 {/* Main options */}
                 <div className="border rounded-lg p-4">
                   <h3 className="font-semibold text-xl mb-4 text-center">Add 3D Elements</h3>
@@ -2226,10 +2235,16 @@ export default function WizardDesign() {
                 {/* Files section - unified */}
                 {renderFilesMenu()}
                 </div>
+              </Panel>
 
-            {/* Main content area - using the same renderCanvasSection as 3D preview for consistency */}
-            {renderCanvasSection("step2")}
-          </div>
+              {/* Resizable handle */}
+              <PanelResizeHandle className="w-1 bg-red-400 hover:bg-red-500 transition-colors active:bg-red-600 cursor-col-resize" />
+
+              {/* Main content area - using the same renderCanvasSection as 3D preview for consistency */}
+              <Panel defaultSize={75} minSize={50}>
+                {renderCanvasSection("step2")}
+              </Panel>
+            </PanelGroup>
           </CardContent>
         </Card>
       </>
