@@ -2217,9 +2217,22 @@ export default function WizardDesign() {
             {/* Resizable handle */}
             <PanelResizeHandle className="w-1 bg-transparent hover:bg-gray-200 active:bg-gray-300 cursor-col-resize transition-colors" />
 
-            {/* Right side - Canvas */}
+            {/* Right side - Canvas with vertical resizing */}
             <Panel defaultSize={75} minSize={50}>
-              {renderCanvasSection("tabs")}
+              <PanelGroup direction="vertical" className="h-full">
+                {/* Canvas section */}
+                <Panel defaultSize={70} minSize={30}>
+                  {renderCanvasSection("tabs")}
+                </Panel>
+                
+                {/* Horizontal resize handle for vertical resizing */}
+                <PanelResizeHandle className="h-1 bg-gray-200 hover:bg-gray-300 active:bg-blue-400 cursor-row-resize transition-colors" />
+                
+                {/* Bottom area */}
+                <Panel defaultSize={30} minSize={10}>
+                  <div className="h-full bg-gray-50 border rounded-lg"></div>
+                </Panel>
+              </PanelGroup>
             </Panel>
           </PanelGroup>
             </CardContent>
@@ -2303,9 +2316,22 @@ export default function WizardDesign() {
               {/* Resizable handle */}
               <PanelResizeHandle className="w-1 bg-transparent hover:bg-gray-200 active:bg-gray-300 cursor-col-resize transition-colors" />
 
-              {/* Main content area */}
+              {/* Main content area with vertical resizing */}
               <Panel defaultSize={75} minSize={50}>
-                {renderCanvasSection("step2")}
+                <PanelGroup direction="vertical" className="h-full">
+                  {/* Canvas section */}
+                  <Panel defaultSize={70} minSize={30}>
+                    {renderCanvasSection("step2")}
+                  </Panel>
+                  
+                  {/* Horizontal resize handle for vertical resizing */}
+                  <PanelResizeHandle className="h-1 bg-gray-200 hover:bg-gray-300 active:bg-blue-400 cursor-row-resize transition-colors" />
+                  
+                  {/* Bottom area */}
+                  <Panel defaultSize={30} minSize={10}>
+                    <div className="h-full bg-gray-50 border rounded-lg"></div>
+                  </Panel>
+                </PanelGroup>
               </Panel>
               </PanelGroup>
               </CardContent>
