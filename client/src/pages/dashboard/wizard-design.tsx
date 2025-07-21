@@ -1580,7 +1580,7 @@ export default function WizardDesign() {
 
   const renderStep1 = () => (
     <>
-      <div className="mt-4 flex-1 flex flex-col">
+      <div className="mt-4 flex-1 flex flex-col overflow-x-auto">
         <Card className="flex-1 flex flex-col">
           <CardContent className="p-4 flex-1 flex flex-col">
           <ToolbarToggle
@@ -1591,7 +1591,7 @@ export default function WizardDesign() {
             hasClosedContour={hasClosedContour}
           />
 
-          <PanelGroup direction="horizontal" className="flex-1">
+          <PanelGroup direction="horizontal" className="flex-1 min-w-[1200px]">
             {/* Left side menus - resizable panel */}
             <Panel defaultSize={25} minSize={15} maxSize={50}>
               <div className="space-y-6 overflow-y-auto pr-2 h-full">
@@ -2217,27 +2217,9 @@ export default function WizardDesign() {
             {/* Resizable handle */}
             <PanelResizeHandle className="w-1 bg-transparent hover:bg-gray-200 active:bg-gray-300 cursor-col-resize transition-colors" />
 
-            {/* Right side - Canvas with vertical resizing */}
+            {/* Right side - Canvas */}
             <Panel defaultSize={75} minSize={50}>
-              <PanelGroup direction="vertical" className="h-full">
-                {/* Canvas section */}
-                <Panel defaultSize={80} minSize={30}>
-                  {renderCanvasSection("tabs")}
-                </Panel>
-                
-                {/* Horizontal resize handle below canvas */}
-                <PanelResizeHandle className="h-1 bg-transparent hover:bg-gray-200 active:bg-gray-300 cursor-row-resize transition-colors" />
-                
-                {/* Bottom expandable area */}
-                <Panel defaultSize={20} minSize={10}>
-                  <div className="h-full bg-gray-50 border rounded-lg p-4 flex items-center justify-center text-gray-500">
-                    <div className="text-center">
-                      <div className="text-sm font-medium">Expandable Area</div>
-                      <div className="text-xs mt-1">Drag the bar above to resize</div>
-                    </div>
-                  </div>
-                </Panel>
-              </PanelGroup>
+              {renderCanvasSection("tabs")}
             </Panel>
           </PanelGroup>
             </CardContent>
@@ -2282,11 +2264,11 @@ export default function WizardDesign() {
   const renderStep2 = () => {
     return (
       <>
-        <div className="mt-4 flex-1 flex flex-col">
+        <div className="mt-4 flex-1 flex flex-col overflow-x-auto">
           <Card className="flex-1 flex flex-col">
             <CardContent className="p-4 flex-1 flex flex-col">
 
-          <PanelGroup direction="horizontal" className="flex-1">
+          <PanelGroup direction="horizontal" className="flex-1 min-w-[1200px]">
             {/* Left side menus - resizable panel */}
             <Panel defaultSize={25} minSize={15} maxSize={50}>
               <div className="space-y-6 overflow-y-auto pr-2 h-full">
@@ -2321,27 +2303,9 @@ export default function WizardDesign() {
               {/* Resizable handle */}
               <PanelResizeHandle className="w-1 bg-transparent hover:bg-gray-200 active:bg-gray-300 cursor-col-resize transition-colors" />
 
-              {/* Main content area with vertical resizing */}
+              {/* Main content area */}
               <Panel defaultSize={75} minSize={50}>
-                <PanelGroup direction="vertical" className="h-full">
-                  {/* Canvas section */}
-                  <Panel defaultSize={80} minSize={30}>
-                    {renderCanvasSection("step2")}
-                  </Panel>
-                  
-                  {/* Horizontal resize handle below canvas */}
-                  <PanelResizeHandle className="h-1 bg-transparent hover:bg-gray-200 active:bg-gray-300 cursor-row-resize transition-colors" />
-                  
-                  {/* Bottom expandable area */}
-                  <Panel defaultSize={20} minSize={10}>
-                    <div className="h-full bg-gray-50 border rounded-lg p-4 flex items-center justify-center text-gray-500">
-                      <div className="text-center">
-                        <div className="text-sm font-medium">Expandable Area</div>
-                        <div className="text-xs mt-1">Drag the bar above to resize</div>
-                      </div>
-                    </div>
-                  </Panel>
-                </PanelGroup>
+                {renderCanvasSection("step2")}
               </Panel>
               </PanelGroup>
               </CardContent>
@@ -3923,8 +3887,8 @@ export default function WizardDesign() {
 
 
   const renderCanvasSection = (mode = "tabs") => {
-    // Use full height with flex
-    const canvasClasses = "border rounded-lg overflow-hidden bg-white min-w-[600px] h-full";
+    // Add horizontal scroll to canvas
+    const canvasClasses = "border rounded-lg bg-white min-w-[600px] h-full overflow-x-auto overflow-y-hidden";
     const canvasStyle = { flex: 1 }; // Full height with horizontal expansion
 
     return (
