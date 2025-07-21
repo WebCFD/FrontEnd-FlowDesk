@@ -378,7 +378,6 @@ export default function WizardDesign() {
       // Ensure minimum height of 400px and maximum of 800px
       const clampedHeight = Math.max(400, Math.min(800, calculatedHeight));
       setCanvasHeight(clampedHeight);
-      setDynamicCanvasHeight(clampedHeight);
     };
 
     // Calculate initial height
