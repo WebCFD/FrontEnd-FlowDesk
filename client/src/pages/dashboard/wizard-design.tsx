@@ -369,7 +369,6 @@ export default function WizardDesign() {
   // Estado para el diálogo de carga de diseño
   const [showLoadDesignDialog, setShowLoadDesignDialog] = useState(false);
 
-
   // Calculate canvas height as configurable percentage of viewport height
   useEffect(() => {
     const calculateCanvasHeight = () => {
@@ -1580,9 +1579,8 @@ export default function WizardDesign() {
 
   const renderStep1 = () => (
     <>
-      <div className="mt-4 flex-1 flex flex-col overflow-x-auto">
-        <Card className="flex-1 flex flex-col">
-          <CardContent className="p-4 flex-1 flex flex-col">
+      <Card className="mt-4">
+        <CardContent className="p-4">
           <ToolbarToggle
             mode={tab}
             onModeChange={(value: "2d-editor" | "3d-preview") => {
@@ -1591,13 +1589,10 @@ export default function WizardDesign() {
             hasClosedContour={hasClosedContour}
           />
 
-          <PanelGroup direction="vertical" className="flex-1">
-            {/* Top section - horizontal panels (menu + canvas) */}
-            <Panel defaultSize={70} minSize={30}>
-              <PanelGroup direction="horizontal" className="h-full min-w-[1200px]">
-                {/* Left side menus - resizable panel */}
-                <Panel defaultSize={25} minSize={15} maxSize={50}>
-                  <div className="space-y-6 overflow-y-auto pr-2 h-full">
+          <PanelGroup direction="horizontal" className="h-full">
+            {/* Left side menus - resizable panel */}
+            <Panel defaultSize={25} minSize={15} maxSize={50}>
+              <div className="space-y-6 overflow-y-auto pr-2" style={{ maxHeight: `${canvasHeight}px` }}>
               {/* 2D Configuration - only show when in 2D mode */}
               {tab === "2d-editor" && (
                 <div className="border rounded-lg p-4">
@@ -2217,28 +2212,16 @@ export default function WizardDesign() {
               </div>
             </Panel>
 
-                {/* Resizable handle */}
-                <PanelResizeHandle className="w-1 bg-transparent hover:bg-gray-200 active:bg-gray-300 cursor-col-resize transition-colors" />
+            {/* Resizable handle */}
+            <PanelResizeHandle className="w-1 bg-transparent hover:bg-gray-200 active:bg-gray-300 cursor-col-resize transition-colors" />
 
-                {/* Right side - Canvas */}
-                <Panel defaultSize={75} minSize={50}>
-                  {renderCanvasSection("tabs")}
-                </Panel>
-              </PanelGroup>
-            </Panel>
-            
-            {/* Horizontal resize handle for vertical resizing */}
-            <PanelResizeHandle className="h-1 bg-gray-200 hover:bg-gray-300 active:bg-blue-400 cursor-row-resize transition-colors" />
-            
-            {/* Bottom area */}
-            <Panel defaultSize={30} minSize={10}>
-              <div className="h-full bg-gray-50 border rounded-lg"></div>
+            {/* Right side - Canvas */}
+            <Panel defaultSize={75} minSize={50}>
+              {renderCanvasSection("tabs")}
             </Panel>
           </PanelGroup>
-            </CardContent>
-          </Card>
-        </div>
-
+        </CardContent>
+      </Card>
       <AirEntryDialog
         type={currentAirEntry || "window"}
         isOpen={isAirEntryDialogOpen}
@@ -2277,14 +2260,14 @@ export default function WizardDesign() {
   const renderStep2 = () => {
     return (
       <>
-        <div className="mt-4 flex-1 flex flex-col overflow-x-auto">
-          <Card className="flex-1 flex flex-col">
-            <CardContent className="p-4 flex-1 flex flex-col">
+        <Card className="mt-4">
+          <CardContent className="p-4">
 
-          <PanelGroup direction="horizontal" className="flex-1 min-w-[1200px]">
-            {/* Left side menus - resizable panel */}
-            <Panel defaultSize={25} minSize={15} maxSize={50}>
-              <div className="space-y-6 overflow-y-auto pr-2 h-full">
+
+            <PanelGroup direction="horizontal" className="h-full">
+              {/* Left side menus - resizable panel */}
+              <Panel defaultSize={25} minSize={15} maxSize={50}>
+                <div className="space-y-6 overflow-y-auto pr-2" style={{ maxHeight: `${canvasHeight}px` }}>
                 {/* Main options */}
                 <div className="border rounded-lg p-4">
                   <h3 className="font-semibold text-xl mb-4 text-center">Add 3D Elements</h3>
@@ -2316,28 +2299,13 @@ export default function WizardDesign() {
               {/* Resizable handle */}
               <PanelResizeHandle className="w-1 bg-transparent hover:bg-gray-200 active:bg-gray-300 cursor-col-resize transition-colors" />
 
-              {/* Main content area with vertical resizing */}
+              {/* Main content area - using the same renderCanvasSection as 3D preview for consistency */}
               <Panel defaultSize={75} minSize={50}>
-                <PanelGroup direction="vertical" className="h-full">
-                  {/* Canvas section */}
-                  <Panel defaultSize={70} minSize={30}>
-                    {renderCanvasSection("step2")}
-                  </Panel>
-                  
-                  {/* Horizontal resize handle for vertical resizing */}
-                  <PanelResizeHandle className="h-1 bg-gray-200 hover:bg-gray-300 active:bg-blue-400 cursor-row-resize transition-colors" />
-                  
-                  {/* Bottom area */}
-                  <Panel defaultSize={30} minSize={10}>
-                    <div className="h-full bg-gray-50 border rounded-lg"></div>
-                  </Panel>
-                </PanelGroup>
+                {renderCanvasSection("step2")}
               </Panel>
-              </PanelGroup>
-              </CardContent>
-            </Card>
-          </div>
-
+            </PanelGroup>
+          </CardContent>
+        </Card>
       </>
     );
   };
@@ -3913,9 +3881,9 @@ export default function WizardDesign() {
 
 
   const renderCanvasSection = (mode = "tabs") => {
-    // Add horizontal scroll to canvas
-    const canvasClasses = "border rounded-lg bg-white min-w-[600px] h-full overflow-x-auto overflow-y-hidden";
-    const canvasStyle = { flex: 1 }; // Full height with horizontal expansion
+    // Dynamic height based on 45% of viewport height
+    const canvasClasses = "border rounded-lg overflow-hidden bg-white min-w-[600px]";
+    const canvasStyle = { flex: 1, height: `${canvasHeight}px` }; // Dynamic height with horizontal expansion
 
     return (
       <div className={canvasClasses} style={canvasStyle}>
@@ -4090,9 +4058,9 @@ export default function WizardDesign() {
 
   return (
     <DashboardLayout>
-      <div className="container mx-auto py-4 px-3 space-y-4 h-full flex flex-col">
+      <div className="container mx-auto py-4 px-3 space-y-4">
         {renderStepIndicator()}
-        <div className="flex-1 flex flex-col">
+        <div className="min-h-[690px]">
           {step === 1 && renderStep1()}
           {step === 2 && renderStep2()}
           {step === 3 && renderStep3()}
