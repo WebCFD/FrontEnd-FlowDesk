@@ -368,6 +368,27 @@ export default function WizardDesign() {
 
   // Estado para el diálogo de carga de diseño
   const [showLoadDesignDialog, setShowLoadDesignDialog] = useState(false);
+  
+  // Estado para la altura dinámica de los paneles verticales
+  const [dynamicCanvasHeight, setDynamicCanvasHeight] = useState(canvasHeight);
+  
+  // Función para manejar el redimensionamiento vertical
+  const handleVerticalResize = (sizes: number[]) => {
+    // sizes[0] es el tamaño del panel principal (en porcentaje)
+    // Calculamos la nueva altura del canvas basada en el tamaño del panel principal
+    const mainPanelPercentage = sizes[0];
+    const baseHeight = canvasHeight; // altura base desde la configuración
+    
+    // Calculamos el factor de escala basado en el tamaño del panel
+    // Si el panel es 90% (por defecto), mantenemos la altura base
+    // Si se hace más grande o más pequeño, escalamos proporcionalmente
+    const scaleFactor = mainPanelPercentage / 90; // 90 es el tamaño por defecto
+    const newCanvasHeight = Math.round(baseHeight * scaleFactor);
+    
+    // Aplicamos límites para mantener usabilidad
+    const clampedHeight = Math.max(300, Math.min(1000, newCanvasHeight));
+    setDynamicCanvasHeight(clampedHeight);
+  };
 
   // Calculate canvas height as configurable percentage of viewport height
   useEffect(() => {
@@ -377,6 +398,7 @@ export default function WizardDesign() {
       // Ensure minimum height of 400px and maximum of 800px
       const clampedHeight = Math.max(400, Math.min(800, calculatedHeight));
       setCanvasHeight(clampedHeight);
+      setDynamicCanvasHeight(clampedHeight);
     };
 
     // Calculate initial height
@@ -1579,7 +1601,7 @@ export default function WizardDesign() {
 
   const renderStep1 = () => (
     <>
-      <PanelGroup direction="vertical" className="mt-4" style={{ height: `${canvasHeight + 200}px` }}>
+      <PanelGroup direction="vertical" className="mt-4" style={{ height: `${dynamicCanvasHeight + 200}px` }} onLayout={handleVerticalResize}>
         <Panel defaultSize={90} minSize={80} maxSize={98}>
           <Card className="h-full">
             <CardContent className="p-4 h-full">
@@ -2280,7 +2302,7 @@ export default function WizardDesign() {
   const renderStep2 = () => {
     return (
       <>
-        <PanelGroup direction="vertical" className="mt-4" style={{ height: `${canvasHeight + 200}px` }}>
+        <PanelGroup direction="vertical" className="mt-4" style={{ height: `${dynamicCanvasHeight + 200}px` }} onLayout={handleVerticalResize}>
           <Panel defaultSize={90} minSize={80} maxSize={98}>
             <Card className="h-full">
               <CardContent className="p-4 h-full">
@@ -3922,7 +3944,7 @@ export default function WizardDesign() {
   const renderCanvasSection = (mode = "tabs") => {
     // Dynamic height based on 45% of viewport height
     const canvasClasses = "border rounded-lg overflow-hidden bg-white min-w-[600px]";
-    const canvasStyle = { flex: 1, height: `${canvasHeight}px` }; // Dynamic height with horizontal expansion
+    const canvasStyle = { flex: 1, height: `${dynamicCanvasHeight}px` }; // Dynamic height with horizontal expansion
 
     return (
       <div className={canvasClasses} style={canvasStyle}>
