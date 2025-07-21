@@ -1579,8 +1579,10 @@ export default function WizardDesign() {
 
   const renderStep1 = () => (
     <>
-      <Card className="mt-4">
-        <CardContent className="p-4">
+      <PanelGroup direction="vertical" className="mt-4 h-[600px]">
+        <Panel defaultSize={85} minSize={60} maxSize={95}>
+          <Card className="h-full">
+            <CardContent className="p-4 h-full">
           <ToolbarToggle
             mode={tab}
             onModeChange={(value: "2d-editor" | "3d-preview") => {
@@ -2220,17 +2222,26 @@ export default function WizardDesign() {
               {renderCanvasSection("tabs")}
             </Panel>
           </PanelGroup>
-        </CardContent>
-      </Card>
-      
-      {/* Vertical resize handle - positioned exactly at the green line location */}
-      <div className="flex items-center justify-center py-1 bg-gray-50/50 hover:bg-gray-100/50 cursor-row-resize transition-colors group border-t border-gray-200/50">
-        <div className="flex items-center gap-1 text-xs text-muted-foreground/60 group-hover:text-muted-foreground/80">
-          <div className="w-8 h-0.5 bg-gray-300 rounded group-hover:bg-gray-400"></div>
-          <span>↕</span>
-          <div className="w-8 h-0.5 bg-gray-300 rounded group-hover:bg-gray-400"></div>
-        </div>
-      </div>
+            </CardContent>
+          </Card>
+        </Panel>
+        
+        {/* Functional vertical resize handle */}
+        <PanelResizeHandle className="h-2 bg-gray-100 hover:bg-gray-200 active:bg-gray-300 cursor-row-resize transition-colors flex items-center justify-center group">
+          <div className="flex items-center gap-1 text-xs text-muted-foreground/60 group-hover:text-muted-foreground/80">
+            <div className="w-8 h-0.5 bg-gray-300 rounded group-hover:bg-gray-400"></div>
+            <span>↕</span>
+            <div className="w-8 h-0.5 bg-gray-300 rounded group-hover:bg-gray-400"></div>
+          </div>
+        </PanelResizeHandle>
+        
+        {/* Bottom expandable panel */}
+        <Panel defaultSize={15} minSize={5} maxSize={40}>
+          <div className="h-full bg-gray-50/30 border rounded-lg flex items-center justify-center">
+            <span className="text-xs text-muted-foreground/50">Expandable area</span>
+          </div>
+        </Panel>
+      </PanelGroup>
       <AirEntryDialog
         type={currentAirEntry || "window"}
         isOpen={isAirEntryDialogOpen}
@@ -2269,8 +2280,10 @@ export default function WizardDesign() {
   const renderStep2 = () => {
     return (
       <>
-        <Card className="mt-4">
-          <CardContent className="p-4">
+        <PanelGroup direction="vertical" className="mt-4 h-[600px]">
+          <Panel defaultSize={85} minSize={60} maxSize={95}>
+            <Card className="h-full">
+              <CardContent className="p-4 h-full">
 
           <PanelGroup direction="horizontal" className="h-full">
             {/* Left side menus - resizable panel */}
@@ -2311,18 +2324,27 @@ export default function WizardDesign() {
               <Panel defaultSize={75} minSize={50}>
                 {renderCanvasSection("step2")}
               </Panel>
-          </PanelGroup>
-          </CardContent>
-        </Card>
-        
-        {/* Vertical resize handle - positioned exactly at the green line location */}
-        <div className="flex items-center justify-center py-1 bg-gray-50/50 hover:bg-gray-100/50 cursor-row-resize transition-colors group border-t border-gray-200/50">
-          <div className="flex items-center gap-1 text-xs text-muted-foreground/60 group-hover:text-muted-foreground/80">
-            <div className="w-8 h-0.5 bg-gray-300 rounded group-hover:bg-gray-400"></div>
-            <span>↕</span>
-            <div className="w-8 h-0.5 bg-gray-300 rounded group-hover:bg-gray-400"></div>
-          </div>
-        </div>
+              </PanelGroup>
+              </CardContent>
+            </Card>
+          </Panel>
+          
+          {/* Functional vertical resize handle */}
+          <PanelResizeHandle className="h-2 bg-gray-100 hover:bg-gray-200 active:bg-gray-300 cursor-row-resize transition-colors flex items-center justify-center group">
+            <div className="flex items-center gap-1 text-xs text-muted-foreground/60 group-hover:text-muted-foreground/80">
+              <div className="w-8 h-0.5 bg-gray-300 rounded group-hover:bg-gray-400"></div>
+              <span>↕</span>
+              <div className="w-8 h-0.5 bg-gray-300 rounded group-hover:bg-gray-400"></div>
+            </div>
+          </PanelResizeHandle>
+          
+          {/* Bottom expandable panel */}
+          <Panel defaultSize={15} minSize={5} maxSize={40}>
+            <div className="h-full bg-gray-50/30 border rounded-lg flex items-center justify-center">
+              <span className="text-xs text-muted-foreground/50">Expandable area</span>
+            </div>
+          </Panel>
+        </PanelGroup>
       </>
     );
   };
