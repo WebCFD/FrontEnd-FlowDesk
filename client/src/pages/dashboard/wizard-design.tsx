@@ -1579,8 +1579,10 @@ export default function WizardDesign() {
 
   const renderStep1 = () => (
     <>
-      <Card className="mt-4">
-        <CardContent className="p-4">
+      <PanelGroup direction="vertical" className="mt-4">
+        <Panel defaultSize={95} minSize={70} maxSize={98}>
+          <Card className="h-full">
+            <CardContent className="p-4 h-full">
           <ToolbarToggle
             mode={tab}
             onModeChange={(value: "2d-editor" | "3d-preview") => {
@@ -2220,8 +2222,20 @@ export default function WizardDesign() {
               {renderCanvasSection("tabs")}
             </Panel>
           </PanelGroup>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        </Panel>
+        
+        {/* Vertical resize handle */}
+        <PanelResizeHandle className="h-1 bg-transparent hover:bg-gray-200 active:bg-gray-300 cursor-row-resize transition-colors" />
+        
+        {/* Bottom panel for vertical resize */}
+        <Panel defaultSize={5} minSize={2} maxSize={30}>
+          <div className="h-full bg-gray-50/20 border rounded-lg flex items-center justify-center text-xs text-muted-foreground/60">
+            <span>↕ Drag to resize</span>
+          </div>
+        </Panel>
+      </PanelGroup>
       <AirEntryDialog
         type={currentAirEntry || "window"}
         isOpen={isAirEntryDialogOpen}
@@ -2260,8 +2274,10 @@ export default function WizardDesign() {
   const renderStep2 = () => {
     return (
       <>
-        <Card className="mt-4">
-          <CardContent className="p-4">
+        <PanelGroup direction="vertical" className="mt-4">
+          <Panel defaultSize={95} minSize={70} maxSize={98}>
+            <Card className="h-full">
+              <CardContent className="p-4 h-full">
 
           <PanelGroup direction="horizontal" className="h-full">
             {/* Left side menus - resizable panel */}
@@ -2303,10 +2319,22 @@ export default function WizardDesign() {
                 {renderCanvasSection("step2")}
               </Panel>
           </PanelGroup>
-        </CardContent>
-      </Card>
-    </>
-  );
+              </CardContent>
+            </Card>
+          </Panel>
+          
+          {/* Vertical resize handle */}
+          <PanelResizeHandle className="h-1 bg-transparent hover:bg-gray-200 active:bg-gray-300 cursor-row-resize transition-colors" />
+          
+          {/* Bottom panel for vertical resize */}
+          <Panel defaultSize={5} minSize={2} maxSize={30}>
+            <div className="h-full bg-gray-50/20 border rounded-lg flex items-center justify-center text-xs text-muted-foreground/60">
+              <span>↕ Drag to resize</span>
+            </div>
+          </Panel>
+        </PanelGroup>
+      </>
+    );
   };
 
   const renderStep3 = () => (
