@@ -85,7 +85,7 @@ export function STLUploader({ onModelLoaded, floorContext }: STLUploaderProps) {
       });
 
       // Generate clean name from filename
-      const cleanName = file.name.replace(/\.stl$/i, '').replace(/[^a-zA-Z0-9\s]/g, ' ').trim();
+      const cleanName = (file?.name || 'untitled').replace(/\.stl$/i, '').replace(/[^a-zA-Z0-9\s]/g, ' ').trim();
 
       // Use enhanced STL processor with floor context
       const processor = STLProcessor.getInstance();
