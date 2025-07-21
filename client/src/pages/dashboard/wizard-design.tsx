@@ -1579,8 +1579,8 @@ export default function WizardDesign() {
 
   const renderStep1 = () => (
     <>
-      <PanelGroup direction="vertical" className="mt-4 h-[600px]">
-        <Panel defaultSize={85} minSize={60} maxSize={95}>
+      <PanelGroup direction="vertical" className="mt-4" style={{ height: `${canvasHeight + 200}px` }}>
+        <Panel defaultSize={90} minSize={80} maxSize={98}>
           <Card className="h-full">
             <CardContent className="p-4 h-full">
           <ToolbarToggle
@@ -2236,7 +2236,7 @@ export default function WizardDesign() {
         </PanelResizeHandle>
         
         {/* Bottom expandable panel */}
-        <Panel defaultSize={15} minSize={5} maxSize={40}>
+        <Panel defaultSize={10} minSize={2} maxSize={20}>
           <div className="h-full bg-gray-50/30 border rounded-lg flex items-center justify-center">
             <span className="text-xs text-muted-foreground/50">Expandable area</span>
           </div>
@@ -2280,8 +2280,8 @@ export default function WizardDesign() {
   const renderStep2 = () => {
     return (
       <>
-        <PanelGroup direction="vertical" className="mt-4 h-[600px]">
-          <Panel defaultSize={85} minSize={60} maxSize={95}>
+        <PanelGroup direction="vertical" className="mt-4" style={{ height: `${canvasHeight + 200}px` }}>
+          <Panel defaultSize={90} minSize={80} maxSize={98}>
             <Card className="h-full">
               <CardContent className="p-4 h-full">
 
@@ -2339,7 +2339,7 @@ export default function WizardDesign() {
           </PanelResizeHandle>
           
           {/* Bottom expandable panel */}
-          <Panel defaultSize={15} minSize={5} maxSize={40}>
+          <Panel defaultSize={10} minSize={2} maxSize={20}>
             <div className="h-full bg-gray-50/30 border rounded-lg flex items-center justify-center">
               <span className="text-xs text-muted-foreground/50">Expandable area</span>
             </div>
