@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useLocation } from "wouter";
-
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import {
   Card,
