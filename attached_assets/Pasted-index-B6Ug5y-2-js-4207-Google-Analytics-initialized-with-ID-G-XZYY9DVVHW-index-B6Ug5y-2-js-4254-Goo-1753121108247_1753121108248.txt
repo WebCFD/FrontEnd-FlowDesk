@@ -1,0 +1,60 @@
+index-B6Ug5y-2.js:4207 Google Analytics initialized with ID: G-XZYY9DVVHW
+index-B6Ug5y-2.js:4254 Google Analytics initialized successfully
+/api/auth/user:1 
+            
+            
+           Failed to load resource: the server responded with a status of 401 ()
+index-B6Ug5y-2.js:4254 Google Analytics initialized successfully
+/api/auth/user:1 
+            
+            
+           Failed to load resource: the server responded with a status of 401 ()
+/api/auth/user:1 
+            
+            
+           Failed to load resource: the server responded with a status of 401 ()
+/api/auth/user:1 
+            
+            
+           Failed to load resource: the server responded with a status of 401 ()
+/api/auth/user:1 
+            
+            
+           Failed to load resource: the server responded with a status of 401 ()
+/api/auth/user:1 
+            
+            
+           Failed to load resource: the server responded with a status of 401 ()
+/api/auth/user:1 
+            
+            
+           Failed to load resource: the server responded with a status of 401 ()
+index-B6Ug5y-2.js:40 TypeError: Cannot read properties of undefined (reading 'replace')
+    at index-B6Ug5y-2.js:4254:47567
+    at cn (index-B6Ug5y-2.js:4254:47599)
+    at vue (index-B6Ug5y-2.js:4254:70347)
+    at W1 (index-B6Ug5y-2.js:38:17018)
+    at kS (index-B6Ug5y-2.js:40:3139)
+    at bL (index-B6Ug5y-2.js:40:44833)
+    at wL (index-B6Ug5y-2.js:40:39790)
+    at G5 (index-B6Ug5y-2.js:40:39718)
+    at cv (index-B6Ug5y-2.js:40:39570)
+    at KS (index-B6Ug5y-2.js:40:35934)
+OS @ index-B6Ug5y-2.js:40
+index-B6Ug5y-2.js:38 Uncaught TypeError: Cannot read properties of undefined (reading 'replace')
+    at index-B6Ug5y-2.js:4254:47567
+    at cn (index-B6Ug5y-2.js:4254:47599)
+    at vue (index-B6Ug5y-2.js:4254:70347)
+    at W1 (index-B6Ug5y-2.js:38:17018)
+    at kS (index-B6Ug5y-2.js:40:3139)
+    at bL (index-B6Ug5y-2.js:40:44833)
+    at wL (index-B6Ug5y-2.js:40:39790)
+    at G5 (index-B6Ug5y-2.js:40:39718)
+    at cv (index-B6Ug5y-2.js:40:39570)
+    at KS (index-B6Ug5y-2.js:40:35934)
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
