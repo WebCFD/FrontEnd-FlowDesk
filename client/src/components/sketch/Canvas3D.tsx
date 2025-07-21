@@ -100,6 +100,7 @@ interface Canvas3DProps {
   allowAirEntryEditing?: boolean; // New: allows AirEntry editing even in presentation mode
   lightingIntensity?: number; // New: lighting intensity control
   floorParameters?: Record<string, { ceilingHeight: number; floorDeck: number }>;
+  hasClosedContour?: boolean; // New: indicates if current floor has closed contour
   // Phase 1: Add walls support for AirEntry dialog unification
   walls?: Array<{
     id: string;
@@ -959,6 +960,7 @@ export default function Canvas3D({
   lightingIntensity = 1.5,
   floorParameters = {},
   walls = [], // Phase 1: Add walls prop with default
+  hasClosedContour = false, // New: prop to check if current floor has closed contour
   onUpdateAirEntry,
   onDeleteAirEntry,
   onPropertiesUpdate,
@@ -6295,6 +6297,21 @@ export default function Canvas3D({
     <>
       {/* 3D Canvas container - simplified layout with just the canvas */}
       <div ref={containerRef} className="w-full h-full relative">
+        {/* Warning message overlay when no closed contour */}
+        {!hasClosedContour && (
+          <div className="absolute inset-0 flex items-center justify-center z-20 bg-black bg-opacity-50">
+            <div className="bg-white p-6 rounded-lg shadow-xl max-w-md text-center">
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">Closed Room Contour Required</h3>
+              <p className="text-gray-600 mb-4">
+                Please create a closed room contour in the 2D Editor before viewing the 3D preview.
+              </p>
+              <p className="text-sm text-gray-500">
+                Draw wall lines that connect to form a complete room shape.
+              </p>
+            </div>
+          </div>
+        )}
+        
         {/* View Setup Dropdown */}
         <div className="absolute top-2 right-2 z-10">
           <DropdownMenu>
