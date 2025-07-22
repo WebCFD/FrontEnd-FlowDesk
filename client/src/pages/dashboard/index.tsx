@@ -62,10 +62,19 @@ export default function Dashboard() {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
   const { reset } = useRoomStore();
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Execute pending action when user logs in
+  useEffect(() => {
+    if (user && !user.isAnonymous && pendingAction) {
+      pendingAction();
+      setPendingAction(null);
+    }
+  }, [user, pendingAction]);
 
   // Fetch user simulations
   const { data: simulations = [], isLoading, error } = useQuery<Simulation[]>({
@@ -193,6 +202,8 @@ export default function Dashboard() {
   const handleLoadSampleCase = () => {
     // Check authentication first
     if (!user || user.isAnonymous) {
+      // Store the action to execute after login
+      setPendingAction(() => () => createSampleSimulationMutation.mutate("office-layout"));
       toast({
         title: "Login Required",
         description: "Please log in to load sample cases and create simulations.",
