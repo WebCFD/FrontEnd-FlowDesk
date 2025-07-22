@@ -172,13 +172,9 @@ export default function Dashboard() {
   // Sample case mutation
   const createSampleSimulationMutation = useMutation({
     mutationFn: async (sampleCaseId: string) => {
-      console.log("Calling sample API with:", sampleCaseId);
-      const result = await apiRequest("POST", "/api/simulations/sample", { sampleCaseId });
-      console.log("Sample API response:", result);
-      return result;
+      return apiRequest("POST", "/api/simulations/sample", { sampleCaseId });
     },
     onSuccess: (data) => {
-      console.log("Sample case creation successful:", data);
       queryClient.invalidateQueries({ queryKey: ['/api/simulations'] });
       toast({
         title: "Sample Case Loaded",
@@ -186,7 +182,6 @@ export default function Dashboard() {
       });
     },
     onError: (error: any) => {
-      console.error("Sample case creation failed:", error);
       toast({
         title: "Failed to Load Sample",
         description: error.message || "Failed to create sample simulation.",
@@ -196,11 +191,8 @@ export default function Dashboard() {
   });
 
   const handleLoadSampleCase = () => {
-    console.log("Load Sample Case clicked, user:", user);
-    
     // Check authentication first
     if (!user || user.isAnonymous) {
-      console.log("User not authenticated, showing auth dialog");
       toast({
         title: "Login Required",
         description: "Please log in to load sample cases and create simulations.",
@@ -210,7 +202,6 @@ export default function Dashboard() {
       return;
     }
 
-    console.log("User authenticated, creating sample simulation");
     // Load the office layout sample case
     createSampleSimulationMutation.mutate("office-layout");
   };
