@@ -1588,14 +1588,10 @@ export default function WizardDesign() {
             hasClosedContour={hasClosedContour}
           />
 
-          {/* Vertical PanelGroup for resizable canvas height */}
-          <PanelGroup direction="vertical" className="min-h-[400px] h-[90vh]">
-            {/* Main working area - resizable */}
-            <Panel defaultSize={100} minSize={60}>
-              <PanelGroup direction="horizontal" className="h-full">
+          <PanelGroup direction="horizontal" className="h-full">
             {/* Left side menus - resizable panel */}
             <Panel defaultSize={25} minSize={15} maxSize={50}>
-              <div className="space-y-6 overflow-y-auto pr-2 h-full">
+              <div className="space-y-6 overflow-y-auto pr-2" style={{ maxHeight: `${canvasHeight}px` }}>
               {/* 2D Configuration - only show when in 2D mode */}
               {tab === "2d-editor" && (
                 <div className="border rounded-lg p-4">
@@ -2222,16 +2218,6 @@ export default function WizardDesign() {
             <Panel defaultSize={75} minSize={50}>
               {renderCanvasSection("tabs")}
             </Panel>
-              </PanelGroup>
-            </Panel>
-
-            {/* Horizontal resizable handle for vertical adjustment - positioned at bottom */}
-            <PanelResizeHandle className="h-1 bg-gray-300 hover:bg-gray-400 active:bg-blue-400 cursor-row-resize transition-colors" />
-
-            {/* Hidden expandable area for resize functionality */}
-            <Panel defaultSize={0} minSize={0} maxSize={40}>
-              <div className="h-full bg-transparent"></div>
-            </Panel>
           </PanelGroup>
         </CardContent>
       </Card>
@@ -2275,14 +2261,12 @@ export default function WizardDesign() {
       <>
         <Card className="mt-4">
           <CardContent className="p-4">
-            {/* Vertical PanelGroup for resizable canvas height */}
-            <PanelGroup direction="vertical" className="min-h-[400px] h-[90vh]">
-              {/* Main working area - resizable */}
-              <Panel defaultSize={100} minSize={60}>
-                <PanelGroup direction="horizontal" className="h-full">
+
+
+            <PanelGroup direction="horizontal" className="h-full">
               {/* Left side menus - resizable panel */}
               <Panel defaultSize={25} minSize={15} maxSize={50}>
-                <div className="space-y-6 overflow-y-auto pr-2 h-full">
+                <div className="space-y-6 overflow-y-auto pr-2" style={{ maxHeight: `${canvasHeight}px` }}>
                 {/* Main options */}
                 <div className="border rounded-lg p-4">
                   <h3 className="font-semibold text-xl mb-4 text-center">Add 3D Elements</h3>
@@ -2317,16 +2301,6 @@ export default function WizardDesign() {
               {/* Main content area - using the same renderCanvasSection as 3D preview for consistency */}
               <Panel defaultSize={75} minSize={50}>
                 {renderCanvasSection("step2")}
-              </Panel>
-                </PanelGroup>
-              </Panel>
-
-              {/* Horizontal resizable handle for vertical adjustment - positioned at bottom */}
-              <PanelResizeHandle className="h-1 bg-gray-300 hover:bg-gray-400 active:bg-blue-400 cursor-row-resize transition-colors" />
-
-              {/* Hidden expandable area for resize functionality */}
-              <Panel defaultSize={0} minSize={0} maxSize={40}>
-                <div className="h-full bg-transparent"></div>
               </Panel>
             </PanelGroup>
           </CardContent>
