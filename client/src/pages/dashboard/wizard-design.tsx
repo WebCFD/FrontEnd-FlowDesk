@@ -2315,162 +2315,7 @@ export default function WizardDesign() {
       {renderSimulationInfo()}
       
       <div className="grid gap-6 lg:grid-cols-3">
-        {/* Left Column - Simulation Type Selection (2/3 width) */}
-        <div className="lg:col-span-2 space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Select Your Simulation Type</CardTitle>
-              <CardDescription>
-                Click on your preferred option
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-6 md:grid-cols-2">
-          <Card 
-            className={cn(
-              "cursor-pointer transition-all duration-200 hover:shadow-lg",
-              simulationType === "comfort" ? "ring-2 ring-blue-500 bg-blue-50" : "hover:border-blue-300"
-            )}
-            onClick={() => setSimulationType("comfort")}
-          >
-            <CardHeader>
-              <CardTitle>Steady Simulation</CardTitle>
-              <CardDescription>Thermal Comfort Analysis</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-blue-600">€10</div>
-              <ul className="mt-4 space-y-2 text-sm">
-                <li>• Steady equilibrium simulation</li>
-                <li>• Temperature distribution</li>
-                <li>• Thermal comfort analysis</li>
-                <li>• Basic airflow patterns</li>
-              </ul>
-              <Button 
-                className={cn(
-                  "w-full mt-4",
-                  simulationType === "comfort" ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-white border-2 border-gray-300 text-gray-700 hover:bg-gray-50"
-                )}
-                variant={simulationType === "comfort" ? "default" : "outline"}
-              >
-                {simulationType === "comfort" ? "Selected" : "Select"}
-              </Button>
-            </CardContent>
-          </Card>
-          
-          <Card 
-            className={cn(
-              "cursor-pointer transition-all duration-200 hover:shadow-lg",
-              simulationType === "renovation" ? "ring-2 ring-blue-500 bg-blue-50" : "hover:border-blue-300"
-            )}
-            onClick={() => setSimulationType("renovation")}
-          >
-            <CardHeader>
-              <CardTitle>Air Renovation Simulation</CardTitle>
-              <CardDescription>Thermal Comfort + Air Quality</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-blue-600">€12</div>
-              <ul className="mt-4 space-y-2 text-sm">
-                <li>• Transient simulation</li>
-                <li>• Air renovation analysis</li>
-                <li>• Thermal comfort analysis</li>
-                <li>• Advanced airflow patterns</li>
-              </ul>
-              <Button 
-                className={cn(
-                  "w-full mt-4",
-                  simulationType === "renovation" ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-white border-2 border-gray-300 text-gray-700 hover:bg-gray-50"
-                )}
-                variant={simulationType === "renovation" ? "default" : "outline"}
-              >
-                {simulationType === "renovation" ? "Selected" : "Select"}
-              </Button>
-            </CardContent>
-          </Card>
-            </CardContent>
-          </Card>
-
-          {/* Subscription Plans Card - Horizontal Layout */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Subscription Plans</CardTitle>
-              <CardDescription>Save money with our subscription options</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-3 md:grid-cols-4">
-                {/* Pay per Use (Current) */}
-                <div className="p-3 border rounded-lg bg-gray-50 border-gray-200">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-semibold text-gray-700 text-sm">Pay per Use</span>
-                    <span className="text-xs font-medium text-gray-600">Current</span>
-                  </div>
-                  <div className="text-xs text-gray-600 space-y-1">
-                    <div>• Steady: €10</div>
-                    <div>• Advanced: €12</div>
-                    <div>• No commitment</div>
-                  </div>
-                </div>
-
-                {/* Monthly Plan */}
-                <div className="p-3 border rounded-lg bg-blue-50 border-blue-200">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="font-semibold text-blue-900 text-sm">Monthly</span>
-                    <div className="text-right">
-                      <div className="text-lg font-bold text-blue-600">€75</div>
-                      <div className="text-xs text-blue-700 line-through">€100</div>
-                    </div>
-                  </div>
-                  <div className="text-xs text-blue-800 space-y-1">
-                    <div>• 10 simulations</div>
-                    <div>• 25% discount</div>
-                    <div>• Priority support</div>
-                  </div>
-                </div>
-
-                {/* Quarterly Plan */}
-                <div className="p-3 border rounded-lg bg-green-50 border-green-200">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="font-semibold text-green-900 text-sm">Quarterly</span>
-                    <div className="text-right">
-                      <div className="text-lg font-bold text-green-600">€180</div>
-                      <div className="text-xs text-green-700 line-through">€300</div>
-                    </div>
-                  </div>
-                  <div className="text-xs text-green-800 space-y-1">
-                    <div>• 30 simulations</div>
-                    <div>• 40% discount</div>
-                    <div>• Advanced analytics</div>
-                    <div>• API access</div>
-                  </div>
-                </div>
-
-                {/* Annual Plan */}
-                <div className="p-3 border rounded-lg bg-purple-50 border-purple-200">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="font-semibold text-purple-900 text-sm">Annual</span>
-                    <div className="text-right">
-                      <div className="text-lg font-bold text-purple-600">€600</div>
-                      <div className="text-xs text-purple-700 line-through">€1200</div>
-                    </div>
-                  </div>
-                  <div className="text-xs text-purple-800 space-y-1">
-                    <div>• 120 simulations</div>
-                    <div>• 50% discount</div>
-                    <div>• Account manager</div>
-                    <div>• Custom integrations</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-3 border-t mt-4">
-                <p className="text-xs text-gray-500 text-center">
-                  All plans include 3D visualization, CFD analysis, and cloud storage
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Right Column - Summary Only (1/3 width) */}
+        {/* Left Column - Summary (1/3 width) */}
         <div className="space-y-6">
           {/* Simulation Checkup and Summary Card */}
           <Card>
@@ -2683,10 +2528,10 @@ export default function WizardDesign() {
                           {dimensions?.z ? `${dimensions.z.min?.replace(' cm', '') || 'NA'} to ${dimensions.z.max?.replace(' cm', '') || 'NA'} (${dimensions.z.distance?.replace(' cm', '') || 'NA'})` : "NA to NA (NA)"}
                         </span>
                       </div>
-                      <div className="flex justify-between pt-1 border-t border-gray-200">
-                        <span className="text-gray-600">Container Vol (m3):</span>
-                        <span className="font-medium text-black">
-                          {dimensions?.volume ? dimensions.volume.replace(' m3', '') : "NA"}
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Container Vol (m³):</span>
+                        <span className="font-mono">
+                          {dimensions?.volume ? dimensions.volume.replace(' m³', '') : "NA"}
                         </span>
                       </div>
                     </div>
@@ -2696,6 +2541,163 @@ export default function WizardDesign() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Right Column - Simulation Type Selection (2/3 width) */}
+        <div className="lg:col-span-2 space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Select Your Simulation Type</CardTitle>
+              <CardDescription>
+                Click on your preferred option
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-6 md:grid-cols-2">
+          <Card 
+            className={cn(
+              "cursor-pointer transition-all duration-200 hover:shadow-lg",
+              simulationType === "comfort" ? "ring-2 ring-blue-500 bg-blue-50" : "hover:border-blue-300"
+            )}
+            onClick={() => setSimulationType("comfort")}
+          >
+            <CardHeader>
+              <CardTitle>Steady Simulation</CardTitle>
+              <CardDescription>Thermal Comfort Analysis</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-blue-600">€10</div>
+              <ul className="mt-4 space-y-2 text-sm">
+                <li>• Steady equilibrium simulation</li>
+                <li>• Temperature distribution</li>
+                <li>• Thermal comfort analysis</li>
+                <li>• Basic airflow patterns</li>
+              </ul>
+              <Button 
+                className={cn(
+                  "w-full mt-4",
+                  simulationType === "comfort" ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-white border-2 border-gray-300 text-gray-700 hover:bg-gray-50"
+                )}
+                variant={simulationType === "comfort" ? "default" : "outline"}
+              >
+                {simulationType === "comfort" ? "Selected" : "Select"}
+              </Button>
+            </CardContent>
+          </Card>
+          
+          <Card 
+            className={cn(
+              "cursor-pointer transition-all duration-200 hover:shadow-lg",
+              simulationType === "renovation" ? "ring-2 ring-blue-500 bg-blue-50" : "hover:border-blue-300"
+            )}
+            onClick={() => setSimulationType("renovation")}
+          >
+            <CardHeader>
+              <CardTitle>Air Renovation Simulation</CardTitle>
+              <CardDescription>Thermal Comfort + Air Quality</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-blue-600">€12</div>
+              <ul className="mt-4 space-y-2 text-sm">
+                <li>• Transient simulation</li>
+                <li>• Air renovation analysis</li>
+                <li>• Thermal comfort analysis</li>
+                <li>• Advanced airflow patterns</li>
+              </ul>
+              <Button 
+                className={cn(
+                  "w-full mt-4",
+                  simulationType === "renovation" ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-white border-2 border-gray-300 text-gray-700 hover:bg-gray-50"
+                )}
+                variant={simulationType === "renovation" ? "default" : "outline"}
+              >
+                {simulationType === "renovation" ? "Selected" : "Select"}
+              </Button>
+            </CardContent>
+          </Card>
+            </CardContent>
+          </Card>
+
+          {/* Subscription Plans Card - Horizontal Layout */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Subscription Plans</CardTitle>
+              <CardDescription>Save money with our subscription options</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-3 md:grid-cols-4">
+                {/* Pay per Use (Current) */}
+                <div className="p-3 border rounded-lg bg-gray-50 border-gray-200">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-semibold text-gray-700 text-sm">Pay per Use</span>
+                    <span className="text-xs font-medium text-gray-600">Current</span>
+                  </div>
+                  <div className="text-xs text-gray-600 space-y-1">
+                    <div>• Steady: €10</div>
+                    <div>• Advanced: €12</div>
+                    <div>• No commitment</div>
+                  </div>
+                </div>
+
+                {/* Monthly Plan */}
+                <div className="p-3 border rounded-lg bg-blue-50 border-blue-200">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="font-semibold text-blue-900 text-sm">Monthly</span>
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-blue-600">€75</div>
+                      <div className="text-xs text-blue-700 line-through">€100</div>
+                    </div>
+                  </div>
+                  <div className="text-xs text-blue-800 space-y-1">
+                    <div>• 10 simulations</div>
+                    <div>• 25% discount</div>
+                    <div>• Priority support</div>
+                  </div>
+                </div>
+
+                {/* Quarterly Plan */}
+                <div className="p-3 border rounded-lg bg-green-50 border-green-200">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="font-semibold text-green-900 text-sm">Quarterly</span>
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-green-600">€180</div>
+                      <div className="text-xs text-green-700 line-through">€300</div>
+                    </div>
+                  </div>
+                  <div className="text-xs text-green-800 space-y-1">
+                    <div>• 30 simulations</div>
+                    <div>• 40% discount</div>
+                    <div>• Advanced analytics</div>
+                    <div>• API access</div>
+                  </div>
+                </div>
+
+                {/* Annual Plan */}
+                <div className="p-3 border rounded-lg bg-purple-50 border-purple-200">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="font-semibold text-purple-900 text-sm">Annual</span>
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-purple-600">€600</div>
+                      <div className="text-xs text-purple-700 line-through">€1200</div>
+                    </div>
+                  </div>
+                  <div className="text-xs text-purple-800 space-y-1">
+                    <div>• 120 simulations</div>
+                    <div>• 50% discount</div>
+                    <div>• Account manager</div>
+                    <div>• Custom integrations</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-3 border-t mt-4">
+                <p className="text-xs text-gray-500 text-center">
+                  All plans include 3D visualization, CFD analysis, and cloud storage
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+
       </div>
 
       <AlertDialog
