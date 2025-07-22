@@ -1589,13 +1589,13 @@ export default function WizardDesign() {
           />
 
           {/* Vertical PanelGroup for resizable canvas height */}
-          <PanelGroup direction="vertical" className="h-full">
+          <PanelGroup direction="vertical" className="min-h-[600px] h-[80vh]">
             {/* Main working area - resizable */}
-            <Panel defaultSize={70} minSize={40} maxSize={90}>
+            <Panel defaultSize={75} minSize={50} maxSize={95}>
               <PanelGroup direction="horizontal" className="h-full">
             {/* Left side menus - resizable panel */}
             <Panel defaultSize={25} minSize={15} maxSize={50}>
-              <div className="space-y-6 overflow-y-auto pr-2" style={{ maxHeight: `${canvasHeight}px` }}>
+              <div className="space-y-6 overflow-y-auto pr-2 h-full">
               {/* 2D Configuration - only show when in 2D mode */}
               {tab === "2d-editor" && (
                 <div className="border rounded-lg p-4">
@@ -2226,14 +2226,16 @@ export default function WizardDesign() {
             </Panel>
 
             {/* Horizontal resizable handle for vertical adjustment */}
-            <PanelResizeHandle className="h-1 bg-transparent hover:bg-gray-200 active:bg-gray-300 cursor-row-resize transition-colors" />
+            <PanelResizeHandle className="h-2 bg-gray-100 hover:bg-gray-200 active:bg-blue-300 cursor-row-resize transition-colors border-y border-gray-200 flex items-center justify-center">
+              <div className="w-8 h-1 bg-gray-400 rounded-full"></div>
+            </PanelResizeHandle>
 
             {/* Bottom section - expandable area */}
-            <Panel defaultSize={30} minSize={10} maxSize={60}>
-              <div className="p-4 bg-gray-50 border-t">
+            <Panel defaultSize={25} minSize={5} maxSize={50}>
+              <div className="p-4 bg-gray-50/50 h-full">
                 <div className="text-center text-gray-500">
                   <p className="text-sm">Additional workspace area</p>
-                  <p className="text-xs">Drag the border above to adjust canvas height</p>
+                  <p className="text-xs">Drag the handle above to adjust canvas height</p>
                 </div>
               </div>
             </Panel>
@@ -2281,13 +2283,13 @@ export default function WizardDesign() {
         <Card className="mt-4">
           <CardContent className="p-4">
             {/* Vertical PanelGroup for resizable canvas height */}
-            <PanelGroup direction="vertical" className="h-full">
+            <PanelGroup direction="vertical" className="min-h-[600px] h-[80vh]">
               {/* Main working area - resizable */}
-              <Panel defaultSize={70} minSize={40} maxSize={90}>
+              <Panel defaultSize={75} minSize={50} maxSize={95}>
                 <PanelGroup direction="horizontal" className="h-full">
               {/* Left side menus - resizable panel */}
               <Panel defaultSize={25} minSize={15} maxSize={50}>
-                <div className="space-y-6 overflow-y-auto pr-2" style={{ maxHeight: `${canvasHeight}px` }}>
+                <div className="space-y-6 overflow-y-auto pr-2 h-full">
                 {/* Main options */}
                 <div className="border rounded-lg p-4">
                   <h3 className="font-semibold text-xl mb-4 text-center">Add 3D Elements</h3>
@@ -2327,14 +2329,16 @@ export default function WizardDesign() {
               </Panel>
 
               {/* Horizontal resizable handle for vertical adjustment */}
-              <PanelResizeHandle className="h-1 bg-transparent hover:bg-gray-200 active:bg-gray-300 cursor-row-resize transition-colors" />
+              <PanelResizeHandle className="h-2 bg-gray-100 hover:bg-gray-200 active:bg-blue-300 cursor-row-resize transition-colors border-y border-gray-200 flex items-center justify-center">
+                <div className="w-8 h-1 bg-gray-400 rounded-full"></div>
+              </PanelResizeHandle>
 
               {/* Bottom section - expandable area */}
-              <Panel defaultSize={30} minSize={10} maxSize={60}>
-                <div className="p-4 bg-gray-50 border-t">
+              <Panel defaultSize={25} minSize={5} maxSize={50}>
+                <div className="p-4 bg-gray-50/50 h-full">
                   <div className="text-center text-gray-500">
                     <p className="text-sm">Additional workspace area</p>
-                    <p className="text-xs">Drag the border above to adjust canvas height</p>
+                    <p className="text-xs">Drag the handle above to adjust canvas height</p>
                   </div>
                 </div>
               </Panel>
