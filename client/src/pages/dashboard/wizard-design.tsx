@@ -3826,73 +3826,6 @@ export default function WizardDesign() {
     setShowStartSimulationPrompt(false);
   };
 
-  const handleLoadSampleCase = () => {
-    // Sample case data: A simple two-room layout with basic ventilation
-    const sampleCaseData = {
-      version: "v3.0.0",
-      floors: {
-        "0": {
-          height: 3.0,
-          floorDeck: 0.0,
-          walls: [
-            { start: { x: 0, y: 0 }, end: { x: 6, y: 0 }, temp: 20 },
-            { start: { x: 6, y: 0 }, end: { x: 6, y: 4 }, temp: 20 },
-            { start: { x: 6, y: 4 }, end: { x: 3, y: 4 }, temp: 20 },
-            { start: { x: 3, y: 4 }, end: { x: 3, y: 2 }, temp: 20 },
-            { start: { x: 3, y: 2 }, end: { x: 0, y: 2 }, temp: 20 },
-            { start: { x: 0, y: 2 }, end: { x: 0, y: 0 }, temp: 20 },
-            // Interior wall dividing the space
-            { start: { x: 3, y: 2 }, end: { x: 3, y: 0 }, temp: 20, airEntries: [
-              {
-                id: "door_001",
-                type: "door",
-                position: { x: 3, y: 1 },
-                dimensions: {
-                  width: 0.8,
-                  height: 2.0,
-                  distanceToFloor: 0
-                },
-                properties: {
-                  state: "open",
-                  temperature: 20
-                }
-              }
-            ]}
-          ]
-        }
-      },
-      metadata: {
-        name: "Sample Office Layout",
-        description: "Basic two-room office with door connection",
-        created: new Date().toISOString()
-      }
-    };
-
-    try {
-      // Use the existing handleLoadDesign function to load the sample data
-      handleLoadDesign(sampleCaseData);
-      
-      // Track analytics event
-      trackEvent(
-        AnalyticsCategories.SIMULATION,
-        AnalyticsActions.LOAD_SIMULATION,
-        "sample_case_loaded"
-      );
-
-      toast({
-        title: "Sample Case Loaded",
-        description: "A sample office layout has been loaded successfully.",
-      });
-    } catch (error) {
-      console.error("Error loading sample case:", error);
-      toast({
-        title: "Error Loading Sample Case",
-        description: "Failed to load the sample case data.",
-        variant: "destructive",
-      });
-    }
-  };
-
   const reset = () => {
     setLines([]);
     setAirEntries([]);
@@ -3931,14 +3864,6 @@ export default function WizardDesign() {
         >
           <Upload className="mr-2 h-4 w-4" />
           Load Design
-        </Button>
-        <Button 
-          variant="outline" 
-          className="w-full justify-start"
-          onClick={handleLoadSampleCase}
-        >
-          <FileText className="mr-2 h-4 w-4" />
-          Load Sample Case
         </Button>
         <Button 
           variant="destructive" 

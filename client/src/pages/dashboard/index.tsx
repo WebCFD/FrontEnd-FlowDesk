@@ -164,6 +164,58 @@ export default function Dashboard() {
     loadDesignMutation.mutate(filePath);
   };
 
+  const handleLoadSampleCase = () => {
+    // Sample case data: A simple two-room layout with basic ventilation
+    const sampleCaseData = {
+      version: "v3.0.0",
+      floors: {
+        "0": {
+          height: 3.0,
+          floorDeck: 0.0,
+          walls: [
+            { start: { x: 0, y: 0 }, end: { x: 6, y: 0 }, temp: 20 },
+            { start: { x: 6, y: 0 }, end: { x: 6, y: 4 }, temp: 20 },
+            { start: { x: 6, y: 4 }, end: { x: 3, y: 4 }, temp: 20 },
+            { start: { x: 3, y: 4 }, end: { x: 3, y: 2 }, temp: 20 },
+            { start: { x: 3, y: 2 }, end: { x: 0, y: 2 }, temp: 20 },
+            { start: { x: 0, y: 2 }, end: { x: 0, y: 0 }, temp: 20 },
+            // Interior wall dividing the space
+            { start: { x: 3, y: 2 }, end: { x: 3, y: 0 }, temp: 20, airEntries: [
+              {
+                id: "door_001",
+                type: "door",
+                position: { x: 3, y: 1 },
+                dimensions: {
+                  width: 0.8,
+                  height: 2.0,
+                  distanceToFloor: 0
+                },
+                properties: {
+                  state: "open",
+                  temperature: 20
+                }
+              }
+            ]}
+          ]
+        }
+      },
+      metadata: {
+        name: "Sample Office Layout",
+        description: "Basic two-room office with door connection",
+        created: new Date().toISOString()
+      }
+    };
+
+    // Navigate to wizard-design and store the sample data
+    setLocation("/dashboard/wizard-design");
+    sessionStorage.setItem('pendingDesignLoad', JSON.stringify(sampleCaseData));
+    
+    toast({
+      title: "Sample Case Loaded",
+      description: "A sample office layout has been loaded successfully.",
+    });
+  };
+
   return (
     <DashboardLayout>
       <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
@@ -182,6 +234,14 @@ export default function Dashboard() {
             >
               <PlusCircle className="h-4 w-4" />
               Start New Simulation
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={handleLoadSampleCase}
+              className="flex items-center gap-2"
+            >
+              <FolderOpen className="h-4 w-4" />
+              Load Sample Case
             </Button>
             <Button 
               variant="outline" 
