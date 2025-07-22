@@ -1589,9 +1589,9 @@ export default function WizardDesign() {
           />
 
           {/* Vertical PanelGroup for resizable canvas height */}
-          <PanelGroup direction="vertical" className="min-h-[600px] h-[80vh]">
+          <PanelGroup direction="vertical" className="min-h-[400px] h-[90vh]">
             {/* Main working area - resizable */}
-            <Panel defaultSize={75} minSize={50} maxSize={95}>
+            <Panel defaultSize={100} minSize={60}>
               <PanelGroup direction="horizontal" className="h-full">
             {/* Left side menus - resizable panel */}
             <Panel defaultSize={25} minSize={15} maxSize={50}>
@@ -2225,19 +2225,12 @@ export default function WizardDesign() {
               </PanelGroup>
             </Panel>
 
-            {/* Horizontal resizable handle for vertical adjustment */}
-            <PanelResizeHandle className="h-2 bg-gray-100 hover:bg-gray-200 active:bg-blue-300 cursor-row-resize transition-colors border-y border-gray-200 flex items-center justify-center">
-              <div className="w-8 h-1 bg-gray-400 rounded-full"></div>
-            </PanelResizeHandle>
+            {/* Horizontal resizable handle for vertical adjustment - positioned at bottom */}
+            <PanelResizeHandle className="h-1 bg-gray-300 hover:bg-gray-400 active:bg-blue-400 cursor-row-resize transition-colors" />
 
-            {/* Bottom section - expandable area */}
-            <Panel defaultSize={25} minSize={5} maxSize={50}>
-              <div className="p-4 bg-gray-50/50 h-full">
-                <div className="text-center text-gray-500">
-                  <p className="text-sm">Additional workspace area</p>
-                  <p className="text-xs">Drag the handle above to adjust canvas height</p>
-                </div>
-              </div>
+            {/* Hidden expandable area for resize functionality */}
+            <Panel defaultSize={0} minSize={0} maxSize={40}>
+              <div className="h-full bg-transparent"></div>
             </Panel>
           </PanelGroup>
         </CardContent>
@@ -2283,9 +2276,9 @@ export default function WizardDesign() {
         <Card className="mt-4">
           <CardContent className="p-4">
             {/* Vertical PanelGroup for resizable canvas height */}
-            <PanelGroup direction="vertical" className="min-h-[600px] h-[80vh]">
+            <PanelGroup direction="vertical" className="min-h-[400px] h-[90vh]">
               {/* Main working area - resizable */}
-              <Panel defaultSize={75} minSize={50} maxSize={95}>
+              <Panel defaultSize={100} minSize={60}>
                 <PanelGroup direction="horizontal" className="h-full">
               {/* Left side menus - resizable panel */}
               <Panel defaultSize={25} minSize={15} maxSize={50}>
@@ -2328,19 +2321,12 @@ export default function WizardDesign() {
                 </PanelGroup>
               </Panel>
 
-              {/* Horizontal resizable handle for vertical adjustment */}
-              <PanelResizeHandle className="h-2 bg-gray-100 hover:bg-gray-200 active:bg-blue-300 cursor-row-resize transition-colors border-y border-gray-200 flex items-center justify-center">
-                <div className="w-8 h-1 bg-gray-400 rounded-full"></div>
-              </PanelResizeHandle>
+              {/* Horizontal resizable handle for vertical adjustment - positioned at bottom */}
+              <PanelResizeHandle className="h-1 bg-gray-300 hover:bg-gray-400 active:bg-blue-400 cursor-row-resize transition-colors" />
 
-              {/* Bottom section - expandable area */}
-              <Panel defaultSize={25} minSize={5} maxSize={50}>
-                <div className="p-4 bg-gray-50/50 h-full">
-                  <div className="text-center text-gray-500">
-                    <p className="text-sm">Additional workspace area</p>
-                    <p className="text-xs">Drag the handle above to adjust canvas height</p>
-                  </div>
-                </div>
+              {/* Hidden expandable area for resize functionality */}
+              <Panel defaultSize={0} minSize={0} maxSize={40}>
+                <div className="h-full bg-transparent"></div>
               </Panel>
             </PanelGroup>
           </CardContent>
