@@ -5,6 +5,8 @@ import DashboardLayout from "@/components/layout/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Play, Mail, MoreHorizontal, ExternalLink, Trash2, FolderOpen } from "lucide-react";
+import LoginModal from "@/components/auth/login-modal";
+import RegisterModal from "@/components/auth/register-modal";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useRoomStore } from "@/lib/store/room-store";
 import { useAuth } from "@/hooks/use-auth";
@@ -57,6 +59,9 @@ export default function Dashboard() {
   const [, setLocation] = useLocation();
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; simulationId?: number; simulationName?: string }>({ open: false });
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const { reset } = useRoomStore();
   const { user } = useAuth();
   const { toast } = useToast();
@@ -164,56 +169,41 @@ export default function Dashboard() {
     loadDesignMutation.mutate(filePath);
   };
 
-  const handleLoadSampleCase = () => {
-    // Sample case data: A simple two-room layout with basic ventilation
-    const sampleCaseData = {
-      version: "v3.0.0",
-      floors: {
-        "0": {
-          height: 3.0,
-          floorDeck: 0.0,
-          walls: [
-            { start: { x: 0, y: 0 }, end: { x: 6, y: 0 }, temp: 20 },
-            { start: { x: 6, y: 0 }, end: { x: 6, y: 4 }, temp: 20 },
-            { start: { x: 6, y: 4 }, end: { x: 3, y: 4 }, temp: 20 },
-            { start: { x: 3, y: 4 }, end: { x: 3, y: 2 }, temp: 20 },
-            { start: { x: 3, y: 2 }, end: { x: 0, y: 2 }, temp: 20 },
-            { start: { x: 0, y: 2 }, end: { x: 0, y: 0 }, temp: 20 },
-            // Interior wall dividing the space
-            { start: { x: 3, y: 2 }, end: { x: 3, y: 0 }, temp: 20, airEntries: [
-              {
-                id: "door_001",
-                type: "door",
-                position: { x: 3, y: 1 },
-                dimensions: {
-                  width: 0.8,
-                  height: 2.0,
-                  distanceToFloor: 0
-                },
-                properties: {
-                  state: "open",
-                  temperature: 20
-                }
-              }
-            ]}
-          ]
-        }
-      },
-      metadata: {
-        name: "Sample Office Layout",
-        description: "Basic two-room office with door connection",
-        created: new Date().toISOString()
-      }
-    };
+  // Sample case mutation
+  const createSampleSimulationMutation = useMutation({
+    mutationFn: async (sampleCaseId: string) => {
+      return apiRequest("POST", "/api/simulations/sample", { sampleCaseId });
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/simulations'] });
+      toast({
+        title: "Sample Case Loaded",
+        description: data.message || "Sample simulation created successfully and ready for analysis.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to Load Sample",
+        description: error.message || "Failed to create sample simulation.",
+        variant: "destructive",
+      });
+    },
+  });
 
-    // Navigate to wizard-design and store the sample data
-    setLocation("/dashboard/wizard-design");
-    sessionStorage.setItem('pendingDesignLoad', JSON.stringify(sampleCaseData));
-    
-    toast({
-      title: "Sample Case Loaded",
-      description: "A sample office layout has been loaded successfully.",
-    });
+  const handleLoadSampleCase = () => {
+    // Check authentication first
+    if (!user || user.isAnonymous) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to load sample cases and create simulations.",
+        variant: "destructive",
+      });
+      setShowAuthDialog(true);
+      return;
+    }
+
+    // Load the office layout sample case
+    createSampleSimulationMutation.mutate("office-layout");
   };
 
   return (
@@ -456,6 +446,50 @@ export default function Dashboard() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Authentication Selection Dialog */}
+      <Dialog open={showAuthDialog} onOpenChange={setShowAuthDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Authentication Required</DialogTitle>
+            <p className="text-sm text-muted-foreground mt-2">
+              Please log in or create an account to load sample cases and create simulations.
+            </p>
+          </DialogHeader>
+          
+          <div className="flex flex-col gap-3 mt-6">
+            <Button 
+              onClick={() => {
+                setShowAuthDialog(false);
+                setIsLoginOpen(true);
+              }}
+              className="w-full"
+            >
+              Log In
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={() => {
+                setShowAuthDialog(false);
+                setIsRegisterOpen(true);
+              }}
+              className="w-full"
+            >
+              Sign Up
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+      />
+
+      <RegisterModal
+        isOpen={isRegisterOpen}
+        onClose={() => setIsRegisterOpen(false)}
+      />
     </DashboardLayout>
   );
 }

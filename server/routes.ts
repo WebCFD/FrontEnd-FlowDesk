@@ -135,6 +135,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Sample case endpoint - no credit debit
+  app.post("/api/simulations/sample", async (req, res) => {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const { sampleCaseId } = req.body;
+
+      // Validate sample case ID
+      const validSampleCases = ['office-layout'];
+      if (!validSampleCases.includes(sampleCaseId)) {
+        return res.status(400).json({ message: "Invalid sample case ID" });
+      }
+
+      // Load sample case JSON from secure location
+      const sampleCasePath = path.join(process.cwd(), 'server', 'sample-cases', `${sampleCaseId}.json`);
+      let sampleData;
+      try {
+        const fileContent = await fs.readFile(sampleCasePath, 'utf8');
+        sampleData = JSON.parse(fileContent);
+      } catch (error) {
+        console.error('Error loading sample case:', error);
+        return res.status(500).json({ message: "Error loading sample case" });
+      }
+
+      // Create user folder if it doesn't exist
+      const userFolderPath = path.join(process.cwd(), 'simulations', `user_${req.user.id}`);
+      try {
+        await fs.mkdir(userFolderPath, { recursive: true });
+      } catch (error) {
+        console.error('Error creating user folder:', error);
+      }
+
+      // Generate filename with timestamp
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const sampleName = sampleData.metadata?.name || 'Sample Case';
+      const sanitizedName = sampleName.replace(/[^a-zA-Z0-9_-]/g, '_');
+      const filename = `${sanitizedName}_${timestamp}.json`;
+      const filePath = path.join(userFolderPath, filename);
+
+      // Copy sample case to user folder
+      try {
+        await fs.writeFile(filePath, JSON.stringify(sampleData, null, 2));
+      } catch (error) {
+        console.error('Error saving sample case file:', error);
+        return res.status(500).json({ message: "Error saving sample case file" });
+      }
+
+      // Create simulation record in database (NO CREDIT DEBIT)
+      const relativePath = `/simulations/user_${req.user.id}/${filename}`;
+      const simulation = await storage.createSimulation({
+        name: sampleName,
+        filePath: relativePath,
+        status: 'completed', // Sample cases are always completed
+        simulationType: 'comfort',
+        packageType: 'basic',
+        cost: 0, // No cost for sample cases
+        isPublic: false,
+        jsonConfig: sampleData,
+        userId: req.user.id,
+      });
+
+      // Return success with simulation data
+      res.status(201).json({
+        success: true,
+        simulation,
+        message: `Sample case "${sampleName}" loaded successfully. No credits charged for sample cases.`
+      });
+
+    } catch (error) {
+      console.error('Error creating sample simulation:', error);
+      res.status(500).json({ message: "Error creating sample simulation" });
+    }
+  });
+
   app.get("/api/simulations", async (req, res) => {
     try {
       if (!req.isAuthenticated()) {
