@@ -326,10 +326,8 @@ export default function WizardDesign() {
       }
     }));
     
-    // Force 3D view update when ceiling height or floor deck changes
-    if (parameter === 'ceilingHeight' || parameter === 'floorDeck') {
-      setCanvas3DKey(prev => prev + 1);
-    }
+    // Note: Canvas3D will automatically update via floorParameters prop changes
+    // No need to force re-mount with canvas3DKey for parameter updates
   };
 
   const ensureFloorParametersExist = (floor: string) => {
