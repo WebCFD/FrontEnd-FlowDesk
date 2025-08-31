@@ -298,6 +298,9 @@ export default function WizardDesign() {
   const [canvasHeight, setCanvasHeight] = useState(700); // Dynamic canvas height (configurable % of viewport)
   const [menuWidth, setMenuWidth] = useState(300); // Dynamic menu width (configurable % of canvas width)
   
+  // Camera position preservation for 3D re-renders
+  const savedCameraPositionRef = useRef<{position: {x: number, y: number, z: number}, target: {x: number, y: number, z: number}} | null>(null);
+  
   // Nuevos estados para parámetros por planta
   const [floorParameters, setFloorParameters] = useState<Record<string, { ceilingHeight: number; floorDeck: number; ceilingTemperature?: number; floorTemperature?: number }>>({
     ground: { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20 }
@@ -326,8 +329,22 @@ export default function WizardDesign() {
       }
     }));
     
-    // Note: Canvas3D will automatically update via floorParameters prop changes
-    // No need to force re-mount with canvas3DKey for parameter updates
+    // Force 3D geometry update for ceiling height and floor deck changes
+    if (parameter === 'ceilingHeight' || parameter === 'floorDeck') {
+      // Save current camera position before re-render
+      if (wizardSceneRef.current) {
+        const camera = wizardSceneRef.current.children.find(child => child.type === 'PerspectiveCamera');
+        if (camera) {
+          savedCameraPositionRef.current = {
+            position: { x: camera.position.x, y: camera.position.y, z: camera.position.z },
+            target: { x: 0, y: 0, z: 0 } // Default target, will be updated when available
+          };
+        }
+      }
+      
+      // Force re-render by incrementing key
+      setCanvas3DKey(prev => prev + 1);
+    }
   };
 
   const ensureFloorParametersExist = (floor: string) => {
@@ -4019,6 +4036,18 @@ export default function WizardDesign() {
               onViewChange={handleViewChange}
               onSceneReady={(scene, renderer, camera) => {
                 wizardSceneRef.current = scene;
+                
+                // Restore camera position if saved (after parameter updates)
+                if (savedCameraPositionRef.current && camera) {
+                  camera.position.set(
+                    savedCameraPositionRef.current.position.x,
+                    savedCameraPositionRef.current.position.y,
+                    savedCameraPositionRef.current.position.z
+                  );
+                  
+                  // Clear saved position after restoration
+                  savedCameraPositionRef.current = null;
+                }
               }}
               onFurnitureAdd={handleFurnitureAdd}
               onUpdateFurniture={handleFurnitureUpdate}
