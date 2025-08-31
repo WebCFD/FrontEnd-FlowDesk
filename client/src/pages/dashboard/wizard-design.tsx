@@ -1950,78 +1950,18 @@ export default function WizardDesign() {
                 </div>
               )}
 
-              {/* 3D Configuration - only show when in 3D mode */}
-              {tab === "3d-preview" && (
-                <div className="border rounded-lg p-4">
-                <h3 className="font-semibold text-xl mb-4 text-center">3D Configuration</h3>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-3 gap-2">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="w-full h-16 flex flex-col items-center justify-center gap-1"
-                        >
-                          <Eye className="w-6 h-6" />
-                          <span className="text-xs flex items-center">
-                            View <ChevronDown className="h-3 w-3 ml-1" />
-                          </span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="start">
-                        <DropdownMenuItem
-                          onClick={() => changeViewDirection("+X")}
-                        >
-                          +X View
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => changeViewDirection("-X")}
-                        >
-                          -X View
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => changeViewDirection("+Y")}
-                        >
-                          +Y View
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => changeViewDirection("-Y")}
-                        >
-                          -Y View
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => changeViewDirection("+Z")}
-                        >
-                          +Z View (Top)
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => changeViewDirection("-Z")}
-                        >
-                          -Z View (Bottom)
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                    <Button
-                      variant={isEraserMode ? "default" : "outline"}
-                      className="w-full h-16 flex flex-col items-center justify-center gap-1"
-                      onClick={handleToggleEraserMode}
-                    >
-                      <Eraser className="w-6 h-6" />
-                      <span className="text-xs">Eraser</span>
-                    </Button>
-                    <Button
-                      variant={isMeasureMode ? "default" : "outline"}
-                      className="w-full h-16 flex flex-col items-center justify-center gap-1"
-                      onClick={handleToggleMeasureMode}
-                    >
-                      <Ruler className="w-6 h-6" />
-                      <span className="text-xs">Measure</span>
-                    </Button>
+              {/* Building Parameters - Available in both 2D Editor and 3D Preview */}
+              <div className="border rounded-lg p-4">
+                <div className="space-y-4 pt-4 border-t">
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-medium text-sm text-gray-700">Building Parameters</h4>
                   </div>
-
-                  {/* Height parameters moved to Parameters section */}
-                </div>
-                </div>
+                  
+                  {!isMultifloor ? (
+                    // Modo single floor: solo control de ceiling height
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="ceiling-height">Ceiling Height</Label>
                         <div className="flex items-center gap-2">
                           <Input
                             id="ceiling-height"
@@ -2179,190 +2119,11 @@ export default function WizardDesign() {
                       })}
                     </div>
                   )}
-              )}
-
-              {/* Building Parameters - Available in both 2D Editor and 3D Preview */}
-              <div className="border rounded-lg p-4">
-                <div className="space-y-4 pt-4 border-t">
-                  <div className="flex items-center gap-2">
-                    <h4 className="font-medium text-sm text-gray-700">Building Parameters</h4>
-                  </div>
-                  
-                  {!isMultifloor ? (
-                    // Modo single floor: solo control de ceiling height
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="ceiling-height">Ceiling Height</Label>
-                        <div className="flex items-center gap-2">
-                          <Input
-                            id="ceiling-height"
-                            type="number"
-                            value={ceilingHeight}
-                            min={200}
-                            max={500}
-                            step={10}
-                            onChange={(e) => {
-                              const value = parseInt(e.target.value);
-                              if (!isNaN(value) && value >= 200 && value <= 500) {
-                                setCeilingHeight(value);
-                              }
-                            }}
-                            className="w-24"
-                          />
-                          <span className="text-sm text-gray-500">cm</span>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    // Modo multifloor: controles por planta
-                    <div className="space-y-4">
-                      {Object.keys(floors).filter(floorName => floors[floorName]?.hasClosedContour).map((floorName) => {
-                        const floorParams = floorParameters[floorName] || { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20 };
-                        const isCurrentFloor = floorName === currentFloor;
-                        
-                        return (
-                          <div 
-                            key={floorName} 
-                            className={cn(
-                              "p-3 rounded-lg border transition-all duration-200",
-                              isCurrentFloor 
-                                ? "bg-blue-50 border-blue-200 ring-2 ring-blue-200" 
-                                : "bg-gray-50 border-gray-200 hover:bg-gray-100 hover:border-gray-300",
-                              !isCurrentFloor && "cursor-pointer"
-                            )}
-                            onClick={
-                              !isCurrentFloor
-                                ? () => {
-                                    if (hasMultipleFloors) {
-                                      setCurrentFloor(floorName);
-                                      setSelectedFloor(floorName);
-                                    }
-                                  }
-                                : undefined
-                            }
-                          >
-                            <div className="flex items-center justify-between mb-2">
-                              <h5 className={cn(
-                                "font-medium text-sm capitalize",
-                                isCurrentFloor ? "text-blue-700" : "text-gray-600"
-                              )}>
-                                {floorName === "ground" ? "Ground Floor" : `${floorName.charAt(0).toUpperCase() + floorName.slice(1)} Floor`}
-                              </h5>
-                              {isCurrentFloor && (
-                                <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">
-                                  Current
-                                </span>
-                              )}
-                            </div>
-                            
-                            <div className="grid grid-cols-2 gap-2">
-                              <div className="space-y-1">
-                                <Label className="text-xs">Ceiling Height</Label>
-                                <div className="flex items-center gap-1">
-                                  <Input
-                                    type="number"
-                                    value={floorParams.ceilingHeight}
-                                    min={200}
-                                    max={500}
-                                    step={10}
-                                    onChange={(e) => {
-                                      const value = parseInt(e.target.value);
-                                      if (!isNaN(value) && value >= 200 && value <= 500) {
-                                        updateFloorParameter(floorName, 'ceilingHeight', value);
-                                      }
-                                    }}
-                                    className="w-16 h-8 text-xs"
-                                    onClick={(e) => e.stopPropagation()}
-                                  />
-                                  <span className="text-xs text-gray-500">cm</span>
-                                </div>
-                              </div>
-                              
-                              <div className="space-y-1">
-                                <Label className="text-xs">Floor Deck</Label>
-                                <div className="flex items-center gap-1">
-                                  <Input
-                                    type="number"
-                                    value={floorParams.floorDeck}
-                                    min={20}
-                                    max={100}
-                                    step={5}
-                                    onChange={(e) => {
-                                      const value = parseInt(e.target.value);
-                                      if (!isNaN(value) && value >= 20 && value <= 100) {
-                                        updateFloorParameter(floorName, 'floorDeck', value);
-                                      }
-                                    }}
-                                    className="w-16 h-8 text-xs"
-                                    onClick={(e) => e.stopPropagation()}
-                                  />
-                                  <span className="text-xs text-gray-500">cm</span>
-                                </div>
-                              </div>
-                              
-                              <div className="space-y-1">
-                                <Label className="text-xs">Ceiling Temperature</Label>
-                                <div className="flex items-center gap-1">
-                                  <Input
-                                    type="number"
-                                    value={floorParams.ceilingTemperature || 20}
-                                    min={-50}
-                                    max={100}
-                                    step={0.1}
-                                    onChange={(e) => {
-                                      const value = parseFloat(e.target.value);
-                                      if (!isNaN(value) && value >= -50 && value <= 100) {
-                                        updateFloorParameter(floorName, 'ceilingTemperature', value);
-                                      }
-                                    }}
-                                    className="w-16 h-8 text-xs"
-                                  />
-                                  <span className="text-xs text-gray-500">°C</span>
-                                </div>
-                              </div>
-                              <div className="space-y-1">
-                                <Label className="text-xs">Floor Temperature</Label>
-                                <div className="flex items-center gap-1">
-                                  <Input
-                                    type="number"
-                                    value={floorParams.floorTemperature || 20}
-                                    min={-50}
-                                    max={100}
-                                    step={0.1}
-                                    onChange={(e) => {
-                                      const value = parseFloat(e.target.value);
-                                      if (!isNaN(value) && value >= -50 && value <= 100) {
-                                        updateFloorParameter(floorName, 'floorTemperature', value);
-                                      }
-                                    }}
-                                    className="w-16 h-8 text-xs"
-                                  />
-                                  <span className="text-xs text-gray-500">°C</span>
-                                </div>
-                              </div>
-                            </div>
-                            
-                            {/* Delete button for non-ground floors */}
-                            {floorName !== "ground" && (
-                              <div className="mt-2 pt-2 border-t border-gray-200">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="w-full text-left justify-start hover:bg-red-50 hover:text-red-600 hover:border-red-200"
-                                  onClick={() => handleDeleteFloorConfirm(floorName)}
-                                >
-                                  <Trash2 className="h-4 w-4 mr-2" />
-                                  Delete {formatFloorText(floorName)}
-                                </Button>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
                 </div>
               </div>
+
+              {/* 3D Configuration - only show when in 3D mode */}
+              {tab === "3d-preview" && (
                 <div className="border rounded-lg p-4">
                 <h3 className="font-semibold text-xl mb-4 text-center">3D Configuration</h3>
                 <div className="space-y-4">
