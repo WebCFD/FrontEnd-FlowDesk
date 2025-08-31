@@ -9,8 +9,8 @@ interface Point {
 }
 
 interface Line {
-  start: Point;
-  end: Point;
+   start: Point;
+   end: Point;
 }
 
 // Propiedades base compartidas
