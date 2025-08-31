@@ -2198,6 +2198,123 @@ export default function WizardDesign() {
               </div>
               )}
 
+              {/* Building Parameters Card - Same as 2D Editor */}
+              <div className="border rounded-lg p-4">
+                <div className="space-y-4 pt-4 border-t">
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-medium text-sm text-gray-700">Building Parameters</h4>
+                  </div>
+                  
+                  {!isMultifloor ? (
+                    // Modo single floor: solo control de ceiling height
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="ceiling-height-3d">Ceiling Height</Label>
+                        <div className="flex items-center gap-2">
+                          <Input
+                            id="ceiling-height-3d"
+                            type="number"
+                            value={ceilingHeight}
+                            min={200}
+                            max={500}
+                            step={10}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value);
+                              if (!isNaN(value) && value >= 200 && value <= 500) {
+                                setCeilingHeight(value);
+                              }
+                            }}
+                            className="w-24"
+                          />
+                          <span className="text-sm text-gray-500">cm</span>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    // Modo multifloor: controles por planta
+                    <div className="space-y-4">
+                      {Object.keys(floors).filter(floorName => floors[floorName]?.hasClosedContour).map((floorName) => {
+                        const floorParams = floorParameters[floorName] || { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20 };
+                        const isCurrentFloor = floorName === currentFloor;
+                        
+                        return (
+                          <div 
+                            key={floorName} 
+                            className={cn(
+                              "p-3 rounded-lg border transition-all duration-200",
+                              isCurrentFloor 
+                                ? "bg-blue-50 border-blue-200 ring-2 ring-blue-200" 
+                                : "bg-gray-50 border-gray-200 hover:bg-gray-100 hover:border-gray-300",
+                              !isCurrentFloor && "cursor-pointer"
+                            )}
+                            onClick={
+                              !isCurrentFloor
+                                ? () => setCurrentFloor(floorName)
+                                : undefined
+                            }
+                          >
+                            <div className="text-sm font-semibold text-gray-800 mb-2 capitalize">
+                              {formatFloorText(floorName)}
+                              {isCurrentFloor && (
+                                <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                                  Current
+                                </span>
+                              )}
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="space-y-1">
+                                <Label className="text-xs text-gray-600">Ceiling Height</Label>
+                                <div className="flex items-center gap-1">
+                                  <Input
+                                    type="number"
+                                    value={floorParams.ceilingHeight}
+                                    min={200}
+                                    max={500}
+                                    step={10}
+                                    onChange={(e) => {
+                                      const value = parseInt(e.target.value);
+                                      if (!isNaN(value) && value >= 200 && value <= 500) {
+                                        updateFloorParameter(floorName, 'ceilingHeight', value);
+                                      }
+                                    }}
+                                    className="w-16 h-7 text-xs"
+                                    onClick={(e) => e.stopPropagation()}
+                                  />
+                                  <span className="text-xs text-gray-500">cm</span>
+                                </div>
+                              </div>
+                              
+                              <div className="space-y-1">
+                                <Label className="text-xs text-gray-600">Floor Deck</Label>
+                                <div className="flex items-center gap-1">
+                                  <Input
+                                    type="number"
+                                    value={floorParams.floorDeck}
+                                    min={10}
+                                    max={100}
+                                    step={5}
+                                    onChange={(e) => {
+                                      const value = parseInt(e.target.value);
+                                      if (!isNaN(value) && value >= 10 && value <= 100) {
+                                        updateFloorParameter(floorName, 'floorDeck', value);
+                                      }
+                                    }}
+                                    className="w-16 h-7 text-xs"
+                                    onClick={(e) => e.stopPropagation()}
+                                  />
+                                  <span className="text-xs text-gray-500">cm</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {renderFilesMenu()}
               </div>
             </Panel>
