@@ -1914,41 +1914,19 @@ export default function WizardDesign() {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={tab === "2d-editor" ? handleLoadTemplate : () => {
-                                toast({
-                                  title: "Feature Unavailable",
-                                  description: "Floor management is available only in 2D Editor",
-                                  variant: "destructive",
-                                });
-                              }}
-                              disabled={tab !== "2d-editor"}
-                              className={cn(
-                                tab !== "2d-editor" && "cursor-not-allowed"
-                              )}
-                              title={tab !== "2d-editor" ? "Floor management available only in 2D Editor" : undefined}
+                              onClick={handleLoadTemplate}
                             >
                               Load
                             </Button>
                           </div>
-                          {tab !== "2d-editor" && (
-                            <p className="text-xs text-muted-foreground">
-                              Switch to 2D Editor to load floor templates
-                            </p>
-                          )}
                         </div>
                       </div>
                     )}
 
                     {/* Ceiling Height y Floor Deck Parameters */}
-                    <div className={cn(
-                      "space-y-4 pt-4 border-t",
-                      tab !== "2d-editor" && "opacity-50 pointer-events-none"
-                    )}>
+                    <div className="space-y-4 pt-4 border-t">
                       <div className="flex items-center gap-2">
                         <h4 className="font-medium text-sm text-gray-700">Building Parameters</h4>
-                        {tab !== "2d-editor" && (
-                          <span className="text-xs text-muted-foreground">(Available in 2D Editor)</span>
-                        )}
                       </div>
                       
                       {!isMultifloor ? (
@@ -1991,26 +1969,15 @@ export default function WizardDesign() {
                                   isCurrentFloor 
                                     ? "bg-blue-50 border-blue-200 ring-2 ring-blue-200" 
                                     : "bg-gray-50 border-gray-200 hover:bg-gray-100 hover:border-gray-300",
-                                  tab === "2d-editor" && !isCurrentFloor && "cursor-pointer",
-                                  tab !== "2d-editor" && "cursor-not-allowed"
+                                  !isCurrentFloor && "cursor-pointer"
                                 )}
                                 onClick={
-                                  tab === "2d-editor" && !isCurrentFloor
+                                  !isCurrentFloor
                                     ? () => handleFloorChange(floorName)
-                                    : tab !== "2d-editor"
-                                    ? () => {
-                                        toast({
-                                          title: "Feature Unavailable",
-                                          description: "Floor navigation is available only in 2D Editor",
-                                          variant: "destructive",
-                                        });
-                                      }
                                     : undefined
                                 }
                                 title={
-                                  tab !== "2d-editor" 
-                                    ? "Floor navigation available only in 2D Editor"
-                                    : !isCurrentFloor 
+                                  !isCurrentFloor 
                                     ? `Click to switch to ${formatFloorText(floorName)}`
                                     : `Currently viewing ${formatFloorText(floorName)}`
                                 }
@@ -2018,7 +1985,7 @@ export default function WizardDesign() {
                                 <h5 className="font-medium text-sm mb-3 flex items-center gap-2">
                                   {formatFloorText(floorName)}
                                   {isCurrentFloor && <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Current</span>}
-                                  {tab === "2d-editor" && !isCurrentFloor && (
+                                  {!isCurrentFloor && (
                                     <span className="text-xs text-gray-500 ml-auto">Click to switch</span>
                                   )}
                                 </h5>
@@ -2113,7 +2080,6 @@ export default function WizardDesign() {
                                       size="sm"
                                       className="w-full text-left justify-start hover:bg-red-50 hover:text-red-600 hover:border-red-200"
                                       onClick={() => handleDeleteFloorConfirm(floorName)}
-                                      disabled={tab !== "2d-editor"}
                                     >
                                       <Trash2 className="h-4 w-4 mr-2" />
                                       Delete {formatFloorText(floorName)}
