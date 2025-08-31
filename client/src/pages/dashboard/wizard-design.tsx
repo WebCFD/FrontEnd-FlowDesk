@@ -299,8 +299,13 @@ export default function WizardDesign() {
   const [menuWidth, setMenuWidth] = useState(300); // Dynamic menu width (configurable % of canvas width)
   
   // Camera position preservation for 3D re-renders
-  const savedCameraPositionRef = useRef<{position: {x: number, y: number, z: number}, target: {x: number, y: number, z: number}} | null>(null);
+  const savedCameraStateRef = useRef<{
+    position: {x: number, y: number, z: number}, 
+    target: {x: number, y: number, z: number},
+    up: {x: number, y: number, z: number}
+  } | null>(null);
   const canvas3DCameraRef = useRef<THREE.Camera | null>(null);
+  const canvas3DControlsRef = useRef<any>(null);
   
   // Nuevos estados para parámetros por planta
   const [floorParameters, setFloorParameters] = useState<Record<string, { ceilingHeight: number; floorDeck: number; ceilingTemperature?: number; floorTemperature?: number }>>({
@@ -332,15 +337,24 @@ export default function WizardDesign() {
     
     // Force 3D geometry update for ceiling height and floor deck changes
     if (parameter === 'ceilingHeight' || parameter === 'floorDeck') {
-      // Save current camera position before re-render
-      if (canvas3DCameraRef.current) {
-        savedCameraPositionRef.current = {
+      // Save complete camera state before re-render
+      if (canvas3DCameraRef.current && canvas3DControlsRef.current) {
+        savedCameraStateRef.current = {
           position: { 
             x: canvas3DCameraRef.current.position.x, 
             y: canvas3DCameraRef.current.position.y, 
             z: canvas3DCameraRef.current.position.z 
           },
-          target: { x: 0, y: 0, z: 0 } // Will be updated if available
+          target: {
+            x: canvas3DControlsRef.current.target.x,
+            y: canvas3DControlsRef.current.target.y,
+            z: canvas3DControlsRef.current.target.z
+          },
+          up: {
+            x: canvas3DCameraRef.current.up.x,
+            y: canvas3DCameraRef.current.up.y,
+            z: canvas3DCameraRef.current.up.z
+          }
         };
       }
       
@@ -4036,20 +4050,38 @@ export default function WizardDesign() {
               onPropertiesUpdate={handlePropertiesUpdateFrom3D}
               onDimensionsUpdate={handleDimensionsUpdateFrom3D}
               onViewChange={handleViewChange}
-              onSceneReady={(scene, renderer, camera) => {
+              onSceneReady={(scene, renderer, camera, controls) => {
                 wizardSceneRef.current = scene;
-                canvas3DCameraRef.current = camera; // Store camera reference
+                canvas3DCameraRef.current = camera;
+                canvas3DControlsRef.current = controls; // Store controls reference
                 
-                // Restore camera position if saved (after parameter updates)
-                if (savedCameraPositionRef.current && camera) {
+                // Restore complete camera state if saved (after parameter updates)
+                if (savedCameraStateRef.current && camera && controls) {
+                  // Restore camera position and orientation
                   camera.position.set(
-                    savedCameraPositionRef.current.position.x,
-                    savedCameraPositionRef.current.position.y,
-                    savedCameraPositionRef.current.position.z
+                    savedCameraStateRef.current.position.x,
+                    savedCameraStateRef.current.position.y,
+                    savedCameraStateRef.current.position.z
                   );
                   
-                  // Clear saved position after restoration
-                  savedCameraPositionRef.current = null;
+                  camera.up.set(
+                    savedCameraStateRef.current.up.x,
+                    savedCameraStateRef.current.up.y,
+                    savedCameraStateRef.current.up.z
+                  );
+                  
+                  // Restore controls target
+                  controls.target.set(
+                    savedCameraStateRef.current.target.x,
+                    savedCameraStateRef.current.target.y,
+                    savedCameraStateRef.current.target.z
+                  );
+                  
+                  // Update controls
+                  controls.update();
+                  
+                  // Clear saved state after restoration
+                  savedCameraStateRef.current = null;
                 }
               }}
               onFurnitureAdd={handleFurnitureAdd}

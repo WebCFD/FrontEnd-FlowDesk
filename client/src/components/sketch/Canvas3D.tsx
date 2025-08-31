@@ -143,7 +143,7 @@ interface Canvas3DProps {
     }
   ) => void;
   onViewChange?: (callback: (direction: ViewDirection) => void) => void;
-  onSceneReady?: (scene: THREE.Scene, renderer: THREE.WebGLRenderer, camera: THREE.Camera) => void; // For RSP texture access
+  onSceneReady?: (scene: THREE.Scene, renderer: THREE.WebGLRenderer, camera: THREE.Camera, controls?: any) => void; // For RSP texture access
   onFurnitureAdded?: () => void; // Callback to notify when new furniture is added to scene
   onFurnitureDeleted?: () => void; // Callback to notify when furniture is deleted from scene
   // REMOVED: onAirEntryUpdated - no longer needed, textures preserved automatically during direct modification
@@ -3355,7 +3355,7 @@ export default function Canvas3D({
     // Notify parent component that scene is ready (for both RSP and wizard design)
     if (onSceneReady) {
       try {
-        onSceneReady(scene, renderer, camera);
+        onSceneReady(scene, renderer, camera, controlsRef.current);
       } catch (error) {
         console.error('Canvas3D: Error in onSceneReady callback:', error);
       }
