@@ -1950,12 +1950,8 @@ export default function WizardDesign() {
                 </div>
               )}
 
-              {/* Building Parameters - Available in both 2D Editor and 3D Preview */}
-              <div className="border rounded-lg p-4">
-                <div className="space-y-4 pt-4 border-t">
-                  <div className="flex items-center gap-2">
-                    <h4 className="font-medium text-sm text-gray-700">Building Parameters</h4>
-                  </div>
+
+
                   
                   {!isMultifloor ? (
                     // Modo single floor: solo control de ceiling height
