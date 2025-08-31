@@ -298,14 +298,7 @@ export default function WizardDesign() {
   const [canvasHeight, setCanvasHeight] = useState(700); // Dynamic canvas height (configurable % of viewport)
   const [menuWidth, setMenuWidth] = useState(300); // Dynamic menu width (configurable % of canvas width)
   
-  // Camera position preservation for 3D re-renders
-  const savedCameraStateRef = useRef<{
-    position: {x: number, y: number, z: number}, 
-    target: {x: number, y: number, z: number},
-    up: {x: number, y: number, z: number}
-  } | null>(null);
-  const canvas3DCameraRef = useRef<THREE.Camera | null>(null);
-  const canvas3DControlsRef = useRef<any>(null);
+
   
   // Nuevos estados para parámetros por planta
   const [floorParameters, setFloorParameters] = useState<Record<string, { ceilingHeight: number; floorDeck: number; ceilingTemperature?: number; floorTemperature?: number }>>({
@@ -335,32 +328,8 @@ export default function WizardDesign() {
       }
     }));
     
-    // Force 3D geometry update for ceiling height and floor deck changes
-    if (parameter === 'ceilingHeight' || parameter === 'floorDeck') {
-      // Save complete camera state before re-render
-      if (canvas3DCameraRef.current && canvas3DControlsRef.current) {
-        savedCameraStateRef.current = {
-          position: { 
-            x: canvas3DCameraRef.current.position.x, 
-            y: canvas3DCameraRef.current.position.y, 
-            z: canvas3DCameraRef.current.position.z 
-          },
-          target: {
-            x: canvas3DControlsRef.current.target.x,
-            y: canvas3DControlsRef.current.target.y,
-            z: canvas3DControlsRef.current.target.z
-          },
-          up: {
-            x: canvas3DCameraRef.current.up.x,
-            y: canvas3DCameraRef.current.up.y,
-            z: canvas3DCameraRef.current.up.z
-          }
-        };
-      }
-      
-      // Force re-render by incrementing key
-      setCanvas3DKey(prev => prev + 1);
-    }
+    // Note: Canvas3D will automatically update geometry via floorParameters prop changes
+    // No need for forced re-mounts or camera state preservation
   };
 
   const ensureFloorParametersExist = (floor: string) => {
@@ -4027,7 +3996,6 @@ export default function WizardDesign() {
             />
           ) : (
             <Canvas3D
-              key={canvas3DKey}
               floors={floors}
               currentFloor={currentFloor}
               ceilingHeight={ceilingHeight}
@@ -4050,39 +4018,8 @@ export default function WizardDesign() {
               onPropertiesUpdate={handlePropertiesUpdateFrom3D}
               onDimensionsUpdate={handleDimensionsUpdateFrom3D}
               onViewChange={handleViewChange}
-              onSceneReady={(scene, renderer, camera, controls) => {
+              onSceneReady={(scene, renderer, camera) => {
                 wizardSceneRef.current = scene;
-                canvas3DCameraRef.current = camera;
-                canvas3DControlsRef.current = controls; // Store controls reference
-                
-                // Restore complete camera state if saved (after parameter updates)
-                if (savedCameraStateRef.current && camera && controls) {
-                  // Restore camera position and orientation
-                  camera.position.set(
-                    savedCameraStateRef.current.position.x,
-                    savedCameraStateRef.current.position.y,
-                    savedCameraStateRef.current.position.z
-                  );
-                  
-                  camera.up.set(
-                    savedCameraStateRef.current.up.x,
-                    savedCameraStateRef.current.up.y,
-                    savedCameraStateRef.current.up.z
-                  );
-                  
-                  // Restore controls target
-                  controls.target.set(
-                    savedCameraStateRef.current.target.x,
-                    savedCameraStateRef.current.target.y,
-                    savedCameraStateRef.current.target.z
-                  );
-                  
-                  // Update controls
-                  controls.update();
-                  
-                  // Clear saved state after restoration
-                  savedCameraStateRef.current = null;
-                }
               }}
               onFurnitureAdd={handleFurnitureAdd}
               onUpdateFurniture={handleFurnitureUpdate}
