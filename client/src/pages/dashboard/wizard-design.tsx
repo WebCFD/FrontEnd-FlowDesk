@@ -325,6 +325,11 @@ export default function WizardDesign() {
         [parameter]: value
       }
     }));
+    
+    // Force 3D view update when ceiling height or floor deck changes
+    if (parameter === 'ceilingHeight' || parameter === 'floorDeck') {
+      setCanvas3DKey(prev => prev + 1);
+    }
   };
 
   const ensureFloorParametersExist = (floor: string) => {
