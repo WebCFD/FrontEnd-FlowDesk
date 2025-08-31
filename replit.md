@@ -8,6 +8,7 @@ This is a full-stack web application for HVAC (Heating, Ventilation, and Air Con
 
 Preferred communication style: Simple, everyday language.
 Technical documentation preference: Detailed technical explanations for architectural patterns to enable replication in future development cycles.
+Development approach: Favor simple, minimal solutions over complex implementations. Avoid overengineering.
 
 ## System Architecture
 
