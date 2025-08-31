@@ -300,6 +300,7 @@ export default function WizardDesign() {
   
   // Camera position preservation for 3D re-renders
   const savedCameraPositionRef = useRef<{position: {x: number, y: number, z: number}, target: {x: number, y: number, z: number}} | null>(null);
+  const canvas3DCameraRef = useRef<THREE.Camera | null>(null);
   
   // Nuevos estados para parámetros por planta
   const [floorParameters, setFloorParameters] = useState<Record<string, { ceilingHeight: number; floorDeck: number; ceilingTemperature?: number; floorTemperature?: number }>>({
@@ -332,14 +333,15 @@ export default function WizardDesign() {
     // Force 3D geometry update for ceiling height and floor deck changes
     if (parameter === 'ceilingHeight' || parameter === 'floorDeck') {
       // Save current camera position before re-render
-      if (wizardSceneRef.current) {
-        const camera = wizardSceneRef.current.children.find(child => child.type === 'PerspectiveCamera');
-        if (camera) {
-          savedCameraPositionRef.current = {
-            position: { x: camera.position.x, y: camera.position.y, z: camera.position.z },
-            target: { x: 0, y: 0, z: 0 } // Default target, will be updated when available
-          };
-        }
+      if (canvas3DCameraRef.current) {
+        savedCameraPositionRef.current = {
+          position: { 
+            x: canvas3DCameraRef.current.position.x, 
+            y: canvas3DCameraRef.current.position.y, 
+            z: canvas3DCameraRef.current.position.z 
+          },
+          target: { x: 0, y: 0, z: 0 } // Will be updated if available
+        };
       }
       
       // Force re-render by incrementing key
@@ -4036,6 +4038,7 @@ export default function WizardDesign() {
               onViewChange={handleViewChange}
               onSceneReady={(scene, renderer, camera) => {
                 wizardSceneRef.current = scene;
+                canvas3DCameraRef.current = camera; // Store camera reference
                 
                 // Restore camera position if saved (after parameter updates)
                 if (savedCameraPositionRef.current && camera) {
