@@ -10,6 +10,9 @@ import vtkFullScreenRenderWindow from '@kitware/vtk.js/Rendering/Misc/FullScreen
 import vtkActor from '@kitware/vtk.js/Rendering/Core/Actor';
 import vtkMapper from '@kitware/vtk.js/Rendering/Core/Mapper';
 import vtkPolyDataReader from '@kitware/vtk.js/IO/Legacy/PolyDataReader';
+import vtkPolyData from '@kitware/vtk.js/Common/DataModel/PolyData';
+import vtkPoints from '@kitware/vtk.js/Common/Core/Points';
+import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
 import vtkColorTransferFunction from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction';
 import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
 
@@ -107,54 +110,11 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         throw new Error(`File not found: ${response.status}`);
       }
 
-      // Parsear archivo JSON .vtkjs y crear dataset manualmente
-      const vtkData = await response.json();
-      console.log('[VTKViewer] Parsed VTK data:', {
-        pointsSize: vtkData.points?.size || 0,
-        polysSize: vtkData.polys?.size || 0,
-        pointDataArrays: vtkData.pointData?.arrays?.length || 0
-      });
-
-      // Crear PolyData desde el JSON
-      const polyData = vtkPolyData.newInstance();
-      const points = vtkPoints.newInstance();
-
-      // Cargar puntos
-      if (vtkData.points?.values) {
-        const pointsData = new Float32Array(vtkData.points.values);
-        points.setData(pointsData);
-        polyData.setPoints(points);
-      }
-
-      // Cargar polígonos
-      if (vtkData.polys?.values) {
-        const polysData = new Uint32Array(vtkData.polys.values);
-        polyData.getPolys().setData(polysData);
-      }
-
-      // Cargar datos de punto (presión, velocidad, etc.)
-      if (vtkData.pointData?.arrays) {
-        for (const arrayInfo of vtkData.pointData.arrays) {
-          if (arrayInfo.data?.values) {
-            const dataArray = vtkDataArray.newInstance({
-              name: arrayInfo.data.name,
-              dataType: arrayInfo.data.dataType,
-              numberOfComponents: arrayInfo.data.numberOfComponents || 1,
-              values: arrayInfo.data.values
-            });
-
-            // Si es el primer array o es presión, usarlo como scalars
-            if (arrayInfo.data.name === 'p' || arrayInfo.data.name === 'pressure' || 
-                polyData.getPointData().getNumberOfArrays() === 0) {
-              polyData.getPointData().setScalars(dataArray);
-            } else {
-              polyData.getPointData().addArray(dataArray);
-            }
-          }
-        }
-      }
-
-      const dataset = polyData;
+      // Cargar archivo Legacy VTK con PolyDataReader
+      const reader = vtkPolyDataReader.newInstance();
+      await reader.setUrl(vtkUrl);
+      
+      const dataset = reader.getOutputData();
       
       if (!dataset || dataset.getNumberOfPoints() === 0) {
         throw new Error('No data in VTK file');
