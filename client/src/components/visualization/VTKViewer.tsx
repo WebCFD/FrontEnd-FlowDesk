@@ -5,6 +5,8 @@ import { Loader2, Box, Info, AlertCircle, Eye, Activity, Wind, Zap, Layers, Sett
 import '@kitware/vtk.js/Rendering/Profiles/Geometry';
 import vtkFullScreenRenderWindow from '@kitware/vtk.js/Rendering/Misc/FullScreenRenderWindow';
 import vtkHttpDataSetReader from '@kitware/vtk.js/IO/Core/HttpDataSetReader';
+import JSZip from 'jszip';
+import newJSZipDataAccessHelper from '@kitware/vtk.js/IO/Core/DataAccessHelper/JSZipDataAccessHelper';
 import vtkCubeSource from '@kitware/vtk.js/Filters/Sources/CubeSource';
 import vtkActor from '@kitware/vtk.js/Rendering/Core/Actor';
 import vtkMapper from '@kitware/vtk.js/Rendering/Core/Mapper';
@@ -82,11 +84,29 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       console.log('[VTKViewer] Loading CFD file from simple static path:', vtkUrl);
       
       try {
-        // Create simple VTK reader
-        const reader = vtkHttpDataSetReader.newInstance();
+        // Manual fetch approach - bypass VTK.js HTTP issues
+        console.log('[VTKViewer] Fetching CFD file manually as ArrayBuffer...');
+        const response = await fetch(vtkUrl);
         
-        // Load sample data without compression issues
-        await reader.setUrl(vtkUrl, { loadData: true });
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const arrayBuffer = await response.arrayBuffer();
+        console.log('[VTKViewer] CFD file fetched successfully:', arrayBuffer.byteLength, 'bytes');
+        
+        // Unzip and use JSZipDataAccessHelper (CORRECT API)
+        console.log('[VTKViewer] Unzipping .vtkjs container...');
+        const zip = await JSZip.loadAsync(arrayBuffer);
+        console.log('[VTKViewer] ZIP extracted, setting up VTK reader with correct helper...');
+        
+        // Create VTK reader with JSZip data access helper (FACTORY FUNCTION)
+        const reader = vtkHttpDataSetReader.newInstance({ fetchGzip: true });
+        const dah = newJSZipDataAccessHelper({ zip });
+        reader.setDataAccessHelper(dah);
+        
+        // Load from index.json inside the ZIP
+        await reader.setUrl('index.json', { loadData: true });
         const dataset = reader.getOutputData();
         
         if (dataset) {
