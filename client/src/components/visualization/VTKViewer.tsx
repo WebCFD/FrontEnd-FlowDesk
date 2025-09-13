@@ -40,13 +40,41 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     { id: 'default' as const, label: 'Default', icon: Settings }
   ];
 
-  // Aplicar visualización con colormaps válidos
+  // Calcular magnitud de vectores para coloring
+  const calculateVectorMagnitude = (vectorArray: any): any => {
+    const numTuples = vectorArray.getNumberOfTuples();
+    const numComp = vectorArray.getNumberOfComponents();
+    
+    if (numComp < 3) return vectorArray; // No es un vector 3D
+    
+    const magnitudes = new Float32Array(numTuples);
+    const data = vectorArray.getData();
+    
+    for (let i = 0; i < numTuples; i++) {
+      const idx = i * numComp;
+      const vx = data[idx];
+      const vy = data[idx + 1];
+      const vz = data[idx + 2];
+      magnitudes[i] = Math.sqrt(vx * vx + vy * vy + vz * vz);
+    }
+    
+    const magnitudeArray = vtkDataArray.newInstance({
+      name: `${vectorArray.getName()}_magnitude`,
+      values: magnitudes,
+      numberOfComponents: 1
+    });
+    
+    return magnitudeArray;
+  };
+
+  // Aplicar visualización con colormaps válidos y manejo vectorial
   const applyVisualization = (mapper: any, dataset: any, mode: VisualizationMode) => {
     const pointData = dataset.getPointData();
     const lookupTable = vtkColorTransferFunction.newInstance();
     
     let array = null;
     let presetName = 'erdc_rainbow_bright';
+    let useVectorMagnitude = false;
     
     switch (mode) {
       case 'pressure':
@@ -56,21 +84,37 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       case 'velocity':
         array = pointData.getArrayByName('U') || pointData.getArray(1);
         presetName = 'erdc_rainbow_bright'; // Rainbow para velocidad
+        useVectorMagnitude = true; // Usar magnitud para vectores
         break;
       default:
         array = pointData.getArray(0);
-        presetName = 'grayscale'; // Escala de grises por defecto
+        presetName = 'Greys'; // Preset válido de escala de grises
         break;
     }
     
     if (array) {
-      mapper.setScalarModeToUsePointData();
-      mapper.setScalarVisibility(true);
-      mapper.setColorByArrayName(array.getName());
+      // Para vectores de velocidad, usar magnitud
+      if (useVectorMagnitude && array.getNumberOfComponents() >= 3) {
+        const magnitudeArray = calculateVectorMagnitude(array);
+        array = magnitudeArray;
+        pointData.addArray(magnitudeArray);
+        mapper.setScalarModeToUsePointData();
+        mapper.setColorByArrayName(magnitudeArray.getName());
+      } else {
+        mapper.setScalarModeToUsePointData();
+        mapper.setColorByArrayName(array.getName());
+      }
       
-      const range = array.getRange();
-      if (range && range.length >= 2) {
+      mapper.setScalarVisibility(true);
+      mapper.setUseLookupTableScalarRange(true);
+      
+      // Obtener range con fallback defensivo
+      const range = array.getRange() || [0, 1];
+      if (range && range.length >= 2 && !isNaN(range[0]) && !isNaN(range[1])) {
         lookupTable.setMappingRange(range[0], range[1]);
+      } else {
+        console.warn('Invalid range detected, using default [0,1]');
+        lookupTable.setMappingRange(0, 1);
       }
       
       // Intentar aplicar colormap, con fallback manual si falla
@@ -80,26 +124,33 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       } else {
         // Fallback manual para colormaps científicos
         console.warn(`Preset ${presetName} not found, using manual colormap`);
+        const [minVal, maxVal] = range;
+        
         if (mode === 'pressure') {
           // Azul (frío) a rojo (caliente) para presión
-          lookupTable.addRGBPoint(range[0], 0.0, 0.0, 1.0); // Azul
-          lookupTable.addRGBPoint((range[0] + range[1]) / 2, 0.0, 1.0, 0.0); // Verde
-          lookupTable.addRGBPoint(range[1], 1.0, 0.0, 0.0); // Rojo
-        } else {
+          lookupTable.addRGBPoint(minVal, 0.0, 0.0, 1.0); // Azul
+          lookupTable.addRGBPoint((minVal + maxVal) / 2, 0.0, 1.0, 0.0); // Verde
+          lookupTable.addRGBPoint(maxVal, 1.0, 0.0, 0.0); // Rojo
+        } else if (mode === 'velocity') {
           // Rainbow para velocidad
-          lookupTable.addRGBPoint(range[0], 0.0, 0.0, 1.0); // Azul
-          lookupTable.addRGBPoint(range[0] + (range[1] - range[0]) * 0.25, 0.0, 1.0, 1.0); // Cyan
-          lookupTable.addRGBPoint(range[0] + (range[1] - range[0]) * 0.5, 0.0, 1.0, 0.0); // Verde
-          lookupTable.addRGBPoint(range[0] + (range[1] - range[0]) * 0.75, 1.0, 1.0, 0.0); // Amarillo
-          lookupTable.addRGBPoint(range[1], 1.0, 0.0, 0.0); // Rojo
+          lookupTable.addRGBPoint(minVal, 0.0, 0.0, 1.0); // Azul
+          lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.25, 0.0, 1.0, 1.0); // Cyan
+          lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.5, 0.0, 1.0, 0.0); // Verde
+          lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.75, 1.0, 1.0, 0.0); // Amarillo
+          lookupTable.addRGBPoint(maxVal, 1.0, 0.0, 0.0); // Rojo
+        } else {
+          // Grayscale para default
+          lookupTable.addRGBPoint(minVal, 0.0, 0.0, 0.0); // Negro
+          lookupTable.addRGBPoint(maxVal, 1.0, 1.0, 1.0); // Blanco
         }
       }
       
       mapper.setLookupTable(lookupTable);
       
-      console.log(`Applied ${mode} visualization:`, array.getName());
+      console.log(`Applied ${mode} visualization:`, array.getName(), useVectorMagnitude ? '(magnitude)' : '');
     } else {
       mapper.setScalarVisibility(false);
+      console.warn(`No array found for ${mode} visualization`);
     }
   };
 
