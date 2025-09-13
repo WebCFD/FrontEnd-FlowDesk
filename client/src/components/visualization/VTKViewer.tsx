@@ -6,7 +6,7 @@ import '@kitware/vtk.js/Rendering/Profiles/Geometry';
 import vtkFullScreenRenderWindow from '@kitware/vtk.js/Rendering/Misc/FullScreenRenderWindow';
 import vtkHttpDataSetReader from '@kitware/vtk.js/IO/Core/HttpDataSetReader';
 import JSZip from 'jszip';
-import newJSZipDataAccessHelper from '@kitware/vtk.js/IO/Core/DataAccessHelper/JSZipDataAccessHelper';
+import DataAccessHelper from '@kitware/vtk.js/IO/Core/DataAccessHelper';
 import vtkCubeSource from '@kitware/vtk.js/Filters/Sources/CubeSource';
 import vtkActor from '@kitware/vtk.js/Rendering/Core/Actor';
 import vtkMapper from '@kitware/vtk.js/Rendering/Core/Mapper';
@@ -100,14 +100,21 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         const zip = await JSZip.loadAsync(arrayBuffer);
         console.log('[VTKViewer] ZIP extracted, setting up VTK reader with correct helper...');
         
-        // Create VTK reader with JSZip data access helper (FACTORY FUNCTION)
+        // Create VTK reader with JSZip data access helper (CORRECT API)
+        console.log('[VTKViewer] Creating VTK reader...');
         const reader = vtkHttpDataSetReader.newInstance({ fetchGzip: true });
-        const dah = newJSZipDataAccessHelper({ zip });
+        console.log('[VTKViewer] Creating DataAccessHelper...');
+        const dah = DataAccessHelper.get('zip', { zipContent: zip });
+        console.log('[VTKViewer] Setting DataAccessHelper...');
         reader.setDataAccessHelper(dah);
+        console.log('[VTKViewer] Helper configured successfully!');
         
         // Load from index.json inside the ZIP
+        console.log('[VTKViewer] Loading index.json from ZIP...');
         await reader.setUrl('index.json', { loadData: true });
+        console.log('[VTKViewer] setUrl completed, getting output data...');
         const dataset = reader.getOutputData();
+        console.log('[VTKViewer] Dataset retrieved:', dataset ? dataset.getClassName() : 'NULL');
         
         if (dataset) {
           console.log('[VTKViewer] REAL CFD dataset loaded successfully!');
