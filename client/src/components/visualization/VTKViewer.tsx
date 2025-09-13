@@ -74,24 +74,38 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       const renderWindow = fullScreenRenderer.getRenderWindow();
       rendererRef.current = renderer;
 
-      // Load real .vtkjs file data directly (bypass authentication issue)
+      // Load real .vtkjs file manually with fetch then pass to VTK.js
       console.log('[VTKViewer] Loading real CFD data from .vtkjs file');
       
-      // For now, use the attached file directly to test VTK.js rendering
-      // The .vtkjs format contains the complete 3D geometry and CFD data
+      // Use the working API endpoint to fetch the .vtkjs file
+      const vtkUrl = `/api/simulations/${simulationId}/results/result.vtkjs`;
+      console.log('[VTKViewer] Fetching .vtkjs from:', vtkUrl);
       
+      // Fetch the .vtkjs file as binary data
+      const response = await fetch(vtkUrl, { credentials: 'include' });
+      if (!response.ok) {
+        throw new Error(`Failed to fetch .vtkjs file: HTTP ${response.status}`);
+      }
+      
+      const arrayBuffer = await response.arrayBuffer();
+      console.log('[VTKViewer] Fetched .vtkjs file:', arrayBuffer.byteLength, 'bytes');
+      
+      // Create VTK.js reader for the compressed .vtkjs format
       const reader = vtkHttpDataSetReader.newInstance({ 
         fetchGzip: true,
         enableArray: true
       });
       
-      // Use the public path to load the .vtkjs file
-      const vtkUrl = '/simulations/office_building/results/result.vtkjs';
-      console.log('[VTKViewer] Loading .vtkjs directly from:', vtkUrl);
+      // Create a blob URL for the data and load it
+      const blob = new Blob([arrayBuffer], { type: 'application/octet-stream' });
+      const blobUrl = URL.createObjectURL(blob);
       
       try {
-        await reader.setUrl(vtkUrl, { loadData: true });
+        await reader.setUrl(blobUrl, { loadData: true });
         const dataset = reader.getOutputData();
+        
+        // Clean up blob URL
+        URL.revokeObjectURL(blobUrl);
         
         if (!dataset) {
           throw new Error('No dataset loaded from .vtkjs file');
@@ -123,6 +137,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         }
         
       } catch (loadError: any) {
+        URL.revokeObjectURL(blobUrl); // Clean up on error
         console.error('[VTKViewer] Error loading .vtkjs file:', loadError);
         throw new Error(`Failed to load CFD data: ${loadError?.message || 'Unknown error'}`);
       }
