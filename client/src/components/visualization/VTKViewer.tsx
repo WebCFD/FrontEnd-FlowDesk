@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, AlertCircle, Layers, Eye, Activity, Wind, Zap, Settings } from 'lucide-react';
 
-// VTK.js imports - solo los que sabemos que existen
+// VTK.js imports - añadidos módulos básicos para PolyData
 import '@kitware/vtk.js/Rendering/Profiles/Geometry';
 import vtkFullScreenRenderWindow from '@kitware/vtk.js/Rendering/Misc/FullScreenRenderWindow';
 import vtkActor from '@kitware/vtk.js/Rendering/Core/Actor';
@@ -12,6 +12,9 @@ import vtkMapper from '@kitware/vtk.js/Rendering/Core/Mapper';
 import vtkHttpDataSetReader from '@kitware/vtk.js/IO/Core/HttpDataSetReader';
 import vtkColorTransferFunction from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction';
 import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
+import vtkPolyData from '@kitware/vtk.js/Common/DataModel/PolyData';
+import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
+import vtkPoints from '@kitware/vtk.js/Common/Core/Points';
 
 interface VTKViewerProps {
   simulationId: number;
