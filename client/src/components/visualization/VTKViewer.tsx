@@ -93,53 +93,14 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       }
       
       try {
-        // Load .vtkjs file from Express API with correct headers
-        console.log('[VTKViewer] 🚀 Loading .vtkjs file with JSZip support...');
-        
-        // For .vtkjs files (ZIP format), explicitly set compression to 'zip'
-        const reader = vtkHttpDataSetReader.newInstance({ 
-          fetchGzip: false  // Important: don't use gzip for .vtkjs files
-        });
-        
-        // Set URL with explicit compression type for ZIP files
-        await reader.setUrl(apiUrl, { 
-          loadData: true,
-          compression: 'zip'  // Tell VTK.js this is a ZIP file
-        });
-        const dataset = reader.getOutputData();
-        
-        if (dataset) {
-          console.log('[VTKViewer] REAL CFD dataset loaded successfully!');
-          console.log('[VTKViewer] CFD Dataset type:', dataset.getClassName());
-          console.log('[VTKViewer] CFD Points:', dataset.getNumberOfPoints(), 'CFD Cells:', dataset.getNumberOfCells());
-          
-          // Create mapper and actor
-          const mapper = vtkMapper.newInstance();
-          mapper.setInputData(dataset);
-          
-          const actor = vtkActor.newInstance();
-          actor.setMapper(mapper);
-          actorRef.current = actor;
-          
-          // Apply visualization
-          applyVisualizationMode(mapper, dataset, activeMode);
-          
-          // Add to scene
-          renderer.addActor(actor);
-          renderer.resetCamera();
-          renderer.setBackground(0.1, 0.1, 0.2);
-          renderWindow.render();
-          
-          console.log('[VTKViewer] CFD data loaded successfully! 🎉');
-          
-        } else {
-          throw new Error('No dataset in sample file');
-        }
+        // TEMPORARILY DISABLED: VTK.js has issues with .vtkjs ZIP format
+        console.log('[VTKViewer] ⚠️ VTK.js temporarily disabled - use ParaView test above');
+        throw new Error('VTK.js disabled - ParaView Glance works correctly');
         
       } catch (cfdError) {
-        console.error('[VTKViewer] ERROR: Real CFD file failed to load:', cfdError);
+        console.error('[VTKViewer] ERROR: VTK.js disabled, showing demo cube:', cfdError.message);
         
-        // Fallback to demo cube if sample fails
+        // Fallback to demo cube 
         const cubeSource = vtkCubeSource.newInstance({ xLength: 1, yLength: 1, zLength: 1 });
         const mapper = vtkMapper.newInstance();
         mapper.setInputConnection(cubeSource.getOutputPort());
