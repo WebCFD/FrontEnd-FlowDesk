@@ -78,26 +78,25 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       // Load the REAL CFD data that works in ParaView
       console.log('[VTKViewer] Loading REAL CFD data from .vtkjs file');
       
-      // ===== TEST DIAGNÓSTICO: Verificar Content-Type =====
-      console.log('[VTKViewer] 🧪 TEST: Verificando Content-Type del servidor');
+      // ===== SOLUCIÓN 2: Usar endpoint existente (bypass Vite) =====
+      const apiUrl = `/api/simulations/${simulationId}/results/result.vtkjs`;
+      console.log('[VTKViewer] 🚀 SOLUCIÓN 2: Usando endpoint existente:', apiUrl);
+      
+      // Test de la nueva API
       try {
-        const response = await fetch('/cfd-data.vtkjs');
-        console.log('[VTKViewer] 🧪 Response status:', response.status);
-        console.log('[VTKViewer] 🧪 Content-Type header:', response.headers.get('Content-Type') || 'VACIO/UNDEFINED');
-        console.log('[VTKViewer] 🧪 Content-Length:', response.headers.get('Content-Length'));
+        const response = await fetch(apiUrl);
+        console.log('[VTKViewer] 🚀 API Response status:', response.status);
+        console.log('[VTKViewer] 🚀 API Content-Type header:', response.headers.get('Content-Type') || 'VACIO/UNDEFINED');
+        console.log('[VTKViewer] 🚀 API Content-Length:', response.headers.get('Content-Length'));
       } catch (testError) {
-        console.log('[VTKViewer] 🧪 Test de headers falló:', testError);
+        console.log('[VTKViewer] 🚀 API test falló:', testError);
       }
       
-      // Use super simple static file path in public root
-      const vtkUrl = `/cfd-data.vtkjs`;
-      console.log('[VTKViewer] Loading CFD file from simple static path:', vtkUrl);
-      
       try {
-        // Load .vtkjs file directly with correct JSZip loader
-        console.log('[VTKViewer] Loading .vtkjs file with JSZipDataAccessHelper...');
-        const reader = vtkHttpDataSetReader.newInstance(); // Remove fetchGzip for .vtkjs files
-        await reader.setUrl('/cfd-data.vtkjs', { loadData: true });
+        // Load .vtkjs file from Express API with correct headers
+        console.log('[VTKViewer] 🚀 Loading .vtkjs file from Express API...');
+        const reader = vtkHttpDataSetReader.newInstance();
+        await reader.setUrl(apiUrl, { loadData: true });
         const dataset = reader.getOutputData();
         
         if (dataset) {

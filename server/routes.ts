@@ -382,6 +382,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ===== SOLUCIÓN 2: API específica para archivos .vtkjs (bypass Vite) =====
+  app.get("/api/vtk/cfd-data.vtkjs", async (req, res) => {
+    try {
+      console.log('[Express] 🚀 SOLUCIÓN 2: Sirviendo .vtkjs via API específica');
+      
+      // Path to the .vtkjs file in public directory
+      const vtkFilePath = path.join(process.cwd(), 'client', 'public', 'cfd-data.vtkjs');
+      
+      // Check if file exists
+      try {
+        await fs.access(vtkFilePath);
+      } catch {
+        return res.status(404).json({ message: "VTK file not found" });
+      }
+
+      // Set correct headers for binary .vtkjs file
+      res.setHeader('Content-Type', 'application/zip');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Content-Disposition', 'inline; filename="cfd-data.vtkjs"');
+      
+      console.log('[Express] 🚀 Headers configured correctly for .vtkjs');
+      
+      // Stream the binary file directly
+      const fileBuffer = await fs.readFile(vtkFilePath);
+      console.log('[Express] 🚀 File loaded, size:', fileBuffer.length, 'bytes');
+      res.send(fileBuffer);
+
+    } catch (error) {
+      console.error('[Express] Error serving VTK.js file via API:', error);
+      res.status(500).json({ message: "Error serving VTK file" });
+    }
+  });
+
   // Endpoint to serve VTK.js results files
   app.get("/api/simulations/:id/results/result.vtkjs", async (req, res) => {
     try {
