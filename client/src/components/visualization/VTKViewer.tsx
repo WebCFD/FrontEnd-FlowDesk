@@ -77,9 +77,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       // Load the REAL CFD data that works in ParaView
       console.log('[VTKViewer] Loading REAL CFD data from .vtkjs file');
       
-      // Use the actual CFD file that's confirmed to exist and work in ParaView  
-      const vtkUrl = `/simulations/office_building/results/result.vtkjs`;
-      console.log('[VTKViewer] Loading REAL CFD file from:', vtkUrl);
+      // Use super simple static file path in public root
+      const vtkUrl = `/cfd-data.vtkjs`;
+      console.log('[VTKViewer] Loading CFD file from simple static path:', vtkUrl);
       
       try {
         // Create simple VTK reader
