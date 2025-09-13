@@ -1,92 +1,69 @@
 {
-  "scene": [
-    {
-      "name": "TestCube",
-      "type": "vtkPolyData",
-      "points": {
-        "vtkClass": "vtkDataArray",
-        "name": "Points",
-        "dataType": "Float32Array",
-        "numberOfComponents": 3,
-        "size": 24,
-        "values": [
-          -0.5, -0.5, -0.5,
-           0.5, -0.5, -0.5,
-           0.5,  0.5, -0.5,
-          -0.5,  0.5, -0.5,
-          -0.5, -0.5,  0.5,
-           0.5, -0.5,  0.5,
-           0.5,  0.5,  0.5,
-          -0.5,  0.5,  0.5
-        ]
-      },
-      "polys": {
-        "vtkClass": "vtkDataArray",
-        "name": "Polys",
-        "dataType": "Uint32Array",
-        "numberOfComponents": 1,
-        "size": 36,
-        "values": [
-          4, 0, 1, 2, 3,
-          4, 4, 7, 6, 5,
-          4, 0, 4, 5, 1,
-          4, 1, 5, 6, 2,
-          4, 2, 6, 7, 3,
-          4, 3, 7, 4, 0
-        ]
-      },
-      "pointData": {
-        "vtkClass": "vtkDataSetAttributes",
-        "arrays": [
-          {
-            "data": {
-              "vtkClass": "vtkDataArray",
-              "name": "pressure",
-              "dataType": "Float32Array",
-              "numberOfComponents": 1,
-              "size": 8,
-              "values": [1.0, 1.5, 2.0, 1.8, 0.5, 0.8, 1.2, 0.9]
-            }
-          },
-          {
-            "data": {
-              "vtkClass": "vtkDataArray", 
-              "name": "velocity",
-              "dataType": "Float32Array",
-              "numberOfComponents": 3,
-              "size": 24,
-              "values": [
-                0.1, 0.0, 0.0,
-                0.2, 0.1, 0.0,
-                0.3, 0.2, 0.1,
-                0.2, 0.3, 0.1,
-                0.1, 0.1, 0.2,
-                0.2, 0.2, 0.3,
-                0.3, 0.3, 0.4,
-                0.2, 0.2, 0.3
-              ]
-            }
-          }
-        ]
-      },
-      "actor": {
-        "origin": [0, 0, 0],
-        "scale": [1, 1, 1],
-        "orientation": [0, 0, 0]
-      },
-      "mapper": {
-        "colorByArrayName": "pressure",
-        "scalarRange": [0.5, 2.0]
-      },
-      "property": {
-        "representation": 2
-      }
-    }
-  ],
-  "camera": {
-    "focalPoint": [0, 0, 0],
-    "position": [3, 3, 3],
-    "viewUp": [0, 1, 0]
+  "vtkClass": "vtkPolyData",
+  "points": {
+    "vtkClass": "vtkDataArray",
+    "name": "Points", 
+    "dataType": "Float32Array",
+    "numberOfComponents": 3,
+    "size": 24,
+    "values": [
+      -0.5, -0.5, -0.5,
+       0.5, -0.5, -0.5,
+       0.5,  0.5, -0.5,
+      -0.5,  0.5, -0.5,
+      -0.5, -0.5,  0.5,
+       0.5, -0.5,  0.5,
+       0.5,  0.5,  0.5,
+      -0.5,  0.5,  0.5
+    ]
   },
-  "background": [0.1, 0.1, 0.2]
+  "polys": {
+    "vtkClass": "vtkDataArray",
+    "name": "Polys",
+    "dataType": "Uint32Array", 
+    "numberOfComponents": 1,
+    "size": 36,
+    "values": [
+      4, 0, 1, 2, 3,
+      4, 4, 7, 6, 5,
+      4, 0, 4, 5, 1,
+      4, 1, 5, 6, 2,
+      4, 2, 6, 7, 3,
+      4, 3, 7, 4, 0
+    ]
+  },
+  "pointData": {
+    "vtkClass": "vtkDataSetAttributes",
+    "arrays": [
+      {
+        "data": {
+          "vtkClass": "vtkDataArray",
+          "name": "pressure",
+          "dataType": "Float32Array",
+          "numberOfComponents": 1,
+          "size": 8,
+          "values": [1.0, 1.5, 2.0, 1.8, 0.5, 0.8, 1.2, 0.9]
+        }
+      },
+      {
+        "data": {
+          "vtkClass": "vtkDataArray",
+          "name": "velocity", 
+          "dataType": "Float32Array",
+          "numberOfComponents": 3,
+          "size": 24,
+          "values": [
+            0.1, 0.0, 0.0,
+            0.2, 0.1, 0.0,
+            0.3, 0.2, 0.1,
+            0.2, 0.3, 0.1,
+            0.1, 0.1, 0.2,
+            0.2, 0.2, 0.3,
+            0.3, 0.3, 0.4,
+            0.2, 0.2, 0.3
+          ]
+        }
+      }
+    ]
+  }
 }
