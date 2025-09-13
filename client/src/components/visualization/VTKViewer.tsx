@@ -53,9 +53,14 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     if (!containerRef.current) return;
 
     try {
-      // Clean up previous renderer
+      // Clean up previous renderer safely
       if (renderWindowRef.current) {
-        renderWindowRef.current.delete();
+        try {
+          renderWindowRef.current.delete();
+        } catch (cleanupError) {
+          console.warn('[VTKViewer] Error during cleanup:', cleanupError);
+        }
+        renderWindowRef.current = null;
       }
 
       // Create full screen render window
@@ -69,32 +74,68 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       const renderWindow = fullScreenRenderer.getRenderWindow();
       rendererRef.current = renderer;
 
-      // Simplified approach: load VTK data directly from URL (no authentication for now)
-      console.log('[VTKViewer] Creating simple demo scene for CFD visualization');
+      // Load real .vtkjs file data 
+      console.log('[VTKViewer] Loading real CFD data from .vtkjs file');
       
-      // For now, create a simple demo scene while we resolve the .vtkjs loading issue
-      // This will show the UI works and controls function properly
-      
-      // Create a simple cube as placeholder for CFD data
-      const cubeSource = vtkCubeSource.newInstance({
-        xLength: 2,
-        yLength: 1,
-        zLength: 1
+      const reader = vtkHttpDataSetReader.newInstance({ 
+        fetchGzip: true,
+        enableArray: true
       });
       
-      const polydata = cubeSource.getOutputData();
-      console.log('[VTKViewer] Demo polydata created:', polydata);
+      // Load the real .vtkjs file
+      const vtkUrl = `/api/simulations/${simulationId}/results/result.vtkjs`;
+      console.log('[VTKViewer] Loading .vtkjs from:', vtkUrl);
+      
+      try {
+        await reader.setUrl(vtkUrl, { loadData: true });
+        const dataset = reader.getOutputData();
+        
+        if (!dataset) {
+          throw new Error('No dataset loaded from .vtkjs file');
+        }
+        
+        console.log('[VTKViewer] Real CFD dataset loaded:', dataset);
+        console.log('[VTKViewer] Dataset type:', dataset.getClassName());
+        console.log('[VTKViewer] Number of points:', dataset.getNumberOfPoints());
+        console.log('[VTKViewer] Number of cells:', dataset.getNumberOfCells());
+        
+        // Check for available data arrays
+        const pointData = dataset.getPointData();
+        const cellData = dataset.getCellData();
+        console.log('[VTKViewer] Point data arrays:', pointData.getNumberOfArrays());
+        console.log('[VTKViewer] Cell data arrays:', cellData.getNumberOfArrays());
+        
+        if (pointData.getNumberOfArrays() > 0) {
+          for (let i = 0; i < pointData.getNumberOfArrays(); i++) {
+            const array = pointData.getArray(i);
+            console.log(`[VTKViewer] Point array ${i}:`, array.getName(), 'Range:', array.getRange());
+          }
+        }
+        
+        if (cellData.getNumberOfArrays() > 0) {
+          for (let i = 0; i < cellData.getNumberOfArrays(); i++) {
+            const array = cellData.getArray(i);
+            console.log(`[VTKViewer] Cell array ${i}:`, array.getName(), 'Range:', array.getRange());
+          }
+        }
+        
+      } catch (loadError: any) {
+        console.error('[VTKViewer] Error loading .vtkjs file:', loadError);
+        throw new Error(`Failed to load CFD data: ${loadError?.message || 'Unknown error'}`);
+      }
+      
+      const dataset = reader.getOutputData();
 
-      // Create mapper and actor
+      // Create mapper and actor for real CFD data
       const mapper = vtkMapper.newInstance();
-      mapper.setInputData(polydata);
+      mapper.setInputData(dataset);
       
       const actor = vtkActor.newInstance();
       actor.setMapper(mapper);
       actorRef.current = actor;
 
-      // Apply initial visualization mode
-      applyVisualizationMode(mapper, polydata, activeMode);
+      // Apply initial visualization mode to real data
+      applyVisualizationMode(mapper, dataset, activeMode);
 
       // Add actor to scene
       renderer.addActor(actor);
@@ -105,7 +146,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       
       renderWindow.render();
       
-      console.log('[VTKViewer] Demo 3D renderer initialized successfully');
+      console.log('[VTKViewer] Real CFD 3D renderer initialized successfully');
       
     } catch (err) {
       console.error('[VTKViewer] Error initializing VTK renderer:', err);
@@ -123,55 +164,104 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     lookupTable.applyColorMap(colorMap);
     mapper.setLookupTable(lookupTable);
     
-    // For demo data (cube), simulate different visualization modes with color changes
+    // Apply real CFD visualization modes based on data arrays
+    const pointData = dataset.getPointData();
+    const cellData = dataset.getCellData();
+    
     switch (mode) {
       case 'pressure':
-        // Blue to red for pressure
-        lookupTable.applyColorMap(vtkColorMaps.getPresetByName('Cool to Warm'));
-        mapper.setScalarVisibility(false); // Solid color for demo
-        if (actorRef.current) {
-          actorRef.current.getProperty().setColor(0.2, 0.5, 1.0); // Blue for pressure
+        // Look for pressure data in point arrays
+        let pressureArray = pointData.getArrayByName('Pressure') || 
+                           pointData.getArrayByName('pressure') ||
+                           pointData.getArrayByName('p') ||
+                           pointData.getArray(0); // Fallback to first array
+        
+        if (pressureArray) {
+          mapper.setScalarModeToUsePointData();
+          mapper.setScalarVisibility(true);
+          mapper.setColorByArrayName(pressureArray.getName());
+          const pressureRange = pressureArray.getRange();
+          if (pressureRange && pressureRange.length >= 2) {
+            lookupTable.setMappingRange(pressureRange[0], pressureRange[1]);
+          }
+          lookupTable.applyColorMap(vtkColorMaps.getPresetByName('Cool to Warm'));
+          console.log('[VTKViewer] Applied pressure visualization:', pressureArray.getName());
+        } else {
+          mapper.setScalarVisibility(false);
+          if (actorRef.current) {
+            actorRef.current.getProperty().setColor(0.2, 0.5, 1.0);
+          }
         }
         break;
+        
       case 'velocity':
-        // Green for velocity
-        mapper.setScalarVisibility(false);
-        if (actorRef.current) {
-          actorRef.current.getProperty().setColor(0.2, 1.0, 0.2); // Green for velocity
+        // Look for velocity magnitude in point data
+        let velocityArray = pointData.getArrayByName('Velocity') ||
+                           pointData.getArrayByName('velocity') ||
+                           pointData.getArrayByName('U') ||
+                           pointData.getArrayByName('vmag') ||
+                           pointData.getArray(1); // Fallback to second array
+        
+        if (velocityArray) {
+          mapper.setScalarModeToUsePointData();
+          mapper.setScalarVisibility(true);
+          mapper.setColorByArrayName(velocityArray.getName());
+          const velocityRange = velocityArray.getRange();
+          if (velocityRange && velocityRange.length >= 2) {
+            lookupTable.setMappingRange(velocityRange[0], velocityRange[1]);
+          }
+          lookupTable.applyColorMap(vtkColorMaps.getPresetByName('Rainbow'));
+          console.log('[VTKViewer] Applied velocity visualization:', velocityArray.getName());
+        } else {
+          mapper.setScalarVisibility(false);
+          if (actorRef.current) {
+            actorRef.current.getProperty().setColor(0.2, 1.0, 0.2);
+          }
         }
         break;
+        
       case 'surface_pressure':
-        // Red for surface pressure
-        mapper.setScalarVisibility(false);
-        if (actorRef.current) {
-          actorRef.current.getProperty().setColor(1.0, 0.2, 0.2); // Red for surface pressure
+        // Look for pressure in cell data (surface values)
+        let surfacePressureArray = cellData.getArrayByName('Pressure') ||
+                                  cellData.getArrayByName('pressure') ||
+                                  cellData.getArray(0);
+        
+        if (surfacePressureArray) {
+          mapper.setScalarModeToUseCellData();
+          mapper.setScalarVisibility(true);
+          mapper.setColorByArrayName(surfacePressureArray.getName());
+          const surfaceRange = surfacePressureArray.getRange();
+          if (surfaceRange && surfaceRange.length >= 2) {
+            lookupTable.setMappingRange(surfaceRange[0], surfaceRange[1]);
+          }
+          lookupTable.applyColorMap(vtkColorMaps.getPresetByName('Viridis'));
+          console.log('[VTKViewer] Applied surface pressure visualization:', surfacePressureArray.getName());
+        } else {
+          mapper.setScalarVisibility(false);
+          if (actorRef.current) {
+            actorRef.current.getProperty().setColor(1.0, 0.2, 0.2);
+          }
         }
         break;
-      case 'surface_friction':
-        // Orange for friction
-        mapper.setScalarVisibility(false);
-        if (actorRef.current) {
-          actorRef.current.getProperty().setColor(1.0, 0.5, 0.0); // Orange for friction
-        }
-        break;
-      case 'streamlines_vertical':
-        // Purple for streamlines
-        mapper.setScalarVisibility(false);
-        if (actorRef.current) {
-          actorRef.current.getProperty().setColor(0.7, 0.2, 1.0); // Purple for streamlines
-        }
-        break;
-      case 'streamlines_horizontal':
-        // Cyan for horizontal streamlines
-        mapper.setScalarVisibility(false);
-        if (actorRef.current) {
-          actorRef.current.getProperty().setColor(0.0, 0.8, 1.0); // Cyan for horizontal streamlines
-        }
-        break;
+        
       default:
-        mapper.setScalarVisibility(false);
-        if (actorRef.current) {
-          actorRef.current.getProperty().setColor(0.8, 0.8, 0.8); // Default gray
+        // Default: use first available array or solid color
+        if (pointData.getNumberOfArrays() > 0) {
+          const defaultArray = pointData.getArray(0);
+          mapper.setScalarModeToUsePointData();
+          mapper.setScalarVisibility(true);
+          mapper.setColorByArrayName(defaultArray.getName());
+          const defaultRange = defaultArray.getRange();
+          if (defaultRange && defaultRange.length >= 2) {
+            lookupTable.setMappingRange(defaultRange[0], defaultRange[1]);
+          }
+          lookupTable.applyColorMap(vtkColorMaps.getPresetByName('Cool to Warm'));
+          console.log('[VTKViewer] Applied default visualization:', defaultArray.getName());
+        } else {
+          mapper.setScalarVisibility(false);
+          if (actorRef.current) {
+            actorRef.current.getProperty().setColor(0.8, 0.8, 0.8);
+          }
         }
     }
     
