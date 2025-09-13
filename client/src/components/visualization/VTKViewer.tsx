@@ -97,22 +97,63 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       renderWindowRef.current = fullScreenRenderer;
       const renderer = fullScreenRenderer.getRenderer();
 
-      // URL para archivo .vtkjs binario de ParaView
+      // URL para archivo .vtkjs JSON de ParaView
       const vtkUrl = `/api/simulations/${simulationId}/results/result.vtkjs`;
-      console.log('[VTKViewer] Loading .vtkjs file:', vtkUrl);
+      console.log('[VTKViewer] Loading real CFD data from:', vtkUrl);
 
-      // Validar que el archivo existe
-      const response = await fetch(vtkUrl, { method: 'HEAD' });
+      // Fetch y parsear el archivo JSON
+      const response = await fetch(vtkUrl);
       if (!response.ok) {
         throw new Error(`File not found: ${response.status}`);
       }
 
-      // Cargar archivo .vtkjs con HttpDataSetReader
-      const reader = vtkHttpDataSetReader.newInstance({ fetchGzip: true });
-      reader.setUrl(vtkUrl);
-      
-      await reader.loadData();
-      const dataset = reader.getOutputData();
+      const vtkData = await response.json();
+      console.log('[VTKViewer] Loaded CFD data:', {
+        pointsSize: vtkData.points?.size || 0,
+        polysSize: vtkData.polys?.size || 0,
+        pointDataArrays: vtkData.pointData?.arrays?.length || 0
+      });
+
+      // Crear dataset manualmente desde JSON real de ParaView
+      const polyData = vtkPolyData.newInstance();
+      const points = vtkPoints.newInstance();
+
+      // Cargar puntos desde JSON
+      if (vtkData.points?.values) {
+        const pointsData = new Float32Array(vtkData.points.values);
+        points.setData(pointsData);
+        polyData.setPoints(points);
+      }
+
+      // Cargar polígonos desde JSON
+      if (vtkData.polys?.values) {
+        const polysData = new Uint32Array(vtkData.polys.values);
+        polyData.getPolys().setData(polysData);
+      }
+
+      // Cargar datos de punto (presión, velocidad, etc.)
+      if (vtkData.pointData?.arrays) {
+        for (const arrayInfo of vtkData.pointData.arrays) {
+          if (arrayInfo.data?.values) {
+            const dataArray = vtkDataArray.newInstance({
+              name: arrayInfo.data.name,
+              dataType: arrayInfo.data.dataType,
+              numberOfComponents: arrayInfo.data.numberOfComponents || 1,
+              values: arrayInfo.data.values
+            });
+
+            // Si es el primer array o es presión, usarlo como scalars
+            if (arrayInfo.data.name === 'p' || arrayInfo.data.name === 'pressure' || 
+                polyData.getPointData().getNumberOfArrays() === 0) {
+              polyData.getPointData().setScalars(dataArray);
+            } else {
+              polyData.getPointData().addArray(dataArray);
+            }
+          }
+        }
+      }
+
+      const dataset = polyData;
       
       if (!dataset || dataset.getNumberOfPoints() === 0) {
         throw new Error('No data in VTK file');
