@@ -94,9 +94,18 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       
       try {
         // Load .vtkjs file from Express API with correct headers
-        console.log('[VTKViewer] 🚀 Loading .vtkjs file from Express API...');
-        const reader = vtkHttpDataSetReader.newInstance();
-        await reader.setUrl(apiUrl, { loadData: true });
+        console.log('[VTKViewer] 🚀 Loading .vtkjs file with JSZip support...');
+        
+        // For .vtkjs files (ZIP format), explicitly set compression to 'zip'
+        const reader = vtkHttpDataSetReader.newInstance({ 
+          fetchGzip: false  // Important: don't use gzip for .vtkjs files
+        });
+        
+        // Set URL with explicit compression type for ZIP files
+        await reader.setUrl(apiUrl, { 
+          loadData: true,
+          compression: 'zip'  // Tell VTK.js this is a ZIP file
+        });
         const dataset = reader.getOutputData();
         
         if (dataset) {
