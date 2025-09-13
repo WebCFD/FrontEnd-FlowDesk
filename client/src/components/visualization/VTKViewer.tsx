@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, AlertCircle, Layers, Eye, Activity, Wind, Zap, Settings } from 'lucide-react';
 
-// VTK.js imports - añadidos módulos básicos para PolyData
+// VTK.js imports simplificados
 import '@kitware/vtk.js/Rendering/Profiles/Geometry';
 import vtkFullScreenRenderWindow from '@kitware/vtk.js/Rendering/Misc/FullScreenRenderWindow';
 import vtkActor from '@kitware/vtk.js/Rendering/Core/Actor';
@@ -12,9 +12,6 @@ import vtkMapper from '@kitware/vtk.js/Rendering/Core/Mapper';
 import vtkHttpDataSetReader from '@kitware/vtk.js/IO/Core/HttpDataSetReader';
 import vtkColorTransferFunction from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction';
 import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
-import vtkPolyData from '@kitware/vtk.js/Common/DataModel/PolyData';
-import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
-import vtkPoints from '@kitware/vtk.js/Common/Core/Points';
 
 interface VTKViewerProps {
   simulationId: number;
@@ -100,44 +97,22 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       renderWindowRef.current = fullScreenRenderer;
       const renderer = fullScreenRenderer.getRenderer();
 
-      // 🔗 COMUNICACIÓN CON ARCHIVO EXTERNO: Cargar JSON y crear dataset manualmente
+      // URL para archivo .vtkjs binario de ParaView
       const vtkUrl = `/api/simulations/${simulationId}/results/result.vtkjs`;
-      console.log('[VTKViewer] 🔗 Loading from external file:', vtkUrl);
-      
-      // Fetch del archivo JSON
-      const response = await fetch(vtkUrl);
+      console.log('[VTKViewer] Loading .vtkjs file:', vtkUrl);
+
+      // Validar que el archivo existe
+      const response = await fetch(vtkUrl, { method: 'HEAD' });
       if (!response.ok) {
         throw new Error(`File not found: ${response.status}`);
       }
-      
-      const jsonData = await response.json();
-      console.log('[VTKViewer] 📄 Loaded JSON data:', jsonData);
-      
-      // Crear dataset manualmente desde los datos JSON
-      const polyData = vtkPolyData.newInstance();
-      const points = vtkPoints.newInstance();
 
-      // Usar puntos desde el archivo JSON
-      const pointsData = new Float32Array(jsonData.points.values);
-      points.setData(pointsData);
-      polyData.setPoints(points);
-
-      // Usar polígonos desde el archivo JSON  
-      const polysData = new Uint32Array(jsonData.polys.values);
-      polyData.getPolys().setData(polysData);
+      // Cargar archivo .vtkjs con HttpDataSetReader
+      const reader = vtkHttpDataSetReader.newInstance({ fetchGzip: true });
+      reader.setUrl(vtkUrl);
       
-      // Usar datos de presión desde el archivo JSON
-      if (jsonData.pointData && jsonData.pointData.arrays && jsonData.pointData.arrays[0]) {
-        const pressureArray = jsonData.pointData.arrays[0].data;
-        const pressureData = vtkDataArray.newInstance({
-          name: pressureArray.name,
-          dataType: pressureArray.dataType,
-          values: pressureArray.values
-        });
-        polyData.getPointData().setScalars(pressureData);
-      }
-      
-      const dataset = polyData;
+      await reader.loadData();
+      const dataset = reader.getOutputData();
       
       if (!dataset || dataset.getNumberOfPoints() === 0) {
         throw new Error('No data in VTK file');
@@ -166,14 +141,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
     } catch (error) {
       console.error('[VTKViewer] Loading failed:', error);
-      console.error('[VTKViewer] Error details:', {
-        message: (error as Error)?.message,
-        stack: (error as Error)?.stack,
-        name: (error as Error)?.name,
-        errorType: typeof error,
-        errorString: String(error)
-      });
-      setError(`Failed to load VTK: ${(error as Error)?.message || 'Unknown error'}`);
+      setError(`Failed to load VTK: ${(error as Error).message}`);
       setLoading(false);
     }
   };
