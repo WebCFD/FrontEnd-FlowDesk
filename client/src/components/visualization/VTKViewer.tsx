@@ -100,39 +100,42 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       renderWindowRef.current = fullScreenRenderer;
       const renderer = fullScreenRenderer.getRenderer();
 
-      // 🔬 PRUEBA DE DIAGNÓSTICO: Crear cubo simple directamente en código
-      console.log('[VTKViewer] 🔬 DIAGNOSTIC TEST: Creating cube directly in JavaScript');
+      // 🔗 COMUNICACIÓN CON ARCHIVO EXTERNO: Cargar JSON y crear dataset manualmente
+      const vtkUrl = `/api/simulations/${simulationId}/results/result.vtkjs`;
+      console.log('[VTKViewer] 🔗 Loading from external file:', vtkUrl);
       
-      // Crear dataset básico directamente en memoria
+      // Fetch del archivo JSON
+      const response = await fetch(vtkUrl);
+      if (!response.ok) {
+        throw new Error(`File not found: ${response.status}`);
+      }
+      
+      const jsonData = await response.json();
+      console.log('[VTKViewer] 📄 Loaded JSON data:', jsonData);
+      
+      // Crear dataset manualmente desde los datos JSON
       const polyData = vtkPolyData.newInstance();
       const points = vtkPoints.newInstance();
 
-      // 8 puntos de un cubo simple
-      const pointsData = new Float32Array([
-        -0.5, -0.5, -0.5,
-         0.5, -0.5, -0.5, 
-         0.5,  0.5, -0.5,
-        -0.5,  0.5, -0.5,
-        -0.5, -0.5,  0.5,
-         0.5, -0.5,  0.5,
-         0.5,  0.5,  0.5,
-        -0.5,  0.5,  0.5
-      ]);
-
+      // Usar puntos desde el archivo JSON
+      const pointsData = new Float32Array(jsonData.points.values);
       points.setData(pointsData);
       polyData.setPoints(points);
 
-      // Crear polígonos (6 caras del cubo)
-      const polysData = new Uint32Array([4,0,1,2,3, 4,4,7,6,5, 4,0,4,5,1, 4,1,5,6,2, 4,2,6,7,3, 4,3,7,4,0]);
+      // Usar polígonos desde el archivo JSON  
+      const polysData = new Uint32Array(jsonData.polys.values);
       polyData.getPolys().setData(polysData);
       
-      // Datos de presión de prueba (8 valores para los 8 puntos)
-      const pressureData = vtkDataArray.newInstance({
-        name: 'pressure',
-        dataType: 'Float32Array',
-        values: [1.0, 1.5, 2.0, 1.8, 0.5, 0.8, 1.2, 0.9]
-      });
-      polyData.getPointData().setScalars(pressureData);
+      // Usar datos de presión desde el archivo JSON
+      if (jsonData.pointData && jsonData.pointData.arrays && jsonData.pointData.arrays[0]) {
+        const pressureArray = jsonData.pointData.arrays[0].data;
+        const pressureData = vtkDataArray.newInstance({
+          name: pressureArray.name,
+          dataType: pressureArray.dataType,
+          values: pressureArray.values
+        });
+        polyData.getPointData().setScalars(pressureData);
+      }
       
       const dataset = polyData;
       
