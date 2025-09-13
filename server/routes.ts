@@ -552,23 +552,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
           contentType = 'text/plain';
         }
       } else {
-        // Binary content (.gz, .bin, .raw, .png, etc.)
-        content = await file.async('arraybuffer');
-        console.log('[Express] 📄 Serving binary file:', foundPath, 'Size:', content.byteLength, 'bytes');
+        // Binary content
+        const filename = foundPath.split('/').pop() || '';
         
-        if (foundPath.endsWith('.gz')) {
-          contentType = 'application/gzip';
-        } else if (foundPath.endsWith('.png')) {
-          contentType = 'image/png';
-        } else if (foundPath.endsWith('.bin') || foundPath.endsWith('.raw')) {
-          contentType = 'application/octet-stream';
+        // ✅ DETECTAR ARCHIVOS DE ARRAYS TIPADOS DE VTK.JS
+        const typedArrayPattern = /^(Float(32|64)|Int(8|16|32)|Uint(8|16|32))_\d+/;
+        const isTypedArrayFile = typedArrayPattern.test(filename);
+        
+        if (isTypedArrayFile) {
+          // Archivos de datos VTK.js - usar nodebuffer para mejor control
+          content = await file.async('nodebuffer');
+          console.log('[Express] 🎯 Serving VTK typed array file:', foundPath, 'Size:', content.length, 'bytes');
           
-          // ✅ CORREGIR ALINEACIÓN: Solo para archivos .bin/.raw (no .gz comprimidos)
-          if (content.byteLength % 4 !== 0) {
-            console.log('[Express] ⚠️ Fixing byte alignment for raw binary, adding padding');
-            const aligned = new ArrayBuffer(Math.ceil(content.byteLength / 4) * 4);
-            new Uint8Array(aligned).set(new Uint8Array(content));
+          // ✅ ALINEACIÓN CRÍTICA PARA ARRAYS TIPADOS
+          const elementSize = filename.includes('64') ? 8 : 4;
+          if (content.length % elementSize !== 0) {
+            const paddedLength = Math.ceil(content.length / elementSize) * elementSize;
+            const paddedBytes = paddedLength - content.length;
+            console.log(`[Express] ⚠️ VTK alignment fix: ${filename} ${content.length} → ${paddedLength} bytes (+${paddedBytes})`);
+            
+            const aligned = Buffer.alloc(paddedLength);
+            content.copy(aligned);
             content = aligned;
+          }
+          
+          contentType = 'application/octet-stream';
+        } else {
+          // Otros archivos binarios (.gz, .png, etc.)
+          content = await file.async('arraybuffer');
+          console.log('[Express] 📄 Serving binary file:', foundPath, 'Size:', content.byteLength, 'bytes');
+          
+          if (foundPath.endsWith('.gz')) {
+            contentType = 'application/gzip';
+          } else if (foundPath.endsWith('.png')) {
+            contentType = 'image/png';
+          } else if (foundPath.endsWith('.bin') || foundPath.endsWith('.raw')) {
+            contentType = 'application/octet-stream';
           }
         }
       }
@@ -576,7 +595,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.setHeader('Content-Type', contentType);
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept');
-      res.setHeader('Cache-Control', 'no-cache');
+      
+      // ✅ HEADERS ESPECÍFICOS PARA DATOS VTK.JS
+      const filename = foundPath.split('/').pop() || '';
+      const typedArrayPattern = /^(Float(32|64)|Int(8|16|32)|Uint(8|16|32))_\d+/;
+      if (typedArrayPattern.test(filename)) {
+        res.setHeader('Cache-Control', 'no-store');
+        res.setHeader('Content-Encoding', 'identity'); // Evitar compresión
+      } else {
+        res.setHeader('Cache-Control', 'no-cache');
+      }
       
       res.send(content);
       
