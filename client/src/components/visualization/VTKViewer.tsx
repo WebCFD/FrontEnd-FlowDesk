@@ -192,6 +192,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const renderWindowRef = useRef<any>(null);
   const rendererRef = useRef<any>(null);
   const actorRef = useRef<any>(null);
+  const blobUrlRef = useRef<string | null>(null);
 
   // Visualization controls configuration
   const visualizationControls: VisualizationControl[] = [
@@ -246,6 +247,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       // ✅ CONVERTIR A BLOB Y CREAR URL TEMPORAL
       const blob = await response.blob();
       const blobUrl = URL.createObjectURL(blob);
+      blobUrlRef.current = blobUrl; // Store for cleanup
       
       console.log('[VTKViewer] Created blob URL:', blobUrl);
       console.log('[VTKViewer] Blob size:', blob.size, 'bytes');
@@ -254,7 +256,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       let loaded = false;
       
       try {
-        // Intentar SceneLoader con blob URL
+        // Intentar SceneLoader con blob URL 
         const sceneLoader = vtkHttpSceneLoader.newInstance();
         await sceneLoader.setUrl(blobUrl);
         
@@ -299,11 +301,14 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         }
       }
 
-      // ✅ LIMPIAR BLOB URL DESPUÉS DE 5 segundos
+      // ✅ LIMPIAR BLOB URL DESPUÉS DE CARGA EXITOSA
       setTimeout(() => {
-        URL.revokeObjectURL(blobUrl);
-        console.log('[VTKViewer] Blob URL cleaned up');
-      }, 5000);
+        if (blobUrlRef.current) {
+          URL.revokeObjectURL(blobUrlRef.current);
+          console.log('[VTKViewer] Blob URL cleaned up');
+          blobUrlRef.current = null;
+        }
+      }, 10000); // Increased to 10s for safety
 
       if (!loaded) {
         throw new Error('Failed to load VTK data from blob with both methods');
@@ -327,6 +332,15 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     setLoading(true);
     setError(null);
     initializeVTKRenderer();
+    
+    // Cleanup blob URL on unmount
+    return () => {
+      if (blobUrlRef.current) {
+        URL.revokeObjectURL(blobUrlRef.current);
+        console.log('[VTKViewer] Blob URL cleaned up on unmount');
+        blobUrlRef.current = null;
+      }
+    };
   }, [simulationId]);
 
   // Switch visualization mode
