@@ -100,21 +100,41 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       renderWindowRef.current = fullScreenRenderer;
       const renderer = fullScreenRenderer.getRenderer();
 
-      // URL para archivo .vtkjs (formato JSON de VTK.js)
-      const vtkUrl = `/api/simulations/${simulationId}/results/result.vtkjs`;
-      console.log('[VTKViewer] Loading VTKjs file:', vtkUrl);
-
-      // Validar que el archivo existe
-      const response = await fetch(vtkUrl);
-      if (!response.ok) {
-        throw new Error(`File not found: ${response.status}`);
-      }
-
-      // Cargar con HttpDataSetReader (maneja archivos .vtkjs)
-      const reader = vtkHttpDataSetReader.newInstance();
-      await reader.setUrl(vtkUrl, { loadData: true });
+      // 🔬 PRUEBA DE DIAGNÓSTICO: Crear cubo simple directamente en código
+      console.log('[VTKViewer] 🔬 DIAGNOSTIC TEST: Creating cube directly in JavaScript');
       
-      const dataset = reader.getOutputData();
+      // Crear dataset básico directamente en memoria
+      const polyData = vtkPolyData.newInstance();
+      const points = vtkPoints.newInstance();
+
+      // 8 puntos de un cubo simple
+      const pointsData = new Float32Array([
+        -0.5, -0.5, -0.5,
+         0.5, -0.5, -0.5, 
+         0.5,  0.5, -0.5,
+        -0.5,  0.5, -0.5,
+        -0.5, -0.5,  0.5,
+         0.5, -0.5,  0.5,
+         0.5,  0.5,  0.5,
+        -0.5,  0.5,  0.5
+      ]);
+
+      points.setData(pointsData);
+      polyData.setPoints(points);
+
+      // Crear polígonos (6 caras del cubo)
+      const polysData = new Uint32Array([4,0,1,2,3, 4,4,7,6,5, 4,0,4,5,1, 4,1,5,6,2, 4,2,6,7,3, 4,3,7,4,0]);
+      polyData.getPolys().setData(polysData);
+      
+      // Datos de presión de prueba (8 valores para los 8 puntos)
+      const pressureData = vtkDataArray.newInstance({
+        name: 'pressure',
+        dataType: 'Float32Array',
+        values: [1.0, 1.5, 2.0, 1.8, 0.5, 0.8, 1.2, 0.9]
+      });
+      polyData.getPointData().setScalars(pressureData);
+      
+      const dataset = polyData;
       
       if (!dataset || dataset.getNumberOfPoints() === 0) {
         throw new Error('No data in VTK file');
