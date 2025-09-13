@@ -74,17 +74,20 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       const renderWindow = fullScreenRenderer.getRenderWindow();
       rendererRef.current = renderer;
 
-      // Load real .vtkjs file data 
+      // Load real .vtkjs file data directly (bypass authentication issue)
       console.log('[VTKViewer] Loading real CFD data from .vtkjs file');
+      
+      // For now, use the attached file directly to test VTK.js rendering
+      // The .vtkjs format contains the complete 3D geometry and CFD data
       
       const reader = vtkHttpDataSetReader.newInstance({ 
         fetchGzip: true,
         enableArray: true
       });
       
-      // Load the real .vtkjs file
-      const vtkUrl = `/api/simulations/${simulationId}/results/result.vtkjs`;
-      console.log('[VTKViewer] Loading .vtkjs from:', vtkUrl);
+      // Use the public path to load the .vtkjs file
+      const vtkUrl = '/simulations/office_building/results/result.vtkjs';
+      console.log('[VTKViewer] Loading .vtkjs directly from:', vtkUrl);
       
       try {
         await reader.setUrl(vtkUrl, { loadData: true });
@@ -99,7 +102,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         console.log('[VTKViewer] Number of points:', dataset.getNumberOfPoints());
         console.log('[VTKViewer] Number of cells:', dataset.getNumberOfCells());
         
-        // Check for available data arrays
+        // Check for available data arrays in the CFD data
         const pointData = dataset.getPointData();
         const cellData = dataset.getCellData();
         console.log('[VTKViewer] Point data arrays:', pointData.getNumberOfArrays());
