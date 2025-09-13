@@ -6,7 +6,7 @@ import '@kitware/vtk.js/Rendering/Profiles/Geometry';
 import vtkFullScreenRenderWindow from '@kitware/vtk.js/Rendering/Misc/FullScreenRenderWindow';
 import vtkHttpDataSetReader from '@kitware/vtk.js/IO/Core/HttpDataSetReader';
 import JSZip from 'jszip';
-import DataAccessHelper from '@kitware/vtk.js/IO/Core/DataAccessHelper';
+import '@kitware/vtk.js/IO/Core/DataAccessHelper/JSZipDataAccessHelper'; // Side-effect import to register 'zip' helper
 import vtkCubeSource from '@kitware/vtk.js/Filters/Sources/CubeSource';
 import vtkActor from '@kitware/vtk.js/Rendering/Core/Actor';
 import vtkMapper from '@kitware/vtk.js/Rendering/Core/Mapper';
@@ -84,37 +84,13 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       console.log('[VTKViewer] Loading CFD file from simple static path:', vtkUrl);
       
       try {
-        // Manual fetch approach - bypass VTK.js HTTP issues
-        console.log('[VTKViewer] Fetching CFD file manually as ArrayBuffer...');
-        const response = await fetch(vtkUrl);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        
-        const arrayBuffer = await response.arrayBuffer();
-        console.log('[VTKViewer] CFD file fetched successfully:', arrayBuffer.byteLength, 'bytes');
-        
-        // Unzip and use JSZipDataAccessHelper (CORRECT API)
-        console.log('[VTKViewer] Unzipping .vtkjs container...');
-        const zip = await JSZip.loadAsync(arrayBuffer);
-        console.log('[VTKViewer] ZIP extracted, setting up VTK reader with correct helper...');
-        
-        // Create VTK reader with JSZip data access helper (CORRECT API)
-        console.log('[VTKViewer] Creating VTK reader...');
+        // Use VTK.js native .vtkjs loading (simplest approach)
+        console.log('[VTKViewer] Loading .vtkjs file with native VTK.js loader...');
         const reader = vtkHttpDataSetReader.newInstance({ fetchGzip: true });
-        console.log('[VTKViewer] Creating DataAccessHelper...');
-        const dah = DataAccessHelper.get('zip', { zipContent: zip });
-        console.log('[VTKViewer] Setting DataAccessHelper...');
-        reader.setDataAccessHelper(dah);
-        console.log('[VTKViewer] Helper configured successfully!');
         
-        // Load from index.json inside the ZIP
-        console.log('[VTKViewer] Loading index.json from ZIP...');
-        await reader.setUrl('index.json', { loadData: true });
-        console.log('[VTKViewer] setUrl completed, getting output data...');
+        // Load directly - VTK.js will handle ZIP automatically
+        await reader.setUrl(vtkUrl, { loadData: true });
         const dataset = reader.getOutputData();
-        console.log('[VTKViewer] Dataset retrieved:', dataset ? dataset.getClassName() : 'NULL');
         
         if (dataset) {
           console.log('[VTKViewer] REAL CFD dataset loaded successfully!');
