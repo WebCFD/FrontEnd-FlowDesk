@@ -74,12 +74,12 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       const renderWindow = fullScreenRenderer.getRenderWindow();
       rendererRef.current = renderer;
 
-      // Load real .vtkjs file directly via static URL (VTK.js needs access to internal files)
-      console.log('[VTKViewer] Loading real CFD data from .vtkjs file');
+      // Load real CFD data from extracted .vtkjs directory (VTK.js needs access to individual files)
+      console.log('[VTKViewer] Loading real CFD data from extracted .vtkjs directory');
       
-      // Use static path - VTK.js needs to access individual files within the .vtkjs ZIP
-      const vtkUrl = `/simulations/office_building/results/result.vtkjs`;
-      console.log('[VTKViewer] Loading .vtkjs directly from static URL:', vtkUrl);
+      // Use directory path - VTK.js needs to access individual files that were extracted
+      const vtkUrl = `/simulations/office_building/results/`;
+      console.log('[VTKViewer] Loading CFD data from extracted directory:', vtkUrl);
       
       // Create VTK.js reader for the compressed .vtkjs format
       const reader = vtkHttpDataSetReader.newInstance({ 
