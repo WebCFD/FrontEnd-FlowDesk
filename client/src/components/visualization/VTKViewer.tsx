@@ -6,7 +6,7 @@ import '@kitware/vtk.js/Rendering/Profiles/Geometry';
 import vtkFullScreenRenderWindow from '@kitware/vtk.js/Rendering/Misc/FullScreenRenderWindow';
 import vtkHttpDataSetReader from '@kitware/vtk.js/IO/Core/HttpDataSetReader';
 import '@kitware/vtk.js/IO/Core/DataAccessHelper/JSZipDataAccessHelper'; // Side-effect import to register 'zip' helper
-import '@kitware/vtk.js/IO/Core/DataAccessHelper/HttpDataAccessHelper'; // Register full HTTP helper to support compression
+// Remove HttpDataAccessHelper - not needed for .vtkjs files
 import vtkCubeSource from '@kitware/vtk.js/Filters/Sources/CubeSource';
 import vtkActor from '@kitware/vtk.js/Rendering/Core/Actor';
 import vtkMapper from '@kitware/vtk.js/Rendering/Core/Mapper';
@@ -83,10 +83,10 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       console.log('[VTKViewer] Loading CFD file from simple static path:', vtkUrl);
       
       try {
-        // Load CFD data directly from prepared directory structure
-        console.log('[VTKViewer] Loading CFD data from prepared directory...');
-        const reader = vtkHttpDataSetReader.newInstance({ fetchGzip: true });
-        await reader.setUrl('/simulations/office_building/results/1', { loadData: true });
+        // Load .vtkjs file directly with correct JSZip loader
+        console.log('[VTKViewer] Loading .vtkjs file with JSZipDataAccessHelper...');
+        const reader = vtkHttpDataSetReader.newInstance(); // Remove fetchGzip for .vtkjs files
+        await reader.setUrl('/cfd-data.vtkjs', { loadData: true });
         const dataset = reader.getOutputData();
         
         if (dataset) {
