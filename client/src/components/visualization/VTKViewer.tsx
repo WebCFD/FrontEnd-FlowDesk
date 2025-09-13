@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Loader2, Box, Info } from 'lucide-react';
+import { Loader2, Box, Info, AlertCircle } from 'lucide-react';
 
 interface VTKViewerProps {
   simulationId: number;
@@ -9,14 +9,38 @@ interface VTKViewerProps {
 
 export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [vtkData, setVtkData] = useState<any>(null);
   
   useEffect(() => {
-    // Simple simulation of loading
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2000);
+    const loadVTKData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        console.log(`[VTKViewer] Loading VTK data for simulation ${simulationId}`);
+        
+        const response = await fetch(`/api/simulations/${simulationId}/results/result.vtkjs`, {
+          credentials: 'include'
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const arrayBuffer = await response.arrayBuffer();
+        console.log(`[VTKViewer] Loaded VTK data: ${arrayBuffer.byteLength} bytes`);
+        
+        setVtkData(arrayBuffer);
+        setLoading(false);
+      } catch (err) {
+        console.error('[VTKViewer] Error loading VTK data:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load VTK data');
+        setLoading(false);
+      }
+    };
     
-    return () => clearTimeout(timer);
+    loadVTKData();
   }, [simulationId]);
 
   return (
@@ -29,22 +53,30 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
           {loading ? (
             <div className="flex flex-col items-center gap-4 text-white">
               <Loader2 className="h-8 w-8 animate-spin" />
-              <p>Loading 3D visualization...</p>
+              <p>Loading VTK data from server...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center text-white space-y-4">
+              <AlertCircle className="h-16 w-16 mx-auto text-red-400" />
+              <div>
+                <h3 className="text-lg font-semibold text-red-400">Error Loading VTK Data</h3>
+                <p className="text-red-200 text-sm mt-2">{error}</p>
+              </div>
             </div>
           ) : (
             <div className="text-center text-white space-y-4">
-              <Box className="h-16 w-16 mx-auto text-blue-300" />
+              <Box className="h-16 w-16 mx-auto text-green-300" />
               <div>
-                <h3 className="text-lg font-semibold">3D CFD Visualization</h3>
-                <p className="text-blue-200">Simulation #{simulationId}</p>
+                <h3 className="text-lg font-semibold">VTK Data Loaded Successfully</h3>
+                <p className="text-green-200">Simulation #{simulationId}</p>
                 <p className="text-sm text-gray-300 mt-2">
-                  Interactive 3D view of simulation results
+                  {vtkData ? `${Math.round(vtkData.byteLength / 1024)}KB loaded` : 'Ready for 3D rendering'}
                 </p>
               </div>
-              <div className="mt-4 p-3 bg-blue-900/50 rounded-lg border border-blue-700/50">
-                <div className="flex items-center gap-2 text-blue-200 text-sm">
+              <div className="mt-4 p-3 bg-green-900/50 rounded-lg border border-green-700/50">
+                <div className="flex items-center gap-2 text-green-200 text-sm">
                   <Info className="h-4 w-4" />
-                  <span>VTK.js 3D renderer ready - CFD data visualization</span>
+                  <span>Real .vtkjs file loaded - Ready for VTK.js rendering</span>
                 </div>
               </div>
             </div>
