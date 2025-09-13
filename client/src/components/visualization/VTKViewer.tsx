@@ -82,14 +82,10 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       console.log('[VTKViewer] Loading CFD file from simple static path:', vtkUrl);
       
       try {
-        // Load .vtkjs as binary to avoid directory-mode confusion
-        console.log('[VTKViewer] Loading .vtkjs as binary...');
-        const res = await fetch(vtkUrl);
-        if (!res.ok) throw new Error('Failed to fetch vtkjs');
-        const buf = await res.arrayBuffer();
-        
+        // Load CFD data directly from prepared directory structure
+        console.log('[VTKViewer] Loading CFD data from prepared directory...');
         const reader = vtkHttpDataSetReader.newInstance({ fetchGzip: true });
-        await reader.parseAsArrayBuffer(buf);
+        await reader.setUrl('/simulations/office_building/results/1', { loadData: true });
         const dataset = reader.getOutputData();
         
         if (dataset) {
