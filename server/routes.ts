@@ -231,9 +231,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Not authenticated" });
       }
 
-      console.log(`[DEBUG] Fetching completed simulations for user ID: ${req.user.id}`);
       const simulations = await storage.getCompletedSimulationsByUserId(req.user.id);
-      console.log(`[DEBUG] Found ${simulations.length} completed simulations:`, simulations.map(s => ({ id: s.id, name: s.name, status: s.status })));
       res.json(simulations);
     } catch (error) {
       console.error('Error in /api/simulations/completed:', error);
