@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { useState } from "react";
 import VTKViewer from "@/components/visualization/VTKViewer";
+import ParaViewTest from "@/components/visualization/ParaViewTest";
 import type { Simulation } from "@shared/schema";
 
 // Utility function to format dates
@@ -132,16 +133,37 @@ export default function PostAnalysis() {
           </CardContent>
         </Card>
 
-        {/* 3D Visualization Section */}
+        {/* ParaView Test Section */}
         {selectedSimulation && (
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Eye className="h-5 w-5" />
-                3D Visualization - {selectedSimulation.name}
+                🧪 ParaView Glance Test - {selectedSimulation.name}
               </CardTitle>
               <CardDescription>
-                Interactive 3D view of CFD simulation results
+                Testing ParaView Glance compatibility with our .vtkjs file
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ParaViewTest 
+                simulationId={selectedSimulation.id}
+                className="w-full"
+              />
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Original VTK.js Visualization Section */}
+        {selectedSimulation && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Eye className="h-5 w-5" />
+                3D Visualization (VTK.js) - {selectedSimulation.name}
+              </CardTitle>
+              <CardDescription>
+                Current VTK.js implementation (with issues)
               </CardDescription>
             </CardHeader>
             <CardContent>
