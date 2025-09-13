@@ -74,21 +74,12 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       const renderWindow = fullScreenRenderer.getRenderWindow();
       rendererRef.current = renderer;
 
-      // Load real .vtkjs file manually with fetch then pass to VTK.js
+      // Load real .vtkjs file directly via URL (let VTK.js handle decompression)
       console.log('[VTKViewer] Loading real CFD data from .vtkjs file');
       
-      // Use the working API endpoint to fetch the .vtkjs file
+      // Use the working API endpoint URL directly
       const vtkUrl = `/api/simulations/${simulationId}/results/result.vtkjs`;
-      console.log('[VTKViewer] Fetching .vtkjs from:', vtkUrl);
-      
-      // Fetch the .vtkjs file as binary data
-      const response = await fetch(vtkUrl, { credentials: 'include' });
-      if (!response.ok) {
-        throw new Error(`Failed to fetch .vtkjs file: HTTP ${response.status}`);
-      }
-      
-      const arrayBuffer = await response.arrayBuffer();
-      console.log('[VTKViewer] Fetched .vtkjs file:', arrayBuffer.byteLength, 'bytes');
+      console.log('[VTKViewer] Loading .vtkjs directly from URL:', vtkUrl);
       
       // Create VTK.js reader for the compressed .vtkjs format
       const reader = vtkHttpDataSetReader.newInstance({ 
@@ -96,53 +87,38 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         enableArray: true
       });
       
-      // Create a blob URL for the data and load it
-      const blob = new Blob([arrayBuffer], { type: 'application/octet-stream' });
-      const blobUrl = URL.createObjectURL(blob);
+      // Let VTK.js handle the HTTP request and decompression
+      await reader.setUrl(vtkUrl, { loadData: true });
+      const dataset = reader.getOutputData();
       
-      try {
-        await reader.setUrl(blobUrl, { loadData: true });
-        const dataset = reader.getOutputData();
-        
-        // Clean up blob URL
-        URL.revokeObjectURL(blobUrl);
-        
-        if (!dataset) {
-          throw new Error('No dataset loaded from .vtkjs file');
-        }
-        
-        console.log('[VTKViewer] Real CFD dataset loaded:', dataset);
-        console.log('[VTKViewer] Dataset type:', dataset.getClassName());
-        console.log('[VTKViewer] Number of points:', dataset.getNumberOfPoints());
-        console.log('[VTKViewer] Number of cells:', dataset.getNumberOfCells());
-        
-        // Check for available data arrays in the CFD data
-        const pointData = dataset.getPointData();
-        const cellData = dataset.getCellData();
-        console.log('[VTKViewer] Point data arrays:', pointData.getNumberOfArrays());
-        console.log('[VTKViewer] Cell data arrays:', cellData.getNumberOfArrays());
-        
-        if (pointData.getNumberOfArrays() > 0) {
-          for (let i = 0; i < pointData.getNumberOfArrays(); i++) {
-            const array = pointData.getArray(i);
-            console.log(`[VTKViewer] Point array ${i}:`, array.getName(), 'Range:', array.getRange());
-          }
-        }
-        
-        if (cellData.getNumberOfArrays() > 0) {
-          for (let i = 0; i < cellData.getNumberOfArrays(); i++) {
-            const array = cellData.getArray(i);
-            console.log(`[VTKViewer] Cell array ${i}:`, array.getName(), 'Range:', array.getRange());
-          }
-        }
-        
-      } catch (loadError: any) {
-        URL.revokeObjectURL(blobUrl); // Clean up on error
-        console.error('[VTKViewer] Error loading .vtkjs file:', loadError);
-        throw new Error(`Failed to load CFD data: ${loadError?.message || 'Unknown error'}`);
+      if (!dataset) {
+        throw new Error('No dataset loaded from .vtkjs file - file may be corrupted or in wrong format');
       }
       
-      const dataset = reader.getOutputData();
+      console.log('[VTKViewer] Real CFD dataset loaded successfully!');
+      console.log('[VTKViewer] Dataset type:', dataset.getClassName());
+      console.log('[VTKViewer] Number of points:', dataset.getNumberOfPoints());
+      console.log('[VTKViewer] Number of cells:', dataset.getNumberOfCells());
+      
+      // Check for available data arrays in the CFD data
+      const pointData = dataset.getPointData();
+      const cellData = dataset.getCellData();
+      console.log('[VTKViewer] Point data arrays:', pointData.getNumberOfArrays());
+      console.log('[VTKViewer] Cell data arrays:', cellData.getNumberOfArrays());
+      
+      if (pointData.getNumberOfArrays() > 0) {
+        for (let i = 0; i < pointData.getNumberOfArrays(); i++) {
+          const array = pointData.getArray(i);
+          console.log(`[VTKViewer] Point array ${i}:`, array.getName(), 'Range:', array.getRange());
+        }
+      }
+      
+      if (cellData.getNumberOfArrays() > 0) {
+        for (let i = 0; i < cellData.getNumberOfArrays(); i++) {
+          const array = cellData.getArray(i);
+          console.log(`[VTKViewer] Cell array ${i}:`, array.getName(), 'Range:', array.getRange());
+        }
+      }
 
       // Create mapper and actor for real CFD data
       const mapper = vtkMapper.newInstance();
@@ -164,7 +140,8 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       
       renderWindow.render();
       
-      console.log('[VTKViewer] Real CFD 3D renderer initialized successfully');
+      console.log('[VTKViewer] Real CFD 3D renderer initialized successfully!');
+      console.log('[VTKViewer] You should now see the actual CFD geometry and data from the .vtkjs file!');
       
     } catch (err) {
       console.error('[VTKViewer] Error initializing VTK renderer:', err);
