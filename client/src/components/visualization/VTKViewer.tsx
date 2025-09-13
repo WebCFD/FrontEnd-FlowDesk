@@ -5,7 +5,6 @@ import { Loader2, Box, Info, AlertCircle, Eye, Activity, Wind, Zap, Layers, Sett
 import '@kitware/vtk.js/Rendering/Profiles/Geometry';
 import vtkFullScreenRenderWindow from '@kitware/vtk.js/Rendering/Misc/FullScreenRenderWindow';
 import vtkHttpDataSetReader from '@kitware/vtk.js/IO/Core/HttpDataSetReader';
-import JSZip from 'jszip';
 import '@kitware/vtk.js/IO/Core/DataAccessHelper/JSZipDataAccessHelper'; // Side-effect import to register 'zip' helper
 import vtkCubeSource from '@kitware/vtk.js/Filters/Sources/CubeSource';
 import vtkActor from '@kitware/vtk.js/Rendering/Core/Actor';
@@ -33,7 +32,6 @@ interface VisualizationControl {
 export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [vtkData, setVtkData] = useState<any>(null);
   const [activeMode, setActiveMode] = useState<VisualizationMode>('pressure');
   const containerRef = useRef<HTMLDivElement>(null);
   const renderWindowRef = useRef<any>(null);
@@ -84,12 +82,14 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       console.log('[VTKViewer] Loading CFD file from simple static path:', vtkUrl);
       
       try {
-        // Use VTK.js native .vtkjs loading (simplest approach)
-        console.log('[VTKViewer] Loading .vtkjs file with native VTK.js loader...');
-        const reader = vtkHttpDataSetReader.newInstance({ fetchGzip: true });
+        // Load .vtkjs as binary to avoid directory-mode confusion
+        console.log('[VTKViewer] Loading .vtkjs as binary...');
+        const res = await fetch(vtkUrl);
+        if (!res.ok) throw new Error('Failed to fetch vtkjs');
+        const buf = await res.arrayBuffer();
         
-        // Load directly - VTK.js will handle ZIP automatically
-        await reader.setUrl(vtkUrl, { loadData: true });
+        const reader = vtkHttpDataSetReader.newInstance({ fetchGzip: true });
+        await reader.parseAsArrayBuffer(buf);
         const dataset = reader.getOutputData();
         
         if (dataset) {
@@ -114,8 +114,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
           renderer.setBackground(0.1, 0.1, 0.2);
           renderWindow.render();
           
-          setVtkData(dataset);
-          console.log('[VTKViewer] REAL CFD 3D visualization ready! 🎉');
+          console.log('[VTKViewer] CFD data loaded successfully! 🎉');
           
         } else {
           throw new Error('No dataset in sample file');
