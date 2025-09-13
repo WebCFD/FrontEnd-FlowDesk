@@ -6,6 +6,7 @@ import '@kitware/vtk.js/Rendering/Profiles/Geometry';
 import vtkFullScreenRenderWindow from '@kitware/vtk.js/Rendering/Misc/FullScreenRenderWindow';
 import vtkHttpDataSetReader from '@kitware/vtk.js/IO/Core/HttpDataSetReader';
 import '@kitware/vtk.js/IO/Core/DataAccessHelper/JSZipDataAccessHelper'; // Side-effect import to register 'zip' helper
+import '@kitware/vtk.js/IO/Core/DataAccessHelper/HttpDataAccessHelper'; // Register full HTTP helper to support compression
 import vtkCubeSource from '@kitware/vtk.js/Filters/Sources/CubeSource';
 import vtkActor from '@kitware/vtk.js/Rendering/Core/Actor';
 import vtkMapper from '@kitware/vtk.js/Rendering/Core/Mapper';
