@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2, Box, Info, AlertCircle, Eye, Activity, Wind, Zap, Layers, Settings } from 'lucide-react';
 import '@kitware/vtk.js/Rendering/Profiles/Geometry';
 import vtkFullScreenRenderWindow from '@kitware/vtk.js/Rendering/Misc/FullScreenRenderWindow';
-import vtkHttpDataSetReader from '@kitware/vtk.js/IO/Core/HttpDataSetReader';
+import vtkHttpSceneLoader from '@kitware/vtk.js/IO/Core/HttpSceneLoader';
 import vtkCubeSource from '@kitware/vtk.js/Filters/Sources/CubeSource';
 import vtkActor from '@kitware/vtk.js/Rendering/Core/Actor';
 import vtkMapper from '@kitware/vtk.js/Rendering/Core/Mapper';
@@ -74,74 +74,77 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       const renderWindow = fullScreenRenderer.getRenderWindow();
       rendererRef.current = renderer;
 
-      // Load real CFD data from extracted .vtkjs directory (VTK.js needs access to individual files)
-      console.log('[VTKViewer] Loading real CFD data from extracted .vtkjs directory');
+      // Load real CFD scene from extracted .vtkjs directory (handles multiple datasets)
+      console.log('[VTKViewer] Loading real CFD scene from extracted .vtkjs directory');
       
-      // Use directory path - VTK.js needs to access individual files that were extracted
+      // Use directory path - VTK.js scene loader can handle multiple datasets
       const vtkUrl = `/simulations/office_building/results/`;
-      console.log('[VTKViewer] Loading CFD data from extracted directory:', vtkUrl);
+      console.log('[VTKViewer] Loading CFD scene from extracted directory:', vtkUrl);
       
-      // Create VTK.js reader for the compressed .vtkjs format
-      const reader = vtkHttpDataSetReader.newInstance({ 
-        fetchGzip: true,
-        enableArray: true
+      // Create VTK.js scene loader for multi-dataset CFD scenes (correct API usage)
+      const sceneLoader = vtkHttpSceneLoader.newInstance({ 
+        fetchGzip: true
       });
       
-      // Let VTK.js handle the HTTP request and decompression
-      await reader.setUrl(vtkUrl, { loadData: true });
-      const dataset = reader.getOutputData();
+      // Let VTK.js load the entire scene with all datasets
+      await sceneLoader.setUrl(vtkUrl);
+      sceneLoader.setRenderer(renderer);
       
-      if (!dataset) {
-        throw new Error('No dataset loaded from .vtkjs file - file may be corrupted or in wrong format');
-      }
-      
-      console.log('[VTKViewer] Real CFD dataset loaded successfully!');
-      console.log('[VTKViewer] Dataset type:', dataset.getClassName());
-      console.log('[VTKViewer] Number of points:', dataset.getNumberOfPoints());
-      console.log('[VTKViewer] Number of cells:', dataset.getNumberOfCells());
-      
-      // Check for available data arrays in the CFD data
-      const pointData = dataset.getPointData();
-      const cellData = dataset.getCellData();
-      console.log('[VTKViewer] Point data arrays:', pointData.getNumberOfArrays());
-      console.log('[VTKViewer] Cell data arrays:', cellData.getNumberOfArrays());
-      
-      if (pointData.getNumberOfArrays() > 0) {
-        for (let i = 0; i < pointData.getNumberOfArrays(); i++) {
-          const array = pointData.getArray(i);
-          console.log(`[VTKViewer] Point array ${i}:`, array.getName(), 'Range:', array.getRange());
+      // Wait for scene to be ready (actors automatically added to renderer)
+      sceneLoader.onReady?.(() => {
+        console.log('[VTKViewer] Real CFD scene loaded and ready!');
+        
+        // Get actors that were automatically added by the scene loader
+        const actors = renderer.getActors();
+        console.log('[VTKViewer] Number of actors loaded:', actors.length);
+        
+        if (actors.length > 0) {
+          // Use the first actor for visualization controls
+          const actor = actors[0];
+          actorRef.current = actor;
+          
+          const mapper = (actor as any).getMapper?.();
+          const dataset = mapper?.getInputData?.();
+          
+          if (dataset) {
+            console.log('[VTKViewer] Dataset type:', dataset.getClassName());
+            console.log('[VTKViewer] Points:', dataset.getNumberOfPoints(), 'Cells:', dataset.getNumberOfCells());
+            
+            // Check for CFD data arrays
+            const pointData = dataset.getPointData();
+            const cellData = dataset.getCellData();
+            console.log('[VTKViewer] Point arrays:', pointData.getNumberOfArrays(), 'Cell arrays:', cellData.getNumberOfArrays());
+            
+            if (pointData.getNumberOfArrays() > 0) {
+              for (let i = 0; i < pointData.getNumberOfArrays(); i++) {
+                const array = pointData.getArray(i);
+                console.log(`[VTKViewer] Point array ${i}:`, array.getName(), 'Range:', array.getRange());
+              }
+            }
+            
+            if (cellData.getNumberOfArrays() > 0) {
+              for (let i = 0; i < cellData.getNumberOfArrays(); i++) {
+                const array = cellData.getArray(i);
+                console.log(`[VTKViewer] Cell array ${i}:`, array.getName(), 'Range:', array.getRange());
+              }
+            }
+            
+            // Apply initial visualization mode to real CFD data
+            applyVisualizationMode(mapper, dataset, activeMode);
+            
+            // Store the real dataset for later use
+            setVtkData(dataset);
+          }
         }
-      }
-      
-      if (cellData.getNumberOfArrays() > 0) {
-        for (let i = 0; i < cellData.getNumberOfArrays(); i++) {
-          const array = cellData.getArray(i);
-          console.log(`[VTKViewer] Cell array ${i}:`, array.getName(), 'Range:', array.getRange());
-        }
-      }
-
-      // Create mapper and actor for real CFD data
-      const mapper = vtkMapper.newInstance();
-      mapper.setInputData(dataset);
-      
-      const actor = vtkActor.newInstance();
-      actor.setMapper(mapper);
-      actorRef.current = actor;
-
-      // Apply initial visualization mode to real data
-      applyVisualizationMode(mapper, dataset, activeMode);
-
-      // Add actor to scene
-      renderer.addActor(actor);
-      renderer.resetCamera();
-      
-      // Set background color to CFD-like theme
-      renderer.setBackground(0.1, 0.1, 0.2);
-      
-      renderWindow.render();
-      
-      console.log('[VTKViewer] Real CFD 3D renderer initialized successfully!');
-      console.log('[VTKViewer] You should now see the actual CFD geometry and data from the .vtkjs file!');
+        
+        // Set up the scene appearance
+        renderer.resetCamera();
+        renderer.setBackground(0.1, 0.1, 0.2); // CFD-like dark theme
+        renderWindow.render();
+        
+        console.log('[VTKViewer] Real CFD 3D visualization ready!');
+        console.log('[VTKViewer] You should now see the actual CFD geometry and data!');
+      });
       
     } catch (err) {
       console.error('[VTKViewer] Error initializing VTK renderer:', err);
