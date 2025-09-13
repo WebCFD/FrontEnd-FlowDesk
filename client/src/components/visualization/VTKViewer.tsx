@@ -203,7 +203,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     { id: 'velocity', label: 'Velocity Field', icon: Settings, active: activeMode === 'velocity' }
   ];
 
-  // ✅ NORMAL URL SOLUTION: Initialize VTK.js 3D renderer with internal file support
+  // ✅ FALLBACK ROBUST SOLUTION: Use JSZip blob approach for problematic files
   const initializeVTKRenderer = async () => {
     if (!containerRef.current) return;
 
@@ -224,52 +224,71 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       const renderer = fullScreenRenderer.getRenderer();
       rendererRef.current = renderer;
 
-      // ✅ USAR URL NORMAL (no blob) - el backend manejará los internos
       const vtkUrl = getVTKUrl(simulationId);
-      console.log('[VTKViewer] Loading VTK with internal file support:', vtkUrl);
+      console.log('[VTKViewer] Loading VTK with robust JSZip approach:', vtkUrl);
       
-      // ✅ VALIDACIÓN PREVIA (mantener)
-      const validatedUrl = await loadVTKFile(vtkUrl);
-      console.log('[VTKViewer] ✅ URL validated, starting VTK load');
+      // ✅ MÉTODO ROBUSTO: Descargar y usar JSZip para máxima compatibilidad
+      const response = await fetch(vtkUrl);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
 
-      // ✅ CARGAR CON VTK.js (método original)
+      const arrayBuffer = await response.arrayBuffer();
+      console.log('[VTKViewer] Downloaded VTK file:', arrayBuffer.byteLength, 'bytes');
+      
+      // ✅ USAR JSZIP PARA EVITAR PROBLEMAS DE PARSING
+      const JSZip = (await import('jszip')).default;
+      const zip = new JSZip();
+      const zipContent = await zip.loadAsync(arrayBuffer);
+      
+      console.log('[VTKViewer] ZIP loaded, files:', Object.keys(zipContent.files));
+      
+      // ✅ CONFIGURAR JSZIP DATA ACCESS HELPER PARA MÁXIMA ROBUSTEZ
+      const vtkJSZipDataAccessHelper = (await import('@kitware/vtk.js/IO/Core/DataAccessHelper/JSZipDataAccessHelper')).default;
+      vtkJSZipDataAccessHelper.registerInstance(zip);
+      
+      // ✅ CREAR BLOB URL PARA EL ZIP COMPLETO
+      const blob = new Blob([arrayBuffer], { type: 'application/zip' });
+      const blobUrl = URL.createObjectURL(blob);
+      
       let loaded = false;
       
       try {
-        console.log('[VTKViewer] 🎬 Trying SceneLoader...');
+        console.log('[VTKViewer] 🎬 Trying SceneLoader with JSZip...');
+        const vtkHttpSceneLoader = (await import('@kitware/vtk.js/IO/Core/HttpSceneLoader')).default;
         const sceneLoader = vtkHttpSceneLoader.newInstance();
         
-        await sceneLoader.setUrl(validatedUrl);
+        await sceneLoader.setUrl(blobUrl);
         
         const scene = sceneLoader.getScene() as any[];
         if (scene && Array.isArray(scene) && scene.length > 0) {
-          console.log('[VTKViewer] ✅ Scene loaded successfully:', scene.length, 'objects');
+          console.log('[VTKViewer] ✅ Scene loaded with JSZip:', scene.length, 'objects');
           scene.forEach((obj: any, index: number) => {
-            console.log(`[VTKViewer] Scene object ${index}:`, obj);
             if (obj.actor) {
               renderer.addActor(obj.actor);
               actorRef.current = obj.actor;
             }
           });
           loaded = true;
-        } else {
-          console.log('[VTKViewer] ⚠️ Scene is empty or invalid');
         }
         
       } catch (sceneError) {
-        console.log('[VTKViewer] 🎬 SceneLoader failed:', sceneError);
-        console.log('[VTKViewer] Error details:', (sceneError as Error).message);
+        console.log('[VTKViewer] 🎬 SceneLoader with JSZip failed:', sceneError);
       }
 
       if (!loaded) {
-        console.log('[VTKViewer] 📊 Falling back to DataSetReader...');
+        console.log('[VTKViewer] 📊 Trying DataSetReader with JSZip...');
         try {
+          const vtkHttpDataSetReader = (await import('@kitware/vtk.js/IO/Core/HttpDataSetReader')).default;
           const reader = vtkHttpDataSetReader.newInstance();
-          await reader.setUrl(validatedUrl, { loadData: true });
+          await reader.setUrl(blobUrl, { loadData: true });
           const dataset = reader.getOutputData();
           
           if (dataset && dataset.getNumberOfPoints() > 0) {
-            console.log('[VTKViewer] ✅ Dataset loaded:', dataset.getNumberOfPoints(), 'points');
+            console.log('[VTKViewer] ✅ Dataset loaded with JSZip:', dataset.getNumberOfPoints(), 'points');
+            
+            const vtkMapper = (await import('@kitware/vtk.js/Rendering/Core/Mapper')).default;
+            const vtkActor = (await import('@kitware/vtk.js/Rendering/Core/Actor')).default;
             
             const mapper = vtkMapper.newInstance();
             mapper.setInputData(dataset);
@@ -283,23 +302,26 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
             loaded = true;
           }
         } catch (datasetError) {
-          console.log('[VTKViewer] 📊 DataSetReader failed:', datasetError);
+          console.log('[VTKViewer] 📊 DataSetReader with JSZip failed:', datasetError);
         }
       }
 
+      // Cleanup blob URL
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
+
       if (!loaded) {
-        throw new Error('Both VTK loading methods failed - check server logs for internal file requests');
+        throw new Error('All VTK loading methods failed with JSZip approach');
       }
 
       renderer.resetCamera();
       renderer.setBackground(0.1, 0.1, 0.2);
       renderWindowRef.current.getRenderWindow().render();
       
-      console.log('[VTKViewer] ✅ VTK initialization complete');
+      console.log('[VTKViewer] ✅ VTK loaded successfully with JSZip');
       setLoading(false);
       
     } catch (error) {
-      console.error('[VTKViewer] Initialization failed:', error);
+      console.error('[VTKViewer] JSZip loading failed:', error);
       setError(`VTK loading failed: ${(error as Error).message}`);
       setLoading(false);
     }
