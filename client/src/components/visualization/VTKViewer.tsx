@@ -69,41 +69,14 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         
         // Load VTK.js data file
         const reader = vtkHttpDataSetReader.newInstance();
-        const url = `/api/simulations/${simulationId}/results/result.vtkjs`;
+        // For now, use a static demo file to test the visualization
+        const url = `/sample-vtk-data.vtkjs`;
         
         console.log(`[VTKViewer] Loading data from: ${url}`);
         
-        // Custom fetch function that includes credentials
-        const customFetch = async (url: string) => {
-          const response = await fetch(url, {
-            credentials: 'include', // Include cookies for authentication
-            headers: {
-              'Accept': 'application/octet-stream, */*'
-            }
-          });
-          
-          if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-          }
-          
-          return response.arrayBuffer();
-        };
-
-        console.log(`[VTKViewer] Fetching data with credentials...`);
-        const arrayBuffer = await customFetch(url);
-        
-        console.log(`[VTKViewer] Received data: ${arrayBuffer.byteLength} bytes`);
-        
-        // Use a temporary blob to work with VTK.js reader
-        const blob = new Blob([arrayBuffer]);
-        const blobUrl = URL.createObjectURL(blob);
-        
-        // Set the blob URL and load data
-        reader.setUrl(blobUrl, { loadData: true });
+        // Simple VTK.js loading 
+        reader.setUrl(url, { loadData: true });
         await reader.loadData();
-        
-        // Clean up the blob URL
-        URL.revokeObjectURL(blobUrl);
         
         const polyData = reader.getOutputData();
         if (!polyData) {

@@ -1,0 +1,33 @@
+{
+  "version": "1.0",
+  "type": "http",
+  "appended": false,
+  "refs": {},
+  "metadata": {},
+  "scene": [
+    {
+      "name": "demo-data",
+      "type": "vtkPolyData",
+      "points": {
+        "vtkClass": "vtkDataArray",
+        "name": "points",
+        "numberOfComponents": 3,
+        "dataType": "Float32Array",
+        "values": [
+          -1, -1, 0, 1, -1, 0, 1, 1, 0, -1, 1, 0,
+          -0.5, -0.5, 1, 0.5, -0.5, 1, 0.5, 0.5, 1, -0.5, 0.5, 1
+        ]
+      },
+      "polys": {
+        "vtkClass": "vtkDataArray",
+        "name": "polys",
+        "numberOfComponents": 1,
+        "dataType": "Uint32Array",
+        "values": [
+          4, 0, 1, 2, 3,
+          4, 4, 7, 6, 5
+        ]
+      }
+    }
+  ]
+}
