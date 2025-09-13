@@ -6,11 +6,28 @@ import { z } from "zod";
 import { setupAuth } from "./auth";
 import { promises as fs } from "fs";
 import path from "path";
+import JSZip from "jszip";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // ===== DEBUG MIDDLEWARE: Track all VTK requests =====
+  app.use((req, res, next) => {
+    if (req.path.includes('.vtkjs')) {
+      console.log('🚀 VTK Request:', {
+        method: req.method,
+        path: req.path,
+        url: req.url,
+        headers: {
+          accept: req.headers.accept,
+          'content-type': req.headers['content-type']
+        }
+      });
+    }
+    next();
+  });
+
   // ===== SOLUCIÓN: Force correct MIME type for .vtkjs files =====
   app.use((req, res, next) => {
-    if (req.url.endsWith('.vtkjs')) {
+    if (req.url.endsWith('.vtkjs') && !req.url.includes('/', req.url.indexOf('.vtkjs'))) {
       console.log('[Express] 🔧 FIXING Content-Type for .vtkjs file:', req.url);
       res.setHeader('Content-Type', 'application/zip');
       res.setHeader('Access-Control-Allow-Origin', '*');
@@ -421,6 +438,146 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('[Express] Error serving VTK.js file via API:', error);
       res.status(500).json({ message: "Error serving VTK file" });
+    }
+  });
+
+  // ✅ ENDPOINT PARA ARCHIVOS INTERNOS DEL ZIP
+  app.get("/api/simulations/:id/results/:filename.vtkjs/:internalPath(*)", async (req, res) => {
+    const { id, filename, internalPath } = req.params;
+    const simulationId = parseInt(id);
+    
+    console.log('[Express] 🔍 Internal VTK request:', { 
+      id, 
+      filename, 
+      internalPath,
+      fullPath: req.path 
+    });
+    
+    if (isNaN(simulationId)) {
+      return res.status(400).json({ 
+        error: 'Invalid simulation ID',
+        simulation: id,
+        filename: filename,
+        internalPath: internalPath
+      });
+    }
+
+    // ✅ SECURITY: Require authentication for internal files
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Authentication required for VTK internal files" });
+    }
+
+    // Map to actual .vtkjs file location
+    let vtkjsPath;
+    if (simulationId === 33 && filename === 'result') {
+      vtkjsPath = path.join(process.cwd(), 'client', 'public', 'cfd-data.vtkjs');
+    } else {
+      const uploadsPath = process.env.NODE_ENV === 'production' 
+        ? path.join('/app/uploads', id) 
+        : path.join(process.cwd(), 'client', 'public');
+      vtkjsPath = path.join(uploadsPath, `${filename}.vtkjs`);
+    }
+    
+    console.log('[Express] Looking for VTK file:', vtkjsPath);
+    
+    try {
+      await fs.access(vtkjsPath);
+    } catch {
+      console.log('[Express] ❌ VTK file not found:', vtkjsPath);
+      return res.status(404).json({ error: 'VTK file not found' });
+    }
+    
+    try {
+      // ✅ LEER Y PROCESAR ZIP
+      const zipBuffer = await fs.readFile(vtkjsPath);
+      const zip = await JSZip.loadAsync(zipBuffer);
+      
+      console.log('[Express] 📁 ZIP contains:', Object.keys(zip.files));
+      
+      // ✅ NORMALIZAR PATH (remover slashes iniciales/finales)
+      const normalizedPath = internalPath.replace(/^\/+|\/+$/g, '');
+      
+      // ✅ BUSCAR ARCHIVO CON DIFERENTES VARIACIONES
+      const searchPaths = [
+        normalizedPath,
+        `data/${normalizedPath}`,
+        `scene/${normalizedPath}`,
+        normalizedPath.replace(/^data\//, ''), // Remover data/ prefix si existe
+        normalizedPath.replace(/^scene\//, ''), // Remover scene/ prefix si existe
+      ];
+      
+      let file = null;
+      let foundPath = '';
+      
+      for (const searchPath of searchPaths) {
+        if (zip.files[searchPath] && !zip.files[searchPath].dir) {
+          file = zip.files[searchPath];
+          foundPath = searchPath;
+          console.log('[Express] ✅ Found internal file:', foundPath);
+          break;
+        }
+      }
+      
+      if (!file) {
+        console.log('[Express] ❌ Internal file not found:', normalizedPath);
+        console.log('[Express] Available files:', Object.keys(zip.files).filter(f => !zip.files[f].dir));
+        return res.status(404).json({ 
+          error: 'Internal file not found',
+          requested: normalizedPath,
+          available: Object.keys(zip.files).filter(f => !zip.files[f].dir)
+        });
+      }
+      
+      // ✅ EXTRAER CONTENIDO (diferencial por tipo)
+      let content;
+      let contentType = 'application/octet-stream';
+      
+      if (foundPath.endsWith('.json') || foundPath.endsWith('.txt') || foundPath.endsWith('.js')) {
+        // Text content
+        content = await file.async('text');
+        console.log('[Express] 📄 Serving text file:', foundPath, 'Size:', content.length, 'chars');
+        
+        if (foundPath.endsWith('.json')) {
+          contentType = 'application/json';
+          // Validar que es JSON válido
+          try {
+            JSON.parse(content);
+            console.log('[Express] ✅ Valid JSON confirmed');
+          } catch (jsonError) {
+            console.log('[Express] ⚠️ JSON validation failed:', (jsonError as Error).message);
+          }
+        } else if (foundPath.endsWith('.js')) {
+          contentType = 'application/javascript';
+        } else if (foundPath.endsWith('.txt')) {
+          contentType = 'text/plain';
+        }
+      } else {
+        // Binary content (.gz, .bin, .raw, .png, etc.)
+        content = await file.async('arraybuffer');
+        console.log('[Express] 📄 Serving binary file:', foundPath, 'Size:', content.byteLength, 'bytes');
+        
+        if (foundPath.endsWith('.gz')) {
+          contentType = 'application/gzip';
+        } else if (foundPath.endsWith('.png')) {
+          contentType = 'image/png';
+        } else if (foundPath.endsWith('.bin') || foundPath.endsWith('.raw')) {
+          contentType = 'application/octet-stream';
+        }
+      }
+      
+      res.setHeader('Content-Type', contentType);
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept');
+      res.setHeader('Cache-Control', 'no-cache');
+      
+      res.send(content);
+      
+    } catch (error) {
+      console.error('[Express] ❌ Error processing ZIP:', error);
+      res.status(500).json({ 
+        error: 'Failed to extract internal file from VTK ZIP',
+        details: (error as Error).message 
+      });
     }
   });
 

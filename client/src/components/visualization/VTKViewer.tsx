@@ -192,7 +192,6 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const renderWindowRef = useRef<any>(null);
   const rendererRef = useRef<any>(null);
   const actorRef = useRef<any>(null);
-  const blobUrlRef = useRef<string | null>(null);
 
   // Visualization controls configuration
   const visualizationControls: VisualizationControl[] = [
@@ -204,18 +203,14 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     { id: 'velocity', label: 'Velocity Field', icon: Settings, active: activeMode === 'velocity' }
   ];
 
-  // ✅ BLOB URL SOLUTION: Initialize VTK.js 3D renderer
+  // ✅ NORMAL URL SOLUTION: Initialize VTK.js 3D renderer with internal file support
   const initializeVTKRenderer = async () => {
     if (!containerRef.current) return;
 
     try {
       // Cleanup anterior
       if (renderWindowRef.current) {
-        try {
-          renderWindowRef.current.delete();
-        } catch (cleanupError) {
-          console.warn('[VTKViewer] Error during cleanup:', cleanupError);
-        }
+        renderWindowRef.current.delete();
         renderWindowRef.current = null;
       }
 
@@ -229,61 +224,52 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       const renderer = fullScreenRenderer.getRenderer();
       rendererRef.current = renderer;
 
-      // ✅ SOLUCIÓN: Cargar como blob y crear URL temporal
+      // ✅ USAR URL NORMAL (no blob) - el backend manejará los internos
       const vtkUrl = getVTKUrl(simulationId);
-      console.log('[VTKViewer] Loading VTK as blob from:', vtkUrl);
+      console.log('[VTKViewer] Loading VTK with internal file support:', vtkUrl);
       
-      // Descargar archivo completo
-      const response = await fetch(vtkUrl);
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
+      // ✅ VALIDACIÓN PREVIA (mantener)
+      const validatedUrl = await loadVTKFile(vtkUrl);
+      console.log('[VTKViewer] ✅ URL validated, starting VTK load');
 
-      const contentType = response.headers.get('Content-Type') || '';
-      if (contentType.includes('text/html')) {
-        throw new Error('Server returned HTML error page');
-      }
-
-      // ✅ CONVERTIR A BLOB Y CREAR URL TEMPORAL
-      const blob = await response.blob();
-      const blobUrl = URL.createObjectURL(blob);
-      blobUrlRef.current = blobUrl; // Store for cleanup
-      
-      console.log('[VTKViewer] Created blob URL:', blobUrl);
-      console.log('[VTKViewer] Blob size:', blob.size, 'bytes');
-
-      // ✅ USAR BLOB URL CON VTK (esto evita requests adicionales)
+      // ✅ CARGAR CON VTK.js (método original)
       let loaded = false;
       
       try {
-        // Intentar SceneLoader con blob URL 
+        console.log('[VTKViewer] 🎬 Trying SceneLoader...');
         const sceneLoader = vtkHttpSceneLoader.newInstance();
-        await sceneLoader.setUrl(blobUrl);
+        
+        await sceneLoader.setUrl(validatedUrl);
         
         const scene = sceneLoader.getScene() as any[];
         if (scene && Array.isArray(scene) && scene.length > 0) {
-          console.log('[VTKViewer] ✅ Scene loaded from blob:', scene.length, 'objects');
-          scene.forEach((obj: any) => {
+          console.log('[VTKViewer] ✅ Scene loaded successfully:', scene.length, 'objects');
+          scene.forEach((obj: any, index: number) => {
+            console.log(`[VTKViewer] Scene object ${index}:`, obj);
             if (obj.actor) {
               renderer.addActor(obj.actor);
               actorRef.current = obj.actor;
             }
           });
           loaded = true;
+        } else {
+          console.log('[VTKViewer] ⚠️ Scene is empty or invalid');
         }
+        
       } catch (sceneError) {
-        console.log('[VTKViewer] Scene from blob failed:', sceneError);
+        console.log('[VTKViewer] 🎬 SceneLoader failed:', sceneError);
+        console.log('[VTKViewer] Error details:', (sceneError as Error).message);
       }
 
       if (!loaded) {
+        console.log('[VTKViewer] 📊 Falling back to DataSetReader...');
         try {
-          // Fallback: DataSetReader con blob URL
           const reader = vtkHttpDataSetReader.newInstance();
-          await reader.setUrl(blobUrl, { loadData: true });
+          await reader.setUrl(validatedUrl, { loadData: true });
           const dataset = reader.getOutputData();
           
           if (dataset && dataset.getNumberOfPoints() > 0) {
-            console.log('[VTKViewer] ✅ Dataset loaded from blob:', dataset.getNumberOfPoints(), 'points');
+            console.log('[VTKViewer] ✅ Dataset loaded:', dataset.getNumberOfPoints(), 'points');
             
             const mapper = vtkMapper.newInstance();
             mapper.setInputData(dataset);
@@ -297,33 +283,24 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
             loaded = true;
           }
         } catch (datasetError) {
-          console.log('[VTKViewer] Dataset from blob failed:', datasetError);
+          console.log('[VTKViewer] 📊 DataSetReader failed:', datasetError);
         }
       }
 
-      // ✅ LIMPIAR BLOB URL DESPUÉS DE CARGA EXITOSA
-      setTimeout(() => {
-        if (blobUrlRef.current) {
-          URL.revokeObjectURL(blobUrlRef.current);
-          console.log('[VTKViewer] Blob URL cleaned up');
-          blobUrlRef.current = null;
-        }
-      }, 10000); // Increased to 10s for safety
-
       if (!loaded) {
-        throw new Error('Failed to load VTK data from blob with both methods');
+        throw new Error('Both VTK loading methods failed - check server logs for internal file requests');
       }
 
       renderer.resetCamera();
       renderer.setBackground(0.1, 0.1, 0.2);
       renderWindowRef.current.getRenderWindow().render();
       
-      console.log('[VTKViewer] ✅ VTK initialization complete via blob');
+      console.log('[VTKViewer] ✅ VTK initialization complete');
       setLoading(false);
       
     } catch (error) {
-      console.error('[VTKViewer] Blob loading failed:', error);
-      setError(`Failed to load 3D visualization: ${(error as Error).message}`);
+      console.error('[VTKViewer] Initialization failed:', error);
+      setError(`VTK loading failed: ${(error as Error).message}`);
       setLoading(false);
     }
   };
@@ -332,15 +309,6 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     setLoading(true);
     setError(null);
     initializeVTKRenderer();
-    
-    // Cleanup blob URL on unmount
-    return () => {
-      if (blobUrlRef.current) {
-        URL.revokeObjectURL(blobUrlRef.current);
-        console.log('[VTKViewer] Blob URL cleaned up on unmount');
-        blobUrlRef.current = null;
-      }
-    };
   }, [simulationId]);
 
   // Switch visualization mode
