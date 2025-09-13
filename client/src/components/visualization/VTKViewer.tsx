@@ -78,6 +78,17 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       // Load the REAL CFD data that works in ParaView
       console.log('[VTKViewer] Loading REAL CFD data from .vtkjs file');
       
+      // ===== TEST DIAGNÓSTICO: Verificar Content-Type =====
+      console.log('[VTKViewer] 🧪 TEST: Verificando Content-Type del servidor');
+      try {
+        const response = await fetch('/cfd-data.vtkjs');
+        console.log('[VTKViewer] 🧪 Response status:', response.status);
+        console.log('[VTKViewer] 🧪 Content-Type header:', response.headers.get('Content-Type') || 'VACIO/UNDEFINED');
+        console.log('[VTKViewer] 🧪 Content-Length:', response.headers.get('Content-Length'));
+      } catch (testError) {
+        console.log('[VTKViewer] 🧪 Test de headers falló:', testError);
+      }
+      
       // Use super simple static file path in public root
       const vtkUrl = `/cfd-data.vtkjs`;
       console.log('[VTKViewer] Loading CFD file from simple static path:', vtkUrl);

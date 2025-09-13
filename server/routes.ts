@@ -8,6 +8,17 @@ import { promises as fs } from "fs";
 import path from "path";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // ===== SOLUCIÓN: Force correct MIME type for .vtkjs files =====
+  app.use((req, res, next) => {
+    if (req.url.endsWith('.vtkjs')) {
+      console.log('[Express] 🔧 FIXING Content-Type for .vtkjs file:', req.url);
+      res.setHeader('Content-Type', 'application/zip');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Cache-Control', 'no-cache');
+    }
+    next();
+  });
+
   // Set up authentication routes and middleware
   setupAuth(app);
 
