@@ -14,7 +14,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('[Express] 🔧 FIXING Content-Type for .vtkjs file:', req.url);
       res.setHeader('Content-Type', 'application/zip');
       res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control');
       res.setHeader('Cache-Control', 'no-cache');
+      
+      // Handle preflight OPTIONS requests
+      if (req.method === 'OPTIONS') {
+        res.status(200).end();
+        return;
+      }
     }
     next();
   });
@@ -450,6 +458,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Set appropriate headers for .vtkjs ZIP file
       res.setHeader('Content-Type', 'application/zip'); 
       res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control');
       res.setHeader('Cache-Control', 'no-cache');
       res.setHeader('Content-Disposition', `inline; filename=result_${simulationId}.vtkjs`);
       
