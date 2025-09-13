@@ -9,7 +9,7 @@ import '@kitware/vtk.js/Rendering/Profiles/Geometry';
 import vtkFullScreenRenderWindow from '@kitware/vtk.js/Rendering/Misc/FullScreenRenderWindow';
 import vtkActor from '@kitware/vtk.js/Rendering/Core/Actor';
 import vtkMapper from '@kitware/vtk.js/Rendering/Core/Mapper';
-import vtkHttpDataSetReader from '@kitware/vtk.js/IO/Core/HttpDataSetReader';
+import vtkPolyDataReader from '@kitware/vtk.js/IO/Legacy/PolyDataReader';
 import vtkColorTransferFunction from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction';
 import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
 
@@ -97,35 +97,36 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       renderWindowRef.current = fullScreenRenderer;
       const renderer = fullScreenRenderer.getRenderer();
 
-      // URL para archivo .vtkjs JSON de ParaView
+      // URL simplificada - buscar .vtkjs generado por foamToVTK  
       const vtkUrl = `/api/simulations/${simulationId}/results/result.vtkjs`;
-      console.log('[VTKViewer] Loading real CFD data from:', vtkUrl);
+      console.log('[VTKViewer] Loading VTK.js file:', vtkUrl);
 
-      // Fetch y parsear el archivo JSON
+      // Validar que el archivo existe
       const response = await fetch(vtkUrl);
       if (!response.ok) {
         throw new Error(`File not found: ${response.status}`);
       }
 
+      // Parsear archivo JSON .vtkjs y crear dataset manualmente
       const vtkData = await response.json();
-      console.log('[VTKViewer] Loaded CFD data:', {
+      console.log('[VTKViewer] Parsed VTK data:', {
         pointsSize: vtkData.points?.size || 0,
         polysSize: vtkData.polys?.size || 0,
         pointDataArrays: vtkData.pointData?.arrays?.length || 0
       });
 
-      // Crear dataset manualmente desde JSON real de ParaView
+      // Crear PolyData desde el JSON
       const polyData = vtkPolyData.newInstance();
       const points = vtkPoints.newInstance();
 
-      // Cargar puntos desde JSON
+      // Cargar puntos
       if (vtkData.points?.values) {
         const pointsData = new Float32Array(vtkData.points.values);
         points.setData(pointsData);
         polyData.setPoints(points);
       }
 
-      // Cargar polígonos desde JSON
+      // Cargar polígonos
       if (vtkData.polys?.values) {
         const polysData = new Uint32Array(vtkData.polys.values);
         polyData.getPolys().setData(polysData);
