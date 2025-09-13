@@ -564,16 +564,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
           content = await file.async('nodebuffer');
           console.log('[Express] 🎯 Serving VTK typed array file:', foundPath, 'Size:', content.length, 'bytes');
           
-          // ✅ ALINEACIÓN CRÍTICA PARA ARRAYS TIPADOS
+          // ✅ ALINEACIÓN INTELIGENTE: Solo aplicar si es necesario
           const elementSize = filename.includes('64') ? 8 : 4;
-          if (content.length % elementSize !== 0) {
+          const isAligned = content.length % elementSize === 0;
+          
+          if (!isAligned) {
+            // Solo padding para archivos que realmente necesitan alineación
             const paddedLength = Math.ceil(content.length / elementSize) * elementSize;
             const paddedBytes = paddedLength - content.length;
-            console.log(`[Express] ⚠️ VTK alignment fix: ${filename} ${content.length} → ${paddedLength} bytes (+${paddedBytes})`);
+            console.log(`[Express] ⚠️ CRITICAL: Unaligned VTK data detected: ${filename} ${content.length} → ${paddedLength} bytes (+${paddedBytes})`);
             
             const aligned = Buffer.alloc(paddedLength);
             content.copy(aligned);
             content = aligned;
+          } else {
+            console.log(`[Express] ✅ VTK data properly aligned: ${filename} (${content.length} bytes, element size: ${elementSize})`);
           }
           
           contentType = 'application/octet-stream';
