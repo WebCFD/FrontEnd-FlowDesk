@@ -174,7 +174,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     };
   }, [simulationId]);
   
-  // Cleanup on unmount
+  // Cleanup on unmount only
   useEffect(() => {
     return () => {
       if (renderWindowRef.current) {
@@ -183,44 +183,38 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     };
   }, []);
 
-  if (loading) {
-    return (
-      <Card className={className}>
-        <CardContent className="flex items-center justify-center h-96" data-testid="vtk-viewer-loading">
-          <div className="flex flex-col items-center gap-4">
-            <Loader2 className="h-8 w-8 animate-spin" />
-            <p className="text-muted-foreground">Loading 3D visualization...</p>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (error) {
-    return (
-      <Card className={className}>
-        <CardContent className="flex items-center justify-center h-96" data-testid="vtk-viewer-error">
-          <div className="flex flex-col items-center gap-4 text-center max-w-md">
-            <AlertCircle className="h-8 w-8 text-red-500" />
-            <div>
-              <h3 className="font-semibold text-red-600 mb-2">Visualization Error</h3>
-              <p className="text-sm text-muted-foreground">{error}</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <Card className={className}>
-      <CardContent className="p-0">
+      <CardContent className="p-0 relative">
         <div 
           ref={containerRef}
           className="w-full h-96 bg-gray-900 rounded-lg"
           style={{ cursor: 'grab' }}
           data-testid="vtk-viewer-container"
         />
+        
+        {/* Loading overlay */}
+        {loading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-80 rounded-lg" data-testid="vtk-viewer-loading">
+            <div className="flex flex-col items-center gap-4">
+              <Loader2 className="h-8 w-8 animate-spin text-white" />
+              <p className="text-white">Loading 3D visualization...</p>
+            </div>
+          </div>
+        )}
+        
+        {/* Error overlay */}
+        {error && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-90 rounded-lg" data-testid="vtk-viewer-error">
+            <div className="flex flex-col items-center gap-4 text-center max-w-md">
+              <AlertCircle className="h-8 w-8 text-red-500" />
+              <div>
+                <h3 className="font-semibold text-red-600 mb-2">Visualization Error</h3>
+                <p className="text-sm text-gray-300">{error}</p>
+              </div>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
