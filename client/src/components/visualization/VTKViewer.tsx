@@ -5,8 +5,8 @@ import { Loader2, Box, Info, AlertCircle, Eye, Activity, Wind, Zap, Layers, Sett
 import '@kitware/vtk.js/Rendering/Profiles/Geometry';
 import vtkFullScreenRenderWindow from '@kitware/vtk.js/Rendering/Misc/FullScreenRenderWindow';
 import vtkHttpDataSetReader from '@kitware/vtk.js/IO/Core/HttpDataSetReader';
-import '@kitware/vtk.js/IO/Core/DataAccessHelper/JSZipDataAccessHelper'; // Side-effect import to register 'zip' helper
-// Remove HttpDataAccessHelper - not needed for .vtkjs files
+import vtkHttpSceneLoader from '@kitware/vtk.js/IO/Core/HttpSceneLoader';
+import '@kitware/vtk.js/IO/Core/DataAccessHelper/JSZipDataAccessHelper'; // Side-effect import to register ZIP helper
 import vtkCubeSource from '@kitware/vtk.js/Filters/Sources/CubeSource';
 import vtkActor from '@kitware/vtk.js/Rendering/Core/Actor';
 import vtkMapper from '@kitware/vtk.js/Rendering/Core/Mapper';
@@ -53,6 +53,8 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const initializeVTKRenderer = async () => {
     if (!containerRef.current) return;
 
+    // ✅ JSZipDataAccessHelper is imported above to handle .vtkjs ZIP files
+
     try {
       // Clean up previous renderer safely
       if (renderWindowRef.current) {
@@ -93,12 +95,79 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       }
       
       try {
-        // TEMPORARILY DISABLED: VTK.js has issues with .vtkjs ZIP format
-        console.log('[VTKViewer] ⚠️ VTK.js temporarily disabled - use ParaView test above');
-        throw new Error('VTK.js disabled - ParaView Glance works correctly');
+        // ✅ PROPER FIX: Try vtkHttpSceneLoader first (for scene .vtkjs), then fallback to dataset reader
+        console.log('[VTKViewer] 🚀 Loading .vtkjs with SceneLoader first...');
+        
+        let dataset = null;
+        let loadMethod = '';
+        
+        // Option 1: Try as Scene (for ParaView exported .vtkjs)
+        try {
+          const sceneLoader = vtkHttpSceneLoader.newInstance();
+          await sceneLoader.setUrl(apiUrl); // SceneLoader only needs URL parameter
+          
+          // Scene loader adds actors directly to renderer
+          const scene = sceneLoader.getScene() as any[];
+          if (scene && Array.isArray(scene) && scene.length > 0) {
+            console.log('[VTKViewer] 🎉 Scene loaded with', scene.length, 'objects');
+            scene.forEach((sceneObject: any) => {
+              if (sceneObject.actor) {
+                renderer.addActor(sceneObject.actor);
+                actorRef.current = sceneObject.actor; // Store last actor
+              }
+            });
+            
+            renderer.resetCamera();
+            renderer.setBackground(0.1, 0.1, 0.2);
+            renderWindow.render();
+            
+            loadMethod = 'SceneLoader';
+            console.log('[VTKViewer] Scene loaded successfully! 🎉');
+            
+          } else {
+            throw new Error('Scene is empty');
+          }
+          
+        } catch (sceneError) {
+          console.log('[VTKViewer] Scene loading failed, trying DataSetReader:', sceneError);
+          
+          // Option 2: Fallback to DataSet reader  
+          const reader = vtkHttpDataSetReader.newInstance();
+          await reader.setUrl(apiUrl, { loadData: true });
+          dataset = reader.getOutputData();
+          
+          if (dataset) {
+            console.log('[VTKViewer] 🎉 REAL CFD dataset loaded successfully!');
+            console.log('[VTKViewer] CFD Dataset type:', dataset.getClassName());
+            console.log('[VTKViewer] CFD Points:', dataset.getNumberOfPoints(), 'CFD Cells:', dataset.getNumberOfCells());
+            
+            // Create mapper and actor
+            const mapper = vtkMapper.newInstance();
+            mapper.setInputData(dataset);
+            
+            const actor = vtkActor.newInstance();
+            actor.setMapper(mapper);
+            actorRef.current = actor;
+            
+            // Apply visualization
+            applyVisualizationMode(mapper, dataset, activeMode);
+            
+            // Add to scene
+            renderer.addActor(actor);
+            renderer.resetCamera();
+            renderer.setBackground(0.1, 0.1, 0.2);
+            renderWindow.render();
+            
+            loadMethod = 'DataSetReader';
+            console.log('[VTKViewer] CFD data loaded successfully! 🎉');
+            
+          } else {
+            throw new Error('No dataset in .vtkjs file');
+          }
+        }
         
       } catch (cfdError) {
-        console.error('[VTKViewer] ERROR: VTK.js disabled, showing demo cube:', cfdError.message);
+        console.error('[VTKViewer] ERROR: Real CFD file failed to load:', (cfdError as Error).message || cfdError);
         
         // Fallback to demo cube 
         const cubeSource = vtkCubeSource.newInstance({ xLength: 1, yLength: 1, zLength: 1 });
