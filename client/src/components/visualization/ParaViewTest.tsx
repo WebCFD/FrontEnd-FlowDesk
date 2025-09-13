@@ -34,12 +34,12 @@ export default function ParaViewTest({ simulationId, className }: ParaViewTestPr
         const blob = await response.blob();
         console.log('[ParaViewTest] 🧪 File blob size:', blob.size);
         
-        // Create a blob URL for ParaView Glance
-        const blobUrl = URL.createObjectURL(blob);
-        console.log('[ParaViewTest] 🧪 Created blob URL:', blobUrl);
+        // Use direct API URL to avoid CORS issues with blob URLs
+        const directUrl = `${window.location.origin}/api/simulations/${simulationId}/results/result.vtkjs`;
+        console.log('[ParaViewTest] 🧪 Direct API URL:', directUrl);
         
         // ParaView Glance can be loaded with a file parameter
-        const paraviewUrl = `https://kitware.github.io/glance/app/?file=${encodeURIComponent(blobUrl)}`;
+        const paraviewUrl = `https://kitware.github.io/glance/app/?file=${encodeURIComponent(directUrl)}`;
         console.log('[ParaViewTest] 🧪 ParaView URL:', paraviewUrl);
         
         setSuccess(true);
@@ -59,22 +59,30 @@ export default function ParaViewTest({ simulationId, className }: ParaViewTestPr
 
   const handleOpenParaView = async () => {
     try {
-      const response = await fetch(`/api/simulations/${simulationId}/results/result.vtkjs`);
-      const blob = await response.blob();
-      const blobUrl = URL.createObjectURL(blob);
+      // Para evitar problemas de CORS, usar la URL directa del API
+      const directUrl = `${window.location.origin}/api/simulations/${simulationId}/results/result.vtkjs`;
       
-      // Open ParaView Glance in new tab with our file
-      const paraviewUrl = `https://kitware.github.io/glance/app/?file=${encodeURIComponent(blobUrl)}`;
+      // Open ParaView Glance in new tab with direct API URL
+      const paraviewUrl = `https://kitware.github.io/glance/app/?file=${encodeURIComponent(directUrl)}`;
+      console.log('[ParaViewTest] 🚀 Opening ParaView with direct URL:', paraviewUrl);
       window.open(paraviewUrl, '_blank');
     } catch (err) {
       console.error('Failed to open ParaView:', err);
     }
   };
 
-  const handleEmbedParaView = () => {
-    // Load ParaView Glance in iframe
-    if (iframeRef.current) {
-      iframeRef.current.src = 'https://kitware.github.io/glance/app/';
+  const handleEmbedParaView = async () => {
+    try {
+      // Load ParaView Glance in iframe with our file
+      const directUrl = `${window.location.origin}/api/simulations/${simulationId}/results/result.vtkjs`;
+      const paraviewUrl = `https://kitware.github.io/glance/app/?file=${encodeURIComponent(directUrl)}`;
+      
+      if (iframeRef.current) {
+        console.log('[ParaViewTest] 🚀 Loading ParaView in iframe:', paraviewUrl);
+        iframeRef.current.src = paraviewUrl;
+      }
+    } catch (err) {
+      console.error('Failed to embed ParaView:', err);
     }
   };
 
