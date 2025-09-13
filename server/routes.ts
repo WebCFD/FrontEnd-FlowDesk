@@ -424,52 +424,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Endpoint to serve VTK.js results files
-  app.get("/api/simulations/:id/results/result.vtkjs", async (req, res) => {
+  // ✅ ENDPOINT ROBUSTO PARA .vtkjs (dev + prod)
+  app.get("/api/simulations/:id/results/:filename.vtkjs", async (req, res) => {
+    const { id, filename } = req.params;
+    const simulationId = parseInt(id);
+    
+    console.log('[Express] VTK request:', { id, filename, simulationId, env: process.env.NODE_ENV });
+    
+    if (isNaN(simulationId)) {
+      return res.status(400).json({ 
+        error: 'Invalid simulation ID',
+        simulation: id,
+        filename: filename 
+      });
+    }
+
+    // En producción, usar path absoluto; en dev, relativo
+    const uploadsPath = process.env.NODE_ENV === 'production' 
+      ? path.join('/app/uploads', id) // Ajustar según tu deploy
+      : path.join(process.cwd(), 'client', 'public'); // Por ahora usar public para pruebas
+      
+    // Map specific files for testing
+    let actualFilePath;
+    if (simulationId === 33 && filename === 'result') {
+      actualFilePath = path.join(process.cwd(), 'client', 'public', 'cfd-data.vtkjs');
+    } else {
+      actualFilePath = path.join(uploadsPath, `${filename}.vtkjs`);
+    }
+    
+    console.log('[Express] Looking for file:', actualFilePath);
+    
+    // Verificar si existe el archivo
     try {
-      // Skip auth for now to test VTK loading
-      const simulationId = parseInt(req.params.id);
-      if (isNaN(simulationId)) {
-        return res.status(400).json({ message: "Invalid simulation ID" });
-      }
-
-      // For now, just check that simulationId is 33 (our test case)
-      if (simulationId !== 33) {
-        return res.status(404).json({ message: "Simulation not found" });
-      }
-
-      // Map simulation ID to proper path structure
-      // For now, use office_building for simulation ID 33 (Sample Office Layout)
-      let simulationPath = 'office_building';
-      if (simulationId !== 33) {
-        simulationPath = `simulation_${simulationId}`;
-      }
-      
-      // Use the actual .vtkjs file we have
-      const vtkFilePath = path.join(process.cwd(), 'client', 'public', 'cfd-data.vtkjs');
-      
-      // Check if file exists
-      try {
-        await fs.access(vtkFilePath);
-      } catch {
-        return res.status(404).json({ message: "Results file not found" });
-      }
-
-      // Set appropriate headers for .vtkjs ZIP file
-      res.setHeader('Content-Type', 'application/zip'); 
-      res.setHeader('Access-Control-Allow-Origin', '*');
-      res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control');
-      res.setHeader('Cache-Control', 'no-cache');
-      res.setHeader('Content-Disposition', `inline; filename=result_${simulationId}.vtkjs`);
-      
-      // Stream the binary file
-      const fileBuffer = await fs.readFile(vtkFilePath);
+      await fs.access(actualFilePath);
+    } catch {
+      console.error('[Express] File not found:', actualFilePath);
+      return res.status(404).json({ 
+        error: 'VTK file not found',
+        simulation: id,
+        filename: filename,
+        path: process.env.NODE_ENV === 'development' ? actualFilePath : 'hidden'
+      });
+    }
+    
+    // ✅ HEADERS UNIVERSALES para VTK.js
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}.vtkjs"`);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    
+    try {
+      const fileBuffer = await fs.readFile(actualFilePath);
+      console.log('[Express] Sending VTK file:', fileBuffer.length, 'bytes');
       res.send(fileBuffer);
-
     } catch (error) {
-      console.error('Error serving VTK.js file:', error);
-      res.status(500).json({ message: "Error serving results file" });
+      console.error('[Express] Error reading file:', error);
+      res.status(500).json({ error: 'Failed to read VTK file' });
     }
   });
 
