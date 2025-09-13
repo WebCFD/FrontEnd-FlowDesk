@@ -9,7 +9,7 @@ import { useAuth } from "@/hooks/use-auth";
 import type { Simulation } from "@shared/schema";
 
 // Utility function to format dates
-const formatDate = (date: string) => {
+const formatDate = (date: string | Date) => {
   const now = new Date();
   const simulationDate = new Date(date);
   const diffInMilliseconds = now.getTime() - simulationDate.getTime();
