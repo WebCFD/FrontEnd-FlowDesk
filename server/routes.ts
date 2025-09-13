@@ -5,6 +5,7 @@ import { insertUserSchema, insertSimulationSchema, updateSimulationStatusSchema 
 import { z } from "zod";
 import { setupAuth } from "./auth";
 import { promises as fs } from "fs";
+import * as fsSync from "fs";
 import path from "path";
 import JSZip from "jszip";
 
@@ -683,6 +684,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('[Express] Error reading file:', error);
       res.status(500).json({ error: 'Failed to read VTK file' });
     }
+  });
+
+  // ✅ SIMPLE VTK FILE ENDPOINT (.vtk files - not .vtkjs)
+  app.get('/api/simulations/:id/results/:filename.vtk', (req, res) => {
+    const { id, filename } = req.params;
+    const filePath = path.join(process.cwd(), 'uploads', id, `${filename}.vtk`);
+    
+    if (!fsSync.existsSync(filePath)) {
+      return res.status(404).json({ error: 'VTK file not found' });
+    }
+    
+    res.setHeader('Content-Type', 'application/xml');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.sendFile(path.resolve(filePath));
   });
 
   // User credits API endpoint

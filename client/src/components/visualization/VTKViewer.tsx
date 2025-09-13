@@ -9,7 +9,7 @@ import '@kitware/vtk.js/Rendering/Profiles/Geometry';
 import vtkFullScreenRenderWindow from '@kitware/vtk.js/Rendering/Misc/FullScreenRenderWindow';
 import vtkActor from '@kitware/vtk.js/Rendering/Core/Actor';
 import vtkMapper from '@kitware/vtk.js/Rendering/Core/Mapper';
-import vtkHttpDataSetReader from '@kitware/vtk.js/IO/Core/HttpDataSetReader';
+import vtkXMLPolyDataReader from '@kitware/vtk.js/IO/XML/XMLPolyDataReader';
 import vtkColorTransferFunction from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction';
 import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
 
@@ -34,7 +34,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     { id: 'default' as const, label: 'Default', icon: Settings }
   ];
 
-  // Aplicar visualización simplificada
+  // Aplicar visualización simplificada - busca directamente arrays 'p' y 'U'
   const applyVisualization = (mapper: any, dataset: any, mode: VisualizationMode) => {
     const pointData = dataset.getPointData();
     const lookupTable = vtkColorTransferFunction.newInstance();
@@ -44,10 +44,12 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     
     switch (mode) {
       case 'pressure':
+        // Busca directamente array 'p'
         array = pointData.getArrayByName('p') || pointData.getArray(0);
         colorMap = 'Cool to Warm';
         break;
       case 'velocity':
+        // Busca directamente array 'U' 
         array = pointData.getArrayByName('U') || pointData.getArray(1);
         colorMap = 'Rainbow';
         break;
@@ -107,10 +109,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         throw new Error(`File not found: ${response.status}`);
       }
 
-      // Cargar con HttpDataSetReader (funciona para .vtu y .vtk)
-      const reader = vtkHttpDataSetReader.newInstance();
-      reader.setUrl(vtkUrl);
-      await reader.loadData();
+      // Cargar con XMLPolyDataReader (funciona para .vtk)
+      const reader = vtkXMLPolyDataReader.newInstance();
+      await reader.setUrl(vtkUrl);
       
       const dataset = reader.getOutputData();
       
