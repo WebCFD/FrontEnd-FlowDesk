@@ -10,7 +10,6 @@ import vtkFullScreenRenderWindow from '@kitware/vtk.js/Rendering/Misc/FullScreen
 import vtkActor from '@kitware/vtk.js/Rendering/Core/Actor';
 import vtkMapper from '@kitware/vtk.js/Rendering/Core/Mapper';
 import vtkXMLUnstructuredGridReader from '@kitware/vtk.js/IO/XML/XMLUnstructuredGridReader';
-import vtkHttpDataSetReader from '@kitware/vtk.js/IO/Core/HttpDataSetReader';
 import vtkColorTransferFunction from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction';
 import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
 
@@ -35,7 +34,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     { id: 'default' as const, label: 'Default', icon: Settings }
   ];
 
-  // Aplicar visualización simplificada - busca directamente arrays 'p' y 'U'
+  // Aplicar visualización simplificada
   const applyVisualization = (mapper: any, dataset: any, mode: VisualizationMode) => {
     const pointData = dataset.getPointData();
     const lookupTable = vtkColorTransferFunction.newInstance();
@@ -45,12 +44,10 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     
     switch (mode) {
       case 'pressure':
-        // Busca directamente array 'p'
         array = pointData.getArrayByName('p') || pointData.getArray(0);
         colorMap = 'Cool to Warm';
         break;
       case 'velocity':
-        // Busca directamente array 'U' 
         array = pointData.getArrayByName('U') || pointData.getArray(1);
         colorMap = 'Rainbow';
         break;
@@ -110,9 +107,15 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         throw new Error(`File not found: ${response.status}`);
       }
 
-      // Cargar con HttpDataSetReader (maneja múltiples formatos)
-      const reader = vtkHttpDataSetReader.newInstance();
-      await reader.setUrl(vtkUrl, { loadData: true });
+      // Cargar archivo VTU/XML con XMLUnstructuredGridReader
+      const reader = vtkXMLUnstructuredGridReader.newInstance();
+      
+      // Fetch manual para verificar contenido
+      const fileResponse = await fetch(vtkUrl);
+      const arrayBuffer = await fileResponse.arrayBuffer();
+      
+      // Parse con el reader usando array buffer
+      reader.parseAsArrayBuffer(arrayBuffer);
       
       const dataset = reader.getOutputData();
       
