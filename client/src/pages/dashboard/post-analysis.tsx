@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { BarChart3, FileText, TrendingUp, Download, Eye, Calendar } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
+import { useState } from "react";
+import VTKViewer from "@/components/visualization/VTKViewer";
 import type { Simulation } from "@shared/schema";
 
 // Utility function to format dates
@@ -23,12 +25,15 @@ const formatDate = (date: string | Date) => {
 
 export default function PostAnalysis() {
   const { user } = useAuth();
+  const [selectedSimulationId, setSelectedSimulationId] = useState<string>("");
 
   // Fetch completed simulations
   const { data: completedSimulations = [], isLoading, error } = useQuery<Simulation[]>({
     queryKey: ['/api/simulations/completed'],
     enabled: !!user && !user.isAnonymous,
   });
+
+  const selectedSimulation = completedSimulations.find(sim => sim.id.toString() === selectedSimulationId);
 
   return (
     <DashboardLayout>
@@ -81,7 +86,11 @@ export default function PostAnalysis() {
               </div>
             ) : (
               <div className="space-y-4">
-                <Select>
+                <Select 
+                  value={selectedSimulationId} 
+                  onValueChange={setSelectedSimulationId}
+                  data-testid="simulation-select"
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a simulation to analyze" />
                   </SelectTrigger>
@@ -122,6 +131,27 @@ export default function PostAnalysis() {
             )}
           </CardContent>
         </Card>
+
+        {/* 3D Visualization Section */}
+        {selectedSimulation && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Eye className="h-5 w-5" />
+                3D Visualization - {selectedSimulation.name}
+              </CardTitle>
+              <CardDescription>
+                Interactive 3D view of CFD simulation results
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <VTKViewer 
+                simulationId={selectedSimulation.id}
+                className="w-full"
+              />
+            </CardContent>
+          </Card>
+        )}
 
         <div className="grid gap-6 md:grid-cols-2">
           <Card>
