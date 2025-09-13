@@ -4,12 +4,15 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, AlertCircle, Layers, Eye, Activity, Wind, Zap, Settings } from 'lucide-react';
 
-// VTK.js imports simplificados
+// VTK.js imports
 import '@kitware/vtk.js/Rendering/Profiles/Geometry';
-import vtkFullScreenRenderWindow from '@kitware/vtk.js/Rendering/Misc/FullScreenRenderWindow';
+import vtkRenderWindow from '@kitware/vtk.js/Rendering/Core/RenderWindow';
+import vtkRenderer from '@kitware/vtk.js/Rendering/Core/Renderer';
+import vtkRenderWindowInteractor from '@kitware/vtk.js/Rendering/Core/RenderWindowInteractor';
+import vtkInteractorStyleTrackballCamera from '@kitware/vtk.js/Interaction/Style/InteractorStyleTrackballCamera';
+import vtkOpenGLRenderWindow from '@kitware/vtk.js/Rendering/OpenGL/RenderWindow';
 import vtkActor from '@kitware/vtk.js/Rendering/Core/Actor';
 import vtkMapper from '@kitware/vtk.js/Rendering/Core/Mapper';
-// import vtkPolyDataReader from '@kitware/vtk.js/IO/Legacy/PolyDataReader';
 import vtkPolyData from '@kitware/vtk.js/Common/DataModel/PolyData';
 import vtkPoints from '@kitware/vtk.js/Common/Core/Points';
 import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
@@ -87,18 +90,43 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
       // Cleanup anterior
       if (renderWindowRef.current) {
-        renderWindowRef.current.delete();
+        const { renderWindow, renderer, openGLRenderWindow, interactor } = renderWindowRef.current;
+        
+        // Cleanup VTK objects
+        if (interactor) interactor.delete();
+        if (openGLRenderWindow) openGLRenderWindow.delete();
+        if (renderer) renderer.delete();
+        if (renderWindow) renderWindow.delete();
+        
         renderWindowRef.current = null;
       }
 
       // Crear renderer
-      const fullScreenRenderer = vtkFullScreenRenderWindow.newInstance({
-        container: containerRef.current,
-        containerStyle: { height: '100%', width: '100%', position: 'relative' }
-      });
+      // Configuración manual del render window
+      const renderWindow = vtkRenderWindow.newInstance();
+      const renderer = vtkRenderer.newInstance();
+      renderWindow.addRenderer(renderer);
 
-      renderWindowRef.current = fullScreenRenderer;
-      const renderer = fullScreenRenderer.getRenderer();
+      const openGLRenderWindow = vtkOpenGLRenderWindow.newInstance();
+      renderWindow.addView(openGLRenderWindow);
+      
+      // Configurar el contenedor DOM
+      if (containerRef.current) {
+        openGLRenderWindow.setContainer(containerRef.current);
+        const { width, height } = containerRef.current.getBoundingClientRect();
+        openGLRenderWindow.setSize(width, height);
+      }
+
+      // Configurar interacciones
+      const interactor = vtkRenderWindowInteractor.newInstance();
+      interactor.setView(openGLRenderWindow);
+      interactor.initialize();
+
+      const trackballStyle = vtkInteractorStyleTrackballCamera.newInstance();
+      interactor.setInteractorStyle(trackballStyle);
+      interactor.bindEvents(containerRef.current);
+
+      renderWindowRef.current = { renderWindow, renderer, openGLRenderWindow, interactor };
 
       // URL simplificada - buscar .vtkjs generado por foamToVTK  
       const vtkUrl = `/api/simulations/${simulationId}/results/result.vtkjs`;
@@ -180,7 +208,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       renderer.addActor(actor);
       renderer.resetCamera();
       renderer.setBackground(0.1, 0.1, 0.2);
-      renderWindowRef.current.getRenderWindow().render();
+      renderWindow.render();
 
       setLoading(false);
 
@@ -200,7 +228,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       
       if (dataset) {
         applyVisualization(mapper, dataset, mode);
-        renderWindowRef.current?.getRenderWindow().render();
+        renderWindowRef.current?.renderWindow.render();
       }
     }
   };
