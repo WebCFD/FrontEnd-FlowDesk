@@ -331,7 +331,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Not authenticated" });
       }
 
-      const filePath = req.params[0];
+      const filePath = (req.params as any)[0];
       if (!filePath) {
         return res.status(400).json({ message: "File path is required" });
       }
@@ -367,6 +367,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error serving file:', error);
       res.status(500).json({ message: "Error reading file" });
+    }
+  });
+
+  // Endpoint to serve VTK.js results files
+  app.get("/api/simulations/:id/results/result.vtkjs", async (req, res) => {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const simulationId = parseInt(req.params.id);
+      if (isNaN(simulationId)) {
+        return res.status(400).json({ message: "Invalid simulation ID" });
+      }
+
+      // Verify user owns this simulation and it's completed
+      const simulations = await storage.getSimulationsByUserId(req.user.id);
+      const simulation = simulations.find(sim => sim.id === simulationId);
+      if (!simulation) {
+        return res.status(404).json({ message: "Simulation not found" });
+      }
+
+      if (simulation.status !== 'completed') {
+        return res.status(400).json({ message: "Results not available - simulation not completed" });
+      }
+
+      // Construct path to VTK.js file
+      const vtkFilePath = path.join(process.cwd(), 'public', 'results', `simulation_${simulationId}`, 'result.vtkjs');
+      
+      // Check if file exists
+      try {
+        await fs.access(vtkFilePath);
+      } catch {
+        return res.status(404).json({ message: "Results file not found" });
+      }
+
+      // Set appropriate headers for binary file
+      res.setHeader('Content-Type', 'application/octet-stream');
+      res.setHeader('Content-Disposition', `attachment; filename=result_${simulationId}.vtkjs`);
+      
+      // Stream the binary file
+      const fileBuffer = await fs.readFile(vtkFilePath);
+      res.send(fileBuffer);
+
+    } catch (error) {
+      console.error('Error serving VTK.js file:', error);
+      res.status(500).json({ message: "Error serving results file" });
     }
   });
 
