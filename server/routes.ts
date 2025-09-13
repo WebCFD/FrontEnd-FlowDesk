@@ -556,20 +556,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         content = await file.async('arraybuffer');
         console.log('[Express] 📄 Serving binary file:', foundPath, 'Size:', content.byteLength, 'bytes');
         
-        // ✅ CORREGIR ALINEACIÓN: Asegurar múltiplos de 4 bytes para arrays tipados
-        if (content.byteLength % 4 !== 0) {
-          console.log('[Express] ⚠️ Fixing byte alignment, adding padding');
-          const aligned = new ArrayBuffer(Math.ceil(content.byteLength / 4) * 4);
-          new Uint8Array(aligned).set(new Uint8Array(content));
-          content = aligned;
-        }
-        
         if (foundPath.endsWith('.gz')) {
           contentType = 'application/gzip';
         } else if (foundPath.endsWith('.png')) {
           contentType = 'image/png';
         } else if (foundPath.endsWith('.bin') || foundPath.endsWith('.raw')) {
           contentType = 'application/octet-stream';
+          
+          // ✅ CORREGIR ALINEACIÓN: Solo para archivos .bin/.raw (no .gz comprimidos)
+          if (content.byteLength % 4 !== 0) {
+            console.log('[Express] ⚠️ Fixing byte alignment for raw binary, adding padding');
+            const aligned = new ArrayBuffer(Math.ceil(content.byteLength / 4) * 4);
+            new Uint8Array(aligned).set(new Uint8Array(content));
+            content = aligned;
+          }
         }
       }
       
