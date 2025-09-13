@@ -40,25 +40,26 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     { id: 'default' as const, label: 'Default', icon: Settings }
   ];
 
-  // Aplicar visualización simplificada
+  // Aplicar visualización con colormaps válidos
   const applyVisualization = (mapper: any, dataset: any, mode: VisualizationMode) => {
     const pointData = dataset.getPointData();
     const lookupTable = vtkColorTransferFunction.newInstance();
     
     let array = null;
-    let colorMap = 'Cool to Warm';
+    let presetName = 'erdc_rainbow_bright';
     
     switch (mode) {
       case 'pressure':
         array = pointData.getArrayByName('p') || pointData.getArray(0);
-        colorMap = 'Cool to Warm';
+        presetName = 'erdc_blue2red_bw'; // Azul a rojo para presión
         break;
       case 'velocity':
         array = pointData.getArrayByName('U') || pointData.getArray(1);
-        colorMap = 'Rainbow';
+        presetName = 'erdc_rainbow_bright'; // Rainbow para velocidad
         break;
       default:
         array = pointData.getArray(0);
+        presetName = 'grayscale'; // Escala de grises por defecto
         break;
     }
     
@@ -72,7 +73,28 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         lookupTable.setMappingRange(range[0], range[1]);
       }
       
-      lookupTable.applyColorMap(vtkColorMaps.getPresetByName(colorMap));
+      // Intentar aplicar colormap, con fallback manual si falla
+      const preset = vtkColorMaps.getPresetByName(presetName);
+      if (preset) {
+        lookupTable.applyColorMap(preset);
+      } else {
+        // Fallback manual para colormaps científicos
+        console.warn(`Preset ${presetName} not found, using manual colormap`);
+        if (mode === 'pressure') {
+          // Azul (frío) a rojo (caliente) para presión
+          lookupTable.addRGBPoint(range[0], 0.0, 0.0, 1.0); // Azul
+          lookupTable.addRGBPoint((range[0] + range[1]) / 2, 0.0, 1.0, 0.0); // Verde
+          lookupTable.addRGBPoint(range[1], 1.0, 0.0, 0.0); // Rojo
+        } else {
+          // Rainbow para velocidad
+          lookupTable.addRGBPoint(range[0], 0.0, 0.0, 1.0); // Azul
+          lookupTable.addRGBPoint(range[0] + (range[1] - range[0]) * 0.25, 0.0, 1.0, 1.0); // Cyan
+          lookupTable.addRGBPoint(range[0] + (range[1] - range[0]) * 0.5, 0.0, 1.0, 0.0); // Verde
+          lookupTable.addRGBPoint(range[0] + (range[1] - range[0]) * 0.75, 1.0, 1.0, 0.0); // Amarillo
+          lookupTable.addRGBPoint(range[1], 1.0, 0.0, 0.0); // Rojo
+        }
+      }
+      
       mapper.setLookupTable(lookupTable);
       
       console.log(`Applied ${mode} visualization:`, array.getName());
