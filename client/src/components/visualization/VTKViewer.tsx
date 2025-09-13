@@ -74,12 +74,12 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       const renderWindow = fullScreenRenderer.getRenderWindow();
       rendererRef.current = renderer;
 
-      // Simple approach: Use sample VTK data that's guaranteed to work
-      console.log('[VTKViewer] Loading sample CFD-like visualization data');
+      // Load the REAL CFD data that works in ParaView
+      console.log('[VTKViewer] Loading REAL CFD data from .vtkjs file');
       
-      // Try the simple sample file first
-      const vtkUrl = `/sample-vtk-data.vtkjs`;
-      console.log('[VTKViewer] Loading simple VTK data from:', vtkUrl);
+      // Use the actual CFD file that's confirmed to exist and work in ParaView  
+      const vtkUrl = `/simulations/office_building/results/result.vtkjs`;
+      console.log('[VTKViewer] Loading REAL CFD file from:', vtkUrl);
       
       try {
         // Create simple VTK reader
@@ -90,9 +90,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         const dataset = reader.getOutputData();
         
         if (dataset) {
-          console.log('[VTKViewer] Sample dataset loaded successfully!');
-          console.log('[VTKViewer] Dataset type:', dataset.getClassName());
-          console.log('[VTKViewer] Points:', dataset.getNumberOfPoints(), 'Cells:', dataset.getNumberOfCells());
+          console.log('[VTKViewer] REAL CFD dataset loaded successfully!');
+          console.log('[VTKViewer] CFD Dataset type:', dataset.getClassName());
+          console.log('[VTKViewer] CFD Points:', dataset.getNumberOfPoints(), 'CFD Cells:', dataset.getNumberOfCells());
           
           // Create mapper and actor
           const mapper = vtkMapper.newInstance();
@@ -112,14 +112,14 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
           renderWindow.render();
           
           setVtkData(dataset);
-          console.log('[VTKViewer] Simple 3D visualization ready!');
+          console.log('[VTKViewer] REAL CFD 3D visualization ready! 🎉');
           
         } else {
           throw new Error('No dataset in sample file');
         }
         
-      } catch (sampleError) {
-        console.log('[VTKViewer] Sample file failed, using demo cube:', sampleError);
+      } catch (cfdError) {
+        console.error('[VTKViewer] ERROR: Real CFD file failed to load:', cfdError);
         
         // Fallback to demo cube if sample fails
         const cubeSource = vtkCubeSource.newInstance({ xLength: 1, yLength: 1, zLength: 1 });
