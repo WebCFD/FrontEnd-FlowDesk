@@ -489,9 +489,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     
     try {
-      // ✅ LEER Y PROCESAR ZIP
-      const zipBuffer = await fs.readFile(vtkjsPath);
-      const zip = await JSZip.loadAsync(zipBuffer);
+      // ✅ LEER ARCHIVO - DETECTAR SI ES JSON O ZIP
+      const fileBuffer = await fs.readFile(vtkjsPath);
+      const fileContent = fileBuffer.toString('utf8');
+      
+      // Si parece ser un JSON simple (empieza con { o [), manejarlo directamente
+      if (fileContent.trim().startsWith('{') || fileContent.trim().startsWith('[')) {
+        console.log('[Express] 📄 Detected simple JSON file, serving directly');
+        
+        if (internalPath === 'index.json') {
+          // Para index.json, servir el contenido completo
+          res.setHeader('Content-Type', 'application/json');
+          res.setHeader('Cache-Control', 'no-cache');
+          return res.send(fileContent);
+        } else {
+          // Para otros paths internos en JSON simple, retornar error
+          return res.status(404).json({ 
+            error: 'Simple JSON files only support index.json',
+            requested: internalPath,
+            supported: ['index.json']
+          });
+        }
+      }
+      
+      // Si no es JSON simple, procesar como ZIP
+      const zip = await JSZip.loadAsync(fileBuffer);
       
       console.log('[Express] 📁 ZIP contains:', Object.keys(zip.files));
       
