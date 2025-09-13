@@ -437,8 +437,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         simulationPath = `simulation_${simulationId}`;
       }
       
-      // Construct path to VTK.js file
-      const vtkFilePath = path.join(process.cwd(), 'public', 'simulations', simulationPath, 'results', 'result.vtkjs');
+      // Use the actual .vtkjs file we have
+      const vtkFilePath = path.join(process.cwd(), 'client', 'public', 'cfd-data.vtkjs');
       
       // Check if file exists
       try {
@@ -447,9 +447,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Results file not found" });
       }
 
-      // Set appropriate headers for binary file
-      res.setHeader('Content-Type', 'application/octet-stream');
-      res.setHeader('Content-Disposition', `attachment; filename=result_${simulationId}.vtkjs`);
+      // Set appropriate headers for .vtkjs ZIP file
+      res.setHeader('Content-Type', 'application/zip'); 
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Content-Disposition', `inline; filename=result_${simulationId}.vtkjs`);
       
       // Stream the binary file
       const fileBuffer = await fs.readFile(vtkFilePath);
