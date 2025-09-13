@@ -4,12 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, AlertCircle, Layers, Eye, Activity, Wind, Zap, Settings } from 'lucide-react';
 
-// VTK.js imports simplificados
+// VTK.js imports - solo los que sabemos que existen
 import '@kitware/vtk.js/Rendering/Profiles/Geometry';
 import vtkFullScreenRenderWindow from '@kitware/vtk.js/Rendering/Misc/FullScreenRenderWindow';
 import vtkActor from '@kitware/vtk.js/Rendering/Core/Actor';
 import vtkMapper from '@kitware/vtk.js/Rendering/Core/Mapper';
-import vtkXMLUnstructuredGridReader from '@kitware/vtk.js/IO/XML/XMLUnstructuredGridReader';
+import vtkHttpDataSetReader from '@kitware/vtk.js/IO/Core/HttpDataSetReader';
 import vtkColorTransferFunction from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction';
 import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
 
@@ -97,9 +97,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       renderWindowRef.current = fullScreenRenderer;
       const renderer = fullScreenRenderer.getRenderer();
 
-      // URL simplificada - buscar .vtk generado por foamToVTK
-      const vtkUrl = `/api/simulations/${simulationId}/results/result.vtk`;
-      console.log('[VTKViewer] Loading VTU/VTK file:', vtkUrl);
+      // URL para archivo .vtkjs (formato JSON de VTK.js)
+      const vtkUrl = `/api/simulations/${simulationId}/results/result.vtkjs`;
+      console.log('[VTKViewer] Loading VTKjs file:', vtkUrl);
 
       // Validar que el archivo existe
       const response = await fetch(vtkUrl);
@@ -107,15 +107,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         throw new Error(`File not found: ${response.status}`);
       }
 
-      // Cargar archivo VTU/XML con XMLUnstructuredGridReader
-      const reader = vtkXMLUnstructuredGridReader.newInstance();
-      
-      // Fetch manual para verificar contenido
-      const fileResponse = await fetch(vtkUrl);
-      const arrayBuffer = await fileResponse.arrayBuffer();
-      
-      // Parse con el reader usando array buffer
-      reader.parseAsArrayBuffer(arrayBuffer);
+      // Cargar con HttpDataSetReader (maneja archivos .vtkjs)
+      const reader = vtkHttpDataSetReader.newInstance();
+      await reader.setUrl(vtkUrl, { loadData: true });
       
       const dataset = reader.getOutputData();
       
@@ -146,7 +140,14 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
     } catch (error) {
       console.error('[VTKViewer] Loading failed:', error);
-      setError(`Failed to load VTK: ${(error as Error).message}`);
+      console.error('[VTKViewer] Error details:', {
+        message: (error as Error)?.message,
+        stack: (error as Error)?.stack,
+        name: (error as Error)?.name,
+        errorType: typeof error,
+        errorString: String(error)
+      });
+      setError(`Failed to load VTK: ${(error as Error)?.message || 'Unknown error'}`);
       setLoading(false);
     }
   };
