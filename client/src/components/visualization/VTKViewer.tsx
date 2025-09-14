@@ -1195,7 +1195,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                       style={{
                         background: activeMode === 'pressure' 
                           ? 'linear-gradient(to top, #0000ff, #00ffff, #00ff00, #ffff00, #ff0000)' 
-                          : 'linear-gradient(to top, #440154, #31688e, #35b779, #fde725)'
+                          : 'linear-gradient(to top, #0000ff, #00ffff, #00ff00, #ffff00, #ff0000)'
                       }}
                     />
                     
