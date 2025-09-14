@@ -69,6 +69,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [backgroundColor, setBackgroundColor] = useState<string>('#ffffff'); // Blanco por defecto
   const [colormapMin, setColormapMin] = useState<number | null>(null);
   const [colormapMax, setColormapMax] = useState<number | null>(null);
+  const [opacity, setOpacity] = useState<number>(1.0); // 1.0 = opaco, 0.0 = transparente
   const [filterConfig, setFilterConfig] = useState<FilterConfig>({
     isosurface: { enabled: false, values: [0.5] },
     threshold: { enabled: false, range: [0, 1] },
@@ -102,6 +103,13 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       actors.forEach(actor => {
         renderWindowRef.current.renderer.addActor(actor);
       });
+    }
+  };
+
+  // Helper function to apply opacity to actors
+  const applyOpacityToActor = (actor: any) => {
+    if (actor && actor.getProperty) {
+      actor.getProperty().setOpacity(opacity);
     }
   };
 
@@ -323,7 +331,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     // Configure as sophisticated wireframe for flow lines
     streamlineActor.getProperty().setRepresentationToWireframe();
     streamlineActor.getProperty().setLineWidth(2);
-    streamlineActor.getProperty().setOpacity(0.4);
+    streamlineActor.getProperty().setOpacity(opacity * 0.4); // Apply user opacity with base transparency
     streamlineActor.getProperty().setColor(0.2, 0.6, 1.0); // Light blue for flow lines
     
     // Apply vector magnitude coloring to wireframe
@@ -361,7 +369,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       // Configure as point cloud
       pointActor.getProperty().setRepresentationToPoints();
       pointActor.getProperty().setPointSize(Math.max(2, scale * 2));
-      pointActor.getProperty().setOpacity(0.6);
+      pointActor.getProperty().setOpacity(opacity * 0.6); // Apply user opacity with base transparency
       
       // Use same magnitude coloring as wireframe
       pointMapper.setScalarModeToUsePointData();
@@ -522,6 +530,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       applyContourVisualization(contourMapper, filteredData, config.isosurface.values, scalarArrayName, activeField as VisualizationMode);
       
       actors.push(contourActor);
+      applyOpacityToActor(contourActor);
       filterEffectApplied = true;
       console.log('[VTKViewer] Applied real contour visualization');
     }
@@ -540,6 +549,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       applyThresholdVisualization(thresholdMapper, filteredData, config.threshold.range, scalarArrayName, activeField as VisualizationMode);
       
       actors.push(thresholdActor);
+      applyOpacityToActor(thresholdActor);
       filterEffectApplied = true;
       console.log('[VTKViewer] Applied real threshold visualization');
     }
@@ -558,6 +568,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       applyClipVisualization(clipActor, filteredData, config.clip.plane.origin, config.clip.plane.normal, activeField as VisualizationMode);
       
       actors.push(clipActor);
+      applyOpacityToActor(clipActor);
       filterEffectApplied = true;
       console.log('[VTKViewer] Applied real clipping visualization');
     }
@@ -575,6 +586,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       applyVisualization(surfaceMapper, filteredData, mode);
       
       actors.push(surfaceActor);
+      applyOpacityToActor(surfaceActor);
     }
 
     // Real vector visualization with advanced techniques
@@ -602,7 +614,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       gridActor.getProperty().setRepresentationToWireframe();
       gridActor.getProperty().setLineWidth(1);
       gridActor.getProperty().setColor(0.3, 0.3, 0.3); // Dark gray
-      gridActor.getProperty().setOpacity(0.8);
+      applyOpacityToActor(gridActor);
       
       // Disable scalar coloring for grid - show only wireframe
       gridMapper.setScalarVisibility(false);
@@ -1013,7 +1025,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       // Render the scene
       renderWindowRef.current.renderWindow.render();
     }
-  }, [filterConfig, selectedColormap, invertColormap, showGrid, backgroundColor, colormapMin, colormapMax]);
+  }, [filterConfig, selectedColormap, invertColormap, showGrid, backgroundColor, colormapMin, colormapMax, opacity]);
 
   return (
     <div className={`vtk-viewer ${className || ''}`}>
@@ -1358,6 +1370,26 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                     </div>
                     <div className="text-xs text-slate-500">
                       Auto range: {dataRange[0].toFixed(2)} - {dataRange[1].toFixed(2)}
+                    </div>
+                  </div>
+
+                  {/* Transparency Control */}
+                  <div className="space-y-2 mt-4">
+                    <Label className="text-sm font-medium">
+                      Transparency: {(100 - opacity * 100).toFixed(0)}%
+                    </Label>
+                    <Slider
+                      value={[opacity]}
+                      onValueChange={(value: number[]) => setOpacity(value[0])}
+                      max={1}
+                      min={0}
+                      step={0.01}
+                      className="w-full"
+                      data-testid="slider-transparency"
+                    />
+                    <div className="flex justify-between text-xs text-slate-500">
+                      <span>Opaque</span>
+                      <span>Transparent</span>
                     </div>
                   </div>
                 </div>
