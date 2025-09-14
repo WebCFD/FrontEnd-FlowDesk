@@ -62,6 +62,11 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [error, setError] = useState<string | null>(null);
   const [activeMode, setActiveMode] = useState<VisualizationMode>('pressure');
   const [showAdvancedControls, setShowAdvancedControls] = useState(false);
+  const [showIsosurfaces, setShowIsosurfaces] = useState(false);
+  const [showThresholdFilter, setShowThresholdFilter] = useState(false);
+  const [showCuttingPlane, setShowCuttingPlane] = useState(false);
+  const [showVectorField, setShowVectorField] = useState(false);
+  const [showScientificColormaps, setShowScientificColormaps] = useState(true); // Start open
   const [dataRange, setDataRange] = useState<[number, number]>([0, 1]);
   const [selectedColormap, setSelectedColormap] = useState<string>('erdc_blue2red_bw');
   const [invertColormap, setInvertColormap] = useState<boolean>(false);
@@ -1071,328 +1076,387 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
               </CollapsibleTrigger>
               
               <CollapsibleContent className="space-y-4 mt-4 p-4 bg-slate-50 rounded-lg">
-                {/* Isosuperficies */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-sm font-medium flex items-center gap-2">
-                      <Target className="h-4 w-4" />
-                      Isosurfaces
-                    </Label>
-                    <Switch
-                      checked={filterConfig.isosurface.enabled}
-                      onCheckedChange={(enabled) => setFilterConfig(prev => ({
-                        ...prev,
-                        isosurface: { ...prev.isosurface, enabled }
-                      }))}
-                      data-testid="switch-isosurface"
-                    />
-                  </div>
-                  {filterConfig.isosurface.enabled && (
-                    <div className="space-y-2">
-                      <Label className="text-xs text-gray-600">Value: {filterConfig.isosurface.values[0]?.toFixed(3)}</Label>
-                      <Slider
-                        value={filterConfig.isosurface.values}
-                        onValueChange={(values: number[]) => setFilterConfig(prev => ({
-                          ...prev,
-                          isosurface: { ...prev.isosurface, values }
-                        }))}
-                        min={dataRange[0]}
-                        max={dataRange[1]}
-                        step={(dataRange[1] - dataRange[0]) / 100}
-                        className="w-full"
-                        data-testid="slider-isosurface"
-                      />
+                {/* Isosurfaces */}
+                <Collapsible open={showIsosurfaces} onOpenChange={setShowIsosurfaces}>
+                  <CollapsibleTrigger asChild>
+                    <Button variant="ghost" size="sm" className="w-full justify-between p-2" data-testid="button-isosurfaces">
+                      <div className="flex items-center gap-2">
+                        <Target className="h-4 w-4" />
+                        <span className="text-sm font-medium">Isosurfaces</span>
+                      </div>
+                      <div className={`transition-transform ${showIsosurfaces ? 'rotate-180' : ''}`}>
+                        ▼
+                      </div>
+                    </Button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <div className="space-y-2 mt-2">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-sm">Enable</Label>
+                        <Switch
+                          checked={filterConfig.isosurface.enabled}
+                          onCheckedChange={(enabled) => setFilterConfig(prev => ({
+                            ...prev,
+                            isosurface: { ...prev.isosurface, enabled }
+                          }))}
+                          data-testid="switch-isosurface"
+                        />
+                      </div>
+                      {filterConfig.isosurface.enabled && (
+                        <div className="space-y-2">
+                          <Label className="text-xs text-gray-600">Value: {filterConfig.isosurface.values[0]?.toFixed(3)}</Label>
+                          <Slider
+                            value={filterConfig.isosurface.values}
+                            onValueChange={(values: number[]) => setFilterConfig(prev => ({
+                              ...prev,
+                              isosurface: { ...prev.isosurface, values }
+                            }))}
+                            min={dataRange[0]}
+                            max={dataRange[1]}
+                            step={(dataRange[1] - dataRange[0]) / 100}
+                            className="w-full"
+                            data-testid="slider-isosurface"
+                          />
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
+                  </CollapsibleContent>
+                </Collapsible>
 
                 <Separator />
 
                 {/* Threshold Filter */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-sm font-medium flex items-center gap-2">
-                      <Scissors className="h-4 w-4" />
-                      Threshold Filter
-                    </Label>
-                    <Switch
-                      checked={filterConfig.threshold.enabled}
-                      onCheckedChange={(enabled) => setFilterConfig(prev => ({
-                        ...prev,
-                        threshold: { ...prev.threshold, enabled }
-                      }))}
-                      data-testid="switch-threshold"
-                    />
-                  </div>
-                  {filterConfig.threshold.enabled && (
-                    <div className="space-y-2">
-                      <Label className="text-xs text-gray-600">
-                        Range: {filterConfig.threshold.range[0]?.toFixed(3)} - {filterConfig.threshold.range[1]?.toFixed(3)}
-                      </Label>
-                      <Slider
-                        value={filterConfig.threshold.range}
-                        onValueChange={(range: number[]) => setFilterConfig(prev => ({
-                          ...prev,
-                          threshold: { ...prev.threshold, range: range as [number, number] }
-                        }))}
-                        min={dataRange[0]}
-                        max={dataRange[1]}
-                        step={(dataRange[1] - dataRange[0]) / 100}
-                        className="w-full"
-                        data-testid="slider-threshold"
-                      />
+                <Collapsible open={showThresholdFilter} onOpenChange={setShowThresholdFilter}>
+                  <CollapsibleTrigger asChild>
+                    <Button variant="ghost" size="sm" className="w-full justify-between p-2" data-testid="button-threshold-filter">
+                      <div className="flex items-center gap-2">
+                        <Scissors className="h-4 w-4" />
+                        <span className="text-sm font-medium">Threshold Filter</span>
+                      </div>
+                      <div className={`transition-transform ${showThresholdFilter ? 'rotate-180' : ''}`}>
+                        ▼
+                      </div>
+                    </Button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <div className="space-y-2 mt-2">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-sm">Enable</Label>
+                        <Switch
+                          checked={filterConfig.threshold.enabled}
+                          onCheckedChange={(enabled) => setFilterConfig(prev => ({
+                            ...prev,
+                            threshold: { ...prev.threshold, enabled }
+                          }))}
+                          data-testid="switch-threshold"
+                        />
+                      </div>
+                      {filterConfig.threshold.enabled && (
+                        <div className="space-y-2">
+                          <Label className="text-xs text-gray-600">
+                            Range: {filterConfig.threshold.range[0]?.toFixed(3)} - {filterConfig.threshold.range[1]?.toFixed(3)}
+                          </Label>
+                          <Slider
+                            value={filterConfig.threshold.range}
+                            onValueChange={(range: number[]) => setFilterConfig(prev => ({
+                              ...prev,
+                              threshold: { ...prev.threshold, range: range as [number, number] }
+                            }))}
+                            min={dataRange[0]}
+                            max={dataRange[1]}
+                            step={(dataRange[1] - dataRange[0]) / 100}
+                            className="w-full"
+                            data-testid="slider-threshold"
+                          />
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
+                  </CollapsibleContent>
+                </Collapsible>
 
                 <Separator />
 
                 {/* Cutting Plane */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-sm font-medium flex items-center gap-2">
-                      <Activity className="h-4 w-4" />
-                      Cutting Plane
-                    </Label>
-                    <Switch
-                      checked={filterConfig.clip.enabled}
-                      onCheckedChange={(enabled) => setFilterConfig(prev => ({
-                        ...prev,
-                        clip: { ...prev.clip, enabled }
-                      }))}
-                      data-testid="switch-clip"
-                    />
-                  </div>
-                  {filterConfig.clip.enabled && (
-                    <div className="space-y-2">
-                      <Label className="text-xs text-gray-600">Normal: X={filterConfig.clip.plane.normal[0]} Y={filterConfig.clip.plane.normal[1]} Z={filterConfig.clip.plane.normal[2]}</Label>
-                      <div className="grid grid-cols-3 gap-2">
-                        <Slider
-                          value={[filterConfig.clip.plane.normal[0]]}
-                          onValueChange={([x]: number[]) => setFilterConfig(prev => ({
+                <Collapsible open={showCuttingPlane} onOpenChange={setShowCuttingPlane}>
+                  <CollapsibleTrigger asChild>
+                    <Button variant="ghost" size="sm" className="w-full justify-between p-2" data-testid="button-cutting-plane">
+                      <div className="flex items-center gap-2">
+                        <Activity className="h-4 w-4" />
+                        <span className="text-sm font-medium">Cutting Plane</span>
+                      </div>
+                      <div className={`transition-transform ${showCuttingPlane ? 'rotate-180' : ''}`}>
+                        ▼
+                      </div>
+                    </Button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <div className="space-y-2 mt-2">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-sm">Enable</Label>
+                        <Switch
+                          checked={filterConfig.clip.enabled}
+                          onCheckedChange={(enabled) => setFilterConfig(prev => ({
                             ...prev,
-                            clip: { 
-                              ...prev.clip, 
-                              plane: { ...prev.clip.plane, normal: [x, prev.clip.plane.normal[1], prev.clip.plane.normal[2]] }
-                            }
+                            clip: { ...prev.clip, enabled }
                           }))}
-                          min={-1}
-                          max={1}
-                          step={0.1}
-                          className="w-full"
-                        />
-                        <Slider
-                          value={[filterConfig.clip.plane.normal[1]]}
-                          onValueChange={([y]: number[]) => setFilterConfig(prev => ({
-                            ...prev,
-                            clip: { 
-                              ...prev.clip, 
-                              plane: { ...prev.clip.plane, normal: [prev.clip.plane.normal[0], y, prev.clip.plane.normal[2]] }
-                            }
-                          }))}
-                          min={-1}
-                          max={1}
-                          step={0.1}
-                          className="w-full"
-                        />
-                        <Slider
-                          value={[filterConfig.clip.plane.normal[2]]}
-                          onValueChange={([z]: number[]) => setFilterConfig(prev => ({
-                            ...prev,
-                            clip: { 
-                              ...prev.clip, 
-                              plane: { ...prev.clip.plane, normal: [prev.clip.plane.normal[0], prev.clip.plane.normal[1], z] }
-                            }
-                          }))}
-                          min={-1}
-                          max={1}
-                          step={0.1}
-                          className="w-full"
+                          data-testid="switch-clip"
                         />
                       </div>
+                      {filterConfig.clip.enabled && (
+                        <div className="space-y-2">
+                          <Label className="text-xs text-gray-600">Normal: X={filterConfig.clip.plane.normal[0]} Y={filterConfig.clip.plane.normal[1]} Z={filterConfig.clip.plane.normal[2]}</Label>
+                          <div className="grid grid-cols-3 gap-2">
+                            <Slider
+                              value={[filterConfig.clip.plane.normal[0]]}
+                              onValueChange={([x]: number[]) => setFilterConfig(prev => ({
+                                ...prev,
+                                clip: { 
+                                  ...prev.clip, 
+                                  plane: { ...prev.clip.plane, normal: [x, prev.clip.plane.normal[1], prev.clip.plane.normal[2]] }
+                                }
+                              }))}
+                              min={-1}
+                              max={1}
+                              step={0.1}
+                              className="w-full"
+                            />
+                            <Slider
+                              value={[filterConfig.clip.plane.normal[1]]}
+                              onValueChange={([y]: number[]) => setFilterConfig(prev => ({
+                                ...prev,
+                                clip: { 
+                                  ...prev.clip, 
+                                  plane: { ...prev.clip.plane, normal: [prev.clip.plane.normal[0], y, prev.clip.plane.normal[2]] }
+                                }
+                              }))}
+                              min={-1}
+                              max={1}
+                              step={0.1}
+                              className="w-full"
+                            />
+                            <Slider
+                              value={[filterConfig.clip.plane.normal[2]]}
+                              onValueChange={([z]: number[]) => setFilterConfig(prev => ({
+                                ...prev,
+                                clip: { 
+                                  ...prev.clip, 
+                                  plane: { ...prev.clip.plane, normal: [prev.clip.plane.normal[0], prev.clip.plane.normal[1], z] }
+                                }
+                              }))}
+                              min={-1}
+                              max={1}
+                              step={0.1}
+                              className="w-full"
+                            />
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
+                  </CollapsibleContent>
+                </Collapsible>
 
                 <Separator />
 
-                {/* Vector Glyphs */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-sm font-medium flex items-center gap-2">
-                      <ArrowUp className="h-4 w-4" />
-                      Vector Arrows
-                    </Label>
-                    <Switch
-                      checked={filterConfig.vectors.enabled}
-                      onCheckedChange={(enabled) => setFilterConfig(prev => ({
-                        ...prev,
-                        vectors: { ...prev.vectors, enabled }
-                      }))}
-                      data-testid="switch-vectors"
-                    />
-                  </div>
-                  {filterConfig.vectors.enabled && (
-                    <div className="space-y-2">
-                      <Label className="text-xs text-gray-600">Scale: {filterConfig.vectors.scale?.toFixed(2)}</Label>
-                      <Slider
-                        value={[filterConfig.vectors.scale]}
-                        onValueChange={([scale]: number[]) => setFilterConfig(prev => ({
-                          ...prev,
-                          vectors: { ...prev.vectors, scale }
-                        }))}
-                        min={0.1}
-                        max={5.0}
-                        step={0.1}
-                        className="w-full"
-                      />
-                      <Label className="text-xs text-gray-600">Density: {filterConfig.vectors.density?.toFixed(2)}</Label>
-                      <Slider
-                        value={[filterConfig.vectors.density]}
-                        onValueChange={([density]: number[]) => setFilterConfig(prev => ({
-                          ...prev,
-                          vectors: { ...prev.vectors, density }
-                        }))}
-                        min={0.01}
-                        max={1.0}
-                        step={0.01}
-                        className="w-full"
-                      />
+                {/* Vector Field */}
+                <Collapsible open={showVectorField} onOpenChange={setShowVectorField}>
+                  <CollapsibleTrigger asChild>
+                    <Button variant="ghost" size="sm" className="w-full justify-between p-2" data-testid="button-vector-field">
+                      <div className="flex items-center gap-2">
+                        <ArrowUp className="h-4 w-4" />
+                        <span className="text-sm font-medium">Vector Field</span>
+                      </div>
+                      <div className={`transition-transform ${showVectorField ? 'rotate-180' : ''}`}>
+                        ▼
+                      </div>
+                    </Button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <div className="space-y-2 mt-2">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-sm">Enable</Label>
+                        <Switch
+                          checked={filterConfig.vectors.enabled}
+                          onCheckedChange={(enabled) => setFilterConfig(prev => ({
+                            ...prev,
+                            vectors: { ...prev.vectors, enabled }
+                          }))}
+                          data-testid="switch-vectors"
+                        />
+                      </div>
+                      {filterConfig.vectors.enabled && (
+                        <div className="space-y-2">
+                          <Label className="text-xs text-gray-600">Scale: {filterConfig.vectors.scale?.toFixed(2)}</Label>
+                          <Slider
+                            value={[filterConfig.vectors.scale]}
+                            onValueChange={([scale]: number[]) => setFilterConfig(prev => ({
+                              ...prev,
+                              vectors: { ...prev.vectors, scale }
+                            }))}
+                            min={0.1}
+                            max={5.0}
+                            step={0.1}
+                            className="w-full"
+                          />
+                          <Label className="text-xs text-gray-600">Density: {filterConfig.vectors.density?.toFixed(2)}</Label>
+                          <Slider
+                            value={[filterConfig.vectors.density]}
+                            onValueChange={([density]: number[]) => setFilterConfig(prev => ({
+                              ...prev,
+                              vectors: { ...prev.vectors, density }
+                            }))}
+                            min={0.01}
+                            max={1.0}
+                            step={0.01}
+                            className="w-full"
+                          />
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
+                  </CollapsibleContent>
+                </Collapsible>
 
                 <Separator />
 
                 {/* Scientific Colormaps */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium flex items-center gap-2">
-                    <Palette className="h-4 w-4" />
-                    Scientific Colormaps
-                  </Label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {['erdc_blue2red_bw', 'jet_cfd', 'plasma', 'viridis', 'cool_warm', 'grayscale'].map((colormap) => (
-                      <Button
-                        key={colormap}
-                        variant={selectedColormap === colormap ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => {
-                          console.log('[VTKViewer] Changing colormap to:', colormap);
-                          setSelectedColormap(colormap);
-                        }}
-                        className="text-xs"
-                        data-testid={`button-colormap-${colormap}`}
-                      >
-                        {colormap.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                      </Button>
-                    ))}
-                  </div>
-                  
-                  {/* Toggle para invertir colormap */}
-                  <div className="flex items-center justify-between mt-2">
-                    <Label className="text-sm">Invert scale</Label>
-                    <Switch
-                      checked={invertColormap}
-                      onCheckedChange={setInvertColormap}
-                      data-testid="toggle-colormap-invert"
-                    />
-                  </div>
-                  
-                  {/* Toggle para mostrar grid */}
-                  <div className="flex items-center justify-between mt-2">
-                    <Label className="text-sm">Show Grid</Label>
-                    <Switch
-                      checked={showGrid}
-                      onCheckedChange={setShowGrid}
-                      data-testid="toggle-show-grid"
-                    />
-                  </div>
-                  
-                  {/* Selector de color de fondo */}
-                  <div className="flex items-center justify-between mt-2">
-                    <Label className="text-sm">Background</Label>
-                    <div className="flex gap-2">
-                      {[
-                        { color: '#ffffff', label: 'White' },
-                        { color: '#000000', label: 'Black' },
-                        { color: '#1a1a2e', label: 'Dark Blue' },
-                        { color: '#f5f5f5', label: 'Light Gray' }
-                      ].map((bg) => (
-                        <Button
-                          key={bg.color}
-                          variant={backgroundColor === bg.color ? "default" : "outline"}
-                          size="sm"
-                          className="w-6 h-6 p-0 rounded-full border-2"
-                          style={{ backgroundColor: bg.color === '#ffffff' ? '#ffffff' : bg.color }}
-                          onClick={() => setBackgroundColor(bg.color)}
-                          data-testid={`button-bg-${bg.label.toLowerCase().replace(' ', '-')}`}
-                          title={bg.label}
+                <Collapsible open={showScientificColormaps} onOpenChange={setShowScientificColormaps}>
+                  <CollapsibleTrigger asChild>
+                    <Button variant="ghost" size="sm" className="w-full justify-between p-2" data-testid="button-scientific-colormaps">
+                      <div className="flex items-center gap-2">
+                        <Palette className="h-4 w-4" />
+                        <span className="text-sm font-medium">Scientific Colormaps</span>
+                      </div>
+                      <div className={`transition-transform ${showScientificColormaps ? 'rotate-180' : ''}`}>
+                        ▼
+                      </div>
+                    </Button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <div className="space-y-2 mt-2">
+                      <div className="grid grid-cols-2 gap-2">
+                        {['erdc_blue2red_bw', 'jet_cfd', 'plasma', 'viridis', 'cool_warm', 'grayscale'].map((colormap) => (
+                          <Button
+                            key={colormap}
+                            variant={selectedColormap === colormap ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => {
+                              console.log('[VTKViewer] Changing colormap to:', colormap);
+                              setSelectedColormap(colormap);
+                            }}
+                            className="text-xs"
+                            data-testid={`button-colormap-${colormap}`}
+                          >
+                            {colormap.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                          </Button>
+                        ))}
+                      </div>
+                      
+                      {/* Toggle para invertir colormap */}
+                      <div className="flex items-center justify-between mt-2">
+                        <Label className="text-sm">Invert scale</Label>
+                        <Switch
+                          checked={invertColormap}
+                          onCheckedChange={setInvertColormap}
+                          data-testid="toggle-colormap-invert"
                         />
-                      ))}
-                    </div>
-                  </div>
+                      </div>
+                      
+                      {/* Toggle para mostrar grid */}
+                      <div className="flex items-center justify-between mt-2">
+                        <Label className="text-sm">Show Grid</Label>
+                        <Switch
+                          checked={showGrid}
+                          onCheckedChange={setShowGrid}
+                          data-testid="toggle-show-grid"
+                        />
+                      </div>
+                      
+                      {/* Selector de color de fondo */}
+                      <div className="flex items-center justify-between mt-2">
+                        <Label className="text-sm">Background</Label>
+                        <div className="flex gap-2">
+                          {[
+                            { color: '#ffffff', label: 'White' },
+                            { color: '#000000', label: 'Black' },
+                            { color: '#1a1a2e', label: 'Dark Blue' },
+                            { color: '#f5f5f5', label: 'Light Gray' }
+                          ].map((bg) => (
+                            <Button
+                              key={bg.color}
+                              variant={backgroundColor === bg.color ? "default" : "outline"}
+                              size="sm"
+                              className="w-6 h-6 p-0 rounded-full border-2"
+                              style={{ backgroundColor: bg.color === '#ffffff' ? '#ffffff' : bg.color }}
+                              onClick={() => setBackgroundColor(bg.color)}
+                              data-testid={`button-bg-${bg.label.toLowerCase().replace(' ', '-')}`}
+                              title={bg.label}
+                            />
+                          ))}
+                        </div>
+                      </div>
 
-                  {/* Colormap Range Controls */}
-                  <div className="space-y-2 mt-4">
-                    <Label className="text-sm font-medium">Colormap Range</Label>
-                    <div className="flex space-x-2 items-center">
-                      <Input
-                        type="number"
-                        placeholder="Min"
-                        value={colormapMin ?? ''}
-                        onChange={(e) => setColormapMin(e.target.value ? parseFloat(e.target.value) : null)}
-                        className="w-20 text-xs"
-                        step="any"
-                        data-testid="input-colormap-min"
-                      />
-                      <Input
-                        type="number"
-                        placeholder="Max"
-                        value={colormapMax ?? ''}
-                        onChange={(e) => setColormapMax(e.target.value ? parseFloat(e.target.value) : null)}
-                        className="w-20 text-xs"
-                        step="any"
-                        data-testid="input-colormap-max"
-                      />
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => { 
-                          setColormapMin(null); 
-                          setColormapMax(null); 
-                        }}
-                        className="text-xs px-2 py-1"
-                        data-testid="button-reset-colormap-range"
-                        title="Reset to automatic range"
-                      >
-                        Reset
-                      </Button>
-                    </div>
-                    <div className="text-xs text-slate-500">
-                      Auto range: {dataRange[0].toFixed(2)} - {dataRange[1].toFixed(2)}
-                    </div>
-                  </div>
+                      {/* Colormap Range Controls */}
+                      <div className="space-y-2 mt-4">
+                        <Label className="text-sm font-medium">Colormap Range</Label>
+                        <div className="flex space-x-2 items-center">
+                          <Input
+                            type="number"
+                            placeholder="Min"
+                            value={colormapMin ?? ''}
+                            onChange={(e) => setColormapMin(e.target.value ? parseFloat(e.target.value) : null)}
+                            className="w-20 text-xs"
+                            step="any"
+                            data-testid="input-colormap-min"
+                          />
+                          <Input
+                            type="number"
+                            placeholder="Max"
+                            value={colormapMax ?? ''}
+                            onChange={(e) => setColormapMax(e.target.value ? parseFloat(e.target.value) : null)}
+                            className="w-20 text-xs"
+                            step="any"
+                            data-testid="input-colormap-max"
+                          />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => { 
+                              setColormapMin(null); 
+                              setColormapMax(null); 
+                            }}
+                            className="text-xs px-2 py-1"
+                            data-testid="button-reset-colormap-range"
+                            title="Reset to automatic range"
+                          >
+                            Reset
+                          </Button>
+                        </div>
+                        <div className="text-xs text-slate-500">
+                          Auto range: {dataRange[0].toFixed(2)} - {dataRange[1].toFixed(2)}
+                        </div>
+                      </div>
 
-                  {/* Transparency Control */}
-                  <div className="space-y-2 mt-4">
-                    <Label className="text-sm font-medium">
-                      Transparency: {(100 - opacity * 100).toFixed(0)}%
-                    </Label>
-                    <Slider
-                      value={[opacity]}
-                      onValueChange={(value: number[]) => setOpacity(value[0])}
-                      max={1}
-                      min={0}
-                      step={0.01}
-                      className="w-full"
-                      data-testid="slider-transparency"
-                    />
-                    <div className="flex justify-between text-xs text-slate-500">
-                      <span>Opaque</span>
-                      <span>Transparent</span>
+                      {/* Transparency Control */}
+                      <div className="space-y-2 mt-4">
+                        <Label className="text-sm font-medium">
+                          Transparency: {(100 - opacity * 100).toFixed(0)}%
+                        </Label>
+                        <Slider
+                          value={[opacity]}
+                          onValueChange={(value: number[]) => setOpacity(value[0])}
+                          max={1}
+                          min={0}
+                          step={0.01}
+                          className="w-full"
+                          data-testid="slider-transparency"
+                        />
+                        <div className="flex justify-between text-xs text-slate-500">
+                          <span>Opaque</span>
+                          <span>Transparent</span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  </CollapsibleContent>
+                </Collapsible>
               </CollapsibleContent>
             </Collapsible>
           </div>
