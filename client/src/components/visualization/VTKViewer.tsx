@@ -692,7 +692,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         
         // Usar selectedColormap en lugar de mode para determinar colores
         // Aplicar inversión si está activada
-        switch (selectedColormap || presetName) {
+        const activeColormap = selectedColormap || presetName;
+        console.log('[VTKViewer] Applied colormap:', activeColormap);
+        switch (activeColormap) {
           case 'grayscale':
             // Escala de grises
             if (invertColormap) {
@@ -738,8 +740,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
             }
             break;
             
-          case 'erdc_rainbow_bright':
+          case 'jet_cfd':
             // CFD Jet Colormap: Rojo → Amarillo → Verde → Cian → Azul (clásico CFD)
+            console.log('[VTKViewer] Applying Jet colormap with range:', minVal, 'to', maxVal, 'inverted:', invertColormap);
             if (invertColormap) {
               lookupTable.addRGBPoint(minVal, 0.0, 0.0, 1.0); // Azul
               lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.25, 0.0, 1.0, 1.0); // Cian
@@ -1233,7 +1236,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                     Scientific Colormaps
                   </Label>
                   <div className="grid grid-cols-2 gap-2">
-                    {['erdc_blue2red_bw', 'erdc_rainbow_bright', 'plasma', 'viridis', 'cool_warm', 'grayscale'].map((colormap) => (
+                    {['erdc_blue2red_bw', 'jet_cfd', 'plasma', 'viridis', 'cool_warm', 'grayscale'].map((colormap) => (
                       <Button
                         key={colormap}
                         variant={selectedColormap === colormap ? "default" : "outline"}
@@ -1353,7 +1356,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                           switch (selectedColormap || 'erdc_blue2red_bw') {
                             case 'grayscale':
                               return `linear-gradient(${direction}, #000000, #ffffff)`;
-                            case 'erdc_rainbow_bright':
+                            case 'jet_cfd':
                               return `linear-gradient(${direction}, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff)`;
                             case 'plasma':
                               return `linear-gradient(${direction}, #0d0887, #7e03a8, #dd513a, #fca636, #f0f921)`;
