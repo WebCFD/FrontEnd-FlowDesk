@@ -605,7 +605,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     const lookupTable = vtkColorTransferFunction.newInstance();
     
     let array = null;
-    let presetName = 'erdc_rainbow_bright';
+    let presetName = 'erdc_blue2red_bw';
     let useVectorMagnitude = false;
     
     switch (mode) {
@@ -615,7 +615,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         break;
       case 'velocity':
         array = pointData.getArrayByName('U') || pointData.getArray(1);
-        presetName = 'erdc_rainbow_bright'; // Rainbow para velocidad
+        presetName = 'erdc_blue2red_bw'; // Default para velocidad
         useVectorMagnitude = true; // Usar magnitud para vectores
         break;
       case 'geometry':
@@ -1263,18 +1263,19 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                       className="w-full h-full rounded"
                       style={{
                         background: (() => {
+                          const direction = invertColormap ? 'to bottom' : 'to top';
                           switch (selectedColormap || 'erdc_blue2red_bw') {
                             case 'grayscale':
-                              return 'linear-gradient(to top, #000000, #ffffff)';
+                              return `linear-gradient(${direction}, #000000, #ffffff)`;
                             case 'plasma':
-                              return 'linear-gradient(to top, #0d0887, #7e03a8, #dd513a, #fca636, #f0f921)';
+                              return `linear-gradient(${direction}, #0d0887, #7e03a8, #dd513a, #fca636, #f0f921)`;
                             case 'viridis':
-                              return 'linear-gradient(to top, #440154, #482777, #218e8d, #5ec962, #fde725)';
+                              return `linear-gradient(${direction}, #440154, #482777, #218e8d, #5ec962, #fde725)`;
                             case 'cool_warm':
                             case 'erdc_blue2red_bw':
-                              return 'linear-gradient(to top, #3b4cc0, #dddddd, #b5032a)';
+                              return `linear-gradient(${direction}, #3b4cc0, #dddddd, #b5032a)`;
                             default:
-                              return 'linear-gradient(to top, #3b4cc0, #dddddd, #b5032a)';
+                              return `linear-gradient(${direction}, #3b4cc0, #dddddd, #b5032a)`;
                           }
                         })()
                       }}
