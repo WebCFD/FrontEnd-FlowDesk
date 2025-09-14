@@ -668,44 +668,78 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         const [minVal, maxVal] = range;
         
         // Usar selectedColormap en lugar de mode para determinar colores
+        // Aplicar inversión si está activada
         switch (selectedColormap || presetName) {
           case 'grayscale':
             // Escala de grises
-            lookupTable.addRGBPoint(minVal, 0.0, 0.0, 0.0); // Negro
-            lookupTable.addRGBPoint(maxVal, 1.0, 1.0, 1.0); // Blanco
+            if (invertColormap) {
+              lookupTable.addRGBPoint(minVal, 1.0, 1.0, 1.0); // Blanco
+              lookupTable.addRGBPoint(maxVal, 0.0, 0.0, 0.0); // Negro
+            } else {
+              lookupTable.addRGBPoint(minVal, 0.0, 0.0, 0.0); // Negro
+              lookupTable.addRGBPoint(maxVal, 1.0, 1.0, 1.0); // Blanco
+            }
             break;
             
           case 'plasma':
-            // Plasma: Púrpura oscuro a amarillo
-            lookupTable.addRGBPoint(minVal, 0.05, 0.03, 0.53); // Púrpura oscuro
-            lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.25, 0.49, 0.01, 0.66); // Púrpura
-            lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.5, 0.87, 0.31, 0.39); // Rosa-rojo
-            lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.75, 0.99, 0.65, 0.04); // Naranja
-            lookupTable.addRGBPoint(maxVal, 0.94, 0.98, 0.65); // Amarillo claro
+            // Plasma: Púrpura oscuro a amarillo (o invertido)
+            if (invertColormap) {
+              lookupTable.addRGBPoint(minVal, 0.94, 0.98, 0.65); // Amarillo claro
+              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.25, 0.99, 0.65, 0.04); // Naranja
+              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.5, 0.87, 0.31, 0.39); // Rosa-rojo
+              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.75, 0.49, 0.01, 0.66); // Púrpura
+              lookupTable.addRGBPoint(maxVal, 0.05, 0.03, 0.53); // Púrpura oscuro
+            } else {
+              lookupTable.addRGBPoint(minVal, 0.05, 0.03, 0.53); // Púrpura oscuro
+              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.25, 0.49, 0.01, 0.66); // Púrpura
+              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.5, 0.87, 0.31, 0.39); // Rosa-rojo
+              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.75, 0.99, 0.65, 0.04); // Naranja
+              lookupTable.addRGBPoint(maxVal, 0.94, 0.98, 0.65); // Amarillo claro
+            }
             break;
             
           case 'viridis':
-            // Viridis: Púrpura oscuro a verde-amarillo
-            lookupTable.addRGBPoint(minVal, 0.27, 0.00, 0.33); // Púrpura oscuro
-            lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.25, 0.28, 0.17, 0.48); // Púrpura
-            lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.5, 0.13, 0.57, 0.55); // Turquesa
-            lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.75, 0.37, 0.74, 0.35); // Verde
-            lookupTable.addRGBPoint(maxVal, 0.99, 0.91, 0.15); // Amarillo
+            // Viridis: Púrpura oscuro a verde-amarillo (o invertido)
+            if (invertColormap) {
+              lookupTable.addRGBPoint(minVal, 0.99, 0.91, 0.15); // Amarillo
+              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.25, 0.37, 0.74, 0.35); // Verde
+              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.5, 0.13, 0.57, 0.55); // Turquesa
+              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.75, 0.28, 0.17, 0.48); // Púrpura
+              lookupTable.addRGBPoint(maxVal, 0.27, 0.00, 0.33); // Púrpura oscuro
+            } else {
+              lookupTable.addRGBPoint(minVal, 0.27, 0.00, 0.33); // Púrpura oscuro
+              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.25, 0.28, 0.17, 0.48); // Púrpura
+              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.5, 0.13, 0.57, 0.55); // Turquesa
+              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.75, 0.37, 0.74, 0.35); // Verde
+              lookupTable.addRGBPoint(maxVal, 0.99, 0.91, 0.15); // Amarillo
+            }
             break;
             
           case 'cool_warm':
           case 'erdc_blue2red_bw':
-            // Azul frío a rojo cálido
-            lookupTable.addRGBPoint(minVal, 0.23, 0.30, 0.75); // Azul frío
-            lookupTable.addRGBPoint((minVal + maxVal) / 2, 0.87, 0.87, 0.87); // Blanco
-            lookupTable.addRGBPoint(maxVal, 0.71, 0.016, 0.15); // Rojo cálido
+            // Azul frío a rojo cálido (o invertido)
+            if (invertColormap) {
+              lookupTable.addRGBPoint(minVal, 0.71, 0.016, 0.15); // Rojo cálido
+              lookupTable.addRGBPoint((minVal + maxVal) / 2, 0.87, 0.87, 0.87); // Blanco
+              lookupTable.addRGBPoint(maxVal, 0.23, 0.30, 0.75); // Azul frío
+            } else {
+              lookupTable.addRGBPoint(minVal, 0.23, 0.30, 0.75); // Azul frío
+              lookupTable.addRGBPoint((minVal + maxVal) / 2, 0.87, 0.87, 0.87); // Blanco
+              lookupTable.addRGBPoint(maxVal, 0.71, 0.016, 0.15); // Rojo cálido
+            }
             break;
             
           default:
             // Default: erdc_blue2red_bw style
-            lookupTable.addRGBPoint(minVal, 0.23, 0.30, 0.75); // Azul frío
-            lookupTable.addRGBPoint((minVal + maxVal) / 2, 0.87, 0.87, 0.87); // Blanco
-            lookupTable.addRGBPoint(maxVal, 0.71, 0.016, 0.15); // Rojo cálido
+            if (invertColormap) {
+              lookupTable.addRGBPoint(minVal, 0.71, 0.016, 0.15); // Rojo cálido
+              lookupTable.addRGBPoint((minVal + maxVal) / 2, 0.87, 0.87, 0.87); // Blanco
+              lookupTable.addRGBPoint(maxVal, 0.23, 0.30, 0.75); // Azul frío
+            } else {
+              lookupTable.addRGBPoint(minVal, 0.23, 0.30, 0.75); // Azul frío
+              lookupTable.addRGBPoint((minVal + maxVal) / 2, 0.87, 0.87, 0.87); // Blanco
+              lookupTable.addRGBPoint(maxVal, 0.71, 0.016, 0.15); // Rojo cálido
+            }
             break;
         }
       }
