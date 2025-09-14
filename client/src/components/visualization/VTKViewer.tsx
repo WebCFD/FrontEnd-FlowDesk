@@ -738,14 +738,22 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
             }
             break;
             
-          case 'red_to_blue':
-            // Rojo a azul típico de CFD (sin blanco intermedio)
+          case 'erdc_rainbow_bright':
+            // Erdc Rainbow Bright: Colores brillantes del arcoíris
             if (invertColormap) {
-              lookupTable.addRGBPoint(minVal, 0.0, 0.0, 1.0); // Azul puro
-              lookupTable.addRGBPoint(maxVal, 1.0, 0.0, 0.0); // Rojo puro
+              lookupTable.addRGBPoint(minVal, 1.0, 0.0, 1.0); // Magenta
+              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.2, 0.0, 0.0, 1.0); // Azul
+              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.4, 0.0, 1.0, 1.0); // Cian
+              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.6, 0.0, 1.0, 0.0); // Verde
+              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.8, 1.0, 1.0, 0.0); // Amarillo
+              lookupTable.addRGBPoint(maxVal, 1.0, 0.0, 0.0); // Rojo
             } else {
-              lookupTable.addRGBPoint(minVal, 1.0, 0.0, 0.0); // Rojo puro
-              lookupTable.addRGBPoint(maxVal, 0.0, 0.0, 1.0); // Azul puro
+              lookupTable.addRGBPoint(minVal, 1.0, 0.0, 0.0); // Rojo
+              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.2, 1.0, 1.0, 0.0); // Amarillo
+              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.4, 0.0, 1.0, 0.0); // Verde
+              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.6, 0.0, 1.0, 1.0); // Cian
+              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.8, 0.0, 0.0, 1.0); // Azul
+              lookupTable.addRGBPoint(maxVal, 1.0, 0.0, 1.0); // Magenta
             }
             break;
             
@@ -1227,7 +1235,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                     Scientific Colormaps
                   </Label>
                   <div className="grid grid-cols-2 gap-2">
-                    {['erdc_blue2red_bw', 'red_to_blue', 'plasma', 'viridis', 'cool_warm', 'grayscale'].map((colormap) => (
+                    {['erdc_blue2red_bw', 'erdc_rainbow_bright', 'plasma', 'viridis', 'cool_warm', 'grayscale'].map((colormap) => (
                       <Button
                         key={colormap}
                         variant={selectedColormap === colormap ? "default" : "outline"}
@@ -1347,8 +1355,8 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                           switch (selectedColormap || 'erdc_blue2red_bw') {
                             case 'grayscale':
                               return `linear-gradient(${direction}, #000000, #ffffff)`;
-                            case 'red_to_blue':
-                              return `linear-gradient(${direction}, #ff0000, #0000ff)`;
+                            case 'erdc_rainbow_bright':
+                              return `linear-gradient(${direction}, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff)`;
                             case 'plasma':
                               return `linear-gradient(${direction}, #0d0887, #7e03a8, #dd513a, #fca636, #f0f921)`;
                             case 'viridis':
