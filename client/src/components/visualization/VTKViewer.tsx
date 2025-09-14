@@ -672,10 +672,14 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       
       // Obtener range con fallback defensivo
       const range = array.getRange() || [0, 1];
+      
+      // Define effective range at function scope so it's available for manual colormap
+      let effectiveMin, effectiveMax;
+      
       if (range && range.length >= 2 && !isNaN(range[0]) && !isNaN(range[1])) {
         // Use custom min/max values if specified, otherwise use data range
-        const effectiveMin = colormapMin ?? range[0];
-        const effectiveMax = colormapMax ?? range[1];
+        effectiveMin = colormapMin ?? range[0];
+        effectiveMax = colormapMax ?? range[1];
         
         lookupTable.setMappingRange(effectiveMin, effectiveMax);
         // Connect range to UI state for sliders (always use data range for UI)
@@ -685,8 +689,8 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                    'Effective:', `${effectiveMin.toFixed(2)}-${effectiveMax.toFixed(2)}`);
       } else {
         console.warn('Invalid range detected, using default [0,1]');
-        const effectiveMin = colormapMin ?? 0;
-        const effectiveMax = colormapMax ?? 1;
+        effectiveMin = colormapMin ?? 0;
+        effectiveMax = colormapMax ?? 1;
         lookupTable.setMappingRange(effectiveMin, effectiveMax);
         setDataRange([0, 1]);
       }
@@ -700,7 +704,8 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       } else {
         // Fallback manual para colormaps científicos
         console.warn(`Preset ${colormapName} not found, using manual colormap`);
-        const [minVal, maxVal] = range;
+        // Use effective range (custom min/max if specified, otherwise data range)
+        const [minVal, maxVal] = [effectiveMin, effectiveMax];
         
         // Usar selectedColormap en lugar de mode para determinar colores
         // Aplicar inversión si está activada
@@ -1402,7 +1407,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                   
                   {/* Valor máximo */}
                   <div className="text-xs text-gray-600 dark:text-gray-400 text-center mb-1">
-                    {dataRange[1]?.toFixed(2) || '1.00'}
+                    {(colormapMax ?? dataRange[1])?.toFixed(2) || '1.00'}
                   </div>
                   
                   {/* Barra de colores */}
@@ -1443,7 +1448,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                   
                   {/* Valor mínimo */}
                   <div className="text-xs text-gray-600 dark:text-gray-400 text-center mt-1">
-                    {dataRange[0]?.toFixed(2) || '0.00'}
+                    {(colormapMin ?? dataRange[0])?.toFixed(2) || '0.00'}
                   </div>
                   
                   {/* Información adicional */}
