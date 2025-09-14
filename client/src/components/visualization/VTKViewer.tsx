@@ -66,9 +66,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [showThresholdFilter, setShowThresholdFilter] = useState(false);
   const [showCuttingPlane, setShowCuttingPlane] = useState(false);
   const [showVectorField, setShowVectorField] = useState(false);
-  const [showScientificColormaps, setShowScientificColormaps] = useState(true); // Start open
+  const [showScientificColormaps, setShowScientificColormaps] = useState(false);
   const [dataRange, setDataRange] = useState<[number, number]>([0, 1]);
-  const [selectedColormap, setSelectedColormap] = useState<string>('erdc_blue2red_bw');
+  const [selectedColormap, setSelectedColormap] = useState<string>('jet_cfd');
   const [invertColormap, setInvertColormap] = useState<boolean>(false);
   const [showGrid, setShowGrid] = useState<boolean>(false);
   const [backgroundColor, setBackgroundColor] = useState<string>('#ffffff'); // Blanco por defecto
@@ -1076,6 +1076,149 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
               </CollapsibleTrigger>
               
               <CollapsibleContent className="space-y-4 mt-4 p-4 bg-slate-50 rounded-lg">
+                {/* Scientific Colormaps */}
+                <Collapsible open={showScientificColormaps} onOpenChange={setShowScientificColormaps}>
+                  <CollapsibleTrigger asChild>
+                    <Button variant="ghost" size="sm" className="w-full justify-between p-2" data-testid="button-scientific-colormaps">
+                      <div className="flex items-center gap-2">
+                        <Palette className="h-4 w-4" />
+                        <span className="text-sm font-medium">Scientific Colormaps</span>
+                      </div>
+                      <div className={`transition-transform ${showScientificColormaps ? 'rotate-180' : ''}`}>
+                        ▼
+                      </div>
+                    </Button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <div className="space-y-2 mt-2">
+                      <div className="grid grid-cols-2 gap-2">
+                        {['erdc_blue2red_bw', 'jet_cfd', 'plasma', 'viridis', 'cool_warm', 'grayscale'].map((colormap) => (
+                          <Button
+                            key={colormap}
+                            variant={selectedColormap === colormap ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => {
+                              console.log('[VTKViewer] Changing colormap to:', colormap);
+                              setSelectedColormap(colormap);
+                            }}
+                            className="text-xs"
+                            data-testid={`button-colormap-${colormap}`}
+                          >
+                            {colormap.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                          </Button>
+                        ))}
+                      </div>
+                      
+                      {/* Toggle para invertir colormap */}
+                      <div className="flex items-center justify-between mt-2">
+                        <Label className="text-sm">Invert scale</Label>
+                        <Switch
+                          checked={invertColormap}
+                          onCheckedChange={setInvertColormap}
+                          data-testid="toggle-colormap-invert"
+                        />
+                      </div>
+                      
+                      {/* Toggle para mostrar grid */}
+                      <div className="flex items-center justify-between mt-2">
+                        <Label className="text-sm">Show Grid</Label>
+                        <Switch
+                          checked={showGrid}
+                          onCheckedChange={setShowGrid}
+                          data-testid="toggle-show-grid"
+                        />
+                      </div>
+                      
+                      {/* Selector de color de fondo */}
+                      <div className="flex items-center justify-between mt-2">
+                        <Label className="text-sm">Background</Label>
+                        <div className="flex gap-2">
+                          {[
+                            { color: '#ffffff', label: 'White' },
+                            { color: '#000000', label: 'Black' },
+                            { color: '#1a1a2e', label: 'Dark Blue' },
+                            { color: '#f5f5f5', label: 'Light Gray' }
+                          ].map((bg) => (
+                            <Button
+                              key={bg.color}
+                              variant={backgroundColor === bg.color ? "default" : "outline"}
+                              size="sm"
+                              className="w-6 h-6 p-0 rounded-full border-2"
+                              style={{ backgroundColor: bg.color === '#ffffff' ? '#ffffff' : bg.color }}
+                              onClick={() => setBackgroundColor(bg.color)}
+                              data-testid={`button-bg-${bg.label.toLowerCase().replace(' ', '-')}`}
+                              title={bg.label}
+                            />
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Colormap Range Controls */}
+                      <div className="space-y-2 mt-4">
+                        <Label className="text-sm font-medium">Colormap Range</Label>
+                        <div className="flex space-x-2 items-center">
+                          <Input
+                            type="number"
+                            placeholder="Min"
+                            value={colormapMin ?? ''}
+                            onChange={(e) => setColormapMin(e.target.value ? parseFloat(e.target.value) : null)}
+                            className="w-20 text-xs"
+                            step="any"
+                            data-testid="input-colormap-min"
+                          />
+                          <Input
+                            type="number"
+                            placeholder="Max"
+                            value={colormapMax ?? ''}
+                            onChange={(e) => setColormapMax(e.target.value ? parseFloat(e.target.value) : null)}
+                            className="w-20 text-xs"
+                            step="any"
+                            data-testid="input-colormap-max"
+                          />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => { 
+                              setColormapMin(null); 
+                              setColormapMax(null); 
+                            }}
+                            className="text-xs px-2 py-1"
+                            data-testid="button-reset-colormap-range"
+                            title="Reset to automatic range"
+                          >
+                            Reset
+                          </Button>
+                        </div>
+                        <div className="text-xs text-slate-500">
+                          Auto range: {dataRange[0].toFixed(2)} - {dataRange[1].toFixed(2)}
+                        </div>
+                      </div>
+
+                      {/* Transparency Control */}
+                      <div className="space-y-2 mt-4">
+                        <Label className="text-sm font-medium">
+                          Transparency: {(100 - opacity * 100).toFixed(0)}%
+                        </Label>
+                        <Slider
+                          value={[opacity]}
+                          onValueChange={(value: number[]) => setOpacity(value[0])}
+                          max={1}
+                          min={0}
+                          step={0.01}
+                          className="w-full"
+                          data-testid="slider-transparency"
+                        />
+                        <div className="flex justify-between text-xs text-slate-500">
+                          <span>Opaque</span>
+                          <span>Transparent</span>
+                        </div>
+                      </div>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+
+                <Separator />
+
                 {/* Isosurfaces */}
                 <Collapsible open={showIsosurfaces} onOpenChange={setShowIsosurfaces}>
                   <CollapsibleTrigger asChild>
@@ -1315,148 +1458,6 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                   </CollapsibleContent>
                 </Collapsible>
 
-                <Separator />
-
-                {/* Scientific Colormaps */}
-                <Collapsible open={showScientificColormaps} onOpenChange={setShowScientificColormaps}>
-                  <CollapsibleTrigger asChild>
-                    <Button variant="ghost" size="sm" className="w-full justify-between p-2" data-testid="button-scientific-colormaps">
-                      <div className="flex items-center gap-2">
-                        <Palette className="h-4 w-4" />
-                        <span className="text-sm font-medium">Scientific Colormaps</span>
-                      </div>
-                      <div className={`transition-transform ${showScientificColormaps ? 'rotate-180' : ''}`}>
-                        ▼
-                      </div>
-                    </Button>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <div className="space-y-2 mt-2">
-                      <div className="grid grid-cols-2 gap-2">
-                        {['erdc_blue2red_bw', 'jet_cfd', 'plasma', 'viridis', 'cool_warm', 'grayscale'].map((colormap) => (
-                          <Button
-                            key={colormap}
-                            variant={selectedColormap === colormap ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => {
-                              console.log('[VTKViewer] Changing colormap to:', colormap);
-                              setSelectedColormap(colormap);
-                            }}
-                            className="text-xs"
-                            data-testid={`button-colormap-${colormap}`}
-                          >
-                            {colormap.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                          </Button>
-                        ))}
-                      </div>
-                      
-                      {/* Toggle para invertir colormap */}
-                      <div className="flex items-center justify-between mt-2">
-                        <Label className="text-sm">Invert scale</Label>
-                        <Switch
-                          checked={invertColormap}
-                          onCheckedChange={setInvertColormap}
-                          data-testid="toggle-colormap-invert"
-                        />
-                      </div>
-                      
-                      {/* Toggle para mostrar grid */}
-                      <div className="flex items-center justify-between mt-2">
-                        <Label className="text-sm">Show Grid</Label>
-                        <Switch
-                          checked={showGrid}
-                          onCheckedChange={setShowGrid}
-                          data-testid="toggle-show-grid"
-                        />
-                      </div>
-                      
-                      {/* Selector de color de fondo */}
-                      <div className="flex items-center justify-between mt-2">
-                        <Label className="text-sm">Background</Label>
-                        <div className="flex gap-2">
-                          {[
-                            { color: '#ffffff', label: 'White' },
-                            { color: '#000000', label: 'Black' },
-                            { color: '#1a1a2e', label: 'Dark Blue' },
-                            { color: '#f5f5f5', label: 'Light Gray' }
-                          ].map((bg) => (
-                            <Button
-                              key={bg.color}
-                              variant={backgroundColor === bg.color ? "default" : "outline"}
-                              size="sm"
-                              className="w-6 h-6 p-0 rounded-full border-2"
-                              style={{ backgroundColor: bg.color === '#ffffff' ? '#ffffff' : bg.color }}
-                              onClick={() => setBackgroundColor(bg.color)}
-                              data-testid={`button-bg-${bg.label.toLowerCase().replace(' ', '-')}`}
-                              title={bg.label}
-                            />
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Colormap Range Controls */}
-                      <div className="space-y-2 mt-4">
-                        <Label className="text-sm font-medium">Colormap Range</Label>
-                        <div className="flex space-x-2 items-center">
-                          <Input
-                            type="number"
-                            placeholder="Min"
-                            value={colormapMin ?? ''}
-                            onChange={(e) => setColormapMin(e.target.value ? parseFloat(e.target.value) : null)}
-                            className="w-20 text-xs"
-                            step="any"
-                            data-testid="input-colormap-min"
-                          />
-                          <Input
-                            type="number"
-                            placeholder="Max"
-                            value={colormapMax ?? ''}
-                            onChange={(e) => setColormapMax(e.target.value ? parseFloat(e.target.value) : null)}
-                            className="w-20 text-xs"
-                            step="any"
-                            data-testid="input-colormap-max"
-                          />
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => { 
-                              setColormapMin(null); 
-                              setColormapMax(null); 
-                            }}
-                            className="text-xs px-2 py-1"
-                            data-testid="button-reset-colormap-range"
-                            title="Reset to automatic range"
-                          >
-                            Reset
-                          </Button>
-                        </div>
-                        <div className="text-xs text-slate-500">
-                          Auto range: {dataRange[0].toFixed(2)} - {dataRange[1].toFixed(2)}
-                        </div>
-                      </div>
-
-                      {/* Transparency Control */}
-                      <div className="space-y-2 mt-4">
-                        <Label className="text-sm font-medium">
-                          Transparency: {(100 - opacity * 100).toFixed(0)}%
-                        </Label>
-                        <Slider
-                          value={[opacity]}
-                          onValueChange={(value: number[]) => setOpacity(value[0])}
-                          max={1}
-                          min={0}
-                          step={0.01}
-                          className="w-full"
-                          data-testid="slider-transparency"
-                        />
-                        <div className="flex justify-between text-xs text-slate-500">
-                          <span>Opaque</span>
-                          <span>Transparent</span>
-                        </div>
-                      </div>
-                    </div>
-                  </CollapsibleContent>
-                </Collapsible>
               </CollapsibleContent>
             </Collapsible>
           </div>
