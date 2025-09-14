@@ -739,21 +739,19 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
             break;
             
           case 'erdc_rainbow_bright':
-            // Erdc Rainbow Bright: Colores brillantes del arcoíris
+            // CFD Jet Colormap: Rojo → Amarillo → Verde → Cian → Azul (clásico CFD)
             if (invertColormap) {
-              lookupTable.addRGBPoint(minVal, 1.0, 0.0, 1.0); // Magenta
-              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.2, 0.0, 0.0, 1.0); // Azul
-              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.4, 0.0, 1.0, 1.0); // Cian
-              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.6, 0.0, 1.0, 0.0); // Verde
-              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.8, 1.0, 1.0, 0.0); // Amarillo
+              lookupTable.addRGBPoint(minVal, 0.0, 0.0, 1.0); // Azul
+              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.25, 0.0, 1.0, 1.0); // Cian
+              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.5, 0.0, 1.0, 0.0); // Verde
+              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.75, 1.0, 1.0, 0.0); // Amarillo
               lookupTable.addRGBPoint(maxVal, 1.0, 0.0, 0.0); // Rojo
             } else {
               lookupTable.addRGBPoint(minVal, 1.0, 0.0, 0.0); // Rojo
-              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.2, 1.0, 1.0, 0.0); // Amarillo
-              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.4, 0.0, 1.0, 0.0); // Verde
-              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.6, 0.0, 1.0, 1.0); // Cian
-              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.8, 0.0, 0.0, 1.0); // Azul
-              lookupTable.addRGBPoint(maxVal, 1.0, 0.0, 1.0); // Magenta
+              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.25, 1.0, 1.0, 0.0); // Amarillo
+              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.5, 0.0, 1.0, 0.0); // Verde
+              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.75, 0.0, 1.0, 1.0); // Cian
+              lookupTable.addRGBPoint(maxVal, 0.0, 0.0, 1.0); // Azul
             }
             break;
             
@@ -1356,7 +1354,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                             case 'grayscale':
                               return `linear-gradient(${direction}, #000000, #ffffff)`;
                             case 'erdc_rainbow_bright':
-                              return `linear-gradient(${direction}, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff)`;
+                              return `linear-gradient(${direction}, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff)`;
                             case 'plasma':
                               return `linear-gradient(${direction}, #0d0887, #7e03a8, #dd513a, #fca636, #f0f921)`;
                             case 'viridis':
