@@ -935,7 +935,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       // Render the scene
       renderWindowRef.current.renderWindow.render();
     }
-  }, [filterConfig, selectedColormap]);
+  }, [filterConfig, selectedColormap, invertColormap]);
 
   return (
     <div className={`vtk-viewer ${className || ''}`}>
