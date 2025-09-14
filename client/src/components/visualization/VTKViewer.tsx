@@ -1145,24 +1145,83 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         </CardHeader>
         
         <CardContent className="p-0 relative">
-          <div 
-            ref={containerRef}
-            className="w-full h-96 bg-gradient-to-br from-gray-900 via-blue-900 to-slate-900 rounded-lg relative overflow-hidden"
-            data-testid="vtk-container"
-          >
-            {loading && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 text-white bg-black/50 z-10" data-testid="vtk-loading">
-                <Loader2 className="h-8 w-8 animate-spin" />
-                <p>Loading VTK file...</p>
-              </div>
-            )}
+          <div className="flex">
+            <div 
+              ref={containerRef}
+              className={`${activeMode === 'geometry' ? 'w-full' : 'flex-1'} h-96 bg-gradient-to-br from-gray-900 via-blue-900 to-slate-900 rounded-lg relative overflow-hidden`}
+              data-testid="vtk-container"
+            >
+              {loading && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 text-white bg-black/50 z-10" data-testid="vtk-loading">
+                  <Loader2 className="h-8 w-8 animate-spin" />
+                  <p>Loading VTK file...</p>
+                </div>
+              )}
+              
+              {error && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 text-white bg-black/50 z-10" data-testid="vtk-error">
+                  <AlertCircle className="h-16 w-16 text-red-400" />
+                  <div className="text-center">
+                    <h3 className="text-lg font-semibold text-red-400">Loading Error</h3>
+                    <p className="text-red-200 text-sm mt-2">{error}</p>
+                  </div>
+                </div>
+              )}
+            </div>
             
-            {error && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 text-white bg-black/50 z-10" data-testid="vtk-error">
-                <AlertCircle className="h-16 w-16 text-red-400" />
-                <div className="text-center">
-                  <h3 className="text-lg font-semibold text-red-400">Loading Error</h3>
-                  <p className="text-red-200 text-sm mt-2">{error}</p>
+            {/* Colormap Scale Bar - Solo para Pressure y Velocity */}
+            {activeMode !== 'geometry' && (
+              <div className="w-20 p-2 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 rounded-r-lg flex flex-col justify-between" data-testid="colormap-bar">
+                <div className="flex flex-col h-full">
+                  {/* Título y unidades */}
+                  <div className="text-center mb-2">
+                    <div className="text-xs font-medium text-gray-700 dark:text-gray-300 capitalize">
+                      {activeMode}
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      {activeMode === 'pressure' ? 'Pa' : 'm/s'}
+                    </div>
+                  </div>
+                  
+                  {/* Valor máximo */}
+                  <div className="text-xs text-gray-600 dark:text-gray-400 text-center mb-1">
+                    {dataRange[1]?.toFixed(2) || '1.00'}
+                  </div>
+                  
+                  {/* Barra de colores */}
+                  <div className="flex-1 w-6 mx-auto relative">
+                    <div 
+                      className="w-full h-full rounded"
+                      style={{
+                        background: activeMode === 'pressure' 
+                          ? 'linear-gradient(to top, #0000ff, #00ffff, #00ff00, #ffff00, #ff0000)' 
+                          : 'linear-gradient(to top, #440154, #31688e, #35b779, #fde725)'
+                      }}
+                    />
+                    
+                    {/* Marcas de escala */}
+                    <div className="absolute -right-2 top-0 bottom-0 flex flex-col justify-between text-xs text-gray-500 dark:text-gray-400">
+                      <div className="w-2 h-px bg-gray-400"></div>
+                      <div className="w-2 h-px bg-gray-400"></div>
+                      <div className="w-2 h-px bg-gray-400"></div>
+                      <div className="w-2 h-px bg-gray-400"></div>
+                      <div className="w-2 h-px bg-gray-400"></div>
+                    </div>
+                  </div>
+                  
+                  {/* Valor mínimo */}
+                  <div className="text-xs text-gray-600 dark:text-gray-400 text-center mt-1">
+                    {dataRange[0]?.toFixed(2) || '0.00'}
+                  </div>
+                  
+                  {/* Información adicional */}
+                  <div className="text-center mt-2 space-y-1">
+                    {activeMode === 'velocity' && (
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        Magnitude
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
