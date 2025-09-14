@@ -928,17 +928,8 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       addActors(actorsRef.current);
       renderer.resetCamera();
       
-      // Set background color from state (convert hex to RGB)
-      const hexToRgb = (hex: string) => {
-        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? [
-          parseInt(result[1], 16) / 255,
-          parseInt(result[2], 16) / 255,
-          parseInt(result[3], 16) / 255
-        ] : [1, 1, 1]; // Default to white
-      };
-      const [r, g, b] = hexToRgb(backgroundColor);
-      renderer.setBackground(r, g, b);
+      // Set initial background to white
+      renderer.setBackground(1, 1, 1);
       
       renderWindow.render();
 
@@ -986,6 +977,21 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       
       // Add new actors to scene
       addActors(actorsRef.current);
+      
+      // Update background color when it changes
+      if (renderWindowRef.current?.renderer) {
+        const hexToRgb = (hex: string) => {
+          const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+          return result ? [
+            parseInt(result[1], 16) / 255,
+            parseInt(result[2], 16) / 255,
+            parseInt(result[3], 16) / 255
+          ] : [1, 1, 1]; // Default to white
+        };
+        const [r, g, b] = hexToRgb(backgroundColor);
+        renderWindowRef.current.renderer.setBackground(r, g, b);
+        console.log('[VTKViewer] Background color updated to:', backgroundColor, `RGB(${r}, ${g}, ${b})`);
+      }
       
       // Render the scene
       renderWindowRef.current.renderWindow.render();
