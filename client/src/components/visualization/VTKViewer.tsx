@@ -62,7 +62,8 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [activeMode, setActiveMode] = useState<VisualizationMode>('pressure');
   const [showAdvancedControls, setShowAdvancedControls] = useState(false);
   const [dataRange, setDataRange] = useState<[number, number]>([0, 1]);
-  const [selectedColormap, setSelectedColormap] = useState<string>('erdc_rainbow_bright');
+  const [selectedColormap, setSelectedColormap] = useState<string>('erdc_blue2red_bw');
+  const [invertColormap, setInvertColormap] = useState<boolean>(false);
   const [filterConfig, setFilterConfig] = useState<FilterConfig>({
     isosurface: { enabled: false, values: [0.5] },
     threshold: { enabled: false, range: [0, 1] },
@@ -1161,6 +1162,16 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                         {colormap.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                       </Button>
                     ))}
+                  </div>
+                  
+                  {/* Toggle para invertir colormap */}
+                  <div className="flex items-center justify-between mt-2">
+                    <Label className="text-sm">Invert scale</Label>
+                    <Switch
+                      checked={invertColormap}
+                      onCheckedChange={setInvertColormap}
+                      data-testid="toggle-colormap-invert"
+                    />
                   </div>
                 </div>
               </CollapsibleContent>
