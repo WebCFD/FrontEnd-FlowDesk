@@ -64,6 +64,8 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [dataRange, setDataRange] = useState<[number, number]>([0, 1]);
   const [selectedColormap, setSelectedColormap] = useState<string>('erdc_blue2red_bw');
   const [invertColormap, setInvertColormap] = useState<boolean>(false);
+  const [showGrid, setShowGrid] = useState<boolean>(false);
+  const [backgroundColor, setBackgroundColor] = useState<string>('#ffffff'); // Blanco por defecto
   const [filterConfig, setFilterConfig] = useState<FilterConfig>({
     isosurface: { enabled: false, values: [0.5] },
     threshold: { enabled: false, range: [0, 1] },
@@ -585,6 +587,27 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       }
     }
 
+    // Add grid/wireframe actor if showGrid is enabled
+    if (showGrid) {
+      const gridMapper = vtkMapper.newInstance();
+      gridMapper.setInputData(currentData);
+      
+      const gridActor = vtkActor.newInstance();
+      gridActor.setMapper(gridMapper);
+      
+      // Configure wireframe appearance
+      gridActor.getProperty().setRepresentationToWireframe();
+      gridActor.getProperty().setLineWidth(1);
+      gridActor.getProperty().setColor(0.3, 0.3, 0.3); // Dark gray
+      gridActor.getProperty().setOpacity(0.8);
+      
+      // Disable scalar coloring for grid - show only wireframe
+      gridMapper.setScalarVisibility(false);
+      
+      actors.push(gridActor);
+      console.log('[VTKViewer] Added grid/wireframe actor');
+    }
+
     // Store filter state for cleanup
     filtersRef.current = {
       contour: config.isosurface.enabled ? 'simulated' : null,
@@ -712,6 +735,17 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
               lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.5, 0.13, 0.57, 0.55); // Turquesa
               lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.75, 0.37, 0.74, 0.35); // Verde
               lookupTable.addRGBPoint(maxVal, 0.99, 0.91, 0.15); // Amarillo
+            }
+            break;
+            
+          case 'red_to_blue':
+            // Rojo a azul típico de CFD (sin blanco intermedio)
+            if (invertColormap) {
+              lookupTable.addRGBPoint(minVal, 0.0, 0.0, 1.0); // Azul puro
+              lookupTable.addRGBPoint(maxVal, 1.0, 0.0, 0.0); // Rojo puro
+            } else {
+              lookupTable.addRGBPoint(minVal, 1.0, 0.0, 0.0); // Rojo puro
+              lookupTable.addRGBPoint(maxVal, 0.0, 0.0, 1.0); // Azul puro
             }
             break;
             
@@ -884,7 +918,19 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       // Add new actors to scene using helper
       addActors(actorsRef.current);
       renderer.resetCamera();
-      renderer.setBackground(0.1, 0.1, 0.2);
+      
+      // Set background color from state (convert hex to RGB)
+      const hexToRgb = (hex: string) => {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? [
+          parseInt(result[1], 16) / 255,
+          parseInt(result[2], 16) / 255,
+          parseInt(result[3], 16) / 255
+        ] : [1, 1, 1]; // Default to white
+      };
+      const [r, g, b] = hexToRgb(backgroundColor);
+      renderer.setBackground(r, g, b);
+      
       renderWindow.render();
 
       setLoading(false);
@@ -935,7 +981,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       // Render the scene
       renderWindowRef.current.renderWindow.render();
     }
-  }, [filterConfig, selectedColormap, invertColormap]);
+  }, [filterConfig, selectedColormap, invertColormap, showGrid, backgroundColor]);
 
   return (
     <div className={`vtk-viewer ${className || ''}`}>
@@ -1181,7 +1227,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                     Scientific Colormaps
                   </Label>
                   <div className="grid grid-cols-2 gap-2">
-                    {['erdc_blue2red_bw', 'plasma', 'viridis', 'cool_warm', 'grayscale'].map((colormap) => (
+                    {['erdc_blue2red_bw', 'red_to_blue', 'plasma', 'viridis', 'cool_warm', 'grayscale'].map((colormap) => (
                       <Button
                         key={colormap}
                         variant={selectedColormap === colormap ? "default" : "outline"}
@@ -1206,6 +1252,40 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                       onCheckedChange={setInvertColormap}
                       data-testid="toggle-colormap-invert"
                     />
+                  </div>
+                  
+                  {/* Toggle para mostrar grid */}
+                  <div className="flex items-center justify-between mt-2">
+                    <Label className="text-sm">Show Grid</Label>
+                    <Switch
+                      checked={showGrid}
+                      onCheckedChange={setShowGrid}
+                      data-testid="toggle-show-grid"
+                    />
+                  </div>
+                  
+                  {/* Selector de color de fondo */}
+                  <div className="flex items-center justify-between mt-2">
+                    <Label className="text-sm">Background</Label>
+                    <div className="flex gap-2">
+                      {[
+                        { color: '#ffffff', label: 'White' },
+                        { color: '#000000', label: 'Black' },
+                        { color: '#1a1a2e', label: 'Dark Blue' },
+                        { color: '#f5f5f5', label: 'Light Gray' }
+                      ].map((bg) => (
+                        <Button
+                          key={bg.color}
+                          variant={backgroundColor === bg.color ? "default" : "outline"}
+                          size="sm"
+                          className="w-6 h-6 p-0 rounded-full border-2"
+                          style={{ backgroundColor: bg.color === '#ffffff' ? '#ffffff' : bg.color }}
+                          onClick={() => setBackgroundColor(bg.color)}
+                          data-testid={`button-bg-${bg.label.toLowerCase().replace(' ', '-')}`}
+                          title={bg.label}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
               </CollapsibleContent>
@@ -1267,6 +1347,8 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                           switch (selectedColormap || 'erdc_blue2red_bw') {
                             case 'grayscale':
                               return `linear-gradient(${direction}, #000000, #ffffff)`;
+                            case 'red_to_blue':
+                              return `linear-gradient(${direction}, #ff0000, #0000ff)`;
                             case 'plasma':
                               return `linear-gradient(${direction}, #0d0887, #7e03a8, #dd513a, #fca636, #f0f921)`;
                             case 'viridis':
