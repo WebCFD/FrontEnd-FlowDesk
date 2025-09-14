@@ -663,25 +663,52 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         console.log('[VTKViewer] Applied colormap:', colormapName);
       } else {
         // Fallback manual para colormaps científicos
-        console.warn(`Preset ${presetName} not found, using manual colormap`);
+        console.warn(`Preset ${colormapName} not found, using manual colormap`);
         const [minVal, maxVal] = range;
         
-        if (mode === 'pressure') {
-          // Azul (frío) a rojo (caliente) para presión
-          lookupTable.addRGBPoint(minVal, 0.0, 0.0, 1.0); // Azul
-          lookupTable.addRGBPoint((minVal + maxVal) / 2, 0.0, 1.0, 0.0); // Verde
-          lookupTable.addRGBPoint(maxVal, 1.0, 0.0, 0.0); // Rojo
-        } else if (mode === 'velocity') {
-          // Rainbow para velocidad
-          lookupTable.addRGBPoint(minVal, 0.0, 0.0, 1.0); // Azul
-          lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.25, 0.0, 1.0, 1.0); // Cyan
-          lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.5, 0.0, 1.0, 0.0); // Verde
-          lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.75, 1.0, 1.0, 0.0); // Amarillo
-          lookupTable.addRGBPoint(maxVal, 1.0, 0.0, 0.0); // Rojo
-        } else {
-          // Grayscale para default
-          lookupTable.addRGBPoint(minVal, 0.0, 0.0, 0.0); // Negro
-          lookupTable.addRGBPoint(maxVal, 1.0, 1.0, 1.0); // Blanco
+        // Usar selectedColormap en lugar de mode para determinar colores
+        switch (selectedColormap || presetName) {
+          case 'grayscale':
+            // Escala de grises
+            lookupTable.addRGBPoint(minVal, 0.0, 0.0, 0.0); // Negro
+            lookupTable.addRGBPoint(maxVal, 1.0, 1.0, 1.0); // Blanco
+            break;
+            
+          case 'plasma':
+            // Plasma: Púrpura oscuro a amarillo
+            lookupTable.addRGBPoint(minVal, 0.05, 0.03, 0.53); // Púrpura oscuro
+            lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.25, 0.49, 0.01, 0.66); // Púrpura
+            lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.5, 0.87, 0.31, 0.39); // Rosa-rojo
+            lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.75, 0.99, 0.65, 0.04); // Naranja
+            lookupTable.addRGBPoint(maxVal, 0.94, 0.98, 0.65); // Amarillo claro
+            break;
+            
+          case 'viridis':
+            // Viridis: Púrpura oscuro a verde-amarillo
+            lookupTable.addRGBPoint(minVal, 0.27, 0.00, 0.33); // Púrpura oscuro
+            lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.25, 0.28, 0.17, 0.48); // Púrpura
+            lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.5, 0.13, 0.57, 0.55); // Turquesa
+            lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.75, 0.37, 0.74, 0.35); // Verde
+            lookupTable.addRGBPoint(maxVal, 0.99, 0.91, 0.15); // Amarillo
+            break;
+            
+          case 'cool_warm':
+          case 'erdc_blue2red_bw':
+            // Azul frío a rojo cálido
+            lookupTable.addRGBPoint(minVal, 0.23, 0.30, 0.75); // Azul frío
+            lookupTable.addRGBPoint((minVal + maxVal) / 2, 0.87, 0.87, 0.87); // Blanco
+            lookupTable.addRGBPoint(maxVal, 0.71, 0.016, 0.15); // Rojo cálido
+            break;
+            
+          case 'erdc_rainbow_bright':
+          default:
+            // Rainbow por defecto: Azul-Cyan-Verde-Amarillo-Rojo
+            lookupTable.addRGBPoint(minVal, 0.0, 0.0, 1.0); // Azul
+            lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.25, 0.0, 1.0, 1.0); // Cyan
+            lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.5, 0.0, 1.0, 0.0); // Verde
+            lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.75, 1.0, 1.0, 0.0); // Amarillo
+            lookupTable.addRGBPoint(maxVal, 1.0, 0.0, 0.0); // Rojo
+            break;
         }
       }
       
@@ -1193,9 +1220,22 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                     <div 
                       className="w-full h-full rounded"
                       style={{
-                        background: activeMode === 'pressure' 
-                          ? 'linear-gradient(to top, #0000ff, #00ffff, #00ff00, #ffff00, #ff0000)' 
-                          : 'linear-gradient(to top, #0000ff, #00ffff, #00ff00, #ffff00, #ff0000)'
+                        background: (() => {
+                          switch (selectedColormap || 'erdc_rainbow_bright') {
+                            case 'grayscale':
+                              return 'linear-gradient(to top, #000000, #ffffff)';
+                            case 'plasma':
+                              return 'linear-gradient(to top, #0d0887, #7e03a8, #dd513a, #fca636, #f0f921)';
+                            case 'viridis':
+                              return 'linear-gradient(to top, #440154, #482777, #218e8d, #5ec962, #fde725)';
+                            case 'cool_warm':
+                            case 'erdc_blue2red_bw':
+                              return 'linear-gradient(to top, #3b4cc0, #dddddd, #b5032a)';
+                            case 'erdc_rainbow_bright':
+                            default:
+                              return 'linear-gradient(to top, #0000ff, #00ffff, #00ff00, #ffff00, #ff0000)';
+                          }
+                        })()
                       }}
                     />
                     
