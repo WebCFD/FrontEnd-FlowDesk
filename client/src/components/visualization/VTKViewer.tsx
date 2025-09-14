@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, AlertCircle, Layers, Eye, Activity, Wind, Zap, Settings, Sliders, Scissors, Target, ArrowUp, Palette } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
@@ -66,6 +67,8 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [invertColormap, setInvertColormap] = useState<boolean>(false);
   const [showGrid, setShowGrid] = useState<boolean>(false);
   const [backgroundColor, setBackgroundColor] = useState<string>('#ffffff'); // Blanco por defecto
+  const [colormapMin, setColormapMin] = useState<number | null>(null);
+  const [colormapMax, setColormapMax] = useState<number | null>(null);
   const [filterConfig, setFilterConfig] = useState<FilterConfig>({
     isosurface: { enabled: false, values: [0.5] },
     threshold: { enabled: false, range: [0, 1] },
@@ -670,12 +673,21 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       // Obtener range con fallback defensivo
       const range = array.getRange() || [0, 1];
       if (range && range.length >= 2 && !isNaN(range[0]) && !isNaN(range[1])) {
-        lookupTable.setMappingRange(range[0], range[1]);
-        // Connect range to UI state for sliders
+        // Use custom min/max values if specified, otherwise use data range
+        const effectiveMin = colormapMin ?? range[0];
+        const effectiveMax = colormapMax ?? range[1];
+        
+        lookupTable.setMappingRange(effectiveMin, effectiveMax);
+        // Connect range to UI state for sliders (always use data range for UI)
         setDataRange([range[0], range[1]]);
+        
+        console.log('[VTKViewer] Colormap range applied - Data:', `${range[0].toFixed(2)}-${range[1].toFixed(2)}`, 
+                   'Effective:', `${effectiveMin.toFixed(2)}-${effectiveMax.toFixed(2)}`);
       } else {
         console.warn('Invalid range detected, using default [0,1]');
-        lookupTable.setMappingRange(0, 1);
+        const effectiveMin = colormapMin ?? 0;
+        const effectiveMax = colormapMax ?? 1;
+        lookupTable.setMappingRange(effectiveMin, effectiveMax);
         setDataRange([0, 1]);
       }
       
@@ -996,7 +1008,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       // Render the scene
       renderWindowRef.current.renderWindow.render();
     }
-  }, [filterConfig, selectedColormap, invertColormap, showGrid, backgroundColor]);
+  }, [filterConfig, selectedColormap, invertColormap, showGrid, backgroundColor, colormapMin, colormapMax]);
 
   return (
     <div className={`vtk-viewer ${className || ''}`}>
@@ -1300,6 +1312,47 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                           title={bg.label}
                         />
                       ))}
+                    </div>
+                  </div>
+
+                  {/* Colormap Range Controls */}
+                  <div className="space-y-2 mt-4">
+                    <Label className="text-sm font-medium">Colormap Range</Label>
+                    <div className="flex space-x-2 items-center">
+                      <Input
+                        type="number"
+                        placeholder="Min"
+                        value={colormapMin ?? ''}
+                        onChange={(e) => setColormapMin(e.target.value ? parseFloat(e.target.value) : null)}
+                        className="w-20 text-xs"
+                        step="any"
+                        data-testid="input-colormap-min"
+                      />
+                      <Input
+                        type="number"
+                        placeholder="Max"
+                        value={colormapMax ?? ''}
+                        onChange={(e) => setColormapMax(e.target.value ? parseFloat(e.target.value) : null)}
+                        className="w-20 text-xs"
+                        step="any"
+                        data-testid="input-colormap-max"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => { 
+                          setColormapMin(null); 
+                          setColormapMax(null); 
+                        }}
+                        className="text-xs px-2 py-1"
+                        data-testid="button-reset-colormap-range"
+                        title="Reset to automatic range"
+                      >
+                        Reset
+                      </Button>
+                    </div>
+                    <div className="text-xs text-slate-500">
+                      Auto range: {dataRange[0].toFixed(2)} - {dataRange[1].toFixed(2)}
                     </div>
                   </div>
                 </div>
