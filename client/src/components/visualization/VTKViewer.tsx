@@ -373,69 +373,65 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
   // Individual filter functions (legacy - kept for compatibility)
   const createContourFilter = (inputData: any, values: number[], arrayName: string) => {
-    if (!vtkContourFilter) {
-      console.warn('[VTKViewer] ContourFilter not available');
-      return null;
-    }
+    // VTK ContourFilter not available in this build
+    console.warn('[VTKViewer] ContourFilter not available');
+    return null;
     
-    const contourFilter = vtkContourFilter.newInstance();
-    contourFilter.setInputData(inputData);
-    contourFilter.setContourValues(values);
+    // const contourFilter = vtkContourFilter.newInstance();
+    // contourFilter.setInputData(inputData);
+    // contourFilter.setContourValues(values);
     
-    // Set the scalar field to contour on
-    const pointData = inputData.getPointData();
-    const array = pointData.getArrayByName(arrayName) || pointData.getArray(0);
-    if (array) {
-      contourFilter.setInputArrayToProcess(0, 0, 0, 'vtkDataObject::FIELD_ASSOCIATION_POINTS', array.getName());
-    }
+    // // Set the scalar field to contour on
+    // const pointData = inputData.getPointData();
+    // const array = pointData.getArrayByName(arrayName) || pointData.getArray(0);
+    // if (array) {
+    //   contourFilter.setInputArrayToProcess(0, 0, 0, 'vtkDataObject::FIELD_ASSOCIATION_POINTS', array.getName());
+    // }
     
-    return contourFilter;
+    // return contourFilter;
   };
 
   const createThresholdFilter = (inputData: any, range: [number, number], arrayName: string) => {
-    if (!vtkThresholdPoints) {
-      console.warn('[VTKViewer] ThresholdFilter not available');
-      return null;
-    }
+    // VTK ThresholdPoints not available in this build
+    console.warn('[VTKViewer] ThresholdFilter not available');
+    return null;
     
-    const thresholdFilter = vtkThresholdPoints.newInstance();
-    thresholdFilter.setInputData(inputData);
-    thresholdFilter.setLowerThreshold(range[0]);
-    thresholdFilter.setUpperThreshold(range[1]);
+    // const thresholdFilter = vtkThresholdPoints.newInstance();
+    // thresholdFilter.setInputData(inputData);
+    // thresholdFilter.setLowerThreshold(range[0]);
+    // thresholdFilter.setUpperThreshold(range[1]);
     
-    // Set the scalar field to threshold on
-    const pointData = inputData.getPointData();
-    const array = pointData.getArrayByName(arrayName) || pointData.getArray(0);
-    if (array) {
-      thresholdFilter.setInputArrayToProcess(0, 0, 0, 'vtkDataObject::FIELD_ASSOCIATION_POINTS', array.getName());
-    }
+    // // Set the scalar field to threshold on
+    // const pointData = inputData.getPointData();
+    // const array = pointData.getArrayByName(arrayName) || pointData.getArray(0);
+    // if (array) {
+    //   thresholdFilter.setInputArrayToProcess(0, 0, 0, 'vtkDataObject::FIELD_ASSOCIATION_POINTS', array.getName());
+    // }
     
-    return thresholdFilter;
+    // return thresholdFilter;
   };
 
   const createClipFilter = (inputData: any, planeOrigin: number[], planeNormal: number[]) => {
-    if (!vtkClipPolyData || !vtkPlane) {
-      console.warn('[VTKViewer] ClipFilter or Plane not available');
-      return null;
-    }
+    // VTK ClipPolyData and Plane not available in this build
+    console.warn('[VTKViewer] ClipFilter or Plane not available');
+    return null;
     
-    const clipFilter = vtkClipPolyData.newInstance();
-    const plane = vtkPlane.newInstance();
+    // const clipFilter = vtkClipPolyData.newInstance();
+    // const plane = vtkPlane.newInstance();
     
-    plane.setOrigin(planeOrigin);
-    plane.setNormal(planeNormal);
+    // plane.setOrigin(planeOrigin);
+    // plane.setNormal(planeNormal);
     
-    clipFilter.setInputData(inputData);
-    clipFilter.setClippingPlane(plane);
+    // clipFilter.setInputData(inputData);
+    // clipFilter.setClippingPlane(plane);
     
-    return clipFilter;
+    // return clipFilter;
   };
 
   const createVectorGlyphs = (inputData: any, scale: number, density: number, arrayName: string) => {
-    if (!vtkGlyph3DMapper || !vtkArrowSource) {
-      console.warn('[VTKViewer] Glyph3DMapper or ArrowSource not available');
-      return null;
-    }
+    // VTK Glyph3DMapper and ArrowSource not available in this build
+    console.warn('[VTKViewer] Glyph3DMapper or ArrowSource not available');
+    return null;
     
     const pointData = inputData.getPointData();
     const vectorArray = pointData.getArrayByName(arrayName) || pointData.getArray(1);
@@ -446,18 +442,18 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     }
 
     // Create arrow source for glyphs
-    const arrowSource = vtkArrowSource.newInstance();
-    arrowSource.setTipLength(0.3);
-    arrowSource.setTipRadius(0.1);
-    arrowSource.setShaftRadius(0.03);
+    // const arrowSource = vtkArrowSource.newInstance();
+    // arrowSource.setTipLength(0.3);
+    // arrowSource.setTipRadius(0.1);
+    // arrowSource.setShaftRadius(0.03);
 
-    // Create glyph mapper
-    const glyphMapper = vtkGlyph3DMapper.newInstance();
-    glyphMapper.setInputData(inputData);
-    glyphMapper.setSourceData(arrowSource.getOutputData());
-    glyphMapper.setOrientationArray(vectorArray.getName());
-    glyphMapper.setScaleArray(vectorArray.getName());
-    glyphMapper.setScaleFactor(scale);
+    // // Create glyph mapper
+    // const glyphMapper = vtkGlyph3DMapper.newInstance();
+    // glyphMapper.setInputData(inputData);
+    // glyphMapper.setSourceData(arrowSource.getOutputData());
+    // glyphMapper.setOrientationArray(vectorArray.getName());
+    // glyphMapper.setScaleArray(vectorArray.getName());
+    // glyphMapper.setScaleFactor(scale);
     
     // Apply density sampling (every Nth point)
     const totalPoints = inputData.getNumberOfPoints();
@@ -517,7 +513,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       contourActor.setMapper(contourMapper);
       
       // Apply contour-specific visualization
-      applyContourVisualization(contourMapper, filteredData, config.isosurface.values, scalarArrayName, mode);
+      applyContourVisualization(contourMapper, filteredData, config.isosurface.values, scalarArrayName, activeField as VisualizationMode);
       
       actors.push(contourActor);
       filterEffectApplied = true;
@@ -535,7 +531,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       thresholdActor.setMapper(thresholdMapper);
       
       // Apply threshold-specific visualization
-      applyThresholdVisualization(thresholdMapper, filteredData, config.threshold.range, scalarArrayName, mode);
+      applyThresholdVisualization(thresholdMapper, filteredData, config.threshold.range, scalarArrayName, activeField as VisualizationMode);
       
       actors.push(thresholdActor);
       filterEffectApplied = true;
@@ -553,7 +549,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       clipActor.setMapper(clipMapper);
       
       // Apply clipping-specific visualization
-      applyClipVisualization(clipActor, filteredData, config.clip.plane.origin, config.clip.plane.normal, mode);
+      applyClipVisualization(clipActor, filteredData, config.clip.plane.origin, config.clip.plane.normal, activeField as VisualizationMode);
       
       actors.push(clipActor);
       filterEffectApplied = true;
@@ -597,7 +593,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     };
     
     console.log('[VTKViewer] Built pipeline with', actors.length, 'actors for field:', activeField);
-    console.log('[VTKViewer] Active filters:', Object.keys(filtersRef.current).filter(k => filtersRef.current[k]));
+    console.log('[VTKViewer] Active filters:', Object.keys(filtersRef.current).filter(k => (filtersRef.current as any)[k]));
     
     return actors;
   };
