@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Users, Database, CheckCircle, Clock, XCircle, DollarSign, Lock } from 'lucide-react';
+import { Users, Database, CheckCircle, Clock, XCircle, DollarSign, Lock, Filter } from 'lucide-react';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 
@@ -152,6 +152,20 @@ const DatabaseLoginForm = ({ onLogin }: { onLogin: (password: string) => void })
 
 // Main admin database component
 const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
+  // Filter states
+  const [userFilters, setUserFilters] = useState({
+    username: '',
+    email: '',
+    fullName: '',
+  });
+
+  const [simulationFilters, setSimulationFilters] = useState({
+    name: '',
+    username: '',
+    email: '',
+    status: '',
+    simulationType: '',
+  });
   // Fetch admin stats with auth token
   const { data: stats, isLoading: statsLoading } = useQuery<AdminStats>({
     queryKey: ['/api/admindatabase/stats'],
@@ -193,6 +207,33 @@ const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
       return response.json();
     }
   });
+
+  // Filtered data using useMemo for performance
+  const filteredUsers = useMemo(() => {
+    if (!users) return [];
+    
+    return users.filter(user => {
+      return (
+        user.username.toLowerCase().includes(userFilters.username.toLowerCase()) &&
+        user.email.toLowerCase().includes(userFilters.email.toLowerCase()) &&
+        (user.fullName || '').toLowerCase().includes(userFilters.fullName.toLowerCase())
+      );
+    });
+  }, [users, userFilters]);
+
+  const filteredSimulations = useMemo(() => {
+    if (!simulations) return [];
+    
+    return simulations.filter(sim => {
+      return (
+        sim.name.toLowerCase().includes(simulationFilters.name.toLowerCase()) &&
+        sim.user.username.toLowerCase().includes(simulationFilters.username.toLowerCase()) &&
+        sim.user.email.toLowerCase().includes(simulationFilters.email.toLowerCase()) &&
+        sim.status.toLowerCase().includes(simulationFilters.status.toLowerCase()) &&
+        sim.simulationType.toLowerCase().includes(simulationFilters.simulationType.toLowerCase())
+      );
+    });
+  }, [simulations, simulationFilters]);
 
   if (statsLoading) {
     return (
@@ -282,8 +323,12 @@ const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
       {/* Users Table */}
       <Card data-testid="card-users-table">
         <CardHeader>
-          <CardTitle>Usuarios</CardTitle>
-          <CardDescription>Lista completa de todos los usuarios registrados con todos los campos</CardDescription>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            Usuarios
+            <Badge variant="secondary">{filteredUsers.length} / {users?.length || 0}</Badge>
+          </CardTitle>
+          <CardDescription>Lista completa de todos los usuarios registrados con filtros</CardDescription>
         </CardHeader>
         <CardContent>
           {usersLoading ? (
@@ -296,16 +341,49 @@ const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>ID</TableHead>
-                    <TableHead>Usuario</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Nombre Completo</TableHead>
+                    <TableHead>
+                      <div className="space-y-1">
+                        <div>Usuario</div>
+                        <Input
+                          placeholder="Filtrar..."
+                          value={userFilters.username}
+                          onChange={(e) => setUserFilters({...userFilters, username: e.target.value})}
+                          className="h-7 text-xs"
+                          data-testid="filter-username"
+                        />
+                      </div>
+                    </TableHead>
+                    <TableHead>
+                      <div className="space-y-1">
+                        <div>Email</div>
+                        <Input
+                          placeholder="Filtrar..."
+                          value={userFilters.email}
+                          onChange={(e) => setUserFilters({...userFilters, email: e.target.value})}
+                          className="h-7 text-xs"
+                          data-testid="filter-user-email"
+                        />
+                      </div>
+                    </TableHead>
+                    <TableHead>
+                      <div className="space-y-1">
+                        <div>Nombre Completo</div>
+                        <Input
+                          placeholder="Filtrar..."
+                          value={userFilters.fullName}
+                          onChange={(e) => setUserFilters({...userFilters, fullName: e.target.value})}
+                          className="h-7 text-xs"
+                          data-testid="filter-fullname"
+                        />
+                      </div>
+                    </TableHead>
                     <TableHead>Créditos</TableHead>
                     <TableHead>Fecha Registro</TableHead>
                     <TableHead>Última Actualización</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {users?.map((user) => (
+                  {filteredUsers.map((user) => (
                     <TableRow key={user.id} data-testid={`row-user-${user.id}`}>
                       <TableCell data-testid={`text-user-id-${user.id}`}>{user.id}</TableCell>
                       <TableCell data-testid={`text-username-${user.id}`}>{user.username}</TableCell>
@@ -326,8 +404,12 @@ const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
       {/* Simulations Table */}
       <Card data-testid="card-simulations-table">
         <CardHeader>
-          <CardTitle>Simulaciones</CardTitle>
-          <CardDescription>Lista completa de todas las simulaciones con todos los campos de la base de datos</CardDescription>
+          <CardTitle className="flex items-center gap-2">
+            <Database className="h-5 w-5" />
+            Simulaciones
+            <Badge variant="secondary">{filteredSimulations.length} / {simulations?.length || 0}</Badge>
+          </CardTitle>
+          <CardDescription>Lista completa de todas las simulaciones con filtros en tiempo real</CardDescription>
         </CardHeader>
         <CardContent>
           {simulationsLoading ? (
@@ -340,12 +422,70 @@ const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>ID</TableHead>
-                    <TableHead>Nombre</TableHead>
-                    <TableHead>Usuario</TableHead>
-                    <TableHead>Email Usuario</TableHead>
+                    <TableHead>
+                      <div className="space-y-1">
+                        <div>Nombre</div>
+                        <Input
+                          placeholder="Filtrar..."
+                          value={simulationFilters.name}
+                          onChange={(e) => setSimulationFilters({...simulationFilters, name: e.target.value})}
+                          className="h-7 text-xs"
+                          data-testid="filter-sim-name"
+                        />
+                      </div>
+                    </TableHead>
+                    <TableHead>
+                      <div className="space-y-1">
+                        <div>Usuario</div>
+                        <Input
+                          placeholder="Filtrar..."
+                          value={simulationFilters.username}
+                          onChange={(e) => setSimulationFilters({...simulationFilters, username: e.target.value})}
+                          className="h-7 text-xs"
+                          data-testid="filter-sim-username"
+                        />
+                      </div>
+                    </TableHead>
+                    <TableHead>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-1">
+                          <span>Email Usuario</span>
+                          <Filter className="h-3 w-3 text-muted-foreground" />
+                        </div>
+                        <Input
+                          placeholder="Filtrar por email..."
+                          value={simulationFilters.email}
+                          onChange={(e) => setSimulationFilters({...simulationFilters, email: e.target.value})}
+                          className="h-7 text-xs"
+                          data-testid="filter-sim-email"
+                        />
+                      </div>
+                    </TableHead>
                     <TableHead>File Path</TableHead>
-                    <TableHead>Estado</TableHead>
-                    <TableHead>Tipo Simulación</TableHead>
+                    <TableHead>
+                      <div className="space-y-1">
+                        <div>Estado</div>
+                        <Input
+                          placeholder="Filtrar..."
+                          value={simulationFilters.status}
+                          onChange={(e) => setSimulationFilters({...simulationFilters, status: e.target.value})}
+                          className="h-7 text-xs"
+                          data-testid="filter-sim-status"
+                        />
+                      </div>
+                    </TableHead>
+                    <TableHead>
+                      <div className="space-y-1">
+                        <div>Tipo Simulación</div>
+                        <Input
+                          placeholder="Filtrar..."
+                          value={simulationFilters.simulationType}
+                          onChange={(e) => setSimulationFilters({...simulationFilters, simulationType: e.target.value})}
+                          className="h-7 text-xs"
+                          data-testid="filter-sim-type"
+                        />
+                      </div>
+                    </TableHead>
                     <TableHead>Tipo Paquete</TableHead>
                     <TableHead>Costo</TableHead>
                     <TableHead>Público</TableHead>
@@ -356,7 +496,7 @@ const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {simulations?.map((sim) => (
+                  {filteredSimulations.map((sim) => (
                     <TableRow key={sim.id} data-testid={`row-simulation-${sim.id}`}>
                       <TableCell data-testid={`text-sim-id-${sim.id}`}>{sim.id}</TableCell>
                       <TableCell data-testid={`text-sim-name-${sim.id}`} className="max-w-xs">
