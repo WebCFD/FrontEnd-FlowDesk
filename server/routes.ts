@@ -825,6 +825,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // External API for simulation status updates (for external servers)
+  app.patch("/api/external/simulations/:id/status", async (req, res) => {
+    try {
+      // Check API key for external access
+      const apiKey = req.headers['x-api-key'];
+      if (!apiKey || apiKey !== 'flowerpower-external-api') {
+        return res.status(401).json({ message: "Invalid API key" });
+      }
+
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid simulation ID" });
+      }
+
+      // Validate request body
+      const { status, completedAt } = req.body;
+      if (!status || !['processing', 'completed', 'failed'].includes(status)) {
+        return res.status(400).json({ 
+          message: "Invalid status. Must be: 'processing', 'completed', or 'failed'" 
+        });
+      }
+
+      // Prepare status update
+      const statusUpdate: any = { status };
+      if (completedAt) {
+        statusUpdate.completedAt = new Date(completedAt);
+      } else if (status === 'completed') {
+        statusUpdate.completedAt = new Date(); // Auto-set completion time
+      }
+      
+      const simulation = await storage.updateSimulationStatus(id, statusUpdate);
+      
+      if (!simulation) {
+        return res.status(404).json({ message: "Simulation not found" });
+      }
+
+      res.json({ 
+        success: true, 
+        message: `Simulation ${id} status updated to ${status}`,
+        simulation: {
+          id: simulation.id,
+          name: simulation.name,
+          status: simulation.status,
+          completedAt: simulation.completedAt,
+          updatedAt: simulation.updatedAt
+        }
+      });
+    } catch (error) {
+      console.error('Error updating simulation status externally:', error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
