@@ -35,6 +35,7 @@ interface AdminSimulation {
   packageType: 'basic' | 'professional' | 'enterprise';
   cost: string;
   isPublic: boolean;
+  jsonConfig?: any; // JSON configuration data
   createdAt: string;
   completedAt?: string;
   updatedAt: string;
@@ -177,7 +178,7 @@ export default function AdminPage() {
       <Card data-testid="card-users-table">
         <CardHeader>
           <CardTitle>Usuarios</CardTitle>
-          <CardDescription>Lista de todos los usuarios registrados</CardDescription>
+          <CardDescription>Lista completa de todos los usuarios registrados con todos los campos</CardDescription>
         </CardHeader>
         <CardContent>
           {usersLoading ? (
@@ -185,30 +186,34 @@ export default function AdminPage() {
               <div>Cargando usuarios...</div>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Usuario</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Nombre</TableHead>
-                  <TableHead>Créditos</TableHead>
-                  <TableHead>Fecha de Registro</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {users?.map((user) => (
-                  <TableRow key={user.id} data-testid={`row-user-${user.id}`}>
-                    <TableCell data-testid={`text-user-id-${user.id}`}>{user.id}</TableCell>
-                    <TableCell data-testid={`text-username-${user.id}`}>{user.username}</TableCell>
-                    <TableCell data-testid={`text-email-${user.id}`}>{user.email}</TableCell>
-                    <TableCell data-testid={`text-fullname-${user.id}`}>{user.fullName || '-'}</TableCell>
-                    <TableCell data-testid={`text-credits-${user.id}`}>€{parseFloat(user.credits).toFixed(2)}</TableCell>
-                    <TableCell data-testid={`text-created-${user.id}`}>{format(new Date(user.createdAt), 'dd/MM/yyyy')}</TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>ID</TableHead>
+                    <TableHead>Usuario</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Nombre Completo</TableHead>
+                    <TableHead>Créditos</TableHead>
+                    <TableHead>Fecha Registro</TableHead>
+                    <TableHead>Última Actualización</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {users?.map((user) => (
+                    <TableRow key={user.id} data-testid={`row-user-${user.id}`}>
+                      <TableCell data-testid={`text-user-id-${user.id}`}>{user.id}</TableCell>
+                      <TableCell data-testid={`text-username-${user.id}`}>{user.username}</TableCell>
+                      <TableCell data-testid={`text-email-${user.id}`}>{user.email}</TableCell>
+                      <TableCell data-testid={`text-fullname-${user.id}`}>{user.fullName || '-'}</TableCell>
+                      <TableCell data-testid={`text-credits-${user.id}`}>€{parseFloat(user.credits).toFixed(2)}</TableCell>
+                      <TableCell data-testid={`text-created-${user.id}`}>{format(new Date(user.createdAt), 'dd/MM/yyyy HH:mm')}</TableCell>
+                      <TableCell data-testid={`text-updated-${user.id}`}>{format(new Date(user.updatedAt), 'dd/MM/yyyy HH:mm')}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </CardContent>
       </Card>
@@ -217,7 +222,7 @@ export default function AdminPage() {
       <Card data-testid="card-simulations-table">
         <CardHeader>
           <CardTitle>Simulaciones</CardTitle>
-          <CardDescription>Lista de todas las simulaciones del sistema</CardDescription>
+          <CardDescription>Lista completa de todas las simulaciones con todos los campos de la base de datos</CardDescription>
         </CardHeader>
         <CardContent>
           {simulationsLoading ? (
@@ -225,36 +230,78 @@ export default function AdminPage() {
               <div>Cargando simulaciones...</div>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Nombre</TableHead>
-                  <TableHead>Usuario</TableHead>
-                  <TableHead>Tipo</TableHead>
-                  <TableHead>Estado</TableHead>
-                  <TableHead>Costo</TableHead>
-                  <TableHead>Fecha</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {simulations?.map((sim) => (
-                  <TableRow key={sim.id} data-testid={`row-simulation-${sim.id}`}>
-                    <TableCell data-testid={`text-sim-id-${sim.id}`}>{sim.id}</TableCell>
-                    <TableCell data-testid={`text-sim-name-${sim.id}`} className="max-w-xs truncate">{sim.name}</TableCell>
-                    <TableCell data-testid={`text-sim-user-${sim.id}`}>{sim.user.username}</TableCell>
-                    <TableCell data-testid={`badge-sim-type-${sim.id}`}>
-                      <SimulationTypeBadge type={sim.simulationType} />
-                    </TableCell>
-                    <TableCell data-testid={`badge-sim-status-${sim.id}`}>
-                      <StatusBadge status={sim.status} />
-                    </TableCell>
-                    <TableCell data-testid={`text-sim-cost-${sim.id}`}>€{parseFloat(sim.cost).toFixed(2)}</TableCell>
-                    <TableCell data-testid={`text-sim-date-${sim.id}`}>{format(new Date(sim.createdAt), 'dd/MM/yyyy')}</TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>ID</TableHead>
+                    <TableHead>Nombre</TableHead>
+                    <TableHead>Usuario</TableHead>
+                    <TableHead>Email Usuario</TableHead>
+                    <TableHead>File Path</TableHead>
+                    <TableHead>Estado</TableHead>
+                    <TableHead>Tipo Simulación</TableHead>
+                    <TableHead>Tipo Paquete</TableHead>
+                    <TableHead>Costo</TableHead>
+                    <TableHead>Público</TableHead>
+                    <TableHead>Fecha Creación</TableHead>
+                    <TableHead>Fecha Completado</TableHead>
+                    <TableHead>Última Actualización</TableHead>
+                    <TableHead>Config JSON</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {simulations?.map((sim) => (
+                    <TableRow key={sim.id} data-testid={`row-simulation-${sim.id}`}>
+                      <TableCell data-testid={`text-sim-id-${sim.id}`}>{sim.id}</TableCell>
+                      <TableCell data-testid={`text-sim-name-${sim.id}`} className="max-w-xs">
+                        <div className="truncate" title={sim.name}>{sim.name}</div>
+                      </TableCell>
+                      <TableCell data-testid={`text-sim-user-${sim.id}`}>{sim.user.username}</TableCell>
+                      <TableCell data-testid={`text-sim-user-email-${sim.id}`}>{sim.user.email}</TableCell>
+                      <TableCell data-testid={`text-sim-filepath-${sim.id}`} className="max-w-xs">
+                        <div className="truncate text-xs font-mono" title={sim.filePath}>{sim.filePath}</div>
+                      </TableCell>
+                      <TableCell data-testid={`badge-sim-status-${sim.id}`}>
+                        <StatusBadge status={sim.status} />
+                      </TableCell>
+                      <TableCell data-testid={`badge-sim-type-${sim.id}`}>
+                        <SimulationTypeBadge type={sim.simulationType} />
+                      </TableCell>
+                      <TableCell data-testid={`text-sim-package-${sim.id}`}>
+                        <Badge variant="outline">{sim.packageType}</Badge>
+                      </TableCell>
+                      <TableCell data-testid={`text-sim-cost-${sim.id}`}>€{parseFloat(sim.cost).toFixed(2)}</TableCell>
+                      <TableCell data-testid={`text-sim-public-${sim.id}`}>
+                        {sim.isPublic ? (
+                          <Badge variant="secondary">Público</Badge>
+                        ) : (
+                          <Badge variant="outline">Privado</Badge>
+                        )}
+                      </TableCell>
+                      <TableCell data-testid={`text-sim-created-${sim.id}`}>
+                        {format(new Date(sim.createdAt), 'dd/MM/yyyy HH:mm')}
+                      </TableCell>
+                      <TableCell data-testid={`text-sim-completed-${sim.id}`}>
+                        {sim.completedAt ? format(new Date(sim.completedAt), 'dd/MM/yyyy HH:mm') : '-'}
+                      </TableCell>
+                      <TableCell data-testid={`text-sim-updated-${sim.id}`}>
+                        {format(new Date(sim.updatedAt), 'dd/MM/yyyy HH:mm')}
+                      </TableCell>
+                      <TableCell data-testid={`text-sim-json-${sim.id}`}>
+                        {sim.jsonConfig ? (
+                          <Badge variant="secondary" className="cursor-pointer" title="Click para ver JSON">
+                            JSON disponible
+                          </Badge>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </CardContent>
       </Card>
