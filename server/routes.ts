@@ -1,13 +1,15 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertUserSchema, insertSimulationSchema, updateSimulationStatusSchema } from "@shared/schema";
+import { insertUserSchema, insertSimulationSchema, updateSimulationStatusSchema, simulations, users } from "@shared/schema";
 import { z } from "zod";
 import { setupAuth } from "./auth";
 import { promises as fs } from "fs";
 import * as fsSync from "fs";
 import path from "path";
 import JSZip from "jszip";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // ===== DEBUG MIDDLEWARE: Track all VTK requests =====
@@ -822,6 +824,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error fetching database stats:', error);
       res.status(500).json({ message: "Error fetching database stats" });
+    }
+  });
+
+  // External API to get simulation details with user info
+  app.get("/api/external/simulations/:id", async (req, res) => {
+    try {
+      // Check API key for external access
+      const apiKey = req.headers['x-api-key'];
+      if (!apiKey || apiKey !== 'flowerpower-external-api') {
+        return res.status(401).json({ message: "Invalid API key" });
+      }
+
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid simulation ID" });
+      }
+
+      // Get simulation with user details
+      const result = await db
+        .select({
+          // Simulation info
+          id: simulations.id,
+          name: simulations.name,
+          filePath: simulations.filePath,
+          status: simulations.status,
+          simulationType: simulations.simulationType,
+          packageType: simulations.packageType,
+          cost: simulations.cost,
+          isPublic: simulations.isPublic,
+          createdAt: simulations.createdAt,
+          completedAt: simulations.completedAt,
+          updatedAt: simulations.updatedAt,
+          // User info
+          user: {
+            id: users.id,
+            username: users.username,
+            email: users.email,
+            fullName: users.fullName,
+            credits: users.credits
+          }
+        })
+        .from(simulations)
+        .innerJoin(users, eq(simulations.userId, users.id))
+        .where(eq(simulations.id, id))
+        .limit(1);
+
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Simulation not found" });
+      }
+
+      res.json({
+        success: true,
+        simulation: result[0]
+      });
+    } catch (error) {
+      console.error('Error fetching simulation details:', error);
+      res.status(500).json({ message: "Internal server error" });
     }
   });
 
