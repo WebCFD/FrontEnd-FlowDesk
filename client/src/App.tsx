@@ -10,7 +10,7 @@ import Profile from "@/pages/dashboard/profile";
 import NewSimulation from "@/pages/dashboard/new-simulation";
 import WizardDesign from "@/pages/dashboard/wizard-design";
 import PostAnalysis from "@/pages/dashboard/post-analysis";
-import AdminPage from "@/pages/admin";
+import AdminDatabasePage from "@/pages/admindatabase";
 
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
@@ -51,11 +51,7 @@ function Router() {
           <Profile />
         </ProtectedRoute>
       </Route>
-      <Route path="/admin">
-        <ProtectedRoute>
-          <AdminPage />
-        </ProtectedRoute>
-      </Route>
+      <Route path="/admindatabase" component={AdminDatabasePage} />
       <Route component={NotFound} />
     </Switch>
   );

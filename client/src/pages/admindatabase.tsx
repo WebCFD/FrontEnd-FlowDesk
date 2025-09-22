@@ -1,9 +1,14 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Users, Database, CheckCircle, Clock, XCircle, DollarSign } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Users, Database, CheckCircle, Clock, XCircle, DollarSign, Lock } from 'lucide-react';
 import { format } from 'date-fns';
+import { useToast } from '@/hooks/use-toast';
 
 // Types for admin APIs
 interface AdminStats {
@@ -77,20 +82,116 @@ const SimulationTypeBadge = ({ type }: { type: string }) => (
   </Badge>
 );
 
-export default function AdminPage() {
-  // Fetch admin stats
+// Login form component
+const DatabaseLoginForm = ({ onLogin }: { onLogin: (password: string) => void }) => {
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    if (password === 'flowerpower') {
+      onLogin(password);
+      toast({
+        title: "Acceso concedido",
+        description: "Bienvenido al panel de administración de base de datos",
+      });
+    } else {
+      toast({
+        title: "Contraseña incorrecta",
+        description: "Ingrese la contraseña correcta para acceder",
+        variant: "destructive",
+      });
+    }
+    
+    setIsLoading(false);
+  };
+
+  return (
+    <div className="container mx-auto p-6 max-w-md">
+      <Card data-testid="card-database-login">
+        <CardHeader className="text-center">
+          <div className="flex justify-center mb-4">
+            <Lock className="h-12 w-12 text-muted-foreground" />
+          </div>
+          <CardTitle>Acceso a Base de Datos</CardTitle>
+          <CardDescription>
+            Ingrese la contraseña para acceder al panel de administración de la base de datos
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="password">Contraseña</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Ingrese la contraseña"
+                data-testid="input-database-password"
+                required
+              />
+            </div>
+            <Button 
+              type="submit" 
+              className="w-full" 
+              disabled={isLoading}
+              data-testid="button-database-login"
+            >
+              {isLoading ? "Verificando..." : "Acceder"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+// Main admin database component
+const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
+  // Fetch admin stats with auth token
   const { data: stats, isLoading: statsLoading } = useQuery<AdminStats>({
-    queryKey: ['/api/admin/stats'],
+    queryKey: ['/api/admindatabase/stats'],
+    queryFn: async () => {
+      const response = await fetch('/api/admindatabase/stats', {
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+        },
+      });
+      if (!response.ok) throw new Error('Failed to fetch stats');
+      return response.json();
+    }
   });
 
-  // Fetch all users
+  // Fetch all users with auth token
   const { data: users, isLoading: usersLoading } = useQuery<AdminUser[]>({
-    queryKey: ['/api/admin/users'],
+    queryKey: ['/api/admindatabase/users'],
+    queryFn: async () => {
+      const response = await fetch('/api/admindatabase/users', {
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+        },
+      });
+      if (!response.ok) throw new Error('Failed to fetch users');
+      return response.json();
+    }
   });
 
-  // Fetch all simulations
+  // Fetch all simulations with auth token
   const { data: simulations, isLoading: simulationsLoading } = useQuery<AdminSimulation[]>({
-    queryKey: ['/api/admin/simulations'],
+    queryKey: ['/api/admindatabase/simulations'],
+    queryFn: async () => {
+      const response = await fetch('/api/admindatabase/simulations', {
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+        },
+      });
+      if (!response.ok) throw new Error('Failed to fetch simulations');
+      return response.json();
+    }
   });
 
   if (statsLoading) {
@@ -106,7 +207,11 @@ export default function AdminPage() {
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold" data-testid="heading-admin-panel">Panel de Administración</h1>
+        <h1 className="text-3xl font-bold" data-testid="heading-admindatabase-panel">Panel de Administración - Base de Datos</h1>
+        <Badge variant="secondary" className="flex items-center gap-2">
+          <Database className="h-4 w-4" />
+          Acceso Total
+        </Badge>
       </div>
 
       {/* Stats Cards */}
@@ -307,4 +412,20 @@ export default function AdminPage() {
       </Card>
     </div>
   );
+};
+
+// Main component
+export default function AdminDatabasePage() {
+  const [authToken, setAuthToken] = useState<string | null>(null);
+
+  const handleLogin = (password: string) => {
+    // Generate a simple token for session management
+    setAuthToken(password);
+  };
+
+  if (!authToken) {
+    return <DatabaseLoginForm onLogin={handleLogin} />;
+  }
+
+  return <AdminDatabasePanel authToken={authToken} />;
 }

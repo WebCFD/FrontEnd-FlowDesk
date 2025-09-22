@@ -737,7 +737,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin API endpoints
+  // Admin API endpoints (legacy - requires user authentication)
   app.get("/api/admin/users", async (req, res) => {
     try {
       if (!req.isAuthenticated()) {
@@ -777,6 +777,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error fetching admin stats:', error);
       res.status(500).json({ message: "Error fetching admin stats" });
+    }
+  });
+
+  // Database Admin API endpoints (requires special password authentication)
+  const checkDatabaseAuth = (req: Request, res: Response, next: Function) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ message: "Database access token required" });
+    }
+
+    const token = authHeader.split(' ')[1];
+    if (token !== 'flowerpower') {
+      return res.status(403).json({ message: "Invalid database access token" });
+    }
+
+    next();
+  };
+
+  app.get("/api/admindatabase/users", checkDatabaseAuth, async (req, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      res.json(users);
+    } catch (error) {
+      console.error('Error fetching database users:', error);
+      res.status(500).json({ message: "Error fetching database users" });
+    }
+  });
+
+  app.get("/api/admindatabase/simulations", checkDatabaseAuth, async (req, res) => {
+    try {
+      const simulations = await storage.getAllSimulations();
+      res.json(simulations);
+    } catch (error) {
+      console.error('Error fetching database simulations:', error);
+      res.status(500).json({ message: "Error fetching database simulations" });
+    }
+  });
+
+  app.get("/api/admindatabase/stats", checkDatabaseAuth, async (req, res) => {
+    try {
+      const stats = await storage.getAdminStats();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error fetching database stats:', error);
+      res.status(500).json({ message: "Error fetching database stats" });
     }
   });
 
