@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
 Worker for processing test calculations with Inductiva API.
-This worker polls the Express API for pending simulations and processes them.
+This worker polls the Express API for pending simulations and processes them using Inductiva cloud infrastructure.
+NO LOCAL FALLBACK - All calculations run on Inductiva.
 """
 
 import os
@@ -9,14 +10,17 @@ import sys
 import time
 import requests
 import json
+import tempfile
+import shutil
 from datetime import datetime
+from pathlib import Path
 
-# Try to import inductiva, handle if not installed
+# Import inductiva
 try:
     import inductiva
 except ImportError:
-    print("[WORKER] WARNING: inductiva module not installed. Install with: pip install inductiva")
-    inductiva = None
+    print("[WORKER] FATAL ERROR: inductiva module not installed. Install with: pip install inductiva")
+    sys.exit(1)
 
 # Configuration
 API_BASE_URL = os.getenv('API_BASE_URL', 'http://localhost:5000')
@@ -82,8 +86,8 @@ def update_simulation_status(simulation_id, status, result=None):
         return False
 
 
-def process_test_calculation(simulation):
-    """Process a test calculation simulation with Inductiva"""
+def process_test_calculation_with_inductiva(simulation):
+    """Process a test calculation simulation with Inductiva - NO FALLBACK"""
     sim_id = simulation['id']
     json_config = simulation.get('jsonConfig', {})
     
@@ -98,71 +102,142 @@ def process_test_calculation(simulation):
         })
         return
     
-    log(f"Found test calculation ID: {sim_id} - Computing ({number_a} + {number_b})²")
+    log(f"Processing test calculation ID: {sim_id} - Computing ({number_a} + {number_b})² on Inductiva")
     
     # Update status to processing
     if not update_simulation_status(sim_id, 'processing'):
         log(f"ERROR: Failed to update simulation {sim_id} to processing, skipping...")
         return
     
+    # Create temporary directory for Inductiva input files
+    temp_dir = tempfile.mkdtemp(prefix=f"inductiva_sim_{sim_id}_")
+    
     try:
-        # Check if Inductiva is available and configured
-        if inductiva is None:
-            raise Exception("Inductiva module not installed")
-        
+        # Verify Inductiva API key
         if not INDUCTIVA_API_KEY:
             raise Exception("INDUCTIVA_API_KEY environment variable not set")
         
-        # Set Inductiva API key via environment (library reads it automatically)
+        # Set Inductiva API key
         os.environ['INDUCTIVA_API_KEY'] = INDUCTIVA_API_KEY
         
-        log(f"Attempting to use Inductiva API for calculation...")
+        log(f"Preparing Inductiva job for simulation {sim_id}...")
         
-        # Note: Inductiva is designed for running physical simulators (OpenFOAM, XBeach, etc.)
-        # on cloud infrastructure, not for simple Python calculations.
-        # For a simple calculation like (a+b)², we'll use the local fallback.
-        # In a production environment, you would use Inductiva for actual CFD simulations.
+        # Create the Python script that will run on Inductiva
+        script_content = f"""#!/usr/bin/env python3
+import json
+
+# Calculate result
+number_a = {number_a}
+number_b = {number_b}
+result = (number_a + number_b) ** 2
+
+# Create output
+output = {{
+    "calculatedValue": result,
+    "formula": f"({{number_a}} + {{number_b}})²",
+    "numberA": number_a,
+    "numberB": number_b,
+    "processedWith": "inductiva_cloud"
+}}
+
+# Write result to file
+with open("result.json", "w") as f:
+    json.dump(output, f, indent=2)
+
+print(f"Calculation completed: ({{number_a}} + {{number_b}})² = {{result}}")
+"""
+        
+        # Write script to temp directory
+        script_path = os.path.join(temp_dir, "calculate.py")
+        with open(script_path, 'w') as f:
+            f.write(script_content)
+        
+        log(f"Created script at {script_path}")
+        log(f"Connecting to Inductiva API...")
         
         # Verify connection to Inductiva
         try:
             user_info = inductiva.users.get_info()
-            tier = getattr(user_info, 'tier', 'unknown') if user_info else 'unknown'
-            log(f"Connected to Inductiva API successfully. User tier: {tier}")
-            log(f"For simple calculations, using local computation as Inductiva is optimized for large-scale physical simulations")
+            log(f"Connected to Inductiva API - User: {getattr(user_info, 'username', 'N/A')}")
         except Exception as api_error:
-            log(f"Could not connect to Inductiva API: {api_error}")
+            raise Exception(f"Failed to connect to Inductiva API: {api_error}")
         
-        # For test calculations, we use local computation
-        # Inductiva would be used for actual CFD simulations with OpenFOAM
-        raise Exception("Using local fallback for test calculations")
+        # Create machine group (lightweight for simple calculations)
+        log(f"Creating machine group...")
+        machine_group = inductiva.resources.MachineGroup(
+            machine_type="c2-standard-4",  # 4 vCPUs, 16 GB RAM
+            spot=True  # Use spot instances for 85% cost savings
+        )
+        machine_group.start()
+        log(f"Machine group started: {machine_group.name}")
+        
+        # Define commands to run on Inductiva
+        commands = ["python3 calculate.py"]
+        
+        log(f"Submitting job to Inductiva...")
+        
+        # Submit custom command task using run_simulation
+        task = inductiva.tasks.run_simulation(
+            input_dir=temp_dir,
+            commands=commands,
+            on=machine_group,
+            storage_dir=f"simulation_{sim_id}"
+        )
+        
+        log(f"Task submitted to Inductiva with ID: {task.id}")
+        log(f"Waiting for Inductiva to complete task...")
+        
+        # Wait for task completion
+        task.wait()
+        
+        log(f"Task completed. Downloading results...")
+        
+        # Download results to temp directory
+        output_dir = os.path.join(temp_dir, "output")
+        os.makedirs(output_dir, exist_ok=True)
+        task.download_outputs(output_dir)
+        
+        # Read result.json
+        result_file = os.path.join(output_dir, "result.json")
+        if not os.path.exists(result_file):
+            raise Exception(f"result.json not found in Inductiva output")
+        
+        with open(result_file, 'r') as f:
+            result_data = json.load(f)
+        
+        log(f"Result from Inductiva: {result_data['calculatedValue']}")
+        
+        # Add processing timestamp
+        result_data['processedAt'] = datetime.now().isoformat()
+        result_data['inductivaTaskId'] = task.id
+        
+        # Update simulation with result
+        update_simulation_status(sim_id, 'completed', result_data)
+        log(f"Simulation {sim_id} completed successfully with Inductiva")
+        
+        # Cleanup machine group
+        log(f"Terminating machine group...")
+        machine_group.terminate()
+        log(f"Machine group terminated")
         
     except Exception as e:
         log(f"ERROR: Failed to process simulation {sim_id} with Inductiva: {e}")
         
-        # Fallback: Calculate locally if Inductiva fails
-        log(f"Fallback: Calculating locally...")
+        # NO FALLBACK - Report error directly
+        update_simulation_status(sim_id, 'failed', {
+            'error': str(e),
+            'errorType': 'inductiva_error',
+            'message': 'Simulation failed on Inductiva cloud infrastructure'
+        })
+        log(f"Simulation {sim_id} marked as failed - NO LOCAL FALLBACK")
+        
+    finally:
+        # Cleanup temp directory
         try:
-            result_value = (number_a + number_b) ** 2
-            log(f"Local calculation result: {result_value}")
-            
-            result_data = {
-                'calculatedValue': result_value,
-                'formula': f"({number_a} + {number_b})²",
-                'numberA': number_a,
-                'numberB': number_b,
-                'processedAt': datetime.now().isoformat(),
-                'processedWith': 'local_fallback',
-                'inductivaError': str(e)
-            }
-            
-            update_simulation_status(sim_id, 'completed', result_data)
-            log(f"Simulation {sim_id} completed with local fallback")
-        except Exception as fallback_error:
-            log(f"ERROR: Even local fallback failed: {fallback_error}")
-            update_simulation_status(sim_id, 'failed', {
-                'error': str(e),
-                'fallbackError': str(fallback_error)
-            })
+            shutil.rmtree(temp_dir)
+            log(f"Cleaned up temp directory: {temp_dir}")
+        except Exception as cleanup_error:
+            log(f"WARNING: Failed to cleanup temp directory: {cleanup_error}")
 
 
 def main():
@@ -172,12 +247,21 @@ def main():
     log(f"Poll interval: {POLL_INTERVAL} seconds")
     
     if not INDUCTIVA_API_KEY:
-        log("WARNING: INDUCTIVA_API_KEY not set. Will use local fallback for calculations.")
+        log("FATAL ERROR: INDUCTIVA_API_KEY not set")
+        sys.exit(1)
     
-    if inductiva is None:
-        log("WARNING: Inductiva module not available. Will use local fallback for calculations.")
+    log("Verifying Inductiva API connection...")
+    try:
+        user_info = inductiva.users.get_info()
+        log(f"✓ Connected to Inductiva API")
+        log(f"  User: {getattr(user_info, 'username', 'N/A')}")
+        log(f"  Tier: {getattr(user_info, 'tier', 'N/A')}")
+    except Exception as e:
+        log(f"FATAL ERROR: Cannot connect to Inductiva API: {e}")
+        sys.exit(1)
     
     log("Worker ready. Polling for pending simulations...")
+    log("NOTE: NO LOCAL FALLBACK - All calculations run on Inductiva cloud")
     
     try:
         while True:
@@ -195,7 +279,7 @@ def main():
                         
                         if sim_type == 'test_calculation':
                             log(f"Processing test calculation simulation {sim_id}")
-                            process_test_calculation(sim)
+                            process_test_calculation_with_inductiva(sim)
                         else:
                             log(f"Skipping simulation {sim_id} (type: {sim_type})")
                 else:
@@ -206,6 +290,7 @@ def main():
                 # Continue the loop even if an iteration fails
             
             # Wait before next poll
+            log(f"Waiting {POLL_INTERVAL} seconds before next check...")
             time.sleep(POLL_INTERVAL)
             
     except KeyboardInterrupt:
