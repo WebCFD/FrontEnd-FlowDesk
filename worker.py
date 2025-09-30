@@ -343,7 +343,40 @@ mergePatchPairs
 def extract_value_from_openfoam_results(output_dir):
     """Extract a numerical value from OpenFOAM results"""
     try:
-        # Look for the final time directory
+        # First, try to extract from stdout.txt if it exists
+        stdout_file = os.path.join(output_dir, "stdout.txt")
+        if os.path.exists(stdout_file):
+            log(f"Reading stdout.txt for numerical values...")
+            with open(stdout_file, 'r') as f:
+                content = f.read()
+            
+            # Extract final time step Courant number
+            courant_matches = re.findall(r'Time = (\d+)\s+Courant Number mean: ([-+]?[0-9]*\.?[0-9]+(?:[eE][-+]?[0-9]+)?)\s+max: ([-+]?[0-9]*\.?[0-9]+(?:[eE][-+]?[0-9]+)?)', content)
+            if courant_matches:
+                last_time, mean_courant, max_courant = courant_matches[-1]
+                log(f"Extracted Courant number from Time={last_time}: mean={mean_courant}, max={max_courant}")
+                return {
+                    'extractedValue': float(max_courant),
+                    'meanValue': float(mean_courant),
+                    'valueType': 'courant_number_max',
+                    'timeStep': int(last_time),
+                    'source': 'stdout.txt'
+                }
+            
+            # Extract final pressure residuals
+            p_residual_matches = re.findall(r'Time = (\d+)[\s\S]*?DICPCG:\s+Solving for p, Initial residual = ([-+]?[0-9]*\.?[0-9]+(?:[eE][-+]?[0-9]+)?), Final residual = ([-+]?[0-9]*\.?[0-9]+(?:[eE][-+]?[0-9]+)?)', content)
+            if p_residual_matches:
+                last_time, initial_res, final_res = p_residual_matches[-1]
+                log(f"Extracted pressure residual from Time={last_time}: final={final_res}")
+                return {
+                    'extractedValue': float(final_res),
+                    'initialResidual': float(initial_res),
+                    'valueType': 'pressure_final_residual',
+                    'timeStep': int(last_time),
+                    'source': 'stdout.txt'
+                }
+        
+        # Fallback: try to find time directories (original approach)
         time_dirs = []
         for item in os.listdir(output_dir):
             item_path = os.path.join(output_dir, item)
@@ -355,7 +388,7 @@ def extract_value_from_openfoam_results(output_dir):
                     continue
         
         if not time_dirs:
-            raise Exception("No time directories found in OpenFOAM results")
+            raise Exception("No time directories found and could not extract from stdout")
         
         # Get the last time directory
         time_dirs.sort()
@@ -370,7 +403,6 @@ def extract_value_from_openfoam_results(output_dir):
                 content = f.read()
             
             # Extract internalField values
-            # Look for pattern like "internalField   uniform 0.123;" or "internalField nonuniform List<scalar>"
             match = re.search(r'internalField\s+uniform\s+([-+]?[0-9]*\.?[0-9]+(?:[eE][-+]?[0-9]+)?)', content)
             if match:
                 pressure_value = float(match.group(1))
@@ -380,45 +412,6 @@ def extract_value_from_openfoam_results(output_dir):
                     'valueType': 'pressure_uniform',
                     'timeStep': last_time_val,
                     'source': f'{last_time_dir}/p'
-                }
-            
-            # If uniform not found, try to extract from nonuniform list
-            match = re.search(r'internalField\s+nonuniform\s+List<scalar>\s*\n\s*\d+\s*\n\s*\(([\s\S]+?)\)', content)
-            if match:
-                values_str = match.group(1)
-                values = [float(x) for x in values_str.split()]
-                if values:
-                    avg_pressure = sum(values) / len(values)
-                    max_pressure = max(values)
-                    log(f"Extracted average pressure: {avg_pressure}, max: {max_pressure}")
-                    return {
-                        'extractedValue': avg_pressure,
-                        'maxValue': max_pressure,
-                        'valueType': 'pressure_average',
-                        'timeStep': last_time_val,
-                        'cellCount': len(values),
-                        'source': f'{last_time_dir}/p'
-                    }
-        
-        # Try velocity file if pressure fails
-        u_file = os.path.join(output_dir, last_time_dir, "U")
-        if os.path.exists(u_file):
-            with open(u_file, 'r') as f:
-                content = f.read()
-            
-            # Extract velocity magnitude
-            match = re.search(r'internalField\s+uniform\s+\(([-+]?[0-9]*\.?[0-9]+(?:[eE][-+]?[0-9]+)?)\s+([-+]?[0-9]*\.?[0-9]+(?:[eE][-+]?[0-9]+)?)\s+([-+]?[0-9]*\.?[0-9]+(?:[eE][-+]?[0-9]+)?)\)', content)
-            if match:
-                ux = float(match.group(1))
-                uy = float(match.group(2))
-                uz = float(match.group(3))
-                velocity_mag = (ux**2 + uy**2 + uz**2)**0.5
-                log(f"Extracted velocity magnitude: {velocity_mag}")
-                return {
-                    'extractedValue': velocity_mag,
-                    'valueType': 'velocity_magnitude',
-                    'timeStep': last_time_val,
-                    'source': f'{last_time_dir}/U'
                 }
         
         raise Exception("Could not extract numerical value from results")
