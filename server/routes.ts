@@ -104,25 +104,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Validation 2: Check simulation type
-      const validTypes = ['comfort', 'renovation'];
+      const validTypes = ['comfort', 'renovation', 'test_calculation'];
       if (!validTypes.includes(simulationType)) {
         return res.status(400).json({ message: "Invalid simulation type" });
       }
 
       // Validation 3: Check status
-      const validStatuses = ['completed', 'processing', 'failed'];
+      const validStatuses = ['pending', 'completed', 'processing', 'failed'];
       if (!validStatuses.includes(status)) {
         return res.status(400).json({ message: "Invalid simulation status" });
       }
 
       // Validation 4: Check if user has enough credits - dynamic pricing
-      const simulationCost = simulationType === 'comfort' ? 10 : 12; // Steady: €10, Air Renovation: €12
-      const hasEnoughCredits = await storage.debitUserCredits(req.user.id, simulationCost);
-      
-      if (!hasEnoughCredits) {
-        return res.status(400).json({ 
-          message: `Insufficient credits. You need at least €${simulationCost} to run this simulation.` 
-        });
+      // Test calculations are free (for testing Inductiva integration)
+      let simulationCost = 0;
+      if (simulationType === 'test_calculation') {
+        simulationCost = 0; // Free for testing
+        console.log('[EXPRESS] Test calculation - no credit debit');
+      } else {
+        simulationCost = simulationType === 'comfort' ? 10 : 12; // Steady: €10, Air Renovation: €12
+        const hasEnoughCredits = await storage.debitUserCredits(req.user.id, simulationCost);
+        
+        if (!hasEnoughCredits) {
+          return res.status(400).json({ 
+            message: `Insufficient credits. You need at least €${simulationCost} to run this simulation.` 
+          });
+        }
       }
 
       // Create user folder if it doesn't exist
@@ -884,6 +891,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // External API to get pending simulations (for worker)
+  app.get("/api/external/simulations/pending", async (req, res) => {
+    try {
+      // Check API key for external access
+      const apiKey = req.headers['x-api-key'];
+      if (!apiKey || apiKey !== 'flowerpower-external-api') {
+        return res.status(401).json({ message: "Invalid API key" });
+      }
+
+      console.log('[EXPRESS] Fetching pending simulations...');
+
+      // Get all simulations with status 'pending'
+      const pendingSimulations = await db
+        .select({
+          id: simulations.id,
+          userId: simulations.userId,
+          name: simulations.name,
+          filePath: simulations.filePath,
+          status: simulations.status,
+          simulationType: simulations.simulationType,
+          packageType: simulations.packageType,
+          cost: simulations.cost,
+          jsonConfig: simulations.jsonConfig,
+          createdAt: simulations.createdAt,
+          updatedAt: simulations.updatedAt,
+        })
+        .from(simulations)
+        .where(eq(simulations.status, 'pending'))
+        .orderBy(simulations.createdAt);
+
+      console.log('[EXPRESS] Found pending simulations:', pendingSimulations.length);
+
+      res.json({
+        success: true,
+        count: pendingSimulations.length,
+        simulations: pendingSimulations
+      });
+    } catch (error) {
+      console.error('[EXPRESS] Error fetching pending simulations:', error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // External API for simulation status updates (for external servers)
   app.patch("/api/external/simulations/:id/status", async (req, res) => {
     try {
@@ -899,21 +949,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Validate request body
-      const { status, completedAt } = req.body;
-      if (!status || !['processing', 'completed', 'failed'].includes(status)) {
+      const { status, result, completedAt } = req.body;
+      if (!status || !['pending', 'processing', 'completed', 'failed'].includes(status)) {
         return res.status(400).json({ 
-          message: "Invalid status. Must be: 'processing', 'completed', or 'failed'" 
+          message: "Invalid status. Must be: 'pending', 'processing', 'completed', or 'failed'" 
         });
       }
 
       // Prepare status update
       const statusUpdate: any = { status };
+      if (result !== undefined) {
+        statusUpdate.result = result; // Store result from external processing (e.g., Inductiva)
+      }
       if (completedAt) {
         statusUpdate.completedAt = new Date(completedAt);
       } else if (status === 'completed') {
         statusUpdate.completedAt = new Date(); // Auto-set completion time
       }
       
+      console.log('[EXPRESS] Updating simulation status:', { id, status, hasResult: !!result });
       const simulation = await storage.updateSimulationStatus(id, statusUpdate);
       
       if (!simulation) {

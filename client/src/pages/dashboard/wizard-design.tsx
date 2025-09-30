@@ -2801,8 +2801,8 @@ export default function WizardDesign() {
     setShowNumbersDialog(true);
   };
 
-  // Función para guardar los números ingresados
-  const handleSaveNumbers = () => {
+  // Función para guardar los números ingresados y crear simulación de prueba
+  const handleSaveNumbers = async () => {
     const num1 = parseFloat(number1);
     const num2 = parseFloat(number2);
 
@@ -2818,13 +2818,60 @@ export default function WizardDesign() {
     setSavedNumber1(num1);
     setSavedNumber2(num2);
     setShowNumbersDialog(false);
+    setIsCreatingSimulation(true);
 
-    toast({
-      title: "Números guardados",
-      description: `Número 1: ${num1}, Número 2: ${num2}`,
-    });
+    try {
+      // Crear simulación de prueba para Inductiva
+      console.log('[FRONTEND] Creating test calculation with:', { numberA: num1, numberB: num2 });
+      
+      const response = await fetch("/api/simulations/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          name: `Test Calculation: (${num1} + ${num2})²`,
+          simulationType: "test_calculation",
+          status: "pending",
+          jsonConfig: {
+            numberA: num1,
+            numberB: num2,
+          },
+        }),
+      });
 
-    console.log("Números guardados:", { numero1: num1, numero2: num2 });
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Error creating test simulation");
+      }
+
+      console.log('[FRONTEND] Test calculation created:', result);
+
+      // Invalidate queries to refresh dashboard
+      await queryClient.invalidateQueries({ queryKey: ["/api/simulations"] });
+
+      toast({
+        title: "Simulación de Prueba Creada",
+        description: `Cálculo: (${num1} + ${num2})². El worker procesará esta simulación en breve.`,
+      });
+
+      // Redirect to dashboard
+      setTimeout(() => {
+        setLocation("/dashboard");
+      }, 1000);
+
+    } catch (error) {
+      console.error('[FRONTEND] Error creating test calculation:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Error al crear la simulación de prueba",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCreatingSimulation(false);
+    }
   };
 
   // Función para obtener el costo de la simulación
