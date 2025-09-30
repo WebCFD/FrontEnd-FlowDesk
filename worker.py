@@ -126,7 +126,8 @@ def process_test_calculation(simulation):
         # Verify connection to Inductiva
         try:
             user_info = inductiva.users.get_info()
-            log(f"Connected to Inductiva API successfully. User tier: {user_info.get('tier', 'unknown')}")
+            tier = getattr(user_info, 'tier', 'unknown') if user_info else 'unknown'
+            log(f"Connected to Inductiva API successfully. User tier: {tier}")
             log(f"For simple calculations, using local computation as Inductiva is optimized for large-scale physical simulations")
         except Exception as api_error:
             log(f"Could not connect to Inductiva API: {api_error}")
