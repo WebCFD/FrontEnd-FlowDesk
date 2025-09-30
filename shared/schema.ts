@@ -18,12 +18,13 @@ export const simulations = pgTable("simulations", {
   userId: integer("user_id").references(() => users.id).notNull(),
   name: text("name").notNull(),
   filePath: text("file_path").notNull(),
-  status: text("status").notNull(), // 'processing', 'completed', 'failed'
-  simulationType: text("simulation_type").notNull(), // 'comfort', 'renovation'
+  status: text("status").notNull(), // 'pending', 'processing', 'completed', 'failed'
+  simulationType: text("simulation_type").notNull(), // 'comfort', 'renovation', 'test_calculation'
   packageType: text("package_type").notNull(), // 'basic', 'professional', 'enterprise'
   cost: decimal("cost", { precision: 10, scale: 2 }).notNull(),
   isPublic: boolean("is_public").default(false).notNull(),
-  jsonConfig: jsonb("json_config"), // Complete simulation configuration
+  jsonConfig: jsonb("json_config"), // Complete simulation configuration or parameters for test
+  result: jsonb("result"), // Result from external processing (e.g., Inductiva API)
   createdAt: timestamp("created_at").defaultNow().notNull(),
   completedAt: timestamp("completed_at"),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -63,15 +64,16 @@ export const insertSimulationSchema = createInsertSchema(simulations)
     jsonConfig: true,
   })
   .extend({
-    status: z.enum(['processing', 'completed', 'failed']),
-    simulationType: z.enum(['comfort', 'renovation']),
+    status: z.enum(['pending', 'processing', 'completed', 'failed']),
+    simulationType: z.enum(['comfort', 'renovation', 'test_calculation']),
     packageType: z.enum(['basic', 'professional', 'enterprise']),
     cost: z.string().transform(val => parseFloat(val)),
   });
 
 // Schema for updating simulation status
 export const updateSimulationStatusSchema = z.object({
-  status: z.enum(['processing', 'completed', 'failed']),
+  status: z.enum(['pending', 'processing', 'completed', 'failed']),
+  result: z.any().optional(),
   completedAt: z.date().optional(),
 });
 
