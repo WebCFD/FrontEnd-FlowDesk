@@ -432,10 +432,8 @@ def process_test_calculation_with_inductiva(simulation):
     sim_id = simulation['id']
     json_config = simulation.get('jsonConfig', {})
     
-    # Extract numbers (we'll use them for iterations count)
-    number_a = json_config.get('numberA', 5)
-    number_b = json_config.get('numberB', 5)
-    iterations = max(10, min(number_a + number_b, 50))  # 10-50 iterations
+    # Use minimal iterations for fast testing
+    iterations = 3
     
     log(f"Processing simulation ID: {sim_id} using OpenFOAM cavity case ({iterations} iterations)")
     
