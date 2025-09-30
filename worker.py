@@ -456,6 +456,15 @@ def process_test_calculation_with_inductiva(simulation):
         log(f"Creating OpenFOAM cavity case...")
         create_openfoam_cavity_case(temp_dir, iterations)
         
+        # Create run script for OpenFOAM
+        run_script = """#!/bin/bash
+set -e
+blockMesh
+icoFoam
+"""
+        with open(os.path.join(temp_dir, "run.sh"), 'w') as f:
+            f.write(run_script)
+        
         log(f"Connecting to Inductiva API...")
         user_info = inductiva.users.get_info()
         log(f"Connected - User: {getattr(user_info, 'username', 'N/A')}")
@@ -478,9 +487,9 @@ def process_test_calculation_with_inductiva(simulation):
         # Submit task
         task = openfoam.run(
             input_dir=temp_dir,
+            shell_script="run.sh",
             on=machine_group,
-            storage_dir=f"simulation_{sim_id}",
-            use_hwloc=False  # Disable hwloc for faster execution
+            storage_dir=f"simulation_{sim_id}"
         )
         
         log(f"Task submitted with ID: {task.id}")
