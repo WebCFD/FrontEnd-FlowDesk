@@ -322,40 +322,71 @@ export default function Dashboard() {
                     simulations.map((simulation) => (
                       <TableRow key={simulation.id}>
                         <TableCell className="font-medium">
-                          <div className="flex items-center gap-2">
-                            {simulation.name}
-                            {simulation.isPublic && (
-                              <Badge variant="secondary" className="text-xs">
-                                Public
-                              </Badge>
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-2">
+                              {simulation.name}
+                              {simulation.isPublic && (
+                                <Badge variant="secondary" className="text-xs">
+                                  Public
+                                </Badge>
+                              )}
+                              {simulation.simulationType === "test_calculation" && (
+                                <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
+                                  Test
+                                </Badge>
+                              )}
+                            </div>
+                            {simulation.simulationType === "test_calculation" && simulation.status === "completed" && simulation.result && (
+                              <div className="text-sm text-green-600 font-mono mt-1">
+                                {typeof simulation.result === 'object' && 'calculatedValue' in simulation.result && (
+                                  <>
+                                    {simulation.result.formula} = {simulation.result.calculatedValue}
+                                  </>
+                                )}
+                              </div>
+                            )}
+                            {simulation.simulationType === "test_calculation" && simulation.status === "failed" && simulation.result && (
+                              <div className="text-sm text-red-600 mt-1">
+                                {typeof simulation.result === 'object' && 'error' in simulation.result && (
+                                  <>Error: {simulation.result.error}</>
+                                )}
+                              </div>
                             )}
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="flex items-center gap-2">
-                            <code className="text-sm bg-muted px-2 py-1 rounded font-mono">
-                              {simulation.filePath}
-                            </code>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleLoadDesign(simulation.filePath)}
-                              disabled={loadDesignMutation.isPending}
-                              className="flex items-center gap-1"
-                            >
-                              <FolderOpen className="h-3 w-3" />
-                              Load
-                            </Button>
-                          </div>
+                          {simulation.simulationType === "test_calculation" ? (
+                            <div className="text-sm text-muted-foreground">
+                              Test calculation
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <code className="text-sm bg-muted px-2 py-1 rounded font-mono">
+                                {simulation.filePath}
+                              </code>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleLoadDesign(simulation.filePath)}
+                                disabled={loadDesignMutation.isPending}
+                                className="flex items-center gap-1"
+                              >
+                                <FolderOpen className="h-3 w-3" />
+                                Load
+                              </Button>
+                            </div>
+                          )}
                         </TableCell>
                         <TableCell>
                           <Badge 
                             variant={
+                              simulation.status === "pending" ? "outline" :
                               simulation.status === "processing" ? "default" :
                               simulation.status === "completed" ? "secondary" :
                               "destructive"
                             }
                             className={
+                              simulation.status === "pending" ? "bg-gray-50 text-gray-700 border-gray-200" :
                               simulation.status === "processing" ? "bg-blue-100 text-blue-800 border-blue-200" :
                               simulation.status === "completed" ? "bg-green-100 text-green-800 border-green-200" :
                               "bg-red-100 text-red-800 border-red-200"
