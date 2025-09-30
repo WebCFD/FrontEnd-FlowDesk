@@ -314,6 +314,13 @@ export default function WizardDesign() {
   const [closedContourCache, setClosedContourCache] = useState(new Map());
   const [lastLinesHash, setLastLinesHash] = useState('');
 
+  // Estados para el diálogo de dos números
+  const [showNumbersDialog, setShowNumbersDialog] = useState(false);
+  const [number1, setNumber1] = useState<string>("");
+  const [number2, setNumber2] = useState<string>("");
+  const [savedNumber1, setSavedNumber1] = useState<number | null>(null);
+  const [savedNumber2, setSavedNumber2] = useState<number | null>(null);
+
   // Funciones auxiliares para manejo de parámetros por planta
   const getCurrentFloorParameters = () => {
     return floorParameters[selectedFloor] || { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20 };
@@ -2789,93 +2796,35 @@ export default function WizardDesign() {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
 
-  // Función para mostrar el diálogo de confirmación antes de crear la simulación
+  // Función modificada para mostrar el diálogo de dos números
   const handleStartSimulation = () => {
-    // PRIMERA VALIDACIÓN: Boundary Conditions (IBC - Insufficient Boundary Conditions)
-    let conditions;
-    try {
-      conditions = calculateBoundaryConditions();
-    } catch (error) {
-      console.log("Error calculating boundary conditions:", error);
-      conditions = null;
-    }
-    
-    const totalInflow = conditions ? (conditions.airEntry.inflow + conditions.furnVent.inflow) : 0;
-    const totalOutflow = conditions ? (conditions.airEntry.outflow + conditions.furnVent.outflow) : 0;
-    const totalPressureBCs = conditions ? conditions.pressureBCs : 0;
-    const hasValidBoundaryConditions = totalInflow >= 1 && totalOutflow >= 1;
-    const hasValidPressureConditions = totalPressureBCs >= 1;
-    
-    if (!hasValidBoundaryConditions) {
+    setShowNumbersDialog(true);
+  };
+
+  // Función para guardar los números ingresados
+  const handleSaveNumbers = () => {
+    const num1 = parseFloat(number1);
+    const num2 = parseFloat(number2);
+
+    if (isNaN(num1) || isNaN(num2)) {
       toast({
-        title: "Insufficient Boundary Conditions (IBC)",
-        description: "At least 1 Inflow and 1 Outflow condition are required for the CFD problem to be solvable. Configure air direction in your AirEntries or add ceiling/floor vents.",
+        title: "Error",
+        description: "Por favor ingrese números válidos",
         variant: "destructive",
       });
       return;
     }
 
-    if (!hasValidPressureConditions) {
-      toast({
-        title: "Insufficient Boundary Pressure (IBS)",
-        description: "Please add at least an open window, or an open door, or configure an existing vent to use at least one Pressure flow type. Without a pressure reference, the simulation cannot determine the air movement in your space.",
-        variant: "destructive",
-      });
-      return;
-    }
+    setSavedNumber1(num1);
+    setSavedNumber2(num2);
+    setShowNumbersDialog(false);
 
-    // SEGUNDA VALIDACIÓN: Stair Connectivity (ISC - Insufficient Stair Connectivity)
-    let stats;
-    try {
-      stats = calculateDesignStats();
-    } catch (error) {
-      stats = null;
-    }
-    const totalFloors = stats ? stats.floors : 0;
-    const totalStairs = stats ? stats.stairs : 0;
-    const requiredStairs = totalFloors > 1 ? totalFloors - 1 : 0;
-    const hasValidStairConnectivity = totalFloors <= 1 || totalStairs >= requiredStairs;
+    toast({
+      title: "Números guardados",
+      description: `Número 1: ${num1}, Número 2: ${num2}`,
+    });
 
-    if (!hasValidStairConnectivity) {
-      toast({
-        title: "Insufficient Stair Connectivity (ISC)",
-        description: "Your stairs do not connect all floors, leaving some isolated. While possible, this may affect air flow accuracy. Please, add more Stairs elements to connect all floors, or analyze only connected floors (remove others) for realistic results.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // TERCERA VALIDACIÓN: Usuario logueado
-    if (!user) {
-      toast({
-        title: "Login Required",
-        description: "Please log in to create and run simulations.",
-        variant: "destructive",
-      });
-      setShowAuthDialog(true);
-      return;
-    }
-
-    // CUARTA VALIDACIÓN: Nombre de simulación
-    if (!simulationName || simulationName.trim().length === 0) {
-      toast({
-        title: "Simulation Name Required",
-        description: "Please enter a simulation name before starting.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (simulationName.trim().length < 3 || simulationName.trim().length > 100) {
-      toast({
-        title: "Invalid Simulation Name",
-        description: "Simulation name must be between 3 and 100 characters.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setShowStartSimulationDialog(true);
+    console.log("Números guardados:", { numero1: num1, numero2: num2 });
   };
 
   // Función para obtener el costo de la simulación
@@ -4227,6 +4176,54 @@ export default function WizardDesign() {
           </div>
         </div>
       )}
+
+      {/* Diálogo para ingresar dos números */}
+      <Dialog open={showNumbersDialog} onOpenChange={setShowNumbersDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Ingresar Números</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="number1">Número 1</Label>
+              <Input
+                id="number1"
+                type="number"
+                value={number1}
+                onChange={(e) => setNumber1(e.target.value)}
+                placeholder="Ingrese el primer número"
+                data-testid="input-number1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="number2">Número 2</Label>
+              <Input
+                id="number2"
+                type="number"
+                value={number2}
+                onChange={(e) => setNumber2(e.target.value)}
+                placeholder="Ingrese el segundo número"
+                data-testid="input-number2"
+              />
+            </div>
+          </div>
+          <div className="flex justify-end gap-2 mt-6">
+            <Button
+              variant="outline"
+              onClick={() => setShowNumbersDialog(false)}
+              data-testid="button-cancel-numbers"
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleSaveNumbers}
+              data-testid="button-save-numbers"
+            >
+              Guardar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Authentication Selection Dialog */}
       <Dialog open={showAuthDialog} onOpenChange={setShowAuthDialog}>
