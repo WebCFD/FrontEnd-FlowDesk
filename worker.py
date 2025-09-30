@@ -467,7 +467,8 @@ def process_test_calculation_with_inductiva(simulation):
         machine_group = inductiva.resources.MachineGroup(
             machine_type="c2-standard-4",
             spot=True,
-            disk_size=10
+            data_disk_gb=10,
+            auto_resize_disk_max_gb=1000
         )
         machine_group.start()
         log(f"Machine group started: {machine_group.name}")
