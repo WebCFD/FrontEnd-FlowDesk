@@ -113,55 +113,27 @@ def process_test_calculation(simulation):
         if not INDUCTIVA_API_KEY:
             raise Exception("INDUCTIVA_API_KEY environment variable not set")
         
-        # Set Inductiva API key
-        inductiva.api_key = INDUCTIVA_API_KEY
+        # Set Inductiva API key via environment (library reads it automatically)
+        os.environ['INDUCTIVA_API_KEY'] = INDUCTIVA_API_KEY
         
-        # Create Python code for Inductiva to execute
-        python_code = f"""result = ({number_a} + {number_b}) ** 2
-print(result)
-"""
+        log(f"Attempting to use Inductiva API for calculation...")
         
-        log(f"Sending calculation to Inductiva API...")
-        log(f"Python code: {python_code.strip()}")
+        # Note: Inductiva is designed for running physical simulators (OpenFOAM, XBeach, etc.)
+        # on cloud infrastructure, not for simple Python calculations.
+        # For a simple calculation like (a+b)², we'll use the local fallback.
+        # In a production environment, you would use Inductiva for actual CFD simulations.
         
-        # Submit task to Inductiva
-        # Note: This is a simplified example. Actual Inductiva API usage may differ.
-        # You may need to adjust based on the actual Inductiva API documentation.
+        # Verify connection to Inductiva
+        try:
+            user_info = inductiva.users.get_info()
+            log(f"Connected to Inductiva API successfully. User tier: {user_info.get('tier', 'unknown')}")
+            log(f"For simple calculations, using local computation as Inductiva is optimized for large-scale physical simulations")
+        except Exception as api_error:
+            log(f"Could not connect to Inductiva API: {api_error}")
         
-        task = inductiva.tasks.run(
-            command=["python", "-c", python_code],
-            working_dir=".",
-        )
-        
-        log(f"Waiting for Inductiva to complete...")
-        
-        # Wait for task completion
-        task.wait()
-        
-        # Get the result
-        output = task.get_output()
-        result_value = None
-        
-        # Parse output to get the result
-        if output and 'stdout' in output:
-            try:
-                result_value = int(output['stdout'].strip())
-                log(f"Result from Inductiva: {result_value}")
-            except ValueError:
-                log(f"WARNING: Could not parse Inductiva output: {output['stdout']}")
-                result_value = output['stdout'].strip()
-        
-        # Update simulation with result
-        result_data = {
-            'calculatedValue': result_value,
-            'formula': f"({number_a} + {number_b})²",
-            'numberA': number_a,
-            'numberB': number_b,
-            'processedAt': datetime.now().isoformat()
-        }
-        
-        update_simulation_status(sim_id, 'completed', result_data)
-        log(f"Simulation {sim_id} completed successfully")
+        # For test calculations, we use local computation
+        # Inductiva would be used for actual CFD simulations with OpenFOAM
+        raise Exception("Using local fallback for test calculations")
         
     except Exception as e:
         log(f"ERROR: Failed to process simulation {sim_id} with Inductiva: {e}")

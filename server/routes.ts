@@ -834,6 +834,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // External API to get pending simulations (for worker)
+  // IMPORTANT: This route must come BEFORE /:id to avoid route conflicts
+  app.get("/api/external/simulations/pending", async (req, res) => {
+    try {
+      // Check API key for external access
+      const apiKey = req.headers['x-api-key'];
+      if (!apiKey || apiKey !== 'flowerpower-external-api') {
+        return res.status(401).json({ message: "Invalid API key" });
+      }
+
+      console.log('[EXPRESS] Fetching pending simulations...');
+
+      // Get all simulations with status 'pending'
+      const pendingSimulations = await db
+        .select({
+          id: simulations.id,
+          userId: simulations.userId,
+          name: simulations.name,
+          filePath: simulations.filePath,
+          status: simulations.status,
+          simulationType: simulations.simulationType,
+          packageType: simulations.packageType,
+          cost: simulations.cost,
+          jsonConfig: simulations.jsonConfig,
+          createdAt: simulations.createdAt,
+          updatedAt: simulations.updatedAt,
+        })
+        .from(simulations)
+        .where(eq(simulations.status, 'pending'))
+        .orderBy(simulations.createdAt);
+
+      console.log('[EXPRESS] Found pending simulations:', pendingSimulations.length);
+
+      res.json({
+        success: true,
+        count: pendingSimulations.length,
+        simulations: pendingSimulations
+      });
+    } catch (error) {
+      console.error('[EXPRESS] Error fetching pending simulations:', error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // External API to get simulation details with user info
   app.get("/api/external/simulations/:id", async (req, res) => {
     try {
@@ -887,49 +931,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       console.error('Error fetching simulation details:', error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  });
-
-  // External API to get pending simulations (for worker)
-  app.get("/api/external/simulations/pending", async (req, res) => {
-    try {
-      // Check API key for external access
-      const apiKey = req.headers['x-api-key'];
-      if (!apiKey || apiKey !== 'flowerpower-external-api') {
-        return res.status(401).json({ message: "Invalid API key" });
-      }
-
-      console.log('[EXPRESS] Fetching pending simulations...');
-
-      // Get all simulations with status 'pending'
-      const pendingSimulations = await db
-        .select({
-          id: simulations.id,
-          userId: simulations.userId,
-          name: simulations.name,
-          filePath: simulations.filePath,
-          status: simulations.status,
-          simulationType: simulations.simulationType,
-          packageType: simulations.packageType,
-          cost: simulations.cost,
-          jsonConfig: simulations.jsonConfig,
-          createdAt: simulations.createdAt,
-          updatedAt: simulations.updatedAt,
-        })
-        .from(simulations)
-        .where(eq(simulations.status, 'pending'))
-        .orderBy(simulations.createdAt);
-
-      console.log('[EXPRESS] Found pending simulations:', pendingSimulations.length);
-
-      res.json({
-        success: true,
-        count: pendingSimulations.length,
-        simulations: pendingSimulations
-      });
-    } catch (error) {
-      console.error('[EXPRESS] Error fetching pending simulations:', error);
       res.status(500).json({ message: "Internal server error" });
     }
   });
