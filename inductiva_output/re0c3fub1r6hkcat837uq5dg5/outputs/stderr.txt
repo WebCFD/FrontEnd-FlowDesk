@@ -1,0 +1,6 @@
+# COMMAND: ['bash', 'run.sh']
+# Working directory: /workdir/output/artifacts
+# Env: {}
+
+
+ -------

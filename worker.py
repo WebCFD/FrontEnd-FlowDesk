@@ -493,10 +493,11 @@ icoFoam
         
         log(f"Task completed! Downloading results...")
         
-        # Download results
-        output_dir = os.path.join(temp_dir, "output")
-        os.makedirs(output_dir, exist_ok=True)
-        task.download_outputs(output_dir)
+        # Download results (Inductiva downloads to inductiva_output/task_id/outputs by default)
+        task.download_outputs()
+        
+        # Find the actual output directory where Inductiva downloaded files
+        output_dir = os.path.join("inductiva_output", task.id, "outputs")
         
         log(f"Results downloaded. Extracting numerical value...")
         
