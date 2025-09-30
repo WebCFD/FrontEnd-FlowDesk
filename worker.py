@@ -174,12 +174,17 @@ print(f"Calculation completed: ({{number_a}} + {{number_b}})² = {{result}}")
         # Define commands to run on Inductiva
         commands = ["python3 calculate.py"]
         
-        log(f"Submitting job to Inductiva...")
+        log(f"Submitting job to Inductiva using CustomImage simulator...")
         
-        # Submit custom command task using run_simulation
-        task = inductiva.tasks.run_simulation(
+        # Use CustomImage simulator to run custom commands
+        custom_sim = inductiva.simulators.CustomImage(
+            image="python:3.11-slim",  # Use official Python image
+            commands=commands
+        )
+        
+        # Submit task
+        task = custom_sim.run(
             input_dir=temp_dir,
-            commands=commands,
             on=machine_group,
             storage_dir=f"simulation_{sim_id}"
         )
