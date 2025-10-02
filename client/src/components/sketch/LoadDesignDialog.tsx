@@ -62,13 +62,15 @@ export default function LoadDesignDialog({
       errors.push("Falta información de versión");
     }
 
-    if (!data.floors || typeof data.floors !== 'object') {
-      errors.push("No se encontraron datos de plantas");
+    // Soporte para formato nuevo (levels) y antiguo (floors)
+    const floorsData = data.levels || data.floors;
+    if (!floorsData || typeof floorsData !== 'object') {
+      errors.push("No se encontraron datos de plantas (levels/floors)");
       return { isValid: false, errors, warnings };
     }
 
     // Verificar cada planta
-    const floorKeys = Object.keys(data.floors);
+    const floorKeys = Object.keys(floorsData);
     if (floorKeys.length === 0) {
       errors.push("No hay plantas definidas en el diseño");
       return { isValid: false, errors, warnings };
@@ -78,7 +80,7 @@ export default function LoadDesignDialog({
     const floorDetails: Array<{name: string; airEntryCount: number; wallCount: number; stairCount: number}> = [];
     
     for (const floorKey of floorKeys) {
-      const floor = data.floors[floorKey];
+      const floor = floorsData[floorKey];
       
       if (!floor || typeof floor !== 'object') {
         errors.push(`Planta ${floorKey}: Datos inválidos`);
@@ -89,8 +91,10 @@ export default function LoadDesignDialog({
         errors.push(`Planta ${floorKey}: Altura no válida`);
       }
 
-      if (typeof floor.floorDeck !== 'number') {
-        warnings.push(`Planta ${floorKey}: Floor Deck no definido`);
+      // Soporte para formato nuevo (deck) y antiguo (floorDeck)
+      const deckValue = floor.deck !== undefined ? floor.deck : floor.floorDeck;
+      if (typeof deckValue !== 'number') {
+        warnings.push(`Planta ${floorKey}: Deck no definido`);
       }
 
       if (!Array.isArray(floor.walls)) {
@@ -114,13 +118,15 @@ export default function LoadDesignDialog({
         airEntryCount += floor.airEntries.length;
       }
       
-      // Contar vents horizontales (ceiling y floor_surf)
+      // Contar vents horizontales (ceiling y floor/floor_surf)
       let horizontalVentCount = 0;
       if (floor.ceiling?.airEntries) {
         horizontalVentCount += floor.ceiling.airEntries.filter((entry: any) => entry.type === 'vent').length;
       }
-      if (floor.floor_surf?.airEntries) {
-        horizontalVentCount += floor.floor_surf.airEntries.filter((entry: any) => entry.type === 'vent').length;
+      // Soporte para formato nuevo (floor) y antiguo (floor_surf)
+      const floorSurfData = floor.floor || floor.floor_surf;
+      if (floorSurfData?.airEntries) {
+        horizontalVentCount += floorSurfData.airEntries.filter((entry: any) => entry.type === 'vent').length;
       }
       
       // Sumar vents horizontales al total de air entries
