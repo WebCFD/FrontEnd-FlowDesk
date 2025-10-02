@@ -2784,7 +2784,8 @@ export default function WizardDesign() {
       rawFloors,
       furnitureObjects,
       getCurrentCeilingHeight() / 100,
-      floorParameters
+      floorParameters,
+      simulationName || undefined
     );
   };
 
@@ -3297,6 +3298,11 @@ export default function WizardDesign() {
       // Primero limpiar el estado actual
       reset();
       
+      // Cargar case_name si existe en el nuevo formato
+      if (designData.case_name) {
+        setSimulationName(designData.case_name);
+      }
+      
       // Convertir datos del JSON al formato interno
       const convertedFloors: Record<string, any> = {};
       const newFloorParameters: Record<string, { ceilingHeight: number; floorDeck: number; ceilingTemperature?: number; floorTemperature?: number }> = {};
@@ -3309,7 +3315,13 @@ export default function WizardDesign() {
         '3': 'third'
       };
       
-      Object.entries(designData.floors).forEach(([floorNumber, floorData]: [string, any]) => {
+      // Soporte para formato nuevo (levels) y antiguo (floors)
+      const floorsData = designData.levels || designData.floors;
+      if (!floorsData) {
+        throw new Error("No se encontraron datos de plantas (levels/floors)");
+      }
+      
+      Object.entries(floorsData).forEach(([floorNumber, floorData]: [string, any]) => {
         const floorName = floorNameMap[floorNumber] || `floor_${floorNumber}`;
         console.log(`🔍 IMPORT DEBUG: Processing floor ${floorNumber} → ${floorName}`, floorData);
         
@@ -3559,9 +3571,10 @@ export default function WizardDesign() {
           });
         }
         
-        // Procesar floor_surf vents
-        if (floorData.floor_surf?.airEntries) {
-          floorData.floor_surf.airEntries.forEach((entry: any) => {
+        // Procesar floor vents (soporte para formato nuevo "floor" y antiguo "floor_surf")
+        const floorSurfData = floorData.floor || floorData.floor_surf;
+        if (floorSurfData?.airEntries) {
+          floorSurfData.airEntries.forEach((entry: any) => {
             if (entry.type === 'vent') {
               // Convertir metros a centímetros (* 100) directamente, SIN denormalizeCoordinates
               const positionInCm = { x: entry.position.x * 100, y: entry.position.y * 100 };
@@ -3681,11 +3694,15 @@ export default function WizardDesign() {
 
         
         // Configurar parámetros del piso
+        // Soporte para formato nuevo (deck, floor) y antiguo (floorDeck, floor_surf)
+        const deckValue = floorData.deck !== undefined ? floorData.deck : floorData.floorDeck;
+        const floorTempValue = (floorData.floor || floorData.floor_surf)?.temp;
+        
         newFloorParameters[floorName] = {
           ceilingHeight: (floorData.height || 2.2) * 100, // Convertir metros a cm
-          floorDeck: (floorData.floorDeck || 0) * 100, // Convertir metros a cm
+          floorDeck: (deckValue || 0) * 100, // Convertir metros a cm - soporte nuevo y antiguo formato
           ceilingTemperature: floorData.ceiling?.temp || floorData.ceilingTemperature || 20, // Leer de ceiling.temp o default
-          floorTemperature: floorData.floor_surf?.temp || floorData.floorTemperature || 20 // Leer de floor_surf.temp o default
+          floorTemperature: floorTempValue || floorData.floorTemperature || 20 // Leer de floor.temp/floor_surf.temp o default
         };
       });
       
