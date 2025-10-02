@@ -204,12 +204,12 @@ interface FurnitureExport {
 
 interface FloorExport {
   height: number;
-  floorDeck: number;
+  deck: number;
   ceiling: {
     temp: number;
     airEntries: AirEntryExport[];
   };
-  floor_surf: {
+  floor: {
     temp: number;
     airEntries: AirEntryExport[];
   };
@@ -219,8 +219,9 @@ interface FloorExport {
 }
 
 interface SimulationExport {
+  case_name?: string;
   version: string;
-  floors: Record<string, FloorExport>;
+  levels: Record<string, FloorExport>;
 }
 
 // Constantes para la normalización de coordenadas
@@ -289,14 +290,16 @@ export function generateSimulationData(
   floors: Record<string, FloorData>,
   furniture: THREE.Object3D[] = [],
   roomHeight: number = 2.5,
-  floorParameters?: Record<string, { ceilingHeight: number; floorDeck: number; ceilingTemperature?: number; floorTemperature?: number }>
+  floorParameters?: Record<string, { ceilingHeight: number; floorDeck: number; ceilingTemperature?: number; floorTemperature?: number }>,
+  caseName?: string
 ): SimulationExport {
   // Reset global stair line counter for each export
   globalStairLineCounter = 1;
   
   const exportData: SimulationExport = {
+    case_name: caseName,
     version: "1.0",
-    floors: {}
+    levels: {}
   };
 
   // Procesar cada piso - convertir nombres a números
@@ -542,8 +545,12 @@ export function generateSimulationData(
     floorFurnitureObjects.forEach(obj => {
       if (obj.userData?.id) {
         const floorPrefix = getFloorPrefix(floorName);
-        // Match pattern: type_0F_1, type_1F_2, etc.
-        const match = obj.userData.id.match(new RegExp(`^([a-z_]+)_${floorPrefix}_(\\d+)$`));
+        // Match pattern: object_0F_type_1, object_1F_type_2, etc. (new format)
+        // Also match old format: type_0F_1, type_1F_2, etc. for backwards compatibility
+        const newFormatMatch = obj.userData.id.match(new RegExp(`^object_${floorPrefix}_([a-z_]+)_(\\d+)$`));
+        const oldFormatMatch = obj.userData.id.match(new RegExp(`^([a-z_]+)_${floorPrefix}_(\\d+)$`));
+        const match = newFormatMatch || oldFormatMatch;
+        
         if (match) {
           const type = match[1] as keyof typeof furnitureTypeCounts;
           const num = parseInt(match[2]);
@@ -560,15 +567,15 @@ export function generateSimulationData(
       
       // Generate new ID using furniture type and floor prefix
       let furnitureId: string;
-      if (obj.userData?.id && obj.userData.id.includes('_' + getFloorPrefix(floorName) + '_')) {
+      const floorPrefix = getFloorPrefix(floorName);
+      if (obj.userData?.id && obj.userData.id.startsWith('object_' + floorPrefix + '_')) {
         // Use existing ID if it already follows the new format
         furnitureId = obj.userData.id;
       } else {
-        // Generate new ID with type_floor_number format
+        // Generate new ID with object_floor_type_number format
         const furnitureType = getFurnitureTypeForId(obj.userData?.furnitureType);
-        const floorPrefix = getFloorPrefix(floorName);
         furnitureTypeCounts[furnitureType as keyof typeof furnitureTypeCounts]++;
-        furnitureId = `${furnitureType}_${floorPrefix}_${furnitureTypeCounts[furnitureType as keyof typeof furnitureTypeCounts]}`;
+        furnitureId = `object_${floorPrefix}_${furnitureType}_${furnitureTypeCounts[furnitureType as keyof typeof furnitureTypeCounts]}`;
       }
       
       // Extract thermal properties from userData
@@ -714,14 +721,14 @@ export function generateSimulationData(
     const floorTemp = currentFloorParams.floorTemperature ?? 20; // Valor por defecto 20°C
     
     // Agregar los datos del piso al objeto de exportación usando número
-    exportData.floors[floorNumber] = {
+    exportData.levels[floorNumber] = {
       height: floorHeight,
-      floorDeck: floorDeckValue,
+      deck: floorDeckValue,
       ceiling: {
         temp: ceilingTemp,
         airEntries: ceilingAirEntries
       },
-      floor_surf: {
+      floor: {
         temp: floorTemp,
         airEntries: floorSurfAirEntries
       },
