@@ -25,18 +25,18 @@ mixture
     }
     equationOfState
     {
-        rho0            1;
+        rho0            1.2;
         T0              300;
-        beta            3e-03;
+        beta            3.4e-03;
     }
     thermodynamics
     {
-        Cp              1040;
+        Cp              1005;
         Hf              0;
     }
     transport
     {
-        mu              1e-05;
+        mu              1.81e-05;
         Pr              0.7;
     }
 }
