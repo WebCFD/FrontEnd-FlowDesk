@@ -18,9 +18,9 @@ DEFAULT_TEMPERATURE = 20
 
 FLOW_LEVELS = {
     # STRING: (VALUE IN METERS PER SECOND)
-    'low':      10,
-    'medium':   20,
-    'high':     30,
+    'low':      0.5,
+    'medium':   1.0,
+    'high':     2.0,
 }
 
 ELEMENTS_MESHES = {
