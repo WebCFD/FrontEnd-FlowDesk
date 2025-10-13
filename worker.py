@@ -656,15 +656,16 @@ def main():
                     
                     for sim in simulations:
                         sim_type = sim.get('simulationType')
+                        sim_id = sim.get('id')
                         
                         if sim_type == 'test_calculation':
-                            log(f"Processing test calculation simulation {sim['id']}")
+                            log(f"Processing test calculation simulation {sim_id}")
                             process_test_calculation_with_inductiva(sim)
-                        elif sim_type in ['comfort', 'renovation']:
-                            log(f"Processing CFD simulation {sim['id']} (type: {sim_type})")
+                        elif sim_type in ['comfort', 'renovation', 'cfd_real']:
+                            log(f"Processing CFD simulation {sim_id} (type: {sim_type})")
                             process_cfd_simulation_with_pipeline(sim)
                         else:
-                            log(f"Skipping simulation {sim['id']} - unsupported type: {sim_type}")
+                            log(f"Skipping simulation {sim_id} - unsupported type: {sim_type}")
                             
             except Exception as e:
                 log(f"ERROR in main loop iteration: {e}")
