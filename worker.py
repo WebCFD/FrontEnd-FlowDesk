@@ -541,6 +541,85 @@ icoFoam
             log(f"WARNING: Failed to cleanup temp directory: {cleanup_error}")
 
 
+def process_cfd_simulation_with_pipeline(simulation):
+    """Process CFD simulation using complete pipeline: JSON → Geo → Mesh → CFD → Inductiva"""
+    sim_id = simulation['id']
+    
+    log(f"Processing CFD simulation ID: {sim_id}")
+    
+    # Update status to processing
+    if not update_simulation_status(sim_id, 'processing'):
+        log(f"ERROR: Failed to update simulation {sim_id} to processing")
+        return
+    
+    try:
+        # Step 1: Get file path from simulation data
+        file_path = simulation.get('filePath')
+        if not file_path:
+            raise Exception("No file path provided in simulation data")
+        
+        log(f"Loading simulation JSON from: {file_path}")
+        
+        # Step 2: Read JSON file
+        import json
+        with open(file_path, 'r') as f:
+            json_payload = json.load(f)
+        
+        log(f"JSON loaded successfully")
+        
+        # Step 3: Import pipeline steps
+        import sys
+        sys.path.append('.')  # Add current directory to path
+        
+        from step01_json2geo import run as json2geo
+        from step02_geo2mesh import run as geo2mesh
+        from step03_mesh2cfd import run as mesh2cfd
+        from step04_cfd2result import run as cfd2result
+        
+        log(f"Pipeline modules imported successfully")
+        
+        # Step 4: Execute pipeline
+        case_name = f"sim_{sim_id}"
+        
+        log(f"Step 1/4: Converting JSON to geometry...")
+        final_geometry_mesh, boundary_conditions_df = json2geo(json_payload, case_name)
+        
+        log(f"Step 2/4: Generating mesh...")
+        mesh_script = geo2mesh(case_name, final_geometry_mesh, boundary_conditions_df, type="snappy")
+        
+        log(f"Step 3/4: Setting up CFD case...")
+        mesh2cfd(case_name, type="hvac", mesh_script=mesh_script)
+        
+        log(f"Step 4/4: Running CFD simulation on Inductiva...")
+        cfd2result(case_name, type="inductiva")
+        
+        log(f"CFD simulation completed successfully")
+        
+        # Step 5: Prepare result data
+        result_data = {
+            'simulationType': 'cfd_comfort',
+            'caseName': case_name,
+            'processedAt': datetime.now().isoformat(),
+            'message': 'CFD simulation completed on Inductiva',
+            'resultsPath': f'cases/{case_name}/post'
+        }
+        
+        # Update simulation with result
+        update_simulation_status(sim_id, 'completed', result_data)
+        log(f"Simulation {sim_id} completed successfully")
+        
+    except Exception as e:
+        log(f"ERROR: Failed to process CFD simulation {sim_id}: {e}")
+        import traceback
+        log(f"Traceback: {traceback.format_exc()}")
+        
+        update_simulation_status(sim_id, 'failed', {
+            'error': str(e),
+            'errorType': 'cfd_pipeline_error',
+            'message': 'CFD simulation pipeline failed'
+        })
+
+
 def main():
     """Main worker loop"""
     log("Worker starting...")
@@ -581,6 +660,9 @@ def main():
                         if sim_type == 'test_calculation':
                             log(f"Processing test calculation simulation {sim['id']}")
                             process_test_calculation_with_inductiva(sim)
+                        elif sim_type in ['comfort', 'renovation']:
+                            log(f"Processing CFD simulation {sim['id']} (type: {sim_type})")
+                            process_cfd_simulation_with_pipeline(sim)
                         else:
                             log(f"Skipping simulation {sim['id']} - unsupported type: {sim_type}")
                             
