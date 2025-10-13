@@ -124,7 +124,10 @@ def get_entry_bc_dict(data):
     else:  # velocity
         new_patch['type'] = 'velocity_inlet'
         flow_intensity = simulation.get('flowIntensity', 'medium')
-        new_patch['U'] = FLOW_LEVELS.get(flow_intensity, FLOW_LEVELS['medium'])
+        if flow_intensity == 'custom':
+            new_patch['U'] = simulation.get('customValue', FLOW_LEVELS['medium'])
+        else:
+            new_patch['U'] = FLOW_LEVELS.get(flow_intensity, FLOW_LEVELS['medium'])
     
     new_patch['T'] = simulation.get('temperature', DEFAULT_TEMPERATURE)
     new_patch['nx'] = data['position']['normal']['x']
