@@ -6,4 +6,9 @@ requires-python = ">=3.11"
 dependencies = [
     "inductiva>=0.18.0",
     "requests>=2.32.5",
+    "pyvista>=0.44.0",
+    "pandas>=2.2.0",
+    "numpy>=1.26.0",
+    "shapely>=2.0.0",
+    "foamlib>=0.2.0",
 ]
