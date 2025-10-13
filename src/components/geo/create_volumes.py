@@ -127,6 +127,9 @@ def get_entry_bc_dict(data):
         new_patch['U'] = FLOW_LEVELS.get(flow_intensity, FLOW_LEVELS['medium'])
     
     new_patch['T'] = simulation.get('temperature', DEFAULT_TEMPERATURE)
+    new_patch['nx'] = data['position']['normal']['x']
+    new_patch['ny'] = data['position']['normal']['y']
+    new_patch['nz'] = data['position']['normal']['z']
     return new_patch
 
 
