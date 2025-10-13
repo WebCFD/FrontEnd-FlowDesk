@@ -1,0 +1,74 @@
+"""
+Geometry to mesh conversion with parallel processing and memory management.
+"""
+
+import os
+import logging
+from typing import List
+import pyvista as pv
+import pandas as pd
+
+from src.components.mesh.cfmesh import prepare_cfmesh
+from src.components.mesh.snappy import prepare_snappy
+from src.components.tools.load_geo import load_geo_files
+from src.components.tools.performance import PerformanceMonitor
+
+logger = logging.getLogger(__name__)
+
+
+def run(case_name: str, geo_mesh: pv.PolyData, geo_df: pd.DataFrame, type: str = "cfmesh") -> List[str]:
+    """
+    Convert 3D geometry to computational mesh with parallel processing and memory management.
+    
+    This function orchestrates the complete mesh generation pipeline:
+    1. Sets up the mesh case directory structure
+    2. Prepares mesh generation scripts based on selected meshing software
+    3. Configures mesh parameters and boundary conditions
+    4. Generates mesh generation commands for execution
+    
+    Args:
+        case_name: Name of the simulation case
+        geo_mesh: 3D geometry mesh from previous step
+        geo_df: DataFrame containing boundary condition information
+        type: Type of meshing software ("cfmesh" or "snappy")
+        
+    Returns:
+        List of script commands for mesh generation
+    """
+    performance_monitor = PerformanceMonitor()
+    performance_monitor.start()
+    
+    logger.info("\n=========== RUNNING GEOMETRY TO MESH CONVERSION ===========")
+
+    # Step 1: Set up case directory structure
+    case_path = os.path.join(os.getcwd(), "cases", case_name)
+    sim_path = os.path.join(case_path, "sim")
+    logger.info(f"1 - Setting up case directory structure: {case_path}")
+    performance_monitor.update_memory()
+
+    # Step 2: Prepare mesh generation scripts
+    logger.info(f"2 - Preparing {type} mesh generation scripts")
+    performance_monitor.update_memory()
+    
+    if type == "cfmesh":
+        script_commands = prepare_cfmesh(geo_mesh, sim_path, geo_df)
+    elif type == "snappy":
+        script_commands = prepare_snappy(geo_mesh, sim_path, geo_df)
+    else:
+        logger.error(f"Unknown meshing software: {type}")
+        raise ValueError(f"Unknown meshing software: {type}")
+    
+    performance_monitor.update_memory()
+    
+    # Log performance summary
+    performance_summary = performance_monitor.get_summary()
+    logger.info(f"Total processing time: {performance_summary['total_time']:.2f}s")
+    logger.info(f"Peak memory usage: {performance_summary['peak_memory_mb']:.1f}MB")
+    logger.info(f"✅ Mesh preparation pipeline completed successfully:")
+    return script_commands
+
+
+if __name__ == "__main__":
+    case_name = "FDM_iter2"
+    geo_mesh, geo_df = load_geo_files(case_name)
+    result = run(case_name=case_name, geo_mesh=geo_mesh, geo_df=geo_df, type="snappy")
