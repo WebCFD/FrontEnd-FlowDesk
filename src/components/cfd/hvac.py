@@ -199,9 +199,13 @@ def define_initial_files(sim_path, patch_df):
             # WORKAROUND: Add "limits" patch from blockMesh background mesh
             # This patch should normally be removed by snappyHexMesh but sometimes survives
             logger.warning(f"    ⚠️  Adding residual patch 'limits' to {variable} field (blockMesh background)")
-            limits_bc = {"type": "empty"}
-            if variable != 'U':
-                limits_bc["value"] = "$internalField"
+            # BC compatible with patch type "patch" (not constraint type)
+            if variable == 'U':
+                limits_bc = {"type": "slip"}
+            elif variable in ['p', 'p_rgh']:
+                limits_bc = {"type": "zeroGradient"}
+            else:
+                limits_bc = {"type": "zeroGradient"}
             f.boundary_field['limits'] = limits_bc
     
     logger.warning("    ╔═══════════════════════════════════════════════════════════════╗")
