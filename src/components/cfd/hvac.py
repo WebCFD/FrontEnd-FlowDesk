@@ -236,7 +236,7 @@ def setup(case_path: str) -> bool:
 
     script_commands = [
         # Run solver in parallel
-        'runParallel -np 16 $(getApplication) -parallel',
+        'runParallel -np 16 buoyantSimpleFoam -parallel',
 
         # 3. Reconstruct the results back into serial for post-processing
         'runApplication reconstructPar -latestTime',

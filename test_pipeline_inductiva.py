@@ -90,8 +90,15 @@ def test_pipeline_inductiva():
         logger.info(f"  - Estimated time: 5-10 minutes")
         logger.info(f"  - Estimated cost: $0.10-0.20")
         
-        # Ask for confirmation
-        response = input("\nProceed with Inductiva execution? (yes/no): ").strip().lower()
+        # Ask for confirmation (auto-confirm if --yes flag)
+        import sys
+        auto_confirm = '--yes' in sys.argv or '-y' in sys.argv
+        
+        if auto_confirm:
+            response = 'yes'
+            logger.info("Auto-confirming execution (--yes flag detected)")
+        else:
+            response = input("\nProceed with Inductiva execution? (yes/no): ").strip().lower()
         
         if response != 'yes':
             logger.info("❌ Execution cancelled by user")

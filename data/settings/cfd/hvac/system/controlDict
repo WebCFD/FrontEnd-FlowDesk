@@ -24,6 +24,7 @@ runTimeModifiable false;
 
 functions
 {
-    #include "FOage"
-    #include "FOcomfort"
+    // Post-processing functions disabled for basic simulation
+    // #include "FOage"
+    // #include "FOcomfort"
 }
