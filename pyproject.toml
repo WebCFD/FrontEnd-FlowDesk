@@ -11,4 +11,7 @@ dependencies = [
     "numpy>=1.26.0",
     "shapely>=2.0.0",
     "foamlib>=0.2.0",
+    "pymeshlab>=2023.12",
+    "psutil>=5.9.0",
+    "tqdm>=4.66.0",
 ]

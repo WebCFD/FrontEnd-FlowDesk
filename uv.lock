@@ -1400,6 +1400,22 @@ wheels = [
 ]
 
 [[package]]
+name = "psutil"
+version = "7.1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b3/31/4723d756b59344b643542936e37a31d1d3204bcdc42a7daa8ee9eb06fb50/psutil-7.1.0.tar.gz", hash = "sha256:655708b3c069387c8b77b072fc429a57d0e214221d01c0a772df7dfedcb3bcd2", size = 497660 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/46/62/ce4051019ee20ce0ed74432dd73a5bb087a6704284a470bb8adff69a0932/psutil-7.1.0-cp36-abi3-macosx_10_9_x86_64.whl", hash = "sha256:76168cef4397494250e9f4e73eb3752b146de1dd950040b29186d0cce1d5ca13", size = 245242 },
+    { url = "https://files.pythonhosted.org/packages/38/61/f76959fba841bf5b61123fbf4b650886dc4094c6858008b5bf73d9057216/psutil-7.1.0-cp36-abi3-macosx_11_0_arm64.whl", hash = "sha256:5d007560c8c372efdff9e4579c2846d71de737e4605f611437255e81efcca2c5", size = 246682 },
+    { url = "https://files.pythonhosted.org/packages/88/7a/37c99d2e77ec30d63398ffa6a660450b8a62517cabe44b3e9bae97696e8d/psutil-7.1.0-cp36-abi3-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:22e4454970b32472ce7deaa45d045b34d3648ce478e26a04c7e858a0a6e75ff3", size = 287994 },
+    { url = "https://files.pythonhosted.org/packages/9d/de/04c8c61232f7244aa0a4b9a9fbd63a89d5aeaf94b2fc9d1d16e2faa5cbb0/psutil-7.1.0-cp36-abi3-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8c70e113920d51e89f212dd7be06219a9b88014e63a4cec69b684c327bc474e3", size = 291163 },
+    { url = "https://files.pythonhosted.org/packages/f4/58/c4f976234bf6d4737bc8c02a81192f045c307b72cf39c9e5c5a2d78927f6/psutil-7.1.0-cp36-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:7d4a113425c037300de3ac8b331637293da9be9713855c4fc9d2d97436d7259d", size = 293625 },
+    { url = "https://files.pythonhosted.org/packages/79/87/157c8e7959ec39ced1b11cc93c730c4fb7f9d408569a6c59dbd92ceb35db/psutil-7.1.0-cp37-abi3-win32.whl", hash = "sha256:09ad740870c8d219ed8daae0ad3b726d3bf9a028a198e7f3080f6a1888b99bca", size = 244812 },
+    { url = "https://files.pythonhosted.org/packages/bf/e9/b44c4f697276a7a95b8e94d0e320a7bf7f3318521b23de69035540b39838/psutil-7.1.0-cp37-abi3-win_amd64.whl", hash = "sha256:57f5e987c36d3146c0dd2528cd42151cf96cd359b9d67cfff836995cc5df9a3d", size = 247965 },
+    { url = "https://files.pythonhosted.org/packages/26/65/1070a6e3c036f39142c2820c4b52e9243246fcfc3f96239ac84472ba361e/psutil-7.1.0-cp37-abi3-win_arm64.whl", hash = "sha256:6937cb68133e7c97b6cc9649a570c9a18ba0efebed46d8c5dae4c07fa1b67a07", size = 244971 },
+]
+
+[[package]]
 name = "pycparser"
 version = "2.23"
 source = { registry = "https://pypi.org/simple" }
@@ -1531,6 +1547,31 @@ wheels = [
 ]
 
 [[package]]
+name = "pymeshlab"
+version = "2025.7"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b0/a3/3da854a33c2845e56c21fb98d8c4d7586f037fe5bad135e9dcfa82dc2fcb/pymeshlab-2025.7-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:9181abea37b2877dd2f9a6f538b1f32dbad6628fc4b6953c1ff0e9dca8173823", size = 73839197 },
+    { url = "https://files.pythonhosted.org/packages/90/f8/51c366d2ff0a6348d69162eecfe18bf9689c6a9e1be5b57c0bd55738dbaf/pymeshlab-2025.7-cp311-cp311-macosx_11_0_x86_64.whl", hash = "sha256:a6725ef70d3cfd20fd9ae1b16e48e39979494ca4702bdb2103fdff63aa800b38", size = 54867962 },
+    { url = "https://files.pythonhosted.org/packages/03/9a/41100ba56adc6ac20421006c86ea785a08bfa60af69ecfb3bf7ab7bb93b4/pymeshlab-2025.7-cp311-cp311-manylinux_2_35_aarch64.whl", hash = "sha256:cf0d31b47b9da269f7e35c2d7d865e50b4a541688ab473856de3bbab923b091e", size = 64996203 },
+    { url = "https://files.pythonhosted.org/packages/4e/69/bff2b1086367e4fdb3e58f043b7a62a8287b03c2a79a4dbdbab45b060fb4/pymeshlab-2025.7-cp311-cp311-manylinux_2_35_x86_64.whl", hash = "sha256:7a65a02e8aa09e36fd79f96633741249829698fb578bce545ab01d55076e5537", size = 106188297 },
+    { url = "https://files.pythonhosted.org/packages/4a/90/e9ca97335c03139a034d782be44aff94097fa845ad847bc8427e075ed319/pymeshlab-2025.7-cp311-cp311-win_amd64.whl", hash = "sha256:d2c9e65ad444eeeb99271e0cfb4bcf5631f7a8bcf6a36de5cb04071da63fadb2", size = 55151506 },
+    { url = "https://files.pythonhosted.org/packages/c5/34/4e55476f1494772e6c397204f5d48eeaeceb3ca9b774697566a568777acf/pymeshlab-2025.7-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:e989545ebbbe948da8497a389867ff58af7f9273d1731024b647ee85f9be36a7", size = 73839769 },
+    { url = "https://files.pythonhosted.org/packages/ea/ce/40e6cf11a4a11e3f899584b6e78c63bb6b3f4faea9fcb21b0d9667f389d5/pymeshlab-2025.7-cp312-cp312-macosx_11_0_x86_64.whl", hash = "sha256:ca1b0dead7de4cfa50e6466b7456b5f60da79bd1d611fdd74c489703d9f2db48", size = 54869524 },
+    { url = "https://files.pythonhosted.org/packages/37/66/a29eb9d54595144a9b059c45ace63c44296195b9897f5030050a38167fad/pymeshlab-2025.7-cp312-cp312-manylinux_2_35_aarch64.whl", hash = "sha256:7a107e07d7f0c2cd061a405d14d5a817dccbd4eb03b3313fe585c03cc9cec01f", size = 65248869 },
+    { url = "https://files.pythonhosted.org/packages/fe/62/b973a67eb48ba76cc33b249fdb8627c250d29600134dfab7137bca87dee4/pymeshlab-2025.7-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:5444bc01e6091e358468ce8d886143d5340b6c49e852748e9606b72c822b4988", size = 106475642 },
+    { url = "https://files.pythonhosted.org/packages/b7/70/afea7f74043ddc081d8f5f4120565f4e94c725bb0567023680c3182c2797/pymeshlab-2025.7-cp312-cp312-win_amd64.whl", hash = "sha256:ddaea3f02d5870d4b7039a87eb7b823a3a4c8bdc359a719298b081b103343c53", size = 55152452 },
+    { url = "https://files.pythonhosted.org/packages/fb/9a/db7cf61785c0519db8465f14ca9931c4cc9c5f77afc75c45a2600af49943/pymeshlab-2025.7-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:ecca34167cf578c55505ef7ed0c9c84ebe2625e5ae73553750f6b073f2e7aae4", size = 73840460 },
+    { url = "https://files.pythonhosted.org/packages/82/18/1636ee1c14ad6ae1b41616c87db010a5d77820c18318d28d74d2b294cdcf/pymeshlab-2025.7-cp313-cp313-macosx_11_0_x86_64.whl", hash = "sha256:58a4883ef32de729b0bc56234b54acbc3ab214f5ae01ce543ca8244163b52cdc", size = 54869433 },
+    { url = "https://files.pythonhosted.org/packages/5e/e8/902ffa5f936f4d52dcaa22a946500b652be31adba79fefcb5eaad63041f5/pymeshlab-2025.7-cp313-cp313-manylinux_2_35_aarch64.whl", hash = "sha256:1b5c8fdc17454fc660b5b4d269342413c51a628b7af4f432137a625eaadea983", size = 65146711 },
+    { url = "https://files.pythonhosted.org/packages/0d/64/9119d37ce4e3b40bb745e11313cf80717f42b1164c441ef8b1f5f9ea5a26/pymeshlab-2025.7-cp313-cp313-manylinux_2_35_x86_64.whl", hash = "sha256:8ae33f9162c77678cb6d7a608fa9f08ae3227813757b6131169eb414cb19d4ea", size = 106347180 },
+    { url = "https://files.pythonhosted.org/packages/83/1b/32ad9c46245510d4271dbc4b56250559fe7773461f4bca87b1844ecf2a27/pymeshlab-2025.7-cp313-cp313-win_amd64.whl", hash = "sha256:9f24d181343b48174d221b5329b187f1425f481130c7f56fa542b2da54087cae", size = 55152437 },
+]
+
+[[package]]
 name = "pyopenssl"
 version = "25.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1609,9 +1650,12 @@ dependencies = [
     { name = "inductiva" },
     { name = "numpy" },
     { name = "pandas" },
+    { name = "psutil" },
+    { name = "pymeshlab" },
     { name = "pyvista" },
     { name = "requests" },
     { name = "shapely" },
+    { name = "tqdm" },
 ]
 
 [package.metadata]
@@ -1620,9 +1664,12 @@ requires-dist = [
     { name = "inductiva", specifier = ">=0.18.0" },
     { name = "numpy", specifier = ">=1.26.0" },
     { name = "pandas", specifier = ">=2.2.0" },
+    { name = "psutil", specifier = ">=5.9.0" },
+    { name = "pymeshlab", specifier = ">=2023.12" },
     { name = "pyvista", specifier = ">=0.44.0" },
     { name = "requests", specifier = ">=2.32.5" },
     { name = "shapely", specifier = ">=2.0.0" },
+    { name = "tqdm", specifier = ">=4.66.0" },
 ]
 
 [[package]]
