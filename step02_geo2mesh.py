@@ -8,8 +8,6 @@ from typing import List
 import pyvista as pv
 import pandas as pd
 
-from src.components.mesh.cfmesh import prepare_cfmesh
-from src.components.mesh.snappy import prepare_snappy
 from src.components.tools.load_geo import load_geo_files
 from src.components.tools.performance import PerformanceMonitor
 
@@ -51,8 +49,10 @@ def run(case_name: str, geo_mesh: pv.PolyData, geo_df: pd.DataFrame, type: str =
     performance_monitor.update_memory()
     
     if type == "cfmesh":
+        from src.components.mesh.cfmesh import prepare_cfmesh
         script_commands = prepare_cfmesh(geo_mesh, sim_path, geo_df)
     elif type == "snappy":
+        from src.components.mesh.snappy import prepare_snappy
         script_commands = prepare_snappy(geo_mesh, sim_path, geo_df)
     else:
         logger.error(f"Unknown meshing software: {type}")
