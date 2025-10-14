@@ -195,6 +195,24 @@ def define_initial_files(sim_path, patch_df):
                     raise BaseException('Boundary Condition Type Unknown')
 
                 f.boundary_field[row['id']] = new_bc_data
+            
+            # WORKAROUND: Add "limits" patch from blockMesh background mesh
+            # This patch should normally be removed by snappyHexMesh but sometimes survives
+            logger.warning(f"    ⚠️  Adding residual patch 'limits' to {variable} field (blockMesh background)")
+            limits_bc = {"type": "empty"}
+            if variable != 'U':
+                limits_bc["value"] = "$internalField"
+            f.boundary_field['limits'] = limits_bc
+    
+    logger.warning("    ╔═══════════════════════════════════════════════════════════════╗")
+    logger.warning("    ║  ⚠️  WARNING: Residual patch 'limits' detected                ║")
+    logger.warning("    ║  This patch from blockMesh background should not exist       ║")
+    logger.warning("    ║  in the final mesh. This indicates:                          ║")
+    logger.warning("    ║  - STL may have gaps/holes                                   ║")
+    logger.warning("    ║  - locationInMesh may be incorrect                           ║")
+    logger.warning("    ║  - snappyHexMesh configuration needs review                  ║")
+    logger.warning("    ╚═══════════════════════════════════════════════════════════════╝")
+    
     return
 
 
