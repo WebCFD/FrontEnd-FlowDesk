@@ -691,7 +691,7 @@ wheels = [
 
 [[package]]
 name = "inductiva"
-version = "0.18.0"
+version = "0.18.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -710,9 +710,9 @@ dependencies = [
     { name = "urllib3" },
     { name = "websocket-client" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/62/63/118ed1e1a8ae27df5961ecad40aaacadc7ec0046307db57dc94700c158b0/inductiva-0.18.0.tar.gz", hash = "sha256:1ec4ce8b28c32f77f87e98e7ee08ef94c389afa4ecd684a54c2c1e4380edd999", size = 223538 }
+sdist = { url = "https://files.pythonhosted.org/packages/75/0d/7c7020f7a82aac9741abba0fa57b5b4930ed19d43b150ee23bb078db5631/inductiva-0.18.3.tar.gz", hash = "sha256:446b3e9f05965150c82b9ec304caf0c4364bbd5598c9d2f77bd6761e2af14ce8", size = 232989 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/96/5e/225e82552d608c90107be65bfe30e4cc6c0f770bcb5d9dd6b9845e9b2b9f/inductiva-0.18.0-py3-none-any.whl", hash = "sha256:aabcb22b7341ecf602097220bc615f2af37e770b7eb3905bd4be235057728243", size = 470716 },
+    { url = "https://files.pythonhosted.org/packages/03/97/31ce97379f4168cf4c345efa12a7bf8d1c317bbc385a6a3beac14e2b39bb/inductiva-0.18.3-py3-none-any.whl", hash = "sha256:207c8a48fea7faadc54b220cdb6231e5343ed33fc2aa041b7e805c7340bfe003", size = 502744 },
 ]
 
 [[package]]
@@ -1655,13 +1655,14 @@ dependencies = [
     { name = "pyvista" },
     { name = "requests" },
     { name = "shapely" },
+    { name = "tarsafe" },
     { name = "tqdm" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "foamlib", specifier = ">=0.2.0" },
-    { name = "inductiva", specifier = ">=0.18.0" },
+    { name = "inductiva", specifier = "==0.18.3" },
     { name = "numpy", specifier = ">=1.26.0" },
     { name = "pandas", specifier = ">=2.2.0" },
     { name = "psutil", specifier = ">=5.9.0" },
@@ -1669,6 +1670,7 @@ requires-dist = [
     { name = "pyvista", specifier = ">=0.44.0" },
     { name = "requests", specifier = ">=2.32.5" },
     { name = "shapely", specifier = ">=2.0.0" },
+    { name = "tarsafe", specifier = ">=0.0.5" },
     { name = "tqdm", specifier = ">=4.66.0" },
 ]
 
@@ -1784,6 +1786,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/ec/fe/802052aecb21e3797b8f7902564ab6ea0d60ff8ca23952079064155d1ae1/tabulate-0.9.0.tar.gz", hash = "sha256:0095b12bf5966de529c0feb1fa08671671b3368eec77d7ef7ab114be2c068b3c", size = 81090 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/40/44/4a5f08c96eb108af5cb50b41f76142f0afa346dfa99d5296fe7202a11854/tabulate-0.9.0-py3-none-any.whl", hash = "sha256:024ca478df22e9340661486f85298cff5f6dcdba14f3813e8830015b9ed1948f", size = 35252 },
+]
+
+[[package]]
+name = "tarsafe"
+version = "0.0.5"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/17/a3/7787b1103146248f365528f1a4870e5d6c79c82175a1f8b5117617621bf3/tarsafe-0.0.5.tar.gz", hash = "sha256:cbdffc260d8a33f0e35ed7b70b2e2f56ad40e77019e5384bbe1cfc1ccccac79a", size = 2963 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f1/8c/4aadcd0eca9001266ef026338df159cc5f75483abea8f9f97e2dc2fd705f/tarsafe-0.0.5-py3-none-any.whl", hash = "sha256:1a6aa8255c181d6070db3b083f6d969602c6306ba3dc7c836a288cc26a5c5bff", size = 5412 },
 ]
 
 [[package]]

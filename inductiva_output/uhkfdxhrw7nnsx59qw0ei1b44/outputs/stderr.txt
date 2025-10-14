@@ -1,0 +1,7 @@
+# COMMAND: ['bash', './Allrun']
+# Working directory: /workdir/output/artifacts
+# Env: {}
+
+Error getting 'application' from system/controlDict
+
+ -------
