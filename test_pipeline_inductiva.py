@@ -25,6 +25,7 @@ from step01_json2geo import run as json2geo
 from step02_geo2mesh import run as geo2mesh
 from step03_mesh2cfd import run as mesh2cfd
 from step04_cfd2result import run as cfd2result
+from step05_results2post import run as results2post
 
 def test_pipeline_inductiva():
     """Test complete pipeline with Inductiva cloud execution"""
@@ -111,6 +112,13 @@ def test_pipeline_inductiva():
         cfd2result(case_name, type="inductiva")
         logger.info(f"✓ Inductiva simulation completed")
         
+        # STEP 5: Post-process results
+        logger.info("\n" + "="*60)
+        logger.info("STEP 5: Post-Processing Results")
+        logger.info("="*60)
+        results2post(case_name)
+        logger.info(f"✓ Post-processing completed")
+        
         # Success
         logger.info("\n" + "="*60)
         logger.info("🎉 SUCCESS! Complete pipeline with Inductiva executed successfully")
@@ -118,6 +126,11 @@ def test_pipeline_inductiva():
         
         case_path = os.path.join(os.getcwd(), "cases", case_name)
         logger.info(f"\nResults directory: {case_path}/sim")
+        logger.info(f"\nPost-processing outputs:")
+        logger.info(f"  - PDF Report: cases/{case_name}/post/post_report.pdf")
+        logger.info(f"  - Residuals CSV: cases/{case_name}/post/csv/residuals.csv")
+        logger.info(f"  - Images: cases/{case_name}/post/images/")
+        logger.info(f"  - VTK slices: cases/{case_name}/post/obj/")
         logger.info("\nNext steps:")
         logger.info("1. Review simulation results in cases/test_simple_room/sim/")
         logger.info("2. Check convergence in postProcessing/ directory")
