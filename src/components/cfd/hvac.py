@@ -198,7 +198,7 @@ def define_initial_files(sim_path, patch_df):
     return
 
 
-def setup(case_path: str) -> bool:
+def setup(case_path: str) -> list:
     """
     Set up HVAC CFD simulation case with boundary conditions and solver configuration.
     
