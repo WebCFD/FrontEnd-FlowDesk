@@ -59,7 +59,11 @@ def solve_inductiva(sim_path, machine_type):
     logger.info("    * Waiting for simulation to complete...")
     task.wait()
     logger.info("    * Simulation completed, terminating cloud machine")
-    cloud_machine.terminate()
+    try:
+        cloud_machine.terminate()
+        logger.info("    * Machine group terminated")
+    except Exception as e:
+        logger.warning(f"    * Machine group termination skipped (already terminated): {e}")
 
     logger.info("    * Downloading simulation results")
     task.download_outputs(output_dir=sim_path, rm_remote_files=True)
