@@ -57,7 +57,17 @@ def solve_inductiva(sim_path, machine_type):
 
     # Wait for the simulation to finish and download the results
     logger.info("    * Waiting for simulation to complete...")
+    
+    # Diagnostic logging
+    initial_status = task.get_status()
+    logger.info(f"    * [DEBUG] Initial task status before wait(): {initial_status}")
+    logger.info(f"    * [DEBUG] Task ID: {task.id}")
+    
     task.wait()
+    
+    final_status = task.get_status()
+    logger.info(f"    * [DEBUG] Task status after wait(): {final_status}")
+    
     logger.info("    * Simulation completed, terminating cloud machine")
     try:
         cloud_machine.terminate()
