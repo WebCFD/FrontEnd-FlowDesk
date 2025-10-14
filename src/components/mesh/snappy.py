@@ -193,7 +193,7 @@ def prepare_snappy(geo_mesh, sim_path, geo_df, stl_filename = "geometry.stl"):
 
         # Prepare initial fields
         'rm -rf 0',
-        '[ -d "0.orig" ] && cp -r 0.orig 0',
+        'cp -r 0.orig 0',
 
         # Clean processors & decompose
         'rm -rf processor*',
