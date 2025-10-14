@@ -1,0 +1,12 @@
+# COMMAND: ['bash', './Allrun']
+# Working directory: /workdir/output/artifacts
+# Env: {}
+
+Running surfaceFeatureExtract on /workdir/output/artifacts
+Running blockMesh on /workdir/output/artifacts
+Running snappyHexMesh on /workdir/output/artifacts
+Running decomposePar on /workdir/output/artifacts
+Running buoyantSimpleFoam (16 processes) on /workdir/output/artifacts 
+Running reconstructPar on /workdir/output/artifacts
+
+ -------
