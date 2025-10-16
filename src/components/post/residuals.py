@@ -58,8 +58,9 @@ def analyse_residuals(logfile_path, post_path):
     output_csv = os.path.join(csv_dir, "residuals.csv")
     logger.info(f"    * Saving residual data to CSV: {output_csv}")
 
-    data = {field: residuals[field] for field in target_fields}
-    data["iteration"] = iterations
+    min_len = min(len(residuals[f]) for f in target_fields)
+    data = {field: residuals[field][:min_len] for field in target_fields}
+    data["iteration"] = iterations[:min_len]
     df = pd.DataFrame(data)
     df.to_csv(output_csv, index=False)
     logger.info(f"    * Residuals saved to {output_csv}")
