@@ -195,57 +195,6 @@ def define_initial_files(sim_path, patch_df):
                     raise BaseException('Boundary Condition Type Unknown')
 
                 f.boundary_field[row['id']] = new_bc_data
-            
-            # WORKAROUND: Add residual patches from blockMesh background mesh
-            # These patches should normally be removed by snappyHexMesh but sometimes survive
-            logger.warning(f"    ⚠️  Adding residual patches 'limits' and 'defaultFaces' to {variable} field (blockMesh background)")
-            
-            # BC for "limits" patch (type: patch)
-            if variable == 'U':
-                limits_bc = {"type": "slip"}
-            elif variable in ['p', 'p_rgh']:
-                limits_bc = {"type": "zeroGradient"}
-            else:
-                limits_bc = {"type": "zeroGradient"}
-            f.boundary_field['limits'] = limits_bc
-            
-            # BC for "defaultFaces" patch (type: wall)
-            if variable == 'alphat':
-                defaultFaces_bc = {"type": "compressible::alphatJayatillekeWallFunction", "Prt": 0.85, "value": "$internalField"}
-            elif variable == 'DR':
-                defaultFaces_bc = {"type": "calculated", "value": 0}
-            elif variable == 'epsilon':
-                defaultFaces_bc = {"type": "epsilonWallFunction", "value": "$internalField"}
-            elif variable == 'k':
-                defaultFaces_bc = {"type": "kqRWallFunction", "value": "$internalField"}
-            elif variable == 'nut':
-                defaultFaces_bc = {"type": "nutkWallFunction", "value": "$internalField"}
-            elif variable == 'p':
-                defaultFaces_bc = {"type": "calculated", "value": "$internalField"}
-            elif variable == 'p_rgh':
-                defaultFaces_bc = {"type": "fixedFluxPressure", "value": "$internalField"}
-            elif variable == 'PMV':
-                defaultFaces_bc = {"type": "calculated", "value": 1.40936}
-            elif variable == 'PPD':
-                defaultFaces_bc = {"type": "calculated", "value": 46.0115}
-            elif variable == 'T':
-                defaultFaces_bc = {"type": "zeroGradient"}
-            elif variable == 'U':
-                defaultFaces_bc = {"type": "noSlip"}
-            else:
-                defaultFaces_bc = {"type": "zeroGradient"}
-            f.boundary_field['defaultFaces'] = defaultFaces_bc
-    
-    logger.warning("    ╔═══════════════════════════════════════════════════════════════╗")
-    logger.warning("    ║  ⚠️  WARNING: Residual patches from blockMesh detected       ║")
-    logger.warning("    ║  Patches 'limits' and 'defaultFaces' should not exist        ║")
-    logger.warning("    ║  in the final mesh. This indicates:                          ║")
-    logger.warning("    ║  - STL may have gaps/holes                                   ║")
-    logger.warning("    ║  - locationInMesh may be incorrect                           ║")
-    logger.warning("    ║  - snappyHexMesh configuration needs review                  ║")
-    logger.warning("    ╚═══════════════════════════════════════════════════════════════╝")
-    
-    return
 
 
 def setup(case_path: str) -> list:
