@@ -314,12 +314,9 @@ export default function WizardDesign() {
   const [closedContourCache, setClosedContourCache] = useState(new Map());
   const [lastLinesHash, setLastLinesHash] = useState('');
 
-  // Estados para el diálogo de dos números
-  const [showNumbersDialog, setShowNumbersDialog] = useState(false);
-  const [number1, setNumber1] = useState<string>("");
-  const [number2, setNumber2] = useState<string>("");
-  const [savedNumber1, setSavedNumber1] = useState<number | null>(null);
-  const [savedNumber2, setSavedNumber2] = useState<number | null>(null);
+  // Estados para el diálogo de tipo de simulación
+  const [showSimulationTypeDialog, setShowSimulationTypeDialog] = useState(false);
+  const [selectedSimulationType, setSelectedSimulationType] = useState<'comfort' | 'renovation'>('comfort');
 
   // Funciones auxiliares para manejo de parámetros por planta
   const getCurrentFloorParameters = () => {
@@ -2797,33 +2794,21 @@ export default function WizardDesign() {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
 
-  // Función modificada para mostrar el diálogo de dos números
+  // Función para mostrar el diálogo de tipo de simulación
   const handleStartSimulation = () => {
-    setShowNumbersDialog(true);
+    setShowSimulationTypeDialog(true);
   };
 
-  // Función para guardar los números ingresados y crear simulación de prueba
-  const handleSaveNumbers = async () => {
-    const num1 = parseFloat(number1);
-    const num2 = parseFloat(number2);
-
-    if (isNaN(num1) || isNaN(num2)) {
-      toast({
-        title: "Error",
-        description: "Por favor ingrese números válidos",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setSavedNumber1(num1);
-    setSavedNumber2(num2);
-    setShowNumbersDialog(false);
+  // Función para crear simulación HVAC
+  const handleCreateHVACSimulation = async () => {
+    setShowSimulationTypeDialog(false);
     setIsCreatingSimulation(true);
 
     try {
-      // Crear simulación de prueba para Inductiva
-      console.log('[FRONTEND] Creating test calculation with:', { numberA: num1, numberB: num2 });
+      // Generar datos de simulación completos desde el diseño actual
+      const simulationData = generateSimulationData();
+      
+      console.log('[FRONTEND] Creating HVAC simulation with type:', selectedSimulationType);
       
       const response = await fetch("/api/simulations/create", {
         method: "POST",
@@ -2832,30 +2817,27 @@ export default function WizardDesign() {
         },
         credentials: "include",
         body: JSON.stringify({
-          name: `Test Calculation: (${num1} + ${num2})²`,
-          simulationType: "test_calculation",
+          name: `HVAC ${selectedSimulationType === 'comfort' ? 'Comfort' : 'Renovation'} - ${simulationData.case_name}`,
+          simulationType: selectedSimulationType,
           status: "pending",
-          jsonConfig: {
-            numberA: num1,
-            numberB: num2,
-          },
+          jsonConfig: simulationData,
         }),
       });
 
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || "Error creating test simulation");
+        throw new Error(result.message || "Error creating HVAC simulation");
       }
 
-      console.log('[FRONTEND] Test calculation created:', result);
+      console.log('[FRONTEND] HVAC simulation created:', result);
 
       // Invalidate queries to refresh dashboard
       await queryClient.invalidateQueries({ queryKey: ["/api/simulations"] });
 
       toast({
-        title: "Simulación de Prueba Creada",
-        description: `Cálculo: (${num1} + ${num2})². El worker procesará esta simulación en breve.`,
+        title: "Simulación HVAC Creada",
+        description: `Tipo: ${selectedSimulationType === 'comfort' ? 'Confort' : 'Renovación'}. El worker procesará esta simulación en breve.`,
       });
 
       // Redirect to dashboard
@@ -2864,10 +2846,10 @@ export default function WizardDesign() {
       }, 1000);
 
     } catch (error) {
-      console.error('[FRONTEND] Error creating test calculation:', error);
+      console.error('[FRONTEND] Error creating HVAC simulation:', error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Error al crear la simulación de prueba",
+        description: error instanceof Error ? error.message : "Error al crear la simulación HVAC",
         variant: "destructive",
       });
     } finally {
@@ -4241,49 +4223,53 @@ export default function WizardDesign() {
         </div>
       )}
 
-      {/* Diálogo para ingresar dos números */}
-      <Dialog open={showNumbersDialog} onOpenChange={setShowNumbersDialog}>
+      {/* Diálogo para seleccionar tipo de simulación HVAC */}
+      <Dialog open={showSimulationTypeDialog} onOpenChange={setShowSimulationTypeDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Ingresar Números</DialogTitle>
+            <DialogTitle>Tipo de Simulación HVAC</DialogTitle>
+            <p className="text-sm text-muted-foreground mt-2">
+              Seleccione el tipo de análisis que desea realizar
+            </p>
           </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="number1">Número 1</Label>
-              <Input
-                id="number1"
-                type="number"
-                value={number1}
-                onChange={(e) => setNumber1(e.target.value)}
-                placeholder="Ingrese el primer número"
-                data-testid="input-number1"
-              />
-            </div>
-            <div>
-              <Label htmlFor="number2">Número 2</Label>
-              <Input
-                id="number2"
-                type="number"
-                value={number2}
-                onChange={(e) => setNumber2(e.target.value)}
-                placeholder="Ingrese el segundo número"
-                data-testid="input-number2"
-              />
-            </div>
+          <div className="space-y-3 mt-4">
+            <Button
+              variant={selectedSimulationType === 'comfort' ? 'default' : 'outline'}
+              className="w-full justify-start"
+              onClick={() => setSelectedSimulationType('comfort')}
+              data-testid="button-select-comfort"
+            >
+              <div className="text-left">
+                <div className="font-semibold">Confort Térmico</div>
+                <div className="text-sm opacity-80">Análisis de temperatura y flujo de aire</div>
+              </div>
+            </Button>
+            <Button
+              variant={selectedSimulationType === 'renovation' ? 'default' : 'outline'}
+              className="w-full justify-start"
+              onClick={() => setSelectedSimulationType('renovation')}
+              data-testid="button-select-renovation"
+            >
+              <div className="text-left">
+                <div className="font-semibold">Renovación</div>
+                <div className="text-sm opacity-80">Análisis de ventilación y calidad del aire</div>
+              </div>
+            </Button>
           </div>
           <div className="flex justify-end gap-2 mt-6">
             <Button
               variant="outline"
-              onClick={() => setShowNumbersDialog(false)}
-              data-testid="button-cancel-numbers"
+              onClick={() => setShowSimulationTypeDialog(false)}
+              data-testid="button-cancel-simulation-type"
             >
               Cancelar
             </Button>
             <Button
-              onClick={handleSaveNumbers}
-              data-testid="button-save-numbers"
+              onClick={handleCreateHVACSimulation}
+              disabled={isCreatingSimulation}
+              data-testid="button-create-hvac-simulation"
             >
-              Guardar
+              {isCreatingSimulation ? 'Creando...' : 'Crear Simulación'}
             </Button>
           </div>
         </DialogContent>
