@@ -60,6 +60,11 @@ def process_simulation(sim):
     sim_id = sim['id']
     case_name = f"sim_{sim_id}"
     
+    # Parse jsonConfig si viene como string
+    if isinstance(sim.get('jsonConfig'), str):
+        import json as json_module
+        sim['jsonConfig'] = json_module.loads(sim['jsonConfig'])
+    
     try:
         logger.info(f"Processing simulation {sim_id}")
         
