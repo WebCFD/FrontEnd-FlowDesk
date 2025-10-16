@@ -63,31 +63,33 @@ def process_simulation(sim):
             'startedAt': datetime.utcnow().isoformat()
         })
         
-        # STEP 1
+        # STEP 1: JSON → Geometry
         update_simulation(sim_id, {
             'status': 'geometry',
             'progress': 20,
             'currentStep': 'Generating 3D geometry...'
         })
-        json2geo(case_name, json_data=sim['jsonConfig'])
+        import json
+        json_payload = json.dumps(sim['jsonConfig'])
+        geo_mesh, geo_df = json2geo(json_payload, case_name)
         
-        # STEP 2
+        # STEP 2: Geometry → Mesh
         update_simulation(sim_id, {
             'status': 'meshing',
             'progress': 40,
             'currentStep': 'Creating computational mesh...'
         })
-        geo2mesh(case_name)
+        mesh_script = geo2mesh(case_name, geo_mesh, geo_df, type="cfmesh")
         
-        # STEP 3
+        # STEP 3: Mesh → CFD
         update_simulation(sim_id, {
             'status': 'cfd_setup',
             'progress': 60,
             'currentStep': 'Setting up CFD case...'
         })
-        mesh2cfd(case_name, type="hvac")
+        mesh2cfd(case_name, type="hvac", mesh_script=mesh_script)
         
-        # STEP 4
+        # STEP 4: Submit to Inductiva (NO ESPERA)
         update_simulation(sim_id, {
             'status': 'cloud_execution',
             'progress': 70,
