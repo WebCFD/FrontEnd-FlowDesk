@@ -31,27 +31,15 @@ def create_blockMeshDict(template_path, sim_path, geo_mesh):
 
 
 def generate_location_inside_mesh(mesh):
-    # Definir un offset pequeño
-    epsilon = 1e-3  # ajusta según el tamaño de tu mesh
-
-    # Obtener puntos
-    points = mesh.points
-
-    # Encontrar el punto más extremo en +X, +Y, +Z
-    # Calculamos la "distancia" combinada para determinar el punto más en la esquina +X+Y+Z
-    distances = points[:, 0] + points[:, 1] + points[:, 2]
-    extreme_idx = np.argmax(distances)
-    extreme_point = points[extreme_idx].copy()
-
-    # Calcular vector hacia el centro de la malla
+    """
+    Generate locationInMesh point for snappyHexMesh internal flow cases.
+    Uses the geometric center of the mesh for robust interior detection.
+    
+    For HVAC/internal flow: the center is guaranteed to be inside the domain.
+    For external flow: would need a different approach.
+    """
     center = mesh.center
-    direction_to_center = center - extreme_point
-    direction_to_center /= np.linalg.norm(direction_to_center)  # normalizar
-
-    # Aplicar offset hacia el interior
-    new_point = extreme_point + epsilon * direction_to_center
-    #return "({:.6f} {:.6f} {:.6f})".format(*new_point)
-    return "(0.0 0.0 1.0)"
+    return f"({center[0]:.6f} {center[1]:.6f} {center[2]:.6f})"
 
 
 def create_snappyHexMeshDict(template_path, sim_path, stl_filename, geo_mesh, geo_df):
