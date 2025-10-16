@@ -25,13 +25,17 @@ def create_decomposeParDict(template_path, sim_path, machine_type):
     replace_in_file(input_path, output_path, str_replace_dict)
 
 
-def solve_inductiva(sim_path, machine_type):
+def solve_inductiva(sim_path, machine_type, wait=True):
     """
-    Solve the CFD case on Inductiva cloud platform.
+    Solve CFD case on Inductiva cloud.
     
     Args:
-        sim_path: Path to the simulation directory
-        machine_type: Type of cloud machine to use
+        sim_path: Path to simulation directory
+        machine_type: Type of cloud machine
+        wait: If True, waits for completion. If False, returns task_id immediately
+    
+    Returns:
+        task_id if wait=False, None if wait=True
     """
     import logging
     logger = logging.getLogger(__name__)
@@ -55,6 +59,12 @@ def solve_inductiva(sim_path, machine_type):
     # Run simulation
     logger.info("    * Submitting CFD simulation task to cloud")
     task = OpenFOAM.run(input_dir=sim_path, shell_script="./Allrun", on=cloud_machine)
+    
+    task_id = task.id
+    
+    if not wait:
+        logger.info(f"    * Task submitted: {task_id}")
+        return task_id
 
     # Wait for the simulation to finish using polling (wait() doesn't work in Replit)
     logger.info("    * Waiting for simulation to complete...")
