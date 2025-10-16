@@ -28,11 +28,15 @@ def get_pending_simulations():
         )
         if response.ok:
             data = response.json()
-            # Si retorna objeto con 'simulations', extraer array
+            logger.info(f"DEBUG: Response type: {type(data)}")
+            logger.info(f"DEBUG: Response data: {data}")
+            
             if isinstance(data, dict) and 'simulations' in data:
+                logger.info(f"DEBUG: Found {len(data['simulations'])} sims")
                 return data['simulations']
-            # Si retorna array directo, usar como está
             return data if isinstance(data, list) else []
+        else:
+            logger.error(f"DEBUG: Request failed: {response.status_code}")
         return []
     except Exception as e:
         logger.error(f"Failed to fetch pending sims: {e}")
