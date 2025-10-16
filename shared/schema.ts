@@ -25,6 +25,11 @@ export const simulations = pgTable("simulations", {
   isPublic: boolean("is_public").default(false).notNull(),
   jsonConfig: jsonb("json_config"), // Complete simulation configuration or parameters for test
   result: jsonb("result"), // Result from external processing (e.g., Inductiva API)
+  taskId: text("task_id"),
+  progress: integer("progress").default(0),
+  currentStep: text("current_step"),
+  errorMessage: text("error_message"),
+  startedAt: timestamp("started_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   completedAt: timestamp("completed_at"),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -64,7 +69,17 @@ export const insertSimulationSchema = createInsertSchema(simulations)
     jsonConfig: true,
   })
   .extend({
-    status: z.enum(['pending', 'processing', 'completed', 'failed']),
+    status: z.enum([
+      'pending',
+      'processing',
+      'geometry',
+      'meshing',
+      'cfd_setup',
+      'cloud_execution',
+      'post_processing',
+      'completed',
+      'failed'
+    ]),
     simulationType: z.enum(['comfort', 'renovation', 'test_calculation']),
     packageType: z.enum(['basic', 'professional', 'enterprise']),
     cost: z.string().transform(val => parseFloat(val)),
@@ -72,8 +87,17 @@ export const insertSimulationSchema = createInsertSchema(simulations)
 
 // Schema for updating simulation status
 export const updateSimulationStatusSchema = z.object({
-  status: z.enum(['pending', 'processing', 'completed', 'failed']),
+  status: z.enum([
+    'pending', 'processing', 'geometry', 'meshing',
+    'cfd_setup', 'cloud_execution', 'post_processing',
+    'completed', 'failed'
+  ]),
+  taskId: z.string().optional(),
+  progress: z.number().min(0).max(100).optional(),
+  currentStep: z.string().optional(),
+  errorMessage: z.string().optional(),
   result: z.any().optional(),
+  startedAt: z.date().optional(),
   completedAt: z.date().optional(),
 });
 
