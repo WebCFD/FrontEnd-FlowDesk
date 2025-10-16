@@ -29,7 +29,14 @@ def get_cloud_execution_sims():
             f"{API_BASE}/api/external/simulations/cloud_execution",
             headers={'x-api-key': API_KEY}
         )
-        return response.json().get('simulations', []) if response.ok else []
+        if response.ok:
+            data = response.json()
+            # Si retorna objeto con 'simulations', extraer array
+            if isinstance(data, dict) and 'simulations' in data:
+                return data['simulations']
+            # Si retorna array directo, usar como está
+            return data if isinstance(data, list) else []
+        return []
     except Exception as e:
         logger.error(f"Failed to fetch cloud sims: {e}")
         return []
