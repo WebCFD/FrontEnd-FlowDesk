@@ -16,6 +16,11 @@ def load_foam_results(sim_path: str):
     # Read complete mesh
     mesh = reader.read()
 
+    # Handle MultiBlock mesh (multiple regions or patches)
+    if isinstance(mesh, pv.MultiBlock):
+        # Combine all blocks into a single UnstructuredGrid
+        mesh = mesh.combine()
+
     # Separate internal volume from boundary surfaces
     # Internal mesh: cells with volume data
     internal_mesh = mesh.extract_cells_by_type([
