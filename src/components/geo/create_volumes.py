@@ -116,18 +116,28 @@ def get_entry_bc_dict(data):
             'T': simulation.get('temperature', DEFAULT_TEMPERATURE)
         }
     
-    # Determine type based on flowType
+    # Determine type based on airDirection and flowType
+    air_direction = simulation.get('airDirection', 'inflow')
     flow_type = simulation.get('flowType', 'velocity')
-    if flow_type == 'Air Mass Flow':
-        new_patch['type'] = 'pressure_outlet'
-        new_patch['U'] = np.nan
-    else:  # velocity
+    
+    if air_direction == 'inflow':
         new_patch['type'] = 'velocity_inlet'
         flow_intensity = simulation.get('flowIntensity', 'medium')
         if flow_intensity == 'custom':
             new_patch['U'] = simulation.get('customValue', FLOW_LEVELS['medium'])
         else:
             new_patch['U'] = FLOW_LEVELS.get(flow_intensity, FLOW_LEVELS['medium'])
+    elif air_direction == 'outflow':
+        if flow_type == 'pressure':
+            new_patch['type'] = 'pressure_outlet'
+            new_patch['U'] = np.nan
+        else:
+            new_patch['type'] = 'velocity_inlet'
+            flow_intensity = simulation.get('flowIntensity', 'medium')
+            if flow_intensity == 'custom':
+                new_patch['U'] = simulation.get('customValue', FLOW_LEVELS['medium'])
+            else:
+                new_patch['U'] = FLOW_LEVELS.get(flow_intensity, FLOW_LEVELS['medium'])
     
     new_patch['T'] = simulation.get('temperature', DEFAULT_TEMPERATURE)
     new_patch['nx'] = data['position']['normal']['x']
