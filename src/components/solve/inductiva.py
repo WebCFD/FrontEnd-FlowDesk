@@ -1,6 +1,5 @@
 import os
 import time
-import threading
 import inductiva
 
 from src.components.tools.populate_template_file import replace_in_file
@@ -57,37 +56,22 @@ def solve_inductiva(sim_path, machine_type):
     logger.info("    * Submitting CFD simulation task to cloud")
     task = OpenFOAM.run(input_dir=sim_path, shell_script="./Allrun", on=cloud_machine)
 
-    # Progress feedback function
-    def show_progress(start_time, stop_event):
-        while not stop_event.is_set():
-            elapsed = int(time.time() - start_time)
-            if elapsed > 0 and elapsed % 30 == 0:
-                logger.info(f"    * Still waiting... ({elapsed}s elapsed)")
-            time.sleep(10)
-    
-    # Wait for the simulation to finish with progress feedback
+    # Wait for the simulation to finish using polling (wait() doesn't work in Replit)
     logger.info("    * Waiting for simulation to complete...")
-    
-    # Diagnostic logging
-    initial_status = task.get_status()
-    logger.info(f"    * [DEBUG] Initial task status before wait(): {initial_status}")
-    logger.info(f"    * [DEBUG] Task ID: {task.id}")
-    
     start_time = time.time()
-    stop_event = threading.Event()
-    progress_thread = threading.Thread(target=show_progress, args=(start_time, stop_event), daemon=True)
-    progress_thread.start()
     
-    task.wait()
-    
-    stop_event.set()
-    progress_thread.join(timeout=1)
-    
-    elapsed = int(time.time() - start_time)
-    logger.info(f"    * Task completed in {elapsed}s")
-    
-    final_status = task.get_status()
-    logger.info(f"    * [DEBUG] Task status after wait(): {final_status}")
+    while True:
+        status = task.get_status()
+        elapsed = int(time.time() - start_time)
+        
+        if status in ["success", "failed", "terminated"]:
+            logger.info(f"    * Task completed in {elapsed}s")
+            break
+        
+        if elapsed % 30 == 0 and elapsed > 0:
+            logger.info(f"    * Still waiting... ({elapsed}s, status: {status})")
+        
+        time.sleep(10)
     
     logger.info("    * Simulation completed, terminating cloud machine")
     try:
