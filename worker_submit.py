@@ -137,6 +137,10 @@ def main():
         try:
             sims = get_pending_simulations()
             
+            # Filtrar solo sims HVAC (comfort/renovation)
+            sims = [s for s in sims if s.get('simulationType') in ['comfort', 'renovation']]
+            logger.info(f"Found {len(sims)} HVAC simulations to process")
+            
             for sim in sims:
                 process_simulation(sim)
             
