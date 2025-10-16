@@ -33,13 +33,15 @@ def create_blockMeshDict(template_path, sim_path, geo_mesh):
 def generate_location_inside_mesh(mesh):
     """
     Generate locationInMesh point for snappyHexMesh internal flow cases.
-    Uses the geometric center of the mesh for robust interior detection.
+    Uses the center of the largest cell for robust interior detection.
     
-    For HVAC/internal flow: the center is guaranteed to be inside the domain.
-    For external flow: would need a different approach.
+    This approach works reliably for complex geometries (C-shape, L-shape)
+    where the geometric centroid might fall outside the domain.
     """
-    center = mesh.center
-    return f"({center[0]:.6f} {center[1]:.6f} {center[2]:.6f})"
+    cell_centers = mesh.cell_centers()
+    volumes = mesh.compute_cell_sizes()["Volume"]
+    point = cell_centers.points[volumes.argmax()]
+    return f"({point[0]:.6f} {point[1]:.6f} {point[2]:.6f})"
 
 
 def create_snappyHexMeshDict(template_path, sim_path, stl_filename, geo_mesh, geo_df):
