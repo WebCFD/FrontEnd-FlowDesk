@@ -878,6 +878,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // External API to get cloud_execution simulations (for worker monitor)
+  app.get("/api/external/simulations/cloud_execution", async (req, res) => {
+    try {
+      // Check API key for external access
+      const apiKey = req.headers['x-api-key'];
+      if (!apiKey || apiKey !== 'flowerpower-external-api') {
+        return res.status(401).json({ message: "Invalid API key" });
+      }
+
+      console.log('[EXPRESS] Fetching cloud_execution simulations...');
+
+      // Get all simulations with status 'cloud_execution'
+      const cloudSimulations = await db
+        .select({
+          id: simulations.id,
+          userId: simulations.userId,
+          name: simulations.name,
+          filePath: simulations.filePath,
+          status: simulations.status,
+          simulationType: simulations.simulationType,
+          packageType: simulations.packageType,
+          cost: simulations.cost,
+          taskId: simulations.taskId,
+          jsonConfig: simulations.jsonConfig,
+          createdAt: simulations.createdAt,
+          updatedAt: simulations.updatedAt,
+        })
+        .from(simulations)
+        .where(eq(simulations.status, 'cloud_execution'))
+        .orderBy(simulations.createdAt);
+
+      console.log('[EXPRESS] Found cloud_execution simulations:', cloudSimulations.length);
+
+      res.json({
+        success: true,
+        count: cloudSimulations.length,
+        simulations: cloudSimulations
+      });
+    } catch (error) {
+      console.error('[EXPRESS] Error fetching cloud_execution simulations:', error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // External API to get simulation details with user info
   app.get("/api/external/simulations/:id", async (req, res) => {
     try {
