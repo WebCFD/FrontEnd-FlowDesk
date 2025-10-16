@@ -994,10 +994,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Validate request body
-      const { status, result, completedAt } = req.body;
-      if (!status || !['pending', 'processing', 'completed', 'failed'].includes(status)) {
+      const { status, result, completedAt, taskId, progress, currentStep, errorMessage, startedAt } = req.body;
+      const validStatuses = ['pending', 'processing', 'geometry', 'meshing', 'cfd_setup', 'cloud_execution', 'post_processing', 'completed', 'failed'];
+      if (!status || !validStatuses.includes(status)) {
         return res.status(400).json({ 
-          message: "Invalid status. Must be: 'pending', 'processing', 'completed', or 'failed'" 
+          message: `Invalid status. Must be one of: ${validStatuses.join(', ')}` 
         });
       }
 
@@ -1005,6 +1006,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const statusUpdate: any = { status };
       if (result !== undefined) {
         statusUpdate.result = result; // Store result from external processing (e.g., Inductiva)
+      }
+      if (taskId !== undefined) {
+        statusUpdate.taskId = taskId;
+      }
+      if (progress !== undefined) {
+        statusUpdate.progress = progress;
+      }
+      if (currentStep !== undefined) {
+        statusUpdate.currentStep = currentStep;
+      }
+      if (errorMessage !== undefined) {
+        statusUpdate.errorMessage = errorMessage;
+      }
+      if (startedAt) {
+        statusUpdate.startedAt = new Date(startedAt);
       }
       if (completedAt) {
         statusUpdate.completedAt = new Date(completedAt);
