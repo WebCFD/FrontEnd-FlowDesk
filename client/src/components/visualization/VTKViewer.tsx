@@ -776,9 +776,15 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       
       // Show warning to user if data is uniform or invalid
       if (normalized.isUniform || normalized.isInvalid) {
-        setDataWarning(normalized.message || null);
+        const warningMsg = normalized.message || null;
+        console.log('[VTKViewer] Setting data warning:', warningMsg);
+        setDataWarning(warningMsg);
       } else {
-        setDataWarning(null);
+        // Only clear warning if there's actually no issue
+        if (dataWarning) {
+          console.log('[VTKViewer] Clearing data warning');
+          setDataWarning(null);
+        }
       }
       
       // Define effective range at function scope so it's available for manual colormap
