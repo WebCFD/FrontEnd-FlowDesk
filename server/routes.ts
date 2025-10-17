@@ -374,9 +374,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       
       // Get latest volume file (prioritize volume_complete from post-processing)
+      // Since files are already sorted by priority, just find first volume
       const latestVolume = files.find(f => 
-        f.type === 'volume_complete' || 
-        f.type === 'volume_internal' || 
+        f.type === 'volume_complete'
+      ) || files.find(f =>
+        f.type === 'volume_internal'
+      ) || files.find(f =>
         f.type === 'volume'
       );
       
