@@ -877,11 +877,32 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
       renderWindowRef.current = { renderWindow, renderer, openGLRenderWindow, interactor };
 
-      // Cargar archivo VTK de temperatura de la simulación específica
-      const vtkUrl = `/uploads/sim_${simulationId}/vtk/T_degC_slice_05.vtkjs`;
+      // Obtener lista de archivos VTK disponibles
+      const filesResponse = await fetch(`/api/simulations/${simulationId}/vtk-files`);
+      if (!filesResponse.ok) {
+        throw new Error(`Failed to get VTK files list: ${filesResponse.status}`);
+      }
+      
+      const { latestVolume, files } = await filesResponse.json();
+      console.log('[VTKViewer] Available VTK files:', files?.length || 0);
+      console.log('[VTKViewer] Latest volume:', latestVolume);
+      
+      // Preferir volumen de OpenFOAM, si no hay usar slice
+      let vtkUrl;
+      if (latestVolume) {
+        vtkUrl = latestVolume.path;
+        console.log('[VTKViewer] Loading OpenFOAM volume from timestep:', latestVolume.timestep);
+      } else if (files && files.length > 0) {
+        // Fallback a primer archivo disponible (slice)
+        vtkUrl = files[0].path;
+        console.log('[VTKViewer] No OpenFOAM volume found, loading slice:', files[0].filename);
+      } else {
+        throw new Error('No VTK files available for this simulation');
+      }
+      
       console.log('[VTKViewer] Loading VTK file for simulation:', simulationId, 'URL:', vtkUrl);
 
-      // Validar que el archivo existe
+      // Cargar el archivo VTK
       const response = await fetch(vtkUrl);
       if (!response.ok) {
         throw new Error(`File not found: ${response.status}`);

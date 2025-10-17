@@ -301,6 +301,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Endpoint para listar archivos VTK disponibles de una simulación
+  app.get("/api/simulations/:id/vtk-files", async (req, res) => {
+    console.log('[VTK-FILES] Endpoint called for simulation:', req.params.id);
+    try {
+      const simulationId = parseInt(req.params.id);
+      const vtkDir = path.join(process.cwd(), 'public', 'uploads', `sim_${simulationId}`, 'vtk');
+      
+      // Check if directory exists
+      if (!fsSync.existsSync(vtkDir)) {
+        return res.json({ files: [] });
+      }
+      
+      // List all .vtkjs files
+      const files = fsSync.readdirSync(vtkDir)
+        .filter(f => f.endsWith('.vtkjs'))
+        .map(filename => {
+          const stats = fsSync.statSync(path.join(vtkDir, filename));
+          
+          // Parse OpenFOAM files to extract timestep
+          let timestep = null;
+          let type = 'slice';
+          
+          if (filename.startsWith('openfoam_')) {
+            type = 'volume';
+            // Extract timestep from filename like: openfoam_domain_5.vtkjs
+            const match = filename.match(/openfoam_[^_]+_(\d+(?:\.\d+)?)/);
+            if (match) {
+              timestep = parseFloat(match[1]);
+            }
+          }
+          
+          return {
+            filename,
+            path: `/uploads/sim_${simulationId}/vtk/${filename}`,
+            type,
+            timestep,
+            size: stats.size,
+            modified: stats.mtime
+          };
+        })
+        .sort((a, b) => {
+          // Sort by timestep (descending) for volume files, then by filename
+          if (a.type === 'volume' && b.type === 'volume' && a.timestep !== null && b.timestep !== null) {
+            return b.timestep - a.timestep;
+          }
+          return a.filename.localeCompare(b.filename);
+        });
+      
+      // Get latest volume file
+      const latestVolume = files.find(f => f.type === 'volume');
+      
+      res.json({ 
+        files,
+        latestVolume: latestVolume || null,
+        count: files.length
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: "Failed to list VTK files", error: error.message });
+    }
+  });
+
   app.get("/api/simulations/:id", async (req, res) => {
     try {
       if (!req.isAuthenticated()) {

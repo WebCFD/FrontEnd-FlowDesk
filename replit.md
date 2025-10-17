@@ -278,9 +278,22 @@ Automated post-processing includes:
 
 ### Testing
 
-Example test simulation (ID 53):
+Example test simulation (ID 56):
 - Type: comfort
 - Status: completed
-- Task ID: ruscz6mat4iwwa0vfeod83yvj
-- Result: PDF report, residuals plot, VTK files generated
+- VTK files: Uses automatic detection via `/api/simulations/:id/vtk-files`
+- VTK Viewer: Automatically loads OpenFOAM volume if available, otherwise falls back to slices
+- Result: PDF report, residuals plot, VTK files generated and converted to .vtkjs
 - Visible in Post & Analysis dashboard ✅
+
+### Recent Updates (Oct 17, 2025)
+
+**OpenFOAM VTK Generation & Viewer Enhancement**:
+1. Modified OpenFOAM to automatically generate VTK files at end of simulation (`foamToVTK`)
+2. Created VTK→vtkjs converter (`src/components/tools/vtk_to_vtkjs.py`) for web compatibility
+3. Updated worker_monitor to automatically convert all VTK files to vtkjs format
+4. Added `/api/simulations/:id/vtk-files` endpoint to list available VTK files
+5. Enhanced VTKViewer to automatically detect and load:
+   - **Priority 1**: OpenFOAM volume data from latest timestep
+   - **Fallback**: Post-processing slices if no volume available
+6. Viewer now intelligently loads the most relevant visualization data
