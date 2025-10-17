@@ -240,8 +240,10 @@ def setup(case_path: str) -> list:
         # 3. Reconstruct the results back into serial for post-processing
         'runApplication reconstructPar -latestTime',
 
-        # 4. Generate VTK files with all fields for visualization
-        'runApplication foamToVTK -latestTime -fields "(T U p p_rgh PMV PPD)"',
+        # 4. Generate VTK surface files (external surfaces only, optimized for web viewer)
+        # -surfaceFields: Only surface data (walls, boundaries)
+        # -faceSet: All faces including internal ones (for volume representation)
+        'runApplication foamToVTK -latestTime -surfaceFields -fields "(T U p p_rgh PMV PPD)"',
 
         # Clean processors
         'rm -rf processor*',
