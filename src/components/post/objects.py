@@ -134,5 +134,11 @@ def post_objects(sim_path, post_path):
             plotter.show(screenshot=img_path)
             plotter.close()
 
+    # Save complete internal mesh for interactive visualization in web viewer
+    logger.info("    * Saving complete internal mesh for web viewer")
+    internal_mesh_path = os.path.join(obj_dir, "internal_mesh_complete.vtu")
+    internal_mesh.save(internal_mesh_path)
+    logger.info(f"    * Saved complete internal mesh: {internal_mesh_path}")
+    
     logger.info("    * Post-processing objects generation completed successfully")
     return internal_mesh

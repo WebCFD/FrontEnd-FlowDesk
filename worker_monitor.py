@@ -102,18 +102,18 @@ def copy_results_to_public(case_name, sim_id):
                         os.path.join(img_dest, img)
                     )
         
-        # Copiar y convertir VTK desde post/obj (slices generados por post-procesamiento)
+        # Copiar y convertir VTK desde post/obj (slices y volume completo generados por post-procesamiento)
         obj_dir = os.path.join(post_path, "obj")
         obj_dest = os.path.join(public_path, "vtk")
         if os.path.exists(obj_dir):
             os.makedirs(obj_dest, exist_ok=True)
             for vtk in os.listdir(obj_dir):
-                if vtk.endswith('.vtk'):
+                if vtk.endswith('.vtk') or vtk.endswith('.vtu'):
                     vtk_path = os.path.join(obj_dir, vtk)
-                    vtkjs_name = vtk.replace('.vtk', '.vtkjs')
+                    vtkjs_name = vtk.replace('.vtk', '.vtkjs').replace('.vtu', '.vtkjs')
                     vtkjs_path = os.path.join(obj_dest, vtkjs_name)
                     
-                    # Convertir VTK a vtkjs
+                    # Convertir VTK/VTU a vtkjs
                     try:
                         vtk_to_vtkjs(vtk_path, vtkjs_path)
                         logger.info(f"Converted {vtk} to {vtkjs_name}")

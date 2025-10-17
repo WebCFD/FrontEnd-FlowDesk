@@ -323,7 +323,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           let timestep = null;
           let type = 'slice';
           
-          if (filename.startsWith('openfoam_')) {
+          // Detect file type and priority
+          if (filename === 'internal_mesh_complete.vtkjs') {
+            // This is the complete volume mesh from post-processing (highest priority)
+            type = 'volume_complete';
+            timestep = 0;
+          } else if (filename.startsWith('openfoam_')) {
             // Check if it's a boundary surface
             if (filename.includes('boundary_')) {
               type = 'boundary';
@@ -350,8 +355,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           };
         })
         .sort((a, b) => {
-          // Sort: boundary > volume > volume_internal > slices, then by timestep
-          const typeOrder: Record<string, number> = { boundary: 0, volume: 1, volume_internal: 2, slice: 3 };
+          // Sort: volume_complete > boundary > volume > volume_internal > slices, then by timestep
+          const typeOrder: Record<string, number> = { 
+            volume_complete: 0, 
+            boundary: 1, 
+            volume: 2, 
+            volume_internal: 3, 
+            slice: 4 
+          };
           const orderDiff = (typeOrder[a.type] || 99) - (typeOrder[b.type] || 99);
           if (orderDiff !== 0) return orderDiff;
           
@@ -362,8 +373,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return a.filename.localeCompare(b.filename);
         });
       
-      // Get latest volume file (prioritize volume_internal which contains full geometry)
-      const latestVolume = files.find(f => f.type === 'volume_internal' || f.type === 'volume');
+      // Get latest volume file (prioritize volume_complete from post-processing)
+      const latestVolume = files.find(f => 
+        f.type === 'volume_complete' || 
+        f.type === 'volume_internal' || 
+        f.type === 'volume'
+      );
       
       res.json({ 
         files,

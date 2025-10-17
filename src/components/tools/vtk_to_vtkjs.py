@@ -23,9 +23,18 @@ def vtk_to_vtkjs(vtk_path: str, output_path: str) -> None:
         
         # If it's an UnstructuredGrid (3D volume), extract surface to get all faces
         # This is what ParaView does - shows the surface representation of the volume
-        if hasattr(mesh, 'extract_surface'):
-            logger.info(f"    * Extracting surface from 3D volume...")
-            mesh = mesh.extract_surface()
+        # Keep all internal data for slicing in web viewer
+        if hasattr(mesh, 'extract_surface') and mesh.n_cells > 1000:
+            logger.info(f"    * Extracting surface from 3D volume ({mesh.n_cells} cells)...")
+            # Extract surface but keep all point data for visualization
+            surface_mesh = mesh.extract_surface()
+            # Transfer all point data to surface
+            for key in mesh.point_data.keys():
+                if key not in surface_mesh.point_data:
+                    # Interpolate volume data to surface points
+                    surface_mesh.point_data[key] = mesh.sample(surface_mesh).point_data[key]
+            mesh = surface_mesh
+            logger.info(f"    * Surface extracted: {mesh.n_points} points, {mesh.n_cells} cells")
         
         # Extract geometry
         points = mesh.points.flatten().tolist()
