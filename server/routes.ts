@@ -362,11 +362,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return a.filename.localeCompare(b.filename);
         });
       
-      // Get preferred volume files (boundary surfaces first, then volume, then internal)
-      const boundaryFiles = files.filter(f => f.type === 'boundary');
-      const latestVolume = boundaryFiles.length > 0 
-        ? boundaryFiles[0] 
-        : files.find(f => f.type === 'volume' || f.type === 'volume_internal');
+      // Get latest volume file (prioritize volume_internal which contains full geometry)
+      const latestVolume = files.find(f => f.type === 'volume_internal' || f.type === 'volume');
       
       res.json({ 
         files,
