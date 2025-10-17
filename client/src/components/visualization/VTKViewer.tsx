@@ -57,6 +57,86 @@ interface FilterConfig {
   };
 }
 
+/**
+ * Normalizes scalar ranges to prevent zero-width, NaN, or infinity issues
+ * that cause vtk.js colormap crashes. Returns safe range for visualization.
+ */
+function normalizeScalarRange(
+  array: any, 
+  fieldName: string = 'unknown'
+): { range: [number, number]; isUniform: boolean; isInvalid: boolean; message?: string } {
+  
+  if (!array) {
+    return { 
+      range: [0, 1], 
+      isUniform: false, 
+      isInvalid: true, 
+      message: 'Array is null or undefined' 
+    };
+  }
+
+  const rawRange = array.getRange();
+  
+  if (!rawRange || rawRange.length < 2) {
+    return { 
+      range: [0, 1], 
+      isUniform: false, 
+      isInvalid: true, 
+      message: 'Invalid range format' 
+    };
+  }
+
+  let [min, max] = rawRange;
+
+  // Handle NaN values
+  if (isNaN(min) || isNaN(max)) {
+    console.warn(`[VTKViewer] NaN detected in ${fieldName} range, using fallback [0, 1]`);
+    return { 
+      range: [0, 1], 
+      isUniform: false, 
+      isInvalid: true, 
+      message: `Field "${fieldName}" contains NaN values` 
+    };
+  }
+
+  // Handle Infinity values
+  if (!isFinite(min) || !isFinite(max)) {
+    console.warn(`[VTKViewer] Infinity detected in ${fieldName} range, using fallback [0, 1]`);
+    return { 
+      range: [0, 1], 
+      isUniform: false, 
+      isInvalid: true, 
+      message: `Field "${fieldName}" contains infinite values` 
+    };
+  }
+
+  // Check for zero-width or near-zero-width range (uniform data)
+  const epsilon = Math.abs(max) * 1e-6 || 1e-6; // Relative epsilon or absolute minimum
+  const rangeWidth = Math.abs(max - min);
+  
+  if (rangeWidth < epsilon) {
+    // Uniform data detected - expand range with small epsilon
+    const midpoint = (min + max) / 2;
+    const expansion = Math.abs(midpoint) * 0.01 || 0.01; // 1% of value or minimum 0.01
+    
+    console.warn(`[VTKViewer] Uniform data detected in ${fieldName}: all values ≈ ${midpoint.toFixed(6)}, expanding range`);
+    
+    return {
+      range: [midpoint - expansion, midpoint + expansion],
+      isUniform: true,
+      isInvalid: false,
+      message: `Field "${fieldName}" has uniform values (${midpoint.toFixed(2)})`
+    };
+  }
+
+  // Valid non-uniform range
+  return {
+    range: [min, max],
+    isUniform: false,
+    isInvalid: false
+  };
+}
+
 export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -75,6 +155,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [colormapMin, setColormapMin] = useState<number | null>(null);
   const [colormapMax, setColormapMax] = useState<number | null>(null);
   const [opacity, setOpacity] = useState<number>(1.0); // 1.0 = opaco, 0.0 = transparente
+  const [dataWarning, setDataWarning] = useState<string | null>(null);
   const [filterConfig, setFilterConfig] = useState<FilterConfig>({
     isosurface: { enabled: false, values: [0.5] },
     threshold: { enabled: false, range: [0, 1] },
@@ -180,8 +261,8 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     
     // Create sophisticated contour visualization using discrete color bands
     const lookupTable = vtkColorTransferFunction.newInstance();
-    const range = array.getRange();
-    const [minVal, maxVal] = range;
+    const normalized = normalizeScalarRange(array, arrayName);
+    const [minVal, maxVal] = normalized.range;
     
     lookupTable.setMappingRange(minVal, maxVal);
     
@@ -242,8 +323,8 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     console.log(`[VTKViewer] Creating real threshold visualization for range: [${range[0]}, ${range[1]}]`);
     
     const lookupTable = vtkColorTransferFunction.newInstance();
-    const fullRange = array.getRange();
-    const [minVal, maxVal] = fullRange;
+    const normalized = normalizeScalarRange(array, arrayName);
+    const [minVal, maxVal] = normalized.range;
     const [thresholdMin, thresholdMax] = range;
     
     lookupTable.setMappingRange(minVal, maxVal);
@@ -348,14 +429,15 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     
     // Create lookup table for vector magnitude
     const vectorLookupTable = vtkColorTransferFunction.newInstance();
-    const magnitudeRange = magnitudeArray.getRange();
-    vectorLookupTable.setMappingRange(magnitudeRange[0], magnitudeRange[1]);
+    const normalized = normalizeScalarRange(magnitudeArray, `${arrayName}_magnitude`);
+    const [minMag, maxMag] = normalized.range;
+    vectorLookupTable.setMappingRange(minMag, maxMag);
     
     // Apply flow-based coloring
-    vectorLookupTable.addRGBPoint(magnitudeRange[0], 0.0, 0.2, 0.8); // Blue (slow)
-    vectorLookupTable.addRGBPoint(magnitudeRange[0] + (magnitudeRange[1] - magnitudeRange[0]) * 0.33, 0.0, 0.8, 0.2); // Green (medium)
-    vectorLookupTable.addRGBPoint(magnitudeRange[0] + (magnitudeRange[1] - magnitudeRange[0]) * 0.66, 0.8, 0.8, 0.0); // Yellow (fast)
-    vectorLookupTable.addRGBPoint(magnitudeRange[1], 0.8, 0.0, 0.0); // Red (very fast)
+    vectorLookupTable.addRGBPoint(minMag, 0.0, 0.2, 0.8); // Blue (slow)
+    vectorLookupTable.addRGBPoint(minMag + (maxMag - minMag) * 0.33, 0.0, 0.8, 0.2); // Green (medium)
+    vectorLookupTable.addRGBPoint(minMag + (maxMag - minMag) * 0.66, 0.8, 0.8, 0.0); // Yellow (fast)
+    vectorLookupTable.addRGBPoint(maxMag, 0.8, 0.0, 0.0); // Red (very fast)
     
     streamlineMapper.setLookupTable(vectorLookupTable);
     actors.push(streamlineActor);
@@ -687,30 +769,34 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       mapper.setScalarVisibility(true);
       mapper.setUseLookupTableScalarRange(true);
       
-      // Obtener range con fallback defensivo
-      const range = array.getRange() || [0, 1];
+      // Normalize range to handle zero-width, NaN, and infinity cases
+      const fieldName = array.getName() || mode;
+      const normalized = normalizeScalarRange(array, fieldName);
+      const [safeMin, safeMax] = normalized.range;
+      
+      // Show warning to user if data is uniform or invalid
+      if (normalized.isUniform || normalized.isInvalid) {
+        setDataWarning(normalized.message || null);
+      } else {
+        setDataWarning(null);
+      }
       
       // Define effective range at function scope so it's available for manual colormap
       let effectiveMin, effectiveMax;
       
-      if (range && range.length >= 2 && !isNaN(range[0]) && !isNaN(range[1])) {
-        // Use custom min/max values if specified, otherwise use data range
-        effectiveMin = colormapMin ?? range[0];
-        effectiveMax = colormapMax ?? range[1];
-        
-        lookupTable.setMappingRange(effectiveMin, effectiveMax);
-        // Connect range to UI state for sliders (always use data range for UI)
-        setDataRange([range[0], range[1]]);
-        
-        console.log('[VTKViewer] Colormap range applied - Data:', `${range[0].toFixed(2)}-${range[1].toFixed(2)}`, 
-                   'Effective:', `${effectiveMin.toFixed(2)}-${effectiveMax.toFixed(2)}`);
-      } else {
-        console.warn('Invalid range detected, using default [0,1]');
-        effectiveMin = colormapMin ?? 0;
-        effectiveMax = colormapMax ?? 1;
-        lookupTable.setMappingRange(effectiveMin, effectiveMax);
-        setDataRange([0, 1]);
-      }
+      // Use custom min/max values if specified, otherwise use normalized safe range
+      effectiveMin = colormapMin ?? safeMin;
+      effectiveMax = colormapMax ?? safeMax;
+      
+      // Always use safe range for lookup table to prevent crashes
+      lookupTable.setMappingRange(effectiveMin, effectiveMax);
+      
+      // Update UI state for sliders (use safe range)
+      setDataRange([safeMin, safeMax]);
+      
+      console.log('[VTKViewer] Colormap range applied - Data:', `${safeMin.toFixed(2)}-${safeMax.toFixed(2)}`, 
+                 'Effective:', `${effectiveMin.toFixed(2)}-${effectiveMax.toFixed(2)}`,
+                 normalized.isUniform ? '(uniform data)' : normalized.isInvalid ? '(invalid data)' : '');
       
       // Usar selectedColormap state si está disponible
       const colormapName = selectedColormap || presetName;
@@ -1064,6 +1150,14 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
               Simulation #{simulationId}
             </Badge>
           </CardTitle>
+          
+          {/* Data warning badge */}
+          {dataWarning && (
+            <div className="mt-2 flex items-center gap-2 p-2 bg-amber-50 border border-amber-200 rounded-md">
+              <AlertCircle className="h-4 w-4 text-amber-600 flex-shrink-0" />
+              <span className="text-xs text-amber-800">{dataWarning}</span>
+            </div>
+          )}
           
           <div className="flex flex-wrap gap-2 mt-4">
             {visualizationControls.map((control) => (
