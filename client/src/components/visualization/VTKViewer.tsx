@@ -878,7 +878,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       renderWindowRef.current = { renderWindow, renderer, openGLRenderWindow, interactor };
 
       // Cargar archivo VTK de temperatura de la simulación específica
-      const vtkUrl = `/uploads/sim_${simulationId}/vtk/T_degC_slice_05.vtk`;
+      const vtkUrl = `/uploads/sim_${simulationId}/vtk/T_degC_slice_05.vtkjs`;
       console.log('[VTKViewer] Loading VTK file for simulation:', simulationId, 'URL:', vtkUrl);
 
       // Validar que el archivo existe

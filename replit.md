@@ -246,9 +246,10 @@ Automated post-processing includes:
    - Post-processing creates visualization slices from OpenFOAM results
    - OpenFOAM directly generates complete volume VTK files via `foamToVTK` (configured in `src/components/cfd/hvac.py`)
 3. **PDF Report**: Generate summary report with images and statistics
-4. **File Organization**: Copy results to public folder for web access
-   - Slice VTK files: `post/obj/` → `public/uploads/sim_{id}/vtk/`
-   - OpenFOAM VTK files: `sim/VTK/` → `public/uploads/sim_{id}/vtk/openfoam_*.vtk`
+4. **File Organization & Conversion**: Copy and convert results to public folder for web access
+   - Slice VTK files: `post/obj/*.vtk` → convert to `.vtkjs` → `public/uploads/sim_{id}/vtk/*.vtkjs`
+   - OpenFOAM VTK files: `sim/VTK/*.vtk` → convert to `.vtkjs` → `public/uploads/sim_{id}/vtk/openfoam_*.vtkjs`
+   - Conversion uses `src/components/tools/vtk_to_vtkjs.py` (pyvista-based) to convert text VTK to JSON vtkjs format for web visualization
 
 ### Verified Functionality ✅
 
@@ -259,10 +260,20 @@ Automated post-processing includes:
 5. **Post & Analysis UI**: ✅ Displays completed simulations with results
 6. **Result Storage**: ✅ Files copied to /public/uploads/ and paths saved in DB
 
+### VTK Visualization Pipeline
+
+1. **OpenFOAM Generation**: `foamToVTK` generates `.vtk` text files with all fields (T, U, p, p_rgh, PMV, PPD)
+2. **Format Conversion**: `vtk_to_vtkjs.py` converts `.vtk` (text) to `.vtkjs` (JSON) for web compatibility
+3. **Frontend Display**: VTKViewer.tsx loads `.vtkjs` files and renders with vtk.js
+4. **File Flow**: 
+   - OpenFOAM: `sim/VTK/*.vtk` 
+   - Worker: converts and copies to `public/uploads/sim_{id}/vtk/*.vtkjs`
+   - Frontend: fetches `/uploads/sim_{id}/vtk/*.vtkjs`
+
 ### Known Limitations
 
 1. **Worker Execution**: Must run manually in terminal (not as background service)
-2. **VTK Visualization**: Basic implementation exists, may need enhancements
+2. **VTK Format**: Frontend requires `.vtkjs` (JSON) format, OpenFOAM generates `.vtk` (text) - automatic conversion in place
 3. **Error Handling**: Some edge cases may need additional validation
 
 ### Testing
