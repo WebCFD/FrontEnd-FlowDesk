@@ -2806,7 +2806,7 @@ export default function WizardDesign() {
 
     try {
       // Generar datos de simulación completos desde el diseño actual
-      const simulationData = generateSimulationData();
+      const simulationData = generateSimulationDataForExport();
       
       console.log('[FRONTEND] Creating HVAC simulation with type:', selectedSimulationType);
       
