@@ -80,9 +80,10 @@ export default function Dashboard() {
   const { data: simulations = [], isLoading, error } = useQuery<Simulation[]>({
     queryKey: ['/api/simulations'],
     enabled: !!user && !user.isAnonymous,
-    refetchInterval: (data) => {
+    refetchInterval: (query) => {
       // Auto-refresh every 5 seconds if there are simulations in progress
-      const hasInProgress = data?.some(sim => 
+      const sims = query.state.data as Simulation[] | undefined;
+      const hasInProgress = sims?.some(sim => 
         sim.status === 'pending' || 
         sim.status === 'processing' || 
         sim.status === 'geometry' ||
