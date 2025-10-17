@@ -1,0 +1,126 @@
+{
+  "case_name": "MySim",
+  "version": "1.0",
+  "levels": {
+    "0": {
+      "height": 2.2,
+      "deck": 0.35,
+      "ceiling": {
+        "temp": 20,
+        "airEntries": []
+      },
+      "floor": {
+        "temp": 20,
+        "airEntries": []
+      },
+      "walls": [
+        {
+          "id": "wall_0F_1",
+          "start": {
+            "x": -2.55,
+            "y": -0.65
+          },
+          "end": {
+            "x": 1.35,
+            "y": -0.7
+          },
+          "temp": 20,
+          "airEntries": []
+        },
+        {
+          "id": "wall_0F_2",
+          "start": {
+            "x": 1.35,
+            "y": -0.7
+          },
+          "end": {
+            "x": 1.35,
+            "y": 2.3
+          },
+          "temp": 20,
+          "airEntries": []
+        },
+        {
+          "id": "wall_0F_3",
+          "start": {
+            "x": 1.35,
+            "y": 2.3
+          },
+          "end": {
+            "x": -2.35,
+            "y": 2.3
+          },
+          "temp": 20,
+          "airEntries": [
+            {
+              "id": "window_0F_2",
+              "type": "window",
+              "position": {
+                "x": 0.33364,
+                "y": 2.3,
+                "z": 1.1,
+                "normal": {
+                  "x": 0,
+                  "y": -1,
+                  "z": 0
+                }
+              },
+              "dimensions": {
+                "width": 1,
+                "height": 1.1,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "temperature": 20,
+                "airDirection": "outflow",
+                "flowIntensity": "low"
+              }
+            }
+          ]
+        },
+        {
+          "id": "wall_0F_4",
+          "start": {
+            "x": -2.4,
+            "y": 2.3
+          },
+          "end": {
+            "x": -2.55,
+            "y": -0.65
+          },
+          "temp": 20,
+          "airEntries": [
+            {
+              "id": "window_0F_1",
+              "type": "window",
+              "position": {
+                "x": -2.45833,
+                "y": 1.15276,
+                "z": 1.1,
+                "normal": {
+                  "x": -0.99871,
+                  "y": -0.05078,
+                  "z": 0
+                }
+              },
+              "dimensions": {
+                "width": 1,
+                "height": 1,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "temperature": 20,
+                "airDirection": "inflow",
+                "flowIntensity": "low"
+              }
+            }
+          ]
+        }
+      ],
+      "stairs": [],
+      "furniture": []
+    }
+  }
+}
