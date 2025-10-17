@@ -126,19 +126,19 @@ def copy_results_to_public(case_name, sim_id):
         if os.path.exists(sim_vtk_dir):
             os.makedirs(obj_dest, exist_ok=True)
             
-            # Buscar recursivamente archivos .vtk y .vtu
+            # Buscar recursivamente archivos .vtk, .vtu, y .vtp
             for root, dirs, files in os.walk(sim_vtk_dir):
                 for vtk_file in files:
-                    if vtk_file.endswith('.vtk') or vtk_file.endswith('.vtu'):
+                    if vtk_file.endswith('.vtk') or vtk_file.endswith('.vtu') or vtk_file.endswith('.vtp'):
                         vtk_path = os.path.join(root, vtk_file)
                         
                         # Generar nombre único basado en ruta relativa
                         rel_path = os.path.relpath(vtk_path, sim_vtk_dir)
-                        safe_name = rel_path.replace(os.sep, '_').replace('.vtk', '').replace('.vtu', '')
+                        safe_name = rel_path.replace(os.sep, '_').replace('.vtk', '').replace('.vtu', '').replace('.vtp', '')
                         vtkjs_name = f"openfoam_{safe_name}.vtkjs"
                         vtkjs_path = os.path.join(obj_dest, vtkjs_name)
                         
-                        # Convertir VTK/VTU a vtkjs
+                        # Convertir VTK/VTU/VTP a vtkjs
                         try:
                             vtk_to_vtkjs(vtk_path, vtkjs_path)
                             logger.info(f"Converted OpenFOAM {vtk_file} to {vtkjs_name}")

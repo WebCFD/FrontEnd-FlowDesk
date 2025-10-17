@@ -319,14 +319,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .map(filename => {
           const stats = fsSync.statSync(path.join(vtkDir, filename));
           
-          // Parse OpenFOAM files to extract timestep
+          // Parse OpenFOAM files to extract timestep and type
           let timestep = null;
           let type = 'slice';
           
           if (filename.startsWith('openfoam_')) {
-            type = 'volume';
-            // Extract timestep from filename like: openfoam_domain_5.vtkjs
-            const match = filename.match(/openfoam_[^_]+_(\d+(?:\.\d+)?)/);
+            // Check if it's a boundary surface
+            if (filename.includes('boundary_')) {
+              type = 'boundary';
+            } else if (filename.includes('internal')) {
+              type = 'volume_internal';
+            } else {
+              type = 'volume';
+            }
+            
+            // Extract timestep from filename like: openfoam_artifacts_5_internal.vtkjs
+            const match = filename.match(/artifacts_(\d+)/);
             if (match) {
               timestep = parseFloat(match[1]);
             }
@@ -342,15 +350,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
           };
         })
         .sort((a, b) => {
-          // Sort by timestep (descending) for volume files, then by filename
-          if (a.type === 'volume' && b.type === 'volume' && a.timestep !== null && b.timestep !== null) {
+          // Sort: boundary > volume > volume_internal > slices, then by timestep
+          const typeOrder: Record<string, number> = { boundary: 0, volume: 1, volume_internal: 2, slice: 3 };
+          const orderDiff = (typeOrder[a.type] || 99) - (typeOrder[b.type] || 99);
+          if (orderDiff !== 0) return orderDiff;
+          
+          // Within same type, sort by timestep (descending)
+          if (a.timestep !== null && b.timestep !== null) {
             return b.timestep - a.timestep;
           }
           return a.filename.localeCompare(b.filename);
         });
       
-      // Get latest volume file
-      const latestVolume = files.find(f => f.type === 'volume');
+      // Get preferred volume files (boundary surfaces first, then volume, then internal)
+      const boundaryFiles = files.filter(f => f.type === 'boundary');
+      const latestVolume = boundaryFiles.length > 0 
+        ? boundaryFiles[0] 
+        : files.find(f => f.type === 'volume' || f.type === 'volume_internal');
       
       res.json({ 
         files,
