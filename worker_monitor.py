@@ -125,21 +125,25 @@ def copy_results_to_public(case_name, sim_id):
         sim_vtk_dir = os.path.join(sim_path, "VTK")
         if os.path.exists(sim_vtk_dir):
             os.makedirs(obj_dest, exist_ok=True)
-            for vtk_folder in os.listdir(sim_vtk_dir):
-                vtk_folder_path = os.path.join(sim_vtk_dir, vtk_folder)
-                if os.path.isdir(vtk_folder_path):
-                    for vtk_file in os.listdir(vtk_folder_path):
-                        if vtk_file.endswith('.vtk'):
-                            vtk_path = os.path.join(vtk_folder_path, vtk_file)
-                            vtkjs_name = f"openfoam_{vtk_file.replace('.vtk', '.vtkjs')}"
-                            vtkjs_path = os.path.join(obj_dest, vtkjs_name)
-                            
-                            # Convertir VTK a vtkjs
-                            try:
-                                vtk_to_vtkjs(vtk_path, vtkjs_path)
-                                logger.info(f"Converted OpenFOAM {vtk_file} to {vtkjs_name}")
-                            except Exception as e:
-                                logger.error(f"Failed to convert OpenFOAM {vtk_file}: {e}")
+            
+            # Buscar recursivamente archivos .vtk y .vtu
+            for root, dirs, files in os.walk(sim_vtk_dir):
+                for vtk_file in files:
+                    if vtk_file.endswith('.vtk') or vtk_file.endswith('.vtu'):
+                        vtk_path = os.path.join(root, vtk_file)
+                        
+                        # Generar nombre único basado en ruta relativa
+                        rel_path = os.path.relpath(vtk_path, sim_vtk_dir)
+                        safe_name = rel_path.replace(os.sep, '_').replace('.vtk', '').replace('.vtu', '')
+                        vtkjs_name = f"openfoam_{safe_name}.vtkjs"
+                        vtkjs_path = os.path.join(obj_dest, vtkjs_name)
+                        
+                        # Convertir VTK/VTU a vtkjs
+                        try:
+                            vtk_to_vtkjs(vtk_path, vtkjs_path)
+                            logger.info(f"Converted OpenFOAM {vtk_file} to {vtkjs_name}")
+                        except Exception as e:
+                            logger.error(f"Failed to convert OpenFOAM {vtk_file}: {e}")
         
         # Retornar rutas (ahora buscamos .vtkjs en lugar de .vtk)
         images_list = [f"/uploads/sim_{sim_id}/images/{img}" for img in os.listdir(img_dest) if img.endswith('.png')] if os.path.exists(img_dest) else []
