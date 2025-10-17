@@ -1073,7 +1073,20 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
       // Add new actors to scene using helper
       addActors(actorsRef.current);
+      
+      // Debug: Log actor bounds
+      if (actorsRef.current.length > 0) {
+        const bounds = actorsRef.current[0].getBounds();
+        console.log('[VTKViewer] Actor bounds:', bounds);
+        console.log('[VTKViewer] Actor visibility:', actorsRef.current[0].getVisibility());
+      }
+      
       renderer.resetCamera();
+      
+      // Debug: Log camera position after reset
+      const camera = renderer.getActiveCamera();
+      console.log('[VTKViewer] Camera position:', camera.getPosition());
+      console.log('[VTKViewer] Camera focal point:', camera.getFocalPoint());
       
       // Set initial background to white
       renderer.setBackground(1, 1, 1);
