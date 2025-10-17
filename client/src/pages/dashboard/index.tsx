@@ -80,6 +80,19 @@ export default function Dashboard() {
   const { data: simulations = [], isLoading, error } = useQuery<Simulation[]>({
     queryKey: ['/api/simulations'],
     enabled: !!user && !user.isAnonymous,
+    refetchInterval: (data) => {
+      // Auto-refresh every 5 seconds if there are simulations in progress
+      const hasInProgress = data?.some(sim => 
+        sim.status === 'pending' || 
+        sim.status === 'processing' || 
+        sim.status === 'geometry' ||
+        sim.status === 'meshing' ||
+        sim.status === 'cfd_setup' ||
+        sim.status === 'cloud_execution' ||
+        sim.status === 'post_processing'
+      );
+      return hasInProgress ? 5000 : false; // 5 seconds if in progress, disabled otherwise
+    },
   });
 
   // Fetch user data including credits
