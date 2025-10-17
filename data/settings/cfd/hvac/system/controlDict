@@ -24,7 +24,27 @@ runTimeModifiable false;
 
 functions
 {
-    // Post-processing functions disabled for basic simulation
-    // #include "FOage"
-    // #include "FOcomfort"
+    // Generate VTK file with all fields at end of simulation
+    writeVTK
+    {
+        type            surfaces;
+        libs            ("libsampling.so");
+        writeControl    writeTime;
+        writeInterval   1;
+        
+        surfaceFormat   vtk;
+        fields          (T U p p_rgh PMV PPD);
+        
+        interpolationScheme cellPoint;
+        
+        surfaces
+        {
+            internalMesh
+            {
+                type            patch;
+                patches         (floor ceiling);
+                interpolate     true;
+            }
+        }
+    }
 }

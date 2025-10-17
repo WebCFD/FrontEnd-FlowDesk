@@ -240,6 +240,9 @@ def setup(case_path: str) -> list:
         # 3. Reconstruct the results back into serial for post-processing
         'runApplication reconstructPar -latestTime',
 
+        # 4. Generate VTK files with all fields for visualization
+        'runApplication foamToVTK -latestTime -fields "(T U p p_rgh PMV PPD)"',
+
         # Clean processors
         'rm -rf processor*',
         ]

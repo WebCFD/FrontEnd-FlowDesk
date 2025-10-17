@@ -231,6 +231,7 @@ python3 worker_monitor.py
 - Input: Meshed case
 - Output: Complete OpenFOAM case with boundary conditions
 - Function: `mesh2cfd(case_path, type="hvac")`
+- **VTK Generation**: Automatically adds `foamToVTK` command to Allrun script for direct VTK export with all fields (T, U, p, p_rgh, PMV, PPD)
 
 #### Step 4: Submit to Inductiva (`src/components/solve/inductiva.py`)
 - Input: Complete OpenFOAM case
@@ -241,9 +242,13 @@ python3 worker_monitor.py
 
 Automated post-processing includes:
 1. **Residual Analysis**: Parse log files, generate convergence plots
-2. **VTK Generation**: Create visualization objects from OpenFOAM results
+2. **VTK Generation**: 
+   - Post-processing creates visualization slices from OpenFOAM results
+   - OpenFOAM directly generates complete volume VTK files via `foamToVTK` (configured in `src/components/cfd/hvac.py`)
 3. **PDF Report**: Generate summary report with images and statistics
 4. **File Organization**: Copy results to public folder for web access
+   - Slice VTK files: `post/obj/` → `public/uploads/sim_{id}/vtk/`
+   - OpenFOAM VTK files: `sim/VTK/` → `public/uploads/sim_{id}/vtk/openfoam_*.vtk`
 
 ### Verified Functionality ✅
 

@@ -101,7 +101,7 @@ def copy_results_to_public(case_name, sim_id):
                         os.path.join(img_dest, img)
                     )
         
-        # Copiar VTK
+        # Copiar VTK desde post/obj (slices generados por post-procesamiento)
         obj_dir = os.path.join(post_path, "obj")
         obj_dest = os.path.join(public_path, "vtk")
         if os.path.exists(obj_dir):
@@ -112,6 +112,21 @@ def copy_results_to_public(case_name, sim_id):
                         os.path.join(obj_dir, vtk),
                         os.path.join(obj_dest, vtk)
                     )
+        
+        # Copiar VTK desde sim/VTK (volumen completo generado por OpenFOAM)
+        sim_path = os.path.join(os.getcwd(), "cases", case_name, "sim")
+        sim_vtk_dir = os.path.join(sim_path, "VTK")
+        if os.path.exists(sim_vtk_dir):
+            os.makedirs(obj_dest, exist_ok=True)
+            for vtk_folder in os.listdir(sim_vtk_dir):
+                vtk_folder_path = os.path.join(sim_vtk_dir, vtk_folder)
+                if os.path.isdir(vtk_folder_path):
+                    for vtk_file in os.listdir(vtk_folder_path):
+                        if vtk_file.endswith('.vtk'):
+                            shutil.copy(
+                                os.path.join(vtk_folder_path, vtk_file),
+                                os.path.join(obj_dest, f"openfoam_{vtk_file}")
+                            )
         
         # Retornar rutas
         images_list = [f"/uploads/sim_{sim_id}/images/{img}" for img in os.listdir(img_dest) if img.endswith('.png')] if os.path.exists(img_dest) else []
