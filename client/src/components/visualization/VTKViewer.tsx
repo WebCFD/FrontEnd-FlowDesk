@@ -117,7 +117,7 @@ function normalizeScalarRange(
   if (rangeWidth < epsilon) {
     // Uniform data detected - expand range with small epsilon
     const midpoint = (min + max) / 2;
-    const expansion = Math.abs(midpoint) * 0.01 || 0.01; // 1% of value or minimum 0.01
+    const expansion = Math.abs(midpoint) * 0.00001 || 0.00001; // 0.001% of value or minimum 0.00001
     
     console.warn(`[VTKViewer] Uniform data detected in ${fieldName}: all values ≈ ${midpoint.toFixed(6)}, expanding range`);
     
