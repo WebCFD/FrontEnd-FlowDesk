@@ -877,9 +877,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
       renderWindowRef.current = { renderWindow, renderer, openGLRenderWindow, interactor };
 
-      // URL simplificada - buscar .vtkjs generado por foamToVTK  
-      const vtkUrl = `/api/simulations/${simulationId}/results/result.vtkjs`;
-      console.log('[VTKViewer] Loading VTK.js file:', vtkUrl);
+      // Cargar archivo VTK de temperatura de la simulación específica
+      const vtkUrl = `/uploads/sim_${simulationId}/vtk/T_degC_slice_05.vtk`;
+      console.log('[VTKViewer] Loading VTK file for simulation:', simulationId, 'URL:', vtkUrl);
 
       // Validar que el archivo existe
       const response = await fetch(vtkUrl);
