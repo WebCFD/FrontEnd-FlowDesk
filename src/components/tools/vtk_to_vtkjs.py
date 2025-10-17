@@ -21,16 +21,19 @@ def vtk_to_vtkjs(vtk_path: str, output_path: str) -> None:
         # Load VTK file
         mesh = pv.read(vtk_path)
         
+        # If it's an UnstructuredGrid (3D volume), extract surface to get all faces
+        # This is what ParaView does - shows the surface representation of the volume
+        if hasattr(mesh, 'extract_surface'):
+            logger.info(f"    * Extracting surface from 3D volume...")
+            mesh = mesh.extract_surface()
+        
         # Extract geometry
         points = mesh.points.flatten().tolist()
         
-        # Extract polygons/cells
+        # Extract polygons/cells (now guaranteed to be surface faces)
         if mesh.faces.size > 0:
             # PolyData with faces
             polys = mesh.faces.tolist()
-        elif mesh.cells.size > 0:
-            # UnstructuredGrid with cells
-            polys = mesh.cells.tolist()
         else:
             polys = []
         
