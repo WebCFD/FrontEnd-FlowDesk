@@ -183,7 +183,9 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 46.0115
                     elif(variable == 'T'):
-                        new_bc_data["type"] = 'zeroGradient'
+                        new_bc_data["type"] = 'inletOutlet'
+                        new_bc_data["inletValue"] = row['T'] + 273.15
+                        new_bc_data["value"] = row['T'] + 273.15
                     elif(variable == 'U'):
                         if (row['open']):
                             new_bc_data["type"] = 'pressureInletOutletVelocity'
