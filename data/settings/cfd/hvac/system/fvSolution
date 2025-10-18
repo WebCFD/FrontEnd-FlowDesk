@@ -59,13 +59,13 @@ relaxationFactors
 {
     fields
     {
-        p_rgh           0.7;
+        p_rgh           0.2;  // Conservative for buoyant flows with outlets
     }
 
     equations
     {
         U               0.5;
-        h               0.5;
+        h               0.3;  // Conservative for thermal stability
         "(k|epsilon|R)" 0.7;
         age             1;
     }
