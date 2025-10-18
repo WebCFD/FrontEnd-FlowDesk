@@ -252,15 +252,18 @@ def get_entry_bc_dict(data):
             new_patch['U'] = get_flow_value(flow_intensity, 'velocity', custom_value)
             
     elif air_direction == 'outflow':
+        # For outflow, always use pressure_outlet type
+        # This allows natural backflow and prevents continuity errors
+        new_patch['type'] = 'pressure_outlet'
+        
         if flow_type == 'pressure':
-            new_patch['type'] = 'pressure_outlet'
             # Get pressure value in Pa
             new_patch['pressure'] = get_flow_value(flow_intensity, 'pressure', custom_value)
-            new_patch['U'] = np.nan
         else:
-            # For outflow with velocity or massFlow, use velocity_inlet with reverse direction
-            new_patch['type'] = 'velocity_inlet'
-            new_patch['U'] = get_flow_value(flow_intensity, 'velocity', custom_value)
+            # For velocity/massFlow outlets, use atmospheric pressure (0 gauge pressure)
+            new_patch['pressure'] = 0
+        
+        new_patch['U'] = np.nan
     
     new_patch['T'] = simulation.get('temperature', DEFAULT_TEMPERATURE)
     
