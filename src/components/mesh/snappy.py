@@ -313,6 +313,9 @@ def prepare_snappy(geo_mesh, sim_path, geo_df, stl_filename = "geometry.stl"):
     expected_patches = geo_df["id"].tolist()
     expected_patches_str = " ".join(expected_patches)
     
+    # Build patch list for Python validation command (avoid backslash in f-string)
+    patches_python_list = "[" + ", ".join([f'\\"{p}\\"' for p in expected_patches]) + "]"
+    
     script_commands = [
         '#!/bin/sh', 
         'cd "${0%/*}" || exit',
@@ -331,13 +334,13 @@ def prepare_snappy(geo_mesh, sim_path, geo_df, stl_filename = "geometry.stl"):
         'runApplication snappyHexMesh -overwrite',
 
         # 4. VALIDATE MESH - Fail fast if background patches remain
-        f'echo "==================== VALIDATING MESH ===================="',
-        f'python3 -c "',
-        f'import sys; sys.path.append(\\"/workdir\\"); ',
-        f'from src.components.mesh.snappy import validate_mesh_patches; ',
-        f'validate_mesh_patches(\\"/workdir/output/artifacts\\", [{", ".join([f"\\\"{p}\\\"" for p in expected_patches])}])',
-        f'" || {{ echo "MESH VALIDATION FAILED - See error above"; exit 1; }}',
-        f'echo "==================== MESH VALIDATION PASSED ===================="',
+        'echo "==================== VALIDATING MESH ===================="',
+        'python3 -c "' +
+        'import sys; sys.path.append(\\"/workdir\\"); ' +
+        'from src.components.mesh.snappy import validate_mesh_patches; ' +
+        f'validate_mesh_patches(\\"/workdir/output/artifacts\\", {patches_python_list})' +
+        '" || { echo "MESH VALIDATION FAILED - See error above"; exit 1; }',
+        'echo "==================== MESH VALIDATION PASSED ===================="',
         
         # 5. Prepare initial fields
         'rm -rf 0',
