@@ -16,6 +16,7 @@ DIMENSIONS_DICT = {
     'alphat':   FoamFile.DimensionSet(mass=1, length=-1, time=-1),
     'DR':       FoamFile.DimensionSet(),
     'epsilon':  FoamFile.DimensionSet(length=2, time=-3),
+    'h':        FoamFile.DimensionSet(length=2, time=-2),  # J/kg = m²/s²
     'k':        FoamFile.DimensionSet(length=2, time=-2),
     'nut':      FoamFile.DimensionSet(length=2, time=-1),
     'p':        FoamFile.DimensionSet(mass=1, length=-1, time=-2),
@@ -30,6 +31,7 @@ INTERNALFIELD_DICT = {
     'alphat':   0,
     'DR':       0,
     'epsilon':  0.23,
+    'h':        294515.75,  # Cp * T = 1005 J/(kg·K) * 293.15 K
     'k':        0.08,
     'nut':      0,
     'p':        101325,
@@ -87,6 +89,10 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'epsilon'):
                         new_bc_data["type"] = 'epsilonWallFunction'
                         new_bc_data["value"] = '$internalField'
+                    elif(variable == 'h'):
+                        # Enthalpy: h = Cp * T
+                        new_bc_data["type"] = 'fixedValue'
+                        new_bc_data["value"] = 1005 * (row['T'] + 273.15)
                     elif(variable == 'k'):
                         new_bc_data["type"] = 'kqRWallFunction'
                         new_bc_data["value"] = '$internalField'
@@ -123,6 +129,10 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'turbulentMixingLengthDissipationRateInlet'
                         new_bc_data["mixingLength"] = 0.0168
                         new_bc_data["value"] = '$internalField'
+                    elif(variable == 'h'):
+                        # Enthalpy: h = Cp * T
+                        new_bc_data["type"] = 'fixedValue'
+                        new_bc_data["value"] = 1005 * (row['T'] + 273.15)
                     elif(variable == 'k'):
                         new_bc_data["type"] = 'turbulentIntensityKineticEnergyInlet'
                         new_bc_data["intensity"] = 0.14
@@ -164,6 +174,10 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'turbulentMixingLengthDissipationRateInlet'
                         new_bc_data["mixingLength"] = 0.0168
                         new_bc_data["value"] = '$internalField'
+                    elif(variable == 'h'):
+                        # Enthalpy: h = Cp * T
+                        new_bc_data["type"] = 'fixedValue'
+                        new_bc_data["value"] = 1005 * (row['T'] + 273.15)
                     elif(variable == 'k'):
                         new_bc_data["type"] = 'turbulentIntensityKineticEnergyInlet'
                         new_bc_data["intensity"] = 0.14
@@ -208,6 +222,11 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'epsilon'):
                         new_bc_data["type"] = 'inletOutlet'
                         new_bc_data["inletValue"] = '$internalField'
+                    elif(variable == 'h'):
+                        # Enthalpy outlet: allow inflow at reference temperature
+                        new_bc_data["type"] = 'inletOutlet'
+                        new_bc_data["inletValue"] = 294515.75  # Cp * TRef = 1005 * 293.15
+                        new_bc_data["value"] = 1005 * (row['T'] + 273.15)
                     elif(variable == 'k'):
                         new_bc_data["type"] = 'inletOutlet'
                         new_bc_data["inletValue"] = '$internalField'
