@@ -6,9 +6,9 @@ FoamFile
     object      turbulenceProperties;
 }
 
-simulationType RAS;
+simulationType laminar;
 
-RAS
-{
-    model      kEpsilon;
-}
+// RAS
+// {
+//     model      kEpsilon;
+// }
