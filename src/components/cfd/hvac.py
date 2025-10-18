@@ -189,7 +189,9 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["value"] = row['T'] + 273.15
                     elif(variable == 'U'):
                         if (row['open']):
-                            new_bc_data["type"] = 'pressureInletOutletVelocity'
+                            # Use inletOutlet for adjustable mass flow conservation
+                            new_bc_data["type"] = 'inletOutlet'
+                            new_bc_data["inletValue"] = '$internalField'
                             new_bc_data["value"] = '$internalField'
                         else:
                             new_bc_data["type"] = 'fixedValue'
