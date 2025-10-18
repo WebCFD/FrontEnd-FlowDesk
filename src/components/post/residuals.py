@@ -19,7 +19,27 @@ def analyse_residuals(logfile_path, post_path):
     """
     logger.info(f"    * Analyzing convergence residuals from: {logfile_path}")
     
-    target_fields = ["h", "p_rgh", "k", "omega"]
+    # Parse all available fields first to detect simulation type
+    all_fields = set()
+    residual_pattern_temp = re.compile(
+        r"Solving for (\w+), Initial residual = ([\deE\.\-]+)"
+    )
+    with open(logfile_path, "r") as f:
+        for line in f:
+            match = residual_pattern_temp.search(line)
+            if match:
+                all_fields.add(match.group(1))
+    
+    # Auto-detect target fields based on simulation type
+    # Turbulent: h, p_rgh, k, omega
+    # Laminar: h, p_rgh, Ux, Uy, Uz
+    if "omega" in all_fields or "k" in all_fields:
+        target_fields = ["h", "p_rgh", "k", "omega"]
+        logger.info(f"    * Detected turbulent simulation (kOmegaSST)")
+    else:
+        target_fields = ["h", "p_rgh", "Ux", "Uy", "Uz"]
+        logger.info(f"    * Detected laminar simulation")
+    
     logger.info(f"    * Target residual fields: {target_fields}")
 
     # === REGEX TO MATCH RESIDUAL LINES ===
@@ -44,13 +64,14 @@ def analyse_residuals(logfile_path, post_path):
                     residuals[field].append(float(initial))
                     current_fields.add(field)
 
-                # Register new iteration once all fields seen
-                if all(f in current_fields for f in target_fields):
-                    iterations.append(iteration)
-                    iteration += 1
-                    current_fields.clear()
+                    # Register new iteration once all fields seen
+                    if len(current_fields) == len(target_fields):
+                        iterations.append(iteration)
+                        iteration += 1
+                        current_fields.clear()
 
     logger.info(f"    * Parsed {len(iterations)} iterations of residual data")
+    logger.info(f"    * Fields found: {list(residuals.keys())}")
 
     # === SAVE TO CSV ===
     csv_dir = os.path.join(post_path, "csv")
