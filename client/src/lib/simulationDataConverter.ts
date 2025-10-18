@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import type { StairPolygon } from '@/types';
+import { createRoomPerimeter } from '@/lib/geometryEngine';
 
 // Definición de los tipos internos que necesitamos
 interface Point2D {
@@ -284,6 +285,64 @@ function mapFlowType(flowType?: string): "Air Mass Flow" | "Air Velocity" | "Pre
 }
 
 /**
+ * Reordena las líneas para formar un polígono cerrado continuo.
+ * Usa createRoomPerimeter() para obtener puntos ordenados y reconstruye las líneas.
+ * 
+ * @param lines - Líneas originales (pueden estar en cualquier orden)
+ * @returns Líneas reordenadas que forman un polígono cerrado continuo
+ */
+function reorderLinesForClosedPolygon(lines: Line[]): Line[] {
+  if (lines.length === 0) {
+    return [];
+  }
+
+  // Usar createRoomPerimeter para obtener puntos ordenados
+  const orderedPoints = createRoomPerimeter(lines);
+  
+  // Si no hay suficientes puntos, retornar las líneas originales
+  if (orderedPoints.length < 3) {
+    console.warn('[simulationDataConverter] Not enough points to form a closed polygon, using original lines');
+    return lines;
+  }
+
+  // Reconstruir líneas ordenadas desde los puntos
+  const reorderedLines: Line[] = [];
+  for (let i = 0; i < orderedPoints.length; i++) {
+    const start = orderedPoints[i];
+    const end = orderedPoints[(i + 1) % orderedPoints.length]; // Wrap around to close polygon
+    
+    reorderedLines.push({
+      start: { x: start.x, y: start.y },
+      end: { x: end.x, y: end.y }
+    });
+  }
+
+  // Validar que el polígono está cerrado
+  const firstPoint = reorderedLines[0].start;
+  const lastPoint = reorderedLines[reorderedLines.length - 1].end;
+  const isClosed = Math.abs(firstPoint.x - lastPoint.x) < 0.1 && 
+                   Math.abs(firstPoint.y - lastPoint.y) < 0.1;
+
+  if (!isClosed) {
+    console.warn('[simulationDataConverter] Polygon is not closed after reordering!', {
+      firstPoint,
+      lastPoint,
+      gap: { 
+        x: firstPoint.x - lastPoint.x, 
+        y: firstPoint.y - lastPoint.y 
+      }
+    });
+  } else {
+    console.log('[simulationDataConverter] Successfully reordered lines to form closed polygon', {
+      originalLineCount: lines.length,
+      reorderedLineCount: reorderedLines.length
+    });
+  }
+
+  return reorderedLines;
+}
+
+/**
  * Convierte los datos del diseño en un formato JSON exportable para simulación
  */
 export function generateSimulationData(
@@ -315,9 +374,16 @@ export function generateSimulationData(
       floorName
     );
 
+    // CRITICAL FIX: Reordenar líneas para formar polígono cerrado continuo
+    // Las líneas del canvas pueden estar en cualquier orden, pero el backend
+    // requiere que formen un polígono cerrado válido para la simulación CFD
+    const reorderedLines = floorData.hasClosedContour && floorData.lines.length > 0
+      ? reorderLinesForClosedPolygon(floorData.lines)
+      : floorData.lines;
+
     // Convertir paredes - usar sincronización para asegurar datos limpios
     const synchronizedWalls = prepareSynchronizedWalls(
-      floorData.lines, 
+      reorderedLines, // Usar líneas reordenadas en lugar de originales
       floorData.walls || [], 
       floorData.name || floorName
     );
