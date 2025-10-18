@@ -59,6 +59,28 @@ def define_system_files(template_path, sim_path):
         shutil.copy(src=source_file, dst=target_file)
 
 
+def get_mesh_patches(sim_path):
+    """
+    Read patch names from the mesh boundary file.
+    Returns list of patch names that actually exist in the mesh.
+    """
+    boundary_file = os.path.join(sim_path, "constant", "polyMesh", "boundary")
+    if not os.path.exists(boundary_file):
+        logger.warning(f"    * Boundary file not found: {boundary_file}")
+        return []
+    
+    # Use FoamLib to parse boundary file
+    case = FoamCase(sim_path)
+    try:
+        with case['constant']['polyMesh']['boundary'] as bnd:
+            patch_names = list(bnd.keys())
+            logger.info(f"    * Found {len(patch_names)} patches in mesh: {patch_names}")
+            return patch_names
+    except Exception as e:
+        logger.warning(f"    * Could not read boundary file: {e}")
+        return []
+
+
 def define_initial_files(sim_path, patch_df):
     os.makedirs(sim_path, exist_ok=True)
 
@@ -66,30 +88,18 @@ def define_initial_files(sim_path, patch_df):
     initial_path = os.path.join(sim_path, "0")
     os.makedirs(initial_path, exist_ok=True)
 
+    # Get actual patches from the mesh
+    mesh_patches = get_mesh_patches(sim_path)
+    
+    # Create lookup dict for user-defined patches
+    patch_dict = {row['id']: row for _, row in patch_df.iterrows()}
+    
+    # If no mesh patches found, fall back to user-defined patches
+    if not mesh_patches:
+        logger.warning("    * No mesh patches found, using user-defined patches only")
+        mesh_patches = list(patch_dict.keys())
+    
     case = FoamCase(sim_path)
-    
-    # Read all patches from the actual mesh
-    boundary_file_path = os.path.join(sim_path, "constant", "polyMesh", "boundary")
-    all_mesh_patches = []
-    if os.path.exists(boundary_file_path):
-        # Read boundary file to get all patch names from the mesh
-        with open(boundary_file_path, 'r') as f:
-            content = f.read()
-            # Extract patch names (they appear before opening brace in boundary file)
-            import re
-            patch_pattern = r'^\s+(\w+)\s*$'
-            for line in content.split('\n'):
-                match = re.match(patch_pattern, line)
-                if match and match.group(1) not in ['FoamFile', 'dimensions', 'internalField', 'boundaryField']:
-                    patch_name = match.group(1)
-                    if patch_name and not patch_name.isdigit():
-                        all_mesh_patches.append(patch_name)
-    
-    logger.info(f"    * Found {len(all_mesh_patches)} patches in mesh: {all_mesh_patches}")
-    
-    # Create a dict from patch_df for easy lookup
-    patch_info_dict = {row['id']: row for _, row in patch_df.iterrows()}
-    
     for variable in DIMENSIONS_DICT.keys():
         with case['0'][variable] as f:
             f.dimensions = DIMENSIONS_DICT[variable]
@@ -97,17 +107,15 @@ def define_initial_files(sim_path, patch_df):
 
             f.boundary_field = dict()
             
-            # Iterate over all patches that exist in the mesh
-            patches_to_process = all_mesh_patches if all_mesh_patches else [row['id'] for _, row in patch_df.iterrows()]
-            
-            for patch_name in patches_to_process:
-                # Check if this patch has info in patch_df
-                if patch_name in patch_info_dict:
-                    row = patch_info_dict[patch_name]
+            # Process each patch that exists in the mesh
+            for patch_name in mesh_patches:
+                # Check if this patch is user-defined
+                if patch_name in patch_dict:
+                    row = patch_dict[patch_name]
                 else:
-                    # Unknown patch - use default wall boundary condition
-                    logger.warning(f"    * Unknown patch '{patch_name}' - applying default wall BC")
-                    row = {'type': 'wall', 'id': patch_name, 'T': 20}  # default wall at 20°C
+                    # Unknown patch - treat as wall with default properties
+                    logger.info(f"    * Patch '{patch_name}' not in user config, treating as wall")
+                    row = {'type': 'wall', 'id': patch_name, 'T': 20}
                 new_bc_data = dict()
                 if(row['type'] == 'wall'):
                     if(variable == 'alphat'):
@@ -270,7 +278,7 @@ def define_initial_files(sim_path, patch_df):
                 else:
                     raise BaseException('Boundary Condition Type Unknown')
 
-                f.boundary_field[row['id']] = new_bc_data
+                f.boundary_field[patch_name] = new_bc_data
 
 
 def setup(case_path: str) -> list:
