@@ -68,6 +68,68 @@ def get_flow_value(flow_intensity: str, flow_type: str, custom_value: float = No
     flow_type_values = FLOW_VALUES.get(flow_type, FLOW_VALUES['velocity'])
     return flow_type_values.get(flow_intensity, flow_type_values['medium'])
 
+
+def angles_to_direction_vector(vertical_angle: float, horizontal_angle: float, wall_normal: np.ndarray) -> np.ndarray:
+    """
+    Convert orientation angles to 3D direction vector for air flow.
+    
+    Applies vertical and horizontal angle rotations to the wall normal vector
+    to compute the actual flow direction for HVAC vents/grilles.
+    
+    Args:
+        vertical_angle: Vertical tilt angle in degrees (-45 to +45)
+                       Positive = upward tilt, Negative = downward tilt
+        horizontal_angle: Horizontal rotation angle in degrees (-45 to +45)
+                         Positive = clockwise, Negative = counterclockwise
+        wall_normal: Base normal vector of the wall [nx, ny, nz]
+    
+    Returns:
+        Normalized 3D direction vector for the air flow
+    """
+    # Convert angles from degrees to radians
+    v_rad = np.deg2rad(vertical_angle)
+    h_rad = np.deg2rad(horizontal_angle)
+    
+    # Ensure wall_normal is a numpy array and normalized
+    normal = np.array(wall_normal, dtype=float)
+    normal = normal / np.linalg.norm(normal)
+    
+    # Find perpendicular vectors to create local coordinate system
+    # Choose an arbitrary vector not parallel to normal
+    if abs(normal[2]) < 0.9:
+        up = np.array([0, 0, 1])
+    else:
+        up = np.array([1, 0, 0])
+    
+    # Create orthogonal basis vectors
+    # right vector (tangent to wall, horizontal direction)
+    right = np.cross(normal, up)
+    right = right / np.linalg.norm(right)
+    
+    # up vector (tangent to wall, vertical direction)
+    up_wall = np.cross(right, normal)
+    up_wall = up_wall / np.linalg.norm(up_wall)
+    
+    # Apply rotations using rotation matrices
+    # Step 1: Rotate around the 'right' axis for vertical angle (pitch)
+    cos_v = np.cos(v_rad)
+    sin_v = np.sin(v_rad)
+    direction = cos_v * normal + sin_v * up_wall
+    
+    # Step 2: Rotate around the 'normal' axis for horizontal angle (yaw)
+    # Use Rodrigues' rotation formula to preserve normal component
+    cos_h = np.cos(h_rad)
+    sin_h = np.sin(h_rad)
+    direction = (direction * cos_h + 
+                 np.cross(normal, direction) * sin_h + 
+                 normal * np.dot(normal, direction) * (1 - cos_h))
+    
+    # Normalize the final direction vector
+    direction = direction / np.linalg.norm(direction)
+    
+    return direction
+
+
 ELEMENTS_MESHES = {
     # ID: (NAME, FOLDER PATH)
      1: ('h_open_arms',                         'HUMANS'),
@@ -201,9 +263,34 @@ def get_entry_bc_dict(data):
             new_patch['U'] = get_flow_value(flow_intensity, 'velocity', custom_value)
     
     new_patch['T'] = simulation.get('temperature', DEFAULT_TEMPERATURE)
-    new_patch['nx'] = data['position']['normal']['x']
-    new_patch['ny'] = data['position']['normal']['y']
-    new_patch['nz'] = data['position']['normal']['z']
+    
+    # Extract wall normal vector
+    wall_normal = np.array([
+        data['position']['normal']['x'],
+        data['position']['normal']['y'],
+        data['position']['normal']['z']
+    ])
+    
+    # Extract orientation angles from simulation data
+    air_orientation = simulation.get('airOrientation', None)
+    if air_orientation and air_orientation.get('verticalAngle') is not None and air_orientation.get('horizontalAngle') is not None:
+        # Use orientation angles to compute directional flow vector
+        vertical_angle = air_orientation.get('verticalAngle', 0.0)
+        horizontal_angle = air_orientation.get('horizontalAngle', 0.0)
+        
+        # Convert angles to directional vector
+        direction_vector = angles_to_direction_vector(vertical_angle, horizontal_angle, wall_normal)
+        
+        # Store directional components
+        new_patch['nx'] = direction_vector[0]
+        new_patch['ny'] = direction_vector[1]
+        new_patch['nz'] = direction_vector[2]
+    else:
+        # No orientation angles specified, use wall normal directly
+        new_patch['nx'] = wall_normal[0]
+        new_patch['ny'] = wall_normal[1]
+        new_patch['nz'] = wall_normal[2]
+    
     return new_patch
 
 
