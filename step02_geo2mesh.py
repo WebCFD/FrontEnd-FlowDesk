@@ -4,6 +4,7 @@ Geometry to mesh conversion with parallel processing and memory management.
 
 import os
 import logging
+import subprocess
 from typing import List
 import pyvista as pv
 import pandas as pd
@@ -54,8 +55,67 @@ def run(case_name: str, geo_mesh: pv.PolyData, geo_df: pd.DataFrame, type: str =
             from src.components.mesh.cfmesh import prepare_cfmesh
             script_commands = prepare_cfmesh(geo_mesh, sim_path, geo_df)
         elif type == "snappy":
-            from src.components.mesh.snappy import prepare_snappy
+            from src.components.mesh.snappy import prepare_snappy, validate_mesh_patches
             script_commands = prepare_snappy(geo_mesh, sim_path, geo_df)
+            
+            # Execute meshing locally to validate before cloud submission
+            logger.info("3 - Running local mesh generation for validation")
+            performance_monitor.update_memory()
+            
+            # Execute the meshing commands locally (surfaceFeatureExtract, blockMesh, snappyHexMesh)
+            meshing_commands = [
+                'surfaceFeatureExtract',
+                'blockMesh', 
+                'snappyHexMesh -overwrite'
+            ]
+            
+            for cmd in meshing_commands:
+                logger.info(f"   Executing: {cmd}")
+                try:
+                    result = subprocess.run(
+                        cmd,
+                        shell=True,
+                        cwd=sim_path,
+                        capture_output=True,
+                        text=True,
+                        timeout=300  # 5 minute timeout
+                    )
+                    if result.returncode != 0:
+                        raise MeshingStepError(
+                            f"Command '{cmd}' failed",
+                            {
+                                'case_name': case_name,
+                                'command': cmd,
+                                'stdout': result.stdout[-500:] if result.stdout else '',
+                                'stderr': result.stderr[-500:] if result.stderr else '',
+                                'suggestion': 'Check geometry validity and mesh parameters'
+                            }
+                        )
+                except subprocess.TimeoutExpired:
+                    raise MeshingStepError(
+                        f"Command '{cmd}' timed out after 5 minutes",
+                        {
+                            'case_name': case_name,
+                            'command': cmd,
+                            'suggestion': 'Reduce mesh refinement or simplify geometry'
+                        }
+                    )
+            
+            # Validate mesh patches
+            logger.info("4 - Validating mesh patches")
+            expected_patches = geo_df["id"].tolist()
+            try:
+                validate_mesh_patches(sim_path, expected_patches)
+                logger.info("   ✅ Mesh validation passed - no background patches found")
+            except Exception as e:
+                raise MeshingStepError(
+                    f"Mesh validation failed: {str(e)}",
+                    {
+                        'case_name': case_name,
+                        'expected_patches': expected_patches,
+                        'suggestion': 'Geometry is not watertight. Check for gaps, holes, or non-manifold surfaces in the 3D geometry.'
+                    }
+                )
         else:
             raise MeshingStepError(
                 f"Unknown meshing software: {type}",

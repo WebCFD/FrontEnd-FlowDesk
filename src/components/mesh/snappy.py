@@ -309,12 +309,8 @@ def prepare_snappy(geo_mesh, sim_path, geo_df, stl_filename = "geometry.stl"):
 
 
 
-    # Get expected patch names for validation
-    expected_patches = geo_df["id"].tolist()
-    expected_patches_str = " ".join(expected_patches)
-    
-    # Build patch list for Python validation command (avoid backslash in f-string)
-    patches_python_list = "[" + ", ".join([f'\\"{p}\\"' for p in expected_patches]) + "]"
+    # Note: Mesh validation is now done locally in step02_geo2mesh.py before cloud submission
+    # This saves credits by catching geometry errors early
     
     script_commands = [
         '#!/bin/sh', 
@@ -333,27 +329,18 @@ def prepare_snappy(geo_mesh, sim_path, geo_df, stl_filename = "geometry.stl"):
         # 3. Run snappyHexMesh in a single core
         'runApplication snappyHexMesh -overwrite',
 
-        # 4. VALIDATE MESH - Fail fast if background patches remain
-        'echo "==================== VALIDATING MESH ===================="',
-        'python3 -c "' +
-        'import sys; sys.path.append(\\"/workdir\\"); ' +
-        'from src.components.mesh.snappy import validate_mesh_patches; ' +
-        f'validate_mesh_patches(\\"/workdir/output/artifacts\\", {patches_python_list})' +
-        '" || { echo "MESH VALIDATION FAILED - See error above"; exit 1; }',
-        'echo "==================== MESH VALIDATION PASSED ===================="',
-        
-        # 5. Prepare initial fields
+        # 4. Prepare initial fields
         'rm -rf 0',
         'cp -r 0.orig 0',
 
-        # 6. Clean processors & decompose
+        # 5. Clean processors & decompose
         'rm -rf processor*',
         'runApplication decomposePar',
 
-        # 7. Create foam marker file for GUI usage
+        # 6. Create foam marker file for GUI usage
         'touch results.foam',
         ]
     
     logger.info("    * SnappyHexMesh preparation completed successfully")
-    logger.info(f"    * Mesh validation will check for patches: {expected_patches}")
+    logger.info("    * Mesh validation will be performed locally before cloud submission")
     return script_commands
