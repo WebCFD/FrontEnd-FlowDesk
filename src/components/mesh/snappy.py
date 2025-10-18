@@ -316,7 +316,6 @@ def prepare_snappy(geo_mesh, sim_path, geo_df, stl_filename = "geometry.stl"):
     script_commands = [
         '#!/bin/sh', 
         'cd "${0%/*}" || exit',
-        'set -e',  # Exit immediately if any command fails
         '. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions',
 
         'decompDict="-decomposeParDict system/decomposeParDict"',
