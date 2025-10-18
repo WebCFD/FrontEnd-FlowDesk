@@ -301,10 +301,10 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'fixedValue'
                         new_bc_data["value"] = 0.5
                     elif(variable == 'h'):
-                        # Enthalpy: h = Cp×(T-Tref) + Hf
+                        # Enthalpy: h = Cp×T + Hf (perfectGas)
                         new_bc_data["type"] = 'fixedValue'
                         T_inlet = row['T'] + 273.15
-                        new_bc_data["value"] = CP * (T_inlet - TREF) + HF
+                        new_bc_data["value"] = CP * T_inlet + HF
                     elif(variable == 'k'):
                         new_bc_data["type"] = 'turbulentIntensityKineticEnergyInlet'
                         new_bc_data["intensity"] = 0.14
