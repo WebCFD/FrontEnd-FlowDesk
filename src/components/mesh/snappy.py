@@ -33,14 +33,81 @@ def create_blockMeshDict(template_path, sim_path, geo_mesh):
 def generate_location_inside_mesh(mesh):
     """
     Generate locationInMesh point for snappyHexMesh internal flow cases.
-    Uses the center of the largest cell for robust interior detection.
+    Uses multiple validation strategies to ensure the point is truly interior.
     
-    This approach works reliably for complex geometries (C-shape, L-shape)
-    where the geometric centroid might fall outside the domain.
+    Strategy:
+    1. Generate candidate points from cell centers
+    2. Validate points are enclosed using select_enclosed_points
+    3. Select point farthest from boundary for robustness
+    4. Fail with clear error if no valid interior point found
+    
+    This approach prevents snappyHexMesh failures that occur when locationInMesh
+    falls outside or on the boundary of the geometry.
     """
+    import logging
+    import numpy as np
+    
+    logger = logging.getLogger(__name__)
+    
+    # Generate candidate points from cell centers
     cell_centers = mesh.cell_centers()
     volumes = mesh.compute_cell_sizes()["Volume"]
-    point = cell_centers.points[volumes.argmax()]
+    
+    # Get top 10 largest cells as candidates (or all if fewer)
+    n_candidates = min(10, len(volumes))
+    top_indices = np.argsort(volumes)[-n_candidates:]
+    candidate_points = cell_centers.points[top_indices]
+    
+    logger.info(f"    * Testing {n_candidates} candidate interior points")
+    
+    # Create a closed surface mesh for select_enclosed_points
+    # For internal flow, mesh should already be closed, but extract surface to be sure
+    surface_mesh = mesh.extract_surface()
+    
+    # Validate which candidates are truly enclosed
+    candidate_cloud = pv.PolyData(candidate_points)
+    enclosed_mask = candidate_cloud.select_enclosed_points(surface_mesh, tolerance=1e-6, check_surface=True)
+    is_inside = enclosed_mask['SelectedPoints'].astype(bool)
+    
+    logger.info(f"    * Found {np.sum(is_inside)} valid interior points out of {n_candidates} candidates")
+    
+    if not np.any(is_inside):
+        # No valid interior points found - this is a critical error
+        error_msg = (
+            f"\n{'='*80}\n"
+            f"GEOMETRY ERROR: Cannot find valid interior point for locationInMesh!\n"
+            f"{'='*80}\n"
+            f"Tested {n_candidates} candidate points, none are truly enclosed.\n\n"
+            f"This indicates a problem with the geometry:\n"
+            f"  1. Geometry may have holes, gaps, or non-manifold surfaces\n"
+            f"  2. Geometry may be too thin or have zero volume\n"
+            f"  3. Surface normals may be inverted\n\n"
+            f"SnappyHexMesh will fail without a valid interior point.\n"
+            f"Please check and fix the geometry before meshing.\n"
+            f"{'='*80}\n"
+        )
+        logger.error(error_msg)
+        raise Exception(error_msg)
+    
+    # Select the valid point that is farthest from the boundary
+    # This provides maximum robustness for snappyHexMesh
+    valid_points = candidate_points[is_inside]
+    
+    # Compute distance to nearest surface point for each valid interior point
+    distances = []
+    for pt in valid_points:
+        closest_point = surface_mesh.find_closest_point(pt)
+        dist = np.linalg.norm(pt - surface_mesh.points[closest_point])
+        distances.append(dist)
+    
+    # Select point with maximum distance from boundary
+    best_idx = np.argmax(distances)
+    point = valid_points[best_idx]
+    max_dist = distances[best_idx]
+    
+    logger.info(f"    * Selected interior point: ({point[0]:.6f}, {point[1]:.6f}, {point[2]:.6f})")
+    logger.info(f"    * Distance to nearest boundary: {max_dist:.6f} m")
+    
     return f"({point[0]:.6f} {point[1]:.6f} {point[2]:.6f})"
 
 
@@ -113,6 +180,83 @@ def export_to_stl(geo_mesh_dict, sim_path, stl_filename):
             f.write(f"endsolid {solid_name}\n")
 
 
+def validate_mesh_patches(sim_path: str, expected_patches: list[str]) -> None:
+    """
+    Validate that the mesh only contains user-defined patches.
+    Raises exception if background patches like 'limits' remain, indicating meshing failure.
+    
+    Args:
+        sim_path: Path to simulation directory
+        expected_patches: List of patch names that should exist (from user config)
+        
+    Raises:
+        Exception: If background patches remain or if meshing failed
+    """
+    import logging
+    from foamlib import FoamCase
+    
+    logger = logging.getLogger(__name__)
+    
+    boundary_file = os.path.join(sim_path, "constant", "polyMesh", "boundary")
+    if not os.path.exists(boundary_file):
+        raise Exception(f"Mesh boundary file not found: {boundary_file}. Meshing may have failed.")
+    
+    # Read boundary file using FoamCase
+    case = FoamCase(sim_path)
+    try:
+        with case['constant']['polyMesh']['boundary'] as bnd:
+            # Get all patches from the mesh
+            mesh_patches = {}
+            for patch_name in bnd.keys():
+                patch_info = bnd[patch_name]
+                n_faces = patch_info.get('nFaces', 0)
+                mesh_patches[patch_name] = n_faces
+            
+            logger.info(f"    * Mesh validation: Found {len(mesh_patches)} patches in mesh")
+            for patch_name, n_faces in mesh_patches.items():
+                logger.info(f"      - {patch_name}: {n_faces} faces")
+            
+            # Check for background patches that indicate meshing failure
+            background_patches = ['limits', 'defaultFaces']
+            failed_patches = []
+            
+            for bg_patch in background_patches:
+                if bg_patch in mesh_patches and mesh_patches[bg_patch] > 0:
+                    failed_patches.append(f"{bg_patch} ({mesh_patches[bg_patch]} faces)")
+            
+            if failed_patches:
+                error_msg = (
+                    f"\n{'='*80}\n"
+                    f"MESHING ERROR: SnappyHexMesh failed to cut geometry properly!\n"
+                    f"{'='*80}\n"
+                    f"Background patches remain in the mesh:\n"
+                    f"  {', '.join(failed_patches)}\n\n"
+                    f"This indicates that snappyHexMesh could not classify cells correctly.\n"
+                    f"Possible causes:\n"
+                    f"  1. locationInMesh point is outside or on the boundary of the geometry\n"
+                    f"  2. Geometry has holes, gaps, or non-manifold surfaces\n"
+                    f"  3. STL file has errors or invalid normals\n\n"
+                    f"Expected patches: {', '.join(expected_patches)}\n"
+                    f"Actual patches: {', '.join(mesh_patches.keys())}\n"
+                    f"{'='*80}\n"
+                )
+                logger.error(error_msg)
+                raise Exception(error_msg)
+            
+            # Check for unexpected patches (not in user config and not background)
+            unexpected = set(mesh_patches.keys()) - set(expected_patches) - set(background_patches)
+            if unexpected:
+                logger.warning(f"    * Warning: Unexpected patches found: {', '.join(unexpected)}")
+            
+            logger.info("    * Mesh validation PASSED: No background patches remain")
+            
+    except Exception as e:
+        if "MESHING ERROR" in str(e):
+            raise  # Re-raise our custom error
+        else:
+            raise Exception(f"Failed to read mesh boundary file: {e}")
+
+
 def split_polydata_by_cell_data(mesh: pv.PolyData, df: pd.DataFrame) -> dict[int, pv.PolyData]:
     patch_names = df[["id"]].to_dict()
 
@@ -165,9 +309,14 @@ def prepare_snappy(geo_mesh, sim_path, geo_df, stl_filename = "geometry.stl"):
 
 
 
+    # Get expected patch names for validation
+    expected_patches = geo_df["id"].tolist()
+    expected_patches_str = " ".join(expected_patches)
+    
     script_commands = [
         '#!/bin/sh', 
-        'cd "${0%/*}" || exit', 
+        'cd "${0%/*}" || exit',
+        'set -e',  # Exit immediately if any command fails
         '. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions',
 
         'decompDict="-decomposeParDict system/decomposeParDict"',
@@ -178,20 +327,30 @@ def prepare_snappy(geo_mesh, sim_path, geo_df, stl_filename = "geometry.stl"):
         # 2. This creates a simple background mesh in constant/polyMesh
         'runApplication blockMesh',
 
-        # 4. Run snappyHexMesh in a single core
+        # 3. Run snappyHexMesh in a single core
         'runApplication snappyHexMesh -overwrite',
 
-        # Prepare initial fields
+        # 4. VALIDATE MESH - Fail fast if background patches remain
+        f'echo "==================== VALIDATING MESH ===================="',
+        f'python3 -c "',
+        f'import sys; sys.path.append(\\"/workdir\\"); ',
+        f'from src.components.mesh.snappy import validate_mesh_patches; ',
+        f'validate_mesh_patches(\\"/workdir/output/artifacts\\", [{", ".join([f"\\\"{p}\\\"" for p in expected_patches])}])',
+        f'" || {{ echo "MESH VALIDATION FAILED - See error above"; exit 1; }}',
+        f'echo "==================== MESH VALIDATION PASSED ===================="',
+        
+        # 5. Prepare initial fields
         'rm -rf 0',
         'cp -r 0.orig 0',
 
-        # Clean processors & decompose
+        # 6. Clean processors & decompose
         'rm -rf processor*',
         'runApplication decomposePar',
 
-        # 9. Create foam marker file for GUI usage
+        # 7. Create foam marker file for GUI usage
         'touch results.foam',
         ]
     
     logger.info("    * SnappyHexMesh preparation completed successfully")
+    logger.info(f"    * Mesh validation will check for patches: {expected_patches}")
     return script_commands
