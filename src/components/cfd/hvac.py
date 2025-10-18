@@ -67,13 +67,47 @@ def define_initial_files(sim_path, patch_df):
     os.makedirs(initial_path, exist_ok=True)
 
     case = FoamCase(sim_path)
+    
+    # Read all patches from the actual mesh
+    boundary_file_path = os.path.join(sim_path, "constant", "polyMesh", "boundary")
+    all_mesh_patches = []
+    if os.path.exists(boundary_file_path):
+        # Read boundary file to get all patch names from the mesh
+        with open(boundary_file_path, 'r') as f:
+            content = f.read()
+            # Extract patch names (they appear before opening brace in boundary file)
+            import re
+            patch_pattern = r'^\s+(\w+)\s*$'
+            for line in content.split('\n'):
+                match = re.match(patch_pattern, line)
+                if match and match.group(1) not in ['FoamFile', 'dimensions', 'internalField', 'boundaryField']:
+                    patch_name = match.group(1)
+                    if patch_name and not patch_name.isdigit():
+                        all_mesh_patches.append(patch_name)
+    
+    logger.info(f"    * Found {len(all_mesh_patches)} patches in mesh: {all_mesh_patches}")
+    
+    # Create a dict from patch_df for easy lookup
+    patch_info_dict = {row['id']: row for _, row in patch_df.iterrows()}
+    
     for variable in DIMENSIONS_DICT.keys():
         with case['0'][variable] as f:
             f.dimensions = DIMENSIONS_DICT[variable]
             f.internal_field = INTERNALFIELD_DICT[variable]
 
             f.boundary_field = dict()
-            for _, row in patch_df.iterrows():
+            
+            # Iterate over all patches that exist in the mesh
+            patches_to_process = all_mesh_patches if all_mesh_patches else [row['id'] for _, row in patch_df.iterrows()]
+            
+            for patch_name in patches_to_process:
+                # Check if this patch has info in patch_df
+                if patch_name in patch_info_dict:
+                    row = patch_info_dict[patch_name]
+                else:
+                    # Unknown patch - use default wall boundary condition
+                    logger.warning(f"    * Unknown patch '{patch_name}' - applying default wall BC")
+                    row = {'type': 'wall', 'id': patch_name, 'T': 20}  # default wall at 20°C
                 new_bc_data = dict()
                 if(row['type'] == 'wall'):
                     if(variable == 'alphat'):
