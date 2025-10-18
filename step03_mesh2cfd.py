@@ -5,6 +5,7 @@ from src.components.cfd.hvac import setup as hvac_setup
 from src.components.tools.clear_case import clean_case_keep_mesh
 from src.components.tools.create_scripts import save_scripts
 from src.components.tools.performance import PerformanceMonitor
+from pipeline_exceptions import CFDSetupError
 
 logger = logging.getLogger(__name__)
 
@@ -42,11 +43,30 @@ def run(case_name: str, type: str, mesh_script: list = []) -> None:
     logger.info(f"2 - Setting up {type} CFD simulation configuration")
     performance_monitor.update_memory()
     
-    if(type == "hvac"):
-        solve_script = hvac_setup(case_path)
-    else:
-        logger.error(f"Unknown simulation type: {type}")
-        raise ValueError(f"Unknown simulation type: {type}")
+    try:
+        if(type == "hvac"):
+            solve_script = hvac_setup(case_path)
+        else:
+            raise CFDSetupError(
+                f"Unknown simulation type: {type}",
+                {
+                    'case_name': case_name,
+                    'simulation_type': type,
+                    'suggestion': 'Use "hvac" simulation type'
+                }
+            )
+    except CFDSetupError:
+        # Re-raise CFDSetupError without wrapping
+        raise
+    except Exception as e:
+        raise CFDSetupError(
+            f"CFD setup failed: {str(e)}",
+            {
+                'case_name': case_name,
+                'simulation_type': type,
+                'suggestion': 'Check if mesh is valid and boundary conditions are properly configured'
+            }
+        )
     
     performance_monitor.update_memory()
 

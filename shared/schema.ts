@@ -18,7 +18,7 @@ export const simulations = pgTable("simulations", {
   userId: integer("user_id").references(() => users.id).notNull(),
   name: text("name").notNull(),
   filePath: text("file_path").notNull(),
-  status: text("status").notNull(), // 'pending', 'processing', 'completed', 'failed'
+  status: text("status").notNull(), // 'pending', 'processing', 'geometry', 'meshing', 'cfd_setup', 'cloud_execution', 'post_processing', 'completed', 'failed'
   simulationType: text("simulation_type").notNull(), // 'comfort', 'renovation', 'test_calculation'
   packageType: text("package_type").notNull(), // 'basic', 'professional', 'enterprise'
   cost: decimal("cost", { precision: 10, scale: 2 }).notNull(),
@@ -29,6 +29,10 @@ export const simulations = pgTable("simulations", {
   progress: integer("progress").default(0),
   currentStep: text("current_step"),
   errorMessage: text("error_message"),
+  failedStep: text("failed_step"), // Pipeline step where failure occurred: 'geometry', 'meshing', 'cfd_setup', 'cloud_execution'
+  errorType: text("error_type"), // Exception class name for categorization
+  failureDetails: jsonb("failure_details"), // Detailed error context from PipelineStepError
+  suggestion: text("suggestion"), // User-facing suggestion for fixing the error
   startedAt: timestamp("started_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   completedAt: timestamp("completed_at"),
@@ -91,11 +95,15 @@ export const updateSimulationStatusSchema = z.object({
     'pending', 'processing', 'geometry', 'meshing',
     'cfd_setup', 'cloud_execution', 'post_processing',
     'completed', 'failed'
-  ]),
+  ]).optional(),
   taskId: z.string().optional(),
   progress: z.number().min(0).max(100).optional(),
   currentStep: z.string().optional(),
   errorMessage: z.string().optional(),
+  failedStep: z.enum(['geometry', 'meshing', 'cfd_setup', 'cloud_execution', 'post_processing', 'unknown']).optional(),
+  errorType: z.string().optional(),
+  failureDetails: z.any().optional(), // JSONB field for detailed error context
+  suggestion: z.string().optional(),
   result: z.any().optional(),
   startedAt: z.date().optional(),
   completedAt: z.date().optional(),

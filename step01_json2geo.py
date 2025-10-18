@@ -4,17 +4,18 @@ import logging
 import pandas as pd
 import pyvista as pv
 
-from typing import Tuple
+from typing import Tuple, Dict, Any
 from src.components.tools.clear_case import clear_case_all
 from src.components.geo.create_volumes import create_volumes
 from src.components.geo.boolean_operations import perform_boolean_operations
 from src.components.geo.finalise_geometry import finalise_geometry
 from src.components.geo.export_result import export_geo
+from pipeline_exceptions import GeometryStepError
 
 logger = logging.getLogger(__name__)
 
 
-def run(json_payload: str, case_name: str) -> Tuple[pv.PolyData, pd.DataFrame]:
+def run(json_payload: Dict[str, Any], case_name: str) -> Tuple[pv.PolyData, pd.DataFrame]:
     """
     Convert JSON building data to 3D geometry with parallel processing and memory management.
     
@@ -40,7 +41,28 @@ def run(json_payload: str, case_name: str) -> Tuple[pv.PolyData, pd.DataFrame]:
 
     # Step 2: Create room geometry (walls, floors, ceilings) and furniture
     logger.info("2 - Creating room geometry and furniture")
-    room_geometry_meshes, furniture_meshes, boundary_conditions_df = create_volumes(json_payload)
+    try:
+        room_geometry_meshes, furniture_meshes, boundary_conditions_df = create_volumes(json_payload)
+    except Exception as e:
+        raise GeometryStepError(
+            f"Failed to create room geometry: {str(e)}",
+            {
+                'case_name': case_name,
+                'error_type': 'volume_creation',
+                'suggestion': 'Check if room polygon is closed and has valid coordinates'
+            }
+        )
+    
+    # Validate that we have geometry to work with
+    if not room_geometry_meshes or len(room_geometry_meshes) == 0:
+        raise GeometryStepError(
+            "No room geometry was created",
+            {
+                'case_name': case_name,
+                'error_type': 'empty_geometry',
+                'suggestion': 'Ensure the JSON contains valid room definitions with closed polygons'
+            }
+        )
 
     # Step 3: Combine room geometry and subtract furniture using boolean operations
     logger.info("3 - Combining room geometry and applying furniture subtractions")

@@ -10,6 +10,7 @@ import pandas as pd
 
 from src.components.tools.load_geo import load_geo_files
 from src.components.tools.performance import PerformanceMonitor
+from pipeline_exceptions import MeshingStepError
 
 logger = logging.getLogger(__name__)
 
@@ -48,15 +49,34 @@ def run(case_name: str, geo_mesh: pv.PolyData, geo_df: pd.DataFrame, type: str =
     logger.info(f"2 - Preparing {type} mesh generation scripts")
     performance_monitor.update_memory()
     
-    if type == "cfmesh":
-        from src.components.mesh.cfmesh import prepare_cfmesh
-        script_commands = prepare_cfmesh(geo_mesh, sim_path, geo_df)
-    elif type == "snappy":
-        from src.components.mesh.snappy import prepare_snappy
-        script_commands = prepare_snappy(geo_mesh, sim_path, geo_df)
-    else:
-        logger.error(f"Unknown meshing software: {type}")
-        raise ValueError(f"Unknown meshing software: {type}")
+    try:
+        if type == "cfmesh":
+            from src.components.mesh.cfmesh import prepare_cfmesh
+            script_commands = prepare_cfmesh(geo_mesh, sim_path, geo_df)
+        elif type == "snappy":
+            from src.components.mesh.snappy import prepare_snappy
+            script_commands = prepare_snappy(geo_mesh, sim_path, geo_df)
+        else:
+            raise MeshingStepError(
+                f"Unknown meshing software: {type}",
+                {
+                    'case_name': case_name,
+                    'meshing_type': type,
+                    'suggestion': 'Use "cfmesh" or "snappy"'
+                }
+            )
+    except MeshingStepError:
+        # Re-raise MeshingStepError without wrapping
+        raise
+    except Exception as e:
+        raise MeshingStepError(
+            f"Mesh generation failed: {str(e)}",
+            {
+                'case_name': case_name,
+                'meshing_type': type,
+                'suggestion': 'Check if geometry is valid and mesh parameters are correct'
+            }
+        )
     
     performance_monitor.update_memory()
     
