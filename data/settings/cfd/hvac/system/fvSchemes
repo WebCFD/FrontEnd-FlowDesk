@@ -58,5 +58,10 @@ snGradSchemes
     default         orthogonal;
 }
 
+wallDist
+{
+    method meshWave;
+}
+
 
 // ************************************************************************* //
