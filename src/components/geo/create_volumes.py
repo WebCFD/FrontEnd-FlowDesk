@@ -16,12 +16,57 @@ logger = logging.getLogger(__name__)
 VOLUMES_TOLERANCE = 1e-5
 DEFAULT_TEMPERATURE = 20
 
+# Flow value mapping for different boundary condition types
+FLOW_VALUES = {
+    # Velocity boundary conditions (m/s)
+    'velocity': {
+        'low': 1.0,
+        'medium': 2.5,
+        'high': 5.0
+    },
+    # Mass flow boundary conditions (m³/h)
+    'massFlow': {
+        'low': 150.0,
+        'medium': 250.0,
+        'high': 400.0
+    },
+    # Pressure boundary conditions (Pa)
+    'pressure': {
+        'low': 0.3,
+        'medium': 2.5,
+        'high': 5.0
+    }
+}
+
+# Legacy flow levels for backward compatibility (velocity in m/s)
 FLOW_LEVELS = {
-    # STRING: (VALUE IN METERS PER SECOND)
     'low':      0.5,
     'medium':   1.0,
     'high':     2.0,
 }
+
+
+def get_flow_value(flow_intensity: str, flow_type: str, custom_value: float = None) -> float:
+    """
+    Get flow value based on intensity level and flow type.
+    
+    Args:
+        flow_intensity: Intensity level ('low', 'medium', 'high', 'custom')
+        flow_type: Type of flow ('velocity', 'massFlow', 'pressure')
+        custom_value: Custom value when flow_intensity is 'custom'
+    
+    Returns:
+        Flow value in appropriate units (m/s for velocity, m³/h for massFlow, Pa for pressure)
+    """
+    if flow_intensity == 'custom':
+        if custom_value is None:
+            logger.warning(f"Custom flow intensity specified but no custom_value provided. Using medium default.")
+            return FLOW_VALUES.get(flow_type, FLOW_VALUES['velocity'])['medium']
+        return custom_value
+    
+    # Get flow type values, default to velocity if unknown type
+    flow_type_values = FLOW_VALUES.get(flow_type, FLOW_VALUES['velocity'])
+    return flow_type_values.get(flow_intensity, flow_type_values['medium'])
 
 ELEMENTS_MESHES = {
     # ID: (NAME, FOLDER PATH)
@@ -118,26 +163,42 @@ def get_entry_bc_dict(data):
     
     # Determine type based on airDirection and flowType
     air_direction = simulation.get('airDirection', 'inflow')
-    flow_type = simulation.get('flowType', 'velocity')
+    flow_type_raw = simulation.get('flowType', 'velocity')
+    flow_intensity = simulation.get('flowIntensity', 'medium')
+    custom_value = simulation.get('customValue', None)
+    
+    # Normalize flow_type to handle case variations (massflow → massFlow)
+    flow_type_map = {
+        'massflow': 'massFlow',
+        'massFlow': 'massFlow',
+        'velocity': 'velocity',
+        'pressure': 'pressure'
+    }
+    flow_type = flow_type_map.get(flow_type_raw, 'velocity')
     
     if air_direction == 'inflow':
-        new_patch['type'] = 'velocity_inlet'
-        flow_intensity = simulation.get('flowIntensity', 'medium')
-        if flow_intensity == 'custom':
-            new_patch['U'] = simulation.get('customValue', FLOW_LEVELS['medium'])
+        # Handle different flow types for inlet
+        if flow_type == 'massFlow':
+            new_patch['type'] = 'mass_flow_inlet'
+            # Get mass flow value in m³/h
+            new_patch['massFlow'] = get_flow_value(flow_intensity, 'massFlow', custom_value)
+            new_patch['U'] = np.nan  # Not used for mass flow inlet
         else:
-            new_patch['U'] = FLOW_LEVELS.get(flow_intensity, FLOW_LEVELS['medium'])
+            # Default to velocity inlet
+            new_patch['type'] = 'velocity_inlet'
+            # Get velocity value in m/s
+            new_patch['U'] = get_flow_value(flow_intensity, 'velocity', custom_value)
+            
     elif air_direction == 'outflow':
         if flow_type == 'pressure':
             new_patch['type'] = 'pressure_outlet'
+            # Get pressure value in Pa
+            new_patch['pressure'] = get_flow_value(flow_intensity, 'pressure', custom_value)
             new_patch['U'] = np.nan
         else:
+            # For outflow with velocity or massFlow, use velocity_inlet with reverse direction
             new_patch['type'] = 'velocity_inlet'
-            flow_intensity = simulation.get('flowIntensity', 'medium')
-            if flow_intensity == 'custom':
-                new_patch['U'] = simulation.get('customValue', FLOW_LEVELS['medium'])
-            else:
-                new_patch['U'] = FLOW_LEVELS.get(flow_intensity, FLOW_LEVELS['medium'])
+            new_patch['U'] = get_flow_value(flow_intensity, 'velocity', custom_value)
     
     new_patch['T'] = simulation.get('temperature', DEFAULT_TEMPERATURE)
     new_patch['nx'] = data['position']['normal']['x']

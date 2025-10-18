@@ -191,6 +191,47 @@ def define_initial_files(sim_path, patch_df):
                             new_bc_data["value"] = np.array([0, 0, 0])
                     else:
                         raise BaseException('Unknown variable')
+                elif(row['type'] == 'mass_flow_inlet'):
+                    if(variable == 'alphat'):
+                        new_bc_data["type"] = 'calculated'
+                        new_bc_data["value"] = '$internalField'
+                    elif(variable == 'DR'):
+                        new_bc_data["type"] = 'calculated'
+                        new_bc_data["value"] = 16.61
+                    elif(variable == 'epsilon'):
+                        new_bc_data["type"] = 'turbulentMixingLengthDissipationRateInlet'
+                        new_bc_data["mixingLength"] = 0.0168
+                        new_bc_data["value"] = '$internalField'
+                    elif(variable == 'k'):
+                        new_bc_data["type"] = 'turbulentIntensityKineticEnergyInlet'
+                        new_bc_data["intensity"] = 0.14
+                        new_bc_data["value"] = '$internalField'
+                    elif(variable == 'nut'):
+                        new_bc_data["type"] = 'calculated'
+                        new_bc_data["value"] = '$internalField'
+                    elif(variable == 'p'):
+                        new_bc_data["type"] = 'calculated'
+                        new_bc_data["value"] = '$internalField'
+                    elif(variable == 'p_rgh'):
+                        new_bc_data["type"] = 'fixedFluxPressure'
+                        new_bc_data["value"] = '$internalField'
+                    elif(variable == 'PMV'):
+                        new_bc_data["type"] = 'calculated'
+                        new_bc_data["value"] = -1.18438
+                    elif(variable == 'PPD'):
+                        new_bc_data["type"] = 'calculated'
+                        new_bc_data["value"] = 34.4876
+                    elif(variable == 'T'):
+                        new_bc_data["type"] = 'fixedValue'
+                        new_bc_data["value"] = row['T'] + 273.15
+                    elif(variable == 'U'):
+                        # Use flowRateInletVelocity for mass flow inlet
+                        # Convert m³/h to m³/s: massFlow (m³/h) / 3600
+                        new_bc_data["type"] = 'flowRateInletVelocity'
+                        new_bc_data["volumetricFlowRate"] = row['massFlow'] / 3600.0
+                        new_bc_data["value"] = '$internalField'
+                    else:
+                        raise BaseException('Unknown variable')
                 else:
                     raise BaseException('Boundary Condition Type Unknown')
 
