@@ -24,6 +24,7 @@ DIMENSIONS_DICT = {
     'h':        FoamFile.DimensionSet(length=2, time=-2),  # J/kg = m²/s²
     'k':        FoamFile.DimensionSet(length=2, time=-2),
     'nut':      FoamFile.DimensionSet(length=2, time=-1),
+    'omega':    FoamFile.DimensionSet(time=-1),  # 1/s
     'p':        FoamFile.DimensionSet(mass=1, length=-1, time=-2),
     'p_rgh':    FoamFile.DimensionSet(mass=1, length=-1, time=-2),
     'PMV':      FoamFile.DimensionSet(),
@@ -39,6 +40,7 @@ INTERNALFIELD_DICT = {
     'h':        0.0,  # h = Cp×(T-Tref) + Hf = 1005×(293.15-293.15) + 0 = 0
     'k':        0.08,
     'nut':      0,
+    'omega':    0.5,
     'p':        101325,
     'p_rgh':    0,
     'PMV':      1.40936,
@@ -94,6 +96,9 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'epsilon'):
                         new_bc_data["type"] = 'epsilonWallFunction'
                         new_bc_data["value"] = '$internalField'
+                    elif(variable == 'omega'):
+                        new_bc_data["type"] = 'omegaWallFunction'
+                        new_bc_data["value"] = 0.5
                     elif(variable == 'h'):
                         # Enthalpy: h = Cp×(T-Tref) + Hf
                         new_bc_data["type"] = 'fixedValue'
@@ -135,6 +140,9 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'turbulentMixingLengthDissipationRateInlet'
                         new_bc_data["mixingLength"] = 0.0168
                         new_bc_data["value"] = '$internalField'
+                    elif(variable == 'omega'):
+                        new_bc_data["type"] = 'fixedValue'
+                        new_bc_data["value"] = 0.5
                     elif(variable == 'h'):
                         # Enthalpy: h = Cp×(T-Tref) + Hf
                         new_bc_data["type"] = 'fixedValue'
@@ -181,6 +189,9 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'turbulentMixingLengthDissipationRateInlet'
                         new_bc_data["mixingLength"] = 0.0168
                         new_bc_data["value"] = '$internalField'
+                    elif(variable == 'omega'):
+                        new_bc_data["type"] = 'fixedValue'
+                        new_bc_data["value"] = 0.5
                     elif(variable == 'h'):
                         # Enthalpy: h = Cp×(T-Tref) + Hf
                         new_bc_data["type"] = 'fixedValue'
@@ -230,6 +241,10 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'epsilon'):
                         new_bc_data["type"] = 'inletOutlet'
                         new_bc_data["inletValue"] = '$internalField'
+                    elif(variable == 'omega'):
+                        new_bc_data["type"] = 'inletOutlet'
+                        new_bc_data["inletValue"] = 0.5
+                        new_bc_data["value"] = 0.5
                     elif(variable == 'h'):
                         # Enthalpy outlet: allow inflow at reference temperature
                         new_bc_data["type"] = 'inletOutlet'
@@ -283,6 +298,14 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'turbulentMixingLengthDissipationRateInlet'
                         new_bc_data["mixingLength"] = 0.0168
                         new_bc_data["value"] = '$internalField'
+                    elif(variable == 'omega'):
+                        new_bc_data["type"] = 'fixedValue'
+                        new_bc_data["value"] = 0.5
+                    elif(variable == 'h'):
+                        # Enthalpy: h = Cp×(T-Tref) + Hf
+                        new_bc_data["type"] = 'fixedValue'
+                        T_inlet = row['T'] + 273.15
+                        new_bc_data["value"] = CP * (T_inlet - TREF) + HF
                     elif(variable == 'k'):
                         new_bc_data["type"] = 'turbulentIntensityKineticEnergyInlet'
                         new_bc_data["intensity"] = 0.14
