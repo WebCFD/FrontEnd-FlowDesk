@@ -379,7 +379,7 @@ def setup(case_path: str) -> list:
 
     script_commands = [
         # Run solver in parallel
-        'runParallel -np 16 buoyantSimpleFoam -parallel',
+        'runParallel -np 16 buoyantPimpleFoam -parallel',
 
         # 3. Reconstruct the results back into serial for post-processing
         'runApplication reconstructPar -latestTime',

@@ -19,7 +19,7 @@ def analyse_residuals(logfile_path, post_path):
     """
     logger.info(f"    * Analyzing convergence residuals from: {logfile_path}")
     
-    target_fields = ["h", "p_rgh", "k", "epsilon"]
+    target_fields = ["h", "p_rgh", "k", "omega"]
     logger.info(f"    * Target residual fields: {target_fields}")
 
     # === REGEX TO MATCH RESIDUAL LINES ===

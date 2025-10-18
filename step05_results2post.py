@@ -36,10 +36,13 @@ def run(case_name: str = "cases/cfd_case") -> None:
     logger.info(f"1 - Setting up post-processing environment: {post_path}")
     performance_monitor.update_memory()
     
-    logfile_path = os.path.join(sim_path, "log.buoyantSimpleFoam")
+    # Try both buoyantPimpleFoam and buoyantSimpleFoam log files
+    logfile_path = os.path.join(sim_path, "log.buoyantPimpleFoam")
     if not os.path.isfile(logfile_path):
-        logger.error(f"Simulation log file not found: {logfile_path}")
-        raise ValueError(f"There are no results for this simulation")
+        logfile_path = os.path.join(sim_path, "log.buoyantSimpleFoam")
+        if not os.path.isfile(logfile_path):
+            logger.error(f"Simulation log file not found in {sim_path}")
+            raise ValueError(f"There are no results for this simulation")
 
     # Step 2: Analyze convergence residuals
     logger.info("2 - Analyzing convergence residuals and solution quality")
