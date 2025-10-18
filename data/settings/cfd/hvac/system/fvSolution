@@ -62,11 +62,25 @@ solvers
 PIMPLE
 {
     momentumPredictor   yes;
-    nOuterCorrectors    1;
-    nCorrectors         2;
-    nNonOrthogonalCorrectors 0;
+    nOuterCorrectors    2;
+    nCorrectors         3;
+    nNonOrthogonalCorrectors 1;
     pRefCell            0;
     pRefValue           0;
+    
+    residualControl
+    {
+        p_rgh
+        {
+            tolerance  1e-5;
+            relTol     0;
+        }
+        U
+        {
+            tolerance  1e-5;
+            relTol     0;
+        }
+    }
 }
 
 relaxationFactors
