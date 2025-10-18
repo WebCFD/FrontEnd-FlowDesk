@@ -40,13 +40,16 @@ INTERNALFIELD_DICT = {
     'k':        0.08,
     'nut':      0,
     'omega':    0.5,
-    'p':        101325,
-    'p_rgh':    0,
+    'p':        101325,     # Atmospheric pressure [Pa]
+    'p_rgh':    0,          # Hydrostatic-corrected pressure [Pa]
     'PMV':      1.40936,
     'PPD':      46.0115,
     'T':        293.15,
     'U':        np.array([0, 0, 0]),
 }
+
+# Reference values for pressure calculations
+P_ATM = 101325  # Atmospheric pressure [Pa]
 
 
 def define_constant_files(template_path, sim_path):
@@ -110,8 +113,9 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'nutkWallFunction'
                         new_bc_data["value"] = '$internalField'
                     elif(variable == 'p'):
+                        # p = p_rgh + p_atm (for walls, p_rgh ≈ 0)
                         new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = '$internalField'
+                        new_bc_data["value"] = P_ATM
                     elif(variable == 'p_rgh'):
                         new_bc_data["type"] = 'fixedFluxPressure'
                         new_bc_data["value"] = '$internalField'
@@ -155,8 +159,9 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = '$internalField'
                     elif(variable == 'p'):
+                        # p = p_rgh + p_atm (for walls, p_rgh ≈ 0)
                         new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = '$internalField'
+                        new_bc_data["value"] = P_ATM
                     elif(variable == 'p_rgh'):
                         new_bc_data["type"] = 'fixedFluxPressure'
                         new_bc_data["value"] = '$internalField'
@@ -204,8 +209,9 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = '$internalField'
                     elif(variable == 'p'):
+                        # p = p_rgh + p_atm (consistent initialization)
                         new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = '$internalField'
+                        new_bc_data["value"] = P_ATM + row['pressure']
                     elif(variable == 'p_rgh'):
                         # Use fixedValue for pressure inlet with specified pressure differential
                         new_bc_data["type"] = 'fixedValue'
@@ -257,8 +263,9 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = '$internalField'
                     elif(variable == 'p'):
+                        # p = p_rgh + p_atm (consistent initialization)
                         new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = '$internalField'
+                        new_bc_data["value"] = P_ATM + row['pressure']
                     elif(variable == 'p_rgh'):
                         # Use fixedValue for pressure outlet with specified pressure differential
                         new_bc_data["type"] = 'fixedValue'
@@ -313,8 +320,9 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = '$internalField'
                     elif(variable == 'p'):
+                        # p = p_rgh + p_atm (for walls, p_rgh ≈ 0)
                         new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = '$internalField'
+                        new_bc_data["value"] = P_ATM
                     elif(variable == 'p_rgh'):
                         new_bc_data["type"] = 'fixedFluxPressure'
                         new_bc_data["value"] = '$internalField'
