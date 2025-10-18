@@ -173,8 +173,8 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = '$internalField'
                     elif(variable == 'p_rgh'):
-                        # Use fixedFluxPressure for buoyant flows to prevent backflow instability
-                        new_bc_data["type"] = 'fixedFluxPressure'
+                        # Use fixedValue for outlets (required when U uses inletOutlet)
+                        new_bc_data["type"] = 'fixedValue'
                         new_bc_data["value"] = 0
                     elif(variable == 'PMV'):
                         new_bc_data["type"] = 'calculated'
@@ -193,6 +193,7 @@ def define_initial_files(sim_path, patch_df):
                             new_bc_data["type"] = 'inletOutlet'
                             new_bc_data["inletValue"] = '$internalField'
                             new_bc_data["value"] = '$internalField'
+                            new_bc_data["phi"] = 'phi'  # Required for SIMPLE to recognize as adjustable outflow
                         else:
                             new_bc_data["type"] = 'fixedValue'
                             new_bc_data["value"] = np.array([0, 0, 0])
