@@ -16,6 +16,14 @@ FoamFile
 
 solvers
 {
+    "rho.*"
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        tolerance       1e-7;
+        relTol          0.1;
+    }
+
     p_rgh
     {
         solver          GAMG;
@@ -24,12 +32,24 @@ solvers
         relTol          0.01;
     }
 
+    p_rghFinal
+    {
+        $p_rgh;
+        relTol          0;
+    }
+
     "(U|h|k|epsilon|omega)"
     {
         solver          PBiCGStab;
         preconditioner  DILU;
         tolerance       1e-7;
         relTol          0.1;
+    }
+
+    "(U|h|k|epsilon|omega)Final"
+    {
+        $U;
+        relTol          0;
     }
 
     age
@@ -41,9 +61,12 @@ solvers
 
 PIMPLE
 {
-    nOuterCorrectors 1;
-    nCorrectors 2;
+    momentumPredictor   yes;
+    nOuterCorrectors    1;
+    nCorrectors         2;
     nNonOrthogonalCorrectors 0;
+    pRefCell            0;
+    pRefValue           0;
 }
 
 relaxationFactors
