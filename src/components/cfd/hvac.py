@@ -62,13 +62,14 @@ def define_system_files(template_path, sim_path):
 def define_initial_files(sim_path, patch_df):
     os.makedirs(sim_path, exist_ok=True)
 
-    # Create 0/ directory for initial conditions (not 0.orig/)
-    initial_path = os.path.join(sim_path, "0")
+    # Create 0.orig/ directory for initial conditions
+    # This will be copied to 0/ after snappyHexMesh by Allrun script
+    initial_path = os.path.join(sim_path, "0.orig")
     os.makedirs(initial_path, exist_ok=True)
 
     case = FoamCase(sim_path)
     for variable in DIMENSIONS_DICT.keys():
-        with case['0'][variable] as f:
+        with case['0.orig'][variable] as f:
             f.dimensions = DIMENSIONS_DICT[variable]
             f.internal_field = INTERNALFIELD_DICT[variable]
 
