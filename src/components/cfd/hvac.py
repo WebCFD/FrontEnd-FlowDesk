@@ -173,9 +173,9 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = '$internalField'
                     elif(variable == 'p_rgh'):
-                        new_bc_data["type"] = 'prghPressure'
-                        new_bc_data["p"] = '$internalField'
-                        new_bc_data["value"] = '$internalField'
+                        # Use fixedFluxPressure for buoyant flows to prevent backflow instability
+                        new_bc_data["type"] = 'fixedFluxPressure'
+                        new_bc_data["value"] = 0
                     elif(variable == 'PMV'):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 1.40936
@@ -183,8 +183,9 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 46.0115
                     elif(variable == 'T'):
+                        # Use buoyant-specific outlet BC that respects Boussinesq reference temperature
                         new_bc_data["type"] = 'inletOutlet'
-                        new_bc_data["inletValue"] = row['T'] + 273.15
+                        new_bc_data["inletValue"] = 293.15  # TRef from thermophysicalProperties
                         new_bc_data["value"] = row['T'] + 273.15
                     elif(variable == 'U'):
                         if (row['open']):
