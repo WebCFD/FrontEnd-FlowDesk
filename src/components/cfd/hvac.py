@@ -237,15 +237,6 @@ def define_initial_files(sim_path, patch_df):
                     raise BaseException('Boundary Condition Type Unknown')
 
                 f.boundary_field[row['id']] = new_bc_data
-            
-            # CRITICAL FIX: Add boundary conditions for snappyHexMesh-generated patches
-            # snappyHexMesh automatically creates "limits" and "defaultFaces" patches
-            # These MUST have boundary conditions defined or OpenFOAM will fail
-            for patch_name in ['limits', 'defaultFaces']:
-                if patch_name not in f.boundary_field:
-                    empty_bc = {"type": "empty"}
-                    f.boundary_field[patch_name] = empty_bc
-                    logger.debug(f"    * Added default boundary condition for snappyHex patch: {patch_name}")
 
 
 def setup(case_path: str) -> list:
