@@ -223,47 +223,69 @@ def get_entry_bc_dict(data):
             'T': simulation.get('temperature', DEFAULT_TEMPERATURE)
         }
     
-    # Determine type based on airDirection and flowType
+    # Determine entry type: windows/doors always use pressure BCs, vents allow user choice
+    entry_type = data.get('type', 'window')  # 'window', 'door', 'vent'
     air_direction = simulation.get('airDirection', 'inflow')
-    flow_type_raw = simulation.get('flowType', 'velocity')
     flow_intensity = simulation.get('flowIntensity', 'medium')
     custom_value = simulation.get('customValue', None)
     
-    # Normalize flow_type to handle case variations (massflow → massFlow)
-    flow_type_map = {
-        'massflow': 'massFlow',
-        'massFlow': 'massFlow',
-        'velocity': 'velocity',
-        'pressure': 'pressure'
-    }
-    flow_type = flow_type_map.get(flow_type_raw, 'velocity')
+    # For windows/doors: ALWAYS use pressure BCs (no flowType in JSON)
+    if entry_type in ['window', 'door']:
+        # Get pressure differential (ΔP) based on flow intensity
+        delta_p = get_flow_value(flow_intensity, 'pressure', custom_value)
+        
+        if air_direction == 'inflow':
+            # Pressure inlet: p = p_internal + ΔP (higher pressure pushes air in)
+            new_patch['type'] = 'pressure_inlet'
+            new_patch['pressure'] = delta_p  # Positive pressure differential
+        else:  # outflow
+            # Pressure outlet: p = p_internal - ΔP (lower pressure pulls air out)
+            new_patch['type'] = 'pressure_outlet'
+            new_patch['pressure'] = -delta_p  # Negative pressure differential
+        
+        new_patch['U'] = np.nan  # Not used for pressure BCs
     
-    if air_direction == 'inflow':
-        # Handle different flow types for inlet
-        if flow_type == 'massFlow':
-            new_patch['type'] = 'mass_flow_inlet'
-            # Get mass flow value in m³/h
-            new_patch['massFlow'] = get_flow_value(flow_intensity, 'massFlow', custom_value)
-            new_patch['U'] = np.nan  # Not used for mass flow inlet
-        else:
-            # Default to velocity inlet
-            new_patch['type'] = 'velocity_inlet'
-            # Get velocity value in m/s
-            new_patch['U'] = get_flow_value(flow_intensity, 'velocity', custom_value)
+    # For vents: User specifies flowType (velocity, massFlow, or pressure)
+    else:
+        flow_type_raw = simulation.get('flowType', 'velocity')
+        
+        # Normalize flow_type to handle case variations (massflow → massFlow)
+        flow_type_map = {
+            'massflow': 'massFlow',
+            'massFlow': 'massFlow',
+            'velocity': 'velocity',
+            'pressure': 'pressure'
+        }
+        flow_type = flow_type_map.get(flow_type_raw, 'velocity')
+        
+        if air_direction == 'inflow':
+            # Handle different flow types for inlet
+            if flow_type == 'massFlow':
+                new_patch['type'] = 'mass_flow_inlet'
+                new_patch['massFlow'] = get_flow_value(flow_intensity, 'massFlow', custom_value)
+                new_patch['U'] = np.nan
+            elif flow_type == 'pressure':
+                # Pressure inlet with positive differential
+                new_patch['type'] = 'pressure_inlet'
+                delta_p = get_flow_value(flow_intensity, 'pressure', custom_value)
+                new_patch['pressure'] = delta_p
+                new_patch['U'] = np.nan
+            else:  # velocity
+                new_patch['type'] = 'velocity_inlet'
+                new_patch['U'] = get_flow_value(flow_intensity, 'velocity', custom_value)
+                
+        else:  # outflow
+            if flow_type == 'pressure':
+                # Pressure outlet with negative differential
+                new_patch['type'] = 'pressure_outlet'
+                delta_p = get_flow_value(flow_intensity, 'pressure', custom_value)
+                new_patch['pressure'] = -delta_p
+            else:
+                # Velocity/massFlow outlets use atmospheric pressure
+                new_patch['type'] = 'pressure_outlet'
+                new_patch['pressure'] = 0
             
-    elif air_direction == 'outflow':
-        # For outflow, always use pressure_outlet type
-        # This allows natural backflow and prevents continuity errors
-        new_patch['type'] = 'pressure_outlet'
-        
-        if flow_type == 'pressure':
-            # Get pressure value in Pa
-            new_patch['pressure'] = get_flow_value(flow_intensity, 'pressure', custom_value)
-        else:
-            # For velocity/massFlow outlets, use atmospheric pressure (0 gauge pressure)
-            new_patch['pressure'] = 0
-        
-        new_patch['U'] = np.nan
+            new_patch['U'] = np.nan
     
     new_patch['T'] = simulation.get('temperature', DEFAULT_TEMPERATURE)
     

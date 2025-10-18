@@ -153,6 +153,51 @@ def define_initial_files(sim_path, patch_df):
                             new_bc_data["value"] = np.array([0, 0, 0])
                     else:
                         raise BaseException('Unknown variable')
+                elif(row['type'] == 'pressure_inlet'):
+                    if(variable == 'alphat'):
+                        new_bc_data["type"] = 'calculated'
+                        new_bc_data["value"] = '$internalField'
+                    elif(variable == 'DR'):
+                        new_bc_data["type"] = 'calculated'
+                        new_bc_data["value"] = 16.61
+                    elif(variable == 'epsilon'):
+                        new_bc_data["type"] = 'turbulentMixingLengthDissipationRateInlet'
+                        new_bc_data["mixingLength"] = 0.0168
+                        new_bc_data["value"] = '$internalField'
+                    elif(variable == 'k'):
+                        new_bc_data["type"] = 'turbulentIntensityKineticEnergyInlet'
+                        new_bc_data["intensity"] = 0.14
+                        new_bc_data["value"] = '$internalField'
+                    elif(variable == 'nut'):
+                        new_bc_data["type"] = 'calculated'
+                        new_bc_data["value"] = '$internalField'
+                    elif(variable == 'p'):
+                        new_bc_data["type"] = 'calculated'
+                        new_bc_data["value"] = '$internalField'
+                    elif(variable == 'p_rgh'):
+                        # Use fixedValue for pressure inlet with specified pressure differential
+                        new_bc_data["type"] = 'fixedValue'
+                        new_bc_data["value"] = row['pressure']
+                    elif(variable == 'PMV'):
+                        new_bc_data["type"] = 'calculated'
+                        new_bc_data["value"] = -1.18438
+                    elif(variable == 'PPD'):
+                        new_bc_data["type"] = 'calculated'
+                        new_bc_data["value"] = 34.4876
+                    elif(variable == 'T'):
+                        # Fixed temperature at pressure inlet
+                        new_bc_data["type"] = 'fixedValue'
+                        new_bc_data["value"] = row['T'] + 273.15
+                    elif(variable == 'U'):
+                        if (row['open']):
+                            # Use pressureInletOutletVelocity for pressure-driven inflow
+                            new_bc_data["type"] = 'pressureInletOutletVelocity'
+                            new_bc_data["value"] = '$internalField'
+                        else:
+                            new_bc_data["type"] = 'fixedValue'
+                            new_bc_data["value"] = np.array([0, 0, 0])
+                    else:
+                        raise BaseException('Unknown variable')
                 elif(row['type'] == 'pressure_outlet'):
                     if(variable == 'alphat'):
                         new_bc_data["type"] = 'calculated'
@@ -173,9 +218,9 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = '$internalField'
                     elif(variable == 'p_rgh'):
-                        # Use fixedValue for outlets (required when U uses inletOutlet)
+                        # Use fixedValue for pressure outlet with specified pressure differential
                         new_bc_data["type"] = 'fixedValue'
-                        new_bc_data["value"] = 0
+                        new_bc_data["value"] = row['pressure']
                     elif(variable == 'PMV'):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 1.40936
