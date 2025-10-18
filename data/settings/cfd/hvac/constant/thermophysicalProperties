@@ -26,7 +26,7 @@ mixture
     equationOfState
     {
         rho0            1.2;
-        T0              300;
+        T0              293.15;
         beta            3.4e-03;
     }
     thermodynamics
