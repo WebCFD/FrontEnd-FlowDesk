@@ -309,8 +309,9 @@ def prepare_snappy(geo_mesh, sim_path, geo_df, stl_filename = "geometry.stl"):
 
 
 
-    # Note: Mesh validation is now done locally in step02_geo2mesh.py before cloud submission
-    # This saves credits by catching geometry errors early
+    # Get expected patches for validation
+    expected_patches = geo_df["id"].tolist()
+    expected_patches_str = ", ".join(expected_patches)
     
     script_commands = [
         '#!/bin/sh', 
@@ -329,18 +330,72 @@ def prepare_snappy(geo_mesh, sim_path, geo_df, stl_filename = "geometry.stl"):
         # 3. Run snappyHexMesh in a single core
         'runApplication snappyHexMesh -overwrite',
 
-        # 4. Prepare initial fields
+        # 4. VALIDATE MESH - Fail fast if background patches remain
+        'echo "==================== VALIDATING MESH ===================="',
+        "python3 << 'VALIDATION_EOF'",
+        "import re",
+        "",
+        "# Read boundary file",
+        "with open('constant/polyMesh/boundary', 'r') as f:",
+        "    content = f.read()",
+        "",
+        "# Extract patch names and face counts",
+        "patches = {}",
+        "lines = content.split('\\n')",
+        "current_patch = None",
+        "for i, line in enumerate(lines):",
+        "    # Match patch name (word followed by newline and opening brace)",
+        "    if re.match(r'^\\s+(\\w+)\\s*$', line):",
+        "        current_patch = line.strip()",
+        "    # Match nFaces",
+        "    elif current_patch and 'nFaces' in line:",
+        "        match = re.search(r'nFaces\\s+(\\d+)', line)",
+        "        if match:",
+        "            patches[current_patch] = int(match.group(1))",
+        "            current_patch = None",
+        "",
+        "# Check for background patches that indicate meshing failure",
+        "background_patches = ['limits', 'defaultFaces', 'background']",
+        f"expected_patches = [{', '.join([repr(p) for p in expected_patches])}]",
+        "failed = [(p, patches[p]) for p in patches if p in background_patches and patches[p] > 0]",
+        "",
+        "if failed:",
+        "    print('\\n' + '='*80)",
+        "    print('MESHING ERROR: SnappyHexMesh failed to cut geometry properly!')",
+        "    print('='*80)",
+        "    print('Background patches remain in the mesh:')",
+        "    for patch, count in failed:",
+        "        print(f'  - {patch}: {count} faces')",
+        "    print()",
+        "    print('This indicates the geometry is NOT WATERTIGHT (has holes/gaps).')",
+        "    print('Possible causes:')",
+        "    print('  1. Geometry has holes, gaps, or non-manifold surfaces')",
+        "    print('  2. Wall extrusion created invalid 3D geometry')",
+        "    print('  3. Boolean operations failed to create closed volume')",
+        "    print()",
+        f"    print('Expected patches: {expected_patches_str}')",
+        "    print(f'Actual patches: {\", \".join(patches.keys())}')",
+        "    print('='*80 + '\\n')",
+        "    exit(1)",
+        "",
+        "print('✅ Mesh validation passed - no background patches found')",
+        "print(f'Valid patches: {\", \".join(patches.keys())}')",
+        "VALIDATION_EOF",
+        'echo "==================== MESH VALIDATION PASSED ===================="',
+
+        # 5. Prepare initial fields
         'rm -rf 0',
         'cp -r 0.orig 0',
 
-        # 5. Clean processors & decompose
+        # 6. Clean processors & decompose
         'rm -rf processor*',
         'runApplication decomposePar',
 
-        # 6. Create foam marker file for GUI usage
+        # 7. Create foam marker file for GUI usage
         'touch results.foam',
         ]
     
     logger.info("    * SnappyHexMesh preparation completed successfully")
-    logger.info("    * Mesh validation will be performed locally before cloud submission")
+    logger.info(f"    * Mesh validation will check for patches: {expected_patches}")
+    logger.info("    * Validation will run in Inductiva after meshing completes")
     return script_commands
