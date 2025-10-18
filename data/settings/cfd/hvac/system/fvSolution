@@ -39,20 +39,11 @@ solvers
     }
 }
 
-SIMPLE
+PIMPLE
 {
-    momentumPredictor false;
+    nOuterCorrectors 1;
+    nCorrectors 2;
     nNonOrthogonalCorrectors 0;
-    pRefCell        0;
-    pRefValue       0;
-
-    residualControl
-    {
-        p_rgh           1e-4;
-        U               1e-4;
-        h               1e-4;
-        "(k|epsilon|omega)"   1e-4;
-    }
 }
 
 relaxationFactors
