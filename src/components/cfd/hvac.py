@@ -125,6 +125,9 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'PPD'):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 46.0115
+                    elif(variable == 'T'):
+                        new_bc_data["type"] = 'fixedValue'
+                        new_bc_data["value"] = row['T'] + 273.15
                     elif(variable == 'U'):
                         new_bc_data["type"] = 'noSlip'
                     else:
@@ -168,6 +171,9 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'PPD'):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 34.4876
+                    elif(variable == 'T'):
+                        new_bc_data["type"] = 'fixedValue'
+                        new_bc_data["value"] = row['T'] + 273.15
                     elif(variable == 'U'):
                         new_bc_data["type"] = 'fixedValue'
                         if (row['open']):
@@ -216,6 +222,9 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'PPD'):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 34.4876
+                    elif(variable == 'T'):
+                        new_bc_data["type"] = 'fixedValue'
+                        new_bc_data["value"] = row['T'] + 273.15
                     elif(variable == 'U'):
                         if (row['open']):
                             # Use pressureInletOutletVelocity for pressure-driven inflow
@@ -266,6 +275,10 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'PPD'):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 46.0115
+                    elif(variable == 'T'):
+                        new_bc_data["type"] = 'inletOutlet'
+                        new_bc_data["inletValue"] = 293.15
+                        new_bc_data["value"] = row['T'] + 273.15
                     elif(variable == 'U'):
                         if (row['open']):
                             # Use inletOutlet for adjustable mass flow conservation
@@ -317,6 +330,9 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'PPD'):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 34.4876
+                    elif(variable == 'T'):
+                        new_bc_data["type"] = 'fixedValue'
+                        new_bc_data["value"] = row['T'] + 273.15
                     elif(variable == 'U'):
                         # Use flowRateInletVelocity for mass flow inlet
                         # Convert m³/h to m³/s: massFlow (m³/h) / 3600
