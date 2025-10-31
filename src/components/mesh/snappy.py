@@ -37,9 +37,10 @@ def generate_location_inside_mesh(mesh):
     
     Strategy:
     1. Generate candidate points from cell centers
-    2. Validate points are enclosed using select_enclosed_points
-    3. Select point farthest from boundary for robustness
-    4. Fail with clear error if no valid interior point found
+    2. Filter out points too close to Z boundaries (floor/ceiling)
+    3. Validate points are enclosed using select_enclosed_points
+    4. Select point farthest from boundary for robustness
+    5. Fail with clear error if no valid interior point found
     
     This approach prevents snappyHexMesh failures that occur when locationInMesh
     falls outside or on the boundary of the geometry.
@@ -49,27 +50,55 @@ def generate_location_inside_mesh(mesh):
     
     logger = logging.getLogger(__name__)
     
+    # Get geometry bounds to identify floor/ceiling levels
+    bounds = mesh.bounds
+    z_min, z_max = bounds[4], bounds[5]
+    z_range = z_max - z_min
+    
+    # Safety margin from boundaries (10% of Z range, minimum 0.05m)
+    z_margin = max(0.1 * z_range, 0.05)
+    
+    logger.info(f"    * Geometry Z bounds: [{z_min:.3f}, {z_max:.3f}], range: {z_range:.3f} m")
+    logger.info(f"    * Using Z margin: {z_margin:.3f} m to avoid floor/ceiling boundaries")
+    
     # Generate candidate points from cell centers
     cell_centers = mesh.cell_centers()
     volumes = mesh.compute_cell_sizes()["Volume"]
     
-    # Get top 10 largest cells as candidates (or all if fewer)
-    n_candidates = min(10, len(volumes))
+    # Get top 20 largest cells as candidates (increased from 10 for better selection)
+    n_candidates = min(20, len(volumes))
     top_indices = np.argsort(volumes)[-n_candidates:]
     candidate_points = cell_centers.points[top_indices]
     
-    logger.info(f"    * Testing {n_candidates} candidate interior points")
+    # Filter out points too close to floor (Z ≈ z_min) or ceiling (Z ≈ z_max)
+    z_coords = candidate_points[:, 2]
+    away_from_boundaries = (z_coords > z_min + z_margin) & (z_coords < z_max - z_margin)
+    
+    if not np.any(away_from_boundaries):
+        # All candidates are near boundaries, relax margin requirement
+        logger.warning(f"    * All {n_candidates} candidates near boundaries, relaxing Z margin to {z_margin/2:.3f} m")
+        z_margin_relaxed = z_margin / 2
+        away_from_boundaries = (z_coords > z_min + z_margin_relaxed) & (z_coords < z_max - z_margin_relaxed)
+    
+    filtered_points = candidate_points[away_from_boundaries]
+    n_filtered = len(filtered_points)
+    
+    logger.info(f"    * Testing {n_filtered} candidate interior points (filtered from {n_candidates} to avoid boundaries)")
+    
+    if n_filtered == 0:
+        logger.warning(f"    * No candidates away from boundaries, using all {n_candidates} candidates")
+        filtered_points = candidate_points
+        n_filtered = n_candidates
     
     # Create a closed surface mesh for select_enclosed_points
-    # For internal flow, mesh should already be closed, but extract surface to be sure
     surface_mesh = mesh.extract_surface()
     
     # Validate which candidates are truly enclosed
-    candidate_cloud = pv.PolyData(candidate_points)
+    candidate_cloud = pv.PolyData(filtered_points)
     enclosed_mask = candidate_cloud.select_enclosed_points(surface_mesh, tolerance=1e-6, check_surface=True)
     is_inside = enclosed_mask['SelectedPoints'].astype(bool)
     
-    logger.info(f"    * Found {np.sum(is_inside)} valid interior points out of {n_candidates} candidates")
+    logger.info(f"    * Found {np.sum(is_inside)} valid interior points out of {n_filtered} candidates")
     
     if not np.any(is_inside):
         # No valid interior points found - this is a critical error
@@ -77,7 +106,7 @@ def generate_location_inside_mesh(mesh):
             f"\n{'='*80}\n"
             f"GEOMETRY ERROR: Cannot find valid interior point for locationInMesh!\n"
             f"{'='*80}\n"
-            f"Tested {n_candidates} candidate points, none are truly enclosed.\n\n"
+            f"Tested {n_filtered} candidate points, none are truly enclosed.\n\n"
             f"This indicates a problem with the geometry:\n"
             f"  1. Geometry may have holes, gaps, or non-manifold surfaces\n"
             f"  2. Geometry may be too thin or have zero volume\n"
@@ -91,7 +120,7 @@ def generate_location_inside_mesh(mesh):
     
     # Select the valid point that is farthest from the boundary
     # This provides maximum robustness for snappyHexMesh
-    valid_points = candidate_points[is_inside]
+    valid_points = filtered_points[is_inside]
     
     # Compute distance to nearest surface point for each valid interior point
     distances = []
@@ -106,6 +135,7 @@ def generate_location_inside_mesh(mesh):
     max_dist = distances[best_idx]
     
     logger.info(f"    * Selected interior point: ({point[0]:.6f}, {point[1]:.6f}, {point[2]:.6f})")
+    logger.info(f"    * Point Z coordinate: {point[2]:.6f} m (floor: {z_min:.3f} m, ceiling: {z_max:.3f} m)")
     logger.info(f"    * Distance to nearest boundary: {max_dist:.6f} m")
     
     return f"({point[0]:.6f} {point[1]:.6f} {point[2]:.6f})"
