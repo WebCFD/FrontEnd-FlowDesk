@@ -28,6 +28,7 @@ DIMENSIONS_DICT = {
     'p_rgh':    FoamFile.DimensionSet(mass=1, length=-1, time=-2),
     'PMV':      FoamFile.DimensionSet(),
     'PPD':      FoamFile.DimensionSet(),
+    'T':        FoamFile.DimensionSet(temperature=1),
     'U':        FoamFile.DimensionSet(length=1, time=-1),
 }
 
@@ -43,6 +44,7 @@ INTERNALFIELD_DICT = {
     'p_rgh':    0,          # Hydrostatic-corrected pressure [Pa]
     'PMV':      1.40936,
     'PPD':      46.0115,
+    'T':        293.15,     # Temperature calculated from h by OpenFOAM
     'U':        np.array([0, 0, 0]),
 }
 
