@@ -77,13 +77,14 @@ relaxationFactors
 {
     fields
     {
-        rho             1;
+        rho             0.01;
         p_rgh           0.3;
     }
     equations
     {
         U               0.7;
         h               0.7;
+        "(k|epsilon|omega)" 0.7;
     }
 }
 

@@ -28,7 +28,6 @@ DIMENSIONS_DICT = {
     'p_rgh':    FoamFile.DimensionSet(mass=1, length=-1, time=-2),
     'PMV':      FoamFile.DimensionSet(),
     'PPD':      FoamFile.DimensionSet(),
-    'T':        FoamFile.DimensionSet(temperature=1),
     'U':        FoamFile.DimensionSet(length=1, time=-1),
 }
 
@@ -36,7 +35,7 @@ INTERNALFIELD_DICT = {
     'alphat':   0,
     'DR':       0,
     'epsilon':  0.23,
-    'h':        294515.75,  # h = Cp×T + Hf = 1005×293.15 + 0 (perfectGas)
+    'h':        0,  # Enthalpy zero reference for Boussinesq approximation
     'k':        0.08,
     'nut':      0,
     'omega':    0.5,
@@ -44,7 +43,6 @@ INTERNALFIELD_DICT = {
     'p_rgh':    0,          # Hydrostatic-corrected pressure [Pa]
     'PMV':      1.40936,
     'PPD':      46.0115,
-    'T':        293.15,
     'U':        np.array([0, 0, 0]),
 }
 
@@ -125,9 +123,6 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'PPD'):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 46.0115
-                    elif(variable == 'T'):
-                        new_bc_data["type"] = 'fixedValue'
-                        new_bc_data["value"] = row['T'] + 273.15
                     elif(variable == 'U'):
                         new_bc_data["type"] = 'noSlip'
                     else:
@@ -171,9 +166,6 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'PPD'):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 34.4876
-                    elif(variable == 'T'):
-                        new_bc_data["type"] = 'fixedValue'
-                        new_bc_data["value"] = row['T'] + 273.15
                     elif(variable == 'U'):
                         new_bc_data["type"] = 'fixedValue'
                         if (row['open']):
@@ -222,10 +214,6 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'PPD'):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 34.4876
-                    elif(variable == 'T'):
-                        # Fixed temperature at pressure inlet
-                        new_bc_data["type"] = 'fixedValue'
-                        new_bc_data["value"] = row['T'] + 273.15
                     elif(variable == 'U'):
                         if (row['open']):
                             # Use pressureInletOutletVelocity for pressure-driven inflow
@@ -276,11 +264,6 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'PPD'):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 46.0115
-                    elif(variable == 'T'):
-                        # Use buoyant-specific outlet BC that respects Boussinesq reference temperature
-                        new_bc_data["type"] = 'inletOutlet'
-                        new_bc_data["inletValue"] = 293.15  # TRef from thermophysicalProperties
-                        new_bc_data["value"] = row['T'] + 273.15
                     elif(variable == 'U'):
                         if (row['open']):
                             # Use inletOutlet for adjustable mass flow conservation
@@ -332,9 +315,6 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'PPD'):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 34.4876
-                    elif(variable == 'T'):
-                        new_bc_data["type"] = 'fixedValue'
-                        new_bc_data["value"] = row['T'] + 273.15
                     elif(variable == 'U'):
                         # Use flowRateInletVelocity for mass flow inlet
                         # Convert m³/h to m³/s: massFlow (m³/h) / 3600
