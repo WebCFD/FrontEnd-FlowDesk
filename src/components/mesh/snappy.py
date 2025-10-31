@@ -412,11 +412,14 @@ def prepare_snappy(geo_mesh, sim_path, geo_df, stl_filename = "geometry.stl"):
         "VALIDATION_EOF",
         'echo "==================== MESH VALIDATION PASSED ===================="',
 
-        # 5. Prepare initial fields
+        # 5. Check mesh quality (skewness, aspect ratio, non-orthogonality)
+        'runApplication checkMesh',
+
+        # 6. Prepare initial fields
         'rm -rf 0',
         'cp -r 0.orig 0',
 
-        # 6. Clean processors & decompose
+        # 7. Clean processors & decompose
         'rm -rf processor*',
         'runApplication decomposePar',
 

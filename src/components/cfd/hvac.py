@@ -385,6 +385,9 @@ def setup(case_path: str) -> list:
     define_system_files(template_path, sim_path)
 
     script_commands = [
+        # Initialize velocity field with potentialFoam for better convergence
+        'runApplication potentialFoam',
+        
         # Run solver in parallel
         'runParallel -np 16 buoyantSimpleFoam -parallel',
 
