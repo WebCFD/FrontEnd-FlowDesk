@@ -34,7 +34,7 @@ functions
         writeInterval   1;
         
         surfaceFormat   vtk;
-        fields          (T U p p_rgh PMV PPD);
+        fields          (h U p p_rgh);
         
         interpolationScheme cellPoint;
         
