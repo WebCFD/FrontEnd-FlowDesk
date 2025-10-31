@@ -389,6 +389,15 @@ def setup(case_path: str) -> list:
         'rm -rf processor*',
         'runApplication decomposePar',
         
+        # DEBUG: Copiar archivos de processor0 para inspección
+        'echo "==================== DEBUG: Copying processor0 files ===================="',
+        'mkdir -p debug_files',
+        'cp processor0/0/h debug_files/processor0_h',
+        'cp processor0/0/U debug_files/processor0_U',
+        'cp processor0/0/p_rgh debug_files/processor0_p_rgh',
+        'cp processor0/constant/thermophysicalProperties debug_files/processor0_thermo',
+        'echo "==================== DEBUG FILES COPIED ===================="',
+        
         # Run solver in parallel
         'runParallel -np 16 buoyantSimpleFoam -parallel',
 
