@@ -419,7 +419,40 @@ def prepare_snappy(geo_mesh, sim_path, geo_df, stl_filename = "geometry.stl"):
         'rm -rf 0',
         'cp -r 0.orig 0',
 
-        # 7. Create foam marker file for GUI usage
+        # 7. Check initial conditions before decomposition
+        'echo "==================== INITIAL CONDITIONS CHECK ===================="',
+        'echo ""',
+        'echo "--- Checking h (enthalpy) ---"',
+        'grep "internalField" 0/h',
+        'echo ""',
+        'echo "h boundary conditions:"',
+        'grep -A 2 "window_0F_1" 0/h',
+        'grep -A 2 "door_0F_1" 0/h',
+        'grep -A 2 "window_0F_2" 0/h',
+        'echo ""',
+        'echo "--- Checking p_rgh (pressure) ---"',
+        'grep "internalField" 0/p_rgh',
+        'echo ""',
+        'echo "p_rgh boundary conditions:"',
+        'grep -A 3 "window_0F_1" 0/p_rgh',
+        'grep -A 3 "door_0F_1" 0/p_rgh',
+        'grep -A 3 "window_0F_2" 0/p_rgh',
+        'echo ""',
+        'echo "--- Checking U (velocity) ---"',
+        'grep "internalField" 0/U',
+        'echo ""',
+        'echo "U boundary conditions:"',
+        'grep -A 3 "window_0F_1" 0/U',
+        'grep -A 3 "door_0F_1" 0/U',
+        'grep -A 3 "window_0F_2" 0/U',
+        'echo ""',
+        'echo "--- Checking thermophysicalProperties ---"',
+        'grep -A 15 "mixture" constant/thermophysicalProperties',
+        'echo ""',
+        'echo "==================== END INITIAL CONDITIONS CHECK ===================="',
+        'echo ""',
+
+        # 8. Create foam marker file for GUI usage
         'touch results.foam',
         ]
     
