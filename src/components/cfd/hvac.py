@@ -385,8 +385,12 @@ def setup(case_path: str) -> list:
     define_system_files(template_path, sim_path)
 
     script_commands = [
-        # Initialize velocity field with potentialFoam for better convergence
+        # Initialize velocity field with potentialFoam (serial, before decomposition)
         'runApplication potentialFoam',
+        
+        # Decompose for parallel execution (after potentialFoam initialization)
+        'rm -rf processor*',
+        'runApplication decomposePar',
         
         # Run solver in parallel
         'runParallel -np 16 buoyantSimpleFoam -parallel',

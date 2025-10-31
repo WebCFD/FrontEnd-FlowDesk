@@ -419,10 +419,6 @@ def prepare_snappy(geo_mesh, sim_path, geo_df, stl_filename = "geometry.stl"):
         'rm -rf 0',
         'cp -r 0.orig 0',
 
-        # 7. Clean processors & decompose
-        'rm -rf processor*',
-        'runApplication decomposePar',
-
         # 7. Create foam marker file for GUI usage
         'touch results.foam',
         ]
