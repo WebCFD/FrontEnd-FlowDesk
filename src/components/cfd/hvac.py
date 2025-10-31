@@ -214,9 +214,9 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = P_ATM + row['pressure']
                     elif(variable == 'p_rgh'):
-                        # Use fixedValue for pressure inlet with specified pressure differential
-                        new_bc_data["type"] = 'fixedValue'
-                        new_bc_data["value"] = row['pressure']
+                        # Use fixedFluxPressure for pressure inlet (allows natural pressure adjustment)
+                        new_bc_data["type"] = 'fixedFluxPressure'
+                        new_bc_data["value"] = '$internalField'
                     elif(variable == 'PMV'):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = -1.18438
@@ -267,9 +267,9 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = P_ATM + row['pressure']
                     elif(variable == 'p_rgh'):
-                        # Use fixedValue for pressure outlet with specified pressure differential
-                        new_bc_data["type"] = 'fixedValue'
-                        new_bc_data["value"] = row['pressure']
+                        # Use fixedFluxPressure for pressure outlet (allows natural pressure adjustment)
+                        new_bc_data["type"] = 'fixedFluxPressure'
+                        new_bc_data["value"] = '$internalField'
                     elif(variable == 'PMV'):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 1.40936
