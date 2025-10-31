@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 # CONSTANTS FOR THERMOPHYSICS
 CP = 1005.0  # Specific heat capacity [J/(kg·K)]
 HF = 0.0  # Formation enthalpy [J/kg]
+T_REF = 293.15  # Reference temperature for Boussinesq approximation [K]
 
 # DIMENSIONS
 DIMENSIONS_DICT = {
@@ -102,10 +103,10 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'omegaWallFunction'
                         new_bc_data["value"] = 0.5
                     elif(variable == 'h'):
-                        # Enthalpy: h = Cp×T + Hf (perfectGas)
+                        # Enthalpy for Boussinesq: h = Cp×(T - T_ref)
                         new_bc_data["type"] = 'fixedValue'
                         T_wall = row['T'] + 273.15
-                        new_bc_data["value"] = CP * T_wall + HF
+                        new_bc_data["value"] = CP * (T_wall - T_REF)
                     elif(variable == 'k'):
                         new_bc_data["type"] = 'kqRWallFunction'
                         new_bc_data["value"] = '$internalField'
@@ -147,10 +148,10 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'fixedValue'
                         new_bc_data["value"] = 0.5
                     elif(variable == 'h'):
-                        # Enthalpy: h = Cp×T + Hf (perfectGas)
+                        # Enthalpy for Boussinesq: h = Cp×(T - T_ref)
                         new_bc_data["type"] = 'fixedValue'
                         T_wall = row['T'] + 273.15
-                        new_bc_data["value"] = CP * T_wall + HF
+                        new_bc_data["value"] = CP * (T_wall - T_REF)
                     elif(variable == 'k'):
                         new_bc_data["type"] = 'turbulentIntensityKineticEnergyInlet'
                         new_bc_data["intensity"] = 0.14
@@ -197,10 +198,10 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'fixedValue'
                         new_bc_data["value"] = 0.5
                     elif(variable == 'h'):
-                        # Enthalpy: h = Cp×T + Hf (perfectGas)
+                        # Enthalpy for Boussinesq: h = Cp×(T - T_ref)
                         new_bc_data["type"] = 'fixedValue'
                         T_wall = row['T'] + 273.15
-                        new_bc_data["value"] = CP * T_wall + HF
+                        new_bc_data["value"] = CP * (T_wall - T_REF)
                     elif(variable == 'k'):
                         new_bc_data["type"] = 'turbulentIntensityKineticEnergyInlet'
                         new_bc_data["intensity"] = 0.14
@@ -252,9 +253,9 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'h'):
                         # Enthalpy outlet: allow inflow at reference temperature
                         new_bc_data["type"] = 'inletOutlet'
-                        new_bc_data["inletValue"] = CP * 293.15 + HF  # h at Tref=293.15K
+                        new_bc_data["inletValue"] = 0  # h = 0 at Tref=293.15K
                         T_outlet = row['T'] + 273.15
-                        new_bc_data["value"] = CP * T_outlet + HF
+                        new_bc_data["value"] = CP * (T_outlet - T_REF)
                     elif(variable == 'k'):
                         new_bc_data["type"] = 'inletOutlet'
                         new_bc_data["inletValue"] = '$internalField'
