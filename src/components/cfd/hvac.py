@@ -306,9 +306,9 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = '$internalField'
                     elif(variable == 'p_rgh'):
-                        # Use fixedFluxPressure for pressure inlet (allows natural pressure adjustment)
-                        new_bc_data["type"] = 'fixedFluxPressure'
-                        new_bc_data["value"] = '$internalField'
+                        # Use buoyantPressure for pressure inlet (stable for buoyancy-driven flows)
+                        new_bc_data["type"] = 'buoyantPressure'
+                        new_bc_data["value"] = 0
                     elif(variable == 'PMV'):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = -1.18438
@@ -363,9 +363,9 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = '$internalField'
                     elif(variable == 'p_rgh'):
-                        # Use fixedFluxPressure for pressure outlet (allows natural pressure adjustment)
-                        new_bc_data["type"] = 'fixedFluxPressure'
-                        new_bc_data["value"] = '$internalField'
+                        # Use buoyantPressure for pressure outlet (stable for buoyancy-driven flows)
+                        new_bc_data["type"] = 'buoyantPressure'
+                        new_bc_data["value"] = 0
                     elif(variable == 'PMV'):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 1.40936
