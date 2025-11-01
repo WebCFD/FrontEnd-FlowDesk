@@ -191,7 +191,7 @@ def define_initial_files(sim_path, patch_df):
                         T_celsius = row['T']
                         T_wall = T_celsius + 273.15
                         h_value = CP * (T_wall - T_REF)
-                        logger.info(f"    BC {row['name']} ({row['type']}): T={T_celsius}°C → T_K={T_wall}K → h={h_value} J/kg")
+                        logger.info(f"    BC {row['id']} ({row['type']}): T={T_celsius}°C → T_K={T_wall}K → h={h_value} J/kg")
                         new_bc_data["value"] = h_value
                     elif(variable == 'k'):
                         new_bc_data["type"] = 'kqRWallFunction'
@@ -239,7 +239,7 @@ def define_initial_files(sim_path, patch_df):
                         T_celsius = row['T']
                         T_wall = T_celsius + 273.15
                         h_value = CP * (T_wall - T_REF)
-                        logger.info(f"    BC {row['name']} ({row['type']}): T={T_celsius}°C → T_K={T_wall}K → h={h_value} J/kg")
+                        logger.info(f"    BC {row['id']} ({row['type']}): T={T_celsius}°C → T_K={T_wall}K → h={h_value} J/kg")
                         new_bc_data["value"] = h_value
                     elif(variable == 'k'):
                         new_bc_data["type"] = 'turbulentIntensityKineticEnergyInlet'
@@ -292,7 +292,7 @@ def define_initial_files(sim_path, patch_df):
                         T_celsius = row['T']
                         T_wall = T_celsius + 273.15
                         h_value = CP * (T_wall - T_REF)
-                        logger.info(f"    BC {row['name']} ({row['type']}): T={T_celsius}°C → T_K={T_wall}K → h={h_value} J/kg")
+                        logger.info(f"    BC {row['id']} ({row['type']}): T={T_celsius}°C → T_K={T_wall}K → h={h_value} J/kg")
                         new_bc_data["value"] = h_value
                     elif(variable == 'k'):
                         new_bc_data["type"] = 'turbulentIntensityKineticEnergyInlet'
