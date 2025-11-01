@@ -52,20 +52,21 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 - **Default Behavior**: Defaults to comfortTest (3 iterations) if simulationType is missing or invalid
 
 **Thermophysical Model:**
-- **Solver**: buoyantSimpleFoam with Boussinesq approximation
+- **Solver**: buoyantSimpleFoam with perfectGas equation of state
+- **Equation of State**: perfectGas (ideal gas law: ρ = p/(R×T)) - supports large temperature differences (20-40°C)
 - **Energy Field**: Sensible enthalpy (h) as primary solved variable
-- **Temperature Reference**: T_ref = 293.15 K (20°C) for Boussinesq approximation
-- **Enthalpy Formulation**: h = Cp × (T - T_ref), where h = 0 at reference temperature
-- **Fluid Properties**: Air with Cp = 1005 J/(kg·K), Pr = 0.7, ρ₀ = 1.225 kg/m³
+- **Enthalpy Formulation**: h = Cp × T (absolute enthalpy, referenced to T=0K)
+- **Fluid Properties**: Air with Cp = 1005 J/(kg·K), Pr = 0.7, molecular weight = 28.9 g/mol
+- **Initial Conditions**: h = 294515.75 J/kg (corresponding to T = 293.15K at 20°C)
 
 **Boundary Conditions for HVAC Applications:**
-- **Walls**: fixedValue for temperature and enthalpy, fixedFluxPressure for p_rgh
+- **Walls**: fixedValue for temperature (T in Kelvin) and enthalpy (h = Cp×T), fixedFluxPressure for p_rgh
 - **Windows/Doors (pressure boundaries)**: 
   - p_rgh: fixedFluxPressure (allows natural pressure adjustment)
   - U: pressureInletOutletVelocity (inlet) or inletOutlet (outlet)
-  - h: fixedValue (inlet) or inletOutlet (outlet) with Boussinesq reference
+  - h: fixedValue (inlet) or inletOutlet (outlet) with h = Cp×T
   - Critical: NEVER use fixedValue for p_rgh on openings - prevents natural flow development
-- **Mass Flow Inlets**: flowRateInletVelocity for velocity-driven boundaries
+- **Mass Flow Inlets**: flowRateInletVelocity for velocity-driven boundaries with h = Cp×T
 
 **Mesh Generation & Validation Pipeline (Allrun):**
 1. surfaceFeatureExtract - Extract geometry features for snapping
@@ -81,7 +82,7 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 11. Post-processing - Reconstruct and export VTK results
 
 **Key Design Decisions:**
-- Enthalpy as energy variable ensures stability and compatibility with Boussinesq density model
+- Enthalpy as energy variable ensures stability and compatibility with perfectGas equation of state
 - fixedFluxPressure on openings allows natural pressure field development in buoyancy-driven flows
 - Comprehensive debug logging at initialization enables rapid troubleshooting of boundary conditions
 - checkMesh validation prevents mesh quality issues before expensive solver runs

@@ -12,7 +12,7 @@ thermoType
     mixture         pureMixture;
     transport       const;
     thermo          hConst;
-    equationOfState Boussinesq;
+    equationOfState perfectGas;
     specie          specie;
     energy          sensibleEnthalpy;
 }
@@ -27,13 +27,6 @@ mixture
     {
         Cp              1005;
         Hf              0;
-        Tref            293.15;
-    }
-    equationOfState
-    {
-        rho0            1.225;
-        T0              293.15;
-        beta            3.3e-3;
     }
     transport
     {
