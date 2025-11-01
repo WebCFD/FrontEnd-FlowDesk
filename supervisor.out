@@ -5,11 +5,11 @@ Logs en: worker_logs/
 =========================================
 
 Iniciando workers por primera vez...
-[2025-11-01 15:08:11] Iniciando worker_submit.py...
-[2025-11-01 15:08:13] ✅ worker_submit.py iniciado correctamente (PID: 65550)
-[2025-11-01 15:08:13] Iniciando worker_monitor.py...
-[2025-11-01 15:08:16] ✅ worker_monitor.py iniciado correctamente (PID: 65565)
+[2025-11-01 15:14:03] Iniciando worker_submit.py...
+[2025-11-01 15:14:05] ✅ worker_submit.py iniciado correctamente (PID: 68438)
+[2025-11-01 15:14:05] Iniciando worker_monitor.py...
+[2025-11-01 15:14:07] ✅ worker_monitor.py iniciado correctamente (PID: 68453)
 
 Supervisor activo. Presiona Ctrl+C para detener.
 
---- Verificación: 2025-11-01 15:08:16 ---
+--- Verificación: 2025-11-01 15:14:08 ---
