@@ -453,6 +453,11 @@ def setup(case_path: str) -> list:
         # 3. Reconstruct the results back into serial for post-processing
         'runApplication reconstructPar -latestTime',
 
+        # 3.5. Calculate PMV/PPD thermal comfort fields from T and U
+        'echo "==================== CALCULATING PMV/PPD THERMAL COMFORT ===================="',
+        'python3 /workspace/src/components/post/calculate_comfort.py . 2>&1 | tee log.comfort',
+        'echo "==================== PMV/PPD CALCULATION COMPLETED ===================="',
+
         # 4. Generate VTK surface files (external surfaces only, optimized for web viewer)
         # -surfaceFields: Only surface data (walls, boundaries)
         # -faceSet: All faces including internal ones (for volume representation)
