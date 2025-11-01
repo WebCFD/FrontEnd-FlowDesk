@@ -71,7 +71,7 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 **Boundary Conditions for HVAC Applications (Boussinesq):**
 - **Walls**: fixedValue for temperature (T in Kelvin) and enthalpy (h = Cp×T); fixedFluxPressure for p_rgh
 - **Windows/Doors (pressure boundaries - pressure_inlet and pressure_outlet)**: 
-  - p_rgh: prghPressure with p=0, value=0 (maintains hydrostatic consistency, prevents h from going negative)
+  - p_rgh: prghPressure with p=101325 Pa (atmospheric pressure), maintains hydrostatic consistency and prevents h<0 crash
   - U: pressureInletOutletVelocity (inlet) or inletOutlet (outlet)
   - h: inletOutlet with inletValue = Cp×293.15 (allows bidirectional flow, backflow at 20°C)
   - T: inletOutlet with inletValue = 293.15K (allows bidirectional flow, backflow at 20°C)

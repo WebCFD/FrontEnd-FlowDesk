@@ -308,8 +308,8 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'p_rgh'):
                         # Use prghPressure for pressure inlet (maintains hydrostatic consistency)
                         new_bc_data["type"] = 'prghPressure'
-                        new_bc_data["p"] = 0
-                        new_bc_data["value"] = 0
+                        new_bc_data["p"] = P_ATM  # Static pressure in Pa
+                        new_bc_data["value"] = '$internalField'
                     elif(variable == 'PMV'):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = -1.18438
@@ -366,8 +366,8 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'p_rgh'):
                         # Use prghPressure for pressure outlet (maintains hydrostatic consistency)
                         new_bc_data["type"] = 'prghPressure'
-                        new_bc_data["p"] = 0
-                        new_bc_data["value"] = 0
+                        new_bc_data["p"] = P_ATM  # Static pressure in Pa
+                        new_bc_data["value"] = '$internalField'
                     elif(variable == 'PMV'):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 1.40936
