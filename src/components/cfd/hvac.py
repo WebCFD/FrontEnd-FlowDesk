@@ -101,7 +101,13 @@ def update_controldict_iterations(case_path, simulation_type):
     with case['system']['controlDict'] as ctrl:
         ctrl['endTime'] = iterations
         ctrl['writeInterval'] = iterations  # Write only at end (when timeStep == endTime)
-        logger.info(f"    * Updated controlDict: endTime={iterations}, writeInterval={iterations}")
+        
+        # CRITICAL: Also update VTK function writeInterval to avoid intermediate writes
+        if 'functions' in ctrl and 'writeVTK' in ctrl['functions']:
+            ctrl['functions']['writeVTK']['writeInterval'] = iterations
+            logger.info(f"    * Updated VTK writeInterval to {iterations}")
+        
+        logger.info(f"    * ✅ controlDict fully updated: endTime={iterations}, writeInterval={iterations}")
 
 
 def update_controldict_patches(sim_path, patch_df):
