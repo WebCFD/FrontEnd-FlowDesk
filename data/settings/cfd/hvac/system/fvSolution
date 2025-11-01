@@ -82,14 +82,14 @@ relaxationFactors
 {
     fields
     {
-        rho             0.1;  // Reduced for stability with perfectGas
-        p_rgh           0.3;
+        rho             0.01;  // Ultra-conservative for perfectGas stability (was 0.1)
+        p_rgh           0.2;   // Reduced from 0.3
     }
     equations
     {
-        U               0.5;
-        e               0.3;  // Conservative relaxation for internal energy (eConst)
-        h               0.5;
+        U               0.3;   // Reduced from 0.5
+        e               0.1;   // Ultra-conservative for eConst stability (was 0.3)
+        h               0.3;   // Reduced from 0.5
         "(k|epsilon|omega)" 0.5;
     }
 }

@@ -93,12 +93,13 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 11. Post-processing - Reconstruct and export VTK results
 
 **Numerical Stability & Solver Configuration:**
-- **Relaxation Factors**: 
-  - rho: 0.1 (reduced for perfectGas stability)
-  - p_rgh: 0.3 (moderate for pressure)
-  - U: 0.5 (standard for velocity)
-  - e: 0.3 (conservative for internal energy with eConst)
-  - h: 0.5 (standard for enthalpy)
+- **Relaxation Factors (Ultra-Conservative for perfectGas Stability - Nov 1, 2025)**: 
+  - rho: 0.01 (was 0.1 - drastically reduced to prevent density oscillations)
+  - p_rgh: 0.2 (was 0.3 - reduced for stability)
+  - U: 0.3 (was 0.5 - reduced)
+  - e: 0.1 (was 0.3 - ultra-conservative to prevent temperature oscillations)
+  - h: 0.3 (was 0.5 - reduced)
+  - Note: These very low values sacrifice convergence speed for stability to test numerical hypothesis
 - **Energy Bounds**: eMin = 100,000 J/kg (prevents negative internal energy, ~-110°C safety limit)
 - **SIMPLE Settings**: nNonOrthogonalCorrectors = 3, consistent = yes
 - **Residual Control**: p_rgh, U, h, e all converge to 1e-4
