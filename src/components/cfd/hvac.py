@@ -290,6 +290,7 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'epsilon'):
                         new_bc_data["type"] = 'inletOutlet'
                         new_bc_data["inletValue"] = '$internalField'
+                        new_bc_data["value"] = '$internalField'
                     elif(variable == 'omega'):
                         new_bc_data["type"] = 'inletOutlet'
                         new_bc_data["inletValue"] = 0.5
@@ -303,6 +304,7 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'k'):
                         new_bc_data["type"] = 'inletOutlet'
                         new_bc_data["inletValue"] = '$internalField'
+                        new_bc_data["value"] = '$internalField'
                     elif(variable == 'nut'):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = '$internalField'
@@ -322,7 +324,7 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["value"] = 46.0115
                     elif(variable == 'T'):
                         new_bc_data["type"] = 'inletOutlet'
-                        new_bc_data["inletValue"] = 293.15
+                        new_bc_data["inletValue"] = T_REF
                         new_bc_data["value"] = row['T'] + 273.15
                     elif(variable == 'U'):
                         if (row['open']):
@@ -351,10 +353,10 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'fixedValue'
                         new_bc_data["value"] = 0.5
                     elif(variable == 'h'):
-                        # Enthalpy: h = Cp×T + Hf (perfectGas)
+                        # Enthalpy for Boussinesq: h = Cp×(T - T_ref)
                         new_bc_data["type"] = 'fixedValue'
                         T_inlet = row['T'] + 273.15
-                        new_bc_data["value"] = CP * T_inlet + HF
+                        new_bc_data["value"] = CP * (T_inlet - T_REF)
                     elif(variable == 'k'):
                         new_bc_data["type"] = 'turbulentIntensityKineticEnergyInlet'
                         new_bc_data["intensity"] = 0.14
