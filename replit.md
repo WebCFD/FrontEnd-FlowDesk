@@ -93,13 +93,14 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 11. Post-processing - Reconstruct and export VTK results
 
 **Numerical Stability & Solver Configuration:**
-- **Relaxation Factors (Ultra-Conservative for perfectGas Stability - Nov 1, 2025)**: 
-  - rho: 0.01 (was 0.1 - drastically reduced to prevent density oscillations)
-  - p_rgh: 0.2 (was 0.3 - reduced for stability)
-  - U: 0.3 (was 0.5 - reduced)
-  - e: 0.1 (was 0.3 - ultra-conservative to prevent temperature oscillations)
-  - h: 0.3 (was 0.5 - reduced)
-  - Note: These very low values sacrifice convergence speed for stability to test numerical hypothesis
+- **Relaxation Factors (Extreme Conservative for perfectGas Stability - Nov 1, 2025)**: 
+  - rho: 0.005 (halved from 0.01 after iter-2 fix, was originally 0.1)
+  - p_rgh: 0.1 (halved from 0.2)
+  - U: 0.15 (halved from 0.3)
+  - e: 0.05 (halved from 0.1 after iter-2 fix, was originally 0.3)
+  - h: 0.15 (halved from 0.3)
+  - k/epsilon/omega: 0.25 (halved from 0.5)
+  - Evolution: Ultra-conservative discretization schemes (upwind) fixed iter-2 crash; extreme relaxation needed for iter-3+
 - **Discretization Schemes (Ultra-Conservative First-Order - Nov 1, 2025)**:
   - All divSchemes use `bounded Gauss upwind` (1st order, monotonic, no oscillations)
   - gradSchemes limiter: 1.0 (maximum conservation, no overshoots)
