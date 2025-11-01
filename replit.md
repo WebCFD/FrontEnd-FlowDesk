@@ -54,10 +54,12 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 **Thermophysical Model:**
 - **Solver**: buoyantSimpleFoam with perfectGas equation of state
 - **Equation of State**: perfectGas (ideal gas law: ρ = p/(R×T)) - supports large temperature differences (20-40°C)
-- **Energy Field**: Sensible enthalpy (h) as primary solved variable
+- **Thermo Model**: eConst (constant internal energy) - required for perfectGas compatibility
+- **Energy Variable**: sensibleInternalEnergy (e = Cv×T internally, h = e + p/ρ for boundary conditions)
 - **Enthalpy Formulation**: h = Cp × T (absolute enthalpy, referenced to T=0K)
-- **Fluid Properties**: Air with Cp = 1005 J/(kg·K), Pr = 0.7, molecular weight = 28.9 g/mol
+- **Fluid Properties**: Air with Cv = 718 J/(kg·K), Cp = 1005 J/(kg·K), Pr = 0.7, molecular weight = 28.9 g/mol
 - **Initial Conditions**: h = 294515.75 J/kg (corresponding to T = 293.15K at 20°C)
+- **Critical**: hConst + perfectGas is incompatible; eConst ensures correct temperature calculation
 
 **Boundary Conditions for HVAC Applications:**
 - **Walls**: fixedValue for temperature (T in Kelvin) and enthalpy (h = Cp×T), fixedFluxPressure for p_rgh
@@ -82,6 +84,7 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 11. Post-processing - Reconstruct and export VTK results
 
 **Key Design Decisions:**
+- eConst thermo model ensures correct temperature calculation with perfectGas (hConst + perfectGas is incompatible)
 - Enthalpy as energy variable ensures stability and compatibility with perfectGas equation of state
 - fixedFluxPressure on openings allows natural pressure field development in buoyancy-driven flows
 - Comprehensive debug logging at initialization enables rapid troubleshooting of boundary conditions

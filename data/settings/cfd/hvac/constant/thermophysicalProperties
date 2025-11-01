@@ -11,10 +11,10 @@ thermoType
     type            heRhoThermo;
     mixture         pureMixture;
     transport       const;
-    thermo          hConst;
+    thermo          eConst;
     equationOfState perfectGas;
     specie          specie;
-    energy          sensibleEnthalpy;
+    energy          sensibleInternalEnergy;
 }
 
 mixture
@@ -25,7 +25,7 @@ mixture
     }
     thermodynamics
     {
-        Cp              1005;
+        Cv              718;
         Hf              0;
     }
     transport
