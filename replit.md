@@ -58,12 +58,14 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 - **Energy Variable**: sensibleInternalEnergy (e = Cv×T internally, h = e + p/ρ for boundary conditions)
 - **Enthalpy Formulation**: h = Cp × T (absolute enthalpy, referenced to T=0K)
 - **Fluid Properties**: Air with Cv = 718 J/(kg·K), Cp = 1005 J/(kg·K), Pr = 0.7, molecular weight = 28.9 g/mol
+- **Temperature Limits**: Tlow = 200K (-73°C), Thigh = 400K (127°C) - hard clamps prevent negative temperatures
 - **Initial Conditions**: 
   - e = 210501.7 J/kg (Cv×T = 718×293.15 for eConst)
   - h = 294515.75 J/kg (Cp×T = 1005×293.15, calculated from e)
   - T = 293.15K (calculated from e: T = e/Cv)
 - **Critical**: hConst + perfectGas is incompatible; eConst ensures correct temperature calculation
 - **Field 'e' Required**: buoyantSimpleFoam with eConst solves internal energy e, not enthalpy h
+- **Temperature Clamping**: OpenFOAM enforces T ∈ [Tlow, Thigh] via limit() function in eConst source code
 
 **Boundary Conditions for HVAC Applications:**
 - **Walls**: fixedValue for temperature (T in Kelvin) and enthalpy (h = Cp×T), fixedFluxPressure for p_rgh
@@ -100,9 +102,10 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 
 **Key Design Decisions:**
 - eConst thermo model ensures correct temperature calculation with perfectGas (hConst + perfectGas is incompatible)
+- Tlow/Thigh temperature limits (200K-400K) in thermophysicalProperties provide hard clamps preventing negative temperatures via OpenFOAM's limit() function
 - Enthalpy as energy variable ensures stability and compatibility with perfectGas equation of state
 - fixedFluxPressure on openings allows natural pressure field development in buoyancy-driven flows
-- eMin bound prevents numerical divergence to negative internal energy during solver iterations
+- eMin bound in fvSolution prevents numerical divergence to negative internal energy during solver iterations
 - Conservative relaxation factors (especially rho=0.1, e=0.3) prevent oscillations with perfectGas EOS
 - Comprehensive debug logging at initialization enables rapid troubleshooting of boundary conditions
 - checkMesh validation prevents mesh quality issues before expensive solver runs

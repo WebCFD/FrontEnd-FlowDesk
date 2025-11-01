@@ -27,6 +27,8 @@ mixture
     {
         Cv              718;
         Hf              0;
+        Tlow            200;    // Lower temperature limit [K] ~-73°C (HVAC safety)
+        Thigh           400;    // Upper temperature limit [K] ~127°C (above max HVAC)
     }
     transport
     {
