@@ -69,6 +69,10 @@ SIMPLE
     rhoMin              0.5;
     rhoMax              2.0;
     
+    // Enthalpy limits to prevent extreme temperatures
+    hMin                -500000;    // ~-200K offset from Tref
+    hMax                500000;     // ~+200K offset from Tref
+    
     residualControl
     {
         p_rgh           1e-4;
