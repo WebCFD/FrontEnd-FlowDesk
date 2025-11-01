@@ -750,9 +750,11 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         presetName = 'erdc_blue2red_bw'; // Azul a rojo para presión
         break;
       case 'velocity':
-        array = pointData.getArrayByName('U') || pointData.getArray(1);
+        // Buscar primero magnitud pre-calculada, luego campo vectorial
+        array = pointData.getArrayByName('U_mag') || pointData.getArrayByName('U');
         presetName = 'erdc_blue2red_bw'; // Default para velocidad
-        useVectorMagnitude = true; // Usar magnitud para vectores
+        // Solo calcular magnitud si es campo vectorial (U), no si ya es U_mag
+        useVectorMagnitude = array?.getName() === 'U' && array?.getNumberOfComponents() >= 3;
         break;
       case 'temperature':
         array = pointData.getArrayByName('T_degC') || pointData.getArrayByName('T');
