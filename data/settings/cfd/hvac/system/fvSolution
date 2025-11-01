@@ -61,13 +61,10 @@ solvers
 
 SIMPLE
 {
-    nNonOrthogonalCorrectors 1;
+    nNonOrthogonalCorrectors 3;
+    consistent          yes;
     pRefCell            0;
     pRefValue           0;
-    
-    // Enthalpy limits to prevent extreme temperatures
-    hMin                -500000;    // ~-200K offset from Tref
-    hMax                500000;     // ~+200K offset from Tref
     
     residualControl
     {
@@ -81,14 +78,14 @@ relaxationFactors
 {
     fields
     {
-        rho             0.1;     // Very conservative for Boussinesq stability (was 0.5)
-        p_rgh           0.2;     // Reduced from 0.3 for stability
+        rho             0.3;
+        p_rgh           0.3;
     }
     equations
     {
-        U               0.5;     // Reduced from 0.7 for stability
-        h               0.5;     // Reduced from 0.7 for stability (critical for Boussinesq)
-        "(k|epsilon|omega)" 0.5; // Reduced from 0.7 for consistency
+        U               0.5;
+        h               0.5;
+        "(k|epsilon|omega)" 0.5;
     }
 }
 

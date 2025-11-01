@@ -28,13 +28,13 @@ divSchemes
 {
     default         none;
 
-    div(phi,U)      bounded Gauss upwind;
+    div(phi,U)      bounded Gauss linearUpwind grad(U);
     div(phi,h)      bounded Gauss upwind;
 
     div(phi,k)      bounded Gauss upwind;
     div(phi,epsilon) bounded Gauss upwind;
     div(phi,omega)  bounded Gauss upwind;
-    div(phi,K)      bounded Gauss upwind;
+    div(phi,K)      bounded Gauss linear;
 
     div(phi,Ekp)    bounded Gauss linear;
 
@@ -45,7 +45,7 @@ divSchemes
 
 laplacianSchemes
 {
-    default         Gauss linear orthogonal;
+    default         Gauss linear limited 0.5;
 }
 
 interpolationSchemes
